@@ -1,0 +1,45 @@
+{
+  "status": "completed Stage67: frozen noise leaves structural-versus-GP gap essentially unchanged; no model selected",
+  "adaptation_execution": "performance/manifests/legacy_joint_population_training_paid_adaptation_execution_v1.json",
+  "adaptation_results": "paper_artifacts/legacy_joint_population_training_paid_adaptation_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "mean_arms": [
+    "joint_structural",
+    "flat",
+    "joint_gp"
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Stage66 two-raw adaptation improves average g error/density for all three existing priors, but structure g MSE remains .005400/.006714 against same-source GP .003660/.004287. Separate the frozen source mean covariance's information propagation from the latent-noise weighting used by paid adaptation, without adding another learned covariance family.",
+  "contrast": "Reuse each five-task native field. For each f/g head, freeze the prior episode noise v_j=E[exp(eta_j)] at paid0/1, then condition its full73-site Gaussian mean law using B=K[:,P]*(K[P,P]+diag(v_P))^{-1}. Save means/covariances and source covariance gain/noise decomposition for all36 branches before scoring. Reconstruct original latent-risk paid moments only to obtain their unrecorded full cross-site covariance, reproducing Stage66 saved moments.",
+  "scoring": "Use the same registered12 unobserved sites and noisy sample-mean labels. Report fixed-noise versus original latent-risk update g MSE, full-task Gaussian mean density with identical observed S2/3 noise, variance reduction and gain norms; also retain structure/flat/GP contrasts. These Gaussian scores do not replace Stage66 proper raw batch density or its original results.",
+  "interpretation": "A frozen-noise attribution contrast: useful only for diagnosing whether covariance propagation or latent-noise conditioning contributes to current prediction gaps. It does not justify replacing raw risk likelihood or selecting a method on these reused training folds.",
+  "decision_rule": "No tuning, new source/risk/map fits, source holdout6/7 or target scoring, gate waiver, KG or confirmation. If the covariance gap persists with frozen noise, prioritize source function estimation; if it changes substantially, inspect latent-risk weighting before any new repair family is registered.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread using cached small JSON, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_paid_covariance_gain_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_paid_covariance_gain_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_paid_covariance_gain_v1/results.json",
+  "next_stage_completed": "performance/manifests/legacy_joint_population_source_mean_covariance_swap_execution_v1.json",
+  "next_plan": "performance/manifests/legacy_joint_population_gp_orthogonal_projection_plan_v1.json"
+}

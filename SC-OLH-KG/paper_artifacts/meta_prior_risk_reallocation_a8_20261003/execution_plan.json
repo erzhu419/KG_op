@@ -1,0 +1,60 @@
+{
+  "stage": "meta_prior_risk_reallocation_a8_20261003",
+  "status": "diagnostic_only_not_deployable",
+  "fixed_before_diagnostic_results": true,
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "control_scores": "paper_artifacts/meta_prior_target_risk_residual_a3_20261003/validation.json",
+  "question": "After giving both diagnostics the same correct risk directions, does retaining source covariance obstruct target prediction compared with redistributing that variance?",
+  "oracle_information": "True target eta function indices only, explicitly confined to this diagnostic. No coefficients, target means/variances, verifier outcomes, future labels or decisions enter fitting.",
+  "common_prior": "Original equal-weight eta source components, with probability 0.5 unchanged and 0.5 corrected. Exponential delta with the generic same-source nonintercept covariance trace as its mean; 48-point Gauss-Laguerre integration. All corrected branches have the original component's total function variance plus delta.",
+  "oracle_add": "Retain original source covariance and add delta/m to each of the m true risk coefficient variances.",
+  "oracle_reallocate": "Redistribute the original component's function covariance trace plus delta uniformly onto the same m true risk functions. Retain its intercept, zero nonintercept means, candidate discrepancy and original source-component mixture. The unchanged branch is identical to oracle_add.",
+  "validation": "Exactly the A3 candidate-group holdouts, all repeats excluded from training. Infer coefficients, delta and component/branch weights from paid training labels. Compare both diagnostics to the same old scores and directly to each other on each path.",
+  "paths": 160,
+  "seeds": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "priors": [
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "prefix_batches": [
+    8,
+    24
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "quadrature_nodes": 48,
+  "paired_bootstrap_seed": 20261014,
+  "numerical_check": "Compare 48/96/144-point scores at the strongest corrected-branch posterior fold per stratum for both variants; raise order if changes exceed 1e-4 joint log-score units.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "interpretation": "Nondeployable paired mechanism diagnostic. A reallocation gain would justify testing paid-label covariance reweighting, not claim that support can be learned or that decisions improve. Reallocation also changes the relative variances within the true support; it does not isolate only removal of irrelevant functions. Same development cohort, not independent confirmation."
+}

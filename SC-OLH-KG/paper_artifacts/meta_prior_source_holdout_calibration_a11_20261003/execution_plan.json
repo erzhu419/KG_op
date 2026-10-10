@@ -1,0 +1,88 @@
+{
+  "stage": "meta_prior_source_holdout_calibration_diagnostic_a11_20261003",
+  "status": "implementation_checked_ready_for_frozen_local_diagnosis",
+  "fixed_before_a11_results": true,
+  "question": "Does leave-one-source-task-out chronological prediction provide a consistent source-only signal for retaining or adapting the source risk prior on compatible tasks?",
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "source_metadata": "paper_artifacts/meta_prior_risk_adaptation_calibration_a10_20261003/source_coverage.json",
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "source_archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "archives": 32,
+    "held_tasks_per_archive": 8,
+    "source_fold_fits": 256,
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "predictive_paths": 512,
+    "forecast_steps": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ]
+  },
+  "reconstruction": "Regenerate only the exact previously paid source labels using the frozen V6 source_data/prepare_sources seeds and protocol; no new observation seeds, source tasks or target data.",
+  "prior_fit": "For each archive/task fold, exclude every label of the held source function. Refit the original full source eta prior and original source-risk ARD on the other seven tasks, reusing one fold fit for both predictive controls. Keep the original public 96-candidate normalization bank and source-ARD optimizer settings.",
+  "prediction": "Treat the held source function as a pseudo-target. Its existing outcome-free source point order supplies the first 24 old observations. At each step use strictly earlier labels; compare original source P0, adapted-only P1 and unchanged A9 on the next old label. All source generating supports are metadata only, never fitting inputs.",
+  "analysis": "Report all archive groups and both priors. First average the 16 next-label gains within a held task, then all eight held tasks within an archive; paired bootstrap units are the 16 seed archives, not individual labels or overlapping source folds.",
+  "purpose": "Diagnose whether source-only held-task prediction can inform future adaptation-strength learning. This stage fits no new calibration rule, uses no target outcomes and selects no winning variant.",
+  "scope": "Within each archive, held source tasks retain its generating risk support. Supports vary across archives, but no archive contains high-frequency risk or within-archive support-shift examples. Do not infer out-of-distribution adaptation quality from this compatible-task diagnosis.",
+  "source_costs": "All labels belong to existing source archives. Report original per-archive source costs separately; the diagnosis adds computation but no simulation calls.",
+  "resource_admission": "Measure the first complete learned-source fold including seven-task ARD refit and both control paths; retain it and forecast all 256 folds. Stop with partial evidence if the forecast exceeds 900 local CPU seconds; do not shrink the cohort or dispatch jobs.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "paired_bootstrap_seed": 20261020,
+  "implementation_checks": "The held function never enters covariance/intercept learning; source priors are shared across its two controls; only earlier held-function observations reach issued predictions; fold and seed grouping match the fixed cohort.",
+  "decision": "A coherent source-only predictive signal permits designing a separate offline calibration protocol. A weak or conflicting signal ends this diagnosis without automatic model expansion. Prospective target searches and recommendation replay remain on hold.",
+  "limitations": "Development source archives associated with the reused V6 seed blocks, not independent confirmation. The diagnostic cannot establish high-frequency or support-shift transfer, KG acquisition value, high-dimensional representation learning or deployment gains.",
+  "public_family_plan": "paper_artifacts/meta_prior_risk_family_reweighting_a9_20261003/execution_plan.json",
+  "artifacts": "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003",
+  "secondary_diagnostic": "Learned-source P0 minus generic-source P0 on identical held functions and point order; keep separate from the adaptation question.",
+  "admission_first_fold": {
+    "seed": 48,
+    "archive_group": "shared",
+    "held_task": 0
+  },
+  "optimizer_reporting": "Report every original source-ARD fold convergence flag and iteration count; no fallback or optimizer retuning."
+}

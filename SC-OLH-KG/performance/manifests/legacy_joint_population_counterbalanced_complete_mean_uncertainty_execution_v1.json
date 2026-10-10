@@ -1,0 +1,52 @@
+{
+  "status": "registered before12 deletion mean fits and8 source forecasts",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "coverage_results": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/results.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "previous_mixture_execution": "performance/manifests/legacy_joint_population_covered_complete_mean_uncertainty_v1.json",
+  "previous_mixture_results": "paper_artifacts/legacy_joint_population_covered_complete_mean_uncertainty_v1/results.json",
+  "direction_candidate_results": "paper_artifacts/legacy_joint_population_task_direction_fit_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "mean_arms": [
+    "joint_structural",
+    "flat"
+  ],
+  "basis_of_next_step": "Old144-call complete-mean deletion mixtures failed with40-record, rank24 mean branches. Counterbalanced216-call views have60 records and rank27 after each deletion, retaining all28 policies. Stage53–57 improves average prediction yet fails all-case repair gates; the fitted single task direction improves source likelihood but loses one holdout g density. Check complete-source estimation variability under the changed coverage rather than adopting the failed direction or adding source calls.",
+  "fit_rule": "Reuse Stage53 full72-record structural/flat mean fits and all Stage53 full/six-deletion GP fits. Fit only the original regularizer/fixed/joint structural/flat f/g objectives on each saved60-record task-deleted mean view, with its existing frozen public normalization/reference, original optimizer and recorded native completion when needed. Source-fitted rank-one covariance is not used in this candidate.",
+  "risk_rule": "Reuse original144-call full48-record and deleted40-record risk maps/priors. Additional source variance information remains unused. Pair each full/deleted mean law with the risk law and public representations bearing the same deleted task identity.",
+  "mixture_rule": "One full identity plus six whole-source-task-deletion identities, uniform1/7 prior weights; the same two raw paid holdout records jointly update mean/risk identity weights. Use the complete Gaussian field covariance already supported by each component. This is a source-estimation ensemble, not a proved Bayesian hyperparameter posterior.",
+  "controls": "Compare each candidate against its own Stage53 same216-call mean with the original risk-only identity mixture. Report the existing same216-call complete GP control and original144-call parent scores. Do not pool assignments or select heads/layouts by heldout scores.",
+  "freeze_rule": "Complete all12 deletion mean fits before any holdout scoring; freeze all8 new source forecasts before evaluating the71 heldout scoring policies, using identical two raw updates and proper three-repeat density. Verify the full identity reproduces the Stage53 full component after identical updates. No target input/truth/posterior access.",
+  "source_gate": "For each arm require g MSE nonincrease, joint batch density nondecrease and g batch density improvement versus its own Stage53 counterpart on BOTH source holdouts in BOTH layouts. The structural candidate must also satisfy the original144-call repair gate before advancing. Report every failed case; conditional scoring-noise intervals do not waive any criterion.",
+  "next_action": "Only a structural candidate passing both gates may enter a separately registered target diagnostic. Otherwise preserve failures and reassess the source model; do not launch KG, confirmation or a broad matrix automatically.",
+  "execution": "local serial single-thread using cached labels; no new simulator/verifier calls, risk fits, terminal integration, server jobs or pulls",
+  "cost": {
+    "native_mean_objectives_before_original_joint_completions": 96,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "output": "paper_artifacts/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1.json"
+}

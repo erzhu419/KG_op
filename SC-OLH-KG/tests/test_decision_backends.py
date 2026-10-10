@@ -618,6 +618,19 @@ def test_exact_joint_voi_expands_new_actions_by_posterior_risk():
         "canonical_plus_posterior_risk")
 
 
+def test_one_posterior_new_action_metadata_contains_only_the_active_new_point():
+    candidates = [(0, 0), (3, 3), (6, 6), (10, 10)]
+    result = decision_backends.evaluate_or_replicate_action_set(
+        candidates, [(candidates[0], np.zeros(2))], DummyProblem(), iteration=1, seed=232,
+        canonical_sobol_candidate=candidates[1], new_action_count=1,
+        new_action_policy="canonical_plus_posterior",
+        new_action_priority=[0., 10., -1., -2.],
+    )
+    assert result["new_action_indices"].tolist() == [1]
+    assert result["baseline_new_action_indices"].tolist() == [1]
+    assert result["active_indices"].tolist() == [1, 0]
+
+
 def test_v52_action_set_is_literal_superset_of_v51_subset():
     candidates = [
         (0, 0), (1, 1), (2, 8), (3, 7), (4, 6),

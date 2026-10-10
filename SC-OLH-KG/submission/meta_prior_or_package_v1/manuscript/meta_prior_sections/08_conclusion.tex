@@ -1,0 +1,32 @@
+\section{Conclusion}\label{sec:mp_conclusion}
+
+We presented a source-learned structural prior for chance-constrained
+simulation optimization of ordered policy profiles.  The method transfers a
+finite function structure, updates it with paid target observations, and
+separates search utility from independent deployment verification.  The
+current evidence supports early prediction and a bounded attribution effect
+under matched mechanisms, with negative transfer and task infeasibility
+retained.  The generic target-only RBF-KG control is at least as strong on both
+reported blocks, so no generic decision-superiority claim is made.
+
+The paired development control shows a contribution from source-selected mean
+structure relative to a same-source full dictionary, but the separate fixed
+seed block does not confirm its mean ordering.  The result is therefore not a
+stable independent-deployment claim.  Learned trajectory coordinates,
+factor-level risk recovery, and general free-variable high-dimensional
+optimization remain outside the evidence.  A submission should state the
+structural-prior contribution at this declared scope and report the unresolved
+deployment and representation limits explicitly.
+
+\section{Data and Code Accessibility}\label{sec:mp_data_code}
+
+This study uses no proprietary or human-subject data.  The synthetic inventory
+generator, public candidate bank, source archive, frozen contracts, target-only
+baseline results, paired bootstrap summaries, manuscript table generators, and
+the two compiled source files are included in the submission package under
+\texttt{submission/meta\_prior\_or\_package\_v1/}.  The package README gives the
+fixed-entrypoint replay command
+\texttt{python3 performance/replay\_meta\_prior\_submission.py --compile}
+and records the artifact paths used by every reported table.  The original
+confirmation interval is intentionally not read by that replay; its overlap
+with development at seed 95434 is recorded in the manifest.

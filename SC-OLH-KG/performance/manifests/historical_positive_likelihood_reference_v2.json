@@ -1,0 +1,30 @@
+{
+  "status": "registered before conditional-transport reference;v1 direct-importance failure retained",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "queries": {
+    "5": 7,
+    "6": 4
+  },
+  "terminal_action_draw_power": 9,
+  "draw_power": 12,
+  "fantasy_power": 3,
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 90,
+  "precision": {
+    "maximum_log_evidence_error": 0.02,
+    "minimum_weight_ESS": 128,
+    "maximum_absolute_tower_drift": 0.005,
+    "maximum_identity_martingale_residual": 0.01
+  },
+  "scope": "Reuse historical fixed_action_likelihood_reference,now routing actual positive mixtures to latent-particle raw likelihood conditioning. Freeze each best debited action at512 terminal draws and same64 predictive fantasies as precision[9,3]. Draw4096 posterior source components and posterior-eta Gaussian proposals per head;reuse historical conditional query-mean transport and exact density ratios within each complete identity;exact adaptive component scores update shared identity weights. Compare unprojected likelihood utility to the actual Gaussian-moment paid filter under the same fixed action and nodes. Required importance ESS and predictive log-density checks precede attributing projection bias. No source/target outcomes or fitting. Exact component evidence already used in categorical posterior selection is divided out of the importance weight. No moment projection of the next eta posterior;same cached laws and all original reference precision gates. This fixes actual v1 particle ESS1 failure without more particles or observations.",
+  "entrypoint": "performance/check_historical_positive_likelihood_reference.py",
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_positive_likelihood_reference_v2",
+  "previous_failed_reference": "paper_artifacts/historical_positive_likelihood_reference_v1/results.json"
+}

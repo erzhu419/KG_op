@@ -1,0 +1,179 @@
+{
+  "contract_id": "inventory_risk_identifiability_v1",
+  "purpose": "source LODO and eight-point target risk calibration; no search or verification",
+  "confirmation_block_read": false,
+  "source_lodo": [
+    {
+      "left_out": 0,
+      "learned_minus_pooled_log_density": 0.8988676099490647,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 1,
+      "learned_minus_pooled_log_density": -0.8732741944984284,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 2,
+      "learned_minus_pooled_log_density": 1.0078862358067795,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 3,
+      "learned_minus_pooled_log_density": 1.0540251915681296,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 4,
+      "learned_minus_pooled_log_density": 0.4967176409276277,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 5,
+      "learned_minus_pooled_log_density": 0.5390813992986452,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 6,
+      "learned_minus_pooled_log_density": 1.2522638328347213,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    },
+    {
+      "left_out": 7,
+      "learned_minus_pooled_log_density": 1.1612886995096616,
+      "learned_converged": true,
+      "pooled_control_reference_mode": "same_source_pooled_factor_families"
+    }
+  ],
+  "source_lodo_mean_gain": 0.6921070519245252,
+  "target_rows": [
+    {
+      "law_seed": 95425,
+      "learned": {
+        "eta_rmse_holdout": 0.3733920189566233,
+        "eta_interval_coverage_holdout": 0.9659090909090909,
+        "factor_beta_rmse": 0.521198901278262,
+        "effective_particles": 66.58159053304946
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.46524542906058075,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.4802061363468526,
+        "effective_particles": 165.35125955443968
+      }
+    },
+    {
+      "law_seed": 95426,
+      "learned": {
+        "eta_rmse_holdout": 0.408368893583289,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.21970264281254373,
+        "effective_particles": 53.04138635457167
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.43426782137883335,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.2673965674706846,
+        "effective_particles": 250.62690703255416
+      }
+    },
+    {
+      "law_seed": 95427,
+      "learned": {
+        "eta_rmse_holdout": 0.44285060075311045,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.2826439011022998,
+        "effective_particles": 86.92916479782404
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.5042130095378473,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.2686022732087016,
+        "effective_particles": 266.89925299951875
+      }
+    },
+    {
+      "law_seed": 95428,
+      "learned": {
+        "eta_rmse_holdout": 0.13980739107561335,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.1362401483273978,
+        "effective_particles": 106.25846471209854
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.19225472568346455,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.23781921047589014,
+        "effective_particles": 378.2592428238859
+      }
+    },
+    {
+      "law_seed": 95430,
+      "learned": {
+        "eta_rmse_holdout": 0.2912287334281344,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.11532374595338755,
+        "effective_particles": 75.44173849060294
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.34157042396493187,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.0746626644615973,
+        "effective_particles": 274.9530362337002
+      }
+    },
+    {
+      "law_seed": 95431,
+      "learned": {
+        "eta_rmse_holdout": 0.36601953309350954,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.5009943014727848,
+        "effective_particles": 41.04928312395469
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.5048740926768159,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.5040189780797696,
+        "effective_particles": 92.42409997783109
+      }
+    },
+    {
+      "law_seed": 95432,
+      "learned": {
+        "eta_rmse_holdout": 0.18875308465845042,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.0851939432725976,
+        "effective_particles": 72.95440528315527
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.22991485015038318,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.059381014685455334,
+        "effective_particles": 267.4408106706311
+      }
+    },
+    {
+      "law_seed": 95434,
+      "learned": {
+        "eta_rmse_holdout": 0.19640514263764786,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.1806948638578056,
+        "effective_particles": 66.2237823332892
+      },
+      "pooled": {
+        "eta_rmse_holdout": 0.23067393660162377,
+        "eta_interval_coverage_holdout": 1.0,
+        "factor_beta_rmse": 0.11477191856729335,
+        "effective_particles": 194.9616512295908
+      }
+    }
+  ],
+  "target_observations": 768
+}

@@ -1,0 +1,1140 @@
+{
+  "execution": {
+    "status": "frozen after outer conditional-density attribution;before source information computation",
+    "entrypoint": "performance/diagnose_legacy_f_joint_spectral_information.py",
+    "inner_source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+    "outer_source_laws": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/source_laws.json",
+    "inner_templates": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_tail_attribution_v1/source_laws.json",
+    "inner_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "positive_tail_fraction": 0.01,
+    "law": "At the ten saved source4 and two source5 fits,compute conditional expected Gaussian covariance Fisher information for the four root-amplitude/spectral parameters: I_ab=.5*tr(K^-1 K_a K^-1 K_b). Record the source score gradient,parameter correlations and nuisance-adjusted task-spectrum information. Existing source-only GP/common/task templates and all nuisance estimates stay fixed. No candidate spectrum grid,source refit or query forecast.",
+    "verification": "A whitened derivative Gram must independently reproduce the Fisher trace formula. Positive information eigenvalues are required for local inverse summaries;failure leaves that summary unresolved without artificial eigenvalue floors. Reuse previous source fit/gradient/conditioning checks.",
+    "decision": "If task spectra have low conditional information and bind at4,register a proper source-only bounded spectral uncertainty probe before another predictor. If well identified,do not blame point-estimation uncertainty;investigate structural misspecification using the existing task contrast. Never treat unconstrained local SE as a posterior interval at a boundary,or use task1 coverage to choose a covariance scale.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_fits": 0,
+      "new_raw_forecasts": 0,
+      "new_source_likelihood_integrations": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached source JSON only;no server jobs,pulls or new NPZ",
+    "scope": "Source-only information diagnostic;stopped candidate remains stopped,retained mixture remains reference,complete-model HOLD. No task1 outcome arrays,source6/7,target,KG,independent confirmation or manuscript changes.",
+    "output": "paper_artifacts/legacy_joint_population_f_joint_spectral_information_v1"
+  },
+  "rows": [
+    {
+      "source_task_count": 4,
+      "layout": "5",
+      "query_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          31.3243194737739,
+          -4.138190893231627,
+          0.162339415485029,
+          -0.004934439864892564
+        ],
+        [
+          -4.138190893231627,
+          15.750607927440702,
+          0.00604307129988726,
+          0.0066203345741952
+        ],
+        [
+          0.162339415485029,
+          0.00604307129988726,
+          9.159162773912676,
+          -0.2652018050414692
+        ],
+        [
+          -0.004934439864892564,
+          0.0066203345741952,
+          -0.2652018050414692,
+          0.19964256452480142
+        ]
+      ],
+      "eigenvalues": [
+        0.19179639482505043,
+        9.16559028767385,
+        14.719681674519004,
+        32.356664382634165
+      ],
+      "unconstrained_local_standard_errors": [
+        0.18186587213071181,
+        0.2564642255150929,
+        0.3369847650042511,
+        2.2824110104333797
+      ],
+      "local_parameter_correlation": [
+        [
+          0.9999999999999998,
+          0.18631796415316607,
+          -0.009785384693983054,
+          -0.0006439993918414183
+        ],
+        [
+          0.186317964153166,
+          1.0000000000000002,
+          -0.003060874077854458,
+          -0.003959526724844407
+        ],
+        [
+          -0.009785384693983054,
+          -0.0030608740778544567,
+          1.0,
+          0.19612020097610927
+        ],
+        [
+          -0.0006439993918414183,
+          -0.003959526724844407,
+          0.19612020097610927,
+          0.9999999999999998
+        ]
+      ],
+      "source_gradient_per_label": [
+        1.0323452140914569e-06,
+        1.052251580868635e-07,
+        -2.7192346137901863e-07,
+        -0.00873323606112822
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.1919606856942611,
+      "task_exponent_fixed_other_parameters_information": 0.19964256452480142,
+      "whitened_gram_error": 1.1723955140041653e-13,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "6",
+      "query_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          30.730106446830384,
+          -4.056492762587266,
+          0.1870383164893109,
+          -0.005511751970464454
+        ],
+        [
+          -4.056492762587266,
+          14.181242810067172,
+          0.027089216169779995,
+          0.007935891076199228
+        ],
+        [
+          0.1870383164893109,
+          0.027089216169779995,
+          9.96612411099072,
+          -0.5529977054068234
+        ],
+        [
+          -0.005511751970464454,
+          0.007935891076199228,
+          -0.5529977054068234,
+          0.33737205234460943
+        ]
+      ],
+      "eigenvalues": [
+        0.3057077749528664,
+        9.994915750366843,
+        13.241836174658431,
+        31.67238572025476
+      ],
+      "unconstrained_local_standard_errors": [
+        0.18391003204049147,
+        0.2707138843260087,
+        0.33225782408015325,
+        1.8057507785254314
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0,
+          0.19436269547937604,
+          -0.011576315820916517,
+          -0.002512928407645958
+        ],
+        [
+          0.19436269547937604,
+          1.0,
+          -0.005719863782034976,
+          -0.004928174154669759
+        ],
+        [
+          -0.011576315820916517,
+          -0.005719863782034977,
+          0.9999999999999999,
+          0.30160111372704185
+        ],
+        [
+          -0.002512928407645958,
+          -0.004928174154669759,
+          0.30160111372704185,
+          1.0
+        ]
+      ],
+      "source_gradient_per_label": [
+        1.0645183968760463e-06,
+        -7.171753262369407e-07,
+        1.76875334932311e-07,
+        -0.011167591711121323
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.30667924008477043,
+      "task_exponent_fixed_other_parameters_information": 0.33737205234460943,
+      "whitened_gram_error": 1.2789769243681803e-13,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "5",
+      "query_task": 2,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6202185912245072,
+        1.5165186742150158,
+        1.1572116876915233,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          43.52709062610653,
+          -3.385218247280204,
+          0.2808262309736325,
+          -0.00042409978623938896
+        ],
+        [
+          -3.385218247280204,
+          12.207345881461354,
+          0.024689527738037703,
+          0.002861138647521504
+        ],
+        [
+          0.2808262309736325,
+          0.024689527738037703,
+          8.8720534558236,
+          -0.3136612925692522
+        ],
+        [
+          -0.00042409978623938896,
+          0.002861138647521504,
+          -0.3136612925692522,
+          0.15266041151815374
+        ]
+      ],
+      "eigenvalues": [
+        0.1413878224506015,
+        8.880146504307168,
+        11.846623866709473,
+        43.8909921814424
+      ],
+      "unconstrained_local_standard_errors": [
+        0.15325202827006035,
+        0.28935491689636433,
+        0.3486720613978729,
+        2.6577748114825117
+      ],
+      "local_parameter_correlation": [
+        [
+          0.9999999999999999,
+          0.14691939611520494,
+          -0.015408603449150633,
+          -0.004292926176722977
+        ],
+        [
+          0.14691939611520494,
+          1.0,
+          -0.0052805257319491865,
+          -0.003440258025229556
+        ],
+        [
+          -0.015408603449150635,
+          -0.005280525731949188,
+          1.0000000000000002,
+          0.2695546637747717
+        ],
+        [
+          -0.004292926176722978,
+          -0.003440258025229556,
+          0.2695546637747717,
+          1.0000000000000002
+        ]
+      ],
+      "source_gradient_per_label": [
+        -7.390220991942975e-06,
+        1.4879990077321104e-06,
+        -1.6441368469802264e-08,
+        -0.0027679124604264318
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.14156752442195808,
+      "task_exponent_fixed_other_parameters_information": 0.15266041151815374,
+      "whitened_gram_error": 2.6645352591003757e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "5",
+      "query_task": 3,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6500458392084202,
+        1.0210959271814024,
+        1.0044983297579613,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          37.781250396752924,
+          -4.334080393534951,
+          0.30184933335394765,
+          -0.006263634080752553
+        ],
+        [
+          -4.334080393534951,
+          17.650506709417666,
+          0.025144191902350177,
+          0.0075081256350571154
+        ],
+        [
+          0.30184933335394765,
+          0.025144191902350177,
+          14.893958379582351,
+          -0.6301519598421818
+        ],
+        [
+          -0.006263634080752553,
+          0.0075081256350571154,
+          -0.6301519598421818,
+          0.3460190187177806
+        ]
+      ],
+      "eigenvalues": [
+        0.3187682167000944,
+        14.913707781974423,
+        16.76099385408451,
+        38.67826465171168
+      ],
+      "unconstrained_local_standard_errors": [
+        0.16504613333158147,
+        0.24145286157944457,
+        0.26974054962059574,
+        1.7695606788333293
+      ],
+      "local_parameter_correlation": [
+        [
+          0.9999999999999999,
+          0.16787578179246682,
+          -0.013352341920921712,
+          -0.00251533638554313
+        ],
+        [
+          0.16787578179246682,
+          1.0,
+          -0.004698007779451665,
+          -0.003981478966246468
+        ],
+        [
+          -0.013352341920921712,
+          -0.004698007779451666,
+          1.0,
+          0.2775956089835184
+        ],
+        [
+          -0.0025153363855431304,
+          -0.003981478966246468,
+          0.2775956089835184,
+          1.0000000000000002
+        ]
+      ],
+      "source_gradient_per_label": [
+        -6.1639203177144e-06,
+        -2.121114891728837e-06,
+        3.0330648407173727e-06,
+        -0.0061436118127672495
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.31935158893512855,
+      "task_exponent_fixed_other_parameters_information": 0.3460190187177806,
+      "whitened_gram_error": 6.750155989720952e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "5",
+      "query_task": 4,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.8184082232650912,
+        1.0208588772140281,
+        1.150825733082901,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          25.795016919437472,
+          -4.14652670456283,
+          0.17983716112342515,
+          -0.005885087641199724
+        ],
+        [
+          -4.14652670456283,
+          19.352320475149902,
+          -0.0011001668413874142,
+          0.00692618690409822
+        ],
+        [
+          0.17983716112342515,
+          -0.0011001668413874142,
+          9.883082002844352,
+          -0.33300935982531954
+        ],
+        [
+          -0.005885087641199724,
+          0.00692618690409822,
+          -0.33300935982531954,
+          0.2332013283778885
+        ]
+      ],
+      "eigenvalues": [
+        0.22172049577420405,
+        9.892276424573778,
+        17.32370016382814,
+        27.825923641633523
+      ],
+      "unconstrained_local_standard_errors": [
+        0.20038798649905532,
+        0.2313385004789875,
+        0.326054139477825,
+        2.122486718101244
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0000000000000002,
+          0.18560020686569828,
+          -0.011322600325762421,
+          -0.000702032463856564
+        ],
+        [
+          0.18560020686569828,
+          0.9999999999999999,
+          -0.00274160165275093,
+          -0.003396381451675725
+        ],
+        [
+          -0.011322600325762421,
+          -0.00274160165275093,
+          0.9999999999999999,
+          0.21934832282936848
+        ],
+        [
+          -0.0007020324638565643,
+          -0.003396381451675725,
+          0.21934832282936848,
+          0.9999999999999998
+        ]
+      ],
+      "source_gradient_per_label": [
+        3.072425455663552e-06,
+        -4.340736718400073e-06,
+        -2.763668426074284e-06,
+        -0.004857229287451124
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.22197805284998062,
+      "task_exponent_fixed_other_parameters_information": 0.2332013283778885,
+      "whitened_gram_error": 4.263256414560601e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "5",
+      "query_task": 5,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "parameters": [
+        0.8414120619596833,
+        0.8710765831932298,
+        0.9466591828909833,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          25.260147513373532,
+          -3.6859185438048745,
+          0.18358411847020162,
+          -0.0059696469860876615
+        ],
+        [
+          -3.6859185438048745,
+          20.597023588780157,
+          -0.009016573935009965,
+          0.00601158780921896
+        ],
+        [
+          0.18358411847020162,
+          -0.009016573935009965,
+          12.370901598537582,
+          -0.12845282939120617
+        ],
+        [
+          -0.0059696469860876615,
+          0.00601158780921896,
+          -0.12845282939120617,
+          0.11866711065045621
+        ]
+      ],
+      "eigenvalues": [
+        0.11731848272934013,
+        12.369369230159922,
+        18.568192889237444,
+        27.291859209215026
+      ],
+      "unconstrained_local_standard_errors": [
+        0.2016285404022214,
+        0.22327818814621403,
+        0.28594094630426153,
+        2.919396861428976
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0000000000000002,
+          0.1615896315788645,
+          -0.01018483360100888,
+          0.0017684872112752597
+        ],
+        [
+          0.16158963157886444,
+          1.0,
+          -0.0014897613205898505,
+          -0.00347099130295985
+        ],
+        [
+          -0.01018483360100888,
+          -0.0014897613205898505,
+          0.9999999999999998,
+          0.10599251483056955
+        ],
+        [
+          0.0017684872112752597,
+          -0.0034709913029598496,
+          0.10599251483056953,
+          1.0000000000000002
+        ]
+      ],
+      "source_gradient_per_label": [
+        -1.0719016516613777e-06,
+        1.785709217660969e-06,
+        1.5171980244574335e-06,
+        -0.010511765512266326
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.11733125781567749,
+      "task_exponent_fixed_other_parameters_information": 0.11866711065045621,
+      "whitened_gram_error": 4.618527782440651e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "6",
+      "query_task": 2,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7191052198832694,
+        1.1559124787023498,
+        1.1845933645149416,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          30.400048354183326,
+          -4.68082773763944,
+          0.21158513877783988,
+          0.0022179792331217495
+        ],
+        [
+          -4.68082773763944,
+          17.19531436226998,
+          0.03502062293995311,
+          0.005476925033231935
+        ],
+        [
+          0.21158513877783988,
+          0.03502062293995311,
+          11.890088616565325,
+          -0.7515816407275724
+        ],
+        [
+          0.0022179792331217495,
+          0.005476925033231935,
+          -0.7515816407275724,
+          0.44558900976277904
+        ]
+      ],
+      "eigenvalues": [
+        0.3964272014367377,
+        11.934920410050772,
+        15.706893108065376,
+        31.892799623228516
+      ],
+      "unconstrained_local_standard_errors": [
+        0.18530928262161164,
+        0.24637757228470658,
+        0.30685104486027015,
+        1.5849736059888961
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0,
+          0.20478618766209142,
+          -0.01292687200869576,
+          -0.005194488229464454
+        ],
+        [
+          0.20478618766209147,
+          1.0000000000000002,
+          -0.0058523585683954715,
+          -0.003940907195242321
+        ],
+        [
+          -0.012926872008695762,
+          -0.0058523585683954715,
+          1.0000000000000002,
+          0.32656688225832203
+        ],
+        [
+          -0.005194488229464455,
+          -0.003940907195242321,
+          0.32656688225832203,
+          1.0
+        ]
+      ],
+      "source_gradient_per_label": [
+        1.5530219332759998e-09,
+        1.6437293337556724e-07,
+        5.911882459616602e-08,
+        -0.009121884729683154
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.3980667756979551,
+      "task_exponent_fixed_other_parameters_information": 0.44558900976277904,
+      "whitened_gram_error": 1.2789769243681803e-13,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "6",
+      "query_task": 3,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6285728275434639,
+        1.1628729495120314,
+        1.222722634046002,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          39.35515894146977,
+          -4.774155731494973,
+          0.2804083689141172,
+          -0.005676070854759304
+        ],
+        [
+          -4.774155731494973,
+          14.371560832101132,
+          0.024889924945618154,
+          0.00804954409618718
+        ],
+        [
+          0.2804083689141172,
+          0.024889924945618154,
+          10.730271368641828,
+          -0.7005167679209285
+        ],
+        [
+          -0.005676070854759304,
+          0.00804954409618718,
+          -0.7005167679209285,
+          0.4262046765394166
+        ]
+      ],
+      "eigenvalues": [
+        0.3787843949776925,
+        10.773127607275562,
+        13.492408419003814,
+        40.238875397495086
+      ],
+      "unconstrained_local_standard_errors": [
+        0.16273444982470495,
+        0.26927138640258075,
+        0.3231417014109113,
+        1.6212356513692414
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0000000000000002,
+          0.2008072970460777,
+          -0.014917633200156646,
+          -0.0041801716977638405
+        ],
+        [
+          0.20080729704607772,
+          1.0,
+          -0.006178029357959234,
+          -0.004892375154804387
+        ],
+        [
+          -0.014917633200156646,
+          -0.006178029357959233,
+          1.0,
+          0.32760192222339446
+        ],
+        [
+          -0.0041801716977638405,
+          -0.004892375154804387,
+          0.32760192222339446,
+          0.9999999999999998
+        ]
+      ],
+      "source_gradient_per_label": [
+        -2.211783345695828e-06,
+        2.347174210770575e-06,
+        3.9202238061829264e-06,
+        -0.008582603306613434
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.38045886604996243,
+      "task_exponent_fixed_other_parameters_information": 0.4262046765394166,
+      "whitened_gram_error": 7.815970093361102e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "6",
+      "query_task": 4,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6903459784526975,
+        1.1816184329308996,
+        1.1884944654355316,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          33.990967239781355,
+          -4.61132461864437,
+          0.2754250143661537,
+          -0.004450010632835927
+        ],
+        [
+          -4.61132461864437,
+          14.97873146666634,
+          -0.03390173478400148,
+          0.006720420990679194
+        ],
+        [
+          0.2754250143661537,
+          -0.03390173478400148,
+          10.203109516461375,
+          -0.5641716064378565
+        ],
+        [
+          -0.004450010632835927,
+          0.006720420990679194,
+          -0.5641716064378565,
+          0.34017521385934746
+        ]
+      ],
+      "eigenvalues": [
+        0.3080022390048987,
+        10.231991922363182,
+        13.919531852435883,
+        35.05345742296447
+      ],
+      "unconstrained_local_standard_errors": [
+        0.1752392427422892,
+        0.2639541178039424,
+        0.3285260468430719,
+        1.7990335590114133
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0000000000000002,
+          0.2043566543363582,
+          -0.015024806031156714,
+          -0.003868486417348269
+        ],
+        [
+          0.20435665433635822,
+          0.9999999999999998,
+          -0.001179948827543595,
+          -0.0029955226512379854
+        ],
+        [
+          -0.015024806031156714,
+          -0.001179948827543595,
+          1.0000000000000002,
+          0.3028423111346978
+        ],
+        [
+          -0.0038684864173482688,
+          -0.0029955226512379854,
+          0.3028423111346978,
+          0.9999999999999999
+        ]
+      ],
+      "source_gradient_per_label": [
+        3.93752372929157e-08,
+        2.8571826338197326e-07,
+        2.3549616724391487e-07,
+        -0.007606630199286595
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.3089736693711641,
+      "task_exponent_fixed_other_parameters_information": 0.34017521385934746,
+      "whitened_gram_error": 1.0658141036401503e-13,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 4,
+      "layout": "6",
+      "query_task": 5,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "parameters": [
+        0.6964037855878337,
+        1.09042110816748,
+        1.156630986791515,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          33.34647209190169,
+          -4.024016900664664,
+          0.2804799324191516,
+          -0.004923118734024599
+        ],
+        [
+          -4.024016900664664,
+          17.54918663759528,
+          0.012587364019955555,
+          0.01019314066943109
+        ],
+        [
+          0.2804799324191516,
+          0.012587364019955555,
+          10.386399565175433,
+          -0.40967277190771184
+        ],
+        [
+          -0.004923118734024599,
+          0.01019314066943109,
+          -0.40967277190771184,
+          0.274748825226818
+        ]
+      ],
+      "eigenvalues": [
+        0.25816903856237494,
+        10.398958883045529,
+        16.58419619750885,
+        34.31548300078247
+      ],
+      "unconstrained_local_standard_errors": [
+        0.17563940372759787,
+        0.24208829067999924,
+        0.3198777516795011,
+        1.966534173764455
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0,
+          0.16638966996257626,
+          -0.015699898248690912,
+          -0.0029673954995714266
+        ],
+        [
+          0.1663896699625763,
+          1.0,
+          -0.004703927391715056,
+          -0.005441745266437957
+        ],
+        [
+          -0.015699898248690912,
+          -0.004703927391715056,
+          1.0,
+          0.242536592159605
+        ],
+        [
+          -0.002967395499571427,
+          -0.005441745266437956,
+          0.242536592159605,
+          1.0
+        ]
+      ],
+      "source_gradient_per_label": [
+        2.964206167188621e-07,
+        1.1815620095667612e-06,
+        7.546437185215749e-08,
+        -0.014310495059572782
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.2585812343997505,
+      "task_exponent_fixed_other_parameters_information": 0.274748825226818,
+      "whitened_gram_error": 4.973799150320701e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 5,
+      "layout": "5",
+      "query_task": 1,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7478352271702585,
+        1.0149998413163717,
+        1.0698111166674817,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          30.987550098734527,
+          -4.647274178765933,
+          0.17938083855288653,
+          -0.007743042288124443
+        ],
+        [
+          -4.647274178765933,
+          19.222277664138847,
+          0.005425222971507155,
+          0.007703188481878358
+        ],
+        [
+          0.17938083855288653,
+          0.005425222971507155,
+          15.9160636071901,
+          -0.48710342760157954
+        ],
+        [
+          -0.007743042288124443,
+          0.007703188481878358,
+          -0.48710342760157954,
+          0.3242226521004682
+        ]
+      ],
+      "eigenvalues": [
+        0.3090166419294792,
+        15.927154014062163,
+        17.610500952146214,
+        32.60344241402606
+      ],
+      "unconstrained_local_standard_errors": [
+        0.18299571386115634,
+        0.23233792982566126,
+        0.2566360431867494,
+        1.7980497853117972
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0,
+          0.19042289955483394,
+          -0.008070462688010222,
+          0.00011537628155905428
+        ],
+        [
+          0.19042289955483394,
+          1.0000000000000002,
+          -0.002513529032393099,
+          -0.003146201624665525
+        ],
+        [
+          -0.00807046268801022,
+          -0.0025135290323930986,
+          1.0,
+          0.2144221615663635
+        ],
+        [
+          0.00011537628155905453,
+          -0.003146201624665525,
+          0.2144221615663635,
+          1.0
+        ]
+      ],
+      "source_gradient_per_label": [
+        -5.382308602364105e-06,
+        -6.576383086542847e-06,
+        9.527218932506298e-06,
+        -0.00848695160101302
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.30931186170122843,
+      "task_exponent_fixed_other_parameters_information": 0.3242226521004682,
+      "whitened_gram_error": 7.460698725481052e-14,
+      "task_exponent_at_declared_upper_bound": true
+    },
+    {
+      "source_task_count": 5,
+      "layout": "6",
+      "query_task": 1,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6798703604559071,
+        1.159651019695701,
+        1.1832806019869548,
+        4.0
+      ],
+      "expected_fisher_information": [
+        [
+          35.493608040628544,
+          -4.921586692720053,
+          0.2220707242699435,
+          -0.006427050977178769
+        ],
+        [
+          -4.921586692720053,
+          16.521915443564982,
+          0.0020235823741886717,
+          0.006911038907155446
+        ],
+        [
+          0.2220707242699435,
+          0.0020235823741886717,
+          14.848732630694052,
+          -0.8419450699660822
+        ],
+        [
+          -0.006427050977178769,
+          0.006911038907155446,
+          -0.8419450699660822,
+          0.5092865111131184
+        ]
+      ],
+      "eigenvalues": [
+        0.46001537728221975,
+        14.88907165392397,
+        15.327971444816075,
+        36.69648414997844
+      ],
+      "unconstrained_local_standard_errors": [
+        0.17143791859178156,
+        0.25126520268253927,
+        0.27261555114227,
+        1.4719545170994557
+      ],
+      "local_parameter_correlation": [
+        [
+          1.0000000000000002,
+          0.20325116862343084,
+          -0.010068469822538414,
+          -0.0020837753020201493
+        ],
+        [
+          0.20325116862343084,
+          1.0000000000000002,
+          -0.002929508625405766,
+          -0.0029146475062136524
+        ],
+        [
+          -0.010068469822538414,
+          -0.0029295086254057657,
+          1.0000000000000002,
+          0.30617269323743657
+        ],
+        [
+          -0.0020837753020201493,
+          -0.0029146475062136524,
+          0.3061726932374365,
+          1.0
+        ]
+      ],
+      "source_gradient_per_label": [
+        9.75831760818835e-06,
+        -1.2735920893458541e-06,
+        6.677489286179353e-06,
+        -0.010379837369232524
+      ],
+      "task_exponent_nuisance_adjusted_information": 0.4615419904722975,
+      "task_exponent_fixed_other_parameters_information": 0.5092865111131184,
+      "whitened_gram_error": 1.6342482922482304e-13,
+      "task_exponent_at_declared_upper_bound": true
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.10389416200000007,
+  "cost": {
+    "new_source_fits": 0,
+    "new_raw_forecasts": 0,
+    "new_source_likelihood_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "candidate_remains_stopped": true,
+  "query_outcomes_indexed": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "interpretation": "Expected Fisher information conditional on fixed empirical source templates,centers,noise and support. Standard errors are unconstrained local information summaries,not posterior credible intervals at p=4. Template/support/GP estimation uncertainty is excluded. No posterior or new predictor fitted."
+}

@@ -1,0 +1,223 @@
+{
+  "execution": {
+    "status": "frozen after two verified full-support amplitude posteriors;before raw forecasts",
+    "entrypoint": "performance/check_legacy_f_inner_task_amplitude_raw.py",
+    "source_amplitude_plan": "performance/manifests/legacy_joint_population_f_source_task_amplitude_uncertainty_plan_v1.json",
+    "source_amplitude_results": "paper_artifacts/legacy_joint_population_f_source_task_amplitude_uncertainty_v1/results.json",
+    "control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+    "point_control_results": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_raw_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "query_tasks": [
+      0
+    ],
+    "paid_prefix": [
+      0,
+      1,
+      29,
+      58
+    ],
+    "controls": [
+      "joint_spectral_geometry",
+      "native_mixture",
+      "source_gp"
+    ],
+    "metrics": [
+      "f_mse",
+      "f_raw_batch_density",
+      "sequential_transcript_density",
+      "actual_mixture_transcript_density"
+    ],
+    "law": "Use only the frozen source4 half-Cauchy amplitude laws;retain all64/128 source-conditioned components through the same Gaussian within-component raw moment filter. No between-component projection,pruning or rescaling. Reuse identical honest source4 eta_f law and fixed-prefix/query score coordinates. The original common parameters and task p=4 remain fixed. This is conditional amplitude uncertainty,not the full hyperparameter posterior or physical risk factor recovery.",
+    "freeze": "Reconstruct source quadrature likelihoods/weights from the same48 means and reproduce their saved laws;all four selected/refined priors frozen before cached paid values. All four forecasts frozen before the same eight cached future batches. Four raw episodes,144 historical source mean calls;96 risk calls are a subset. Query0 absent from its source roster and outer task1 excluded.",
+    "verification": "Selected16 versus refined32 per CDF interval:mean max<=1e-7,covariance relative Frobenius<=1e-5,paid evidence absolute<=1e-6. Future proper raw density and both transcript scores must differ<=1e-6;MSE difference<=1e-9. Preserve failures,stop without scientific interpretation on numerical mismatch. Original raw integrators' bounds unchanged.",
+    "prediction_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "score_tolerances": {
+      "f_mse": 1e-09,
+      "f_raw_batch_density": 1e-06,
+      "sequential_transcript_density": 1e-06,
+      "actual_mixture_transcript_density": 1e-06
+    },
+    "decision": "Screen for a complete tenfold inner comparison only:both canonical pilots must improve raw density or MSE against the stopped point law,and neither may worsen all three original metrics. Otherwise stop forecasts and diagnose cached differences. No outer task1 expansion on two pilots,even if screening passes. Native-mixture/GP comparisons and actual mixture transcript are reported without replacing the original gate.",
+    "maximum_single_thread_cpu_seconds": 60,
+    "cost": {
+      "new_source_optimizations": 0,
+      "source_component_reconstructions": 384,
+      "new_raw_forecasts": 2,
+      "new_numerical_reference_forecasts": 2,
+      "reused_control_forecasts": 6,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached JSON and four compact score-site NPZ;no server work or pulls",
+    "scope": "Repeated inner development only. Retained native mixture remains reference;old point-spectral candidate stopped;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript changes.",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_task_amplitude_raw_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "order_per_interval": 16,
+      "component_count": 64,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "point_parameters": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "source_log_evidence": 117.20175587964258,
+      "source_likelihoods_and_weights_reproduced": true
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "order_per_interval": 32,
+      "component_count": 128,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "point_parameters": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "source_log_evidence": 117.20175587964232,
+      "source_likelihoods_and_weights_reproduced": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "order_per_interval": 16,
+      "component_count": 64,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "point_parameters": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "source_log_evidence": 121.32891552672987,
+      "source_likelihoods_and_weights_reproduced": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "order_per_interval": 32,
+      "component_count": 128,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "point_parameters": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "source_log_evidence": 121.32891552672909,
+      "source_likelihoods_and_weights_reproduced": true
+    }
+  ],
+  "all_priors_frozen_before_paid_values": true
+}

@@ -1,0 +1,56 @@
+{
+  "status": "completed;four source/eta quadrature checks passed;one complete-mixture moment case interpreted",
+  "results": "paper_artifacts/legacy_joint_population_f_exact_mixture_moments_v1/results.json",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_exact_mixture_moments_execution_v1.json",
+  "question": "Can accumulated projection of retained source-intercept variance components and their weights explain the remaining outer task1 mean bias,even though Gaussian native-point/GP controls show small projection errors?",
+  "gaussian_exact_results": "paper_artifacts/legacy_joint_population_f_exact_raw_density_refinement_v2/results.json",
+  "source_rules": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/source_quadrature.json",
+  "control_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "layout": "6",
+  "deleted_task": 1,
+  "design": "fixed_public_prefix",
+  "paid_prefix": [
+    0,
+    1,
+    29,
+    58
+  ],
+  "source_nodes_per_interval": [
+    8,
+    32
+  ],
+  "paid_eta_orders": [
+    5,
+    9
+  ],
+  "case": "One previously scored task1 fold,layout6 fixed prefix,retained native source5 intercept-variance mixture. It has the largest observed undercoverage and mean-level bias among the fixed-prefix layouts. No case selection based on new outcomes;no other fold expansion.",
+  "law": "Use the same full-tail source variance law and shared Gaussian eta_f prior. For each variance component,integrate the four correlated paid eta values jointly by the existing analytic f conditioning. Reweight source components by full four-observation evidence once and retain within/between-component f moments. No sequential Gaussian projections and no source parameter/risk refits.",
+  "calculation": "Only future f mean/covariance and paid joint log evidence. Evaluate the two source rules crossed with two paid-eta rules,four cells;preserve all results. Future raw-batch density is deferred:passing moment checks cannot imply density,terminal or deployment success. Save small moment/evidence/component-evidence summaries only,not eta grids or raw trajectories.",
+  "freeze": "Freeze source law,source rules,eta law and four-point prior before cached paid values. Freeze all four moment/evidence results before reading the twelve already-scored future mean labels. Only the already-used task1 prefix values and source0-5 development packages are accessed.",
+  "verification": "Check existing source8/32-node and paid-eta5/9-node effects separately against the unchanged predictive tolerances. Reproduce the prior selected mixture moments from its source fields before conditioning. The independent single-Gaussian first-observation checks already passed and are reused;do not rerun them. A moment/evidence failure leaves this numerical pilot unresolved without relaxing tolerance.",
+  "prediction_tolerances": {
+    "mean_max_absolute": 1e-07,
+    "covariance_relative_frobenius": 1e-05,
+    "paid_log_evidence_absolute": 1e-06
+  },
+  "decision": "Compare verified full-mixture moments and observed level/shape MSE with its saved projected mixture. Material corrections require a separately frozen broader exact-mixture and proper-density evaluation. Small corrections shift work to source mean/covariance transfer;do not fit another global scale. This one development case cannot close the full meta-prior or OR claim.",
+  "maximum_single_thread_cpu_seconds": 90,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_likelihood_integrations": 0,
+    "maximum_query_moment_rule_cells": 4,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON and in-memory quadrature only;no new component NPZ,no server jobs or pulls",
+  "scope": "One numerical development pilot only. Prior candidates remain stopped;retained native intercept mixture remains reference;complete-model HOLD. No source6/7,target,KG,independent confirmation,manuscript or legacy60/60 changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_exact_mixture_moments_v1",
+  "planned_entrypoint": "performance/check_legacy_f_exact_mixture_moments.py",
+  "source_rule_component_counts": [
+    96,
+    384
+  ]
+}

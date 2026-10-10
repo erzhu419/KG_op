@@ -1,0 +1,1705 @@
+{
+  "protocol": {
+    "status": "registered opened-pilot allocation diagnosis; no new simulations",
+    "pilot": "paper_artifacts/legacy_joint_population_independent_pilot_v1",
+    "output": "paper_artifacts/legacy_joint_population_independent_pilot_v1/allocation_diagnosis.json",
+    "arms": [
+      "joint_population_structural",
+      "joint_population_full"
+    ],
+    "panel": "per task/arm keep its frozen selected primary, original three-policy shortlist and incumbent; compare all three existing guarded allocations and both existing direct allocations, without changing the full-bank recommendation",
+    "integration_power": 15,
+    "integration_seeds": [
+      80771,
+      80772
+    ],
+    "source_rule": "restore the same frozen source priors once; replay the four cached raw initialization records; no source optimization or observation generation",
+    "endpoints": "allocation rank stability across two independent32768-node rules, model reward/call premium of larger guarded budgets, and scoring conditional safe reward/calls for each frozen-panel action",
+    "interpretation": "opened-task numerical/efficiency diagnosis only, not new independent confirmation, a changed selector, global action reranking or incremental KG evidence"
+  },
+  "panels": [
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_structural",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.7618552212993579,
+        0.7977183361055358,
+        0.7947717215422766,
+        0.8001092199982729,
+        0.8048871576914998
+      ],
+      "conditional_total_calls": [
+        233.85102017938527,
+        219.41756901727,
+        268.13564605111446,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7950988079820889,
+            0.794073139817459,
+            0.7952149237997443,
+            0.6936886302549989,
+            0.6993591554194657
+          ],
+          "expected_total_calls": [
+            231.4155122910162,
+            231.41927463324225,
+            276.9752015184723,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.7951110460057356,
+            0.7940930441226961,
+            0.7952516802679692,
+            0.693660893606405,
+            0.6993284978993574
+          ],
+          "expected_total_calls": [
+            231.43183077038518,
+            231.44662489924417,
+            276.9889022023914,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_full",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.7618552212993579,
+        0.7977183361055358,
+        0.7947717215422766,
+        0.8001092199982729,
+        0.8048871576914998
+      ],
+      "conditional_total_calls": [
+        233.85102017938527,
+        219.41756901727,
+        268.13564605111446,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7190478493714327,
+            0.7122616135620935,
+            0.718578803009337,
+            0.44216116623952606,
+            0.44521034200439213
+          ],
+          "expected_total_calls": [
+            248.1247024759687,
+            249.90542590536694,
+            286.3350107371599,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.7190603320525105,
+            0.712281719495662,
+            0.7184923099858371,
+            0.4421251975781718,
+            0.44514319672092034
+          ],
+          "expected_total_calls": [
+            248.1361687181146,
+            249.9135582512371,
+            286.34273186094686,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_structural",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.8050971495992256,
+        0.805097507608127,
+        0.8050975076062358,
+        0.8050975074475843,
+        0.8050975076563084
+      ],
+      "conditional_total_calls": [
+        230.9683638073516,
+        230.3277406836041,
+        279.9693933928397,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7065380464546066,
+            0.7002519895093928,
+            0.7066338083133893,
+            0.45975995718770946,
+            0.4687484055442973
+          ],
+          "expected_total_calls": [
+            245.1924252411214,
+            246.55486392515672,
+            284.400282648681,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.7063251120446759,
+            0.7000673568467738,
+            0.7063149766746619,
+            0.4597628924688616,
+            0.4687876861887634
+          ],
+          "expected_total_calls": [
+            245.22819430982196,
+            246.5849302480804,
+            284.42697196487325,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_full",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.8050971495992256,
+        0.805097507608127,
+        0.8050975076062358,
+        0.8050975074475843,
+        0.8050975076563084
+      ],
+      "conditional_total_calls": [
+        230.9683638073516,
+        230.3277406836041,
+        279.9693933928397,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7152699723382983,
+            0.7078233414046312,
+            0.7147361592369287,
+            0.42732467127105433,
+            0.4303884118990446
+          ],
+          "expected_total_calls": [
+            248.0352250539467,
+            249.91059256788728,
+            286.2827914655616,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.7152366468956031,
+            0.7078095412334452,
+            0.7146824933661897,
+            0.42733556380676957,
+            0.43034460273196967
+          ],
+          "expected_total_calls": [
+            248.04584711201633,
+            249.91565447757304,
+            286.2909894026555,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_structural",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.80384312493899,
+        0.8038431197685311,
+        0.8038431215454365,
+        0.802684699429338,
+        0.8027136279863779
+      ],
+      "conditional_total_calls": [
+        230.7342412026037,
+        230.99489184104746,
+        279.99491696913515,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.8018069391542127,
+            0.8005239281897023,
+            0.8019094790285937,
+            0.6882489368219544,
+            0.6940405915867957
+          ],
+          "expected_total_calls": [
+            230.62707098142505,
+            230.72621918594552,
+            277.1217970611318,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.8019813231765636,
+            0.8006406942009967,
+            0.8021079937475943,
+            0.6882068510438635,
+            0.6939981311924666
+          ],
+          "expected_total_calls": [
+            230.63050330401052,
+            230.7397318571716,
+            277.1220349763379,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_full",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.80384312493899,
+        0.8038431197685311,
+        0.8038431215454365,
+        0.802684699429338,
+        0.8027136279863779
+      ],
+      "conditional_total_calls": [
+        230.7342412026037,
+        230.99489184104746,
+        279.99491696913515,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7507634855980668,
+            0.7440813889838058,
+            0.7504205893318042,
+            0.44841456433189175,
+            0.45139161145372675
+          ],
+          "expected_total_calls": [
+            240.76654314327578,
+            242.48779035019913,
+            282.22947308013534,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.7509666769991754,
+            0.7443199577390962,
+            0.7506550172142196,
+            0.44838700362322814,
+            0.4514351608222057
+          ],
+          "expected_total_calls": [
+            240.75702589917555,
+            242.47797901290775,
+            282.2199993952632,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_structural",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.8057714307593522,
+        0.8058333094494146,
+        0.8058333070661238,
+        0.8058333224820072,
+        0.8058333231204653
+      ],
+      "conditional_total_calls": [
+        215.0146761361212,
+        215.0000596440672,
+        264.00000364451665,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7723810534061571,
+            0.7683781298965127,
+            0.7726043000990657,
+            0.5012625404725081,
+            0.5098425713284278
+          ],
+          "expected_total_calls": [
+            230.49921784638605,
+            231.4538298172056,
+            276.728162432044,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.7721022497515451,
+            0.7681665553157107,
+            0.7723875604186358,
+            0.5012764917417015,
+            0.5098570159826252
+          ],
+          "expected_total_calls": [
+            230.55200635821348,
+            231.49526951108928,
+            276.7624065254235,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_full",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.8057714307593522,
+        0.8058333094494146,
+        0.8058333070661238,
+        0.8058333224820072,
+        0.8058333231204653
+      ],
+      "conditional_total_calls": [
+        215.0146761361212,
+        215.0000596440672,
+        264.00000364451665,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.7820564598646036,
+            0.7780318747032628,
+            0.7820352183224974,
+            0.46315597133486663,
+            0.46609666560822105
+          ],
+          "expected_total_calls": [
+            230.1807523656786,
+            231.27289641945885,
+            276.44576889015207,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.782074601706692,
+            0.7780075142129008,
+            0.7820695599055364,
+            0.46319968824573815,
+            0.4661943029530922
+          ],
+          "expected_total_calls": [
+            230.19383715069063,
+            231.29384271740477,
+            276.4575868539928,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_structural",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.808758758084266,
+        0.8087588794002002,
+        0.80875887940023,
+        0.8087588794003869,
+        0.8087588794003888
+      ],
+      "conditional_total_calls": [
+        221.01262087751567,
+        218.69750638865418,
+        270.0126008578324,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.6819498134472621,
+            0.6802243279190998,
+            0.681998568707957,
+            0.5346476622818899,
+            0.5430633706338612
+          ],
+          "expected_total_calls": [
+            251.05866454570418,
+            251.27072352595175,
+            287.1065480528143,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.6819381435324369,
+            0.6802447969850443,
+            0.6821213560617738,
+            0.5346541953982308,
+            0.5430570711199854
+          ],
+          "expected_total_calls": [
+            251.0776039470184,
+            251.29248107667388,
+            287.12062962833164,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 2
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_full",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.808758758084266,
+        0.8087588794002002,
+        0.80875887940023,
+        0.8087588794003869,
+        0.8087588794003888
+      ],
+      "conditional_total_calls": [
+        221.01262087751567,
+        218.69750638865418,
+        270.0126008578324,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.653810833979604,
+            0.6490151243259202,
+            0.6529674561507559,
+            0.43416146773187536,
+            0.43717337855006844
+          ],
+          "expected_total_calls": [
+            262.8751556865297,
+            264.06764470924344,
+            294.6329983374595,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.6538759459058651,
+            0.6490720457612895,
+            0.6530339368465738,
+            0.434144810360872,
+            0.4371404096336747
+          ],
+          "expected_total_calls": [
+            262.8595825201256,
+            264.0373808889392,
+            294.61607812273405,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 0
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_structural",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.8063073559497969,
+        0.8064410621913991,
+        0.8064410621913991,
+        0.8064411023097985,
+        0.8064411037610468
+      ],
+      "conditional_total_calls": [
+        215.021726277582,
+        215.00000675266168,
+        264.00000422685696,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.5451395620341373,
+            0.5507022784623709,
+            0.547218768527518,
+            0.48758839339734256,
+            0.49633141955268817
+          ],
+          "expected_total_calls": [
+            269.485001778677,
+            268.1809011461577,
+            297.27619804188004,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 1
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.5453219935161986,
+            0.5509375540695085,
+            0.5473943067577771,
+            0.48759813189245865,
+            0.49634887909752373
+          ],
+          "expected_total_calls": [
+            269.5177792456547,
+            268.20425433775176,
+            297.2939162618386,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 1
+        }
+      ]
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_full",
+      "frozen_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "actions": [
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            81,
+            130,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            22
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            128
+          ]
+        },
+        {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        }
+      ],
+      "conditional_safe_rewards": [
+        0.8063073559497969,
+        0.8064410621913991,
+        0.8064410621913991,
+        0.8064411023097985,
+        0.8064411037610468
+      ],
+      "conditional_total_calls": [
+        215.021726277582,
+        215.00000675266168,
+        264.00000422685696,
+        132.0,
+        362.0
+      ],
+      "integrations": [
+        {
+          "seed": 80771,
+          "reward": [
+            0.5728869000078366,
+            0.5744030742772563,
+            0.5717889244575549,
+            0.4255641798850503,
+            0.4285957136887376
+          ],
+          "expected_total_calls": [
+            278.29599060889205,
+            277.87739177528215,
+            303.3450000253297,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 1
+        },
+        {
+          "seed": 80772,
+          "reward": [
+            0.5727344430820287,
+            0.5741995255895453,
+            0.5716293921498556,
+            0.4255595727502711,
+            0.4285441875066743
+          ],
+          "expected_total_calls": [
+            278.2973463391734,
+            277.87348663975956,
+            303.34608285676927,
+            132.0,
+            362.0
+          ],
+          "best_panel_action_index": 1
+        }
+      ]
+    }
+  ],
+  "new_simulator_calls": 0,
+  "source_optimizations": 0,
+  "cpu_seconds": 7.0453216119999995
+}

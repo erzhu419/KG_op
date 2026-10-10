@@ -1,0 +1,15 @@
+{
+  "status": "registered before density-only fantasy precision selection",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "queries": {"5": 7, "6": 4},
+  "seed": 202610077,
+  "fantasy_powers": [3,4,5],
+  "order": 256,
+  "refinement_order": 512,
+  "maximum_single_thread_cpu_seconds": 90,
+  "actual_paid_filter_reference": "paper_artifacts/historical_mixture_lookahead_precision_v3/results.json",
+  "precision": {"maximum_inverse_cdf_error": 1e-8, "maximum_posterior_weight_refinement_error": 1e-6, "maximum_actual_filter_reproduction_error": 1e-6, "maximum_identity_martingale_residual": 0.01},
+  "method": "Same predictive law,positive source components,weights,seed and two paid observations. Integrate scalar raw likelihoods only;no terminal actions or posterior field moments. First reproduce the existing exact raw-filter identity residual at8 fantasies/identity. Compare256/512-order posterior identity weights,then stop at first nested fantasy resolution meeting the original1% identity threshold. This selects numerical resolution without viewing adaptation or deployment utility,not a source prior,policy or scientific winner. Future fullKG tower drift is still separately required.",
+  "cost": {"new_source_labels": 0, "new_prior_fits": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_predictive_martingale_v1"
+}

@@ -1,0 +1,711 @@
+{
+  "scope": "Source-generating support metadata only, derived from the frozen V6 source_data/prepare_sources code; no labels generated or models fitted.",
+  "unique_source_archive_definitions": 32,
+  "source_tasks_per_archive": 8,
+  "within_archive_risk_support_changes": 0,
+  "high_frequency_source_tasks": 0,
+  "source_risk_families": [
+    "linear",
+    "pair_interactions",
+    "squared"
+  ],
+  "interpretation": "Within-archive source-task holdout can assess compatible-task adaptation/calibration. It does not supply support-shift or high-frequency target transfer examples. Coordinate supports vary across archives; this is distinct from within-archive task variation.",
+  "generator_locations": [
+    "performance/run_meta_prior_mechanism.py:76",
+    "performance/run_meta_prior_mechanism_v2.py:prepare_sources"
+  ],
+  "cpu_seconds": 0.0006426600000004612,
+  "rows": [
+    {
+      "seed": 48,
+      "archive_group": "shared",
+      "risk_support": [
+        6,
+        10,
+        43
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 48,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        2,
+        14,
+        47
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 49,
+      "archive_group": "shared",
+      "risk_support": [
+        7,
+        10,
+        44
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 49,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        3,
+        14,
+        51
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 50,
+      "archive_group": "shared",
+      "risk_support": [
+        5,
+        14,
+        42
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 50,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        1,
+        10,
+        42
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 51,
+      "archive_group": "shared",
+      "risk_support": [
+        5,
+        8,
+        58
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 51,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        1,
+        12,
+        40
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 52,
+      "archive_group": "shared",
+      "risk_support": [
+        4,
+        8,
+        50
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 52,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        0,
+        12,
+        38
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 53,
+      "archive_group": "shared",
+      "risk_support": [
+        7,
+        14,
+        38
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 53,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        3,
+        10,
+        50
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 54,
+      "archive_group": "shared",
+      "risk_support": [
+        3,
+        12,
+        40
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 54,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        7,
+        8,
+        58
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 55,
+      "archive_group": "shared",
+      "risk_support": [
+        1,
+        11,
+        42
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 55,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        5,
+        15,
+        42
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 56,
+      "archive_group": "shared",
+      "risk_support": [
+        4,
+        10,
+        35
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 56,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        0,
+        14,
+        35
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 57,
+      "archive_group": "shared",
+      "risk_support": [
+        5,
+        10,
+        36
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 57,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        1,
+        14,
+        41
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 58,
+      "archive_group": "shared",
+      "risk_support": [
+        4,
+        14,
+        35
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 58,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        0,
+        10,
+        35
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 59,
+      "archive_group": "shared",
+      "risk_support": [
+        7,
+        14,
+        58
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 59,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        3,
+        10,
+        40
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 60,
+      "archive_group": "shared",
+      "risk_support": [
+        3,
+        10,
+        50
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 60,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        7,
+        14,
+        38
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 61,
+      "archive_group": "shared",
+      "risk_support": [
+        6,
+        11,
+        43
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 61,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        2,
+        15,
+        47
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 62,
+      "archive_group": "shared",
+      "risk_support": [
+        7,
+        14,
+        56
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 62,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        3,
+        10,
+        34
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    },
+    {
+      "seed": 63,
+      "archive_group": "shared",
+      "risk_support": [
+        4,
+        14,
+        50
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "shared_structure",
+        "support_mismatch",
+        "high_frequency_risk",
+        "separate_risk_support"
+      ]
+    },
+    {
+      "seed": 63,
+      "archive_group": "separate_heads",
+      "risk_support": [
+        0,
+        10,
+        38
+      ],
+      "risk_families": [
+        "linear",
+        "pair_interactions",
+        "squared"
+      ],
+      "source_tasks": 8,
+      "source_points_per_task": 64,
+      "within_archive_support_changes": 0,
+      "target_regimes_using_archive": [
+        "separate_head_structure"
+      ]
+    }
+  ],
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "new_observations": 0
+}

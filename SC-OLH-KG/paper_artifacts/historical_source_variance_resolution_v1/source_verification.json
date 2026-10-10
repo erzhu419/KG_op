@@ -1,0 +1,80 @@
+{
+  "checks": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "arm": "additive/head_specific/observed_task",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.6653345369377348e-15,
+      "precision_posterior_covariance_error": 1.4785436550356643e-17,
+      "passed": true,
+      "compensated_density_identity_error": 1.9895196601282805e-13,
+      "common_conditional_mean_identity_error": 1.249000902703301e-16,
+      "common_conditional_covariance_identity_error": 1.938011383317839e-18,
+      "four_real_source_blocks": true,
+      "maximum_conditional_density_ratio_error": 3.552713678800501e-15,
+      "scientific_population_prior_and_exact_likelihood_unchanged": true,
+      "inverse_tilt_density_identity_max_error": 0.0,
+      "frozen_tilt_source_sites": [
+        44,
+        16,
+        8
+      ],
+      "inverse_weights_from_moments_max_log_error": 1.234568003383174e-13
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "arm": "additive/joint/observed_task",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 3.3306690738754696e-15,
+      "precision_posterior_covariance_error": 2.2971533529536625e-17,
+      "passed": true,
+      "compensated_density_identity_error": 7.105427357601002e-14,
+      "common_conditional_mean_identity_error": 1.8318679906315083e-15,
+      "common_conditional_covariance_identity_error": 1.4179331537036988e-18,
+      "four_real_source_blocks": true,
+      "maximum_conditional_density_ratio_error": 1.7763568394002505e-15,
+      "scientific_population_prior_and_exact_likelihood_unchanged": true,
+      "inverse_tilt_density_identity_max_error": 0.0,
+      "frozen_tilt_source_sites": [
+        0,
+        36,
+        42
+      ],
+      "inverse_weights_from_moments_max_log_error": 1.9417800700693988e-13
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "arm": "spectral/joint/deconvolved_task",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 9.769962616701378e-15,
+      "precision_posterior_covariance_error": 2.39120789141678e-16,
+      "passed": true,
+      "compensated_density_identity_error": 4.263256414560601e-14,
+      "common_conditional_mean_identity_error": 6.217248937900877e-15,
+      "common_conditional_covariance_identity_error": 2.3093506273941244e-17,
+      "four_real_source_blocks": true,
+      "maximum_conditional_density_ratio_error": 2.6645352591003757e-15,
+      "scientific_population_prior_and_exact_likelihood_unchanged": true,
+      "inverse_tilt_density_identity_max_error": 0.0,
+      "frozen_tilt_source_sites": [
+        43,
+        6,
+        9
+      ],
+      "inverse_weights_from_moments_max_log_error": 9.769962616701378e-14
+    }
+  ],
+  "execution_plan": "performance/manifests/historical_source_variance_resolution_v1.json"
+}

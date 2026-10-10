@@ -1,0 +1,14 @@
+{
+  "status": "frozen after outer mixed results stopped the candidate;before diagnostic integration",
+  "entrypoint": "performance/diagnose_legacy_f_outer_joint_spectral_transfer.py",
+  "outer_results": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/results.json",
+  "cached_calibration_results": "paper_artifacts/legacy_joint_population_f_outer_conditional_calibration_v1/results.json",
+  "law": "Read only the two newly saved Gaussian raw-posterior states. Reuse previously verified fixed-prefix retained-mixture conditional calibration and all GP forecasts. Same twelve cached task1 labels;no source or query refit. Decompose proper batch density into variance-label and conditional-mean densities;decompose unconditional MSE into level and centered shape. Preserve all sites,including favorable and unfavorable ones.",
+  "verification": "The new conditional integration must reproduce saved proper raw density within1e-8;density components must add to the joint difference. Label/site/prefix and retained-cache identity must match. MSE decompositions must reproduce all three saved scores. Existing derivative and mixture-refinement checks are reused without rerun.",
+  "decision": "Identify whether the layout5 failure is concentrated in mean/variance or sites,and compare the remaining level bias in both layouts. These are attribution signals,not instructions to widen uncertainty on task1 or discard a policy. Stop new outer forecasts and source6/7 access;register any justified source-only uncertainty analysis separately.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {"new_source_fits": 0, "new_raw_forecasts": 0, "new_local_conditional_integrals": 24, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;two compact existing NPZ and small cached JSON;no server jobs or pulls",
+  "scope": "Two already-scored task1 development cases only;candidate remains stopped,retained native mixture remains reference,complete-model HOLD. No target,KG,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_transfer_v1"
+}

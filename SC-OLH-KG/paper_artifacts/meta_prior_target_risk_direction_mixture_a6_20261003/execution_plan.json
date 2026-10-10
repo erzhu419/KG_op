@@ -1,0 +1,62 @@
+{
+  "stage": "meta_prior_target_risk_direction_mixture_a6_20261003",
+  "status": "fixed_before_local_validation",
+  "fixed_before_validation_results": true,
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "control_scores": "paper_artifacts/meta_prior_target_risk_residual_a3_20261003/validation.json",
+  "hypothesis": "A fixed source-scaled prior and averaging over residual directions/scales may generalize better than A5's unpenalized maximum-likelihood hard selection.",
+  "model_family": "The original eta source components, each either unchanged or augmented by delta * e_j e_j^T for one existing public nonintercept function. No source covariance, intercept, discrepancy, f/g model, paid query path or dictionary normalization is replaced.",
+  "prior": "Probability 0.5 on no residual correction; probability 0.5 on a residual direction uniform over the 68 public functions. Conditional delta has an exponential prior whose mean is the generic same-source total nonintercept covariance trace. The original source-component weights remain equal before paid target observations. The same residual prior is used for both controls.",
+  "inference": "Integrate the exponential scale prior with 48-node Gauss-Laguerre quadrature. Average original source components, the null branch and all direction/scale branches by training-only marginal likelihood; score held-out labels using the complete predictive mixture, not moment matching.",
+  "validation": "Reuse the exact A3 candidate-group holdouts and old scores, excluding all repeated observations at the held candidate. No target truth, support, verifier outcomes, held-out labels or A5 winning directions enter fitting. Source variance scale, null probability and quadrature order are fixed before results; no hyperparameter search.",
+  "paths": 160,
+  "seeds": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "priors": [
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "prefix_batches": [
+    8,
+    24
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "null_probability": 0.5,
+  "quadrature_nodes": 48,
+  "paired_bootstrap_seed": 20261010,
+  "scoring": "All five strata, both source controls, both prefixes, paired seed changes and nominal bootstrap intervals. Primary endpoint remains 24-batch learned-source held-out log score.",
+  "recommendation_replay_gate": "Broad held-out predictive improvement with no material compatible-regime regression is needed before recommendation replay. A gain confined to a chosen stratum, or a clear shared-structure loss, stops replay. No new closed-loop pilot is authorized by predictive gains alone.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "limitations": "This averages a one-extra-direction model family, not arbitrary joint target support. Null mass and the exponential source-scale prior supply regularization as well as uncertainty averaging. Existing adaptive query paths do not establish prospective or verified-reward gains.",
+  "artifacts": "paper_artifacts/meta_prior_target_risk_direction_mixture_a6_20261003"
+}

@@ -1,0 +1,36 @@
+{
+  "question": "Does A9 improve the next old observation when only earlier labels are used?",
+  "protocol_fixed_before_audit_results": true,
+  "forecast_steps": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "paths": 160,
+  "cohort": "Same 160 A9 paths and source priors; all five strata retained.",
+  "primary": "Mean per-batch A9-minus-source log score over steps 9-24; proper full predictive mixture.",
+  "interpretation": "Historical-policy prequential development evidence, not independent confirmation or a new-policy outcome.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "bootstrap_seed": 20261018
+}

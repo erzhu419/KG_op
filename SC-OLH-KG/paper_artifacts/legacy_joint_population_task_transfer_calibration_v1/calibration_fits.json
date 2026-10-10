@@ -1,0 +1,878 @@
+{
+  "execution": {
+    "status": "registered before either scalar calibration fit and all12 development forecasts",
+    "component_execution": "performance/manifests/legacy_joint_population_common_task_attribution_execution_v1.json",
+    "component_results": "paper_artifacts/legacy_joint_population_common_task_attribution_v1/results.json",
+    "update_execution": "performance/manifests/legacy_joint_population_paid_transfer_attribution_execution_v1.json",
+    "update_results": "paper_artifacts/legacy_joint_population_paid_transfer_attribution_v1/results.json",
+    "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+    "training_control_profiles": "paper_artifacts/legacy_joint_population_gp_profile_start_v1/calibration_profiles.json",
+    "holdout_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "basis_of_next_step": "Native-common/restricted-task keeps exactly the native prior mean but still adds task6 paid g MSE .000091/.000126. First-observation gaps account for70.0%/93.5% of the final gaps; risk-identity reweighting contributes less than.03% in magnitude. First-update gain-change RMS is about8 times the local-innovation-change RMS. The same task-law substitution benefits task7, so deleting function-shaped task heterogeneity globally is not established. Preserve common learning and native function shape, and source-calibrate only the strength of task intercept and function variation.",
+    "candidate": "For each cached native g law retain beta, H, white discrepancy, basis, sparse group support, task low-frequency exponent, weak tail and all f/eta laws. With t=.01*source_signal_scale/basis.feature_dim, replace R[0] by a*R_native[0] and R[1:] by t+b*(R_native[1:]-t), where a,b>=0. At a=b=1 reproduce native. This is a two-stage source-fitted predictive meta-prior calibration, not a refit of the integrated native hierarchical source likelihood; population-mean posterior uncertainty stays in the new-task prior. No posterior transplant, new covariance direction, support search or spectrum grid.",
+    "training_inputs": "Use the Stage71 five-task selected native fits and their registered12-site deleted-training-task prediction views. Keep the same deleted-task risk fit and raw g updates at candidates0/1 as Stage71/73. Scoring labels/noise come only from the six training tasks in the cached216-call mean information. Never index source6/7 or target/confirmation labels during calibration.",
+    "objective": "Fit one pair(a,b) per assignment by minimizing equal-task-average Gaussian whole-task mean negative log predictive density AFTER the same two paid raw g updates. Add the existing fixed source-label mean-noise diagonal S^2/3 at the12 scored policies, unchanged across parameter evaluations. This Gaussian mean-density objective is distinct from raw three-repeat batch density; the latter remains an external development acceptance metric after all fits and forecasts freeze. Do not optimize MSE or add a target-tuned penalty.",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "initial": [
+        1.0,
+        1.0
+      ],
+      "bounds": [
+        [
+          0.0,
+          null
+        ],
+        [
+          0.0,
+          null
+        ]
+      ],
+      "maxiter": 64,
+      "maxfun": 128,
+      "ftol": 1e-08,
+      "gtol": 1e-05,
+      "finite_difference_step": 0.0001
+    },
+    "freeze_rule": "Reproduce all73 native prior/paid g means and scoring-site covariance at a=b=1 before fitting; exercise zero excess function variance while retaining the original weak tail. Save both completed scalar fits and all12 calibrated prior/paid forecasts before raw scoring. Report optimizer convergence and all per-task changes. An incomplete fit does not select a candidate or receive a continuation/start search.",
+    "development_acceptance": "Provisionally prefer this rule only if the average paid g MSE does not increase AND average proper raw g batch density strictly improves versus Stage71 native selection under BOTH assignments. Keep Gaussian mean-density and raw batch-density columns separate. These six reused folds are calibration/selection data, not nested validation or independent confirmation; report every regression.",
+    "next_action": "If both fits converge and development acceptance holds, separately register the fixed(a,b) full-six-source prior assembly and four existing source6/7 forecasts, retaining the original same-information and144-call source repair gates and unchanged f/eta identity mixing. Full-source beta,H,R,delta come from the Stage72 cached selected native fits; do not fit on source6/7. Otherwise retain native and diagnose the observed limitation without a parameter grid or gate change. No target, KG, terminal, verifier or independent-confirmation work follows without a passed source gate.",
+    "cost": {
+      "planned_new_scalar_calibration_fits": 2,
+      "new_native_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_task_transfer_calibration_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_task_transfer_calibration_plan_v1.json",
+    "entrypoint": "performance/calibrate_legacy_task_transfer.py"
+  },
+  "fits": {
+    "5": {
+      "multipliers": [
+        2.3250786701580655,
+        0.6875993844809752
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "iterations": 9,
+      "evaluations": 33,
+      "initial_objective": -1.552164678442935,
+      "final_objective": -1.5563326076570252,
+      "final_gradient": [
+        -1.2124568016221808e-06,
+        -1.230375801242325e-06
+      ],
+      "objective_history": [
+        {
+          "multipliers": [
+            1.0,
+            1.0
+          ],
+          "negative_paid_mean_density": -1.552164678442935
+        },
+        {
+          "multipliers": [
+            1.0,
+            1.0
+          ],
+          "negative_paid_mean_density": -1.552164678442935
+        },
+        {
+          "multipliers": [
+            1.0001,
+            1.0
+          ],
+          "negative_paid_mean_density": -1.5521652465094335
+        },
+        {
+          "multipliers": [
+            1.0,
+            1.0001
+          ],
+          "negative_paid_mean_density": -1.5521635864266108
+        },
+        {
+          "multipliers": [
+            1.0056806649850756,
+            0.9890798367574428
+          ],
+          "negative_paid_mean_density": -1.552314714109265
+        },
+        {
+          "multipliers": [
+            1.0057806649850756,
+            0.9890798367574428
+          ],
+          "negative_paid_mean_density": -1.5523152749394307
+        },
+        {
+          "multipliers": [
+            1.0056806649850756,
+            0.9891798367574428
+          ],
+          "negative_paid_mean_density": -1.5523136454880457
+        },
+        {
+          "multipliers": [
+            1.3975945230087754,
+            0.47532333383170994
+          ],
+          "negative_paid_mean_density": -1.5538854499913946
+        },
+        {
+          "multipliers": [
+            1.3976945230087754,
+            0.47532333383170994
+          ],
+          "negative_paid_mean_density": -1.553885680648343
+        },
+        {
+          "multipliers": [
+            1.3975945230087754,
+            0.4754233338317099
+          ],
+          "negative_paid_mean_density": -1.5538872828351267
+        },
+        {
+          "multipliers": [
+            1.191667114401699,
+            0.7452718011710107
+          ],
+          "negative_paid_mean_density": -1.5549261329408093
+        },
+        {
+          "multipliers": [
+            1.191767114401699,
+            0.7452718011710107
+          ],
+          "negative_paid_mean_density": -1.5549264996516043
+        },
+        {
+          "multipliers": [
+            1.191667114401699,
+            0.7453718011710107
+          ],
+          "negative_paid_mean_density": -1.554925856635036
+        },
+        {
+          "multipliers": [
+            1.4119899938965834,
+            0.6281469005392897
+          ],
+          "negative_paid_mean_density": -1.5555146728195384
+        },
+        {
+          "multipliers": [
+            1.4120899938965834,
+            0.6281469005392897
+          ],
+          "negative_paid_mean_density": -1.5555148910492747
+        },
+        {
+          "multipliers": [
+            1.4119899938965834,
+            0.6282469005392897
+          ],
+          "negative_paid_mean_density": -1.5555150658188825
+        },
+        {
+          "multipliers": [
+            1.5492182705875914,
+            0.655525751505098
+          ],
+          "negative_paid_mean_density": -1.5558497883513038
+        },
+        {
+          "multipliers": [
+            1.5493182705875914,
+            0.655525751505098
+          ],
+          "negative_paid_mean_density": -1.5558499426102363
+        },
+        {
+          "multipliers": [
+            1.5492182705875914,
+            0.6556257515050979
+          ],
+          "negative_paid_mean_density": -1.5558499946022877
+        },
+        {
+          "multipliers": [
+            1.8806485557248513,
+            0.6855862065441424
+          ],
+          "negative_paid_mean_density": -1.5562191096961475
+        },
+        {
+          "multipliers": [
+            1.8807485557248513,
+            0.6855862065441424
+          ],
+          "negative_paid_mean_density": -1.556219168960513
+        },
+        {
+          "multipliers": [
+            1.8806485557248513,
+            0.6856862065441424
+          ],
+          "negative_paid_mean_density": -1.5562191275156205
+        },
+        {
+          "multipliers": [
+            2.0842001324531556,
+            0.6900513465695534
+          ],
+          "negative_paid_mean_density": -1.556303621232886
+        },
+        {
+          "multipliers": [
+            2.084300132453156,
+            0.6900513465695534
+          ],
+          "negative_paid_mean_density": -1.5563036470450955
+        },
+        {
+          "multipliers": [
+            2.0842001324531556,
+            0.6901513465695533
+          ],
+          "negative_paid_mean_density": -1.5563036105409411
+        },
+        {
+          "multipliers": [
+            2.240853049417997,
+            0.6888587402119682
+          ],
+          "negative_paid_mean_density": -1.5563293291114217
+        },
+        {
+          "multipliers": [
+            2.240953049417997,
+            0.6888587402119682
+          ],
+          "negative_paid_mean_density": -1.5563293368931201
+        },
+        {
+          "multipliers": [
+            2.240853049417997,
+            0.6889587402119682
+          ],
+          "negative_paid_mean_density": -1.5563293231105086
+        },
+        {
+          "multipliers": [
+            2.308576631770622,
+            0.6877733334459181
+          ],
+          "negative_paid_mean_density": -1.556332471586282
+        },
+        {
+          "multipliers": [
+            2.308676631770622,
+            0.6877733334459181
+          ],
+          "negative_paid_mean_density": -1.5563324731133488
+        },
+        {
+          "multipliers": [
+            2.308576631770622,
+            0.6878733334459181
+          ],
+          "negative_paid_mean_density": -1.5563324709195936
+        },
+        {
+          "multipliers": [
+            2.3250786701580655,
+            0.6875993844809752
+          ],
+          "negative_paid_mean_density": -1.5563326076570252
+        },
+        {
+          "multipliers": [
+            2.3251786701580657,
+            0.6875993844809752
+          ],
+          "negative_paid_mean_density": -1.5563326077782709
+        },
+        {
+          "multipliers": [
+            2.3250786701580655,
+            0.6876993844809752
+          ],
+          "negative_paid_mean_density": -1.5563326077800628
+        }
+      ]
+    },
+    "6": {
+      "multipliers": [
+        345.3732286493489,
+        0.4865381828539313
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "iterations": 22,
+      "evaluations": 75,
+      "initial_objective": -1.561131295012057,
+      "final_objective": -1.6209150844253248,
+      "final_gradient": [
+        -3.7694736230745317e-07,
+        -9.308718240675832e-06
+      ],
+      "objective_history": [
+        {
+          "multipliers": [
+            1.0,
+            1.0
+          ],
+          "negative_paid_mean_density": -1.561131295012057
+        },
+        {
+          "multipliers": [
+            1.0,
+            1.0
+          ],
+          "negative_paid_mean_density": -1.561131295012057
+        },
+        {
+          "multipliers": [
+            1.0001,
+            1.0
+          ],
+          "negative_paid_mean_density": -1.5611345185406806
+        },
+        {
+          "multipliers": [
+            1.0,
+            1.0001
+          ],
+          "negative_paid_mean_density": -1.561130847241249
+        },
+        {
+          "multipliers": [
+            1.0322352862358635,
+            0.9955222919201243
+          ],
+          "negative_paid_mean_density": -1.5621734901707356
+        },
+        {
+          "multipliers": [
+            1.0323352862358635,
+            0.9955222919201243
+          ],
+          "negative_paid_mean_density": -1.562176606524558
+        },
+        {
+          "multipliers": [
+            1.0322352862358635,
+            0.9956222919201243
+          ],
+          "negative_paid_mean_density": -1.5621730241867284
+        },
+        {
+          "multipliers": [
+            2.063782287183332,
+            0.5555805272403396
+          ],
+          "negative_paid_mean_density": -1.584995201015012
+        },
+        {
+          "multipliers": [
+            2.063882287183332,
+            0.5555805272403396
+          ],
+          "negative_paid_mean_density": -1.5849966440043417
+        },
+        {
+          "multipliers": [
+            2.063782287183332,
+            0.5556805272403396
+          ],
+          "negative_paid_mean_density": -1.5849954841574985
+        },
+        {
+          "multipliers": [
+            2.920647783691643,
+            0.6488934549757304
+          ],
+          "negative_paid_mean_density": -1.5943391185425462
+        },
+        {
+          "multipliers": [
+            2.920747783691643,
+            0.6488934549757304
+          ],
+          "negative_paid_mean_density": -1.5943399476164497
+        },
+        {
+          "multipliers": [
+            2.920647783691643,
+            0.6489934549757304
+          ],
+          "negative_paid_mean_density": -1.5943387851335336
+        },
+        {
+          "multipliers": [
+            4.505154004852161,
+            0.17292451857324337
+          ],
+          "negative_paid_mean_density": -1.5982304091619437
+        },
+        {
+          "multipliers": [
+            4.505254004852161,
+            0.17292451857324337
+          ],
+          "negative_paid_mean_density": -1.5982308371925387
+        },
+        {
+          "multipliers": [
+            4.505154004852161,
+            0.17302451857324336
+          ],
+          "negative_paid_mean_density": -1.5982343838029174
+        },
+        {
+          "multipliers": [
+            5.383757117346191,
+            0.5364176071804186
+          ],
+          "negative_paid_mean_density": -1.606725333606765
+        },
+        {
+          "multipliers": [
+            5.38385711734619,
+            0.5364176071804186
+          ],
+          "negative_paid_mean_density": -1.6067256216014298
+        },
+        {
+          "multipliers": [
+            5.383757117346191,
+            0.5365176071804186
+          ],
+          "negative_paid_mean_density": -1.60672526467709
+        },
+        {
+          "multipliers": [
+            6.484503699917899,
+            0.5546770820836269
+          ],
+          "negative_paid_mean_density": -1.609346949406426
+        },
+        {
+          "multipliers": [
+            6.484603699917899,
+            0.5546770820836269
+          ],
+          "negative_paid_mean_density": -1.6093471497387017
+        },
+        {
+          "multipliers": [
+            6.484503699917899,
+            0.5547770820836269
+          ],
+          "negative_paid_mean_density": -1.6093467486017528
+        },
+        {
+          "multipliers": [
+            8.964825856389485,
+            0.5502601256504308
+          ],
+          "negative_paid_mean_density": -1.6129483111741083
+        },
+        {
+          "multipliers": [
+            8.964925856389485,
+            0.5502601256504308
+          ],
+          "negative_paid_mean_density": -1.6129484152184403
+        },
+        {
+          "multipliers": [
+            8.964825856389485,
+            0.5503601256504308
+          ],
+          "negative_paid_mean_density": -1.612948081975371
+        },
+        {
+          "multipliers": [
+            11.666836682142469,
+            0.5116871620078254
+          ],
+          "negative_paid_mean_density": -1.6151430946907865
+        },
+        {
+          "multipliers": [
+            11.666936682142468,
+            0.5116871620078254
+          ],
+          "negative_paid_mean_density": -1.6151431546851986
+        },
+        {
+          "multipliers": [
+            11.666836682142469,
+            0.5117871620078254
+          ],
+          "negative_paid_mean_density": -1.6151430401858093
+        },
+        {
+          "multipliers": [
+            15.25702193053459,
+            0.4769944703390786
+          ],
+          "negative_paid_mean_density": -1.6167486153000432
+        },
+        {
+          "multipliers": [
+            15.25712193053459,
+            0.4769944703390786
+          ],
+          "negative_paid_mean_density": -1.616748649023645
+        },
+        {
+          "multipliers": [
+            15.25702193053459,
+            0.4770944703390786
+          ],
+          "negative_paid_mean_density": -1.6167487464883088
+        },
+        {
+          "multipliers": [
+            19.618324664531144,
+            0.4665054189480264
+          ],
+          "negative_paid_mean_density": -1.6178504160235063
+        },
+        {
+          "multipliers": [
+            19.618424664531144,
+            0.4665054189480264
+          ],
+          "negative_paid_mean_density": -1.6178504354565453
+        },
+        {
+          "multipliers": [
+            19.618324664531144,
+            0.4666054189480264
+          ],
+          "negative_paid_mean_density": -1.6178506000662543
+        },
+        {
+          "multipliers": [
+            25.47415815463539,
+            0.48278074169331203
+          ],
+          "negative_paid_mean_density": -1.6187233202065274
+        },
+        {
+          "multipliers": [
+            25.47425815463539,
+            0.48278074169331203
+          ],
+          "negative_paid_mean_density": -1.6187233310723321
+        },
+        {
+          "multipliers": [
+            25.47415815463539,
+            0.482880741693312
+          ],
+          "negative_paid_mean_density": -1.6187233888018815
+        },
+        {
+          "multipliers": [
+            32.853852827260766,
+            0.49595714649288336
+          ],
+          "negative_paid_mean_density": -1.6193309501911308
+        },
+        {
+          "multipliers": [
+            32.85395282726077,
+            0.49595714649288336
+          ],
+          "negative_paid_mean_density": -1.6193309563474558
+        },
+        {
+          "multipliers": [
+            32.853852827260766,
+            0.49605714649288335
+          ],
+          "negative_paid_mean_density": -1.6193309297778147
+        },
+        {
+          "multipliers": [
+            42.37217168260427,
+            0.4997376247614393
+          ],
+          "negative_paid_mean_density": -1.6197715990325599
+        },
+        {
+          "multipliers": [
+            42.37227168260427,
+            0.4997376247614393
+          ],
+          "negative_paid_mean_density": -1.6197716025260123
+        },
+        {
+          "multipliers": [
+            42.37217168260427,
+            0.4998376247614393
+          ],
+          "negative_paid_mean_density": -1.6197715487130042
+        },
+        {
+          "multipliers": [
+            55.012310872136126,
+            0.4797579093802763
+          ],
+          "negative_paid_mean_density": -1.6201019940850319
+        },
+        {
+          "multipliers": [
+            55.01241087213613,
+            0.4797579093802763
+          ],
+          "negative_paid_mean_density": -1.620101996051525
+        },
+        {
+          "multipliers": [
+            55.012310872136126,
+            0.4798579093802763
+          ],
+          "negative_paid_mean_density": -1.620102057720124
+        },
+        {
+          "multipliers": [
+            70.19257704843913,
+            0.4761978165157003
+          ],
+          "negative_paid_mean_density": -1.6203279105325705
+        },
+        {
+          "multipliers": [
+            70.19267704843914,
+            0.4761978165157003
+          ],
+          "negative_paid_mean_density": -1.6203279116828397
+        },
+        {
+          "multipliers": [
+            70.19257704843913,
+            0.4762978165157003
+          ],
+          "negative_paid_mean_density": -1.6203279915544762
+        },
+        {
+          "multipliers": [
+            144.32139548480455,
+            2.968475747787046
+          ],
+          "negative_paid_mean_density": -1.5803295292475938
+        },
+        {
+          "multipliers": [
+            144.32149548480456,
+            2.968475747787046
+          ],
+          "negative_paid_mean_density": -1.580329529360634
+        },
+        {
+          "multipliers": [
+            144.32139548480455,
+            2.968575747787046
+          ],
+          "negative_paid_mean_density": -1.5803277821218822
+        },
+        {
+          "multipliers": [
+            71.50295242869375,
+            0.5202538221391184
+          ],
+          "negative_paid_mean_density": -1.6203200554184516
+        },
+        {
+          "multipliers": [
+            71.50305242869375,
+            0.5202538221391184
+          ],
+          "negative_paid_mean_density": -1.620320056511767
+        },
+        {
+          "multipliers": [
+            71.50295242869375,
+            0.5203538221391184
+          ],
+          "negative_paid_mean_density": -1.6203198780077424
+        },
+        {
+          "multipliers": [
+            70.75088406325018,
+            0.4949686033869631
+          ],
+          "negative_paid_mean_density": -1.6203386226301395
+        },
+        {
+          "multipliers": [
+            70.75098406325019,
+            0.4949686033869631
+          ],
+          "negative_paid_mean_density": -1.620338623755706
+        },
+        {
+          "multipliers": [
+            70.75088406325018,
+            0.49506860338696307
+          ],
+          "negative_paid_mean_density": -1.6203385887010535
+        },
+        {
+          "multipliers": [
+            91.74861838818471,
+            0.49038261114297
+          ],
+          "negative_paid_mean_density": -1.6205176803124877
+        },
+        {
+          "multipliers": [
+            91.74871838818471,
+            0.49038261114297
+          ],
+          "negative_paid_mean_density": -1.620517680950219
+        },
+        {
+          "multipliers": [
+            91.74861838818471,
+            0.49048261114297
+          ],
+          "negative_paid_mean_density": -1.6205176694679242
+        },
+        {
+          "multipliers": [
+            119.16572225990743,
+            0.4875399135854366
+          ],
+          "negative_paid_mean_density": -1.6206495315127594
+        },
+        {
+          "multipliers": [
+            119.16582225990743,
+            0.4875399135854366
+          ],
+          "negative_paid_mean_density": -1.62064953187435
+        },
+        {
+          "multipliers": [
+            119.16572225990743,
+            0.48763991358543657
+          ],
+          "negative_paid_mean_density": -1.6206495343992426
+        },
+        {
+          "multipliers": [
+            155.0207006060852,
+            0.4872096904862009
+          ],
+          "negative_paid_mean_density": -1.6207472401088971
+        },
+        {
+          "multipliers": [
+            155.0208006060852,
+            0.4872096904862009
+          ],
+          "negative_paid_mean_density": -1.6207472403140926
+        },
+        {
+          "multipliers": [
+            155.0207006060852,
+            0.4873096904862009
+          ],
+          "negative_paid_mean_density": -1.620747242244781
+        },
+        {
+          "multipliers": [
+            202.0602545093804,
+            0.4869635576195513
+          ],
+          "negative_paid_mean_density": -1.620820008601333
+        },
+        {
+          "multipliers": [
+            202.0603545093804,
+            0.4869635576195513
+          ],
+          "negative_paid_mean_density": -1.6208200087178797
+        },
+        {
+          "multipliers": [
+            202.0602545093804,
+            0.4870635576195513
+          ],
+          "negative_paid_mean_density": -1.6208200100403507
+        },
+        {
+          "multipliers": [
+            263.90124840399426,
+            0.48672496650889757
+          ],
+          "negative_paid_mean_density": -1.6208743640061376
+        },
+        {
+          "multipliers": [
+            263.90134840399423,
+            0.48672496650889757
+          ],
+          "negative_paid_mean_density": -1.6208743640723948
+        },
+        {
+          "multipliers": [
+            263.90124840399426,
+            0.48682496650889756
+          ],
+          "negative_paid_mean_density": -1.620874365162755
+        },
+        {
+          "multipliers": [
+            345.3732286493489,
+            0.4865381828539313
+          ],
+          "negative_paid_mean_density": -1.6209150844253248
+        },
+        {
+          "multipliers": [
+            345.3733286493489,
+            0.4865381828539313
+          ],
+          "negative_paid_mean_density": -1.6209150844630196
+        },
+        {
+          "multipliers": [
+            345.3732286493489,
+            0.4866381828539313
+          ],
+          "negative_paid_mean_density": -1.6209150853561967
+        }
+      ]
+    }
+  }
+}

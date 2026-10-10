@@ -1,0 +1,28 @@
+{
+  "status": "completed;raw-source posterior precision HOLD",
+  "entrypoint": "performance/transport_historical_source_samples.py",
+  "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+  "covariance_results": "paper_artifacts/historical_source_covariance_adaptation_v1/results.json",
+  "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+  "proposal": "Reuse the existing variance_reference Gaussian construction for old and new unconditioned eta source laws. T(eta)=m_new+L_new L_old^-1(eta-m_old). T is fixed by source labels/laws,not estimated from the cached samples. Push forward all512 actual old non-Gaussian posterior states;never substitute a Gaussian distribution for them.",
+  "density_ratio": "log p_new(eta_new)+log L_new(eta_new)+log|det T|-log p_old(eta_old)-log L_old(eta_old). Both L use the same collapsed f batch likelihood and exact chi-square sample variance likelihood. This is an exact source evidence-ratio identity for the deterministic pushforward,not a new scientific covariance law or an extra Gaussian eta-label likelihood.",
+  "controls": "All16 observed/deconvolved laws,source regularizers and positive point-discrepancies remain frozen. Same four sources and old512 states. One fixed transformation per law,no scale sweep,refit,extra source chain,tail tuning,target or fantasy scoring. Keep original direct-overlap failures.",
+  "verification": "Unchanged-reference transport must reproduce draws and have zero log-Jacobian. A known Gaussian posterior change with correlated covariances must reproduce the exact evidence ratio under product quadrature;omitting the Jacobian must fail that check. Existing precision gates remain unchanged. Stop on mismatch or CPU budget,retain failed cases.",
+  "maximum_single_thread_cpu_seconds": 10,
+  "output": "paper_artifacts/historical_source_covariance_adaptation_v1/transport.json",
+  "registration_status": "registered after all16 direct cached-proposal overlap failures",
+  "completion": {
+    "all_registered_cases_complete": true,
+    "cpu_seconds": 0.5386991869999999,
+    "eligible_raw_importance_cases": 0,
+    "no_model_adopted": true,
+    "summary": {
+      "weight_ESS_range": [
+        9.169662330807157,
+        93.40648975194809
+      ],
+      "minimum_registered_weight_ESS": 200,
+      "new_source_chains": 0
+    }
+  }
+}

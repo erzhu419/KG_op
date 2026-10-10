@@ -1,0 +1,25 @@
+{
+  "stage": "meta_prior_target_risk_support_a4_20261003",
+  "status": "diagnostic_only_not_deployable",
+  "fixed_before_diagnostic_results": true,
+  "inputs": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "control_scores": "paper_artifacts/meta_prior_target_risk_residual_a3_20261003/validation.json",
+  "paths": 160,
+  "prefix_batches": [
+    8,
+    24
+  ],
+  "oracle_information": "True target risk function indices from the simulator, supplied only to this diagnostic prior. No target coefficients, means, variances, optimal decisions or future labels are supplied.",
+  "oracle_prior": "Use the generic source eta intercept mean/variance and discrepancy; redistribute its nonintercept covariance trace uniformly over the true risk support. Nonintercept coefficient means remain zero, total standardized-function prior variance is unchanged, and no target hyperparameter is fitted.",
+  "validation": "Use exactly A3's candidate-group holdouts and joint repeated-label predictive score. Reuse its already verified old control scores; no control refitting. Fit oracle coefficients from paid training labels only.",
+  "interpretation": "Tests the value of correct risk directions under the retained source scale and paid query paths. This is a nondeployable reference, not a method result, a formal upper bound or a proof of data insufficiency if it fails.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.1,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "stage": "meta_prior_covariance_mixture_optimizer_completion_a37_20261003",
+  "status": "complete_all_optimizers_converged_source_regressions_not_promoted",
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_heterogeneous_covariance_a34_20261003/validation.json",
+    "paper_artifacts/meta_prior_heterogeneous_covariance_attribution_a35_20261003/diagnostic.json",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_joint_archive_target_a28_20261003/target_forecasts.json.gz"
+  ],
+  "question": "Does the same two-class covariance model pass source validation after completing its source optimizer rather than stopping at120 iterations?",
+  "cached_baseline_components": "paper_artifacts/meta_prior_heterogeneous_covariance_attribution_a35_20261003/component_forecasts.json.gz",
+  "implementation_details": {
+    "baseline_reuse": "Reuse A35 original local component prefix evidence and densities, already verified against A34/A28; reproduce original I and A34 Q on each unchanged path before accepting new scores. No local source-prior refits.",
+    "final_fit_initialization": "If the gate passes, initialize the final40-task mixture with the mean of the four cached A34 pooled raw tau vectors in their common public seed48 normalization. This uses all training data only, and needs no additional pooled ARD fit.",
+    "source_class_audit": "Report training responsibilities by mechanism only after fitting; mechanism names never enter likelihood, initialization, gradients or class assignment rules.",
+    "numerical_verification": "Analytic gradient versus finite differences; class-label exchange symmetry; identical classes versus an independent multivariate Gaussian calculation; task-intercept shift invariance. Tests use small unrelated data before experimental fitting."
+  },
+  "cohort": {
+    "meta_training_seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "outer_seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ]
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "path_policies": [
+      "risk_ard_mixture",
+      "fixed_source"
+    ]
+  },
+  "model": "One source model with two latent task covariance classes. Each task draws one class and independent zero-mean function coefficients with a class-specific nonnegative diagonal covariance. Its intercept is projected out for source fitting. Joint marginal likelihood is the sum over training tasks of log(sum_k pi_k Normal(y_projected;0,Z_projected diag(tau_k) Z_projected^T + known_projected_label_noise)). Learn both tau vectors and the class probability from source observations only. No regime label or true support enters fitting.",
+  "fit": "Use A33 deduplicated records and precision-collapse same-candidate visits as in A34. Four leave-pair-out fits on30 tasks each, common public seed48 bank. Initialize from the corresponding A34 training-only pooled tau: class1 multiplies ordinary-function variances by1.5 and high-frequency variances by0.5; class2 reverses these multipliers, equal initial class mass. This symmetry-breaking initialization uses only public dictionary names and source-fit variances. Optimize once with L-BFGS-B,480 iterations,ftol1e-9,gtol1e-5, no restart or class-count search. Learn class mass through one unconstrained logit. Retain the existing one-percent source signal tail,0.25 intercept variance,0.02 discrepancy and source-only intercept mean. Nonintercept means stay zero.",
+  "prediction": "L retains the original local structural/full atoms at masses1/4,1/4 and the two learned covariance classes at total mass1/2 with learned pi. Update all atom probabilities from strictly past eta observations. LG replaces each learned class by its own same-trace isotropic full-dictionary control, with identical source pi, intercept and discrepancy. Retain class uncertainty rather than averaging covariances. A34 Q/I and same-path scores are fixed comparisons. Conditional head-sharing calibration and f/g models remain unchanged.",
+  "analysis": "Same80 source-validation paths, steps9-24, average policies per latent task, four fixed pair blocks and20,000 paired bootstrap draws. Primary comparisons L-I and L-LG; additionally L-Q identifies value against the pooled model. Retain every regime, early/late predictions, optimizer convergence, class masses, covariance geometry, posterior class weights and original-I/A34-Q reproduction. Class merging or a negligible learned class is a result, not a trigger for refitting.",
+  "gate": "Final40-task fit only if all four CV optimizers converge, overall L-I and L-LG95 percent intervals are strictly positive, L-Q mean is positive, and no regime L-I or L-LG interval is strictly negative. Failure stops promotion and preserves all results. Passing permits nested source calibration only, not target/KG or deployment claims.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 60,
+    "source_mixture_fits_max": 5,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "admission": "First complete fold projects the other3 folds and optional final fit with25 percent runtime margin and5 CPU seconds overhead. Stop if projection exceeds60 CPU seconds. Save incomplete output; no automatic resubmission.",
+  "paired_bootstrap_seed": 20261113,
+  "next": "If source validation passes, freeze nested conditional-sharing learning; every covariance and sharing fit must exclude both outer and inner held source blocks. Reused development evaluation seeds56-63 remain unopened to the new algorithm until source validation and calibration finish. New independent confirmation requires a separate later cohort and an explicit resource budget.",
+  "limitations": "Two classes are a fixed development hypothesis, not an established description of the five mechanisms. Conditional sharing and decision benefits are still unresolved. This public finite dictionary learns function variance directions; it does not establish factor HVD or learned trajectory representation.",
+  "optimizer_max_iterations": 480,
+  "fixed_after_a36_before_optimizer_completion": true,
+  "single_change": "Only the optimizer iteration cap changes120 to480. Same objective, source tasks, original A34 initialization, class count, prior masses, tail, intercept, discrepancy, tolerances and prediction. One deterministic solve per fold starts from the original initialization, not A36 fitted values. No restart or best-iteration selection. A36 remains a separate incomplete-optimization development result.",
+  "prior_result": "paper_artifacts/meta_prior_heterogeneous_covariance_mixture_a36_20261003/validation.json",
+  "decision": "If any fit still hits the480 iteration limit, preserve the incomplete optimizer evidence without another automatic extension. If optimizers converge but source validation fails, diagnose the converged model and do not promote it to calibration or target evaluation.",
+  "next_plan": "performance/meta_prior_covariance_mixture_family_diagnostic_plan.json"
+}

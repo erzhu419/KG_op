@@ -1,0 +1,14 @@
+{
+  "stage": "meta_prior_target_risk_support_a4_20261003",
+  "decision": "diagnostic_complete_test_paid_label_direction_selection_next",
+  "oracle_method_promoted": false,
+  "recommendation_replay_run": false,
+  "clean_comparison": "Oracle-support prior versus generic source prior, retaining the generic intercept, discrepancy and total function variance. Removing irrelevant directions and concentrating their variance are both part of this reference.",
+  "learned_comparison_limit": "The same oracle prior also replaces the original ARD/mixture architecture; its comparison to risk_ard_mixture is not a support-only ablation.",
+  "finding": "At 24 batches all five generic-control strata have positive mean predictive gains and nominal paired bootstrap intervals above zero; four learned-prior strata do, while separate-head structure has an interval crossing zero.",
+  "remaining_failures": "Learned shared/52 and separate-risk/61 paths still lose held-out predictive score in the oracle diagnostic. No recommendation or verified-reward gains were evaluated.",
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "cpu_seconds": 14.613937178,
+  "next_plan": "performance/meta_prior_target_risk_direction_plan.json"
+}

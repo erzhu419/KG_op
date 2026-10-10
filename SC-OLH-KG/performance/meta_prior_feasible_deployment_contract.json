@@ -1,0 +1,52 @@
+{
+  "contract_id": "inventory_feasible_deployment_v1",
+  "status": "development_preflight_only",
+  "purpose": "Create a target contract with multiple feasible public candidates before comparing representation and risk decisions.",
+  "source_archive": {
+    "law_seed_start": 95400,
+    "task_count": 8,
+    "constraint_price_range": [0.4, 0.9],
+    "candidate_bank": "existing_public_96",
+    "source_records_to_generate": 1536,
+    "output": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+    "noise_seed_start": 96400,
+    "replicates_per_site": 12,
+    "source_policy_design": "existing_public_source_design_assignments"
+  },
+  "target_context": {
+    "demand": [4.0, 9.0, 6.0, 12.0, 7.0, 14.0, 5.0, 11.0, 8.0, 13.0, 6.0, 10.0],
+    "capacity": 20.0,
+    "initial_stock": 8.0,
+    "cost_budget": 1.0,
+    "constraint_price_range": [0.4, 0.9]
+  },
+  "development_block": {
+    "law_seeds": [95425, 95426, 95427, 95428, 95430, 95431, 95432, 95434],
+    "noise_seed_start": 96425,
+    "oracle_screen": "allowed_for_contract_preflight_only",
+    "gate": {
+      "minimum_feasible_candidates": 2,
+      "minimum_objective_span_among_feasible": 0.04,
+      "must_retain_an_infeasible_candidate": true
+    }
+  },
+  "heldout_confirmation_block": {
+    "law_seed_start": 95433,
+    "law_seed_count": 8,
+    "noise_seed_start": 96433,
+    "oracle_screen": "not_read_before_confirmation",
+    "status": "frozen_uninspected"
+  },
+  "decision_protocol": {
+    "arms": ["fixed_public_coordinate", "observable_state_exposure", "risk_factor_prior"],
+    "common_initial_points": 8,
+    "target_search_points": 24,
+    "verification_replicates": 928,
+    "chance_alpha": 0.05,
+    "paired_search_and_verifier_streams": true,
+    "independent_verifier": true,
+    "source_calls_and_target_calls_reported_separately": true
+  },
+  "promotion_rule": "Do not run the heldout confirmation block unless the development block passes feasibility, objective-separation, and finite-budget preflight without using target observations for selection.",
+  "negative_evidence": "The earlier [0.6,1.4] law range, original 95009-95016 block, and development edge seed 95429 remain unchanged as adverse evidence; they are not silently replaced."
+}

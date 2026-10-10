@@ -1,0 +1,16 @@
+{
+  "status": "registered before one fixed-response risk-state reuse pilot",
+  "case": {"layout":"5","selector":"spectral","support":"head_specific","treatment":"observed_task","head":"f"},
+  "source_learning": "paper_artifacts/historical_source_acceleration_selection_v1/results.json",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "sampler": {"chains":4,"warmup_sweeps_per_chain":512,"retained_sweeps_per_chain":16384,"seed":202610099},
+  "refresh_seeds": [202610100,202610101],
+  "maximum_updates": 16,
+  "maximum_single_thread_cpu_seconds": 120,
+  "optimizer": {"max_iterations":200,"ftol":1e-12,"gtol":1e-7},
+  "score_precision": {"maximum_split_Rhat":1.05,"minimum_functional_ESS":100,"maximum_scaled_95_MC_halfwidth":0.001},
+  "evidence_precision": {"minimum_importance_ESS":100,"minimum_chain_functional_ESS":100,"maximum_split_Rhat":1.05,"maximum_split_log_ratio_difference":0.1},
+  "convergence": {"maximum_relative_covariance_change":0.01,"maximum_scaled_projected_raw_score":0.001,"required_consecutive_iterations":2},
+  "scope": "Choose the largest recorded source-risk covariance change after the certified accelerated source7 selection,using only source diagnostics. Freeze its actual response law and reuse full exact risk MCMC states in memory across up to16 MCEM updates,with complete/half Q,current and proposed score precision and actual normalized marginal evidence gates. Refresh at the current accepted law only after reweighting overlap/score precision failure,using at most the two fixed registered seeds;no seed search or refresh to obtain a favorable Q/evidence sign. Reuse exact compensated Gaussian-reference sampling,prior density ratios and historical M-step. Store compact scores and parameter history,no full risk-state arrays or target mixture expansion. The original32 source laws and latest certified source registry remain unchanged;no new labels,target simulator/verifier calls or server jobs. One local serial process,one numerical-library thread.",
+  "output": "paper_artifacts/historical_source_risk_state_reuse_v1"
+}

@@ -1,0 +1,49 @@
+{
+  "status": "registered before all72 mixture forecasts and source/target scoring",
+  "basis_of_next_step": "at63 eta_g prior SD.518, fixed-map source-task-deletion mean spreadSD.281, full-map-refit deletion mean spreadSD.724; paired full-map minus fixed-map mean changesRMS.800. Learned-risk maps are sensitive to the source archive. Evaluate transmitting source-estimation uncertainty instead of adding a target-tuned variance floor.",
+  "source_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/inputs.json",
+  "mean_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/source_fit.json",
+  "risk_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/risk_source_fit.json",
+  "deletion_execution": "performance/manifests/legacy_joint_population_public_mean_risk_stability_execution_v1.json",
+  "deletion_artifacts": "paper_artifacts/legacy_joint_population_public_mean_risk_stability_v1",
+  "mean_arms": [
+    "joint_structural",
+    "flat",
+    "joint_gp"
+  ],
+  "risk_cases": [
+    "single_full144_risk",
+    "full_plus_six_fixed_map_deletion_risks",
+    "full_plus_six_relearned_map_deletion_risks"
+  ],
+  "source_information": "all three mean laws and risk cases access the same selected48 labels and144 historical paired response calls; deleted branches use cached40-label fits; no extra source fitting or response calls",
+  "model_law": "for each ensemble use seven complete (f,eta_f,g,eta_g) hypotheses: the full144-call risk law plus six cached deletion laws. Each retains its own learned risk map, public reference, joint covariance and native posterior; f/g source mean priors are identical within the ensemble. Start at uniform1/7 identity weights; update one shared identity weight using joint pre-observation raw f/g density via existing JointResponseMixture.update_raw.",
+  "source_uncertainty": "average complete hypotheses through existing predict_joint and raw local density calculations; preserve between-hypothesis dependence. Deletion branches form a registered uncertainty ensemble, not a formal Bayesian posterior or calibrated jackknife variance estimator.",
+  "source_queries": "two opened source holdouts6/7, same first raw records at0/1; freeze all18 mixture-model forecasts before unobserved71-site scoring. Joint per-site replicated f/g density is logsumexp of identity-weighted complete-head log densities, not sum of separate marginal mixtures.",
+  "target_queries": "six opened cached targets, same two raw initial records and73-bank; freeze all54 mixture-model forecasts before cached truth scoring. Report f/g/eta MSE, variance-band coverage, raw predictive evidence, identity weights and27/60/63 errors.",
+  "baseline_reproduction": "single full144 risk cases reproduce saved Stage32/33 predictions for their corresponding mean laws; meaningful failure halts interpretation and is repaired before scoring",
+  "next_action": "compare proper predictive calibration and same-point bias for every matched mean/risk case; specify a separate matched action experiment only after reviewing these results. No paid-search or independent-deployment claim from coverage improvement.",
+  "execution": "local serial single-thread, reuse all cached priors; new source fits0, new simulator/verifier calls0, terminal posterior integrations0, no scheduler/server jobs or pulls",
+  "interpretation": "test source-learned risk-representation uncertainty within the original meta-prior plus paid-adaptation path. Keeps sparse orthogonal low-order low-frequency priors; no public-risk-coordinate replacement or target-truth tuning.",
+  "output": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1",
+  "plan": "performance/manifests/legacy_joint_population_public_mean_risk_uncertainty_plan_v1.json",
+  "target_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1/inputs.json",
+  "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+  "reference_source_predictions": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/source_predictions.json",
+  "reference_target_predictions": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1/predictions.json",
+  "source_holdouts": [
+    6,
+    7
+  ],
+  "diagnostic_candidates": [
+    27,
+    60,
+    63
+  ],
+  "risk_modes": [
+    "risk_fit_only_at_frozen48_label_map",
+    "relearn_map_and_risk_fit_on40_labels"
+  ],
+  "diagnostic_margin": "mean g plus z exp(mean eta/2) is a descriptive plug-in margin, not a posterior certification probability",
+  "freeze_rule": "save all18 source and54 target mixture predictions before any unobserved source labels or cached target truth scoring; single-risk means/variances reproduce saved forecasts first"
+}

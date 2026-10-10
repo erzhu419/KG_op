@@ -1,0 +1,14 @@
+{
+  "status": "registered before a fixed-law risk-only same-seed prefix extension",
+  "case": {"layout":"6","selector":"spectral","support":"joint","treatment":"deconvolved_task","head":"g"},
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "source_learning": "paper_artifacts/historical_source_learning_round6/results.json",
+  "fresh_results": "paper_artifacts/historical_changed_candidate_reconditioning_v6/results.json",
+  "sampler": {"chains":4,"warmup_sweeps_per_chain":512,"retained_sweeps_per_chain":16384,"seed":202610095},
+  "prefix_sweeps_per_chain": 4096,
+  "prefix_stride": 16,
+  "maximum_single_thread_cpu_seconds": 45,
+  "stationarity_threshold": 0.001,
+  "scope": "Pilot one existing fresh sixth-law source case. Exact historical compensated elliptical sampler and unchanged Gaussian reference,parameters,seed,warmup,likelihood. Compare the first4096x4 states against the archived retained prefix. Sample only risk states;avoid every48x48 conditional-f covariance per sweep. Save full/split/prefix eta sufficient moments and covariance-score error,with no new KG mixture or parameter fit. This determines whether longer source statistics can resolve the original score threshold without expanding KG components. Original source laws/labels remain unchanged;no target evaluation or server work.",
+  "output": "paper_artifacts/historical_source_risk_score_bank_v1"
+}

@@ -1,0 +1,718 @@
+{
+  "execution": {
+    "status": "registered before diversified source fits and heldout forecasts",
+    "basis_of_next_step": "current96 labeled source records repeat the same16 policy inputs; current common-function design rank16 for96 coefficients, public catalog rank73. Candidate27 mean bias already appears on both source holdouts, so this is not solely d50-to-d1000 transfer. Correcting only the common covariance leaves zero safe target reward.",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "public_order_diagnostic": "paper_artifacts/legacy_joint_population_joint_common_covariance_v1/source_input_rank_diagnostic.json",
+    "shared_public_anchors": [
+      45,
+      10,
+      51,
+      31
+    ],
+    "source_site_indices_by_task": [
+      [
+        45,
+        10,
+        51,
+        31,
+        20,
+        49,
+        34,
+        59,
+        65,
+        69,
+        54,
+        56,
+        8,
+        2,
+        13,
+        38
+      ],
+      [
+        45,
+        10,
+        51,
+        31,
+        50,
+        48,
+        62,
+        60,
+        67,
+        24,
+        4,
+        55,
+        30,
+        43,
+        39,
+        0
+      ],
+      [
+        45,
+        10,
+        51,
+        31,
+        19,
+        64,
+        70,
+        22,
+        17,
+        23,
+        25,
+        16,
+        53,
+        44,
+        3,
+        21
+      ],
+      [
+        45,
+        10,
+        51,
+        31,
+        11,
+        15,
+        28,
+        63,
+        66,
+        9,
+        68,
+        40,
+        14,
+        46,
+        12,
+        20
+      ],
+      [
+        45,
+        10,
+        51,
+        31,
+        26,
+        18,
+        42,
+        61,
+        57,
+        27,
+        37,
+        71,
+        41,
+        7,
+        35,
+        50
+      ],
+      [
+        45,
+        10,
+        51,
+        31,
+        52,
+        36,
+        6,
+        72,
+        47,
+        5,
+        58,
+        32,
+        33,
+        1,
+        29,
+        19
+      ]
+    ],
+    "selection": "first4 centroid-start public maxmin sites shared across tasks to constrain task offsets; each task takes12 interleaved sites from the remaining69 public sites, wrapping cyclically; no response or target score selects a site",
+    "source_unique_policy_sites": 73,
+    "source_sites_per_task": 16,
+    "replicates_per_site": 3,
+    "response_archive_calls_per_arm": 288,
+    "information": "same per-task source layout for all arms; retrain encoder, feature/response normalization and all priors using only these96 selected labels. Do not inherit the old16-grid encoder or old source hyperparameters. Public source catalog defines the orthogonal measure.",
+    "structural_model": "existing joint common/task group-spectral covariance model with original relative tails and intercept convention; no function library expansion, arbitrary floor or changed risk boundary",
+    "generic_control": "exact shared-function GP with independent task residuals must support different source inputs per task, consume the same label uncertainties and retain interpolation uncertainty; adapt the actual multi-task covariance and verify likelihood/gradient/new-task conditioning, rather than treating different policies as a common grid",
+    "source_first": "two cached raw records per heldout source task,71 unobserved original sites. Freeze local predictive distributions before scoring. Retain observed MSE and joint/constraint batch density plus full-bank predictive-calibration profiles; aggregate MSE alone is insufficient.",
+    "target_progress": "only after source predictive/calibration evidence improves, freeze a separately specified opened-target attribution with strong GP/full controls, same73-policy bank and362 total-call cap. No automatic independent confirmation or server matrix.",
+    "execution": "local serial single-thread, cache source fits once; new simulator/verifier calls0; no scheduler/server jobs or pulls",
+    "interpretation": "development attribution of source-input diversity at matched288 label calls; rank increase does not prove full structural identification or decision superiority; old shared16-grid negative results and historical frontend cost remain separate",
+    "plan": "performance/manifests/legacy_joint_population_diverse_source_design_plan_v1.json",
+    "output": "paper_artifacts/legacy_joint_population_diverse_source_v1",
+    "previous_source_results": "paper_artifacts/legacy_joint_population_joint_common_covariance_v1/results.json",
+    "regularizer_max_iterations": 1024,
+    "fixed_structural_max_iterations": 1024,
+    "gp_anchor_max_iterations": 512,
+    "population_optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 4096,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "arms": [
+      "fixed_common_structural",
+      "joint_common_structural",
+      "joint_common_full",
+      "fixed_common_rbf",
+      "joint_common_rbf"
+    ],
+    "head_order": [
+      "f",
+      "g",
+      "eta_g",
+      "eta_f"
+    ],
+    "generic_fit": "fit source-only known-noise ARD anchor on new labels; fit fixed common GP residuals on actual distinct inputs, then fit common amplitude plus residuals from that solution. Both GP controls retained.",
+    "orthogonal_reference": "all73 public source policies of source task0 transformed by the new selected-label encoder; no unselected response labels",
+    "source_gate_rule": "on each of the two opened heldout tasks: joint_common_structural g MSE, joint and constraint batch log densities improve over stage25; candidates27 and63 observed g lie inside the predictive moment bands, and their g mean ordering agrees with their observed ordering. These are development diagnostics, not independent confirmation.",
+    "calibration_profile": "all73 means/variances and standardized four-head residuals;71 unobserved sites summarized. Mean-label predictive variance uses posterior E exp(eta)/3, eta-label variance uses the existing log-chi-square noise; moment bands need not have exact95% probability.",
+    "source_only_completion": "a reached joint covariance iteration limit may resume once from its saved full parameter vector, same objective/bounds/tolerances and4096 additional iterations, before heldout forecasts. Preserve the incomplete fit and report total fitting time; any remaining failure blocks scoring."
+  },
+  "summary": {
+    "fixed_common_structural": {
+      "observed_head_mse": [
+        0.0011859131001347235,
+        0.007949751939545734,
+        2.050904487724701,
+        2.6423369015302254
+      ],
+      "joint_batch_log_score": -0.30674657978972275,
+      "response_batch_log_scores": [
+        0.16719996769340048,
+        -0.4739465474831233
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9859154929577465,
+        0.9788732394366197,
+        0.943661971830986,
+        0.9295774647887324
+      ],
+      "predictive_standardized_residual_rms": [
+        0.8262496406474065,
+        0.7971181824472713,
+        1.0572088163028375,
+        1.141689892465525
+      ]
+    },
+    "joint_common_structural": {
+      "observed_head_mse": [
+        0.00043130108375749533,
+        0.00241625133811877,
+        2.1921262061096307,
+        2.5878897898955504
+      ],
+      "joint_batch_log_score": 0.469384444232044,
+      "response_batch_log_scores": [
+        0.6381857594855432,
+        -0.1688013152534992
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.943661971830986,
+        0.9577464788732395,
+        0.9295774647887325,
+        0.9436619718309859
+      ],
+      "predictive_standardized_residual_rms": [
+        1.0176055155556718,
+        0.8898584631720482,
+        1.0973340001294303,
+        1.1522305311806673
+      ]
+    },
+    "joint_common_full": {
+      "observed_head_mse": [
+        0.0004305220416295044,
+        0.0023702052874584097,
+        2.192384650564196,
+        2.588684466387396
+      ],
+      "joint_batch_log_score": 0.46329716431163004,
+      "response_batch_log_scores": [
+        0.6363924075075876,
+        -0.17309524319595754
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.943661971830986,
+        0.971830985915493,
+        0.9366197183098592,
+        0.9436619718309859
+      ],
+      "predictive_standardized_residual_rms": [
+        1.0094143342975612,
+        0.8134397865057792,
+        1.0956552476902706,
+        1.1435003409506
+      ]
+    },
+    "fixed_common_rbf": {
+      "observed_head_mse": [
+        0.0004116609691920774,
+        0.001628483478523963,
+        2.060024665693315,
+        2.532422617933503
+      ],
+      "joint_batch_log_score": 0.5319718306633028,
+      "response_batch_log_scores": [
+        0.6483428774310369,
+        -0.11637104676773433
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9366197183098592,
+        1.0,
+        0.9507042253521127,
+        0.9366197183098591
+      ],
+      "predictive_standardized_residual_rms": [
+        1.0412362799598927,
+        0.5551245332327052,
+        1.0703004355253896,
+        1.1864817691738858
+      ]
+    },
+    "joint_common_rbf": {
+      "observed_head_mse": [
+        0.0004056383575509493,
+        0.001614408746588807,
+        2.0624425684068637,
+        2.511311934334471
+      ],
+      "joint_batch_log_score": 0.5672575473307766,
+      "response_batch_log_scores": [
+        0.6654842591583884,
+        -0.09822671182761218
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9366197183098592,
+        1.0,
+        0.9507042253521127,
+        0.9366197183098591
+      ],
+      "predictive_standardized_residual_rms": [
+        1.0353803537764736,
+        0.5670748775370934,
+        1.0647470149304539,
+        1.185198303480219
+      ]
+    }
+  },
+  "source_gate": {
+    "passed": true,
+    "tasks": [
+      {
+        "task_id": "related_inventory_06",
+        "checks": {
+          "g_mse_improved": true,
+          "joint_density_improved": true,
+          "constraint_density_improved": true,
+          "reached_points_within_predictive_moment_bands": true,
+          "reached_points_g_order_correct": true
+        },
+        "before": {
+          "observed_head_mse": [
+            0.0011548668096618242,
+            0.013263950317649006,
+            1.4403275535683187,
+            1.813278015036384
+          ],
+          "joint_batch_log_score": -1.078468322263394,
+          "response_batch_log_scores": [
+            0.06474998752730271,
+            -1.1432183097906972
+          ]
+        },
+        "after": {
+          "observed_head_mse": [
+            0.00025464946818000363,
+            0.002282301692094245,
+            1.6206284424771846,
+            1.8590058355356545
+          ],
+          "joint_batch_log_score": 0.9644351211208009,
+          "response_batch_log_scores": [
+            0.9699747175196957,
+            -0.0055395963988945935
+          ],
+          "predictive_moment_band_95_observed_coverage": [
+            0.971830985915493,
+            0.9859154929577465,
+            0.971830985915493,
+            0.9295774647887324
+          ],
+          "predictive_standardized_residual_rms": [
+            0.815644957188938,
+            0.833996679535004,
+            0.9502419844839881,
+            0.9902895542569702
+          ]
+        }
+      },
+      {
+        "task_id": "related_inventory_07",
+        "checks": {
+          "g_mse_improved": true,
+          "joint_density_improved": true,
+          "constraint_density_improved": true,
+          "reached_points_within_predictive_moment_bands": true,
+          "reached_points_g_order_correct": true
+        },
+        "before": {
+          "observed_head_mse": [
+            0.0014355239328434299,
+            0.015370463164698972,
+            2.993223122769397,
+            3.142889988984186
+          ],
+          "joint_batch_log_score": -2.0903004784867494,
+          "response_batch_log_scores": [
+            -0.36162210528490407,
+            -1.7286783732018456
+          ]
+        },
+        "after": {
+          "observed_head_mse": [
+            0.0006079526993349871,
+            0.002550200984143295,
+            2.763623969742077,
+            3.3167737442554466
+          ],
+          "joint_batch_log_score": -0.025666232656712848,
+          "response_batch_log_scores": [
+            0.30639680145139075,
+            -0.3320630341081038
+          ],
+          "predictive_moment_band_95_observed_coverage": [
+            0.9154929577464789,
+            0.9295774647887324,
+            0.8873239436619719,
+            0.9577464788732394
+          ],
+          "predictive_standardized_residual_rms": [
+            1.2195660739224057,
+            0.9457202468090924,
+            1.2444260157748726,
+            1.3141715081043646
+          ]
+        }
+      }
+    ],
+    "interpretation": "opened development holdouts; predictive moment bands are not exact credible intervals"
+  },
+  "rows": [
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "fixed_common_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0010158361938597206,
+          0.009338189769088564,
+          1.4764270301230336,
+          1.8913973457191504
+        ],
+        "joint_batch_log_score": -0.07304483584943673,
+        "response_batch_log_scores": [
+          0.34399090789838105,
+          -0.4170357437478178
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          0.9577464788732394,
+          0.971830985915493,
+          0.9154929577464789
+        ],
+        "predictive_standardized_residual_rms": [
+          0.7731207518829749,
+          0.8731722583701658,
+          0.907294874396594,
+          0.978647006343335
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "joint_common_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.00025464946818000363,
+          0.002282301692094245,
+          1.6206284424771846,
+          1.8590058355356545
+        ],
+        "joint_batch_log_score": 0.9644351211208009,
+        "response_batch_log_scores": [
+          0.9699747175196957,
+          -0.0055395963988945935
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.971830985915493,
+          0.9859154929577465,
+          0.971830985915493,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.815644957188938,
+          0.833996679535004,
+          0.9502419844839881,
+          0.9902895542569702
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "joint_common_full",
+      "scores": {
+        "observed_head_mse": [
+          0.00025596277228738344,
+          0.0023529082421331862,
+          1.6202315327306596,
+          1.8604280683357206
+        ],
+        "joint_batch_log_score": 0.9483636104482797,
+        "response_batch_log_scores": [
+          0.9803907222485527,
+          -0.032027111800273074
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          1.0,
+          0.971830985915493,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.7898575243362068,
+          0.7740975149755567,
+          0.9513887700852878,
+          0.9785293396790472
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "fixed_common_rbf",
+      "scores": {
+        "observed_head_mse": [
+          0.000260964048388139,
+          0.0019221016472886691,
+          1.4442019149090388,
+          1.791621004400705
+        ],
+        "joint_batch_log_score": 0.9905544062032874,
+        "response_batch_log_scores": [
+          1.0004898189687557,
+          -0.009935412765468343
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          1.0,
+          0.9859154929577465,
+          0.9154929577464789
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8340589056019763,
+          0.5947856579750018,
+          0.9077921688656361,
+          1.0054454465618166
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "joint_common_rbf",
+      "scores": {
+        "observed_head_mse": [
+          0.00025908353333619575,
+          0.0018869027217810674,
+          1.4318851892334399,
+          1.7730258529100855
+        ],
+        "joint_batch_log_score": 1.0214762983373715,
+        "response_batch_log_scores": [
+          1.009682992701127,
+          0.011793305636243727
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          1.0,
+          0.9859154929577465,
+          0.9154929577464789
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8322352216615164,
+          0.6030097320495618,
+          0.8994223245658888,
+          1.0040256960859406
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "fixed_common_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0013559900064097263,
+          0.006561314110002903,
+          2.6253819453263687,
+          3.3932764573413006
+        ],
+        "joint_batch_log_score": -0.5404483237300087,
+        "response_batch_log_scores": [
+          -0.009590972511580071,
+          -0.5308573512184288
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          1.0,
+          0.9154929577464789,
+          0.9436619718309859
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8793785294118379,
+          0.7210641065243767,
+          1.207122758209081,
+          1.3047327785877147
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "joint_common_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0006079526993349871,
+          0.002550200984143295,
+          2.763623969742077,
+          3.3167737442554466
+        ],
+        "joint_batch_log_score": -0.025666232656712848,
+        "response_batch_log_scores": [
+          0.30639680145139075,
+          -0.3320630341081038
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9154929577464789,
+          0.9295774647887324,
+          0.8873239436619719,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          1.2195660739224057,
+          0.9457202468090924,
+          1.2444260157748726,
+          1.3141715081043646
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "joint_common_full",
+      "scores": {
+        "observed_head_mse": [
+          0.0006050813109716253,
+          0.0023875023327836337,
+          2.764537768397733,
+          3.3169408644390717
+        ],
+        "joint_batch_log_score": -0.021769281825019554,
+        "response_batch_log_scores": [
+          0.2923940927666226,
+          -0.314163374591642
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9014084507042254,
+          0.9436619718309859,
+          0.9014084507042254,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          1.2289711442589155,
+          0.8527820580360017,
+          1.2399217252952535,
+          1.3084713422221526
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "fixed_common_rbf",
+      "scores": {
+        "observed_head_mse": [
+          0.0005623578899960158,
+          0.001334865309759257,
+          2.6758474164775916,
+          3.2732242314663007
+        ],
+        "joint_batch_log_score": 0.07338925512331809,
+        "response_batch_log_scores": [
+          0.2961959358933182,
+          -0.22280668077000032
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.8873239436619719,
+          1.0,
+          0.9154929577464789,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          1.248413654317809,
+          0.5154634084904085,
+          1.2328087021851433,
+          1.367518091785955
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "joint_common_rbf",
+      "scores": {
+        "observed_head_mse": [
+          0.0005521931817657028,
+          0.0013419147713965465,
+          2.6929999475802875,
+          3.2495980157588567
+        ],
+        "joint_batch_log_score": 0.1130387963241817,
+        "response_batch_log_scores": [
+          0.3212855256156497,
+          -0.2082467292914681
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.8873239436619719,
+          1.0,
+          0.9154929577464789,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          1.238525485891431,
+          0.531140023024625,
+          1.2300717052950187,
+          1.3663709108744975
+        ]
+      }
+    }
+  ],
+  "source_fit_cpu_seconds": 8.484566327,
+  "prediction_scoring_cpu_seconds": 6.235640784999999,
+  "cost": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "historical_source_response_calls_per_arm": 288,
+    "new_native_source_head_fits": 25
+  }
+}

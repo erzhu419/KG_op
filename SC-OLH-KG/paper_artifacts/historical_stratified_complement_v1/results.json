@@ -1,0 +1,763 @@
+{
+  "execution_plan": "performance/manifests/historical_stratified_complement_v1.json",
+  "rows": [
+    {
+      "raw_draw_power": 12,
+      "weighted_joint_futures": 54,
+      "terminal_action_count": 40,
+      "raw_adaptation_value": 0.0039195650334625885,
+      "raw_net_reward_control_variate": 0.0038883674764722143,
+      "raw_adaptation_of_projected_choice": 0.003919213906259534,
+      "action_selection_loss": 3.5112720305495895e-07,
+      "action_selection_loss_identity_interval": [
+        1.3121124571688902e-08,
+        1.4324402224358184e-06
+      ],
+      "raw_net_control_variate_identity_interval": [
+        0.003888023091220315,
+        0.003889442410318177
+      ],
+      "identity_and_rare_origin_error_bound": 1.0813130193808595e-06,
+      "weighted_omitted_terminal_identity_mass": 3.3800607848327005e-07,
+      "rare_predictive_origin_mass": 7.433069408975894e-07,
+      "raw_net_reward_uncorrected": 0.006055675293792003,
+      "raw_fixed_action_tower_residual": 0.002167307817319792,
+      "projected_adaptation_value": 0.003675847524192112,
+      "projected_value_bias_at_selected_action": 0.00041491837349237463,
+      "adaptation_contributions_by_region": {
+        "complement": 0.002288564387818676,
+        "low_constraint": 0.0016309942664704986,
+        "retained_rare_origin": 6.379173414420474e-09
+      },
+      "predictive_mass_by_region": {
+        "complement": 0.8749993496064266,
+        "low_constraint": 0.12499990708663239,
+        "retained_rare_origin": 7.433069408975894e-07
+      },
+      "expected_model_weights": [
+        7.722835914494086e-30,
+        1.6684558385866746e-29,
+        2.743555025388283e-07,
+        1.0407037284694879e-07,
+        0.5052624576776752,
+        0.4947371638964494,
+        3.1274872270215994e-18,
+        1.5354461666238976e-18
+      ],
+      "raw_selected_action_indices": [
+        32,
+        32,
+        32,
+        20,
+        32,
+        32,
+        32,
+        20,
+        32,
+        37,
+        32,
+        21,
+        32,
+        37,
+        32,
+        21,
+        37,
+        37,
+        21,
+        37,
+        37,
+        21,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        37,
+        21,
+        37,
+        37,
+        37,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32
+      ],
+      "computed_projected_raw_action_disagreement_count": 1,
+      "predictive_log_evidence_max_error": 0.0001262603707647969,
+      "effective_sample_size_min": 4091.7558064033246,
+      "complement_prefix_count": 8,
+      "weighted_absolute_terminal_contrast_difference": 0.00011913223489250395,
+      "weighted_absolute_fixed_action_resolution_change": 0.00013733500389895965,
+      "weighted_absolute_optimal_reward_resolution_change": 2.9373063341392073e-05,
+      "largest_terminal_contrast_changes": [
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960985962257974,
+            -0.14568299172120425
+          ],
+          "weighted_absolute_contrast_change": 1.6087530746662298e-05,
+          "weighted_fixed_action_change": 1.3885373957184404e-05
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960959770364886,
+            -0.14242748124971538
+          ],
+          "weighted_absolute_contrast_change": 1.2076076889892435e-05,
+          "weighted_fixed_action_change": 1.2630030723580378e-05
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 1,
+          "labels": [
+            0.27092738751690226,
+            0.027746719407982883
+          ],
+          "weighted_absolute_contrast_change": 7.2021419691935455e-06,
+          "weighted_fixed_action_change": -7.169876349259523e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 1,
+          "labels": [
+            0.27085701703586607,
+            0.02824782606102711
+          ],
+          "weighted_absolute_contrast_change": 7.087739673260317e-06,
+          "weighted_fixed_action_change": -7.156259251692679e-06
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 7,
+          "labels": [
+            0.3351186078101611,
+            -0.04870845245430416
+          ],
+          "weighted_absolute_contrast_change": 6.278112653068585e-06,
+          "weighted_fixed_action_change": -8.091691166396956e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 13,
+          "labels": [
+            0.28205925475493776,
+            -0.023799786376170973
+          ],
+          "weighted_absolute_contrast_change": 5.777114147140164e-06,
+          "weighted_fixed_action_change": 5.403900203654673e-06
+        }
+      ],
+      "model_weight_martingale_residual": [
+        -4.8596044433208684e-29,
+        -1.05348177270276e-28,
+        -2.63624874561528e-07,
+        -1.0125619094032206e-07,
+        0.00016441646589482328,
+        -0.0001640515848292945,
+        -3.551977189174495e-18,
+        -1.7473307844873725e-18
+      ]
+    },
+    {
+      "raw_draw_power": 14,
+      "weighted_joint_futures": 54,
+      "terminal_action_count": 40,
+      "raw_adaptation_value": 0.0039351192929134825,
+      "raw_net_reward_control_variate": 0.0039039217359231066,
+      "raw_adaptation_of_projected_choice": 0.00392740099607431,
+      "action_selection_loss": 7.718296839172239e-06,
+      "action_selection_loss_identity_interval": [
+        7.380290760688969e-06,
+        8.799609858553098e-06
+      ],
+      "raw_net_control_variate_identity_interval": [
+        0.003903577167089162,
+        0.0039049964861870273
+      ],
+      "identity_and_rare_origin_error_bound": 1.0813130193808595e-06,
+      "weighted_omitted_terminal_identity_mass": 3.3800607848327005e-07,
+      "rare_predictive_origin_mass": 7.433069408975894e-07,
+      "raw_net_reward_uncorrected": 0.00604153285035861,
+      "raw_fixed_action_tower_residual": 0.002137611114435504,
+      "projected_adaptation_value": 0.003675847524192112,
+      "projected_value_bias_at_selected_action": 0.0004364279865618863,
+      "adaptation_contributions_by_region": {
+        "complement": 0.0023354295882131054,
+        "low_constraint": 0.0015996831419449163,
+        "retained_rare_origin": 6.5627554605431245e-09
+      },
+      "predictive_mass_by_region": {
+        "complement": 0.8749993496064266,
+        "low_constraint": 0.12499990708663239,
+        "retained_rare_origin": 7.433069408975894e-07
+      },
+      "expected_model_weights": [
+        7.722835914494086e-30,
+        1.6684558385866746e-29,
+        2.743555025388283e-07,
+        1.0407037284694879e-07,
+        0.5052624576776752,
+        0.4947371638964494,
+        3.1274872270215994e-18,
+        1.5354461666238976e-18
+      ],
+      "raw_selected_action_indices": [
+        32,
+        32,
+        32,
+        20,
+        32,
+        32,
+        32,
+        20,
+        32,
+        37,
+        32,
+        21,
+        32,
+        37,
+        32,
+        21,
+        37,
+        37,
+        21,
+        37,
+        37,
+        21,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        37,
+        21,
+        37,
+        37,
+        21,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32
+      ],
+      "computed_projected_raw_action_disagreement_count": 2,
+      "predictive_log_evidence_max_error": 5.358997787929809e-05,
+      "effective_sample_size_min": 16366.91199832516,
+      "nested_terminal_raw_adaptation_difference": 1.5554259450894017e-05,
+      "complement_prefix_count": 8,
+      "weighted_absolute_terminal_contrast_difference": 0.00011913223489250395,
+      "weighted_absolute_fixed_action_resolution_change": 0.00013733500389895965,
+      "weighted_absolute_optimal_reward_resolution_change": 2.9373063341392073e-05,
+      "largest_terminal_contrast_changes": [
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960985962257974,
+            -0.14568299172120425
+          ],
+          "weighted_absolute_contrast_change": 1.6087530746662298e-05,
+          "weighted_fixed_action_change": 1.3885373957184404e-05
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960959770364886,
+            -0.14242748124971538
+          ],
+          "weighted_absolute_contrast_change": 1.2076076889892435e-05,
+          "weighted_fixed_action_change": 1.2630030723580378e-05
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 1,
+          "labels": [
+            0.27092738751690226,
+            0.027746719407982883
+          ],
+          "weighted_absolute_contrast_change": 7.2021419691935455e-06,
+          "weighted_fixed_action_change": -7.169876349259523e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 1,
+          "labels": [
+            0.27085701703586607,
+            0.02824782606102711
+          ],
+          "weighted_absolute_contrast_change": 7.087739673260317e-06,
+          "weighted_fixed_action_change": -7.156259251692679e-06
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 7,
+          "labels": [
+            0.3351186078101611,
+            -0.04870845245430416
+          ],
+          "weighted_absolute_contrast_change": 6.278112653068585e-06,
+          "weighted_fixed_action_change": -8.091691166396956e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 13,
+          "labels": [
+            0.28205925475493776,
+            -0.023799786376170973
+          ],
+          "weighted_absolute_contrast_change": 5.777114147140164e-06,
+          "weighted_fixed_action_change": 5.403900203654673e-06
+        }
+      ],
+      "model_weight_martingale_residual": [
+        -4.8596044433208684e-29,
+        -1.05348177270276e-28,
+        -2.63624874561528e-07,
+        -1.0125619094032206e-07,
+        0.00016441646589482328,
+        -0.0001640515848292945,
+        -3.551977189174495e-18,
+        -1.7473307844873725e-18
+      ]
+    },
+    {
+      "raw_draw_power": 12,
+      "weighted_joint_futures": 68,
+      "terminal_action_count": 40,
+      "raw_adaptation_value": 0.003891103979858771,
+      "raw_net_reward_control_variate": 0.0038599064228683946,
+      "raw_adaptation_of_projected_choice": 0.003890752852655716,
+      "action_selection_loss": 3.5112720305495895e-07,
+      "action_selection_loss_identity_interval": [
+        0.0,
+        1.464814233145636e-06
+      ],
+      "raw_net_control_variate_identity_interval": [
+        0.003859529663605787,
+        0.0038610137307250724
+      ],
+      "identity_and_rare_origin_error_bound": 1.1136870300906772e-06,
+      "weighted_omitted_terminal_identity_mass": 3.703800891930879e-07,
+      "rare_predictive_origin_mass": 7.433069408975894e-07,
+      "raw_net_reward_uncorrected": 0.006054090603253735,
+      "raw_fixed_action_tower_residual": 0.0021941841803853404,
+      "projected_adaptation_value": 0.0036165826631865358,
+      "projected_value_bias_at_selected_action": 0.0004153663754996826,
+      "adaptation_contributions_by_region": {
+        "complement": 0.0022601033342148575,
+        "low_constraint": 0.0016309942664704986,
+        "retained_rare_origin": 6.379173414420474e-09
+      },
+      "predictive_mass_by_region": {
+        "complement": 0.8749993496064268,
+        "low_constraint": 0.12499990708663239,
+        "retained_rare_origin": 7.433069408975894e-07
+      },
+      "expected_model_weights": [
+        8.230385265916156e-30,
+        1.7786527716604415e-29,
+        2.835900331933737e-07,
+        1.0758070661459253e-07,
+        0.504974553726683,
+        0.49502505510257716,
+        3.296523693976774e-18,
+        1.6187898211819197e-18
+      ],
+      "raw_selected_action_indices": [
+        32,
+        32,
+        32,
+        20,
+        32,
+        32,
+        32,
+        20,
+        32,
+        37,
+        32,
+        21,
+        32,
+        37,
+        32,
+        21,
+        37,
+        37,
+        21,
+        37,
+        37,
+        21,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        37,
+        21,
+        37,
+        37,
+        37,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32
+      ],
+      "computed_projected_raw_action_disagreement_count": 1,
+      "predictive_log_evidence_max_error": 0.0001262603707647969,
+      "effective_sample_size_min": 4091.7558064033246,
+      "complement_prefix_count": 16,
+      "weighted_absolute_terminal_contrast_difference": 0.00013398803625061748,
+      "weighted_absolute_fixed_action_resolution_change": 0.00015225972819640592,
+      "weighted_absolute_optimal_reward_resolution_change": 2.943025522108978e-05,
+      "largest_terminal_contrast_changes": [
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960985962257974,
+            -0.14568299172120425
+          ],
+          "weighted_absolute_contrast_change": 1.6087530746662298e-05,
+          "weighted_fixed_action_change": 1.3885373957184404e-05
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960959770364886,
+            -0.14242748124971538
+          ],
+          "weighted_absolute_contrast_change": 1.2076076889892435e-05,
+          "weighted_fixed_action_change": 1.2630030723580378e-05
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 7,
+          "labels": [
+            0.3351186078101611,
+            -0.04870845245430416
+          ],
+          "weighted_absolute_contrast_change": 6.278112653068585e-06,
+          "weighted_fixed_action_change": -8.091691166396956e-06
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 11,
+          "labels": [
+            0.2919453645085479,
+            0.016272983576987598
+          ],
+          "weighted_absolute_contrast_change": 6.102220796355076e-06,
+          "weighted_fixed_action_change": -6.296560008589352e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 11,
+          "labels": [
+            0.2919315369644787,
+            0.016861041393315686
+          ],
+          "weighted_absolute_contrast_change": 6.034736566823656e-06,
+          "weighted_fixed_action_change": -6.1885277192763695e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 13,
+          "labels": [
+            0.28205925475493776,
+            -0.023799786376170973
+          ],
+          "weighted_absolute_contrast_change": 5.777114147140164e-06,
+          "weighted_fixed_action_change": 5.403900203654673e-06
+        }
+      ],
+      "model_weight_martingale_residual": [
+        -4.8088495081786617e-29,
+        -1.0424620793953831e-28,
+        -2.543903439069826e-07,
+        -9.774585717267833e-08,
+        -0.00012348748509738439,
+        0.0001238396212984716,
+        -3.3829407222193196e-18,
+        -1.6639871299293502e-18
+      ],
+      "nested_complement_adaptation_difference": 2.846105360381759e-05,
+      "completed_rule_reproduction_error": 0.0
+    },
+    {
+      "raw_draw_power": 14,
+      "weighted_joint_futures": 68,
+      "terminal_action_count": 40,
+      "raw_adaptation_value": 0.003910660157746711,
+      "raw_net_reward_control_variate": 0.0038794626007563355,
+      "raw_adaptation_of_projected_choice": 0.003902941860907539,
+      "action_selection_loss": 7.718296839172239e-06,
+      "action_selection_loss_identity_interval": [
+        7.347916749979151e-06,
+        8.831983869262915e-06
+      ],
+      "raw_net_control_variate_identity_interval": [
+        0.0038790856579116826,
+        0.0038805697250309645
+      ],
+      "identity_and_rare_origin_error_bound": 1.1136870300906772e-06,
+      "weighted_omitted_terminal_identity_mass": 3.703800891930879e-07,
+      "rare_predictive_origin_mass": 7.433069408975894e-07,
+      "raw_net_reward_uncorrected": 0.006039858702320712,
+      "raw_fixed_action_tower_residual": 0.0021603961015643804,
+      "projected_adaptation_value": 0.0036165826631865358,
+      "projected_value_bias_at_selected_action": 0.000436965446068826,
+      "adaptation_contributions_by_region": {
+        "complement": 0.002310970453046334,
+        "low_constraint": 0.0015996831419449163,
+        "retained_rare_origin": 6.5627554605431245e-09
+      },
+      "predictive_mass_by_region": {
+        "complement": 0.8749993496064268,
+        "low_constraint": 0.12499990708663239,
+        "retained_rare_origin": 7.433069408975894e-07
+      },
+      "expected_model_weights": [
+        8.230385265916156e-30,
+        1.7786527716604415e-29,
+        2.835900331933737e-07,
+        1.0758070661459253e-07,
+        0.504974553726683,
+        0.49502505510257716,
+        3.296523693976774e-18,
+        1.6187898211819197e-18
+      ],
+      "raw_selected_action_indices": [
+        32,
+        32,
+        32,
+        20,
+        32,
+        32,
+        32,
+        20,
+        32,
+        37,
+        32,
+        21,
+        32,
+        37,
+        32,
+        21,
+        37,
+        37,
+        21,
+        37,
+        37,
+        21,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        37,
+        21,
+        37,
+        37,
+        21,
+        21,
+        37,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32,
+        32,
+        37,
+        32,
+        32
+      ],
+      "computed_projected_raw_action_disagreement_count": 2,
+      "predictive_log_evidence_max_error": 5.358997787929809e-05,
+      "effective_sample_size_min": 16366.91199832516,
+      "nested_terminal_raw_adaptation_difference": 1.955617788794049e-05,
+      "complement_prefix_count": 16,
+      "weighted_absolute_terminal_contrast_difference": 0.00013398803625061748,
+      "weighted_absolute_fixed_action_resolution_change": 0.00015225972819640592,
+      "weighted_absolute_optimal_reward_resolution_change": 2.943025522108978e-05,
+      "largest_terminal_contrast_changes": [
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960985962257974,
+            -0.14568299172120425
+          ],
+          "weighted_absolute_contrast_change": 1.6087530746662298e-05,
+          "weighted_fixed_action_change": 1.3885373957184404e-05
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 59,
+          "labels": [
+            0.2960959770364886,
+            -0.14242748124971538
+          ],
+          "weighted_absolute_contrast_change": 1.2076076889892435e-05,
+          "weighted_fixed_action_change": 1.2630030723580378e-05
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 7,
+          "labels": [
+            0.3351186078101611,
+            -0.04870845245430416
+          ],
+          "weighted_absolute_contrast_change": 6.278112653068585e-06,
+          "weighted_fixed_action_change": -8.091691166396956e-06
+        },
+        {
+          "origin_identity": 5,
+          "identity_fantasy_position": 11,
+          "labels": [
+            0.2919453645085479,
+            0.016272983576987598
+          ],
+          "weighted_absolute_contrast_change": 6.102220796355076e-06,
+          "weighted_fixed_action_change": -6.296560008589352e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 11,
+          "labels": [
+            0.2919315369644787,
+            0.016861041393315686
+          ],
+          "weighted_absolute_contrast_change": 6.034736566823656e-06,
+          "weighted_fixed_action_change": -6.1885277192763695e-06
+        },
+        {
+          "origin_identity": 4,
+          "identity_fantasy_position": 13,
+          "labels": [
+            0.28205925475493776,
+            -0.023799786376170973
+          ],
+          "weighted_absolute_contrast_change": 5.777114147140164e-06,
+          "weighted_fixed_action_change": 5.403900203654673e-06
+        }
+      ],
+      "model_weight_martingale_residual": [
+        -4.8088495081786617e-29,
+        -1.0424620793953831e-28,
+        -2.543903439069826e-07,
+        -9.774585717267833e-08,
+        -0.00012348748509738439,
+        0.0001238396212984716,
+        -3.3829407222193196e-18,
+        -1.6639871299293502e-18
+      ],
+      "nested_complement_adaptation_difference": 2.4459135166771118e-05,
+      "completed_rule_reproduction_error": 0.0
+    }
+  ],
+  "all_cached_rules_complete": true,
+  "complement_gate_passed": true,
+  "weighted_absolute_terminal_contrast_gate_passed": false,
+  "new_future_evaluations": 0,
+  "cpu_seconds": 0.01780828499999998,
+  "independent_confirmation": false,
+  "decision_ranking_certified": false,
+  "limitations": "Adjacent positive rules are numerical diagnostics,not rigorous predictive error bounds or independent decisions. This is one development query;earlier paid projections remain."
+}

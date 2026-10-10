@@ -1,0 +1,18 @@
+{
+  "status": "frozen_before_cached_replay",
+  "closed_loop_records": "paper_artifacts/inventory_physical_risk_20261004/closed_loop.json",
+  "mean_priors": "paper_artifacts/inventory_physical_risk_20261004/mean_posterior_group.json",
+  "source_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+  "mean_selection": "frozen source-only posterior group choices; no target-dependent selection or variance adjustment",
+  "arms": ["repaired_mean_separate_risk", "repaired_joint", "repaired_joint_pooled"],
+  "paths": "all 24 existing paid paths on eight task laws, kept fixed; three paths per task are correlated diagnostics",
+  "checkpoints": [8, 24],
+  "joint_likelihood": "Gaussian sample mean marginalized over source-learned coefficients times exact log-sample-variance density; conditional coefficient posterior per risk particle",
+  "recommendation": "finite-particle joint verifier power times independent objective quality; existing independent Gaussian moment recommendation retained as a diagnostic",
+  "evaluation": "private oracle only after recommendations; no independent validation or new search",
+  "next_cost_budget_rule": "using only source records at the default public context: each source task's minimum observed mean cost plus z0.95 times sample sd across its four paid policies; common budget levels are 1, the 25th and 50th percentiles across eight source minima",
+  "new_episode_calls": 0,
+  "local_cpu_limit_seconds": 45,
+  "scientific_status": "development attribution, not prospective decision evidence; new budget levels use source observations only",
+  "dispatch": "local single thread only; no server jobs"
+}

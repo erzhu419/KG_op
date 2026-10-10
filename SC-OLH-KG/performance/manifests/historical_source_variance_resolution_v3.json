@@ -1,0 +1,66 @@
+{
+  "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+  "selection_plan": "performance/manifests/historical_source_structure_adaptation_v1.json",
+  "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+  "maps": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+  "development_states": "paper_artifacts/historical_prior_posterior_connection_v1/states.json",
+  "legacy_connection_plan": "performance/manifests/historical_prior_posterior_connection_v1.json",
+  "cost": {
+    "new_source_labels": 0,
+    "new_selector_fits": 0,
+    "new_covariance_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "mixture_lookahead": {
+    "status": "registered before mixed-source KG execution",
+    "maximum_single_thread_cpu_seconds_per_layout": 60,
+    "draw_power": 7,
+    "fantasy_power": 0,
+    "seed": 202610077,
+    "scope": "All six balanced4 actions on both cached states. One stratified predictive fantasy per complete identity tests full mixture interfaces;no numerical decision ranking. Fantasy updates use the actual paid filter and terminal evaluations retain positive components. No variance labels are invented. Source HOLD identities remain present with their flags,not dropped from comparisons."
+  },
+  "raw_learning_diagnostic": {
+    "entrypoint": "performance/connect_historical_raw_learning_scores.py",
+    "maximum_single_thread_cpu_seconds": 15,
+    "scope": "All64 heads;reuse old covariance score with correctly weighted retained moments for the three corrected cases and original unweighted moments for the29 unchanged cases. No optimizer or convergence claim."
+  },
+  "status": "registered with actual long-tail correction before completed joint-direction integrals",
+  "previous_source_registry": "paper_artifacts/historical_source_variance_resolution_v2/source_results.json",
+  "completed_source_registry": "paper_artifacts/historical_source_variance_resolution_v3/source_results.json",
+  "output": "paper_artifacts/historical_source_variance_resolution_v3",
+  "maximum_single_thread_cpu_seconds": 100,
+  "integration_maximum_single_thread_cpu_seconds": 30,
+  "tilt_sites_per_case": 3,
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 8192,
+    "seed": 202610081,
+    "joint_direction_sites": [
+      44,
+      16,
+      8
+    ]
+  },
+  "retained_mixture": {
+    "stride_per_chain": 1,
+    "components_per_arm": 1024,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "source_entrypoint": "performance/integrate_historical_joint_source_variance.py",
+  "integration_entrypoint": "performance/connect_complete_historical_reuse.py",
+  "scope": "Reuse all31 passed cases and all1024 unweighted tilted eta states of the remaining f5 case;no chains. Reuse historical quad_vec conditional integrator on the exact joint Gaussian direction q[:,8]/sqrt(q[8,8]). Integrate p*h times1/h with full response and risk first/second moments. Marginal residual weights are conditional E_{p*h}(1/h|residual),not pointwise weights. Original retained eta components retain their pointwise1/h weights. Diagnose four-chain ratio influence moments,central variance and normalizer on conditional expectations;retain all original Rhat/ESS/half-variance/mixture thresholds. Gaussian coordinate integration interval[-32,32] has an explicit actual endpoint-density check. No fit,law,source or target-data changes.",
+  "replay_rule": "Never resample completed cases on replay. Reuse saved source resolution results and resume missing cached KG actions. No new simulator or verifier calls.",
+  "integrated_source_site": 8,
+  "integration_batch_size": 32,
+  "gaussian_coordinate_bound": 32,
+  "boundary_failure": "First32 actual residuals exposed endpoint log density around -13.6 at+12;historical fixed12 bound was insufficient for this joint direction. Registered32 bound retains the same quadrature and endpoint tolerances."
+}

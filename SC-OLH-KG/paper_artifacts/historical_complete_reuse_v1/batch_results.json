@@ -1,0 +1,53 @@
+{
+  "execution_plan": "performance/manifests/historical_complete_reuse_v1.json",
+  "complete_cached_integration_replay_passed": true,
+  "source_posterior_usable_cases": 29,
+  "source_posterior_total_cases": 32,
+  "source_precision_status": "HOLD",
+  "complete_identities": 16,
+  "usable_complete_identities": 13,
+  "paired_response_risk_fields_connected": 32,
+  "scalar_heads_connected": 64,
+  "all_three_remaining_variance_integrals_complete": true,
+  "unique_tests_passed": 21,
+  "scientific_decision_ranking_status": "HOLD",
+  "independent_confirmation": false,
+  "legacy_evidence_retained": [
+    "performance/baselines/v51_observed_terminal_closure_evidence.json",
+    "paper_artifacts/legacy_frontend_evidence.json"
+  ],
+  "cost": {
+    "new_source_labels": 0,
+    "new_selector_fits": 0,
+    "new_covariance_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "remaining_source_failures": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "maximum_first_second_half_f_variance_relative_difference": 0.5069038731135286
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "maximum_first_second_half_f_variance_relative_difference": 0.5367321289721264
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "maximum_first_second_half_f_variance_relative_difference": 0.5056966498207269
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "status": "registered after fixed-marginal correlation rejection, before training-task paid adaptation forecasts or scores",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "deleted_mean_execution": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_execution_v1.json",
+  "correlation_validation": "paper_artifacts/legacy_joint_population_fixed_marginal_correlation_v1/results.json",
+  "layouts": ["5", "6"],
+  "parent_layouts": {"5": "3", "6": "4"},
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "mean_arms": ["joint_structural", "flat", "joint_gp"],
+  "paid_candidates": [0, 1],
+  "basis_of_next_step": "Fixed-marginal correlation loses whole-task density under both assignments. Its main loss is dependence, with gamma reaching1 when deleting task3. Native g marginal Mahalanobis ratios average .914/1.043. Return to independent-head priors and locate what the existing two-raw-observation adaptation does to unseen-policy prediction, using only the six training tasks and matched cached controls.",
+  "fit_rule": "No new function/risk/map fits. Reuse each five-task60-record native structural/flat mean law, matching60-record GP law, and matching40-record risk law/map. All exclude the entire task being adapted. Every arm uses the same single deleted-source risk law, rather than a full-source or nested deletion mixture.",
+  "query_coordinates": "Public inventory-control descriptors are identical across these related tasks by their declared interface. Verify this equality, then reuse each branch's complete73-policy public risk reference directly; recompute public mean coordinates with that branch's native normalization. Reproduce prior structural mean/variance at its12 scoring sites against the frozen independent whole-task forecasts. No hidden task geometry is a feature.",
+  "paid_rule": "Consume only first replicate of cached paired f/g at policies0/1, center g by task tau, and call the existing raw mean/risk moment filter exactly twice. No sample variance accompanies these individual paid updates.",
+  "scoring_rule": "Score only the task's registered12 source sites, disjoint from paid0/1, using their original three-repeat sufficient statistics. Compare prior versus paid forecasts on identical sites: observed f/g MSE, proper raw batch joint/head density, moment-band coverage and standardized residuals. Also report matched structural-minus-flat/GP changes in both assignments. Gaussian whole-task scores from the previous stage and these per-site raw batch scores are distinct metrics.",
+  "freeze_rule": "Save all36 prior and36 paid forecasts before any scored-site labels enter scoring calculations. The cached raw JSON also contains other observations: only the six training tasks' two paid observations are indexed before freezing. Reuse already-opened training outcomes only for diagnosis; do not index source holdouts6/7 or target outcomes.",
+  "decision_rule": "This is an attribution diagnostic, with no model selection, source improvement gate waiver, target experiment or KG/confirmation permission. Report each task, arm and assignment; do not tune paid sites or source laws after scores.",
+  "cost": {"source_calls_per_deleted_branch": 180, "risk_calls_already_included": 120, "paid_calls_per_task_and_arm": 2, "new_source_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "entrypoint": "performance/check_legacy_training_paid_adaptation.py",
+  "output": "paper_artifacts/legacy_joint_population_training_paid_adaptation_v1"
+}

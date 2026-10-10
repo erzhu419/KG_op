@@ -1,0 +1,95 @@
+{
+  "execution": {
+    "status": "registered before implementation and sampling",
+    "entrypoint": "performance/check_legacy_f_learned_covariance_source_update.py",
+    "Mstep_results": "paper_artifacts/legacy_joint_population_f_raw_covariance_mstep_v1/results.json",
+    "source_laws": "paper_artifacts/legacy_joint_population_f_raw_covariance_mstep_v1/source_laws.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+    "old_posterior_results": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json",
+    "reference_results": "paper_artifacts/legacy_joint_population_f_variance_reference_v1/results.json",
+    "references": "paper_artifacts/legacy_joint_population_f_variance_reference_v1/references.json",
+    "question": "After one source-only raw covariance M step,does a fresh raw posterior under each learned covariance meet the existing precision gates and support a retained positive mixture for subsequent transfer?",
+    "law": "Replace only Stage200 function population covariance and its common-latent covariance/cross-covariance by Stage205 learned values. Keep original48 raw means/sample variances,risk population law,coordinates,roster,centers and raw Gaussian/chi-square likelihood. Condition each raw label once. Stage202 variance-informed q remains an exactly compensated computational reference,not the eta prior.",
+    "sampler": {
+      "chains": 4,
+      "warmup_sweeps_per_chain": 512,
+      "retained_sweeps_per_chain": 1024,
+      "seed": 202610074
+    },
+    "monte_carlo_gate": {
+      "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+      "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+      "maximum_first_second_half_f_variance_relative_difference": 0.15
+    },
+    "retained_mixture": {
+      "stride_per_chain": 8,
+      "components_per_arm": 512,
+      "weights": "equal positive weights;original chain order;retained indices0,8,...,1016",
+      "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+      "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1,
+      "purpose": "Retain eta states rather than replace the source law by a single Gaussian. Reconstruct analytic conditional common function/risk heads from learned law and original raw labels. Store only eta states and sufficient moments,not per-component dense covariance files. A retained-mixture failure stops transfer;no extra draws or thinning search."
+    },
+    "verification": "Under each NEW covariance,compare collapsed f density and moments with direct Gaussian/precision expressions before sampling. Recheck the compensated-reference density identity with the learned covariance and original eta prior. Check one conditional common-latent projection against the direct shared-latent update,detecting a stale or incorrectly oriented cross-covariance. No repeat of settled scalar integrals.",
+    "decision": "Keep each precision or mixture failure. If all four pass,register an honest source-validation positive-mixture comparison,with the native mixture reference and same-source GP. One EM step remains a pilot,not a converged raw marginal-likelihood fit;no deployment or superiority claim.",
+    "maximum_single_thread_cpu_seconds": 40,
+    "cost": {
+      "new_source_labels": 0,
+      "new_source_coordinate_fits": 0,
+      "new_covariance_fits": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;four fixed source posterior runs;small JSON with fixed512 eta components per arm,no NPZ or server work",
+    "scope": "Original orthogonal,sparse,low-order,low-frequency constraints preserved. No source6/7,task0/task1,target,KG,independent confirmation or manuscript edits. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 2.2870594307278225e-14,
+      "precision_posterior_covariance_error": 6.952721716771155e-17,
+      "passed": true,
+      "compensated_density_identity_error": 7.958078640513122e-13,
+      "common_conditional_mean_identity_error": 7.840950111415168e-15,
+      "common_conditional_covariance_identity_error": 2.633256026424169e-17
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 2.015054789694659e-14,
+      "precision_posterior_covariance_error": 6.952605249740907e-17,
+      "passed": true,
+      "compensated_density_identity_error": 7.958078640513122e-13,
+      "common_conditional_mean_identity_error": 2.2426505097428162e-14,
+      "common_conditional_covariance_identity_error": 8.155910842522207e-17
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.7486012637846216e-14,
+      "precision_posterior_covariance_error": 8.036648603548802e-17,
+      "passed": true,
+      "compensated_density_identity_error": 1.9042545318370685e-12,
+      "common_conditional_mean_identity_error": 3.1086244689504383e-15,
+      "common_conditional_covariance_identity_error": 3.548051609458813e-17
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.5432100042289676e-14,
+      "precision_posterior_covariance_error": 8.093389223102999e-17,
+      "passed": true,
+      "compensated_density_identity_error": 1.8758328224066645e-12,
+      "common_conditional_mean_identity_error": 2.1316282072803006e-14,
+      "common_conditional_covariance_identity_error": 1.0619760279495516e-16
+    }
+  ],
+  "all_checks_passed_before_sampling": true
+}

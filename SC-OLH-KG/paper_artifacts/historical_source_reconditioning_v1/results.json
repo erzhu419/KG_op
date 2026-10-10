@@ -1,0 +1,412 @@
+{
+  "execution": {
+    "status": "registered before new-law source chains",
+    "entrypoint": "performance/recondition_historical_source_laws.py",
+    "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+    "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+    "covariance_results": "paper_artifacts/historical_source_covariance_adaptation_v1/results.json",
+    "failed_transport": "paper_artifacts/historical_source_covariance_adaptation_v1/transport.json",
+    "history": {
+      "pre_September_9": "ebf89cb0 OrthogonalHVD: source shape mixture and replication-aware scalar/IRLS calibration; e594964c ReplicationVarianceTaskPosterior: exact chi-square finite-expert refit. Reuse original replication density semantics. These are not the current48-dimensional raw source sampler.",
+      "Stage203": "performance/check_legacy_f_corrected_reference_source_update.py and paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json: four precision gates passed in4.36191506 CPU seconds;reuse compensated-reference collapsed sampler.",
+      "Stage206": "performance/check_legacy_f_learned_covariance_source_update.py: reuse new-law density/common-latent checks and fixed512 positive-mixture retention. Existing code and results are already in the workspace history;no new sampler or reference family."
+    },
+    "cases": "layout5/6 x spectral/additive x head_specific/joint x observed_task/deconvolved_task;16 matched f/eta_f laws in existing source_laws order",
+    "law": "Exactly the newly frozen unconditioned common/task source Gaussian laws and the original48 raw means/S^2 labels. Integrate f analytically and sample eta with the existing elliptical slice kernel against a density-compensated Gaussian variance reference. Reference log-variance likelihood cancels exactly. No old Gaussian source posterior is used as a prior,no old96 coefficient states are attached to new maps,and each original batch enters once.",
+    "shared_projection": "Reuse common_moments with common coefficient prior A,source design D and cross=A D'. Integrate both within-eta conditional covariance and between-eta conditional mean covariance. New-task residual covariance remains separately saved in the source law.",
+    "sampler": {
+      "chains": 4,
+      "warmup_sweeps_per_chain": 512,
+      "retained_sweeps_per_chain": 1024,
+      "seed": 202610077
+    },
+    "paired_randomness": "Same base random seed within each observed/deconvolved pair;independent seeds across four chains. No seed search.",
+    "monte_carlo_gate": {
+      "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+      "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+      "maximum_first_second_half_f_variance_relative_difference": 0.15
+    },
+    "precision_contract": "Reuse Stage203/206 fresh-chain gates. The earlier importance weight ESS>=200 criterion still fails and is retained;importance overlap and fresh-chain autocorrelation ESS are different diagnostics. Neither threshold is lowered for this experiment.",
+    "retained_mixture": {
+      "stride_per_chain": 8,
+      "components_per_arm": 512,
+      "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+      "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1,
+      "purpose": "Save only fixed positive eta states and small posterior summaries;reconstruct conditional covariance from source_laws later. Preserve failed retention cases;no thinning search."
+    },
+    "verification": "Before sampling,reuse verify_learned to compare each new-law collapsed raw density and conditional f moments with independent Gaussian/precision expressions,and shared-coefficient projection with a direct block solve. Verify the compensated reference density identity for that new eta law. A mismatch stops sampling;do not rerun settled scalar quadrature or all historical tests.",
+    "decision": "Complete the registered16 cases within the shared CPU cap. Keep all precision/retention failures and stop transfer if any fail. No additional chains,reference tuning,covariance fit,law ranking by failed evidence or target forecasts in this turn. Successful conditioning is source computation,not independent decision confirmation.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_labels": 0,
+      "new_covariance_fits": 0,
+      "new_selector_fits": 0,
+      "new_target_predictions": 0,
+      "new_simulator_calls": 0,
+      "new_verifier_calls": 0
+    },
+    "execution": "Local serial single-thread,existing small source JSON;process CPU interrupt covers preparation and elliptical iterations. No scheduler/server/pulls,task0/1,source6/7,KG fantasies or manuscript edits.",
+    "output": "paper_artifacts/historical_source_reconditioning_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0157502947314605,
+      "minimum_autocorrelation_ess": 259.17522054983124,
+      "maximum_first_second_half_f_variance_relative_difference": 0.09823408410241356,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4991,
+        4851,
+        4998,
+        4863
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.059750822394536884,
+      "retention_mean_rms_error_in_posterior_sd": 0.0028858573336458812,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_head_specific_observed_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0127949982808964,
+      "minimum_autocorrelation_ess": 424.7096468505793,
+      "maximum_first_second_half_f_variance_relative_difference": 0.13249300072392237,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4538,
+        4627,
+        4437,
+        4365
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.056960869209724985,
+      "retention_mean_rms_error_in_posterior_sd": 0.003571846350619621,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_head_specific_deconvolved_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0302855751991389,
+      "minimum_autocorrelation_ess": 224.7161854536101,
+      "maximum_first_second_half_f_variance_relative_difference": 0.09692376943967358,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5254,
+        5059,
+        4885,
+        5023
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.0391209349087267,
+      "retention_mean_rms_error_in_posterior_sd": 0.002480320296416075,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_joint_observed_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0164691213559138,
+      "minimum_autocorrelation_ess": 373.4596595941051,
+      "maximum_first_second_half_f_variance_relative_difference": 0.16262954921535255,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4970,
+        4630,
+        4828,
+        4751
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.058304422955708146,
+      "retention_mean_rms_error_in_posterior_sd": 0.00251556043185767,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_joint_deconvolved_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.02472031256569,
+      "minimum_autocorrelation_ess": 237.45765412457274,
+      "maximum_first_second_half_f_variance_relative_difference": 0.29001442725032894,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5310,
+        5471,
+        5087,
+        5446
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.07205637601596404,
+      "retention_mean_rms_error_in_posterior_sd": 0.0038785285813361468,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_head_specific_observed_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0251449623065563,
+      "minimum_autocorrelation_ess": 239.62813031043163,
+      "maximum_first_second_half_f_variance_relative_difference": 0.23263404077443622,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5099,
+        4990,
+        5216,
+        4902
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.10488119887446201,
+      "retention_mean_rms_error_in_posterior_sd": 0.0018723848683831587,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_head_specific_deconvolved_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0604557291810532,
+      "minimum_autocorrelation_ess": 91.55908251650207,
+      "maximum_first_second_half_f_variance_relative_difference": 0.5727905964896876,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4985,
+        5026,
+        5119,
+        5040
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.11148044254042833,
+      "retention_mean_rms_error_in_posterior_sd": 0.0036705899431253132,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_joint_observed_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0139249049318886,
+      "minimum_autocorrelation_ess": 382.6649288621214,
+      "maximum_first_second_half_f_variance_relative_difference": 0.13051630714494128,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4543,
+        4362,
+        4599,
+        4486
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.04017178738011584,
+      "retention_mean_rms_error_in_posterior_sd": 0.0027003794752007665,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_joint_deconvolved_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0296253444440748,
+      "minimum_autocorrelation_ess": 281.3029978928241,
+      "maximum_first_second_half_f_variance_relative_difference": 0.17402648649258803,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5380,
+        5116,
+        5222,
+        5251
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.03789469537358159,
+      "retention_mean_rms_error_in_posterior_sd": 0.002459982871156209,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_head_specific_observed_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0150399904678378,
+      "minimum_autocorrelation_ess": 300.5888534791857,
+      "maximum_first_second_half_f_variance_relative_difference": 0.0833202785429558,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4902,
+        5016,
+        4767,
+        4708
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.025912704889897498,
+      "retention_mean_rms_error_in_posterior_sd": 0.0021161324632320137,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_head_specific_deconvolved_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.022013603368717,
+      "minimum_autocorrelation_ess": 238.89719658478086,
+      "maximum_first_second_half_f_variance_relative_difference": 0.09080451815535384,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4888,
+        4980,
+        5196,
+        4910
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.043931109792828105,
+      "retention_mean_rms_error_in_posterior_sd": 0.0037746297962329162,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_joint_observed_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.015614928376786,
+      "minimum_autocorrelation_ess": 326.33657734587496,
+      "maximum_first_second_half_f_variance_relative_difference": 0.08350781860823517,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4677,
+        4754,
+        4606,
+        4640
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.03058156165733994,
+      "retention_mean_rms_error_in_posterior_sd": 0.002379150695113358,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_joint_deconvolved_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.041378864362394,
+      "minimum_autocorrelation_ess": 154.43215999493256,
+      "maximum_first_second_half_f_variance_relative_difference": 0.1258508211392593,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5131,
+        5447,
+        5559,
+        5402
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.03615365243226676,
+      "retention_mean_rms_error_in_posterior_sd": 0.0015353968091980823,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_head_specific_observed_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0200724637339948,
+      "minimum_autocorrelation_ess": 342.24478012430563,
+      "maximum_first_second_half_f_variance_relative_difference": 0.10510786376466828,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4780,
+        4797,
+        4972,
+        4999
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.03651646892447513,
+      "retention_mean_rms_error_in_posterior_sd": 0.0013386393668882134,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_head_specific_deconvolved_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0369569766864828,
+      "minimum_autocorrelation_ess": 133.4832275614606,
+      "maximum_first_second_half_f_variance_relative_difference": 0.29846561563670415,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5152,
+        5377,
+        5298,
+        5044
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.0483310766958156,
+      "retention_mean_rms_error_in_posterior_sd": 0.0019865324037506072,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_joint_observed_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": true,
+      "maximum_split_rhat": 1.0174779639496265,
+      "minimum_autocorrelation_ess": 300.21186718484256,
+      "maximum_first_second_half_f_variance_relative_difference": 0.12978767651164091,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4885,
+        5098,
+        5051,
+        5197
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.04377279807931944,
+      "retention_mean_rms_error_in_posterior_sd": 0.00341099066246214,
+      "source_posterior_usable": true,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_joint_deconvolved_task.json"
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "all_source_posterior_gates_passed": false,
+  "all_fixed_mixture_retention_gates_passed": true,
+  "all_source_posteriors_usable": false,
+  "usable_cases": 10,
+  "stopped_at_cpu_budget": false,
+  "stop_phase": null,
+  "cpu_seconds": 21.714257051,
+  "cost": {
+    "new_source_labels": 0,
+    "new_covariance_fits": 0,
+    "new_selector_fits": 0,
+    "new_target_predictions": 0,
+    "new_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "completed_chains": 64,
+    "completed_sweeps": 98304,
+    "completed_chain_likelihood_evaluations": 317953,
+    "retained_positive_components_per_completed_case": 512
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Historical source sampler reconditioned the new frozen f/eta_f laws. Original cached-proposal failures remain. Source posterior precision supplies no evidence normalizing constants,hyperparameter convergence,physical factor recovery or target decision advantage. Full g/eta_g conditioning remains outstanding."
+}

@@ -1,0 +1,79 @@
+{
+  "stage": "meta_prior_heterogeneous_covariance_a34_20261003",
+  "status": "source_covariance_validation_complete_regime_regressions_not_promoted",
+  "fixed_after_a33_before_any_a34_fit": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/preparation.json",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_joint_archive_target_a28_20261003/target_forecasts.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json"
+  ],
+  "cohort": {
+    "meta_training_seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "outer_seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ]
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "path_policies": [
+      "risk_ard_mixture",
+      "fixed_source"
+    ],
+    "steps": [
+      9,
+      24
+    ]
+  },
+  "question": "Does covariance learned from physically co-observed heterogeneous historical tasks predict held source-task risk better than the original local prior and a covariance-scale-matched full dictionary?",
+  "fit": "Four leave-pair-out fits. Each fit uses30 latent tasks from the other6 seeds, with both policy histories deduplicated as in A33. Within a task, precision-collapse distinct visits at the same candidate. Apply the unchanged fit_source_risk_ard marginal likelihood to eta labels only. Use the public96-point bank for seed48 for a common68-function normalization. Learn covariance and intercept, set all nonintercept means to zero. All five regimes enter without oracle support or regime-specific parameters.",
+  "prediction": "For each held source task, original local I retains its two source-trained structural/full components. Q has the same local components with masses1/4,1/4 plus the heterogeneous covariance M with mass1/2. G uses the same components/masses and replaces M by B: identical intercept, discrepancy and total nonintercept covariance trace, spread uniformly over all68 functions. Prefix-only Bayesian weights, no q or population-mass fitting. Report standalone M/B as diagnostics. f/g and conditional-sharing models are unchanged.",
+  "analysis": "Score only old paid steps9-24 on both fixed historical policy paths. Average policies within each latent task. Report Q-I and Q-G across all tasks and each regime, four outer seed-pair blocks,20,000 paired bootstrap resamples. Also report early/late differences, standalone M-I/B-I, optimizer convergence, learned high-frequency covariance mass and original-I reproduction. No source or target outcome is used to select a parameter or winning variant.",
+  "controls": "Training task keys must exclude each held pair completely. Repeated-policy records enter source learning once, distinct visits retain their known measurement noise. Original I forecasts must match A28. Generic B must preserve learned M total coefficient variance, intercept, discrepancy and zero nonintercept mean. Evaluation seeds56-63 and all recommendation/verification outcomes are absent from all fits and scoring.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 90,
+    "source_covariance_fits_max": 5,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "held_development_evaluation_paths_scored": 0
+  },
+  "admission": "After the first complete fold, project remaining3 folds and optional final fit with25 percent runtime margin and5 CPU seconds overhead. Stop if this exceeds90 CPU seconds. Retain any incomplete artifact; no automatic resubmission.",
+  "paired_bootstrap_seed": 20261111,
+  "gate": "Proceed to a final40-task covariance fit only if all four CV optimizers converged, overall Q-I and Q-G95 percent intervals are strictly positive, and no regime Q-I or Q-G interval is strictly negative. Passing supports only a source prediction candidate. Otherwise preserve the result and diagnose; no target/KG test.",
+  "next": "performance/meta_prior_heterogeneous_covariance_attribution_plan.json",
+  "limitations": "This is development source validation with only four independent pair blocks and adaptive historical input selection. Gaussian eta label likelihood approximates bias-corrected log-chi-square noise. Public finite dictionary and pooled diagonal function covariance do not establish HVD or operational superiority."
+}

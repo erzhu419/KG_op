@@ -1,0 +1,22 @@
+{
+  "status": "registered before reconditioning adjusted third-step candidates",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v2/results.json",
+  "previous_precision": "paper_artifacts/historical_raw_source_amplitude_learning_v2/phase_results.json",
+  "proposed_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v3/results.json",
+  "proposed_posterior_precision": "paper_artifacts/historical_raw_source_amplitude_learning_v3/posterior_precision.json",
+  "stationary_cases": [
+    {"layout":"5","selector":"additive","support":"head_specific","treatment":"deconvolved_task","head":"g"},
+    {"layout":"5","selector":"additive","support":"head_specific","treatment":"deconvolved_task","head":"f"},
+    {"layout":"6","selector":"additive","support":"head_specific","treatment":"deconvolved_task","head":"f"},
+    {"layout":"6","selector":"additive","support":"head_specific","treatment":"observed_task","head":"g"},
+    {"layout":"6","selector":"additive","support":"joint","treatment":"deconvolved_task","head":"g"},
+    {"layout":"5","selector":"spectral","support":"head_specific","treatment":"deconvolved_task","head":"f"}
+  ],
+  "required_consecutive_stationarity_iterations": 2,
+  "maximum_single_thread_cpu_seconds": 30,
+  "evidence_precision": {"minimum_importance_ESS": 100, "maximum_split_log_ratio_difference": 0.1},
+  "scope": "Preserve all six proposed mean-head split-Q failures. Their covariance change and scaled source score satisfy the original stationarity thresholds for two consecutive iterations. Retain their round2 parameters, producing exactly zero Q change; retain all58 qualified third-step proposals. Require positive full and split joint Q for all32 mean/risk pairs. Recompute only the six changed candidates' actual posterior and adjacent normalizers. The other26 candidate files are reused. No source law enters target evaluation.",
+  "cost": {"new_source_labels": 0, "new_source_MCMC_sweeps": 0, "new_Mstep_optimizations": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_stationary_source_continuation_v1"
+}

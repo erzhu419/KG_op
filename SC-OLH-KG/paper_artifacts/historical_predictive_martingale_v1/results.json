@@ -1,0 +1,95 @@
+{
+  "execution_plan": "performance/manifests/historical_predictive_martingale_v1.json",
+  "rows": [
+    {
+      "layout": "5",
+      "candidate": 7,
+      "fantasy_power": 3,
+      "fantasy_count": 64,
+      "maximum_inverse_cdf_error": 5.406709524535813e-10,
+      "maximum_adaptive_error_bound": 1.127415324331632e-12,
+      "maximum_posterior_weight_refinement_error": 7.939456281302881e-08,
+      "actual_paid_filter_reproduction_error": 2.3230071199975555e-09,
+      "model_weight_martingale_residual": [
+        -0.0004946379476250262,
+        -0.0008290726445743038,
+        0.014207148630687866,
+        0.006732025725168123,
+        -0.004565943739381455,
+        -0.004578348447533562,
+        -0.006128082743580093,
+        -0.00434308883316159
+      ],
+      "maximum_identity_martingale_residual": 0.014207148630687866,
+      "density_quadrature_adequate": true,
+      "precision_gate_passed": false,
+      "cpu_seconds": 9.057506109999999
+    },
+    {
+      "layout": "5",
+      "candidate": 7,
+      "fantasy_power": 4,
+      "fantasy_count": 128,
+      "maximum_inverse_cdf_error": 5.406709524535813e-10,
+      "maximum_adaptive_error_bound": 1.210408793468419e-12,
+      "maximum_posterior_weight_refinement_error": 7.939456281302881e-08,
+      "actual_paid_filter_reproduction_error": null,
+      "model_weight_martingale_residual": [
+        -0.00013037403386577037,
+        -0.00028311393456028483,
+        -0.0037599028429225467,
+        -0.0026856028723319103,
+        0.0012057514208806824,
+        0.0016508208264193816,
+        0.0021013479186790807,
+        0.0019010735177014126
+      ],
+      "maximum_identity_martingale_residual": 0.0037599028429225467,
+      "density_quadrature_adequate": true,
+      "precision_gate_passed": true,
+      "cpu_seconds": 15.842244081999999
+    },
+    {
+      "layout": "6",
+      "candidate": 4,
+      "fantasy_power": 3,
+      "fantasy_count": 64,
+      "maximum_inverse_cdf_error": 8.37108160567368e-14,
+      "maximum_adaptive_error_bound": 1.158532614865348e-12,
+      "maximum_posterior_weight_refinement_error": 3.8098864341140626e-15,
+      "actual_paid_filter_reproduction_error": 3.3306690738754696e-16,
+      "model_weight_martingale_residual": [
+        0.0034562032949862,
+        0.0038352223859274698,
+        -0.007452049199617006,
+        -0.006396727816914305,
+        -0.0012658497402103785,
+        -0.0012552414383094831,
+        0.004513184736169296,
+        0.004565257777968214
+      ],
+      "maximum_identity_martingale_residual": 0.007452049199617006,
+      "density_quadrature_adequate": true,
+      "precision_gate_passed": true,
+      "cpu_seconds": 7.6017962919999995
+    }
+  ],
+  "selected_fantasy_power": {
+    "5": 4,
+    "6": 3
+  },
+  "all_layouts_complete": true,
+  "stopped_at_cpu_budget": false,
+  "cpu_seconds": 35.849764505,
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "terminal_actions_evaluated": 0,
+  "full_fantasy_moment_updates": 0,
+  "scientific_model_ranking_authorized": false,
+  "independent_confirmation": false
+}

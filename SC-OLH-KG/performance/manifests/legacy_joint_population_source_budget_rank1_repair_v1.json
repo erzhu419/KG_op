@@ -1,0 +1,11 @@
+{
+  "status": "registered after the actual source-only head3 factorization failure, before target recommendations",
+  "source_fit": "paper_artifacts/legacy_joint_population_source_budget_v1/gp_anchor_fit.json",
+  "reached_case": "eta_f at16 sites has fitted signal variance0, discrepancy0, scalar-mean variance.014636397775062777; shared GP covariance is rank1, so its dense Cholesky fails",
+  "repair": "represent this exact constant shared mean by a single whitened Gaussian coefficient and its scalar posterior; retain the native residual RBF/intercept/discrepancy likelihood and target covariance",
+  "model_change": "none; no jitter, positive amplitude floor, discarded label or new hyperparameter fit",
+  "completion": "restore all previously converged cached fits; only execute the remaining generic joint head3; source iteration caps and objective unchanged",
+  "reached_terminal_case": "the completed head3 residual amplitude/intercept/discrepancy are all0, so eta_f has exactly shared constant posterior covariance; the terminal marginal dense Cholesky then fails",
+  "terminal_repair": "retain Cholesky for positive-definite fields and existing checked eigen square root for reached positive-semidefinite marginals; no statistical noise added and full-rank frozen sampling coordinates unchanged",
+  "new_simulator_call_cap": 0
+}

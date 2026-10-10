@@ -1,0 +1,246 @@
+{
+  "execution": {
+    "status": "frozen before two updated source-intercept integrals and positive quadrature rules",
+    "fitted_results": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1/results.json",
+    "fitted_laws": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1/source_laws.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "old_slice_results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+    "entrypoint": "performance/prepare_legacy_f_predictive_shape_reference.py",
+    "law": "Fix each source-predictive shape allocation q and its diagonal task shape covariance. Integrate nonnegative independent task-intercept variance v under the same coherent source Gaussian likelihood and conditional Jeffreys sqrt(I(v))dv as the retained mixture. Recondition common beta/H at every v;keep original common A,empirical center,spectrum/support union,1% tail,discrepancy and known label noise. No variance floor,upper cutoff or averaged-Gaussian adoption.",
+    "numerics": "Reuse old source-only likelihood-slice upper point solely as an integration split;it is not a restriction of the new variance posterior. Reuse verified full-tail scalar/vector integration and positive adaptive-u composite rules. First passing4/8/16 nodes per adaptive interval;later raw prediction uses unchanged32-node refinement.",
+    "quadrature": {
+      "relative_tolerance": 1e-08,
+      "absolute_tolerance_for_scaled_integrals": 1e-09,
+      "maximum_subintervals": 128
+    },
+    "posterior_quantile_probabilities": [
+      0.025,
+      0.5,
+      0.975
+    ],
+    "dense_verification_deleted_task": 1,
+    "dense_verification_variance_over_source_signal": 0.1,
+    "nodes_per_subinterval_resolutions": [
+      4,
+      8,
+      16
+    ],
+    "tolerances": {
+      "raw_mass_absolute": 1e-08,
+      "mean_variance_relative": 1e-06,
+      "coefficient_mean_max_absolute": 1e-08,
+      "common_covariance_relative_frobenius": 1e-06,
+      "second_moment_extra_relative": 1e-06
+    },
+    "verification": "Updated fitted source NLL,beta/H reproduced at original independent intercept point;dense interior likelihood/Fisher/beta/H agree. Scalar/vector full-tail integration and positive-rule moments must pass original numerical criteria. Failure preserves artifacts and stops prediction preparation.",
+    "cost": {
+      "new_source_fits": 0,
+      "maximum_source_variance_integrations": 2,
+      "new_outer_query_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;source training JSON only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_predictive_shape_reference_v1",
+    "decision": "Two verified source rules permit a separately frozen two-task1 pilot at both fixed public and already-frozen old source-greedy four-prefixes. All controls,numerical tolerances and scientific gates stay;no prefix reselection or source6/7,target,KG,confirmation,manuscript changes. Complete-model HOLD remains."
+  },
+  "rows": [
+    {
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 3.780945079229659e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 9.567046102286185e-05,
+        "standard_deviation": 0.00034340179198461636,
+        "quantiles": {
+          "0.025": 4.612481334829407e-06,
+          "0.5": 5.000690222699179e-05,
+          "0.975": 0.0004478165774820221
+        },
+        "normalization_integral": 0.004999579933336182,
+        "normalization_absolute_error": 1.1027937929489624e-12,
+        "normalization_relative_error": 2.2057729002305926e-10,
+        "normalized_vector_integral_error": 1.0568701511784265e-09,
+        "normalized_mass_error": 1.1057821325266559e-13,
+        "normalized_vector_evaluations": 1785
+      },
+      "posterior_task_intercept_standard_deviation": 0.00978112779912735,
+      "mean_variance_over_native": 2.5303319413027294,
+      "stage105_slice_upper_variance": 0.00010470703069046978,
+      "posterior_mass_above_stage105_slice_upper": 0.23617109044584117,
+      "common_mean_bank_rms_change": 0.00010722133732816568,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00012873844267107456,
+        "integrated": 0.0001412767414002443
+      },
+      "public_average_common_level_variance": {
+        "native": 1.2762737351578272e-05,
+        "integrated": 2.4338888597742737e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.5243002601366822e-09,
+      "scalar_quadrature_evaluations": 3759,
+      "maximum_scalar_quadrature_error": 1.1779704288061839e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true,
+        "interior_physical_variance": 0.0020021252176237866,
+        "interior_total_nll_error": 4.547473508864641e-13,
+        "interior_fisher_relative_error": 2.55351295663786e-15
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true,
+      "layout": "5",
+      "deleted_task": 1,
+      "quadrature": {
+        "base_errors": {
+          "raw_mass_absolute_error": 1.0680345496894006e-13,
+          "mean_variance_relative_error": 1.0835776720341528e-13,
+          "coefficient_mean_max_absolute_error": 1.9255430583342559e-16,
+          "common_covariance_relative_frobenius_error": 1.8366558815619098e-14,
+          "second_moment_absolute_error": 1.3860691083048839e-14
+        },
+        "base_passed": true,
+        "adaptive_vector_error": 4.02571661242844e-11,
+        "trials": [
+          {
+            "nodes_per_interval": 4,
+            "node_count": 44,
+            "errors": {
+              "raw_mass_absolute_error": 0.00016503110047794145,
+              "mean_variance_relative_error": 0.00023823175485682135,
+              "coefficient_mean_max_absolute_error": 2.724303737825645e-07,
+              "common_covariance_relative_frobenius_error": 3.307725264989717e-05,
+              "second_moment_absolute_error": 1.3274841972960538e-11
+            },
+            "passed": false
+          },
+          {
+            "nodes_per_interval": 8,
+            "node_count": 88,
+            "errors": {
+              "raw_mass_absolute_error": 1.1709544223137414e-08,
+              "mean_variance_relative_error": 5.021527749171639e-09,
+              "coefficient_mean_max_absolute_error": 1.706215550789647e-11,
+              "common_covariance_relative_frobenius_error": 1.8093086084687318e-09,
+              "second_moment_absolute_error": 1.099337240413686e-14
+            },
+            "passed": false
+          },
+          {
+            "nodes_per_interval": 16,
+            "node_count": 176,
+            "errors": {
+              "raw_mass_absolute_error": 1.0680345496894006e-13,
+              "mean_variance_relative_error": 1.0835776720341528e-13,
+              "coefficient_mean_max_absolute_error": 1.9255430583342559e-16,
+              "common_covariance_relative_frobenius_error": 1.8366558815619098e-14,
+              "second_moment_absolute_error": 1.3860691083048839e-14
+            },
+            "passed": true
+          }
+        ],
+        "selected_node_count": 176
+      }
+    },
+    {
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.0,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 3.348825704972086e-05,
+        "standard_deviation": 0.00015133773047097513,
+        "quantiles": {
+          "0.025": 4.252283129066674e-07,
+          "0.5": 1.378213485786624e-05,
+          "0.975": 0.00017893595287607052
+        },
+        "normalization_integral": 0.0008339864651498625,
+        "normalization_absolute_error": 3.177615601729133e-14,
+        "normalization_relative_error": 3.8101524838992846e-11,
+        "normalized_vector_integral_error": 1.2376559194043653e-09,
+        "normalized_mass_error": 2.020605904817785e-14,
+        "normalized_vector_evaluations": 1638
+      },
+      "posterior_task_intercept_standard_deviation": 0.00578690392608352,
+      "mean_variance_over_native": null,
+      "stage105_slice_upper_variance": 1.4935879453708563e-05,
+      "posterior_mass_above_stage105_slice_upper": 0.4763855596305966,
+      "common_mean_bank_rms_change": 0.0009831462978907013,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00011636344292390107,
+        "integrated": 0.00012703709227691363
+      },
+      "public_average_common_level_variance": {
+        "native": 5.788491619574425e-06,
+        "integrated": 1.2710424327643837e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 4.03292401300131e-08,
+      "scalar_quadrature_evaluations": 4704,
+      "maximum_scalar_quadrature_error": 6.060158948609489e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true,
+        "interior_physical_variance": 0.0020021252176237866,
+        "interior_total_nll_error": 8.526512829121202e-14,
+        "interior_fisher_relative_error": 1.4765966227514582e-14
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true,
+      "layout": "6",
+      "deleted_task": 1,
+      "quadrature": {
+        "base_errors": {
+          "raw_mass_absolute_error": 1.6209256159527285e-14,
+          "mean_variance_relative_error": 1.3988810110276972e-14,
+          "coefficient_mean_max_absolute_error": 5.551115123125783e-17,
+          "common_covariance_relative_frobenius_error": 8.037325440703397e-16,
+          "second_moment_absolute_error": 1.4093744254243257e-14
+        },
+        "base_passed": true,
+        "adaptive_vector_error": 2.0771226923636927e-10,
+        "trials": [
+          {
+            "nodes_per_interval": 4,
+            "node_count": 48,
+            "errors": {
+              "raw_mass_absolute_error": 0.00022974496075445217,
+              "mean_variance_relative_error": 0.00035043952270719103,
+              "coefficient_mean_max_absolute_error": 3.338299404713127e-07,
+              "common_covariance_relative_frobenius_error": 2.226674772146448e-05,
+              "second_moment_absolute_error": 4.025220471862535e-12
+            },
+            "passed": false
+          },
+          {
+            "nodes_per_interval": 8,
+            "node_count": 96,
+            "errors": {
+              "raw_mass_absolute_error": 1.6764377663847085e-09,
+              "mean_variance_relative_error": 7.08766290102858e-09,
+              "coefficient_mean_max_absolute_error": 3.5476940829504144e-11,
+              "common_covariance_relative_frobenius_error": 2.7267195966303505e-09,
+              "second_moment_absolute_error": 1.3877562705500001e-14
+            },
+            "passed": true
+          }
+        ],
+        "selected_node_count": 96
+      }
+    }
+  ],
+  "both_source_integrals_and_rules_verified": true,
+  "cpu_seconds": 0.23102257999999998,
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_source_variance_integrations": 2,
+    "new_outer_query_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_source_variance_integrations": 2
+  },
+  "no_model_adopted": true,
+  "outer_query_paid_or_score_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

@@ -1,0 +1,728 @@
+{
+  "execution": {
+    "status": "frozen after both global compression coordinates failed; before composite positive source-rule construction",
+    "reference_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_integration_execution_v1.json",
+    "reference_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+    "reference_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/source_laws.json",
+    "law": "Same original native conditional Jeffreys posterior over physical task-intercept v, with source common beta/H conditioned at each v. No source parameter refit or added variance.",
+    "construction": "Reuse the adaptive u=sqrt(1-q) partition resolving the whole physical variance posterior. Use positive Gauss-Legendre rules with4,8,16 nodes per subinterval, taking the first rule passing the original source-only tolerances. Save the16-node-per-interval base rule and adaptive intervals for predictive refinement.",
+    "adaptive_positive_rule": "Use the exact u=sqrt(1-q) coordinate on0\u20131, v=source_signal*(1-u^2)/u^2 with Jacobian2*source_signal/u^3. The scaled second moment has a finite endpoint limit at u=0 for T=5 and tends to zero for T=6. Use source native/slice upper points transformed into u, adapt the same vector, and apply16 positive Gauss-Legendre nodes per resulting interval. No cutoff or prior change.",
+    "resolution_rule": "Use the first composite resolution meeting every original source-only tolerance. No Gaussian compression, clipping or tail removal. Freeze all14 rules before any query data. Any future predictive comparison requires its own numerical adequacy check.",
+    "tolerances": {
+      "raw_mass_absolute": 1e-08,
+      "mean_variance_relative": 1e-06,
+      "coefficient_mean_max_absolute": 1e-08,
+      "common_covariance_relative_frobenius": 1e-06,
+      "second_moment_extra_relative": 1e-06
+    },
+    "second_moment_bound": "Compare second moment with Stage111 allowing its declared normalized vector error times source_signal^2, plus the new numerical tolerance. The rare tail is included; do not silently alter its variance.",
+    "quadrature": {
+      "relative_tolerance": 1e-08,
+      "absolute_tolerance_for_scaled_integrals": 1e-09,
+      "maximum_subintervals": 128
+    },
+    "interpretation": "A validated compressed rule enables the existing raw Bayesian mixture update to learn component weights after target observations at much lower cost. Moment agreement is a source quadrature check, not a prediction or deployment claim. Future predictive numerical adequacy still needs the registered development comparison.",
+    "next_action": "If all14 source rules verify, separately register the original12 five-source development forecasts with coherent variance-mixture weights, unchanged eta_f and two paid records. No point-Gaussian covariance inflation or retuning of rejected common candidates. Keep source6/7, target/KG and confirmation closed.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1",
+    "planned_entrypoint": "performance/prepare_legacy_f_task_level_reference_quadrature.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_plan_v1.json",
+    "entrypoint": "performance/prepare_legacy_f_task_level_reference_quadrature.py",
+    "previous_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_execution_v3.json",
+    "numerical_failure": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/numerical_failure_v1.json",
+    "compression_coordinate": "Global median and weakest-eigenvalue compression attempts are retained as numerical failures; not used in the selected source rule.",
+    "incomplete_previous_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/results_execution_v3.json",
+    "nodes_per_subinterval_resolutions": [
+      4,
+      8,
+      16
+    ]
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": null,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 2.475894819013667e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 8.215650382226158e-15,
+        "mean_variance_relative_error": 8.659739592076221e-15,
+        "coefficient_mean_max_absolute_error": 1.1102230246251565e-16,
+        "common_covariance_relative_frobenius_error": 6.319308299890577e-15,
+        "second_moment_absolute_error": 1.3965455717855277e-19
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.00019961778133847918,
+            "mean_variance_relative_error": 0.00025519666698614607,
+            "coefficient_mean_max_absolute_error": 3.438894343732457e-07,
+            "common_covariance_relative_frobenius_error": 6.96373343828298e-05,
+            "second_moment_absolute_error": 3.176205483688004e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 7.3463778393900725e-09,
+            "mean_variance_relative_error": 1.7714562927650945e-08,
+            "coefficient_mean_max_absolute_error": 2.1961067686593339e-10,
+            "common_covariance_relative_frobenius_error": 1.129277964220225e-08,
+            "second_moment_absolute_error": 1.1879774992793287e-15
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 88
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 2.09575606406718e-13,
+      "base_errors": {
+        "raw_mass_absolute_error": 9.707790127322369e-13,
+        "mean_variance_relative_error": 9.64117674584486e-13,
+        "coefficient_mean_max_absolute_error": 5.676015213396113e-15,
+        "common_covariance_relative_frobenius_error": 8.58941937188185e-13,
+        "second_moment_absolute_error": 1.2218659269523017e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 48,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 5.563969479593922e-06,
+            "mean_variance_relative_error": 1.2506054679173317e-05,
+            "coefficient_mean_max_absolute_error": 1.5332069905338308e-08,
+            "common_covariance_relative_frobenius_error": 5.412833398932689e-06,
+            "second_moment_absolute_error": 6.32781232202068e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 96,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 5.96480198566951e-10,
+            "mean_variance_relative_error": 4.829625588342878e-10,
+            "coefficient_mean_max_absolute_error": 6.239869732027614e-13,
+            "common_covariance_relative_frobenius_error": 2.8425080203292837e-10,
+            "second_moment_absolute_error": 9.80711686989974e-16
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 96
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 5.027302372648333e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 1.0791367799356522e-13,
+        "mean_variance_relative_error": 1.0957901253050295e-13,
+        "coefficient_mean_max_absolute_error": 1.960237527853792e-16,
+        "common_covariance_relative_frobenius_error": 1.958335747052453e-14,
+        "second_moment_absolute_error": 1.3992150675872045e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.00015840553855273054,
+            "mean_variance_relative_error": 0.00023377269603130912,
+            "coefficient_mean_max_absolute_error": 3.052516000662253e-07,
+            "common_covariance_relative_frobenius_error": 3.317476592536704e-05,
+            "second_moment_absolute_error": 1.255813806017605e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 1.0609397582683755e-08,
+            "mean_variance_relative_error": 3.6476619502678886e-09,
+            "coefficient_mean_max_absolute_error": 2.097515217069912e-11,
+            "common_covariance_relative_frobenius_error": 2.5471968008599054e-09,
+            "second_moment_absolute_error": 1.1237697416646028e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 176,
+          "nodes_per_subinterval": 16,
+          "errors": {
+            "raw_mass_absolute_error": 1.0791367799356522e-13,
+            "mean_variance_relative_error": 1.0957901253050295e-13,
+            "coefficient_mean_max_absolute_error": 1.960237527853792e-16,
+            "common_covariance_relative_frobenius_error": 1.958335747052453e-14,
+            "second_moment_absolute_error": 1.3992150675872045e-14
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 176
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 2.535636219961782e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 7.340794638821535e-13,
+        "mean_variance_relative_error": 7.328582185550658e-13,
+        "coefficient_mean_max_absolute_error": 3.1563293645398005e-15,
+        "common_covariance_relative_frobenius_error": 5.243509596395736e-13,
+        "second_moment_absolute_error": 8.981536408463194e-15
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.0001047459528217276,
+            "mean_variance_relative_error": 0.00010691079548785787,
+            "coefficient_mean_max_absolute_error": 6.724148460951485e-08,
+            "common_covariance_relative_frobenius_error": 4.6159515810260155e-05,
+            "second_moment_absolute_error": 3.0522559953121445e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 2.5389179647561377e-08,
+            "mean_variance_relative_error": 2.345792471381003e-08,
+            "coefficient_mean_max_absolute_error": 7.580591016020932e-11,
+            "common_covariance_relative_frobenius_error": 2.1017483520955988e-08,
+            "second_moment_absolute_error": 2.0846384298445696e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 176,
+          "nodes_per_subinterval": 16,
+          "errors": {
+            "raw_mass_absolute_error": 7.340794638821535e-13,
+            "mean_variance_relative_error": 7.328582185550658e-13,
+            "coefficient_mean_max_absolute_error": 3.1563293645398005e-15,
+            "common_covariance_relative_frobenius_error": 5.243509596395736e-13,
+            "second_moment_absolute_error": 8.981536408463194e-15
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 176
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 1.2437559345366892e-09,
+      "base_errors": {
+        "raw_mass_absolute_error": 9.983125437429408e-13,
+        "mean_variance_relative_error": 1.0023093466315913e-12,
+        "coefficient_mean_max_absolute_error": 5.419276138951545e-15,
+        "common_covariance_relative_frobenius_error": 7.263063471040356e-13,
+        "second_moment_absolute_error": 1.2581318331714077e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.0005207234242273762,
+            "mean_variance_relative_error": 0.0005869235808084738,
+            "coefficient_mean_max_absolute_error": 1.4134814708965937e-07,
+            "common_covariance_relative_frobenius_error": 0.000229179670836496,
+            "second_moment_absolute_error": 4.942707779360272e-10
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 8.946091156758484e-08,
+            "mean_variance_relative_error": 7.324555184595738e-09,
+            "coefficient_mean_max_absolute_error": 1.9532290368440286e-10,
+            "common_covariance_relative_frobenius_error": 4.038498204464749e-09,
+            "second_moment_absolute_error": 9.297497210195233e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 176,
+          "nodes_per_subinterval": 16,
+          "errors": {
+            "raw_mass_absolute_error": 9.983125437429408e-13,
+            "mean_variance_relative_error": 1.0023093466315913e-12,
+            "coefficient_mean_max_absolute_error": 5.419276138951545e-15,
+            "common_covariance_relative_frobenius_error": 7.263063471040356e-13,
+            "second_moment_absolute_error": 1.2581318331714077e-14
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 176
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 5.501264189045064e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 4.873879078104437e-13,
+        "mean_variance_relative_error": 4.866107516932061e-13,
+        "coefficient_mean_max_absolute_error": 1.700029006457271e-15,
+        "common_covariance_relative_frobenius_error": 1.9190361921932563e-13,
+        "second_moment_absolute_error": 1.65949719879382e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.00013206397002518688,
+            "mean_variance_relative_error": 0.00015605841253552022,
+            "coefficient_mean_max_absolute_error": 3.20466831136082e-08,
+            "common_covariance_relative_frobenius_error": 4.7065536119614304e-05,
+            "second_moment_absolute_error": 3.701417149676246e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 5.208115716470729e-09,
+            "mean_variance_relative_error": 2.882551530802857e-09,
+            "coefficient_mean_max_absolute_error": 3.523419750406376e-11,
+            "common_covariance_relative_frobenius_error": 4.083797231879589e-09,
+            "second_moment_absolute_error": 8.01054728327916e-15
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 88
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 2.3426285838018035e-13,
+      "base_errors": {
+        "raw_mass_absolute_error": 8.497647030480948e-13,
+        "mean_variance_relative_error": 8.5131901528257e-13,
+        "coefficient_mean_max_absolute_error": 4.1494585545365226e-15,
+        "common_covariance_relative_frobenius_error": 5.204799128877142e-13,
+        "second_moment_absolute_error": 1.0891261020628358e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 48,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 1.0184891342968072e-05,
+            "mean_variance_relative_error": 1.9016683275419055e-05,
+            "coefficient_mean_max_absolute_error": 1.649772179979081e-08,
+            "common_covariance_relative_frobenius_error": 7.709419990274302e-06,
+            "second_moment_absolute_error": 5.2497582484608557e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 96,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 9.25246324001705e-10,
+            "mean_variance_relative_error": 7.322404904641644e-10,
+            "coefficient_mean_max_absolute_error": 7.272932256441322e-13,
+            "common_covariance_relative_frobenius_error": 3.633630655365335e-10,
+            "second_moment_absolute_error": 3.2781742069693844e-16
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 96
+    },
+    {
+      "layout": "6",
+      "deleted_task": null,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 7.974496582654621e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 1.1102230246251565e-15,
+        "mean_variance_relative_error": 1.5543122344752192e-15,
+        "coefficient_mean_max_absolute_error": 5.551115123125783e-17,
+        "common_covariance_relative_frobenius_error": 1.8664555845589936e-15,
+        "second_moment_absolute_error": 1.0654086289682996e-19
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.00022814069996601738,
+            "mean_variance_relative_error": 0.00030466355914282595,
+            "coefficient_mean_max_absolute_error": 2.542166315927519e-07,
+            "common_covariance_relative_frobenius_error": 7.587546659744371e-05,
+            "second_moment_absolute_error": 2.94187690245487e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 1.833731921863091e-08,
+            "mean_variance_relative_error": 6.724210521724672e-09,
+            "coefficient_mean_max_absolute_error": 6.795227575073781e-11,
+            "common_covariance_relative_frobenius_error": 4.88533083159218e-09,
+            "second_moment_absolute_error": 2.160562685998896e-15
+          },
+          "passed": false
+        },
+        {
+          "node_count": 176,
+          "nodes_per_subinterval": 16,
+          "errors": {
+            "raw_mass_absolute_error": 1.1102230246251565e-15,
+            "mean_variance_relative_error": 1.5543122344752192e-15,
+            "coefficient_mean_max_absolute_error": 5.551115123125783e-17,
+            "common_covariance_relative_frobenius_error": 1.8664555845589936e-15,
+            "second_moment_absolute_error": 1.0654086289682996e-19
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 176
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 3.933344987681848e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 7.502887200416808e-13,
+        "mean_variance_relative_error": 7.459588502456427e-13,
+        "coefficient_mean_max_absolute_error": 5.8494875609937935e-15,
+        "common_covariance_relative_frobenius_error": 8.157588801514753e-13,
+        "second_moment_absolute_error": 1.774936428675176e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 6.069557933419123e-05,
+            "mean_variance_relative_error": 6.534778958577903e-05,
+            "coefficient_mean_max_absolute_error": 1.920234597302395e-07,
+            "common_covariance_relative_frobenius_error": 4.137864135997419e-05,
+            "second_moment_absolute_error": 4.5822209829531594e-12
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 1.8162615855743525e-09,
+            "mean_variance_relative_error": 7.841662874596977e-10,
+            "coefficient_mean_max_absolute_error": 1.0483843654318648e-10,
+            "common_covariance_relative_frobenius_error": 1.2261766022742258e-08,
+            "second_moment_absolute_error": 1.090811221171839e-14
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 88
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 2.1870608788219488e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 1.4876988529977098e-14,
+        "mean_variance_relative_error": 1.3211653993039363e-14,
+        "coefficient_mean_max_absolute_error": 6.938893903907228e-18,
+        "common_covariance_relative_frobenius_error": 7.450747192405741e-16,
+        "second_moment_absolute_error": 1.355984901474399e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 48,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.0002387260993022,
+            "mean_variance_relative_error": 0.0003648244254939037,
+            "coefficient_mean_max_absolute_error": 3.579506691712975e-07,
+            "common_covariance_relative_frobenius_error": 2.2829644152644132e-05,
+            "second_moment_absolute_error": 4.090265272468305e-12
+          },
+          "passed": false
+        },
+        {
+          "node_count": 96,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 1.4084020616422777e-09,
+            "mean_variance_relative_error": 7.1969785686576415e-09,
+            "coefficient_mean_max_absolute_error": 3.879039017079533e-11,
+            "common_covariance_relative_frobenius_error": 2.7885627296812866e-09,
+            "second_moment_absolute_error": 1.3345266644352816e-14
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 96
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 3.241247615870489e-12,
+      "base_errors": {
+        "raw_mass_absolute_error": 6.066258606551855e-13,
+        "mean_variance_relative_error": 6.061817714453355e-13,
+        "coefficient_mean_max_absolute_error": 5.800915303666443e-15,
+        "common_covariance_relative_frobenius_error": 7.903381496400699e-13,
+        "second_moment_absolute_error": 1.431767901649881e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 3.491233793051496e-05,
+            "mean_variance_relative_error": 4.9446055620405716e-05,
+            "coefficient_mean_max_absolute_error": 1.8545610963593973e-07,
+            "common_covariance_relative_frobenius_error": 2.4381874602392736e-05,
+            "second_moment_absolute_error": 1.9938559909222337e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 5.811056746907184e-09,
+            "mean_variance_relative_error": 5.009446635284576e-09,
+            "coefficient_mean_max_absolute_error": 1.5643791817510078e-11,
+            "common_covariance_relative_frobenius_error": 2.9202772267548816e-09,
+            "second_moment_absolute_error": 3.692041598898769e-15
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 88
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 1.1823418108719967e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 7.420730696594546e-13,
+        "mean_variance_relative_error": 7.442935157087049e-13,
+        "coefficient_mean_max_absolute_error": 5.037636974236648e-15,
+        "common_covariance_relative_frobenius_error": 6.488254759476727e-13,
+        "second_moment_absolute_error": 9.084073770134827e-15
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 8.931019728286582e-05,
+            "mean_variance_relative_error": 9.287560165449626e-05,
+            "coefficient_mean_max_absolute_error": 1.0797335411177889e-07,
+            "common_covariance_relative_frobenius_error": 4.29560483251061e-05,
+            "second_moment_absolute_error": 1.8317425332147345e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 1.6514800749156677e-08,
+            "mean_variance_relative_error": 1.5263027952627795e-08,
+            "coefficient_mean_max_absolute_error": 8.610531038177882e-11,
+            "common_covariance_relative_frobenius_error": 1.6766576094843974e-08,
+            "second_moment_absolute_error": 1.3917550710732126e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 176,
+          "nodes_per_subinterval": 16,
+          "errors": {
+            "raw_mass_absolute_error": 7.420730696594546e-13,
+            "mean_variance_relative_error": 7.442935157087049e-13,
+            "coefficient_mean_max_absolute_error": 5.037636974236648e-15,
+            "common_covariance_relative_frobenius_error": 6.488254759476727e-13,
+            "second_moment_absolute_error": 9.084073770134827e-15
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 176
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 9.189970484159166e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 5.992983886926595e-13,
+        "mean_variance_relative_error": 6.031841692788475e-13,
+        "coefficient_mean_max_absolute_error": 3.524958103184872e-15,
+        "common_covariance_relative_frobenius_error": 3.9332206603351935e-13,
+        "second_moment_absolute_error": 1.440949167050878e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 44,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 0.00010552722754619825,
+            "mean_variance_relative_error": 0.00011717068047167878,
+            "coefficient_mean_max_absolute_error": 8.358878492153998e-08,
+            "common_covariance_relative_frobenius_error": 4.1131431156655425e-05,
+            "second_moment_absolute_error": 2.635243601241593e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 88,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 8.869963985524976e-09,
+            "mean_variance_relative_error": 8.509150273283694e-09,
+            "coefficient_mean_max_absolute_error": 7.553854070030397e-11,
+            "common_covariance_relative_frobenius_error": 1.0942738047868209e-08,
+            "second_moment_absolute_error": 1.3305455903925962e-14
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 88
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 1.9238709689260578e-13,
+      "base_errors": {
+        "raw_mass_absolute_error": 9.00834962180852e-13,
+        "mean_variance_relative_error": 9.0427665355719e-13,
+        "coefficient_mean_max_absolute_error": 5.662137425588298e-15,
+        "common_covariance_relative_frobenius_error": 8.998878113111329e-13,
+        "second_moment_absolute_error": 1.1013048688334002e-14
+      },
+      "base_rule_passed": true,
+      "composite_trials": [
+        {
+          "node_count": 48,
+          "nodes_per_subinterval": 4,
+          "errors": {
+            "raw_mass_absolute_error": 8.077108436532754e-06,
+            "mean_variance_relative_error": 1.580130663203505e-05,
+            "coefficient_mean_max_absolute_error": 1.9922519321757814e-08,
+            "common_covariance_relative_frobenius_error": 7.120447252882465e-06,
+            "second_moment_absolute_error": 5.745381754533543e-11
+          },
+          "passed": false
+        },
+        {
+          "node_count": 96,
+          "nodes_per_subinterval": 8,
+          "errors": {
+            "raw_mass_absolute_error": 7.370024590613866e-10,
+            "mean_variance_relative_error": 5.884082110441113e-10,
+            "coefficient_mean_max_absolute_error": 5.399292124508293e-13,
+            "common_covariance_relative_frobenius_error": 3.4174890257963997e-10,
+            "second_moment_absolute_error": 1.0132801038119019e-16
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true,
+      "selected_node_count": 96
+    }
+  ],
+  "all14_source_rules_complete": true,
+  "no_model_adopted": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.25488110699999994,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

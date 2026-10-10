@@ -1,0 +1,36 @@
+{
+  "status": "completed;predictive derivatives pass;task amplitude has largest covariance sensitivity",
+  "entrypoint": "performance/diagnose_legacy_f_source_predictive_information.py",
+  "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "source_probe_results": "paper_artifacts/legacy_joint_population_f_source_spectral_uncertainty_v1/results.json",
+  "information_results": "paper_artifacts/legacy_joint_population_f_joint_spectral_information_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "query_task": 0,
+  "question": "Which remaining source parameters have uncertainty that matters for public predictive mean/shape,conditional on the original source templates/support?",
+  "calculation": "Hold task exponent at its original boundary4. Use the saved expected Fisher3x3 for the interior common root amplitude/common exponent/task root amplitude and the exact derivatives of coherently source-conditioned beta and H+R. Report J I^-1 J^T as a local predictive-information diagnostic,with correlations;also report each fixed-other-parameter tangent. It is not a hyperparameter posterior or calibrated variance correction. All templates,tails,center,white and original source label noise remain fixed.",
+  "verification": "Reproduce source point states from Stage185. Verify NEW derivatives of predictive beta and H+R against central differences for the first canonical source case,all three interior parameters. PSD of local sensitivity covariance and its covariance identity. Stop on mismatch without changing tolerances;do not rerun old likelihood gradient checks.",
+  "derivative_step": 1e-05,
+  "derivative_tolerances": {
+    "absolute": 1e-08,
+    "relative": 1e-05
+  },
+  "freeze": "Only the same four source identities and48 source mean labels;outcome-free public73 reference. No query paid/future values or score arrays indexed.",
+  "decision": "Use predictive relevance to select the next source-only uncertainty calculation,if warranted. If common exponent dominates,properly integrate it jointly with the task exponent on their original[0,4] domains before any raw pilot. If amplitudes dominate,design proper amplitude priors rather than applying this local tangent as a deployed covariance. No task1-driven scale choice.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "maximum_source_conditionings": 8,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON;no server jobs or pulls",
+  "scope": "Conditional source information only. Retained native intercept mixture remains reference;point-spectral candidate stopped;complete-model HOLD. No source6/7,target,independent confirmation,KG or manuscript change.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_predictive_information_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_predictive_information_v1/results.json",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

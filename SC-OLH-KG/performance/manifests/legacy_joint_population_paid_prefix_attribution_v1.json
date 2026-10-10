@@ -1,0 +1,22 @@
+{
+  "status": "registered after common-function-mean attribution, before prefix recommendations",
+  "inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+  "kernel_population_fit": "paper_artifacts/legacy_joint_population_kernel_mean_v1/source_fit.json",
+  "output": "paper_artifacts/legacy_joint_population_paid_prefix_v1",
+  "arms": ["joint_population_structural", "joint_population_full", "joint_population_rbf_shared_raw"],
+  "prefixes": [2, 4],
+  "total_target_call_cap": 362,
+  "scientific_question": "under a common learned functional mean, does purchasing the next two fixed initialization observations improve safe deployment relative to stopping after two?",
+  "source_fit": "restore completed frozen structural/full parameters and the new generic joint GP; no source optimization",
+  "observations": "same existing bank indices0,1 for stopping, then2,3 for fixed sampling; same cached raw records for all arms; no fresh simulator calls",
+  "retention": "select the common fixed-covariance reference recommendation using only the first two paid observations and sources; no stage20 four-point retained candidate reuse",
+  "terminal_class": "build the complete73-primary class and observed support roster from the first two observations only; retain that identical roster and common recommendation at both prefixes; debit2 or4 before all guarded/direct budgets",
+  "recommendation_barrier": "save all36 actions before opening cached scoring truth; do not choose query points or priors from scores",
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "new_simulator_call_cap": 0,
+  "execution": "reuse small local JSON, local serial single-thread; no source refit, scheduler, server dispatch or pulls",
+  "interpretation": "opened-task conditional paid-fixed-query attribution; this is neither adaptive KG nor fresh independent certification, and the fixed two-point support roster differs from the original stage20 four-point roster"
+}

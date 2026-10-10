@@ -1,0 +1,14 @@
+{
+  "status": "frozen before two source5 fits and task1 forecasts",
+  "plan": "performance/manifests/legacy_joint_population_f_outer_joint_spectral_geometry_plan_v1.json",
+  "entrypoint": "performance/check_legacy_f_outer_joint_spectral_geometry.py",
+  "control_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+  "design_results": "paper_artifacts/legacy_joint_population_f_source_information_design_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "layouts": ["5", "6"],
+  "designs": ["fixed_public_prefix"],
+  "arms": ["source_gp"],
+  "note": "arms/source_gp identifies the two existing Gaussian prior/risk prototypes for reproduction only. The new forecast arm is joint_spectral_geometry. All retained-mixture/native-point/GP paid controls are reused without replay.",
+  "output": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1"
+}

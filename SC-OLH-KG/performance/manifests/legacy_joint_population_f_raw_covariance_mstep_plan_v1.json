@@ -1,0 +1,43 @@
+{
+  "status": "completed;all four optimizers and full/split source Q improvement gates passed;fresh posterior completed separately",
+  "score_results": "paper_artifacts/legacy_joint_population_f_raw_source_covariance_score_v1/results.json",
+  "source_posterior_results": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+  "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "arms": [
+    "joint_spectral_geometry",
+    "source_gp"
+  ],
+  "question": "Does one Monte Carlo EM covariance-learning step under the original-source raw likelihood improve its source-only expected complete-data objective while retaining the structural core and equal-information GP control?",
+  "objective": "Use Stage203 posterior sufficient moments E[(f-m)(f-m)^T] from the ORIGINAL48 raw source batches. Minimize Q(theta)=.5/48*(48log(2pi)+logdet K(theta)+trace(K(theta)^-1 E[(f-m)(f-m)^T])). This is the expected negative Gaussian f-prior log density in the same hierarchical raw source model,with the eta law fixed. No new posterior draws or labels needed for this ONE M step. Posterior means and covariance include the between-eta term. Do not mistake Q improvement for verified marginal raw likelihood improvement.",
+  "parameters": "Structural: ORIGINAL common/task root amplitudes and spectral exponents,p in[0,4];source-derived correlation templates,active support,order2,orthogonal basis,separate positive tails,intercept variances,white discrepancy and center fixed. GP: ORIGINAL common/task RBF amplitudes,task intercept and white discrepancy;lengthscales,common intercept,normalization and center fixed. Four parameters per arm;nonnegative original amplitude bounds,including exact zeros. Risk population law/coordinate remain fixed empirical source estimates.",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "verification": "At original parameters,the new Q gradient must reproduce Stage204 raw score at1e-8 before optimization. Retain PSD/positive-tail and original support properties. Singular GP latent covariance on its allowed zero-amplitude boundary has infinite Q for the full-rank posterior sufficient statistic;handle that as its mathematical objective domain,without a jitter/floor or relaxed bounds. Record each reached optimizer and projected gradient. Reached Q must improve versus old parameters in the full posterior and separately in BOTH split posterior moment summaries. Stop any nonconverged or split-failing candidate without extra optimization restarts.",
+  "decision": "If all four source M-step candidates pass,register a fresh original-source raw posterior update under the learned covariances,then an honest development predictive-mixture comparison. Do not attach current old-posterior moments to the new covariance as if already reconditioned. No Gaussian collapse for paid target updates,no covariance selection by held-task MSE,and no outer task1 or independent confirmation.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "maximum_new_covariance_Mstep_optimizations": 4,
+    "new_source_labels": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_coordinate_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;posterior sufficient moments and original covariance derivatives only;small JSON,no NPZ or server work",
+  "scope": "Source covariance-learning pilot under the raw likelihood,not a complete EM fit or decision improvement. Original orthogonal,sparse,low-order,low-frequency prior constraints remain. Earlier sampler/candidate failures retained;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_covariance_mstep_v1",
+  "entrypoint": "performance/check_legacy_f_raw_covariance_mstep.py",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_covariance_mstep_v1/results.json",
+  "numerical_optimization_coordinates": "Optimize theta_j/initial_theta_j for positive starting parameters,and unit scale for zero starts. This changes numerical units only,preserves all original bounds/exact zeros,and is fixed before optimization. Record gradients in both coordinates."
+}

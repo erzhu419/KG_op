@@ -1,0 +1,43 @@
+{
+  "status": "completed;covariance probe improves both layouts;mean probe does not;no probe adopted",
+  "mixture_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "mixture_profiles": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/calibration_profiles.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_reference_budget_attribution_v1/results.json",
+  "controls_profiles": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "episode_count": 8,
+  "probes": [
+    "gp_source_mean",
+    "gp_source_covariance"
+  ],
+  "prior_intervention": "Construct the same Stage123 source f variance components from cached deleted-task source rules. In gp_source_mean replace each component's initial f mean function with the same five-source GP mean,keeping its f covariance and variance weights. In gp_source_covariance retain component f means and weights but replace each initial f covariance by the same five-source GP covariance. Both preserve the original eta_f mean/covariance,zero initial f/eta cross covariance,source-var weights and original raw update. These are valid function-prior moment probes,not coherently refitted source population A/R laws or candidate algorithms.",
+  "contract": "Use cached selected-source GP fits trained on the same five tasks/60 labels/180 calls. Copy frozen Stage121 eight-policy prefixes and original12 scoring sites. No source6/7 or target outcomes. No new fits,source laws,source policies or hyperparameters. Freeze source identities,prefixes and GP prior moments before paid values;freeze all24 selected/refined forecasts before score labels.",
+  "verification": "Source task/label counts5/60 and query-task exclusion must match. Initial eta_f moments remain identical to Stage123. Selected quadrature versus32 nodes per original source-adaptive interval must satisfy Stage113 mean/covariance/evidence tolerances for every probe/fold at eight episodes. Refine proper raw densities for both task1 probes in both layouts. A numerical failure blocks scientific interpretation without changing source posterior or gates.",
+  "comparison": "Reuse original eight-episode mixture and sourceGP controls without replay. Report every task,task1 and other5 for MSE,proper raw density,Gaussian moment transcript score and actual mixture transcript score. A probe improves original mixture only if mean MSE nonincrease,raw density strict improvement and moment transcript score nondecrease hold in both layouts. GP comparisons are descriptive;no probe is adopted even if it wins.",
+  "decision": "Determine whether source-derived mean functions,covariance functions,or their interaction merit the next coherent source-fitting intervention within the original orthogonal/sparse/low-order/low-frequency model. Prior swaps can alter variance-weight learning and eta adaptation;they do not identify causal physical factors. Preserve the positive Stage113 result and failed complete model gate. No target/KG/confirmation or manuscript changes.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON inputs only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_reference_prior_transplant_v1",
+  "planned_entrypoint": "performance/check_legacy_f_reference_prior_transplant.py",
+  "entrypoint_status": "implemented and completed",
+  "results": "paper_artifacts/legacy_joint_population_f_reference_prior_transplant_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_sparse_task_template_plan_v1.json"
+}

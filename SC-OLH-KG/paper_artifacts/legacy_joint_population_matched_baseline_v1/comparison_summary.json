@@ -1,0 +1,220 @@
+{
+  "scope": "six opened cached tasks; conditional expectations, not new deployment observations",
+  "rows": [
+    {
+      "arm": "common_mean_structural",
+      "conditional_safe_reward": 0.474702183572044,
+      "conditional_total_calls": 296.17562832174417
+    },
+    {
+      "arm": "joint_population_structural",
+      "conditional_safe_reward": 0.8041242665586169,
+      "conditional_total_calls": 262.85209461135
+    },
+    {
+      "arm": "joint_population_full",
+      "conditional_safe_reward": 0.7986381038632272,
+      "conditional_total_calls": 232.5943760773391
+    },
+    {
+      "arm": "target_only_public_rbf_raw",
+      "conditional_safe_reward": 0.4122516313928906,
+      "conditional_total_calls": 314.7634782550134
+    },
+    {
+      "arm": "official_hyperbo_prior_shared_raw",
+      "conditional_safe_reward": 0.4661060592790622,
+      "conditional_total_calls": 311.3835535682433
+    },
+    {
+      "arm": "known_label_noise_rbf_prior_shared_raw",
+      "conditional_safe_reward": 0.4986900539247426,
+      "conditional_total_calls": 306.2800816799135
+    }
+  ],
+  "new_simulator_calls": 0,
+  "paired_comparisons": [
+    {
+      "arm": "joint_population_structural",
+      "reference": "target_only_public_rbf_raw",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.4160901987975931,
+            0.005503577693274031,
+            -2.0822643587159462e-07,
+            0.6488370575871963,
+            0.4743641229513313,
+            0.8064410621913991
+          ],
+          "mean_difference": 0.3918726351657263,
+          "task_bootstrap_95_interval": [
+            0.1493262124604818,
+            0.6237894395253961
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            -64.73460825274765,
+            11.200411708847355,
+            0.23522404050225987,
+            -81.9999880756879,
+            -45.169348035556254,
+            -130.99999324733832
+          ],
+          "mean_difference": -51.91138364366342,
+          "task_bootstrap_95_interval": [
+            -91.34554734431252,
+            -14.505447464934113
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": "official_hyperbo_prior_shared_raw",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.4160901987975931,
+            0.004465122997170834,
+            -2.0822643587159462e-07,
+            0.6488370575871963,
+            0.1522760103304054,
+            0.8064410621913991
+          ],
+          "mean_difference": 0.33801820727955484,
+          "task_bootstrap_95_interval": [
+            0.0962160064449114,
+            0.5932321814863252
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            -64.73460825274765,
+            0.001312354866570331,
+            0.23522404050225987,
+            -81.9999880756879,
+            -13.690700560954895,
+            -130.99999324733832
+          ],
+          "mean_difference": -48.531458956893324,
+          "task_bootstrap_95_interval": [
+            -89.70063322143459,
+            -12.992039337160813
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": "joint_population_full",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0329165002429187,
+            3.5800701014832015e-07,
+            -3.3935535492801705e-09,
+            0.0,
+            1.2131596394127087e-07,
+            0.0
+          ],
+          "mean_difference": 0.0054861626953898734,
+          "task_bootstrap_95_interval": [
+            1.908814280711842e-08,
+            0.016458309223702117
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            34.28462587172919,
+            49.00102958548811,
+            49.26067576653145,
+            0.0,
+            48.99997998031674,
+            0.0
+          ],
+          "mean_difference": 30.257718534010916,
+          "task_bootstrap_95_interval": [
+            13.880767642007655,
+            46.63466942601417
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": "known_label_noise_rbf_prior_shared_raw",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.22147959099494285,
+            0.004465122997170834,
+            -0.0008960071740936604,
+            0.6488394964634214,
+            0.1522760103304054,
+            0.8064410621913991
+          ],
+          "mean_difference": 0.3054342126338743,
+          "task_bootstrap_95_interval": [
+            0.06526934888567193,
+            0.5621191172830716
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            -33.87474368978735,
+            0.001312354866570331,
+            -0.005083030720186343,
+            -81.99871423744662,
+            -13.690700560954895,
+            -130.99999324733832
+          ],
+          "mean_difference": -43.42798706856346,
+          "task_bootstrap_95_interval": [
+            -84.8120208857304,
+            -7.92883093374158
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": "joint_population_full",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0329165002429187,
+            3.5800701014832015e-07,
+            -3.3935535492801705e-09,
+            0.0,
+            1.2131596394127087e-07,
+            0.0
+          ],
+          "mean_difference": 0.0054861626953898734,
+          "task_bootstrap_95_interval": [
+            1.908814280711842e-08,
+            0.016458309223702117
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            34.28462587172919,
+            49.00102958548811,
+            49.26067576653145,
+            0.0,
+            48.99997998031674,
+            0.0
+          ],
+          "mean_difference": 30.257718534010916,
+          "task_bootstrap_95_interval": [
+            13.880767642007655,
+            46.63466942601417
+          ]
+        }
+      }
+    }
+  ],
+  "source_fit_cpu_seconds": 418.773851454,
+  "comparison_cpu_seconds": 156.760020262
+}

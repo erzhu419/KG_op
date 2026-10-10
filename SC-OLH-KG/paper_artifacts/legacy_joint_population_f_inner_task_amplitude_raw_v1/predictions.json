@@ -1,0 +1,577 @@
+{
+  "execution": {
+    "status": "frozen after two verified full-support amplitude posteriors;before raw forecasts",
+    "entrypoint": "performance/check_legacy_f_inner_task_amplitude_raw.py",
+    "source_amplitude_plan": "performance/manifests/legacy_joint_population_f_source_task_amplitude_uncertainty_plan_v1.json",
+    "source_amplitude_results": "paper_artifacts/legacy_joint_population_f_source_task_amplitude_uncertainty_v1/results.json",
+    "control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+    "point_control_results": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_raw_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "query_tasks": [
+      0
+    ],
+    "paid_prefix": [
+      0,
+      1,
+      29,
+      58
+    ],
+    "controls": [
+      "joint_spectral_geometry",
+      "native_mixture",
+      "source_gp"
+    ],
+    "metrics": [
+      "f_mse",
+      "f_raw_batch_density",
+      "sequential_transcript_density",
+      "actual_mixture_transcript_density"
+    ],
+    "law": "Use only the frozen source4 half-Cauchy amplitude laws;retain all64/128 source-conditioned components through the same Gaussian within-component raw moment filter. No between-component projection,pruning or rescaling. Reuse identical honest source4 eta_f law and fixed-prefix/query score coordinates. The original common parameters and task p=4 remain fixed. This is conditional amplitude uncertainty,not the full hyperparameter posterior or physical risk factor recovery.",
+    "freeze": "Reconstruct source quadrature likelihoods/weights from the same48 means and reproduce their saved laws;all four selected/refined priors frozen before cached paid values. All four forecasts frozen before the same eight cached future batches. Four raw episodes,144 historical source mean calls;96 risk calls are a subset. Query0 absent from its source roster and outer task1 excluded.",
+    "verification": "Selected16 versus refined32 per CDF interval:mean max<=1e-7,covariance relative Frobenius<=1e-5,paid evidence absolute<=1e-6. Future proper raw density and both transcript scores must differ<=1e-6;MSE difference<=1e-9. Preserve failures,stop without scientific interpretation on numerical mismatch. Original raw integrators' bounds unchanged.",
+    "prediction_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "score_tolerances": {
+      "f_mse": 1e-09,
+      "f_raw_batch_density": 1e-06,
+      "sequential_transcript_density": 1e-06,
+      "actual_mixture_transcript_density": 1e-06
+    },
+    "decision": "Screen for a complete tenfold inner comparison only:both canonical pilots must improve raw density or MSE against the stopped point law,and neither may worsen all three original metrics. Otherwise stop forecasts and diagnose cached differences. No outer task1 expansion on two pilots,even if screening passes. Native-mixture/GP comparisons and actual mixture transcript are reported without replacing the original gate.",
+    "maximum_single_thread_cpu_seconds": 60,
+    "cost": {
+      "new_source_optimizations": 0,
+      "source_component_reconstructions": 384,
+      "new_raw_forecasts": 2,
+      "new_numerical_reference_forecasts": 2,
+      "reused_control_forecasts": 6,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached JSON and four compact score-site NPZ;no server work or pulls",
+    "scope": "Repeated inner development only. Retained native mixture remains reference;old point-spectral candidate stopped;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript changes.",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_task_amplitude_raw_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "order_per_interval": 16,
+      "component_count": 64,
+      "prediction": {
+        "mean": [
+          0.3146950038135812,
+          0.295114463243442,
+          0.6478061385358301,
+          0.4959783860375194,
+          0.40687400625357284,
+          0.4905328316114326,
+          0.3377878399856934,
+          0.34738700162996344
+        ],
+        "covariance": [
+          [
+            0.0004344385117595737,
+            0.00021942057711236463,
+            -1.1029519745416873e-05,
+            -1.1458496125027211e-06,
+            0.00019433797805698408,
+            -6.953090674362026e-06,
+            0.00010603937323614602,
+            0.00014608462915294626
+          ],
+          [
+            0.00021942057711236463,
+            0.0002378936773273884,
+            -6.386490209125476e-07,
+            1.5022176085731475e-05,
+            0.0001552234502094142,
+            -2.0736626855766924e-06,
+            5.4803153848549985e-05,
+            0.0001020258657046117
+          ],
+          [
+            -1.1029519745416873e-05,
+            -6.386490209125476e-07,
+            0.00011322773118061745,
+            4.608048301959681e-05,
+            1.8229600622807686e-05,
+            -7.73220788966435e-06,
+            1.7580231511225966e-05,
+            -2.5953839036344427e-05
+          ],
+          [
+            -1.1458496125027211e-06,
+            1.5022176085731475e-05,
+            4.608048301959681e-05,
+            0.00010260745960867646,
+            3.086162171933846e-05,
+            -6.069984213775089e-06,
+            2.409880192581838e-05,
+            -3.162098837099167e-05
+          ],
+          [
+            0.00019433797805698408,
+            0.00015522345020941417,
+            1.8229600622807686e-05,
+            3.086162171933846e-05,
+            0.0003709637157741276,
+            -2.562494611974375e-05,
+            -1.7081071924679307e-06,
+            0.0001275886230547537
+          ],
+          [
+            -6.953090674362026e-06,
+            -2.0736626855766924e-06,
+            -7.73220788966435e-06,
+            -6.069984213775089e-06,
+            -2.562494611974375e-05,
+            0.0002209576902762945,
+            -1.6659928140864357e-05,
+            4.19351197535978e-05
+          ],
+          [
+            0.00010603937323614602,
+            5.4803153848549985e-05,
+            1.7580231511225966e-05,
+            2.409880192581838e-05,
+            -1.7081071924679307e-06,
+            -1.6659928140864357e-05,
+            0.0002673323954241541,
+            2.7409044289826433e-05
+          ],
+          [
+            0.00014608462915294626,
+            0.0001020258657046117,
+            -2.5953839036344427e-05,
+            -3.162098837099167e-05,
+            0.0001275886230547537,
+            4.19351197535978e-05,
+            2.7409044289826433e-05,
+            0.0002470855907840423
+          ]
+        ],
+        "paid_predictive_log_score": 10.844463023976163
+      },
+      "component_file": "layout5_task0_order16.npz",
+      "max_raw_integration_error": 1.4083024459374276e-11
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "order_per_interval": 32,
+      "component_count": 128,
+      "prediction": {
+        "mean": [
+          0.31469500381358284,
+          0.2951144632434444,
+          0.6478061385358308,
+          0.49597838603751954,
+          0.4068740062535779,
+          0.4905328316114312,
+          0.3377878399856925,
+          0.3473870016299637
+        ],
+        "covariance": [
+          [
+            0.00043443851175952255,
+            0.00021942057711233634,
+            -1.1029519745412265e-05,
+            -1.1458496125002258e-06,
+            0.000194337978056954,
+            -6.953090674348507e-06,
+            0.00010603937323612379,
+            0.00014608462915292566
+          ],
+          [
+            0.00021942057711233634,
+            0.00023789367732737142,
+            -6.3864902090887e-07,
+            1.5022176085734973e-05,
+            0.00015522345020939113,
+            -2.073662685565735e-06,
+            5.480315384854121e-05,
+            0.00010202586570460114
+          ],
+          [
+            -1.1029519745412265e-05,
+            -6.3864902090887e-07,
+            0.00011322773118061416,
+            4.608048301959681e-05,
+            1.8229600622811206e-05,
+            -7.732207889662932e-06,
+            1.758023151122491e-05,
+            -2.595383903634056e-05
+          ],
+          [
+            -1.1458496125002258e-06,
+            1.5022176085734973e-05,
+            4.608048301959681e-05,
+            0.00010260745960867416,
+            3.08616217193384e-05,
+            -6.0699842137736245e-06,
+            2.409880192581751e-05,
+            -3.162098837098703e-05
+          ],
+          [
+            0.000194337978056954,
+            0.00015522345020939113,
+            1.8229600622811206e-05,
+            3.08616217193384e-05,
+            0.0003709637157740918,
+            -2.562494611973193e-05,
+            -1.7081071924738858e-06,
+            0.000127588623054732
+          ],
+          [
+            -6.953090674348507e-06,
+            -2.0736626855657348e-06,
+            -7.732207889662932e-06,
+            -6.0699842137736245e-06,
+            -2.562494611973193e-05,
+            0.00022095769027628492,
+            -1.665992814085667e-05,
+            4.193511975359653e-05
+          ],
+          [
+            0.00010603937323612379,
+            5.480315384854121e-05,
+            1.758023151122491e-05,
+            2.409880192581751e-05,
+            -1.7081071924738858e-06,
+            -1.665992814085667e-05,
+            0.00026733239542413214,
+            2.7409044289827697e-05
+          ],
+          [
+            0.00014608462915292566,
+            0.00010202586570460114,
+            -2.595383903634056e-05,
+            -3.162098837098703e-05,
+            0.000127588623054732,
+            4.193511975359653e-05,
+            2.7409044289827697e-05,
+            0.00024708559078401673
+          ]
+        ],
+        "paid_predictive_log_score": 10.844463023976228
+      },
+      "component_file": "layout5_task0_order32.npz",
+      "max_raw_integration_error": 1.049928913358558e-11
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "order_per_interval": 16,
+      "component_count": 64,
+      "prediction": {
+        "mean": [
+          0.2981821126608,
+          0.3101798539958522,
+          0.3590044524216721,
+          0.40653856535948907,
+          0.3797896080030131,
+          0.4427231190007394,
+          0.45133432432868764,
+          0.382369860896304
+        ],
+        "covariance": [
+          [
+            0.00012655110654518828,
+            0.00013173888660348275,
+            2.3197605256657807e-05,
+            9.61784645413699e-05,
+            1.814735275251575e-05,
+            9.600769619322281e-05,
+            4.022050548059914e-06,
+            1.3790749564221257e-05
+          ],
+          [
+            0.00013173888660348275,
+            0.00028390523802021756,
+            -1.6493740888388816e-06,
+            0.00011478979771166936,
+            -3.52857709902556e-05,
+            0.0001087392548653283,
+            -3.8221593081198267e-05,
+            1.7464101034153087e-05
+          ],
+          [
+            2.3197605256657807e-05,
+            -1.6493740888388816e-06,
+            7.491353508883108e-05,
+            1.0028480153318412e-05,
+            4.956446762728559e-05,
+            1.9572405067791353e-05,
+            4.911620285349138e-05,
+            1.6642327544121794e-05
+          ],
+          [
+            9.61784645413699e-05,
+            0.00011478979771166936,
+            1.0028480153318412e-05,
+            0.0002477200048321665,
+            5.499446986712826e-05,
+            0.00023164274584959265,
+            5.0547486954252226e-05,
+            -1.9775665477713394e-05
+          ],
+          [
+            1.814735275251575e-05,
+            -3.52857709902556e-05,
+            4.956446762728559e-05,
+            5.499446986712826e-05,
+            0.00020347963197384775,
+            6.842353380143886e-05,
+            0.00015711016694405455,
+            1.798062709187792e-05
+          ],
+          [
+            9.600769619322281e-05,
+            0.0001087392548653283,
+            1.9572405067791353e-05,
+            0.00023164274584959265,
+            6.842353380143886e-05,
+            0.0003160764690452284,
+            8.40925575324005e-05,
+            -2.2010109196805824e-05
+          ],
+          [
+            4.022050548059914e-06,
+            -3.8221593081198267e-05,
+            4.911620285349138e-05,
+            5.0547486954252226e-05,
+            0.00015711016694405455,
+            8.40925575324005e-05,
+            0.00024193474509162877,
+            1.0788604546475482e-05
+          ],
+          [
+            1.3790749564221257e-05,
+            1.7464101034153087e-05,
+            1.6642327544121794e-05,
+            -1.9775665477713394e-05,
+            1.798062709187792e-05,
+            -2.2010109196805824e-05,
+            1.0788604546475482e-05,
+            8.01068276726552e-05
+          ]
+        ],
+        "paid_predictive_log_score": 10.9976140433951
+      },
+      "component_file": "layout6_task0_order16.npz",
+      "max_raw_integration_error": 2.88519005136216e-12
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "arm": "task_amplitude_mixture",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "order_per_interval": 32,
+      "component_count": 128,
+      "prediction": {
+        "mean": [
+          0.29818211266080097,
+          0.3101798539958546,
+          0.35900445242167306,
+          0.40653856535948846,
+          0.3797896080030146,
+          0.44272311900074207,
+          0.45133432432869075,
+          0.38236986089630354
+        ],
+        "covariance": [
+          [
+            0.00012655110654519465,
+            0.00013173888660348825,
+            2.3197605256657488e-05,
+            9.617846454137385e-05,
+            1.8147352752515716e-05,
+            9.600769619322749e-05,
+            4.02205054805974e-06,
+            1.3790749564221506e-05
+          ],
+          [
+            0.00013173888660348825,
+            0.00028390523802022656,
+            -1.6493740888398864e-06,
+            0.00011478979771167544,
+            -3.528577099025467e-05,
+            0.00010873925486533887,
+            -3.82215930811963e-05,
+            1.746410103415209e-05
+          ],
+          [
+            2.3197605256657488e-05,
+            -1.6493740888398864e-06,
+            7.491353508882547e-05,
+            1.002848015331441e-05,
+            4.9564467627283814e-05,
+            1.957240506778676e-05,
+            4.911620285348872e-05,
+            1.6642327544119775e-05
+          ],
+          [
+            9.617846454137385e-05,
+            0.00011478979771167544,
+            1.002848015331441e-05,
+            0.0002477200048321584,
+            5.4994469867129724e-05,
+            0.00023164274584959183,
+            5.054748695425343e-05,
+            -1.9775665477715895e-05
+          ],
+          [
+            1.8147352752515716e-05,
+            -3.528577099025467e-05,
+            4.9564467627283814e-05,
+            5.4994469867129724e-05,
+            0.00020347963197384859,
+            6.842353380143889e-05,
+            0.00015711016694405617,
+            1.798062709187968e-05
+          ],
+          [
+            9.600769619322749e-05,
+            0.00010873925486533887,
+            1.957240506778676e-05,
+            0.00023164274584959183,
+            6.842353380143889e-05,
+            0.0003160764690452314,
+            8.409255753240465e-05,
+            -2.2010109196806607e-05
+          ],
+          [
+            4.02205054805974e-06,
+            -3.82215930811963e-05,
+            4.911620285348872e-05,
+            5.054748695425343e-05,
+            0.00015711016694405617,
+            8.409255753240465e-05,
+            0.00024193474509163188,
+            1.0788604546473065e-05
+          ],
+          [
+            1.3790749564221506e-05,
+            1.746410103415209e-05,
+            1.6642327544119775e-05,
+            -1.9775665477715895e-05,
+            1.798062709187968e-05,
+            -2.2010109196806607e-05,
+            1.0788604546473065e-05,
+            8.010682767265339e-05
+          ]
+        ],
+        "paid_predictive_log_score": 10.997614043395187
+      },
+      "component_file": "layout6_task0_order32.npz",
+      "max_raw_integration_error": 2.8855175096862044e-12
+    }
+  ],
+  "all_forecasts_frozen_before_score_labels": true,
+  "numerical_checks": [
+    {
+      "layout": "5",
+      "query_task": 0,
+      "prediction_errors": {
+        "mean_max_absolute": 5.051514762044462e-15,
+        "covariance_relative_frobenius": 1.2279858012873185e-13,
+        "paid_log_evidence_absolute": 6.572520305780927e-14
+      },
+      "prediction_passed": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "prediction_errors": {
+        "mean_max_absolute": 3.1086244689504383e-15,
+        "covariance_relative_frobenius": 3.5153803044541103e-14,
+        "paid_log_evidence_absolute": 8.704148513061227e-14
+      },
+      "prediction_passed": true
+    }
+  ]
+}

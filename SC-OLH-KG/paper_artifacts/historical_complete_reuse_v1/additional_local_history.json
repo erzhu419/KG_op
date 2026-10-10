@@ -1,0 +1,136 @@
+{
+  "origin": "local reflog outside branch graph",
+  "snapshots": [
+    {
+      "commit": "66ae3d8569015ba38f9e4844aebfb4c8bf7ce50a",
+      "changed_text_versions_fully_read": [
+        {
+          "path": "SC-OLH-KG/docs/final_method_contract.md",
+          "bytes_read": 4640,
+          "lines_read": 109
+        },
+        {
+          "path": "SC-OLH-KG/manuscript/README.md",
+          "bytes_read": 2826,
+          "lines_read": 66
+        },
+        {
+          "path": "SC-OLH-KG/manuscript/main.tex",
+          "bytes_read": 3506,
+          "lines_read": 96
+        },
+        {
+          "path": "SC-OLH-KG/manuscript/sections/01_introduction.tex",
+          "bytes_read": 6483,
+          "lines_read": 107
+        },
+        {
+          "path": "SC-OLH-KG/manuscript/sections/05_theory.tex",
+          "bytes_read": 10680,
+          "lines_read": 230
+        },
+        {
+          "path": "SC-OLH-KG/paper_artifacts/or_manuscript_receipt_v1.json",
+          "bytes_read": 6174,
+          "lines_read": 178
+        },
+        {
+          "path": "SC-OLH-KG/performance/audit_or_manuscript.py",
+          "source_encoding": "utf-8",
+          "bytes_read": 9916,
+          "lines_read": 305,
+          "families": [
+            "state_and_trajectory",
+            "theory_and_reproduction"
+          ],
+          "imports": [
+            "__future__",
+            "argparse",
+            "hashlib",
+            "json",
+            "pathlib",
+            "re",
+            "subprocess"
+          ],
+          "definitions": [
+            {
+              "name": "_sha256",
+              "line": 25,
+              "end_line": 30
+            },
+            {
+              "name": "_atomic_json",
+              "line": 33,
+              "end_line": 40
+            },
+            {
+              "name": "_abstract_word_count",
+              "line": 43,
+              "end_line": 53
+            },
+            {
+              "name": "_reference_start_page",
+              "line": 56,
+              "end_line": 63
+            },
+            {
+              "name": "_source_files",
+              "line": 66,
+              "end_line": 76
+            },
+            {
+              "name": "build_receipt",
+              "line": 79,
+              "end_line": 274
+            },
+            {
+              "name": "main",
+              "line": 277,
+              "end_line": 301
+            }
+          ],
+          "numerical_calls": [],
+          "historical_resolution_markers": []
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_audit_or_manuscript.py",
+          "source_encoding": "utf-8",
+          "bytes_read": 2473,
+          "lines_read": 72,
+          "families": [
+            "state_and_trajectory",
+            "theory_and_reproduction"
+          ],
+          "imports": [
+            "json",
+            "performance.audit_or_manuscript"
+          ],
+          "definitions": [
+            {
+              "name": "test_abstract_word_count_ignores_latex_commands",
+              "line": 10,
+              "end_line": 16
+            },
+            {
+              "name": "test_reference_start_page_reads_aux_label",
+              "line": 19,
+              "end_line": 21
+            },
+            {
+              "name": "test_receipt_passes_for_clean_precompiled_fixture",
+              "line": 24,
+              "end_line": 72
+            }
+          ],
+          "numerical_calls": [],
+          "historical_resolution_markers": []
+        },
+        {
+          "path": "proof/final_or_theory.md",
+          "bytes_read": 8653,
+          "lines_read": 196
+        }
+      ]
+    }
+  ]
+}

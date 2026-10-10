@@ -1,0 +1,12 @@
+{
+  "package_id": "meta_prior_or_package_v1",
+  "scope": "bounded synthetic inventory source-to-target study",
+  "replay": "python3 performance/replay_meta_prior_submission.py --compile",
+  "original_confirmation_block_read": false,
+  "development_overlap_seed": 95434,
+  "independent_v2_seeds": [95800, 95801, 95802, 95803, 95804, 95805, 95806, 95807],
+  "baseline": "target_only_full_dictionary",
+  "generic_control": "target_only_rbf_kg",
+  "generic_rbf_hyperparameters": {"lengthscale": 0.25, "outputscale": 1.0},
+  "data_status": "synthetic; no proprietary data"
+}

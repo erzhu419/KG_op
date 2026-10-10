@@ -1,0 +1,1644 @@
+{
+  "protocol": {
+    "closed_loop": "paper_artifacts/legacy_batch_closed_loop_v1/results.json",
+    "total_target_call_caps": [
+      64,
+      128,
+      256,
+      362
+    ],
+    "terminal_draw_power": 13,
+    "integration_seed": 80621,
+    "question": "does the already-paid new50 or repeated63 batch improve true conditional deployment reward or call use when target search and validation share a tighter cap?",
+    "information": "reuse all four registered fresh noise groups, saved paired observations and unchanged source/paid filters; each arm keeps its original physical search debit; reuse all frozen policies and retention63",
+    "terminal_class": "unchanged proportional guarded allocation and direct min128/full action class at each cap; no new action class or prior tuning",
+    "freeze_order": "freeze every posterior-based recommendation at every cap before scoring any of those actions with target truth",
+    "endpoints": "true conditional expected terminal reward and expected total calls, paired to stop at each cap; retain all caps and groups",
+    "execution": "local serial single-thread;48 saved-posterior decisions;0 new source or target simulations, no independent certification, no server work or pulls",
+    "scope": "post-freeze development frontier with previously opened truth; mathematical conditional verifier power, not new actual certification or a source-prior superiority comparison",
+    "output": "paper_artifacts/legacy_batch_closed_loop_v1/budget_frontier.json"
+  },
+  "rows": [
+    {
+      "group": 0,
+      "arm": "stop_now",
+      "total_target_call_cap": 64,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          17
+        ]
+      },
+      "predicted_reward": 0.4541751844531551,
+      "predicted_verification_calls": 36.25013223648415,
+      "reward_gap_to_other_primary": 0.013164174309738486,
+      "truth": {
+        "expected_terminal_reward": 0.36551252446717514,
+        "expected_total_calls": 47.70114920802885,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "stop_now",
+      "total_target_call_cap": 128,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          42
+        ]
+      },
+      "predicted_reward": 0.5310999503154201,
+      "predicted_verification_calls": 85.68025544226848,
+      "reward_gap_to_other_primary": 0.00407652142921755,
+      "truth": {
+        "expected_terminal_reward": 0.7446129788554264,
+        "expected_total_calls": 111.23115943876724,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "stop_now",
+      "total_target_call_cap": 256,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          91
+        ]
+      },
+      "predicted_reward": 0.5698229892726163,
+      "predicted_verification_calls": 183.18823732637267,
+      "reward_gap_to_other_primary": 0.0007776312972846977,
+      "truth": {
+        "expected_terminal_reward": 0.8056596446884894,
+        "expected_total_calls": 238.2409965080043,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "stop_now",
+      "total_target_call_cap": 362,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5828510639183935,
+      "predicted_verification_calls": 265.97208889426946,
+      "reward_gap_to_other_primary": 0.00017598845079869196,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322115615,
+        "expected_total_calls": 343.38215441838395,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          16
+        ]
+      },
+      "predicted_reward": 0.4073397715670912,
+      "predicted_verification_calls": 36.73163543558452,
+      "reward_gap_to_other_primary": 0.012087502977615516,
+      "truth": {
+        "expected_terminal_reward": 0.3407889686092525,
+        "expected_total_calls": 47.69655259588438,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          41
+        ]
+      },
+      "predicted_reward": 0.497212791069251,
+      "predicted_verification_calls": 87.49419685299843,
+      "reward_gap_to_other_primary": 0.010511754301792076,
+      "truth": {
+        "expected_terminal_reward": 0.7385239105429854,
+        "expected_total_calls": 111.2459213044204,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          90
+        ]
+      },
+      "predicted_reward": 0.5410105441396935,
+      "predicted_verification_calls": 187.40314686815745,
+      "reward_gap_to_other_primary": 0.009891335843326798,
+      "truth": {
+        "expected_terminal_reward": 0.8056279926281299,
+        "expected_total_calls": 238.2602221382916,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5554460793879649,
+      "predicted_verification_calls": 269.2822118077466,
+      "reward_gap_to_other_primary": 0.009956613807895254,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322343454,
+        "expected_total_calls": 343.382153692229,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          9,
+          15,
+          16
+        ]
+      },
+      "predicted_reward": 0.5522425952709982,
+      "predicted_verification_calls": 32.866652501822706,
+      "reward_gap_to_other_primary": 0.017295986406082986,
+      "truth": {
+        "expected_terminal_reward": 0.3401146161531541,
+        "expected_total_calls": 47.71871121090932,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          24,
+          39,
+          41
+        ]
+      },
+      "predicted_reward": 0.6424770166239647,
+      "predicted_verification_calls": 79.85660652941138,
+      "reward_gap_to_other_primary": 0.005783936696327374,
+      "truth": {
+        "expected_terminal_reward": 0.7385161575688781,
+        "expected_total_calls": 111.25049153970336,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          88,
+          89
+        ]
+      },
+      "predicted_reward": 0.6813266104862394,
+      "predicted_verification_calls": 173.13578125292983,
+      "reward_gap_to_other_primary": 0.003068411715686503,
+      "truth": {
+        "expected_terminal_reward": 0.8055923813536879,
+        "expected_total_calls": 238.28123986299028,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          128,
+          130
+        ]
+      },
+      "predicted_reward": 0.6934892884801832,
+      "predicted_verification_calls": 249.0034359353627,
+      "reward_gap_to_other_primary": 0.002691806861271462,
+      "truth": {
+        "expected_terminal_reward": 0.8058849472644141,
+        "expected_total_calls": 343.404120178862,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "stop_now",
+      "total_target_call_cap": 64,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          17
+        ]
+      },
+      "predicted_reward": 0.4541751844531551,
+      "predicted_verification_calls": 36.25013223648415,
+      "reward_gap_to_other_primary": 0.013164174309738486,
+      "truth": {
+        "expected_terminal_reward": 0.36551252446717514,
+        "expected_total_calls": 47.70114920802885,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "stop_now",
+      "total_target_call_cap": 128,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          42
+        ]
+      },
+      "predicted_reward": 0.5310999503154201,
+      "predicted_verification_calls": 85.68025544226848,
+      "reward_gap_to_other_primary": 0.00407652142921755,
+      "truth": {
+        "expected_terminal_reward": 0.7446129788554264,
+        "expected_total_calls": 111.23115943876724,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "stop_now",
+      "total_target_call_cap": 256,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          91
+        ]
+      },
+      "predicted_reward": 0.5698229892726163,
+      "predicted_verification_calls": 183.18823732637267,
+      "reward_gap_to_other_primary": 0.0007776312972846977,
+      "truth": {
+        "expected_terminal_reward": 0.8056596446884894,
+        "expected_total_calls": 238.2409965080043,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "stop_now",
+      "total_target_call_cap": 362,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5828510639183935,
+      "predicted_verification_calls": 265.97208889426946,
+      "reward_gap_to_other_primary": 0.00017598845079869196,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322115615,
+        "expected_total_calls": 343.38215441838395,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          16
+        ]
+      },
+      "predicted_reward": 0.4042585962544202,
+      "predicted_verification_calls": 36.771004580355026,
+      "reward_gap_to_other_primary": 0.009531992622655139,
+      "truth": {
+        "expected_terminal_reward": 0.3407889686092525,
+        "expected_total_calls": 47.69655259588438,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          41
+        ]
+      },
+      "predicted_reward": 0.49420720049836464,
+      "predicted_verification_calls": 87.625313777899,
+      "reward_gap_to_other_primary": 0.008178428329346399,
+      "truth": {
+        "expected_terminal_reward": 0.7385239105429854,
+        "expected_total_calls": 111.2459213044204,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          90
+        ]
+      },
+      "predicted_reward": 0.5380731871555687,
+      "predicted_verification_calls": 187.7120935681493,
+      "reward_gap_to_other_primary": 0.007620842868410138,
+      "truth": {
+        "expected_terminal_reward": 0.8056279926281299,
+        "expected_total_calls": 238.2602221382916,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5525426179107422,
+      "predicted_verification_calls": 269.7379612484938,
+      "reward_gap_to_other_primary": 0.00769361820513248,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322343454,
+        "expected_total_calls": 343.382153692229,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          9,
+          15,
+          16
+        ]
+      },
+      "predicted_reward": 0.5393347777201738,
+      "predicted_verification_calls": 32.82742047272071,
+      "reward_gap_to_other_primary": 0.019497157188804515,
+      "truth": {
+        "expected_terminal_reward": 0.3401146161531541,
+        "expected_total_calls": 47.71871121090932,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          24,
+          39,
+          41
+        ]
+      },
+      "predicted_reward": 0.6281449968765713,
+      "predicted_verification_calls": 79.66374470074118,
+      "reward_gap_to_other_primary": 0.007762136179250145,
+      "truth": {
+        "expected_terminal_reward": 0.7385161575688781,
+        "expected_total_calls": 111.25049153970336,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          88,
+          89
+        ]
+      },
+      "predicted_reward": 0.6675715448153678,
+      "predicted_verification_calls": 172.68145622124445,
+      "reward_gap_to_other_primary": 0.004638273786600977,
+      "truth": {
+        "expected_terminal_reward": 0.8055923813536879,
+        "expected_total_calls": 238.28123986299028,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          128,
+          130
+        ]
+      },
+      "predicted_reward": 0.6799369530478312,
+      "predicted_verification_calls": 248.34285778784042,
+      "reward_gap_to_other_primary": 0.004155360759723115,
+      "truth": {
+        "expected_terminal_reward": 0.8058849472644141,
+        "expected_total_calls": 343.404120178862,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "stop_now",
+      "total_target_call_cap": 64,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          17
+        ]
+      },
+      "predicted_reward": 0.4541751844531551,
+      "predicted_verification_calls": 36.25013223648415,
+      "reward_gap_to_other_primary": 0.013164174309738486,
+      "truth": {
+        "expected_terminal_reward": 0.36551252446717514,
+        "expected_total_calls": 47.70114920802885,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "stop_now",
+      "total_target_call_cap": 128,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          42
+        ]
+      },
+      "predicted_reward": 0.5310999503154201,
+      "predicted_verification_calls": 85.68025544226848,
+      "reward_gap_to_other_primary": 0.00407652142921755,
+      "truth": {
+        "expected_terminal_reward": 0.7446129788554264,
+        "expected_total_calls": 111.23115943876724,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "stop_now",
+      "total_target_call_cap": 256,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          91
+        ]
+      },
+      "predicted_reward": 0.5698229892726163,
+      "predicted_verification_calls": 183.18823732637267,
+      "reward_gap_to_other_primary": 0.0007776312972846977,
+      "truth": {
+        "expected_terminal_reward": 0.8056596446884894,
+        "expected_total_calls": 238.2409965080043,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "stop_now",
+      "total_target_call_cap": 362,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5828510639183935,
+      "predicted_verification_calls": 265.97208889426946,
+      "reward_gap_to_other_primary": 0.00017598845079869196,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322115615,
+        "expected_total_calls": 343.38215441838395,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          16
+        ]
+      },
+      "predicted_reward": 0.4025787351186051,
+      "predicted_verification_calls": 36.78883494657167,
+      "reward_gap_to_other_primary": 0.008041862976424952,
+      "truth": {
+        "expected_terminal_reward": 0.3407889686092525,
+        "expected_total_calls": 47.69655259588438,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          41
+        ]
+      },
+      "predicted_reward": 0.49253690634167746,
+      "predicted_verification_calls": 87.68477913071547,
+      "reward_gap_to_other_primary": 0.006794600855452471,
+      "truth": {
+        "expected_terminal_reward": 0.7385239105429854,
+        "expected_total_calls": 111.2459213044204,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          90
+        ]
+      },
+      "predicted_reward": 0.5364220772381201,
+      "predicted_verification_calls": 187.85300627142425,
+      "reward_gap_to_other_primary": 0.006264904911630342,
+      "truth": {
+        "expected_terminal_reward": 0.8056279926281299,
+        "expected_total_calls": 238.2602221382916,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5509009152791937,
+      "predicted_verification_calls": 269.94335911470137,
+      "reward_gap_to_other_primary": 0.006334946127753316,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322343454,
+        "expected_total_calls": 343.382153692229,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          9,
+          15,
+          16
+        ]
+      },
+      "predicted_reward": 0.4181556652084646,
+      "predicted_verification_calls": 33.762681206590756,
+      "reward_gap_to_other_primary": 0.019679019842201217,
+      "truth": {
+        "expected_terminal_reward": 0.3401146161531541,
+        "expected_total_calls": 47.71871121090932,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          24,
+          39,
+          41
+        ]
+      },
+      "predicted_reward": 0.519954528921829,
+      "predicted_verification_calls": 83.28801023879981,
+      "reward_gap_to_other_primary": 0.007128820663478974,
+      "truth": {
+        "expected_terminal_reward": 0.7385161575688781,
+        "expected_total_calls": 111.25049153970336,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          88,
+          89
+        ]
+      },
+      "predicted_reward": 0.5724046807617108,
+      "predicted_verification_calls": 181.36796200574534,
+      "reward_gap_to_other_primary": 0.003258452001163481,
+      "truth": {
+        "expected_terminal_reward": 0.8055923813536879,
+        "expected_total_calls": 238.28123986299028,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          128,
+          130
+        ]
+      },
+      "predicted_reward": 0.589954374679555,
+      "predicted_verification_calls": 261.3046433247629,
+      "reward_gap_to_other_primary": 0.00196982207006946,
+      "truth": {
+        "expected_terminal_reward": 0.8058849472644141,
+        "expected_total_calls": 343.404120178862,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "stop_now",
+      "total_target_call_cap": 64,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          17
+        ]
+      },
+      "predicted_reward": 0.4541751844531551,
+      "predicted_verification_calls": 36.25013223648415,
+      "reward_gap_to_other_primary": 0.013164174309738486,
+      "truth": {
+        "expected_terminal_reward": 0.36551252446717514,
+        "expected_total_calls": 47.70114920802885,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "stop_now",
+      "total_target_call_cap": 128,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          42
+        ]
+      },
+      "predicted_reward": 0.5310999503154201,
+      "predicted_verification_calls": 85.68025544226848,
+      "reward_gap_to_other_primary": 0.00407652142921755,
+      "truth": {
+        "expected_terminal_reward": 0.7446129788554264,
+        "expected_total_calls": 111.23115943876724,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "stop_now",
+      "total_target_call_cap": 256,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          91
+        ]
+      },
+      "predicted_reward": 0.5698229892726163,
+      "predicted_verification_calls": 183.18823732637267,
+      "reward_gap_to_other_primary": 0.0007776312972846977,
+      "truth": {
+        "expected_terminal_reward": 0.8056596446884894,
+        "expected_total_calls": 238.2409965080043,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "stop_now",
+      "total_target_call_cap": 362,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5828510639183935,
+      "predicted_verification_calls": 265.97208889426946,
+      "reward_gap_to_other_primary": 0.00017598845079869196,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322115615,
+        "expected_total_calls": 343.38215441838395,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          10,
+          16,
+          16
+        ]
+      },
+      "predicted_reward": 0.4092456139233932,
+      "predicted_verification_calls": 36.71309786977833,
+      "reward_gap_to_other_primary": 0.013726342472722697,
+      "truth": {
+        "expected_terminal_reward": 0.3407889686092525,
+        "expected_total_calls": 47.69655259588438,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          25,
+          40,
+          41
+        ]
+      },
+      "predicted_reward": 0.4991700083758656,
+      "predicted_verification_calls": 87.43188944560524,
+      "reward_gap_to_other_primary": 0.012102627344205585,
+      "truth": {
+        "expected_terminal_reward": 0.7385239105429854,
+        "expected_total_calls": 111.2459213044204,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          89,
+          90
+        ]
+      },
+      "predicted_reward": 0.5429531052710334,
+      "predicted_verification_calls": 187.25678437606166,
+      "reward_gap_to_other_primary": 0.011459464830907207,
+      "truth": {
+        "expected_terminal_reward": 0.8056279926281299,
+        "expected_total_calls": 238.2602221382916,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "search_calls": 6,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5573769101263256,
+      "predicted_verification_calls": 269.0664287241896,
+      "reward_gap_to_other_primary": 0.011522290911435973,
+      "truth": {
+        "expected_terminal_reward": 0.8058849322343454,
+        "expected_total_calls": 343.382153692229,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          9,
+          15,
+          16
+        ]
+      },
+      "predicted_reward": 0.500746321224658,
+      "predicted_verification_calls": 33.21110242255999,
+      "reward_gap_to_other_primary": 0.018664921608695706,
+      "truth": {
+        "expected_terminal_reward": 0.3401146161531541,
+        "expected_total_calls": 47.71871121090932,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          24,
+          39,
+          41
+        ]
+      },
+      "predicted_reward": 0.6004582771750806,
+      "predicted_verification_calls": 81.24883977187082,
+      "reward_gap_to_other_primary": 0.0068623093194908336,
+      "truth": {
+        "expected_terminal_reward": 0.7385161575688781,
+        "expected_total_calls": 111.25049153970336,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          55,
+          88,
+          89
+        ]
+      },
+      "predicted_reward": 0.6462661741186859,
+      "predicted_verification_calls": 176.4860839917898,
+      "reward_gap_to_other_primary": 0.002877086052729849,
+      "truth": {
+        "expected_terminal_reward": 0.8055923813536879,
+        "expected_total_calls": 238.28123986299028,
+        "primary_feasible": false
+      }
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "search_calls": 8,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          128,
+          130
+        ]
+      },
+      "predicted_reward": 0.6609155216970959,
+      "predicted_verification_calls": 253.98924888259475,
+      "reward_gap_to_other_primary": 0.002160873597948809,
+      "truth": {
+        "expected_terminal_reward": 0.8058849472644141,
+        "expected_total_calls": 343.404120178862,
+        "primary_feasible": false
+      }
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.02472355585792263,
+      "expected_total_call_difference": -0.004596612144474932
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006089068312441048,
+      "expected_total_call_difference": 0.014761865653170503
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -3.165206035948831e-05,
+      "expected_total_call_difference": 0.01922563028730906
+    },
+    {
+      "group": 0,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 2.2783885889055e-11,
+      "expected_total_call_difference": -7.261549512804777e-07
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.025397908314021056,
+      "expected_total_call_difference": 0.017562002880467276
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006096821286548315,
+      "expected_total_call_difference": 0.019332100936125585
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -6.726333480144842e-05,
+      "expected_total_call_difference": 0.0402433549859893
+    },
+    {
+      "group": 0,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 1.5052852520014426e-08,
+      "expected_total_call_difference": 0.021965760478053653
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.02472355585792263,
+      "expected_total_call_difference": -0.004596612144474932
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006089068312441048,
+      "expected_total_call_difference": 0.014761865653170503
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -3.165206035948831e-05,
+      "expected_total_call_difference": 0.01922563028730906
+    },
+    {
+      "group": 1,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 2.2783885889055e-11,
+      "expected_total_call_difference": -7.261549512804777e-07
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.025397908314021056,
+      "expected_total_call_difference": 0.017562002880467276
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006096821286548315,
+      "expected_total_call_difference": 0.019332100936125585
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -6.726333480144842e-05,
+      "expected_total_call_difference": 0.0402433549859893
+    },
+    {
+      "group": 1,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 1.5052852520014426e-08,
+      "expected_total_call_difference": 0.021965760478053653
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.02472355585792263,
+      "expected_total_call_difference": -0.004596612144474932
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006089068312441048,
+      "expected_total_call_difference": 0.014761865653170503
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -3.165206035948831e-05,
+      "expected_total_call_difference": 0.01922563028730906
+    },
+    {
+      "group": 2,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 2.2783885889055e-11,
+      "expected_total_call_difference": -7.261549512804777e-07
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.025397908314021056,
+      "expected_total_call_difference": 0.017562002880467276
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006096821286548315,
+      "expected_total_call_difference": 0.019332100936125585
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -6.726333480144842e-05,
+      "expected_total_call_difference": 0.0402433549859893
+    },
+    {
+      "group": 2,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 1.5052852520014426e-08,
+      "expected_total_call_difference": 0.021965760478053653
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.02472355585792263,
+      "expected_total_call_difference": -0.004596612144474932
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006089068312441048,
+      "expected_total_call_difference": 0.014761865653170503
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -3.165206035948831e-05,
+      "expected_total_call_difference": 0.01922563028730906
+    },
+    {
+      "group": 3,
+      "arm": "observe_new50",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 2.2783885889055e-11,
+      "expected_total_call_difference": -7.261549512804777e-07
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 64,
+      "expected_reward_difference": -0.025397908314021056,
+      "expected_total_call_difference": 0.017562002880467276
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 128,
+      "expected_reward_difference": -0.006096821286548315,
+      "expected_total_call_difference": 0.019332100936125585
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 256,
+      "expected_reward_difference": -6.726333480144842e-05,
+      "expected_total_call_difference": 0.0402433549859893
+    },
+    {
+      "group": 3,
+      "arm": "repeat63_batch3",
+      "total_target_call_cap": 362,
+      "expected_reward_difference": 1.5052852520014426e-08,
+      "expected_total_call_difference": 0.021965760478053653
+    }
+  ],
+  "new_simulator_calls": 0,
+  "new_independent_certificates": 0,
+  "cpu_seconds": 72.543652272
+}

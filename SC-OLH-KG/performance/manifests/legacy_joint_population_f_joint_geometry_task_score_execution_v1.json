@@ -1,0 +1,25 @@
+{
+  "status": "frozen before all12 conditional source-task scores",
+  "source_execution": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_execution_v1.json",
+  "source_laws": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1/fitted_source_laws.json",
+  "question": "Does the fitted task template direction receive opposing scores from joint source likelihood and conditional whole-source-task density? This cheap fixed-law diagnostic precedes any new source learning objective.",
+  "diagnostic": "On each frozen five-source law compute joint Gaussian NLL and sum_t[-log p(y_t|y_other,theta)] via full-minus-training-block Gaussian log densities. Compare native and joint laws;compute analytic q derivatives and fixedq=.01 probe under the fitted joint law. Empirical center and nuisance are frozen from all five sources,so this is an in-sample objective diagnostic,not honest inner validation or candidate selection.",
+  "fixed_probe_q": 0.01,
+  "gradient_verification_deleted_task": 1,
+  "gradient_step": 1e-07,
+  "verification": "Reproduce fitted joint source NLL;one-sided conditional-task score gradient check in both task1 folds. A mismatch blocks interpretation.",
+  "decision": "If scores oppose,this motivates separately registered genuinely nested task-predictive source learning with outer deleted task and inner source task excluded from their corresponding conditioning/empirical centering. If they agree,do not claim that switching this fixed-law source score would solve the heldout failure. Judge population/representation and omitted uncertainty before new fits. No new prior adoption or paid forecasts.",
+  "scope": "source0-5 only;no outer-query paid labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_v_integrations": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "output": "paper_artifacts/legacy_joint_population_f_joint_geometry_task_score_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_joint_geometry_task_score.py",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_joint_geometry_task_score_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_joint_geometry_task_score.py"
+}

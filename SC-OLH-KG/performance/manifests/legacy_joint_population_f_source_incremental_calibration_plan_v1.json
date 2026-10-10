@@ -1,0 +1,32 @@
+{
+  "status": "completed;conditional density identity verified;training noise information share23-30percent;known-source feasibility registered",
+  "entrypoint": "performance/diagnose_legacy_f_source_incremental_calibration.py",
+  "coverage_results": "paper_artifacts/legacy_joint_population_f_crossed_source_reconditioning_v1/results.json",
+  "coverage_plan": "performance/manifests/legacy_joint_population_f_crossed_source_reconditioning_plan_v1.json",
+  "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "source_gp_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "source_validation_task": 0,
+  "question": "Are the added source observations consistent with the old fixed population laws,and does estimated measurement noise matter more for known-source training than for new-source prediction?",
+  "calculation": "Reuse exactly the four-source12-to24 rosters and cached f statistics from Stage194. For each fixed sparse/GP source law compute all48 added mean innovations conditional on the48 original means,retaining common covariance and same-task residual cross-covariance. Record joint quadratic/48,individual standardized residuals,and trace(S^-1 diag(sample_variance/3))/48 as effective noise information share. This is full covariance leverage,unlike Stage191 diagonal precision concentration. Record Gaussian joint density and the NEW96-label source spectral gradients at the OLD source4 optimum;no optimization or target forecast.",
+  "verification": "Conditional48-label density must equal full96-minus-old48 Gaussian source log density,in the same physical units. New sparse A/R must reproduce the fixed law. Covariance Schur complement positive and effective noise share in[0,1]. Stop on mismatch at1e-8,no variance replacement. No likelihood derivative or old raw filter check repeated.",
+  "decision": "If added-source innovations or gradients show changed source calibration,design a source-only learning update before further held-source/raw forecasts. If effective label-noise influence is material,do not infer training robustness from Stage192's new-source marginal result;test a variance-uncertainty source likelihood at the training conditionals. The Gaussian sampling summaries are not unconditional chi-square tests because covariance/noise are empirical estimates. Preserve the stopped coverage candidate;no unregistered refit or extra data expansion.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 4,
+    "new_source_raw_labels": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;reuse only Stage194 cached source f records/rosters;small JSON summaries,no server work,pulls or NPZ",
+  "scope": "Opened-source attribution,not a new candidate,significance test or independent confirmation. No validation-task0 outcomes,task1,source6/7,target,KG or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_incremental_calibration_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_incremental_calibration_v1/results.json"
+}

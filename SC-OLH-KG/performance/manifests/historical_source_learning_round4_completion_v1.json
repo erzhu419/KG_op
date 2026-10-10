@@ -1,0 +1,28 @@
+{
+  "status": "registered before fourth-step adjacent evidence and failed-site integration",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_stationary_source_continuation_v1/results.json",
+  "learning_results": "paper_artifacts/historical_stationary_source_continuation_v2/results.json",
+  "fresh_results": "paper_artifacts/historical_changed_candidate_reconditioning_v4/results.json",
+  "functional_cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "axis": 8,
+      "sites": [
+        8
+      ]
+    }
+  ],
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "integration_batch_size": 16,
+  "maximum_single_thread_cpu_seconds_per_case": 45,
+  "scope": "Use all5 saved fourth-step candidate mixtures for exact reverse Z(round4)/Z(round3),with actual selected previous f/risk laws. Only site8 of layout5/additive/head_specific/observed_task/f fails posterior variance precision. Reuse historical one-dimensional conditional integration there;retain all other full-chain estimates and actual positive mixture states/weights. One local CPU thread,no MCMC,labels,prior fitting,target evaluation or server work.",
+  "output": "paper_artifacts/historical_source_learning_round4_completion_v1"
+}

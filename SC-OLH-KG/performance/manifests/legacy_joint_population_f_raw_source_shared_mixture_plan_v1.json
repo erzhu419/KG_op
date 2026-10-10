@@ -1,0 +1,29 @@
+{
+  "status": "completed;all four common function/risk positive-mixture reconstructions pass",
+  "entrypoint": "performance/prepare_legacy_f_raw_source_shared_mixture.py",
+  "source_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+  "eta_components": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/mixtures.json",
+  "source_contract_plan": "performance/manifests/legacy_joint_population_f_original_source_raw_contract_plan_v1.json",
+  "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "question": "Can the retained positive source mixture reconstruct the transferable joint common function/risk law without replacing it by independent Gaussian heads?",
+  "law": "For each retained source eta state gamma,common function latent is analytically Gaussian conditional on the48 raw means with noise exp(gamma)/3. Common eta coefficients are Gaussian conditional on gamma under the ORIGINAL unconditioned risk population law. The two heads are independent only WITHIN each component;between-component mean covariance induces their joint posterior dependence. Task residual priors are unchanged by conditioning and remain separate from common heads for a future task. Weights1/512.",
+  "risk_restoration": "Reconstruct the same original32-label observable coordinate deterministically from source2/3/4/5,then require its public/training coordinates and the ORIGINAL48 risk population mean/covariance to match Stage206 at1e-8. This is parameter restoration,not a new coordinate or covariance fit. Do not use source-conditioned risk beta/H as the population prior or add its Gaussian likelihood to raw labels.",
+  "verification": "Require positive-semidefinite risk conditional covariance and assembled joint common covariance. Check total covariance including cross-head between-component block against second-moment form. Compare retained common function and risk means/diagonal variances against projections of full Stage206 posterior moments:mean RMS in full SD<=.1,maximum diagonal variance relative difference<=.15 on positive-variance coordinates;exact constant coordinates remain constant. Failure stops transfer without extra components or samples.",
+  "decision": "If all four joint reconstructions pass,register a matched source-validation zero-shot predictive-mixture pilot before paid target updates. Preserve original structural constraints and same-source GP;retain the native mixture as a separately identified reference. Joint source reconstruction is not risk-factor recovery,EM convergence or independent decision evidence.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "maximum_original_coordinate_restorations": 2,
+    "new_covariance_fits": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_labels": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;reuse fixed512 eta components per arm and analytic conditional moments;save compact reconstruction parameters and aggregate joint moments,no per-component dense covariance files,NPZ or server work",
+  "scope": "Original orthogonal,sparse,low-order,low-frequency constraints preserved. No validation-task0/task1 outcomes,source6/7,target,KG,confirmation or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_source_shared_mixture_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_source_shared_mixture_v1/results.json"
+}

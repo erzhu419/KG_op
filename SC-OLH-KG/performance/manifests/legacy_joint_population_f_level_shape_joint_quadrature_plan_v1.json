@@ -1,0 +1,40 @@
+{
+  "status": "completed;all12 coherent joint full-tail rules pass frozen refinement criteria;no prior adopted",
+  "joint_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_reference_execution_v1.json",
+  "joint_laws": "paper_artifacts/legacy_joint_population_f_level_shape_joint_reference_v1/source_joint_laws.json",
+  "question": "Can the frozen joint source likelihood and two-variance Jeffreys measure be normalized and represented by a compact positive full-tail rule,with verified source variance and common coefficient moments?",
+  "source_law": "Exactly Stage136 native twelve five-source deletion laws;v,a>=0 only;all other parameters frozen. No new source fit,no conditional-posterior product,no GP replacement and no query outcomes.",
+  "reference_measure": "sqrt(det I(v,a)) dv da and the coherent joint source Gaussian likelihood from Stage136. Source signal changes only quadrature coordinates.",
+  "coordinates": "v=signal*(t/(1-t))^2,a=signal*(s/(1-s))^2,t,s in(0,1);Jacobian2signal*t/(1-t)^3 for each. Squared rational maps make the rank5 second-moment endpoint regular. Tensor Gauss-Legendre covers the full positive quadrant,not a finite variance cutoff.",
+  "numerics": "Use stable source Gram-inverse Fisher calculation so very large supported quadrature variances do not subtract nearly equal source information matrices. Reproduce native/dense source results and previous nine source-point likelihood/measure values before integration.",
+  "resolutions": [
+    16,
+    32,
+    64,
+    128
+  ],
+  "acceptance": {
+    "normalizer_relative_difference": 1e-08,
+    "scaled_moment_max_absolute_difference": 1e-08
+  },
+  "scaling": "Variance first/second/cross moments use positive existing conditional source means/second moments as numerical units. Common beta change and average H/covariance of beta use sqrt(source_signal) and source_signal. None are adopted prior scales.",
+  "integration": "Accumulate normalized v,a first/second/cross moments,conditional common beta and H plus covariance of beta. Save separate positive mixture nodes/weights,not an averaged Gaussian replacement. Select first doubled resolution passing both frozen criteria;retain failure at128 without tolerance relaxation or prior adoption. This is numerical refinement evidence,not an analytic integration-error bound.",
+  "scope": "source0-5 only;no query paid labels,source6/7,target,KG,confirmation,paper changes,server work or pulls",
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_joint_source_quadratures": 12,
+    "maximum_joint_density_evaluations": 261120,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small source JSON and compact local NPZ only",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1",
+  "planned_entrypoint": "performance/prepare_legacy_f_level_shape_joint_quadrature.py",
+  "entrypoint_status": "implemented and executed",
+  "decision": "All twelve source rules must pass before a separately frozen paid-prefix development comparison;source normalization alone never promotes the model. If inadequate retain the exact failure and inspect numerical integration without changing the physical law.",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_level_shape_compact_quadrature_plan_v1.json"
+}

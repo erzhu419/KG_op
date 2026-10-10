@@ -1,0 +1,16 @@
+{
+  "status": "registered next-stage source-only attribution; not executed",
+  "data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "reference": "paper_artifacts/legacy_related_inventory_source_v1/results.json",
+  "training_tasks": [0,1,2,3,4,5],
+  "opened_development_holdouts": [6,7],
+  "question": "Does the zero non-intercept population mean discard a repeatable source function shape that is needed for terminal ranking?",
+  "mean_estimator": "source-only Gaussian population-mean posterior in each already fitted orthogonal dictionary: R=C^-1+sum(D_t^T V_t^-1 D_t), m=R^-1(C^-1 m0+sum(D_t^T V_t^-1 y_t)); V_t=D_t C D_t^T+diag(observed_label_variance_t+discrepancy). C, m0, dictionary and discrepancy come from the frozen training-only stage17 fit, with no holdout tuning",
+  "controls": "original zero non-intercept structural/full priors versus the common-mean structural/full attribution controls; the two common-mean arms share the same source-derived mean, intercept, discrepancy and candidate bank, differing only in their original covariance; freeze all four-head coefficients from training before target adaptation",
+  "source_preflight": "six leave-one-task-out training folds, fitting maps/dictionaries/priors/mean only on the other five; report predictive means and observation-aware uncertainty at all withheld source sites, including whether discrepancy floor .02 dominates residual variation; no automatic change of that floor",
+  "holdout_replay": "same eight cached raw adaptation records, full73-policy bank, cap362 and8192-node integration; retention and all recommendations use only current model and paid prefix, never scoring feasibility; safe reward excludes false certificates",
+  "endpoints": "all four function heads, complete-identity predictive scores, selected safe reward/calls and loss to the best same-class action; preserve failures and do not substitute feasible policy63 by hand",
+  "interpretation": "a mean attribution with fixed original covariance is not a completed refit of population residual covariance; improvement on already opened tasks6/7 is development evidence and requires fresh tasks before a generalization claim",
+  "execution": "cached small local JSON only, serial single-thread, zero new source/target/terminal simulations, no server dispatch or pulls; complete source preflight before another target loop",
+  "next_model_boundary": "if the source-only mean attribution is supported, refit common mean and between-task residual covariance/discrepancy together under a separately frozen protocol; do not use lower MSE alone to claim KG deployment gains"
+}

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "test_count": 29,
+  "seconds": 6.028,
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_achievable_precision test_raw_terminal_head_grid test_positive_batch_lookahead",
+  "failure_detected_by_checks": [
+    "per-record admitted rule selection accidentally compares with earliest rule",
+    "unused branch statistics trigger needless refinement",
+    "original head record/cache updates or batch posterior composition regress",
+    "policy merge loses or reorders actions, hides worst likelihood error, or mutates previous rules",
+    "skipping unused covariance updates changes predictive likelihood or retained raw/native terminal statistics",
+    "query-deployment marginal restriction or direct verification budget changes the full batch-conditioned payoff",
+    "full-component Gauss-Hermite integration changes the conditioned payoff or drops positive mixture mass",
+    "predictive summary incorrectly multiplies averages across different source identities"
+  ]
+}

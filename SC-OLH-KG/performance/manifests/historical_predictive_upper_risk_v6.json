@@ -1,0 +1,86 @@
+{
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "seed": 202610077,
+  "maximum_action_resolution_difference": 0.0001,
+  "maximum_identity_integration_error_bound": 2e-06,
+  "status": "Only96 added risk states; fixed priors and raw pricing of native recommendations.",
+  "output": "paper_artifacts/historical_predictive_upper_risk_v6",
+  "states": [
+    "learned_prior_independent_02_source_structural_mixture_layout6"
+  ],
+  "query": 63,
+  "query_basis": "Already frozen source STOP primary; identical query for both learners; no outcome selection.",
+  "replicates": [
+    1
+  ],
+  "powers": [
+    8,
+    10
+  ],
+  "baseline_powers": [
+    14,
+    16
+  ],
+  "predictive_power": 7,
+  "predictive_prefixes": [
+    128,
+    176
+  ],
+  "predictive_seed": 202610092,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_case_cpu_seconds": 420,
+  "origins": {
+    "source_structural_mixture": [
+      4,
+      5
+    ],
+    "source_common_task_rbf": [
+      0
+    ]
+  },
+  "stop_inputs": {
+    "learned_prior_independent_02_source_structural_mixture_layout6": "paper_artifacts/historical_full_bank_batch_kg_precision_v2/precision/learned_prior_independent_02_source_structural_mixture_layout6/terminal_rules.json",
+    "learned_prior_independent_02_source_common_task_rbf_layout6": "paper_artifacts/historical_batch_native_precision_v6/gp_stop/terminal_rules.json"
+  },
+  "scope": "Frozen source single-call query63; reuse admitted body rules, positive upper-CDF-tail integration, original gates.",
+  "accepted_baseline_inputs": {
+    "learned_prior_independent_02_source_structural_mixture_layout6": "paper_artifacts/historical_achievable_batch_kg_v1",
+    "learned_prior_independent_02_source_common_task_rbf_layout6": "paper_artifacts/historical_achievable_batch_kg_baseline_v2"
+  },
+  "cases": [
+    {
+      "name": "source_n1",
+      "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+      "n": 1,
+      "predictive_power": 7,
+      "head_counts": [
+        32,
+        176
+      ],
+      "objective_prefixes": [
+        16,
+        32
+      ]
+    }
+  ],
+  "reuse_precision_plan": "performance/manifests/historical_predictive_risk128_precision_v5.json",
+  "posterior_inputs": {
+    "learned_prior_independent_02_source_structural_mixture_layout6": "paper_artifacts/historical_predictive_extension_v1/learned_prior_independent_02_source_structural_mixture_layout6/posterior.pkl",
+    "learned_prior_independent_02_source_common_task_rbf_layout6": "paper_artifacts/historical_predictive_extension_v1/learned_prior_independent_02_source_common_task_rbf_layout6/posterior.pkl"
+  },
+  "precision_plan": "performance/manifests/historical_predictive_upper_risk_precision_v6.json",
+  "risk_tail_interval": [
+    0.9,
+    1.0
+  ],
+  "risk_tail_orders": [
+    16,
+    32
+  ],
+  "risk_complement_prefixes": [
+    64,
+    128
+  ],
+  "reused_risk_count": 128,
+  "maximum_inverse_cdf_error": 1e-08
+}

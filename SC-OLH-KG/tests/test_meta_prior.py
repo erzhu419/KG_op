@@ -2561,6 +2561,25 @@ class MetaPriorTests(unittest.TestCase):
         self.assertAlmostEqual(sum(diag["source_weights"]), 1.0)
         self.assertTrue(diag["strong_heredity"])
 
+    def test_additive_transform_preserves_its_fitted_source_orthogonality(self):
+        from representation.additive_groups import TransferableAdditiveGroupBank
+        from representation.transferable_spectral import SourceDomainBatch
+
+        rng = np.random.default_rng(922)
+        batches = []
+        for index in range(2):
+            psi = rng.normal(size=(24, 2))
+            signals = (psi[:, 0] + .5 * psi[:, 1] ** 2 + psi[:, 0] * psi[:, 1])[:, None]
+            batches.append(SourceDomainBatch(str(index), psi, signals))
+        bank = TransferableAdditiveGroupBank(max_groups=4, strong_heredity=True).fit(batches)
+        pooled = np.vstack([batch.psi for batch in batches])
+        values = bank.transform(pooled)
+        np.testing.assert_allclose(values.T @ values / len(values),
+            np.eye(bank.feature_dim), atol=1e-8, rtol=0.)
+        # Quantile support information remains available without clipping the map.
+        self.assertTrue(any(np.any(bank.support_saturation(pooled, j))
+                            for j in range(bank.feature_dim)))
+
     def test_additive_gate_learns_groups_from_target_pilot_only(self):
         prior = LearnedMetaPrior(
             local_dim=2,

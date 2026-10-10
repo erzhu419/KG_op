@@ -1,0 +1,32 @@
+{
+  "status": "registered before common16-fantasy per-identity precision check",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "queries": {
+    "5": 7,
+    "6": 4
+  },
+  "seed": 202610077,
+  "fantasy_powers": [
+    4
+  ],
+  "order": 256,
+  "refinement_order": 512,
+  "maximum_single_thread_cpu_seconds": 45,
+  "actual_paid_filter_reference": "paper_artifacts/historical_mixture_lookahead_precision_v3/results.json",
+  "precision": {
+    "maximum_inverse_cdf_error": 1e-08,
+    "maximum_posterior_weight_refinement_error": 1e-06,
+    "maximum_actual_filter_reproduction_error": 1e-06,
+    "maximum_identity_martingale_residual": 0.01
+  },
+  "method": "Common numerical resolution for both queries. Layout5 first passed identity precision at16 fantasies/identity;layout6 at8. Check both at16 before any full terminal evaluation. Same fixed law,seed and thresholds. Compare256/512-order identity weights. No utility is inspected for resolution selection;previous exact paid-filter reproduction is retained.",
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_predictive_martingale_v2",
+  "previous_precision_results": "paper_artifacts/historical_predictive_martingale_v1/results.json"
+}

@@ -1,0 +1,28 @@
+{
+  "status": "frozen_local_interface_check_only",
+  "candidate_seed": 105040,
+  "candidates": 96,
+  "source_tasks": 8,
+  "source_points": 16,
+  "source_law_seed": 93000,
+  "source_noise_seed": 94000,
+  "initial_design_seed": 105041,
+  "target_law_seed": 95000,
+  "target_noise_seed": 96000,
+  "initial_points": 8,
+  "replicates": 12,
+  "learned_active_dim_per_head": 4,
+  "chance_alpha": 0.05,
+  "verification_replicates": 928,
+  "verification_calls_executed": 0,
+  "search_calls_after_initial_executed": 0,
+  "context": {
+    "demand": [4, 9, 6, 12, 7, 14, 5, 11, 8, 13, 6, 10],
+    "capacity": 20,
+    "initial_stock": 8,
+    "cost_budget": 1
+  },
+  "purpose": "public dynamics, source-prior fitting, paid initial updates and one KG computation; no performance conclusion",
+  "official_hyperbo": "source adapter retained; source-trained scalar likelihood noise must also drive KG fantasies",
+  "information": "all methods receive the same public trajectory coordinates and paid labels; no oracle moments enter fitting"
+}

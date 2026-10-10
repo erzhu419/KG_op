@@ -1,0 +1,137 @@
+{
+  "execution": {
+    "status": "registered before coefficient-noise subtraction and source law scoring",
+    "entrypoint": "performance/adapt_historical_source_covariance.py",
+    "selection_plan": "performance/manifests/historical_source_structure_adaptation_v1.json",
+    "maps": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+    "coefficient_priors": "paper_artifacts/historical_prior_posterior_connection_v1/source_priors.json",
+    "source_fields": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/frozen_inputs.json",
+    "source_components": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/mixtures.json",
+    "proposal_arm": "joint_spectral_geometry",
+    "source_roster": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "family": "InventorySupplyChain",
+    "hierarchy": "Four task draws in one family. Reuse V47 centered fit-noise subtraction,not the old multiple-family/episode hierarchy or channel-role blocks. Estimate each task's coefficients on its12 cached batches using the old weighted ridge solver;push declared label noise through the actual estimator. Preserve shared-mean fit uncertainty separately. Corrected covariance has rank at most3. Do not rename task IDs as different business families or fabricate repeated source episodes.",
+    "ridge": 0.001,
+    "treatments": [
+      "observed_task",
+      "deconvolved_task"
+    ],
+    "common_prior": "Use the previous normalized finite coefficient covariance as a frozen common-function regularizer,with its prior mean and point-discrepancy unchanged. This is a newly declared source-only reference hierarchy;the common regularizer is not re-estimated or advertised as the old96-coefficient law. Source task residual covariance alone changes between paired treatments.",
+    "source_conditioning": "Reuse common_replay to condition64 Gaussian-label source laws. Save unconditioned common/task populations separately from conditioned beta/H. The Gaussian posterior must not serve as a prior in subsequent raw-source reweighting.",
+    "raw_contract": "For each of16 matched f/eta_f source references,score the existing512 correlated eta48 states by the new unconditioned eta prior and collapsed Gaussian-f/chi-square batch likelihood relative to the current source posterior proposal. The chi-square likelihood cancels in the ratio but remains in both absolute batch evaluations. New maps live in the common48 source function-value space;no old96-coefficient posterior is attached to a new coefficient map. No Gaussian eta-label likelihood is added to the raw update.",
+    "precision_gates": {
+      "minimum_weight_ESS": 200,
+      "minimum_chain_functional_ESS": 100,
+      "maximum_Rhat": 1.05,
+      "maximum_half_NLL_difference": 0.02
+    },
+    "verification": "Exact product quadrature with no latent task differences checks that centered fit-noise subtraction has zero expectation while common-mean fit covariance survives. Existing exchangeable-mean tests exercise preserved behavior. Check actual estimator covariance and common/task off-block covariance against independent dense source constructions before interpreting results. Raw unchanged-law identity and density normalization must match. A proposal-overlap failure leaves all reference laws HOLD;do not sample additional chains or tune tails to rescue it.",
+    "maximum_single_thread_cpu_seconds": 15,
+    "execution": "Local serial single-thread,existing small JSON;CPU interrupt inside calculation. No scheduler/server work,pulls,new source6/7,task0 scoring,independent targets,simulator/verifier calls,source chains or manuscript edits.",
+    "output": "paper_artifacts/historical_source_covariance_adaptation_v1"
+  },
+  "coefficient_heads": 32,
+  "source_laws": 64,
+  "complete_map_families": 8,
+  "all_registered_cases_complete": true,
+  "raw_importance_cases": 16,
+  "eligible_raw_importance_cases": 0,
+  "checks": [
+    {
+      "layout": "5",
+      "Gaussian_prior_density_normalization_error": 1.4210854715202004e-14,
+      "raw_mean_and_variance_density_error": 0.0,
+      "unchanged_raw_law_ratio": 0.0,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "treatment": "observed_task",
+      "independent_common_task_block_covariance_error": 1.3877787807814457e-17,
+      "new_task_inherits_common_uncertainty_and_an_independent_task_residual": true,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "treatment": "deconvolved_task",
+      "independent_common_task_block_covariance_error": 6.938893903907228e-18,
+      "new_task_inherits_common_uncertainty_and_an_independent_task_residual": true,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "Gaussian_prior_density_normalization_error": 0.0,
+      "raw_mean_and_variance_density_error": 0.0,
+      "unchanged_raw_law_ratio": 0.0,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "treatment": "observed_task",
+      "independent_common_task_block_covariance_error": 1.3877787807814457e-17,
+      "new_task_inherits_common_uncertainty_and_an_independent_task_residual": true,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "treatment": "deconvolved_task",
+      "independent_common_task_block_covariance_error": 1.3877787807814457e-17,
+      "new_task_inherits_common_uncertainty_and_an_independent_task_residual": true,
+      "passed": true
+    }
+  ],
+  "cpu_seconds": 1.383371031,
+  "cost": {
+    "new_selector_fits": 0,
+    "source_coefficient_fits": 128,
+    "Gaussian_source_conditionings": 64,
+    "cached_raw_source_likelihood_evaluations": 9216,
+    "new_source_chains": 0,
+    "new_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "new_target_predictions": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "limitations": "Four related Inventory tasks,not four business families. Frozen source maps and previous finite coefficient regularizers remain empirical-Bayes estimates. Ridge-fit noise subtraction concerns fitted coefficients and does not remove ridge bias. Source Gaussian label conditioning is a reference,including the eta-label approximation. Raw importance uses f/eta_f ordinary batches once,not an additional Gaussian eta-label likelihood;proposal failures do not rank laws or supply a new posterior. No g/eta_g raw-source proposal or full joint-four-head posterior is claimed.",
+  "summary": {
+    "removed_task_trace_fraction_by_head": {
+      "f": {
+        "minimum": 0.0027375988016182795,
+        "maximum": 0.021288229812776116
+      },
+      "g": {
+        "minimum": 0.002334785806667794,
+        "maximum": 0.021802033081377403
+      },
+      "eta_g": {
+        "minimum": 0.25926117832647566,
+        "maximum": 0.8465260051818925
+      },
+      "eta_f": {
+        "minimum": 0.3532646680699295,
+        "maximum": 0.9404215036044902
+      }
+    },
+    "Gaussian_source_reference_NLL": {
+      "paired_cases": 32,
+      "improved_cases": 28,
+      "mean_deconvolved_minus_observed": -0.008869819441004295
+    },
+    "direct_raw_weight_ESS_range": [
+      1.0000001031386776,
+      1.9760578606766306
+    ],
+    "transported_raw_weight_ESS_range": [
+      9.169662330807157,
+      93.40648975194809
+    ],
+    "eligible_raw_source_posteriors": 0,
+    "source_posterior_attachment": "HOLD: cached proposal precision fails;no source law ranking or adoption"
+  }
+}

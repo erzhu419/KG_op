@@ -1,0 +1,1378 @@
+{
+  "rows": [
+    {
+      "task_id": "independent_inventory_00",
+      "task_index": 0,
+      "arm": "common_mean_structural",
+      "arm_index": 0,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 27,
+        "shortlist": [
+          27,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 99,
+      "predicted_reward": 0.7001802253424754,
+      "predicted_verification_calls": 250.3833612565817,
+      "verification_seed": 1600394244,
+      "logical_initialization_calls": 4,
+      "deployed": 27,
+      "verification": {
+        "status": "abstained_uncertified",
+        "certified": false,
+        "verification_budget": 342,
+        "safety_verification_budget": 342,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 346,
+        "selected_shortlist_rank": null,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": false,
+            "sample_count": 81,
+            "sample_mean": 0.005987716835572003,
+            "sample_std": 0.02082036043119645,
+            "upper_margin": 0.049000361385613415,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.04804103512261736,
+            "sample_std": 0.025768348423431783,
+            "upper_margin": 0.002615983149835688,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 2,
+            "certified": false,
+            "sample_count": 131,
+            "sample_mean": -0.043047559041896395,
+            "sample_std": 0.02332278502458546,
+            "upper_margin": 0.002769584315886295,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9644799413742846
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "neither_primary_nor_incumbent_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "task_index": 0,
+      "arm": "joint_population_structural",
+      "arm_index": 1,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 425,
+      "predicted_reward": 0.7954671786268035,
+      "predicted_verification_calls": 272.9561480128194,
+      "verification_seed": 843658117,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 260,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 264,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.06172247986446449,
+            "sample_std": 0.026422811899365763,
+            "upper_margin": -0.009778876681164235,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.04438458055124927,
+            "sample_std": 0.023562437218132528,
+            "upper_margin": 0.0019359205956963887,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "task_index": 0,
+      "arm": "joint_population_full",
+      "arm_index": 2,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 135,
+      "predicted_reward": 0.7188202372840227,
+      "predicted_verification_calls": 244.1076251867441,
+      "verification_seed": 4179244969,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 211,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 215,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 81,
+            "sample_mean": -0.05869009349757798,
+            "sample_std": 0.024185610030648896,
+            "upper_margin": -0.008725202115799115,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.044798829267836654,
+            "sample_std": 0.02582327123368078,
+            "upper_margin": 0.005966159672997608,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "task_index": 1,
+      "arm": "common_mean_structural",
+      "arm_index": 0,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 77,
+      "predicted_reward": 0.6787179629785927,
+      "predicted_verification_calls": 248.32821229157813,
+      "verification_seed": 289967741,
+      "logical_initialization_calls": 4,
+      "deployed": 4,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 227,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 16,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 231,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 81,
+            "sample_mean": -0.04529331276783723,
+            "sample_std": 0.018887919229208957,
+            "upper_margin": -0.006272885682504052,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.058733099868482685,
+            "sample_std": 0.022997560873007677,
+            "upper_margin": -0.01352306769170377,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": true,
+          "status": "challenger_dominates",
+          "challenger_dominates": true,
+          "objective_difference_definition": "challenger_minus_incumbent_for_minimization",
+          "sample_mean_difference": -0.011427139174325418,
+          "sample_std_difference": 0.0006904175258346305,
+          "standard_error": 0.0002440994571838528,
+          "one_sided_upper_confidence_bound": -0.010964673565237813,
+          "critical_value": 1.894578605061305,
+          "degrees_of_freedom": 7,
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 16,
+          "delta": 0.05,
+          "paired_common_random_numbers": true,
+          "comparison_stream_tag": 1329744452,
+          "comparison_stream_independent_from_search_and_safety": true,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "task_index": 1,
+      "arm": "joint_population_structural",
+      "arm_index": 1,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 425,
+      "predicted_reward": 0.7064041390935231,
+      "predicted_verification_calls": 280.4180222813188,
+      "verification_seed": 2063549006,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 276,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 16,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 280,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.06956956489521493,
+            "sample_std": 0.02573602738268857,
+            "upper_margin": -0.018976085330195097,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.056952014196426655,
+            "sample_std": 0.025302444678028706,
+            "upper_margin": -0.007210898416297358,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": true,
+          "status": "challenger_dominates",
+          "challenger_dominates": true,
+          "objective_difference_definition": "challenger_minus_incumbent_for_minimization",
+          "sample_mean_difference": -0.00839462715580383,
+          "sample_std_difference": 0.0022251583684123025,
+          "standard_error": 0.0007867122857591665,
+          "one_sided_upper_confidence_bound": -0.006904138890865637,
+          "critical_value": 1.894578605061305,
+          "degrees_of_freedom": 7,
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 16,
+          "delta": 0.05,
+          "paired_common_random_numbers": true,
+          "comparison_stream_tag": 1329744452,
+          "comparison_stream_independent_from_search_and_safety": true,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "task_index": 1,
+      "arm": "joint_population_full",
+      "arm_index": 2,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 135,
+      "predicted_reward": 0.7146487611479245,
+      "predicted_verification_calls": 244.03798971917922,
+      "verification_seed": 1722639855,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 227,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 16,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 231,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 81,
+            "sample_mean": -0.07123901625081418,
+            "sample_std": 0.025436693387719162,
+            "upper_margin": -0.018689520057895474,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.056557227873324074,
+            "sample_std": 0.025248569056903633,
+            "upper_margin": -0.006922024132217458,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": true,
+          "status": "challenger_dominates",
+          "challenger_dominates": true,
+          "objective_difference_definition": "challenger_minus_incumbent_for_minimization",
+          "sample_mean_difference": -0.007593413376762663,
+          "sample_std_difference": 0.0026224877967502692,
+          "standard_error": 0.0009271894523305418,
+          "one_sided_upper_confidence_bound": -0.00583678007753871,
+          "critical_value": 1.894578605061305,
+          "degrees_of_freedom": 7,
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 16,
+          "delta": 0.05,
+          "paired_common_random_numbers": true,
+          "comparison_stream_tag": 1329744452,
+          "comparison_stream_independent_from_search_and_safety": true,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "task_index": 2,
+      "arm": "common_mean_structural",
+      "arm_index": 0,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 27,
+        "shortlist": [
+          27,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 389,
+      "predicted_reward": 0.7336911174954055,
+      "predicted_verification_calls": 281.4566245252687,
+      "verification_seed": 3854904962,
+      "logical_initialization_calls": 4,
+      "deployed": 3,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 260,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 264,
+        "selected_shortlist_rank": 2,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": 0.010111021743786792,
+            "sample_std": 0.020729548712289356,
+            "upper_margin": 0.050862454883493516,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.07236661715057903,
+            "sample_std": 0.022824245207429567,
+            "upper_margin": -0.027497299663535882,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "challenger_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "task_index": 2,
+      "arm": "joint_population_structural",
+      "arm_index": 1,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 425,
+      "predicted_reward": 0.8019984946411787,
+      "predicted_verification_calls": 273.0939322338646,
+      "verification_seed": 1089241901,
+      "logical_initialization_calls": 4,
+      "deployed": 3,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 276,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 16,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 280,
+        "selected_shortlist_rank": 2,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.06175892783054934,
+            "sample_std": 0.02494659354539727,
+            "upper_margin": -0.012717366287725844,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.06816468698174685,
+            "sample_std": 0.02243574000043836,
+            "upper_margin": -0.024059117137591082,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": true,
+          "status": "incumbent_retained",
+          "challenger_dominates": false,
+          "objective_difference_definition": "challenger_minus_incumbent_for_minimization",
+          "sample_mean_difference": 0.0014860926006782169,
+          "sample_std_difference": 0.0021684123351699614,
+          "standard_error": 0.0007666495333036182,
+          "one_sided_upper_confidence_bound": 0.0029385704040554863,
+          "critical_value": 1.894578605061305,
+          "degrees_of_freedom": 7,
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 16,
+          "delta": 0.05,
+          "paired_common_random_numbers": true,
+          "comparison_stream_tag": 1329744452,
+          "comparison_stream_independent_from_search_and_safety": true,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "task_index": 2,
+      "arm": "joint_population_full",
+      "arm_index": 2,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 135,
+      "predicted_reward": 0.7501544848147225,
+      "predicted_verification_calls": 236.77500185278802,
+      "verification_seed": 834496417,
+      "logical_initialization_calls": 4,
+      "deployed": 3,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 227,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 16,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 231,
+        "selected_shortlist_rank": 2,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 81,
+            "sample_mean": -0.06587354505594722,
+            "sample_std": 0.023613246696698436,
+            "upper_margin": -0.01709109529029907,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.06738742974736994,
+            "sample_std": 0.026102344197305755,
+            "upper_margin": -0.01607382185799481,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": true,
+          "status": "incumbent_retained",
+          "challenger_dominates": false,
+          "objective_difference_definition": "challenger_minus_incumbent_for_minimization",
+          "sample_mean_difference": 0.0027635918067993176,
+          "sample_std_difference": 0.0025398818650383113,
+          "standard_error": 0.0008979838450906627,
+          "one_sided_upper_confidence_bound": 0.004464892787398773,
+          "critical_value": 1.894578605061305,
+          "degrees_of_freedom": 7,
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 16,
+          "delta": 0.05,
+          "paired_common_random_numbers": true,
+          "comparison_stream_tag": 1329744452,
+          "comparison_stream_independent_from_search_and_safety": true,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "task_index": 3,
+      "arm": "common_mean_structural",
+      "arm_index": 0,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 77,
+      "predicted_reward": 0.7600209143697316,
+      "predicted_verification_calls": 230.19486792072223,
+      "verification_seed": 3656318005,
+      "logical_initialization_calls": 4,
+      "deployed": 4,
+      "verification": {
+        "status": "abstained_uncertified",
+        "certified": false,
+        "verification_budget": 342,
+        "safety_verification_budget": 342,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 346,
+        "selected_shortlist_rank": null,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": false,
+            "sample_count": 81,
+            "sample_mean": -0.03877303403640469,
+            "sample_std": 0.02032298973245347,
+            "upper_margin": 0.003212095685287124,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.025971400940725746,
+            "sample_std": 0.02637926970003856,
+            "upper_margin": 0.02588660428531718,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 2,
+            "certified": false,
+            "sample_count": 131,
+            "sample_mean": -0.04062380159558058,
+            "sample_std": 0.023350558092397028,
+            "upper_margin": 0.005247901396828361,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9644799413742846
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "neither_primary_nor_incumbent_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "task_index": 3,
+      "arm": "joint_population_structural",
+      "arm_index": 1,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 425,
+      "predicted_reward": 0.7735211049140276,
+      "predicted_verification_calls": 272.64360273552336,
+      "verification_seed": 2437692241,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 260,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 264,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.07141081253823592,
+            "sample_std": 0.023263985895816016,
+            "upper_margin": -0.02567702551978588,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.02887084646035186,
+            "sample_std": 0.02700833933254113,
+            "upper_margin": 0.0242238228834174,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "task_index": 3,
+      "arm": "joint_population_full",
+      "arm_index": 2,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 425,
+      "predicted_reward": 0.7827855415823026,
+      "predicted_verification_calls": 272.40258617221326,
+      "verification_seed": 3760638788,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 260,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 264,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.07184577668516905,
+            "sample_std": 0.02636998550058079,
+            "upper_margin": -0.020006022914510417,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.03167061520328847,
+            "sample_std": 0.025082759551931687,
+            "upper_margin": 0.017638629924363804,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "task_index": 4,
+      "arm": "common_mean_structural",
+      "arm_index": 0,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 27,
+        "shortlist": [
+          27,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 99,
+      "predicted_reward": 0.6022206874981351,
+      "predicted_verification_calls": 272.7433595728768,
+      "verification_seed": 1005401728,
+      "logical_initialization_calls": 4,
+      "deployed": 3,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 211,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 215,
+        "selected_shortlist_rank": 2,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": false,
+            "sample_count": 81,
+            "sample_mean": 0.03357455201573274,
+            "sample_std": 0.02220879677415778,
+            "upper_margin": 0.07945555799964599,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.04869580256673095,
+            "sample_std": 0.02426925761561541,
+            "upper_margin": -0.0009857900237784725,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "challenger_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "task_index": 4,
+      "arm": "joint_population_structural",
+      "arm_index": 1,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "action_index": 425,
+      "predicted_reward": 0.6823034014074343,
+      "predicted_verification_calls": 283.0953589568104,
+      "verification_seed": 626551052,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 276,
+        "safety_verification_budget": 260,
+        "objective_comparison_budget": 16,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 280,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.08072934555639771,
+            "sample_std": 0.02616788301821749,
+            "upper_margin": -0.029286897386150645,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.04925431521439543,
+            "sample_std": 0.023838696541449565,
+            "upper_margin": -0.002390726347614336,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": true,
+          "status": "challenger_dominates",
+          "challenger_dominates": true,
+          "objective_difference_definition": "challenger_minus_incumbent_for_minimization",
+          "sample_mean_difference": -0.02205467411306236,
+          "sample_std_difference": 0.002967897259276987,
+          "standard_error": 0.0010493101389498632,
+          "one_sided_upper_confidence_bound": -0.020066673573734047,
+          "critical_value": 1.894578605061305,
+          "degrees_of_freedom": 7,
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 16,
+          "delta": 0.05,
+          "paired_common_random_numbers": true,
+          "comparison_stream_tag": 1329744452,
+          "comparison_stream_independent_from_search_and_safety": true,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "task_index": 4,
+      "arm": "joint_population_full",
+      "arm_index": 2,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          130,
+          131
+        ]
+      },
+      "action_index": 135,
+      "predicted_reward": 0.6539877807443764,
+      "predicted_verification_calls": 258.8646461640945,
+      "verification_seed": 248790823,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 211,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 215,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 81,
+            "sample_mean": -0.07912663534263903,
+            "sample_std": 0.022772835451050053,
+            "upper_margin": -0.0320803855964088,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": -0.044577340083829825,
+            "sample_std": 0.025163960346195564,
+            "upper_margin": 0.0048915346037449806,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "task_index": 5,
+      "arm": "common_mean_structural",
+      "arm_index": 0,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 27,
+        "shortlist": [
+          27,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "action_index": 244,
+      "predicted_reward": 0.47359571416446117,
+      "predicted_verification_calls": 298.61416887388145,
+      "verification_seed": 450108240,
+      "logical_initialization_calls": 4,
+      "deployed": 27,
+      "verification": {
+        "status": "abstained_uncertified",
+        "certified": false,
+        "verification_budget": 342,
+        "safety_verification_budget": 342,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 346,
+        "selected_shortlist_rank": null,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": false,
+            "sample_count": 130,
+            "sample_mean": 0.06139525847958518,
+            "sample_std": 0.023713614752205812,
+            "upper_margin": 0.1080129538036699,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 81,
+            "sample_mean": -0.01351347803468536,
+            "sample_std": 0.024934817341987252,
+            "upper_margin": 0.037999195763415344,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          },
+          {
+            "candidate_index": 2,
+            "certified": false,
+            "sample_count": 131,
+            "sample_mean": -0.027282634450631272,
+            "sample_std": 0.02304146594584884,
+            "upper_margin": 0.017981863219847436,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9644799413742846
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "neither_primary_nor_incumbent_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "task_index": 5,
+      "arm": "joint_population_structural",
+      "arm_index": 1,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "action_index": 280,
+      "predicted_reward": 0.550542165394359,
+      "predicted_verification_calls": 264.1485229745986,
+      "verification_seed": 1710064904,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 211,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 215,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.07375118005492881,
+            "sample_std": 0.02628081964801195,
+            "upper_margin": -0.022086714050045322,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 81,
+            "sample_mean": -0.014496601723240887,
+            "sample_std": 0.02472931512554058,
+            "upper_margin": 0.03659152640863676,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "task_index": 5,
+      "arm": "joint_population_full",
+      "arm_index": 2,
+      "retained_candidate": 22,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "action_index": 280,
+      "predicted_reward": 0.5744541108714052,
+      "predicted_verification_calls": 273.87689976600916,
+      "verification_seed": 3000653852,
+      "logical_initialization_calls": 4,
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 211,
+        "safety_verification_budget": 211,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 358,
+        "total_evaluation_count": 215,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 130,
+            "sample_mean": -0.07141267865528964,
+            "sample_std": 0.02486986940359403,
+            "upper_margin": -0.02252194619120254,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 1.9658620506073798
+          },
+          {
+            "candidate_index": 1,
+            "certified": false,
+            "sample_count": 81,
+            "sample_mean": -0.010336091963805614,
+            "sample_std": 0.027221211527102617,
+            "upper_margin": 0.045900028419700686,
+            "delta": 0.016666666666666666,
+            "tolerance_factor": 2.0658933687619006
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "incumbent_not_safety_certified",
+          "comparison_budget_per_policy": 8,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      }
+    }
+  ]
+}

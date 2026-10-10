@@ -1,0 +1,21 @@
+{
+  "status": "frozen before two updated source-intercept integrals and positive quadrature rules",
+  "fitted_results": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1/results.json",
+  "fitted_laws": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1/source_laws.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "old_slice_results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+  "entrypoint": "performance/prepare_legacy_f_predictive_shape_reference.py",
+  "law": "Fix each source-predictive shape allocation q and its diagonal task shape covariance. Integrate nonnegative independent task-intercept variance v under the same coherent source Gaussian likelihood and conditional Jeffreys sqrt(I(v))dv as the retained mixture. Recondition common beta/H at every v;keep original common A,empirical center,spectrum/support union,1% tail,discrepancy and known label noise. No variance floor,upper cutoff or averaged-Gaussian adoption.",
+  "numerics": "Reuse old source-only likelihood-slice upper point solely as an integration split;it is not a restriction of the new variance posterior. Reuse verified full-tail scalar/vector integration and positive adaptive-u composite rules. First passing4/8/16 nodes per adaptive interval;later raw prediction uses unchanged32-node refinement.",
+  "quadrature": {"relative_tolerance": 1e-8, "absolute_tolerance_for_scaled_integrals": 1e-9, "maximum_subintervals": 128},
+  "posterior_quantile_probabilities": [0.025, 0.5, 0.975],
+  "dense_verification_deleted_task": 1,
+  "dense_verification_variance_over_source_signal": 0.1,
+  "nodes_per_subinterval_resolutions": [4, 8, 16],
+  "tolerances": {"raw_mass_absolute": 1e-8, "mean_variance_relative": 1e-6, "coefficient_mean_max_absolute": 1e-8, "common_covariance_relative_frobenius": 1e-6, "second_moment_extra_relative": 1e-6},
+  "verification": "Updated fitted source NLL,beta/H reproduced at original independent intercept point;dense interior likelihood/Fisher/beta/H agree. Scalar/vector full-tail integration and positive-rule moments must pass original numerical criteria. Failure preserves artifacts and stops prediction preparation.",
+  "cost": {"new_source_fits": 0, "maximum_source_variance_integrations": 2, "new_outer_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;source training JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_predictive_shape_reference_v1",
+  "decision": "Two verified source rules permit a separately frozen two-task1 pilot at both fixed public and already-frozen old source-greedy four-prefixes. All controls,numerical tolerances and scientific gates stay;no prefix reselection or source6/7,target,KG,confirmation,manuscript changes. Complete-model HOLD remains."
+}

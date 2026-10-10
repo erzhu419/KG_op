@@ -1,0 +1,124 @@
+{
+  "status": "Registered before current-prior cross-structure evidence evaluation on retained historical banks.",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "source_learning": "paper_artifacts/historical_last_joint_precision_v1/source_candidates.json",
+  "source_precision": "paper_artifacts/historical_last_joint_precision_v1/source_precision.json",
+  "candidate_identities": [
+    [
+      "5",
+      "additive",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "additive",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "5",
+      "additive",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "additive",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "6",
+      "additive",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "additive",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "6",
+      "additive",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "additive",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "joint",
+      "observed_task"
+    ]
+  ],
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "maximum_single_thread_cpu_seconds": 45,
+  "output": "paper_artifacts/historical_cross_structure_evidence_v1",
+  "scope": "All8 actual source structures in each of two layouts,each on its own identical ordered48 raw mean/variance batches. Freeze one reference per layout before evaluation. Compare normalized scientific risk priors and collapsed raw likelihoods,including changed response/risk means and covariance determinants. Reuse saved posterior components and positive masses in both directions. Require original evidence precision gates and overlapping directional intervals. Never compare evidence across the unequal layout data contracts,normalize a passing subset,read target labels,refit priors or sample. Within-layout Bayes factors share one unknown reference normalizer,which cancels from weights. Empirical source-fitted likelihood comparisons are not source validation or independent decision evidence.",
+  "source_row_alignment": "Within-layout comparisons preserve their own ordered48 task-policy batches. Layout5/layout6 site sets differ and their evidence normalizers are never combined.",
+  "execution_incident": "Two initial preparations stopped before evidence comparisons:positional rows differed,and complete task-policy sets then revealed32 common and16 differing batches per layout. Registered all8 within-layout structures separately before evaluating evidence;failed-preparation CPU not recorded.",
+  "reference_identities_by_layout": {
+    "5": [
+      "5",
+      "spectral",
+      "head_specific",
+      "observed_task"
+    ],
+    "6": [
+      "6",
+      "spectral",
+      "head_specific",
+      "observed_task"
+    ]
+  },
+  "cross_layout_observation_contract": {
+    "layout5_source_batches": 48,
+    "layout6_source_batches": 48,
+    "shared_batches": 32,
+    "different_batches_in_each_layout": 16,
+    "common_cross_layout_normalizer_valid": false
+  }
+}

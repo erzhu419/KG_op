@@ -1,0 +1,40 @@
+{
+  "status": "completed Stage65: training-task rule retains independent for both assignments; correlation-only stopped",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "deleted_mean_execution": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_execution_v1.json",
+  "failed_additive_taskout_results": "paper_artifacts/legacy_joint_population_paired_taskout_validation_v1/results.json",
+  "variance_confound": "paper_artifacts/legacy_joint_population_paired_taskout_validation_v1/source_variance_confound.json",
+  "four_field_execution": "performance/manifests/legacy_joint_population_paired_function_risk_filter_execution_v2.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "basis_of_next_step": "Additive paired covariance lowers source training NLL but loses joint and g whole-task-out Gaussian mean density under both assignments. It also amplifies g marginal task variance along its selected direction by4.209/3.557. Separate correlation from this extra marginal variance using a single bounded correlation parameter, without increasing source information or fitting more mean spectra.",
+  "covariance_law": "Keep native task covariance blocks R_f,R_g and common prior covariance fixed. From the training-only paired direction v normalize each head u_h=v_h/sqrt(v_h^T R_h^{-1} v_h) on its positive native support. Set R(gamma)=[[R_f,gamma*u_f*u_g^T],[gamma*u_g*u_f^T,R_g]], gamma in[-1,1]. This preserves each task marginal covariance, is PSD, and retains the original orthogonal low-order basis and group/spectral marginal laws. Source conditioning still updates the common posterior.",
+  "source_fit": "Fit only gamma by paired Gaussian source marginal likelihood, starting at0 with original optimizer tolerances. Export full common posterior and task covariance. Do not add the earlier within-head task directions or refit ARD/spectra/risk maps.",
+  "validation_first": "Reuse the12 cached60-record native mean branches. Recompute direction and fit gamma using only the remaining five tasks for each deletion; freeze all12 fits and24 independent/correlation-only whole-task forecasts before scoring deleted source sample means with identical estimated mean noise.",
+  "selection_rule": "Choose correlation-only for both assignments only if its aggregate whole-task-out joint density improves and g density does not decrease in BOTH assignments. Otherwise retain independent for both and stop this family before full-source or paid holdout work. No selection by source tasks6/7 or target outcomes.",
+  "checks": "At gamma0 reproduce native independent source NLL/common posterior; compare correlation gradient to an independent dense marginal finite difference. Check actual fitted task diagonal blocks equal native ones and the source posterior retains cross-head covariance.",
+  "conditional_full_fit": "Only a family selected by the training-task rule receives two full72-record gamma fits. Register four-field paid source forecasts separately and apply the unchanged same216-call and original144-call source gates. Existing Stage53\u201364 failures remain; no target or KG work follows automatically.",
+  "cost": "At most12 deletion scalar fits and, conditional on training validation,2 full scalar fits. All native means, risk laws and Gaussian field interfaces are reused. No new simulator/verifier calls, risk fits or terminal integrations.",
+  "interpretation": "Source-only function-correlation ablation with native task marginal variances. It does not learn physical risk factors or establish independent deployment/KG value.",
+  "execution": "local serial single-thread and cached small JSON; no target archive reads, server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_fixed_marginal_correlation_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_fixed_marginal_correlation_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_fixed_marginal_correlation_v1/results.json",
+  "diagnostics": "paper_artifacts/legacy_joint_population_fixed_marginal_correlation_v1/diagnostics.json",
+  "next_stage_completed": "performance/manifests/legacy_joint_population_training_paid_adaptation_execution_v1.json",
+  "next_plan": "performance/manifests/legacy_joint_population_paid_covariance_gain_plan_v1.json"
+}

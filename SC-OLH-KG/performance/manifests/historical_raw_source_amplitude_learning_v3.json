@@ -1,0 +1,31 @@
+{
+  "status": "registered before the third source-only covariance iteration",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v2/results.json",
+  "previous_precision": "paper_artifacts/historical_raw_source_amplitude_learning_v2/phase_results.json",
+  "maximum_single_thread_cpu_seconds": 90,
+  "optimizer": {
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "scope": "All64 heads continue from the certified32 round2 mixtures,using the same source templates,means,raw likelihood,sparse/spectral/additive maps,white discrepancy,Q and precision gates. Track consecutive source-stationarity iterations;refresh only new-law HOLD cases. This batch uses existing local labels and one CPU thread,without target outcomes or server work.",
+  "cost": {
+    "new_source_labels": 0,
+    "new_source_MCMC_sweeps": 0,
+    "new_covariance_Mstep_optimizations": 64,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_raw_source_amplitude_learning_v3"
+}

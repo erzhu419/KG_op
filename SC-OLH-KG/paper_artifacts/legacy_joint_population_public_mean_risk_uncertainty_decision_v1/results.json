@@ -1,0 +1,1409 @@
+{
+  "execution": {
+    "status": "registered after Stage35 prediction scoring and before all36 cached action choices",
+    "prediction_execution": "performance/manifests/legacy_joint_population_public_mean_risk_uncertainty_execution_v1.json",
+    "prediction_results": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1/results.json",
+    "prediction_inputs": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1/inputs.json",
+    "target_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1/inputs.json",
+    "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+    "output": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_decision_v1",
+    "mean_arms": [
+      "joint_structural",
+      "flat",
+      "joint_gp"
+    ],
+    "risk_cases": [
+      "single_full144_risk",
+      "full_plus_six_relearned_map_deletion_risks"
+    ],
+    "basis_of_next_step": "On both opened source holdouts, refitted-map mixtures improve proper joint and g batch predictive densities for every mean law. Structural joint score improves .372880 to .592232. Assess whether this predictive improvement changes decisions; the choice of uncertainty treatment follows source scores, not the more favorable target63 fixed-map plug-in margins.",
+    "source_information": "all six arms use the same144 historical paired response calls,48 labels; restore cached source mean and risk priors without fitting. Uniform1/7 initial identity weights, updated only by the same two paid raw observations, as frozen in Stage35.",
+    "model_law": "integrate all seven complete paired f/eta_f and g/eta_g hypotheses once per mean arm and target, preserving shared identity. The single-risk arm reuses component0 exactly; the uncertainty arm averages rewards and costs with updated shared identity weights before maximization. Never average component-optimal actions or treat mixture heads independently.",
+    "target_prefix": 2,
+    "total_target_call_cap": 362,
+    "target_tasks": 6,
+    "primary_candidates": 73,
+    "public_retained_candidate": 2,
+    "terminal_draw_power": 13,
+    "integration_seed": 80771,
+    "bootstrap_seed": 80811,
+    "bootstrap_draws": 10000,
+    "freeze_rule": "save all36 recommendations and component utilities before opening cached outcome/feasibility truth in the action runner; source/target predictions reproduce Stage35 forecasts before integrations. Target tasks are already opened development tasks, not confirmation.",
+    "scoring": "same guarded/direct terminal class and analytic conditional verifier utility as Stage31; infeasible policies contribute zero safe utility. Report every action, actual-truth conditional utility/calls, safe-primary counts and paired task-bootstrap differences. No new stochastic certificates or paid-search observations.",
+    "progress_rule": "report all results, including failed or unchanged actions. Separate uncertainty-treatment effects from structural-versus-flat/GP effects. A positive calibration effect alone does not authorize a KG or independent-deployment claim; register the next step after reading actual choices and utility.",
+    "execution": "local serial single-thread;126 component terminal integrations=3 mean laws x6 targets x7 identities, with18 single-risk results reused. New source fits, simulator/verifier calls, server dispatch and pulls all0.",
+    "interpretation": "opened-target144-source-call decision attribution within source-learned risk prior plus raw paid adaptation; orthogonal low-order function priors retained. No target-truth tuning, stable population advantage or complete KG conclusion."
+  },
+  "rows": [
+    {
+      "task_id": "independent_inventory_00",
+      "mean_arm": "joint_structural",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_structural/single_full144_risk",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.3533864697567402,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.01677591752849711,
+      "scores": {
+        "conditional_safe_reward": 0.8048871591588074,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.006024730272753298
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "mean_arm": "joint_structural",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.3613061188723696,
+      "predicted_verification_calls": 359.9999999999999,
+      "predicted_first_second_reward_gap": 0.015282026271046467,
+      "scores": {
+        "conditional_safe_reward": 0.8048871591588074,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.006024730272753298
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "mean_arm": "flat",
+      "risk_case": "single_full144_risk",
+      "arm": "flat/single_full144_risk",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.48449377175467007,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.016057249541235163,
+      "scores": {
+        "conditional_safe_reward": 0.8104520613955185,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0004598280360421647
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "mean_arm": "flat",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5224582840392149,
+      "predicted_verification_calls": 360.0000000000001,
+      "predicted_first_second_reward_gap": 0.0056319010481648,
+      "scores": {
+        "conditional_safe_reward": 0.8104520613955185,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0004598280360421647
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "mean_arm": "joint_gp",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_gp/single_full144_risk",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.8167818474150945,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0012483745358151666,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8109118894315607
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "mean_arm": "joint_gp",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.7522682219535436,
+      "predicted_verification_calls": 360.0000000000001,
+      "predicted_first_second_reward_gap": 0.004821083690604744,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8109118894315607
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "mean_arm": "joint_structural",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_structural/single_full144_risk",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.3522710315287533,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.016692157278103914,
+      "scores": {
+        "conditional_safe_reward": 0.8050975076563087,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.002478539181662409
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "mean_arm": "joint_structural",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.35266025779508986,
+      "predicted_verification_calls": 360.0000000000001,
+      "predicted_first_second_reward_gap": 0.015219476130389098,
+      "scores": {
+        "conditional_safe_reward": 0.8050975076563087,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.002478539181662409
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "mean_arm": "flat",
+      "risk_case": "single_full144_risk",
+      "arm": "flat/single_full144_risk",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.33378051919007945,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0005130754603255294,
+      "scores": {
+        "conditional_safe_reward": 0.8075760468379711,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "mean_arm": "flat",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.37587131251891126,
+      "predicted_verification_calls": 360.00000000000006,
+      "predicted_first_second_reward_gap": 0.013368841439233059,
+      "scores": {
+        "conditional_safe_reward": 0.8075760468379711,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "mean_arm": "joint_gp",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_gp/single_full144_risk",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.7879538021323431,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0028064327334860195,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8075760468379711
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "mean_arm": "joint_gp",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.7014400980871273,
+      "predicted_verification_calls": 359.9999999999999,
+      "predicted_first_second_reward_gap": 0.00924762400417023,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8075760468379711
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "mean_arm": "joint_structural",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_structural/single_full144_risk",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.3624632745874639,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.01692584309044548,
+      "scores": {
+        "conditional_safe_reward": 0.8027136279863785,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.006619064516663387
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "mean_arm": "joint_structural",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.3699462948506771,
+      "predicted_verification_calls": 359.99999999999994,
+      "predicted_first_second_reward_gap": 0.015393406547352051,
+      "scores": {
+        "conditional_safe_reward": 0.8027136279863785,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.006619064516663387
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "mean_arm": "flat",
+      "risk_case": "single_full144_risk",
+      "arm": "flat/single_full144_risk",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.4703196710037597,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.009462933493770587,
+      "scores": {
+        "conditional_safe_reward": 0.8093317520875238,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 9.404155180137153e-07
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "mean_arm": "flat",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5099460137642844,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0009212910466395163,
+      "scores": {
+        "conditional_safe_reward": 0.8093326925030419,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "mean_arm": "joint_gp",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_gp/single_full144_risk",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.819094508301884,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0015170978240860444,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8093326925030419
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "mean_arm": "joint_gp",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.7539127986805135,
+      "predicted_verification_calls": 360.00000000000017,
+      "predicted_first_second_reward_gap": 0.007097877916458328,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8093326925030419
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "mean_arm": "joint_structural",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_structural/single_full144_risk",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.33353021929271687,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.016370948349877568,
+      "scores": {
+        "conditional_safe_reward": 0.8058333231204656,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "mean_arm": "joint_structural",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.331565987763422,
+      "predicted_verification_calls": 360.0000000000001,
+      "predicted_first_second_reward_gap": 0.01484471081651384,
+      "scores": {
+        "conditional_safe_reward": 0.8058333231204656,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "mean_arm": "flat",
+      "risk_case": "single_full144_risk",
+      "arm": "flat/single_full144_risk",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.23028310678967906,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.002196443948763893,
+      "scores": {
+        "conditional_safe_reward": 0.7911905166022546,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.014642806518211038
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "mean_arm": "flat",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.2578131669329548,
+      "predicted_verification_calls": 359.99999999999994,
+      "predicted_first_second_reward_gap": 0.014075619820760388,
+      "scores": {
+        "conditional_safe_reward": 0.7911905166022546,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.014642806518211038
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "mean_arm": "joint_gp",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_gp/single_full144_risk",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.7402475952152833,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.004810902149538054,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8058333231204656
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "mean_arm": "joint_gp",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6341041985359344,
+      "predicted_verification_calls": 360.0000000000001,
+      "predicted_first_second_reward_gap": 0.010853971745107827,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8058333231204656
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "mean_arm": "joint_structural",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_structural/single_full144_risk",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.340959236099102,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.016434591888862538,
+      "scores": {
+        "conditional_safe_reward": 0.8087588794003892,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "mean_arm": "joint_structural",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.34032728498719234,
+      "predicted_verification_calls": 360.00000000000006,
+      "predicted_first_second_reward_gap": 0.014970908679878603,
+      "scores": {
+        "conditional_safe_reward": 0.8087588794003892,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "mean_arm": "flat",
+      "risk_case": "single_full144_risk",
+      "arm": "flat/single_full144_risk",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.34263023190160696,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.006183420376349391,
+      "scores": {
+        "conditional_safe_reward": 0.8071714342855252,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0015874451148639723
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "mean_arm": "flat",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.37746731988570054,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.006344666808218158,
+      "scores": {
+        "conditional_safe_reward": 0.8077024388470673,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0010564405533218801
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "mean_arm": "joint_gp",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_gp/single_full144_risk",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.7772636793853458,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0027036282795757094,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8087588794003892
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "mean_arm": "joint_gp",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6902639608062908,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.009091880838285271,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8087588794003892
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "mean_arm": "joint_structural",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_structural/single_full144_risk",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.35017413080730786,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.016625042466203832,
+      "scores": {
+        "conditional_safe_reward": 0.8064411037610472,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "mean_arm": "joint_structural",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.34998994512604653,
+      "predicted_verification_calls": 359.99999999999983,
+      "predicted_first_second_reward_gap": 0.01515370703591118,
+      "scores": {
+        "conditional_safe_reward": 0.8064411037610472,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "mean_arm": "flat",
+      "risk_case": "single_full144_risk",
+      "arm": "flat/single_full144_risk",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.32155886433429093,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0011179899168777818,
+      "scores": {
+        "conditional_safe_reward": 0.3586023251083658,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.44783877865268135
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "mean_arm": "flat",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.3623262771716579,
+      "predicted_verification_calls": 360.0000000000001,
+      "predicted_first_second_reward_gap": 0.014007592212319675,
+      "scores": {
+        "conditional_safe_reward": 0.3586023251083658,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true,
+        "loss_to_best_same_class": 0.44783877865268135
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "mean_arm": "joint_gp",
+      "risk_case": "single_full144_risk",
+      "arm": "joint_gp/single_full144_risk",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.779825784847614,
+      "predicted_verification_calls": 360.0,
+      "predicted_first_second_reward_gap": 0.0028852979665137113,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8064411037610472
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "mean_arm": "joint_gp",
+      "risk_case": "full_plus_six_relearned_map_deletion_risks",
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "action_index": 572,
+      "action": {
+        "kind": "direct",
+        "primary": 70,
+        "shortlist": [
+          70
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6915907963541751,
+      "predicted_verification_calls": 360.00000000000017,
+      "predicted_first_second_reward_gap": 0.009372361662827289,
+      "scores": {
+        "conditional_safe_reward": 0.0,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": false,
+        "loss_to_best_same_class": 0.8064411037610472
+      }
+    }
+  ],
+  "summary": {
+    "joint_structural/single_full144_risk": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.8056219335138994,
+      "conditional_total_calls": 362.0,
+      "loss_to_best_same_class": 0.002520388995179849
+    },
+    "joint_structural/full_plus_six_relearned_map_deletion_risks": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.8056219335138994,
+      "conditional_total_calls": 362.0,
+      "loss_to_best_same_class": 0.002520388995179849
+    },
+    "flat/single_full144_risk": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.7307206893861932,
+      "conditional_total_calls": 362.0,
+      "loss_to_best_same_class": 0.0774216331228861
+    },
+    "flat/full_plus_six_relearned_map_deletion_risks": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.7308093468823698,
+      "conditional_total_calls": 362.0,
+      "loss_to_best_same_class": 0.0773329756267094
+    },
+    "joint_gp/single_full144_risk": {
+      "feasible_primary_count": 0,
+      "conditional_safe_reward": 0.0,
+      "conditional_total_calls": 362.0,
+      "loss_to_best_same_class": 0.8081423225090792
+    },
+    "joint_gp/full_plus_six_relearned_map_deletion_risks": {
+      "feasible_primary_count": 0,
+      "conditional_safe_reward": 0.0,
+      "conditional_total_calls": 362.0,
+      "loss_to_best_same_class": 0.8081423225090792
+    }
+  },
+  "paired_comparisons": [
+    {
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "reference": "joint_structural/single_full144_risk",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "flat/full_plus_six_relearned_map_deletion_risks",
+      "reference": "flat/single_full144_risk",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0,
+            0.0,
+            9.404155180137153e-07,
+            0.0,
+            0.0005310045615420922,
+            0.0
+          ],
+          "mean_difference": 8.865749617668432e-05,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.00026565901669071507
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "reference": "joint_gp/single_full144_risk",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_structural/single_full144_risk",
+      "reference": "flat/single_full144_risk",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.005564902236711133,
+            -0.002478539181662409,
+            -0.006618124101145373,
+            0.014642806518211038,
+            0.0015874451148639723,
+            0.44783877865268135
+          ],
+          "mean_difference": 0.07490124412770624,
+          "task_bootstrap_95_interval": [
+            -0.004033987479679535,
+            0.22501928350964692
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_structural/single_full144_risk",
+      "reference": "joint_gp/single_full144_risk",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.8048871591588074,
+            0.8050975076563087,
+            0.8027136279863785,
+            0.8058333231204656,
+            0.8087588794003892,
+            0.8064411037610472
+          ],
+          "mean_difference": 0.8056219335138994,
+          "task_bootstrap_95_interval": [
+            0.8041977068509146,
+            0.8071170681295551
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "reference": "flat/full_plus_six_relearned_map_deletion_risks",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.005564902236711133,
+            -0.002478539181662409,
+            -0.006619064516663387,
+            0.014642806518211038,
+            0.0010564405533218801,
+            0.44783877865268135
+          ],
+          "mean_difference": 0.07481258663152955,
+          "task_bootstrap_95_interval": [
+            -0.00412264497585622,
+            0.22501928350964692
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_structural/full_plus_six_relearned_map_deletion_risks",
+      "reference": "joint_gp/full_plus_six_relearned_map_deletion_risks",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.8048871591588074,
+            0.8050975076563087,
+            0.8027136279863785,
+            0.8058333231204656,
+            0.8087588794003892,
+            0.8064411037610472
+          ],
+          "mean_difference": 0.8056219335138994,
+          "task_bootstrap_95_interval": [
+            0.8041977068509146,
+            0.8071170681295551
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  ],
+  "same_class_oracle": [
+    {
+      "task_id": "independent_inventory_00",
+      "conditional_safe_reward": 0.8109118894315607,
+      "action": {
+        "kind": "guarded",
+        "primary": 71,
+        "shortlist": [
+          71,
+          1,
+          0
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "conditional_safe_reward": 0.8075760468379711,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "conditional_safe_reward": 0.8093326925030419,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "conditional_safe_reward": 0.8058333231204656,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "conditional_safe_reward": 0.8087588794003892,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "conditional_safe_reward": 0.8064411037610472,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      }
+    }
+  ],
+  "stage35_forecast_reproduction_passed": true,
+  "cost": {
+    "historical_source_calls_per_arm": 144,
+    "new_source_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 126,
+    "reused_single_risk_integrations": 18
+  },
+  "cpu_seconds": 772.706173238
+}

@@ -1,0 +1,348 @@
+{
+  "execution": {
+    "status": "registered after both Stage80 transcript fits converged and passed the unchanged development gate, before all four fixed-parameter source6/7 forecasts or scores",
+    "calibration_execution": "performance/manifests/legacy_joint_population_task_transcript_calibration_execution_v1.json",
+    "calibration_results": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1/results.json",
+    "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "fixed_multipliers": {
+      "5": [
+        0.8560570510647199,
+        0.8038509228156204
+      ],
+      "6": [
+        3.6872687914154487,
+        0.4940610402231142
+      ]
+    },
+    "basis_of_next_step": "Source-only whole-transcript predictive calibration converges from the same native start. Task-intercept/function multipliers are(.8561,.8039)/(3.6873,.4941), replacing the conditional-only345-fold intercept. Sequential objective improves .000901/.016593; the unchanged training paid-MSE/raw-density development gate passes both assignments. Source6/7 have not selected these parameters. Test the fixed calibrated law using the same original repair gate and retain all failures.",
+    "candidate": "Use Stage72 cached full-source selected native beta,H,R,delta. Keep beta,H,delta and the original weak tail unchanged. Scale native task intercept variance by a and non-intercept excess above the weak tail by b, using the fixed Stage77 pair for its assignment. Save the new predictive-prior parameters as calibration, not a native source-likelihood fit. No source or risk refit, new spectrum/support, target observations or parameter change.",
+    "information_contract": "Original216-call mean information,144-call risk subset, unchanged full/six-deletion risk-only identities and equal prior weights. Use the same complete73-policy bank and paired raw observations0/1. Keep f/eta laws and Gaussian moment updates unchanged.",
+    "freeze_rule": "Save both full-source calibrated prior laws before indexing heldout paid observations. At a=b=1 reproduce native four-head prior/paid moments, episode variance, identity names/weights and paid predictive density at all73 policies. Freeze all four calibrated prior/paid forecasts before71-site scoring. No family selection or multiplier change on these opened development holdouts.",
+    "comparison": "Keep Stage53 same216-call native and GP, Stage72 selected native, and original144-call structural controls separate. Original repair gate stays g MSE nonincrease, joint raw batch density nondecrease and g raw batch density strict improvement in every case, against both same-information and144-call structural controls. Report all regressions and prior uncertainty changes; a training acceptance pass is not a source gate pass.",
+    "next_action": "A passing source gate permits only a separately registered bounded target decision diagnostic. Otherwise stop target promotion and diagnose the fit/transfer limitation from cached parameters and forecasts. Do not cap the large multiplier or search variants using source6/7, launch a covariance grid or waive failed cases.",
+    "cost": {
+      "new_scalar_fits": 0,
+      "new_native_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+    "entrypoint": "performance/check_legacy_task_transcript_holdout.py",
+    "output": "paper_artifacts/legacy_joint_population_task_transcript_holdout_v1",
+    "previous_holdout_execution": "performance/manifests/legacy_joint_population_task_transfer_holdout_execution_v1.json"
+  },
+  "summary": {
+    "5": {
+      "calibrated": {
+        "observed_head_mse": [
+          0.00019690800284883717,
+          0.0013561534106810084,
+          2.306807677797711,
+          2.533781612892666
+        ],
+        "joint_batch_log_score": 1.114896390827388,
+        "response_batch_log_scores": [
+          1.0947404770204434,
+          0.024406860056149615
+        ]
+      },
+      "native": {
+        "observed_head_mse": [
+          0.00019690732826480576,
+          0.0013673164485834988,
+          2.3066340605301514,
+          2.53359603504585
+        ],
+        "joint_batch_log_score": 1.0998359610061297,
+        "response_batch_log_scores": [
+          1.0947620855596472,
+          0.00934164468816151
+        ]
+      },
+      "gp": {
+        "observed_head_mse": [
+          0.00015302038718630165,
+          0.0012101979713561248,
+          2.330621582283259,
+          2.531468301370953
+        ],
+        "joint_batch_log_score": 1.3874744062879094,
+        "response_batch_log_scores": [
+          1.3069797026857457,
+          0.08186589007267484
+        ]
+      }
+    },
+    "6": {
+      "calibrated": {
+        "observed_head_mse": [
+          0.00020971351174006877,
+          0.0010683949480979965,
+          2.0496596428181597,
+          2.5324543342758687
+        ],
+        "joint_batch_log_score": 1.1500541592644675,
+        "response_batch_log_scores": [
+          1.0513130133529787,
+          0.10113890616094473
+        ]
+      },
+      "native": {
+        "observed_head_mse": [
+          0.00020971434387379652,
+          0.001241567331510946,
+          2.049542883950001,
+          2.5321703948930936
+        ],
+        "joint_batch_log_score": 1.123456138163191,
+        "response_batch_log_scores": [
+          1.051427648023326,
+          0.0744770251357193
+        ]
+      },
+      "gp": {
+        "observed_head_mse": [
+          0.0001398043989805426,
+          0.0011407142991697035,
+          2.0531568626903764,
+          2.5106615413337763
+        ],
+        "joint_batch_log_score": 1.5040418486384302,
+        "response_batch_log_scores": [
+          1.3318281013634024,
+          0.16846909653730502
+        ]
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": 7.802867996376819e-06,
+      "joint_batch_score_difference": 0.013864023758787036,
+      "g_batch_score_difference": 0.013903738979296004,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": -3.1391843842072794e-05,
+      "joint_batch_score_difference": 0.016606731065499702,
+      "g_batch_score_difference": 0.01657693677895858,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": 9.671310771314917e-05,
+      "joint_batch_score_difference": 0.0062238926549011975,
+      "g_batch_score_difference": 0.0063569606791904765,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": -0.0004430578745390481,
+      "joint_batch_score_difference": 0.04697214954765205,
+      "g_batch_score_difference": 0.046966801371260386,
+      "passed": true
+    }
+  ],
+  "parent_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.00013990711322460535,
+      "joint_batch_score_difference": 0.16152764593784186,
+      "g_batch_score_difference": 0.08044545963115554,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": 3.549563381461968e-05,
+      "joint_batch_score_difference": 0.07639386749182742,
+      "g_batch_score_difference": 0.022622310754713326,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.00139570098173779,
+      "joint_batch_score_difference": 0.24638938096939578,
+      "g_batch_score_difference": 0.18642076068493355,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.0009751057877003344,
+      "joint_batch_score_difference": -0.01230971025249139,
+      "g_batch_score_difference": 0.13398444656401243,
+      "passed": false
+    }
+  ],
+  "selected_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_source_nll_selection",
+      "g_mse_difference": 8.014827346155976e-06,
+      "joint_batch_score_difference": 0.013740121969596286,
+      "g_batch_score_difference": 0.013779838785505372,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_source_nll_selection",
+      "g_mse_difference": -3.034090315113722e-05,
+      "joint_batch_score_difference": 0.016380737672920143,
+      "g_batch_score_difference": 0.01635059195047084,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_source_nll_selection",
+      "g_mse_difference": 9.671310771314917e-05,
+      "joint_batch_score_difference": 0.0062238926549011975,
+      "g_batch_score_difference": 0.0063569606791904765,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_source_nll_selection",
+      "g_mse_difference": -0.0004430578745390481,
+      "joint_batch_score_difference": 0.04697214954765205,
+      "g_batch_score_difference": 0.046966801371260386,
+      "passed": true
+    }
+  ],
+  "gp_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": -4.559108785408576e-05,
+      "joint_batch_score_difference": -0.203391799157274,
+      "g_batch_score_difference": -0.04827047788768288,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": 0.0003375019665038529,
+      "joint_batch_score_difference": -0.34176423176376913,
+      "g_batch_score_difference": -0.06664758214536755,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": 4.309640517455066e-05,
+      "joint_batch_score_difference": -0.2638136126841375,
+      "g_batch_score_difference": -0.09807262444431603,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": -0.00018773510731796448,
+      "joint_batch_score_difference": -0.4441617660637879,
+      "g_batch_score_difference": -0.03658775630840455,
+      "passed": false
+    }
+  ],
+  "same_information_source_gate_passed": false,
+  "original144_source_gate_passed": false,
+  "source_gate_passed": false,
+  "native_all73_prior_paid_reproduction_passed": true,
+  "cost": {
+    "new_scalar_fits": 0,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 11.882194537,
+  "independent_confirmation": false,
+  "target_promoted": false
+}

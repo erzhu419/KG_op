@@ -1,0 +1,18 @@
+{
+  "plan": "performance/manifests/legacy_related_inventory_joint_population_plan_v1.json",
+  "source_preflight": "reuse stage18 development-independent six task folds; fit each joint model only on the other five; no target-based tuning",
+  "output": "paper_artifacts/legacy_related_inventory_joint_population_v1/",
+  "arms": ["common_mean_structural", "joint_population_structural", "joint_population_full"],
+  "source_head_fits_per_fold": 8,
+  "mean_regularizer": "original training-only structural prior m0,C0 in each fold, unchanged",
+  "residual_tail": "original .01*source_signal_scale/basis.feature_dim on each non-intercept coefficient; source_signal_scale and tail fixed by the regularizer fit",
+  "optimizer": "L-BFGS-B, maxiter1024, ftol1e-9, gtol1e-5, one original source-head fit and one joint source-head fit per head/fold",
+  "source_metrics": "same stage18 observation-aware four-head errors, interval coverage and Gaussian batch-label scores; source labels and exact target raw filtering conventions retained",
+  "terminal_class": "stage17 full73-policy guarded/direct actions with pre-scoring retained4/34, identical across all arms",
+  "adaptation_calls": 4,
+  "total_target_call_cap": 362,
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "freeze": "save all six recommendations before loading cached stage18 scoring truth",
+  "execution": "cached JSON,local serial single-thread,28 original and28 joint source fits,0 new simulations/certificates/server tasks/pulls"
+}

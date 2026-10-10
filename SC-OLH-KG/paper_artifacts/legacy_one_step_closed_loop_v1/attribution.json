@@ -1,0 +1,237 @@
+{
+  "protocol": {
+    "input": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+    "group": 2,
+    "arm": "observe_primary",
+    "draw_power": 13,
+    "seed": 80591,
+    "contrasts": "reconstruct the saved paid posterior, compare the frozen 50/63 guarded actions, and attribute their reward under selected truth substitutions; retain all original pilot decisions",
+    "retention_reference": "[50,3,63] preserves the pre-update recommended point as last fallback, retaining empirical objective incumbent 3 and the same three-policy budget; this is a post-hoc analytic reference, not an executed certificate",
+    "oracle_substitutions": "only after the actions and posterior draws are frozen: true eta_g at observed 63, true g mean at unobserved 50, true objective mean at 50, and the two g substitutions together; these are diagnosis, never acquisition inputs",
+    "execution": "one opened posterior, three fixed shortlists, same 8192-node rule; simulator disabled; zero new observations, verification episodes, server jobs or pulls",
+    "output": "paper_artifacts/legacy_one_step_closed_loop_v1/attribution.json"
+  },
+  "shortlists": [
+    [
+      50,
+      3,
+      2
+    ],
+    [
+      63,
+      3,
+      2
+    ],
+    [
+      50,
+      3,
+      63
+    ]
+  ],
+  "model_weights": [
+    0.39369383090730625,
+    0.06441036026412532,
+    0.5418958088285684
+  ],
+  "scenarios": {
+    "unchanged": {
+      "component_rewards": [
+        [
+          0.499106897000158,
+          0.5059443899189252,
+          0.5959591059438252
+        ],
+        [
+          0.47259620514948925,
+          0.4744192054598805,
+          0.5639701592831974
+        ],
+        [
+          0.47962231963131025,
+          0.45077859299628736,
+          0.5647157402925351
+        ]
+      ],
+      "mixture_rewards": [
+        0.4868407229742306,
+        0.4740197272874597,
+        0.5769680374648116
+      ],
+      "expected_verification_calls": [
+        292.6727880398295,
+        295.07797429380224,
+        292.6727880398295
+      ]
+    },
+    "true_eta_g_63": {
+      "component_rewards": [
+        [
+          0.499106897000158,
+          0.6423525892174977,
+          0.6852885590582023
+        ],
+        [
+          0.47259620514948925,
+          0.6180557122626882,
+          0.6505489662221051
+        ],
+        [
+          0.47962231963131025,
+          0.6153273755484125,
+          0.6710234110400353
+        ]
+      ],
+      "mixture_rewards": [
+        0.4868407229742306,
+        0.6261427685995715,
+        0.6753207454448363
+      ],
+      "expected_verification_calls": [
+        292.6727880398295,
+        279.9152640868309,
+        292.6727880398295
+      ]
+    },
+    "true_mean_g_50": {
+      "component_rewards": [
+        [
+          0.3286072756808687,
+          0.5059443899189252,
+          0.49586215062510747
+        ],
+        [
+          0.29981987736378485,
+          0.4744192054598805,
+          0.46476336420150255
+        ],
+        [
+          0.27132365471506004,
+          0.45077859299628736,
+          0.4388648463607304
+        ]
+      ],
+      "mixture_rewards": [
+        0.29571131486830243,
+        0.4740197272874597,
+        0.46297246629239336
+      ],
+      "expected_verification_calls": [
+        310.36419469071944,
+        295.07797429380224,
+        310.36419469071944
+      ]
+    },
+    "true_mean_f_50": {
+      "component_rewards": [
+        [
+          0.5000201016335064,
+          0.5059443899189252,
+          0.5968723105771736
+        ],
+        [
+          0.49884718375507797,
+          0.4744192054598805,
+          0.5902211378887863
+        ],
+        [
+          0.4696384201704936,
+          0.45077859299628736,
+          0.5547318408317186
+        ]
+      ],
+      "mixture_rewards": [
+        0.4834808477204253,
+        0.4740197272874597,
+        0.5736081622110064
+      ],
+      "expected_verification_calls": [
+        292.6727880398295,
+        295.07797429380224,
+        292.6727880398295
+      ]
+    },
+    "both_g_substitutions": {
+      "component_rewards": [
+        [
+          0.3286072756808687,
+          0.6423525892174977,
+          0.6322997587670789
+        ],
+        [
+          0.29981987736378485,
+          0.6180557122626882,
+          0.6077599243249249
+        ],
+        [
+          0.27132365471506004,
+          0.6153273755484125,
+          0.6036882445344145
+        ]
+      ],
+      "mixture_rewards": [
+        0.29571131486830243,
+        0.6261427685995715,
+        0.615214679542918
+      ],
+      "expected_verification_calls": [
+        310.36419469071944,
+        279.9152640868309,
+        310.36419469071944
+      ]
+    }
+  },
+  "truth_conditional_reference": [
+    {
+      "reward": 0.0158722173496619,
+      "total_calls": 344.34136853903203
+    },
+    {
+      "reward": 0.8061215277138173,
+      "total_calls": 263.3198853269391
+    },
+    {
+      "reward": 0.8052483843925106,
+      "total_calls": 344.34136853903203
+    }
+  ],
+  "point_truth": {
+    "50": {
+      "values": [
+        0.33451640759608847,
+        -9.062452258323685,
+        0.16533372674692007,
+        -7.375550267163282
+      ],
+      "truly_feasible": false
+    },
+    "3": {
+      "values": [
+        0.3086014846965018,
+        -9.88348796130352,
+        -0.041609178936526714,
+        -7.36739072909731
+      ],
+      "truly_feasible": true
+    },
+    "2": {
+      "values": [
+        0.32693336385838667,
+        -9.815170317549384,
+        0.03313895329749108,
+        -7.594314928600887
+      ],
+      "truly_feasible": false
+    },
+    "63": {
+      "values": [
+        0.29081552643170816,
+        -9.327205185417847,
+        -0.06780462943237285,
+        -7.353462294727414
+      ],
+      "truly_feasible": true
+    }
+  },
+  "new_simulator_calls": 0,
+  "cpu_seconds": 1.433782168
+}

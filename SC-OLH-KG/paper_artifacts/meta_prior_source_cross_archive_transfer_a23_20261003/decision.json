@@ -1,0 +1,195 @@
+{
+  "stage": "meta_prior_source_cross_archive_transfer_a23_20261003",
+  "status": "source_transfer_diagnostic_complete_calibration_and_covariance_gap_identified",
+  "complete": true,
+  "proceed_to_source_calibration_study": true,
+  "basis": "Transferred learned-I forecasts lose substantially in both source groups, in all eight pair blocks. R relative gain rises in all eight blocks versus matched source validation, but absolute transfer R gains and frozen-mixture gains have intervals crossing zero. This supports a source-only calibration study with compatible controls; it does not establish that increasing q can repair between-archive covariance generalization.",
+  "learned_source_groups": {
+    "shared": {
+      "i_transfer_loss": {
+        "mean_gain": -0.0748294058360281,
+        "paired_seed_bootstrap95": [
+          -0.0953525940687204,
+          -0.053036843591109016
+        ],
+        "better": 0,
+        "worse": 8,
+        "pair_block_values": [
+          -0.08071712773942834,
+          -0.020429577239350624,
+          -0.1125321919342945,
+          -0.04702906762010205,
+          -0.07962997627155942,
+          -0.09937095024182713,
+          -0.10960764456290686,
+          -0.04931871107875573
+        ]
+      },
+      "pure_r_gain": {
+        "mean_gain": 0.004504970710214133,
+        "paired_seed_bootstrap95": [
+          -0.005859052785867428,
+          0.012475001514222598
+        ],
+        "better": 6,
+        "worse": 2,
+        "pair_block_values": [
+          0.008332104132717691,
+          -0.02764740289001272,
+          0.014197554555043151,
+          0.009131750352814993,
+          0.0018027555390723732,
+          0.01395060230078363,
+          0.018485549270574077,
+          -0.0022131475792801295
+        ]
+      },
+      "pure_r_gain_change": {
+        "mean_gain": 0.024717515307589633,
+        "paired_seed_bootstrap95": [
+          0.016545733314014897,
+          0.03312168465897034
+        ],
+        "better": 8,
+        "worse": 0,
+        "pair_block_values": [
+          0.025421274941743194,
+          0.008342297935801424,
+          0.038457832684340755,
+          0.013589881034300649,
+          0.020181049956208976,
+          0.03426731552295624,
+          0.04340465790188691,
+          0.014075812483478898
+        ]
+      },
+      "mixture_gain": {
+        "mean_gain": 0.0003142844447221431,
+        "paired_seed_bootstrap95": [
+          -0.0005342638855537069,
+          0.001394803383601234
+        ],
+        "better": 5,
+        "worse": 3,
+        "pair_block_values": [
+          0.0002965896893233474,
+          0.0036997132070503928,
+          -0.0012801465044307964,
+          0.0005544940865338478,
+          0.000294565022904196,
+          -0.0008280000653472402,
+          -0.0007249836048174279,
+          0.0005020437265608254
+        ]
+      }
+    },
+    "separate_heads": {
+      "i_transfer_loss": {
+        "mean_gain": -0.0860977785061859,
+        "paired_seed_bootstrap95": [
+          -0.1096053276789758,
+          -0.061300519259216375
+        ],
+        "better": 0,
+        "worse": 8,
+        "pair_block_values": [
+          -0.11163764063090273,
+          -0.016998019613498335,
+          -0.12073647257185008,
+          -0.07417329519215932,
+          -0.07213261538584398,
+          -0.06832481442271063,
+          -0.08721979048387576,
+          -0.13755957974864633
+        ]
+      },
+      "pure_r_gain": {
+        "mean_gain": 0.00538922342699507,
+        "paired_seed_bootstrap95": [
+          -0.0012165517170595577,
+          0.011241480671821475
+        ],
+        "better": 6,
+        "worse": 2,
+        "pair_block_values": [
+          0.007569922570300848,
+          -0.013293121281754416,
+          0.0163414628710988,
+          0.017129135492388724,
+          -0.0008275662183180044,
+          0.0036035826944909415,
+          0.0074258880670241105,
+          0.005164483220729561
+        ]
+      },
+      "pure_r_gain_change": {
+        "mean_gain": 0.026797948814266018,
+        "paired_seed_bootstrap95": [
+          0.021073097160527625,
+          0.03198450017700563
+        ],
+        "better": 8,
+        "worse": 0,
+        "pair_block_values": [
+          0.02822641829496324,
+          0.010405637443200439,
+          0.03633117761514791,
+          0.026512894280363915,
+          0.021679982116588465,
+          0.023255546009841248,
+          0.031251899583843265,
+          0.036720035170179646
+        ]
+      },
+      "mixture_gain": {
+        "mean_gain": 0.00010701962284405305,
+        "paired_seed_bootstrap95": [
+          -0.00028923738985773027,
+          0.0005098399470072446
+        ],
+        "better": 4,
+        "worse": 4,
+        "pair_block_values": [
+          0.0007263350015099415,
+          0.000806689707217582,
+          2.1715743477444165e-05,
+          0.0009060868683805261,
+          -0.0007286397630080794,
+          -0.0003616450429876543,
+          -0.00018322786945208216,
+          -0.0003311576623852533
+        ]
+      }
+    }
+  },
+  "whole_function_transfer_folds": 256,
+  "source_prior_profiles": 512,
+  "transfer_forecasts": 8192,
+  "tests_passed": 7,
+  "controls": {
+    "max_matched_reproduction_error": 3.3306690738754696e-15,
+    "max_matched_a9_evidence_error": 3.3306690738754696e-15,
+    "max_pure_branch_error": 0.0,
+    "max_generic_ir_error": 6.039613253960852e-14,
+    "max_trace_error": 1.1102230246251565e-16,
+    "max_intercept_error": 0.0,
+    "max_within_set_scale_error": 4.440892098500626e-16,
+    "max_no_sharing_error": 0.0,
+    "max_nonintercept_mean": 0.0
+  },
+  "numerical_controls_passed": true,
+  "cpu_seconds": 31.647604979,
+  "current_process_vm_hwm_mb": 140.9453125,
+  "next_plan": "performance/meta_prior_source_transfer_calibration_plan.json",
+  "recommendation_replay": "hold",
+  "prospective_searches": "hold",
+  "a20_a21_model": "not_promoted",
+  "new_eta_ard_refits": 0,
+  "new_fg_selection_fits": 0,
+  "new_calibration_fits": 0,
+  "new_simulation_samples": 0,
+  "server_jobs": 0,
+  "server_pulls": 0,
+  "target_paths_scored": 0,
+  "kg_calls": 0
+}

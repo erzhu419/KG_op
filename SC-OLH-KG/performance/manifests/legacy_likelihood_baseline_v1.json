@@ -1,0 +1,16 @@
+{
+  "replay":"paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "likelihood_replay":"paper_artifacts/legacy_mixture_likelihood_v1/replay.json",
+  "domain":"InventorySupplyChain",
+  "prefix":4,
+  "candidates":[2,63],
+  "action":{"kind":"guarded","primary":63,"shortlist":[63,3,2],"incumbent_position":1,"budgets":[129,129,83]},
+  "draw_power":13,
+  "fantasy_power":7,
+  "seeds":[80563,80564],
+  "fantasy_rule":"four-dimensional Sobol for independent head eta and marginal raw values; integrate out query means analytically, same continuous predictive law as the original six-dimensional rule",
+  "purpose":"resolve the observed query-dependent starting reward discrepancy and fixed-action tower drift; compare next-update projection under identical fantasies and marginal draws without repeating all terminal rankings",
+  "execution":"local single-thread, fantasy blocks of 32; source fitted once; zero new source/target simulations, server jobs, pulls or truth queries",
+  "scope":"numerical refinement of a fixed action, not an additional optimizer or deployment run",
+  "output":"paper_artifacts/legacy_mixture_likelihood_v1/baseline_precision.json"
+}

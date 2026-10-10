@@ -1,0 +1,20 @@
+{
+  "status": "frozen_ready_not_executed",
+  "source_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+  "prior_candidate": "source_learned_factor_families",
+  "control": "same_source_pooled_physical; same coefficients and pooled scale",
+  "target_law_seeds": [95001, 95002, 95003, 95004, 95005, 95006, 95007, 95008],
+  "target_noise_seeds": [96001, 96002, 96003, 96004, 96005, 96006, 96007, 96008],
+  "candidates_and_initial_design": "same saved public bank and eight initial indices; no source best point",
+  "prior_config": "reuse inventory_physical_risk_protocol.json source_risk_distribution; no refit to target metrics",
+  "initial_points": 8,
+  "replicates": 12,
+  "new_source_episode_calls": 0,
+  "new_target_episode_calls": 768,
+  "source_archive_episode_calls_per_prior": 1536,
+  "shared_observations_between_arms": true,
+  "report": "all eight paired held-out log-risk errors, posterior variance and component errors; retain every loss",
+  "new_search_and_verification_calls": 0,
+  "scientific_status": "new targets under the same development generator; not final external confirmation or decision-benefit proof",
+  "scope": "bounded local task; no server jobs; no parameter selection after these targets"
+}

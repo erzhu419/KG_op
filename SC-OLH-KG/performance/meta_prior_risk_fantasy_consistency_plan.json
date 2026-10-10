@@ -1,0 +1,43 @@
+{
+  "stage": "meta_prior_risk_fantasy_consistency_a45_20261004",
+  "status": "complete",
+  "completion_artifact": "paper_artifacts/meta_prior_risk_fantasy_consistency_a45_20261004/diagnostic.json",
+  "fixed_after_a44_before_any_fantasy_probe": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_source_context_accounting_a44_20261004/decision.json"
+  ],
+  "question": "Does the Gaussian acquisition approximation with fixed fantasy model weights miss risk-structure learning value that the live paid posterior updates?",
+  "evidence": "core/verification_kg.py explicitly freezes mixture weights and hyperparameters in Gaussian fantasies; representation/transfer_mixture.py Bayes-updates the live component weights from pre-observation densities. This is a documented approximation, not an established bug or proven cause of previous losses. A44 excludes a paid posterior-weight update error and shows identical source contexts for four target mechanisms.",
+  "cohort": "All40 historical tasks on seeds48-55, one common8-observation state per task. Use original local structural/full risk I only, with its past-only posterior weights. Do not use or promote A37 L,A42 D orA43 U. No labels after the shared8, latent truth, evaluation56-63 or new observations.",
+  "fixed_mean_context": "For the controlled risk-only probe, freeze f/g posterior means and variances estimated from the same8 paid observations using the already-declared target-only public full dictionary prior: coefficient mean0,intercept variance4,function variance1/68,discrepancy0.02. Keep recorded head-specific observation noise. Use the same f/g context in every risk variant. This isolates the risk acquisition approximation and does not reproduce the full historical f/g model.",
+  "recommendation_population": "Full original384 public candidates for every current and fantasy utility maximum. Preserve replicate12 and independent-verifier budget928 from the original binding n24_v928 protocol. Use the same clipped objective quality and finite-budget verifier pass probability; no chance-penalty substitute.",
+  "sampling_probes": "At each common8 state use up to8 distinct sampling candidates: both original ninth-query choices, the original I latent-risk variance maximizer, the standardized between-component mean-disagreement maximizer |m0-m1|/sqrt(v0+v1+2*eta_measurement_noise), and public indices0,127,255,383. Remove duplicates without replacing them or tuning probe counts. Historical choices are identities only; ninth responses are not read. These probes are not an exhaustive sampling policy.",
+  "risk_reference": "Keep two component Gaussian risk posteriors, their exact latent cross-covariances including candidate-shared discrepancy and past measurement noise, and original I component probabilities. Integrate a Gaussian eta-label approximation with known polygamma(1,11/2) measurement variance. For each source component and quadrature label, update both component function means/variances and their Bayesian probabilities, evaluate the probability-weighted component verifier utilities over all384 recommendations, then take the maximum. Average over the pre-observation mixture label law.",
+  "comparisons": "B9 is the finite-mixture risk reference with posterior probability refresh after each fantasy; F9 keeps the same component predictions and label law but freezes pre-observation probabilities after fantasies. G9 collapses the risk mixture to its mean/covariance and uses Gaussian9-node fantasies. G3 uses the existing3-node Gaussian risk-only approximation. This separates fantasy probability learning B9-F9, mixture moment approximation F9-G9, and quadrature G9-G3. Every variant uses its own internally consistent current and future utility representation. Save current maxima and expected future maxima as well as differences, so representation shifts cannot be described as sampling gains.",
+  "numerical_controls": "On unrelated small Gaussian models verify coefficient and model-probability updates against direct conditioning; identical mixture components reduce to a single Gaussian reference; an observation with zero risk cross-covariance to all recommendations and identical predictive law under both components has zero information value. G3 must reproduce core.verification_kg.risk_only_kg_scores on an unrelated small bank. Probe evaluation leaves paid posterior state unchanged. At the first seed of each mechanism, compare B/F9 to B/F13 without selecting a preferred node count; discrepancies above0.001 in bounded utility require reporting unresolved integration accuracy and prevent promotion.",
+  "analysis": "Report all five mechanisms, every sampled probe, B9-F9,F9-G9,G9-G3, ranking changes within the fixed probe set and numerical errors. This is a controlled numerical acquisition diagnostic, not deployment performance, a new paid trajectory, or full joint three-head KG.",
+  "decision": "If probability refresh materially changes values or rankings, retain the evidence and freeze a separately validated mixture-aware acquisition implementation before any live-policy changes. If it does not, report that result and keep the documented approximation; do not attribute the previous failure to fantasy weights. A source-model gate remains required before any A43 evaluation or recommendation replay.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "historical_posterior_states_max": 40,
+    "distinct_sampling_probes_max": 320,
+    "primary_probe_scores_max": 1280,
+    "higher_order_probe_scores_max": 80,
+    "new_source_covariance_optimizers": 0,
+    "new_noisy_simulator_calls": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_target_searches": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "live_policy_kg_calls": 0,
+    "live_recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "admission": "After the first complete historical state, project all40 states plus five higher-order controls with25 percent timing margin and5 CPU seconds reserve. Stop and save incomplete results if projection exceeds30 CPU seconds; no automatic restart or resource increase.",
+  "limitations": "Risk-only control holds f/g fixed and uses a target-only mean context. Gaussian eta noise and finite quadrature remain. Eight sampling probes are not all384 actions. Numerical consistency does not establish HVD recovery, source transfer benefits or verified deployment improvement. Failed A43 remains separate and unpromoted."
+}

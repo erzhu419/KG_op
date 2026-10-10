@@ -1,0 +1,19 @@
+{
+  "status": "completed:remaining f mean error exceeds conditional measurement interval;level and shape both contribute",
+  "complete_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_complete_v1/results.json",
+  "complete_profiles": "paper_artifacts/legacy_joint_population_f_task_level_reference_complete_v1/calibration_profiles.json",
+  "question": "Is the remaining original144 failure consistent with f mean level/shape error, rather than source-variance quadrature or changed g law?",
+  "diagnostic": "Allfour already opened cases; compare old144,Stage104,newmixture cached prior/paid means. On original71 scoring sites split f MSE exactly into squared mean residual and centered residual energy. Compare total difference using approximate95percent fixed-prediction measurement intervals from the existing independent three-repeat noise estimates. This is not task-population inference or a proper mixture-density decomposition. Record f/g proper raw-density differences from stored scores; no posterior replay or counterfactual law.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_reference_complete_attribution_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_reference_complete_attribution.py",
+  "results": "paper_artifacts/legacy_joint_population_f_reference_complete_attribution_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_nested_source_conditioning_plan_v1.json"
+}

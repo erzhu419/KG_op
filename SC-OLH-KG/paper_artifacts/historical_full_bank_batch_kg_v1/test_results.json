@@ -1,0 +1,30 @@
+{
+  "tests": 48,
+  "passed": 48,
+  "new_batch_tests": 8,
+  "unittest_modules": [
+    "test_positive_batch_lookahead",
+    "test_positive_raw_terminal",
+    "test_replicated_mixture_lookahead",
+    "test_historical_full_bank_replicates",
+    "test_raw_terminal_head_grid",
+    "test_joint_response_mixture",
+    "test_conditional_raw_reference",
+    "test_conditional_terminal_kg"
+  ],
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_positive_batch_lookahead test_positive_raw_terminal test_replicated_mixture_lookahead test_historical_full_bank_replicates -v",
+  "elapsed_seconds": 13.306,
+  "additional_modules": [
+    "test_raw_terminal_head_grid",
+    "test_joint_response_mixture"
+  ],
+  "separate_invocations_elapsed_seconds": [
+    13.306,
+    1.706,
+    8.413,
+    6.397,
+    2.759,
+    32.578
+  ],
+  "unique_tests_count_excludes_repeats": true
+}

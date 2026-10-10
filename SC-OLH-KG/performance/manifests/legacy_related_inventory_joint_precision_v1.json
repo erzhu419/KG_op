@@ -1,0 +1,13 @@
+{
+  "completion": "paper_artifacts/legacy_related_inventory_joint_population_completion_v1/",
+  "pilot": "paper_artifacts/legacy_related_inventory_joint_population_v1/",
+  "data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "task_index": 7,
+  "arms": ["joint_population_structural", "joint_population_full"],
+  "panel": "every original terminal allocation/support at the primary chosen by the completed structural model or its initial capped pilot; candidate indices come only from saved pre-scoring decisions",
+  "draw_power": 15,
+  "seeds": [80771,80772],
+  "scope": "bounded comparison around the changed primary, not a fresh global ranking or independent deployment test",
+  "execution": "restore completed joint priors, reconstruct source encoder with4 original head fits, no joint refits or new simulator/scoring-truth queries; local serial single-thread",
+  "output": "paper_artifacts/legacy_related_inventory_joint_population_completion_v1/precision.json"
+}

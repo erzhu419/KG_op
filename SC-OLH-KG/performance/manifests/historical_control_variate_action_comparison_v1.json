@@ -1,0 +1,17 @@
+{
+  "status": "registered before complete existing action comparison",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "existing_joint_KG": "paper_artifacts/historical_mixture_lookahead_precision_v4/results.json",
+  "existing_prefix_KG": "paper_artifacts/historical_mixture_lookahead_precision_v3/results.json",
+  "existing_factorized_reference": "paper_artifacts/historical_factorized_tower_v1/results.json",
+  "seed": 202610077,
+  "terminal_power": 9,
+  "joint_fantasy_power": 4,
+  "reference_draw_power": 12,
+  "reference_fantasy_powers": [4,5,6],
+  "maximum_single_thread_cpu_seconds_per_action": 180,
+  "precision": {"maximum_log_evidence_error": 0.02, "minimum_reference_ESS": 128, "maximum_absolute_tower_drift": 0.005, "maximum_identity_martingale_residual": 0.01, "maximum_raw_integration_relative_error": 1e-8, "maximum_nested_adaptation_difference": 0.005},
+  "scope": "All12 already registered balanced4 plus paid-repeat actions on the same two opened eight-policy states. Original32 passed source laws,weights,two paid outcomes,budget and guarded terminal actions unchanged. Reuse the two completed joint queries and factorized references. Independently integrate each query's SAME512-draw fixed projected incumbent;add that expectation to the joint adaptive contrast. Adaptive maximum and shared identity updates remain joint. Raw fantasies integrate four labels at once using the unchanged adaptive integrand;the actual sequential filter is the equality reference. Nested8/16-fantasy contrast computed from the same terminal evaluations,without a second fullKG run. Preserve all precision failures. Learned source candidates are kept separate. No candidate-bank expansion,new outcomes,sampling,server work or scientific model ranking.",
+  "cost": {"new_source_labels": 0, "new_source_MCMC_sweeps": 0, "new_prior_fits": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_control_variate_action_comparison_v1"
+}

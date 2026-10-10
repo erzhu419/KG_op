@@ -1,0 +1,514 @@
+{
+  "execution": {
+    "status": "frozen before all12 coherent task-level mixture development forecasts",
+    "source_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_integration_execution_v1.json",
+    "source_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/results.json",
+    "source_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/source_quadrature.json",
+    "adaptation_execution": "performance/manifests/legacy_joint_population_training_paid_adaptation_execution_v1.json",
+    "native_f_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "law": "Use only frozen Stage112 source posterior variance nodes/weights for original native f. At each physical v use coherent beta(v),H(v) and the new task intercept v, with all other native R/support/frequency/tail/discrepancy fixed. Same deleted-source eta_f prior/map, original27 columns, public73 policies and12 score sites. Preserve Gaussian components separately and update variance weights by paid raw evidence; do not collapse source moments into one Gaussian.",
+    "paid_rule": "Index only source tasks0\u20135 first f replicate at existing paid policies0/1. The small local cached JSON contains other outcomes, which are not indexed or used. Use the existing two raw moment-filter updates; no sample variance accompanies them. No new simulator observations.",
+    "freeze": "Freeze all14 source rules before paid records; freeze all12 selected and refined prior/paid forecasts before scored-site response/noise. Use no outcome-dependent resolution selection. Source-weight updates use only the two paid f records.",
+    "verification": "For deleted task1 eachlayout, the one-node native variance reconstructs cached native prior/paid moments/evidence. For all12 compare selected quadrature forecasts with32 nodes per frozen adaptive u interval: f mean max absolute1e-7, covariance relative Frobenius1e-5, paid log evidence absolute1e-6. Freeze every forecast before scored labels. For the two task1 folds additionally compare raw batch and sequential density to the32-node reference at absolute1e-5; numerical disagreement stops interpretation without tuning scientific parameters.",
+    "gate": "For eachlayout mean across the original six deleted tasks: paid f MSE nonincrease, raw three-repeat batch density strict improvement, sequential transcript density nondecrease versus cached native f. Require bothlayouts. Report all tasks, task1 and other5 without reweighting. Frozen gate identical to Stage103. The Gaussian mean density in the cached gate remains the same moment-based metric; additionally report the actual Gaussian-mixture mean and transcript densities descriptively. These distinct quantities are not interchanged.",
+    "decision": "Numerical failure leaves the mixture development comparison unresolved. Scientific gate failure stops this candidate. A pass is development only and permits separately registered full-six-source complete-model validation; do not adopt a prior, open source6/7, target, KG or confirmation.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_g_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_development_v1",
+    "planned_entrypoint": "performance/check_legacy_f_task_level_reference_development.py",
+    "quadrature_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_execution_v4.json",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_development_plan_v1.json",
+    "entrypoint": "performance/check_legacy_f_task_level_reference_development.py",
+    "frozen_before_paid_queries": true
+  },
+  "summary": {
+    "5": {
+      "native_f": {
+        "prior": {
+          "f_mse": 0.00042362169399154495,
+          "f_gaussian_mean_density": 2.641085489417869,
+          "f_raw_batch_density": 0.6743920814649632
+        },
+        "raw_paid": {
+          "f_mse": 0.0003937045272706875,
+          "f_gaussian_mean_density": 2.672499213241919,
+          "f_raw_batch_density": 0.795169657346439,
+          "raw_paid_log_evidence": 5.635704702503221,
+          "sequential_transcript_density": 2.6932639472433038
+        }
+      },
+      "conditional_task_intercept_variance_mixture": {
+        "prior": {
+          "f_mse": 0.0004235800372537786,
+          "f_gaussian_mean_density": 2.653955255653018,
+          "f_raw_batch_density": 0.6391505176090052
+        },
+        "raw_paid": {
+          "f_mse": 0.00038537583904560326,
+          "f_gaussian_mean_density": 2.679726568639797,
+          "f_raw_batch_density": 0.7983475183731287,
+          "raw_paid_log_evidence": 5.568832865487899,
+          "sequential_transcript_density": 2.694682263511819
+        }
+      }
+    },
+    "6": {
+      "native_f": {
+        "prior": {
+          "f_mse": 0.0005080756171403308,
+          "f_gaussian_mean_density": 2.511554372556837,
+          "f_raw_batch_density": 0.6814771839083832
+        },
+        "raw_paid": {
+          "f_mse": 0.0005120454773049969,
+          "f_gaussian_mean_density": 2.5522763730185627,
+          "f_raw_batch_density": 0.7484473618483646,
+          "raw_paid_log_evidence": 5.657783634407231,
+          "sequential_transcript_density": 2.5917928650449986
+        }
+      },
+      "conditional_task_intercept_variance_mixture": {
+        "prior": {
+          "f_mse": 0.0005052533900690842,
+          "f_gaussian_mean_density": 2.6259984998635306,
+          "f_raw_batch_density": 0.6628912704001373
+        },
+        "raw_paid": {
+          "f_mse": 0.0004909229107076767,
+          "f_gaussian_mean_density": 2.6561881026301832,
+          "f_raw_batch_density": 0.7901428823082378,
+          "raw_paid_log_evidence": 5.5890192983812055,
+          "sequential_transcript_density": 2.675948323567386
+        }
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 2.5088397200706287e-08,
+          "f_gaussian_mean_density": -0.02750928781314821,
+          "f_raw_batch_density": -0.05373651206356042
+        },
+        "raw_paid": {
+          "f_mse": 3.460769771847065e-06,
+          "f_gaussian_mean_density": -0.001114999280191764,
+          "f_raw_batch_density": -0.0036971071550687684,
+          "raw_paid_log_evidence": -0.08104981156674818,
+          "sequential_transcript_density": -0.006744985923503144
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.0046541040166676595
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": -3.7271849433087416e-07,
+          "f_gaussian_mean_density": 0.1620569078952281,
+          "f_raw_batch_density": 0.015553583254081182
+        },
+        "raw_paid": {
+          "f_mse": -1.3078259462344323e-05,
+          "f_gaussian_mean_density": 0.055821636404063124,
+          "f_raw_batch_density": 0.01913237066485332,
+          "raw_paid_log_evidence": -0.0816748331308208,
+          "sequential_transcript_density": 0.0420132002655671
+        }
+      },
+      "actual_mixture_transcript_minus_native": 0.08443118504337566
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 1.3727514535229147e-07,
+          "f_gaussian_mean_density": -0.008682582362318225,
+          "f_raw_batch_density": -0.04045664090298262
+        },
+        "raw_paid": {
+          "f_mse": -1.0943360717707677e-06,
+          "f_gaussian_mean_density": -0.0014431179174700937,
+          "f_raw_batch_density": -0.0022115609905983824,
+          "raw_paid_log_evidence": -0.08106707581328987,
+          "sequential_transcript_density": -0.00702746363020923
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.009435613048222269
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": -9.669474133606852e-09,
+          "f_gaussian_mean_density": -0.029439133419949304,
+          "f_raw_batch_density": -0.05891117411738611
+        },
+        "raw_paid": {
+          "f_mse": 4.109566261656025e-07,
+          "f_gaussian_mean_density": 0.0003389767408927824,
+          "f_raw_batch_density": 0.0004569279501656087,
+          "raw_paid_log_evidence": -0.08548571375319991,
+          "sequential_transcript_density": -0.005815570918748847
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.004306569902218893
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 1.940014541923626e-07,
+          "f_gaussian_mean_density": 0.007858736099927377,
+          "f_raw_batch_density": -0.027235968124913135
+        },
+        "raw_paid": {
+          "f_mse": -4.6047309953603e-05,
+          "f_gaussian_mean_density": -0.006983095345157508,
+          "f_raw_batch_density": 0.012989420487944159,
+          "raw_paid_log_evidence": 0.013292679143096287,
+          "sequential_transcript_density": -0.005036033214199875
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.0067034812093402785
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": -2.239174548800127e-07,
+          "f_gaussian_mean_density": -0.02706604298884674,
+          "f_raw_batch_density": -0.04666267118098655
+        },
+        "raw_paid": {
+          "f_mse": 6.376049739199733e-06,
+          "f_gaussian_mean_density": -0.003255268214866991,
+          "f_raw_batch_density": -0.007602884797157428,
+          "raw_paid_log_evidence": -0.08524626697097037,
+          "sequential_transcript_density": -0.008879248967813336
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.007648002333789705
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": -4.384874349806279e-08,
+          "f_gaussian_mean_density": -0.029043883858713482,
+          "f_raw_batch_density": -0.057913800196402576
+        },
+        "raw_paid": {
+          "f_mse": 2.3315992655778366e-06,
+          "f_gaussian_mean_density": -0.0037976430709316666,
+          "f_raw_batch_density": -0.005124624274847278,
+          "raw_paid_log_evidence": -0.08424356500276708,
+          "sequential_transcript_density": -0.009272520132424411
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.006741404059824596
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": -1.7427840637835148e-05,
+          "f_gaussian_mean_density": 0.801996304182482,
+          "f_raw_batch_density": 0.11747523094261231
+        },
+        "raw_paid": {
+          "f_mse": -0.00014263003351669542,
+          "f_gaussian_mean_density": 0.6444471641062453,
+          "f_raw_batch_density": 0.28386249011298303,
+          "raw_paid_log_evidence": -0.075876414007646,
+          "sequential_transcript_density": 0.5469635396619497
+        }
+      },
+      "actual_mixture_transcript_minus_native": 0.7114296782372098
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 1.8661208448753379e-07,
+          "f_gaussian_mean_density": -0.01293820027224335,
+          "f_raw_batch_density": -0.042864847445313936
+        },
+        "raw_paid": {
+          "f_mse": 6.302579593953257e-06,
+          "f_gaussian_mean_density": -0.002564099834777789,
+          "f_raw_batch_density": -0.006511301486727072,
+          "raw_paid_log_evidence": -0.0791135267611951,
+          "sequential_transcript_density": -0.007848766055608802
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.010376846272939222
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 1.1948263898287352e-07,
+          "f_gaussian_mean_density": -0.028480092157720627,
+          "f_raw_batch_density": -0.05241435581250509
+        },
+        "raw_paid": {
+          "f_mse": -7.918660515371118e-07,
+          "f_gaussian_mean_density": -0.00033424373449530975,
+          "f_raw_batch_density": 0.000458976021963986,
+          "raw_paid_log_evidence": -0.0857811279557783,
+          "sequential_transcript_density": -0.0064137180549797
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.004194754885717966
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 1.502828571937529e-07,
+          "f_gaussian_mean_density": -0.01840511964462177,
+          "f_raw_batch_density": -0.035172443589528646
+        },
+        "raw_paid": {
+          "f_mse": 3.306047927311871e-07,
+          "f_gaussian_mean_density": -0.012074353954194095,
+          "f_raw_batch_density": -0.012693878764217237,
+          "raw_paid_log_evidence": -0.020064877638834133,
+          "sequential_transcript_density": -0.011782651792083154
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.008438108042886583
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "mixture_minus_native": {
+        "prior": {
+          "f_mse": 8.194937319060472e-08,
+          "f_gaussian_mean_density": -0.026464244409017734,
+          "f_raw_batch_density": -0.04062526494833729
+        },
+        "raw_paid": {
+          "f_mse": 7.72171633204883e-06,
+          "f_gaussian_mean_density": -0.002206445842121596,
+          "f_raw_batch_density": -0.00981853884991657,
+          "raw_paid_log_evidence": -0.06750650478992881,
+          "sequential_transcript_density": -0.006713132492527585
+        }
+      },
+      "actual_mixture_transcript_minus_native": -0.003897032618523699
+    }
+  ],
+  "gates_by_layout": {
+    "5": {
+      "paid_f_mse_nonincrease": true,
+      "raw_batch_density_improved": true,
+      "sequential_transcript_density_nondecrease": true
+    },
+    "6": {
+      "paid_f_mse_nonincrease": true,
+      "raw_batch_density_improved": true,
+      "sequential_transcript_density_nondecrease": true
+    }
+  },
+  "numerical_forecasts_verified": true,
+  "numerical_density_verified": true,
+  "numerical_checks": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "errors": {
+        "mean_max_absolute": 3.785194380157009e-12,
+        "covariance_relative_frobenius": 3.653598538664449e-10,
+        "paid_log_evidence_absolute": 1.1662315557714464e-10
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "errors": {
+        "mean_max_absolute": 2.220446049250313e-16,
+        "covariance_relative_frobenius": 3.18663453952737e-15,
+        "paid_log_evidence_absolute": 8.881784197001252e-16
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "errors": {
+        "mean_max_absolute": 3.3306690738754696e-16,
+        "covariance_relative_frobenius": 3.413859483163375e-15,
+        "paid_log_evidence_absolute": 1.7763568394002505e-15
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "errors": {
+        "mean_max_absolute": 3.3306690738754696e-16,
+        "covariance_relative_frobenius": 1.3196806495972629e-14,
+        "paid_log_evidence_absolute": 1.0658141036401503e-14
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "errors": {
+        "mean_max_absolute": 8.392542216739685e-11,
+        "covariance_relative_frobenius": 4.5726258734456566e-09,
+        "paid_log_evidence_absolute": 3.0112916604707607e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "errors": {
+        "mean_max_absolute": 1.6813772596435683e-12,
+        "covariance_relative_frobenius": 5.685161488582062e-10,
+        "paid_log_evidence_absolute": 8.704237330903197e-11
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "errors": {
+        "mean_max_absolute": 2.431289614079901e-10,
+        "covariance_relative_frobenius": 7.478857048717526e-09,
+        "paid_log_evidence_absolute": 3.5169298584492026e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "errors": {
+        "mean_max_absolute": 1.5681822507218612e-10,
+        "covariance_relative_frobenius": 2.4344557268368916e-09,
+        "paid_log_evidence_absolute": 3.127698988691918e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "errors": {
+        "mean_max_absolute": 3.926658997954746e-11,
+        "covariance_relative_frobenius": 3.4622144927605157e-09,
+        "paid_log_evidence_absolute": 1.8600125883949659e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "errors": {
+        "mean_max_absolute": 3.3306690738754696e-16,
+        "covariance_relative_frobenius": 7.865368554874815e-16,
+        "paid_log_evidence_absolute": 0.0
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "errors": {
+        "mean_max_absolute": 2.0724033600316716e-10,
+        "covariance_relative_frobenius": 5.803169178377234e-09,
+        "paid_log_evidence_absolute": 3.092543110483348e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "errors": {
+        "mean_max_absolute": 2.2591373216584998e-12,
+        "covariance_relative_frobenius": 4.6329095264824133e-10,
+        "paid_log_evidence_absolute": 1.0394796134960416e-10
+      },
+      "passed": true
+    }
+  ],
+  "density_checks": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "errors": {
+        "f_raw_batch_density": 1.0547118733938987e-15,
+        "sequential_transcript_density": 2.220446049250313e-15
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "errors": {
+        "f_raw_batch_density": 5.076900067013668e-09,
+        "sequential_transcript_density": 4.735462244553901e-09
+      },
+      "passed": true
+    }
+  ],
+  "forecasts_scored": true,
+  "scientific_gate_interpreted": true,
+  "passes_both_layouts": true,
+  "candidate_stopped_after_development_failure": false,
+  "no_model_adopted": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_g_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 154.06242411000002,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

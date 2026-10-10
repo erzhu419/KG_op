@@ -1,0 +1,60 @@
+{
+  "status": "completed;one round accepted;next matched round stopped on GP6 optimizer failure;all failures/moments retained",
+  "entrypoint": "performance/fit_legacy_f_bounded_level_risk_source.py",
+  "Mstep_plan": "performance/manifests/legacy_joint_population_f_raw_level_risk_mstep_plan_v1.json",
+  "initial_Mstep_results": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/results.json",
+  "initial_source_results": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/results.json",
+  "initial_source_partitions": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/source_eta_partitions.json",
+  "initial_source_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/source_laws.json",
+  "initial_risk_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/risk_reconstruction.json",
+  "question": "Can a bounded source-only Monte Carlo EM run approach stationarity in the existing function-level/risk-center/risk-amplitude subproblem,without repeated task0 selection?",
+  "learning_contract": "Continue exactly Stage213's four parameters per arm using freshly conditioned source posterior moments after every accepted M step. Keep original coordinate systems,Stage205 function shape/spectral covariances,common function/risk intercept variances,original positive tails,risk task covariance and white=0. No group/support/representation changes. The convergence question is only this four-parameter subproblem,not all meta-prior hyperparameters.",
+  "maximum_additional_Msteps": 8,
+  "scaled_projected_source_score_tolerance": 0.001,
+  "stationarity": "Use fixed Stage213 optimization-coordinate scales:f-center prior SD,structural task-root1 or GP task variance prior average diagonal,risk center1 and risk amplitude1. Full and both half projected scores must all lie within tolerance to stop as approximately stationary. This is empirical Monte Carlo stationarity conditional on the fixed hyperparameter subproblem. Active directions exceeding tolerance require matching full/half signs before another M step;otherwise stop as unresolved sampling uncertainty.",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-08
+  },
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610076,
+    "round_seed_stride": 10000
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "retained_mixture": {
+    "stride_per_chain": 8,
+    "components_per_arm": 512,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1,
+    "maximum_source_eta_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_eta_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "decision": "Require all four optimizer/full-and-half component Q gates,then all four fresh source posterior/retention gates before advancing the matched round. Stop at first scientific or numerical failure,budget,8-round cap or approximate stationarity. Preserve all round moments/Q/failed candidates. Save only the last accepted512-component mixture;earlier mixtures were never future-scored. No task0 outcomes are indexed,scored or used to choose rounds.",
+  "verification": "Reuse already verified Stage213 covariance/Q derivatives. Recompute and verify each NEW variance reference and common conditional law before its sampling;these checks detect stale prior/cross-covariance after parameter changes. No repeated derivative/integral validation of unchanged formulas.",
+  "maximum_single_thread_cpu_seconds": 60,
+  "cost": {
+    "maximum_new_joint_Mstep_optimizations": 32,
+    "maximum_new_source_conditioning_chains": 128,
+    "maximum_new_source_sweeps": 196608,
+    "new_source_labels": 0,
+    "new_coordinate_fits": 0,
+    "new_future_predictions": 0,
+    "new_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;existing source moments/labels and small JSON only;no server work or NPZ",
+  "scope": "Original four structural priors retained. No task0/task1 outcomes,source6/7,target,KG,independent confirmation or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/results.json"
+}

@@ -1,0 +1,50 @@
+{
+  "status": "frozen before all14 source-only coherent covariance attribution cohorts",
+  "compression_execution": "performance/manifests/legacy_joint_population_f_coherent_common_compression_execution_v1.json",
+  "compression_results": "paper_artifacts/legacy_joint_population_f_coherent_common_compression_v1/results.json",
+  "compression_laws": "paper_artifacts/legacy_joint_population_f_coherent_common_compression_v1/source_laws.json",
+  "head": "f",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "basis": "Stage107 full27 coherent finite PRIOR yields common moments close to fullGP posterior projection, while98% of GP/native mean squared gap lies inside that span. GP diagnostic did not preserve native common/task covariance budgets. Isolate common prior scale/geometry, task covariance and empirical prior center before selecting a structural source estimator; do not expand dictionary or retry failed fixed-marginal f correlation fit.",
+  "diagnostic": "For all14 source cohorts, condition fixed coherent coefficient laws at the native source-only regularizer mean. Form the2x2 native/projectedGP common covariance by native/GP task residual covariance. Add fixed decompositions of GP common covariance into its diagonal, and its shape block with native common intercept and zero intercept/shape correlation. Change GP prior center only in two explicit controls. No fitted parameters, outcomes beyond the source batches, candidate ranking or paid forecasts.",
+  "branches": [
+    "native",
+    "native_common_gp_task",
+    "gp_common_native_task",
+    "gp_common_gp_task",
+    "gp_diagonal_native_task",
+    "gp_shape_native_intercept_native_task",
+    "gp_shape_diagonal_native_intercept_native_task",
+    "native_gp_center",
+    "gp_common_gp_task_gp_center"
+  ],
+  "task_noise": "GP-task swaps include its existing white discrepancy; all branches keep recorded mean observation noise. Native-task branches retain original uncentered spectral/tail/intercept/discrepancy law.",
+  "variance_geometry": "Report prior shape coefficient group mass/spectral weights and intercept/shape correlations; compare centered public-bank variance, not only total covariance trace dominated by the constant direction. This is descriptive attribution, not a hypothesis test or tuning grid.",
+  "verification": "Native dense source NLL and common beta/H must match the cached native endpoint. The projectedGP/commonGP-task/GP-center endpoint must match the Stage107 law already saved. Swapping factors must retain actual source row order. An endpoint mismatch stops attribution interpretation; no old paid-score or optimizer rerun.",
+  "interpretation": "Lower source NLL or movement toward a source-adapted GP does not establish better transfer. These GP scale/kernel contrasts need not obey native sparse/spectral/tail constraints and will not be adopted. Their role is to choose one subsequent estimator question inside the original method.",
+  "next_action": "Use coherent source contrasts to specify one structural estimator repair; preserve g development law and complete-model HOLD. Do not read source6/7 outcomes or target/confirmation, run KG, add a variance floor, optimize GP hybrids, or expand frequency limits.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_coherent_covariance_attribution_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_coherent_covariance_attribution.py",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_coherent_covariance_attribution_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_coherent_covariance_attribution.py"
+}

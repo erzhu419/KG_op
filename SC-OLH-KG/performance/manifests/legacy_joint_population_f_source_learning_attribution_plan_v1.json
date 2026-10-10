@@ -1,0 +1,38 @@
+{
+  "status": "completed;equal observations remove most delete-one variation;no template-instability repair justified",
+  "entrypoint": "performance/diagnose_legacy_f_source_learning_attribution.py",
+  "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "jackknife_results": "paper_artifacts/legacy_joint_population_f_source_task_jackknife_v1/results.json",
+  "outer_source_laws": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/source_laws.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "query_tasks": [
+    0,
+    2,
+    3,
+    4,
+    5
+  ],
+  "question": "Is delete-one source mean variation mostly from missing conditioning labels,or from changing the empirical center/templates/support/spectral learner?",
+  "calculation": "For each of the ten existing source4 laws,freeze its A,R,center,white and all parameters,then condition on the SAME five source tasks/60 means,excluding outer task1. Decompose public mean change from source4 to the full source5 law into extra-source-label conditioning and remaining empirical-learning change. Compare five fixed-source4-law posteriors at equal source5 observations;record equal-weight scatter,not a deployed mixture or jackknife posterior. Preserve both layouts and all deletions.",
+  "verification": "New source5 conditioning must retain the exact source4 A/R law. Verify first case's beta,H independently by coefficient precision conditioning. Check additive mean/covariance decomposition and public covariance PSD. No likelihood-gradient,old forecast or score rerun.",
+  "freeze": "Only the existing five allowed source identities and60 cached means;task1 absent. Use fixed public73 coordinates. No paid/future query or score arrays indexed;no new law fitting or support selection.",
+  "decision": "If equal-observation law variation remains material,identify changed support/templates/centers before a proper joint uncertainty model. If it largely disappears,do not count ordinary missing-source conditioning variation as omitted hyperparameter uncertainty. This cannot itself explain outer score failures or justify added deployed covariance.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 10,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small source coefficient summaries/JSON;no server work,pulls or NPZ",
+  "scope": "Source-only causal decomposition. Point/amplitude candidates stopped;native intercept mixture reference;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript change.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_learning_attribution_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_learning_attribution_v1/results.json",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

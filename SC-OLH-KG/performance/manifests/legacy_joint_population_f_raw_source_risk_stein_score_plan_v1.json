@@ -1,0 +1,30 @@
+{
+  "status": "completed;same-state replay and likelihood derivative identities pass;white/task additions unsupported;source means/common-shape scores retained",
+  "entrypoint": "performance/diagnose_legacy_f_raw_source_risk_stein_score.py",
+  "level_risk_plan": "performance/manifests/legacy_joint_population_f_raw_source_level_risk_score_plan_v1.json",
+  "moment_score_results": "paper_artifacts/legacy_joint_population_f_raw_source_level_risk_score_v1/results.json",
+  "original_source_execution": "performance/manifests/legacy_joint_population_f_learned_covariance_source_update_plan_v1.json",
+  "original_source_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+  "question": "Do equivalent raw likelihood derivative scores settle the absent risk task/white directions without increasing posterior draw count?",
+  "identity": "For scientific raw collapsed likelihood L(eta),risk prior mean gradient is -E[grad log L]/48 and covariance gradient is -.5/48 E[trace((Hess log L+grad log L grad log L^T)dK)]. Gaussian integration by parts gives the SAME marginal source gradient as the prior-moment Fisher expression. Different finite-sample estimators need not coincide pointwise. Use raw likelihood,not the density-corrected computational residual.",
+  "calculation": "With v=exp(eta)/3,W=(K_f+diag(v))^-1,alpha=W(y-m),g_mean=.5 v*(alpha^2-diag W),g=g_mean+(S^2 exp(-eta)-1). H=diag(g_mean-S^2 exp(-eta))+.5(v v^T)*(W^2-2(alpha alpha^T)*W). Reconstruct exactly Stage206's original4096 retained states per arm;reproduce original f/eta moments and512 subset before use. Compute derivative-score series and its ESS/Rhat/full-versus-half means. Save source eta split moments and scalar score records for the next M step;do not discard needed moments and force another replay.",
+  "verification": "Before replay,analytic raw g/H must reproduce finite gradients and Hessian columns at an existing eta reference point;the Gaussian likelihood specialization must reproduce its analytic marginal risk score at1e-8. Scientific eta prior/fixed learned function covariance stay unchanged. Source replay uses the frozen LEARNED Stage206 inputs. No new derivatives of the approximate q or new scalar density integrals.",
+  "decision": "Only derivative directions with Rhat<=1.05,ESS>=100 and matching full/half projected signs support a learning pilot. Report conditional Monte Carlo SE per score;weak or sign-unstable directions remain fixed. Zero-variance positive gradients stay projected at the boundary. Source derivative evidence is not a held-task correction or independent decision claim.",
+  "maximum_single_thread_cpu_seconds": 12,
+  "cost": {
+    "recomputed_original_sweeps": 24576,
+    "additional_independent_chains": 0,
+    "new_source_labels": 0,
+    "new_covariance_optimizations": 0,
+    "new_density_integrations": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;original source-state replay and analytic48-dimensional derivatives;small JSON,no NPZ or server work",
+  "scope": "Same original-source raw model and four priors. No task0/task1 outcomes,source6/7,target,KG,confirmation or manuscript changes. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1/results.json"
+}

@@ -1,0 +1,68 @@
+{
+  "status": "frozen before implementation validation or source6/7 paid data",
+  "training_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_development_v1/results.json",
+  "source_rules": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/source_quadrature.json",
+  "source_rule_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/results.json",
+  "g_execution": "performance/manifests/legacy_joint_population_common_correlation_holdout_execution_v1.json",
+  "g_source_laws": "paper_artifacts/legacy_joint_population_common_correlation_holdout_v1/source_laws.json",
+  "g_profiles": "paper_artifacts/legacy_joint_population_common_correlation_holdout_v1/calibration_profiles.json",
+  "g_results": "paper_artifacts/legacy_joint_population_common_correlation_holdout_v1/results.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "model": "Use only the two frozen full-six-source f reference rules (deleted_task=null), with coherent source beta(v)/H(v) and new-task intercept v. Combine with the two existing Stage104 centered/common-correlation g laws. Preserve original full144/drop0\u20135 risk-only identities, their eta_f/eta_g public maps and equal initial identity weights. No new fits, prior centers, support, spectra or tail changes.",
+  "implementation": "The existing JointResponseMixture already supports a separate Gaussian variance mixture inside each f field. Keep its seven risk identities and nested f variance weights; paired paid evidence updates both levels. Each g field is independent of f variance conditional on its risk identity and is computed once per identity, avoiding an explicit Cartesian expansion. Preserve shared identity dependence in joint prediction and batch scoring.",
+  "freeze": "No read/index of source6/7 paid or scored outcomes until both full-source rules, g laws and complete model inputs are frozen. Save all four prior/paid forecasts before original71-site scored labels. Reuse cached controls without refitting or replaying settled controls.",
+  "verification": "Before heldout outcomes, check one-node native f interface under the cached g law on one training-task public coordinate set. At all four cases verify selected versus32-nodes-per-adaptive-interval prior/paid means, covariances and paid evidence using Stage113 numerical tolerances. Any density-only efficiency change must first agree with the existing local_joint_moments log evidence on training-task development records; scientific gate uses the same raw density. Stop interpretation on unresolved integration error; preserve partial artifacts.",
+  "source_gate": "Original repair gate unchanged: g MSE nonincrease, joint raw batch density nondecrease and g raw batch density strict improvement in every case against BOTH original same216 native and original144 structural controls. Retain Stage72 selected native and GP comparisons separately. Development averages are not gate substitutes.",
+  "comparisons": "Retain every case against original same216 and original144 controls; also report unchanged Stage104 g/f decomposition and source GP descriptively. No averaging substitution for percase gates.",
+  "decision": "Failure stops this combined candidate with complete-model HOLD. Passing both4/4 gates permits separately registered target budget/decision validation. Source6/7 were opened earlier: this is a development repair check, not independent confirmation. No target/KG/confirmation or manuscript claims in this stage.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_complete_v1",
+  "planned_entrypoint": "performance/check_legacy_f_task_level_reference_complete.py",
+  "entrypoint_status": "implementation underway",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_complete_plan_v1.json",
+  "entrypoint": "performance/check_legacy_f_task_level_reference_complete.py",
+  "numerical_tolerances": {
+    "mean_max_absolute": 1e-07,
+    "covariance_relative_frobenius": 1e-05,
+    "paid_log_evidence_absolute": 1e-06,
+    "training_component_log_density_absolute": 1e-07,
+    "raw_density_refinement_absolute": 1e-05
+  },
+  "density_integration": "Evaluate the unchanged Normal/log-chi-square marginal density over standardized eta in[-12,12]. Vectorize over f variance components using quad_vec with percomponent log shifts, epsabs/epsrel1e-10,norm=max,workers=1. No posterior moment projection or paid update changes. Before heldout data compare every variance component with local_joint_moments on training task0 at site35 in all seven risk identities, and sites0/72 in the full risk identity, before/after two paid records. After all four forecasts are frozen, check finer variance rules on original score sites2/36/72 before interpreting gates.",
+  "forecast_refinement": "32 Gauss-Legendre nodes per frozen source adaptive interval for all four prior/paid forecasts; retain all four-head means and complete full covariance for numerical comparison. Save compact forecasts; keep only scoring marginals in memory after forecast construction."
+}

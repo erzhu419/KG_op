@@ -1,0 +1,13 @@
+{
+  "status": "frozen before the remaining32 inner raw forecasts or their scores",
+  "plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+  "entrypoint": "performance/check_legacy_f_inner_raw_folds.py",
+  "source_results": "paper_artifacts/legacy_joint_population_f_inner_raw_remaining_v1/results.json",
+  "source_rules": "paper_artifacts/legacy_joint_population_f_inner_raw_remaining_v1/source_quadrature.json",
+  "source_branches": "paper_artifacts/legacy_joint_population_f_inner_raw_remaining_v1/source_branches.json",
+  "cost": {"maximum_risk_coordinate_refits": 8, "maximum_risk_objective_fits": 24, "maximum_source_variance_integrations": 16, "maximum_inner_raw_forecasts": 32, "maximum_numerical_reference_forecasts": 16},
+  "prediction_tolerances": {"mean_max_absolute": 1e-7, "covariance_relative_frobenius": 1e-5, "paid_log_evidence_absolute": 1e-6},
+  "raw_density_tolerance": 1e-5,
+  "output": "paper_artifacts/legacy_joint_population_f_inner_raw_remaining_v1/raw_pilot",
+  "decision": "Report all eight folds;freeze all32 forecasts before scores and require all16 numerical refinements. Pair shape/native contrasts within both point and mixture contracts. No candidate adoption or outer evaluation."
+}

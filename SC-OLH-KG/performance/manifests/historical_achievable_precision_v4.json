@@ -1,0 +1,50 @@
+{
+  "parent_plan": "performance/manifests/historical_achievable_batch_kg_v1.json",
+  "objective_plan": "performance/manifests/historical_achievable_objective_v3.json",
+  "output": "paper_artifacts/historical_achievable_precision_v4",
+  "cases": [
+    {
+      "name": "source_n1",
+      "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+      "n": 1,
+      "objective_prefixes": [
+        16,
+        32
+      ]
+    },
+    {
+      "name": "source_n4",
+      "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+      "n": 4,
+      "objective_prefixes": [
+        4,
+        8
+      ]
+    },
+    {
+      "name": "gp_n1",
+      "state": "learned_prior_independent_02_source_common_task_rbf_layout6",
+      "n": 1,
+      "objective_prefixes": [
+        4,
+        8
+      ]
+    },
+    {
+      "name": "gp_n4",
+      "state": "learned_prior_independent_02_source_common_task_rbf_layout6",
+      "n": 4,
+      "objective_prefixes": [
+        4,
+        8
+      ]
+    }
+  ],
+  "refinement_powers": [
+    12,
+    14,
+    16
+  ],
+  "maximum_case_cpu_seconds": 420,
+  "status": "Per-record development precision admission through16; higher risk powers use historical policy shards. Preserve previous caches, complete365 actions and original1e-4 gates; no physical calls or fits."
+}

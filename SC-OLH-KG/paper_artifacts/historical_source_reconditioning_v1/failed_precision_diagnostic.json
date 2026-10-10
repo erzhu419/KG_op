@@ -1,0 +1,207 @@
+{
+  "execution": {
+    "status": "registered before saved-state variance diagnostic",
+    "entrypoint": "performance/diagnose_historical_source_precision.py",
+    "maximum_single_thread_cpu_seconds": 5,
+    "data": "Only existing512 retained source states per failed case;no new draws. Reuse aggregate and diagnostics for within/between variance and centered conditional variance functionals. Preserve full-chain failures even if retained halves pass."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0164691213559138,
+      "minimum_autocorrelation_ess": 373.4596595941051,
+      "maximum_first_second_half_f_variance_relative_difference": 0.16262954921535255,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4970,
+        4630,
+        4828,
+        4751
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.058304422955708146,
+      "retention_mean_rms_error_in_posterior_sd": 0.00251556043185767,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_joint_deconvolved_task.json",
+      "retained_worst_variance_site": {
+        "source_task": 4,
+        "policy": 19
+      },
+      "retained_worst_variance_site_index": 30,
+      "retained_half_variance_relative_difference": 0.21073603954044265,
+      "retained_variance_functional_ESS_at_site": 435.0130576414731,
+      "retained_variance_functional_Rhat_at_site": 0.999472362078183,
+      "retained_within_eta_conditional_variance_fraction_at_site": 0.9995479947395922,
+      "retained_variance_functional_mean_to_full_variance_ratio_at_site": 1.0409145823635748,
+      "failed_full_chain_gate_unchanged": true
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.02472031256569,
+      "minimum_autocorrelation_ess": 237.45765412457274,
+      "maximum_first_second_half_f_variance_relative_difference": 0.29001442725032894,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5310,
+        5471,
+        5087,
+        5446
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.07205637601596404,
+      "retention_mean_rms_error_in_posterior_sd": 0.0038785285813361468,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_head_specific_observed_task.json",
+      "retained_worst_variance_site": {
+        "source_task": 3,
+        "policy": 49
+      },
+      "retained_worst_variance_site_index": 16,
+      "retained_half_variance_relative_difference": 0.1935534252573509,
+      "retained_variance_functional_ESS_at_site": 218.61834289254315,
+      "retained_variance_functional_Rhat_at_site": 1.007265169698203,
+      "retained_within_eta_conditional_variance_fraction_at_site": 0.7890652147692843,
+      "retained_variance_functional_mean_to_full_variance_ratio_at_site": 1.0626060278805658,
+      "failed_full_chain_gate_unchanged": true
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0251449623065563,
+      "minimum_autocorrelation_ess": 239.62813031043163,
+      "maximum_first_second_half_f_variance_relative_difference": 0.23263404077443622,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5099,
+        4990,
+        5216,
+        4902
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.10488119887446201,
+      "retention_mean_rms_error_in_posterior_sd": 0.0018723848683831587,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_head_specific_deconvolved_task.json",
+      "retained_worst_variance_site": {
+        "source_task": 2,
+        "policy": 49
+      },
+      "retained_worst_variance_site_index": 8,
+      "retained_half_variance_relative_difference": 0.3701471905716009,
+      "retained_variance_functional_ESS_at_site": 336.89147880259566,
+      "retained_variance_functional_Rhat_at_site": 1.0133449843967794,
+      "retained_within_eta_conditional_variance_fraction_at_site": 0.9944014896551899,
+      "retained_variance_functional_mean_to_full_variance_ratio_at_site": 0.983554879922491,
+      "failed_full_chain_gate_unchanged": true
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0604557291810532,
+      "minimum_autocorrelation_ess": 91.55908251650207,
+      "maximum_first_second_half_f_variance_relative_difference": 0.5727905964896876,
+      "elliptical_likelihood_evaluations_by_chain": [
+        4985,
+        5026,
+        5119,
+        5040
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.11148044254042833,
+      "retention_mean_rms_error_in_posterior_sd": 0.0036705899431253132,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_joint_observed_task.json",
+      "retained_worst_variance_site": {
+        "source_task": 4,
+        "policy": 20
+      },
+      "retained_worst_variance_site_index": 33,
+      "retained_half_variance_relative_difference": 0.6020118872526214,
+      "retained_variance_functional_ESS_at_site": 77.66715047600643,
+      "retained_variance_functional_Rhat_at_site": 1.0547088716842115,
+      "retained_within_eta_conditional_variance_fraction_at_site": 0.7626117915160219,
+      "retained_variance_functional_mean_to_full_variance_ratio_at_site": 1.0058437166094014,
+      "failed_full_chain_gate_unchanged": true
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0296253444440748,
+      "minimum_autocorrelation_ess": 281.3029978928241,
+      "maximum_first_second_half_f_variance_relative_difference": 0.17402648649258803,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5380,
+        5116,
+        5222,
+        5251
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.03789469537358159,
+      "retention_mean_rms_error_in_posterior_sd": 0.002459982871156209,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_head_specific_observed_task.json",
+      "retained_worst_variance_site": {
+        "source_task": 3,
+        "policy": 72
+      },
+      "retained_worst_variance_site_index": 22,
+      "retained_half_variance_relative_difference": 0.19423708922369254,
+      "retained_variance_functional_ESS_at_site": 342.552166940748,
+      "retained_variance_functional_Rhat_at_site": 1.0022664430562136,
+      "retained_within_eta_conditional_variance_fraction_at_site": 0.8718135316110374,
+      "retained_variance_functional_mean_to_full_variance_ratio_at_site": 0.9821038532726003,
+      "failed_full_chain_gate_unchanged": true
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "monte_carlo_gate_passed": false,
+      "maximum_split_rhat": 1.0369569766864828,
+      "minimum_autocorrelation_ess": 133.4832275614606,
+      "maximum_first_second_half_f_variance_relative_difference": 0.29846561563670415,
+      "elliptical_likelihood_evaluations_by_chain": [
+        5152,
+        5377,
+        5298,
+        5044
+      ],
+      "mixture_gate_passed": true,
+      "retention_variance_relative_error": 0.0483310766958156,
+      "retention_mean_rms_error_in_posterior_sd": 0.0019865324037506072,
+      "source_posterior_usable": false,
+      "component_file": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_joint_observed_task.json",
+      "retained_worst_variance_site": {
+        "source_task": 2,
+        "policy": 49
+      },
+      "retained_worst_variance_site_index": 4,
+      "retained_half_variance_relative_difference": 0.21913317562939502,
+      "retained_variance_functional_ESS_at_site": 196.01173727450185,
+      "retained_variance_functional_Rhat_at_site": 1.0334218786498508,
+      "retained_within_eta_conditional_variance_fraction_at_site": 0.9990018459475032,
+      "retained_variance_functional_mean_to_full_variance_ratio_at_site": 1.016480843387198,
+      "failed_full_chain_gate_unchanged": true
+    }
+  ],
+  "all_saved_failures_processed": true,
+  "stopped_at_cpu_budget": false,
+  "cpu_seconds": 0.407534724,
+  "new_source_draws": 0,
+  "interpretation": "Diagnostics of the saved fixed-stride128 states per chain only. Variance functionals use the saved full-run mean. Locations and ESS are coarse retained-state diagnostics;they do not recover the unsaved full-chain site ranking or reverse its failed gate."
+}

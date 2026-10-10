@@ -1,0 +1,104 @@
+{
+  "execution": {
+    "status": "frozen after both-layout coherent shrink probe passed;before one-dimensional source scale learning",
+    "entrypoint": "performance/fit_legacy_f_predictive_shape_scale.py",
+    "direction_results": "paper_artifacts/legacy_joint_population_f_source_shape_scale_direction_v1/results.json",
+    "source_context_plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+    "reference_forecasts": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+    "full_source_rules": "paper_artifacts/legacy_joint_population_f_predictive_shape_reference_v1/source_quadrature.json",
+    "full_source_reference_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_reference_v1/results.json",
+    "full_source_reference_execution": "performance/manifests/legacy_joint_population_f_predictive_shape_reference_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "paid_prefix": [
+      0,
+      1,
+      29,
+      58
+    ],
+    "scale_bounds": [
+      0,
+      1
+    ],
+    "optimizer_xatol": 0.001,
+    "optimizer_max_iterations": 64,
+    "learning_nodes_per_interval": 32,
+    "final_refinement_nodes_per_interval": 64,
+    "source_rule_tolerances": {
+      "raw_mass_absolute": 1e-08,
+      "mean_variance_relative": 1e-06,
+      "coefficient_mean_max_absolute": 1e-08,
+      "common_covariance_relative_frobenius": 1e-06
+    },
+    "prediction_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "density_refinement_tolerance": 1e-05,
+    "maximum_single_thread_cpu_seconds": 180,
+    "law": "One offline scale per source layout on frozen q1 task-shape excess;original support/spectrum/common prior/empirical center/weak tail/independent intercept/eta maps retained. All common moments and the full-tail conditional Jeffreys variance law recondition on the same source data. No posterior covariance scaling and no q refitting.",
+    "learning_objective": "Average proper joint future three-repeat batch density across the five honest source4 branches after the same four fixed-prefix raw observations. Original held-source calls already exist. Inner tasks participate in scale selection,so final inner gains remain training evidence. No target or outer task1 values enter learning.",
+    "optimization": "Single bounded scalar search started by the standard deterministic bounded method,no grid or extra starts;compare its candidate with the two legal endpoints. Bounds permit shrinkage supported by the preceding probe. Selected-point source/forecast32-versus64 quadrature checks must pass before constructing source5 laws. Stop at the CPU budget without promoting incomplete fits.",
+    "decision": "Freeze both completed source5 laws before any outer query data. Report MSE and transcript alongside the learned proper density and all source objectives,including deterioration. Passing source training gates does not adopt this candidate or authorize source6/7,target,KG or independent confirmation. Any later cached outer check needs a separate fixed contract.",
+    "cost": {
+      "maximum_source_predictive_scalar_fits": 2,
+      "new_native_source_parameter_fits": 0,
+      "new_risk_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "output": "paper_artifacts/legacy_joint_population_f_predictive_shape_scale_v1",
+    "execution": "local serial single-thread;small cached JSON and ten final score-site NPZ only;no server jobs or pulls"
+  },
+  "rows": [
+    {
+      "scale": 0.3819660112501051,
+      "raw_density": 1.1700623632046263,
+      "mse": 0.00015062854457114844
+    },
+    {
+      "scale": 0.6180339887498948,
+      "raw_density": 1.1720690631717436,
+      "mse": 0.00013830066300556028
+    },
+    {
+      "scale": 0.7639320225002102,
+      "raw_density": 1.1709012139330226,
+      "mse": 0.00013266522488987752
+    },
+    {
+      "scale": 0.5983609194710328,
+      "raw_density": 1.1721178578416471,
+      "mse": 0.00013915711020945977
+    },
+    {
+      "scale": 0.5710286060918783,
+      "raw_density": 1.1721335657193923,
+      "mse": 0.00014039084412577818
+    },
+    {
+      "scale": 0.5776066259559802,
+      "raw_density": 1.172135562078322,
+      "mse": 0.00014008911641772245
+    },
+    {
+      "scale": 0.5779399678566043,
+      "raw_density": 1.1721355636159339,
+      "mse": 0.00014007390875268923
+    },
+    {
+      "scale": 0.5782733097621726,
+      "raw_density": 1.1721355556180224,
+      "mse": 0.00014005870899265528
+    },
+    {
+      "scale": 0.0,
+      "raw_density": 1.1381878828263783,
+      "mse": 0.00018886018175607086
+    }
+  ]
+}

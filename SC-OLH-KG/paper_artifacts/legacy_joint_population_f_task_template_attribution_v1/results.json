@@ -1,0 +1,730 @@
+{
+  "execution": {
+    "status": "frozen before all12 source template attributions",
+    "template_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "template_results": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/results.json",
+    "source_templates": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/source_templates.json",
+    "question": "Which parts of the failed task template oppose source likelihood,and can preserved native task shape marginals separate correlation from support/scale changes?",
+    "diagnostic": "Decompose the exact q direction and Gaussian source score into level variance,existing task shape marginal changes,new task group marginals,level-shape correlation and shape correlation. Project total q covariance information on locally interior original common/task group amplitudes,spectra,task intercept and discrepancy directions. This information projection is not joint optimization or a feasible improvement claim.",
+    "fixed_probe_q": 0.01,
+    "probes": [
+      "full_template",
+      "diagonal_template",
+      "shape_diagonal_template",
+      "native_task_shape_correlation"
+    ],
+    "probes_contract": "All probes use the same fixed .01 and five training sources. Diagonal probes remove correlation and/or template level variance. The native_task_shape_correlation probe uses source template correlation rescaled to original positive task shape excess marginal variances;independent native v,task support/spectrum,1% independent tail,common A/center/noise/discrepancy remain fixed. No level-shape correlation is introduced by this control.",
+    "verification": "Exact covariance and source derivative decomposition;dense versus whitened Fisher;all fixed probe PSD;native shape correlation preserves existing task marginal budgets/support/spectrum and independent v/tail. A failure blocks interpretation.",
+    "decision": "Retain Stage127 failed family,do not fit its q or rebuild a posterior under it. If the native-task-shape correlation probe improves mean source likelihood in both layouts,register one scalar correlation fit and conditional independent-v integration before any paid test. Otherwise revisit jointly learned common/task geometry using these source attributions;do not infer a new adopted prior from local derivatives.",
+    "scope": "source0-5 five-task deletion folds only;no query paid labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+    "execution": "local serial single-thread;small cached JSON only",
+    "cost": {
+      "new_source_fits": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "output": "paper_artifacts/legacy_joint_population_f_task_template_attribution_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_task_template_attribution.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_task_template_attribution_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_task_template_attribution.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "component_q_gradients_per_label": {
+        "level_variance": 1.7588691816790756e-05,
+        "existing_task_shape_marginals": -1.091810738791434e-06,
+        "new_task_group_marginals": 0.015254711575789283,
+        "level_shape_correlation": 0.002849860877333864,
+        "shape_correlation": -0.000644478506374588
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.00019366652870989043,
+          "q_gradient_at_zero_per_label": 0.017476590827826547,
+          "q_total_fisher_information_at_zero": 26.887176197216988
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.0001716613557860569,
+          "q_gradient_at_zero_per_label": 0.015271208456867328,
+          "q_total_fisher_information_at_zero": 24.640628250435075
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00015250958567092354,
+          "q_gradient_at_zero_per_label": 0.015253619765050483,
+          "q_total_fisher_information_at_zero": 1.5136019124269662
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 6.619575769750696e-06,
+          "q_gradient_at_zero_per_label": -0.0006635279990141786,
+          "q_total_fisher_information_at_zero": 0.022543893627170533
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 26.887176197216988,
+      "nuisance_adjusted_q_fisher_information": 1.7970356093605846,
+      "nuisance_adjusted_information_fraction": 0.06683615996634822,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "component_q_gradients_per_label": {
+        "level_variance": 1.40334841198649e-05,
+        "existing_task_shape_marginals": -4.028812569586519e-07,
+        "new_task_group_marginals": 0.0033403126171325684,
+        "level_shape_correlation": 0.014352967340578261,
+        "shape_correlation": 0.0030954482763546074
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.0003302050696429859,
+          "q_gradient_at_zero_per_label": 0.02080235883692835,
+          "q_total_fisher_information_at_zero": 162.16690315305027
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.000162488362775548,
+          "q_gradient_at_zero_per_label": 0.0033539432199955143,
+          "q_total_fisher_information_at_zero": 152.3393454982295
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -3.4062251810684785e-05,
+          "q_gradient_at_zero_per_label": 0.0033399097358755977,
+          "q_total_fisher_information_at_zero": 0.9711523553163658
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": -1.5588652811260317e-05,
+          "q_gradient_at_zero_per_label": 0.0015582445503134021,
+          "q_total_fisher_information_at_zero": 0.021007646910066034
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 162.16690315305027,
+      "nuisance_adjusted_q_fisher_information": 2.2346844278431943,
+      "nuisance_adjusted_information_fraction": 0.013780151093679938,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "component_q_gradients_per_label": {
+        "level_variance": 2.169525330956527e-06,
+        "existing_task_shape_marginals": 6.799174125428816e-08,
+        "new_task_group_marginals": 0.014109069571231805,
+        "level_shape_correlation": 0.004548002521246835,
+        "shape_correlation": 0.00023275787900556044
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.0002134868323744321,
+          "q_gradient_at_zero_per_label": 0.018892067488556416,
+          "q_total_fisher_information_at_zero": 33.87977335458816
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00016655420526801024,
+          "q_gradient_at_zero_per_label": 0.01411130708830394,
+          "q_total_fisher_information_at_zero": 32.04007624165958
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00014252335314868247,
+          "q_gradient_at_zero_per_label": 0.014109137562973058,
+          "q_total_fisher_information_at_zero": 2.7716674725777115
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 3.780100146677512e-06,
+          "q_gradient_at_zero_per_label": -0.0003787838282773325,
+          "q_total_fisher_information_at_zero": 0.028474200135497542
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 6,
+      "conditional_q_fisher_information": 33.87977335458816,
+      "nuisance_adjusted_q_fisher_information": 3.239468615880379,
+      "nuisance_adjusted_information_fraction": 0.09561659642689654,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "component_q_gradients_per_label": {
+        "level_variance": -2.664437553149268e-05,
+        "existing_task_shape_marginals": -1.1070116100094415e-07,
+        "new_task_group_marginals": 0.01020779744062972,
+        "level_shape_correlation": 0.006048705062678633,
+        "shape_correlation": 0.000500318336148088
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.0001985731092255527,
+          "q_gradient_at_zero_per_label": 0.016730065762763917,
+          "q_total_fisher_information_at_zero": 42.187011733980576
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.0001346000997286545,
+          "q_gradient_at_zero_per_label": 0.010181042363937227,
+          "q_total_fisher_information_at_zero": 39.883612628423855
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00010241019786594308,
+          "q_gradient_at_zero_per_label": 0.010207686739468721,
+          "q_total_fisher_information_at_zero": 1.015560375811112
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 5.533105826405205e-06,
+          "q_gradient_at_zero_per_label": -0.000554130536055133,
+          "q_total_fisher_information_at_zero": 0.025371330779594588
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 42.187011733980576,
+      "nuisance_adjusted_q_fisher_information": 1.6974470888885151,
+      "nuisance_adjusted_information_fraction": 0.040236248530522586,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "component_q_gradients_per_label": {
+        "level_variance": 1.0426787744025981e-05,
+        "existing_task_shape_marginals": 1.6744403665419626e-07,
+        "new_task_group_marginals": 0.0051893174211839815,
+        "level_shape_correlation": -0.0012732592759767665,
+        "shape_correlation": 0.0009147211044560975
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -7.044182617166328e-05,
+          "q_gradient_at_zero_per_label": 0.004841373481443986,
+          "q_total_fisher_information_at_zero": 26.029437024336673
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -7.291748876170345e-05,
+          "q_gradient_at_zero_per_label": 0.005199911652964628,
+          "q_total_fisher_information_at_zero": 24.553101817112957
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -5.200066456678698e-05,
+          "q_gradient_at_zero_per_label": 0.005189484865220634,
+          "q_total_fisher_information_at_zero": 0.4023541488644628
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 5.945069680102222e-06,
+          "q_gradient_at_zero_per_label": -0.00059548768104964,
+          "q_total_fisher_information_at_zero": 0.021675610143319625
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 26.029437024336673,
+      "nuisance_adjusted_q_fisher_information": 0.8816577625080276,
+      "nuisance_adjusted_information_fraction": 0.03387156478581179,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "component_q_gradients_per_label": {
+        "level_variance": -2.5381628927047726e-05,
+        "existing_task_shape_marginals": 1.7993257147033704e-06,
+        "new_task_group_marginals": 0.019150877182378994,
+        "level_shape_correlation": 0.003975340251170737,
+        "shape_correlation": -0.0004668399176043808
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.0002383952937163869,
+          "q_gradient_at_zero_per_label": 0.02263579521273303,
+          "q_total_fisher_information_at_zero": 17.79637875470211
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00020415983451860242,
+          "q_gradient_at_zero_per_label": 0.01912729487916664,
+          "q_total_fisher_information_at_zero": 17.290437800237882
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00019249170683277583,
+          "q_gradient_at_zero_per_label": 0.019152676508093706,
+          "q_total_fisher_information_at_zero": 3.128216553569594
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": -2.060776601364722e-06,
+          "q_gradient_at_zero_per_label": 0.00020594847308124,
+          "q_total_fisher_information_at_zero": 0.0025415423915583994
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 6,
+      "conditional_q_fisher_information": 17.79637875470211,
+      "nuisance_adjusted_q_fisher_information": 2.1116614480085305,
+      "nuisance_adjusted_information_fraction": 0.11865680524756156,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "component_q_gradients_per_label": {
+        "level_variance": -1.4425592685266923e-05,
+        "existing_task_shape_marginals": -1.6217415769598232e-07,
+        "new_task_group_marginals": 0.006318494064883543,
+        "level_shape_correlation": 0.004917682424895055,
+        "shape_correlation": -0.0008102539161915461
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.0001344274533470191,
+          "q_gradient_at_zero_per_label": 0.010411334806744084,
+          "q_total_fisher_information_at_zero": 39.878305324642106
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -9.247723148231302e-05,
+          "q_gradient_at_zero_per_label": 0.006303906298040592,
+          "q_total_fisher_information_at_zero": 37.59739910485109
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -6.326307097204165e-05,
+          "q_gradient_at_zero_per_label": 0.006318331890725846,
+          "q_total_fisher_information_at_zero": 0.4108467861895793
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 2.0339375691680317e-05,
+          "q_gradient_at_zero_per_label": -0.002034472962360969,
+          "q_total_fisher_information_at_zero": 0.036218413591029015
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 39.87830532464212,
+      "nuisance_adjusted_q_fisher_information": 1.2227139203929953,
+      "nuisance_adjusted_information_fraction": 0.030661130417631865,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "component_q_gradients_per_label": {
+        "level_variance": 0.27012785410381585,
+        "existing_task_shape_marginals": 1.1981795335092953e-06,
+        "new_task_group_marginals": 0.0,
+        "level_shape_correlation": 0.004800424578772712,
+        "shape_correlation": 0.0023084429007041757
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.0031867695065139756,
+          "q_gradient_at_zero_per_label": 0.2772379197628259,
+          "q_total_fisher_information_at_zero": 2033.4278245359126
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.0031255968229109143,
+          "q_gradient_at_zero_per_label": 0.2701290522833493,
+          "q_total_fisher_information_at_zero": 1976.2496308144357
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -6.270286294629557e-07,
+          "q_gradient_at_zero_per_label": 1.1981795335088326e-06,
+          "q_total_fisher_information_at_zero": 0.5602021251340228
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": -4.655957138943734e-06,
+          "q_gradient_at_zero_per_label": 0.00046483562695043176,
+          "q_total_fisher_information_at_zero": 0.024138600641899693
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_group_variance:main:2"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 2033.4278245359128,
+      "nuisance_adjusted_q_fisher_information": 2020.0816201961597,
+      "nuisance_adjusted_information_fraction": 0.9934365979560651,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "component_q_gradients_per_label": {
+        "level_variance": 9.348491518782846e-06,
+        "existing_task_shape_marginals": 1.647695663740493e-06,
+        "new_task_group_marginals": 0.0007796577793646268,
+        "level_shape_correlation": 0.001629930872470868,
+        "shape_correlation": 0.0008670970784947414
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -8.295739568708882e-05,
+          "q_gradient_at_zero_per_label": 0.0032876819175127634,
+          "q_total_fisher_information_at_zero": 67.9792628193473
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -5.48207872430595e-05,
+          "q_gradient_at_zero_per_label": 0.0007906539665471316,
+          "q_total_fisher_information_at_zero": 64.1311091346316
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -8.716997572211227e-06,
+          "q_gradient_at_zero_per_label": 0.0007813054750283673,
+          "q_total_fisher_information_at_zero": 0.913828716031524
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": -1.506658016126039e-07,
+          "q_gradient_at_zero_per_label": 1.489311522669794e-05,
+          "q_total_fisher_information_at_zero": 0.026711424116612696
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_group_variance:pair:1,3",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 8,
+      "conditional_q_fisher_information": 67.9792628193473,
+      "nuisance_adjusted_q_fisher_information": 1.6004231633963704,
+      "nuisance_adjusted_information_fraction": 0.02354281433809371,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "component_q_gradients_per_label": {
+        "level_variance": -4.902059868346539e-06,
+        "existing_task_shape_marginals": 2.98388637641131e-07,
+        "new_task_group_marginals": 0.007901097244114924,
+        "level_shape_correlation": 0.007614182899095141,
+        "shape_correlation": -0.0011637609570076166
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.00018129686040113668,
+          "q_gradient_at_zero_per_label": 0.014346915514971758,
+          "q_total_fisher_information_at_zero": 51.48416058447967
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.00011682614909558353,
+          "q_gradient_at_zero_per_label": 0.007896493572884349,
+          "q_total_fisher_information_at_zero": 47.86177551475178
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -7.917765284082279e-05,
+          "q_gradient_at_zero_per_label": 0.007901395632752566,
+          "q_total_fisher_information_at_zero": 0.6257073467329304
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 1.6194795027235642e-05,
+          "q_gradient_at_zero_per_label": -0.0016198660914780456,
+          "q_total_fisher_information_at_zero": 0.03195530378321649
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 7,
+      "conditional_q_fisher_information": 51.48416058447965,
+      "nuisance_adjusted_q_fisher_information": 1.6063962282244832,
+      "nuisance_adjusted_information_fraction": 0.031201756229249766,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "component_q_gradients_per_label": {
+        "level_variance": -1.4407809673063396e-05,
+        "existing_task_shape_marginals": 4.156192331956447e-07,
+        "new_task_group_marginals": 0.007275874250161673,
+        "level_shape_correlation": 0.003547033710412149,
+        "shape_correlation": -0.0008037656010551383
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.00012746761046633637,
+          "q_gradient_at_zero_per_label": 0.010005150169078903,
+          "q_total_fisher_information_at_zero": 34.8836257993371
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -9.881373655140635e-05,
+          "q_gradient_at_zero_per_label": 0.0072618820597217726,
+          "q_total_fisher_information_at_zero": 32.31962164356271
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -7.28916845305072e-05,
+          "q_gradient_at_zero_per_label": 0.007276289869394868,
+          "q_total_fisher_information_at_zero": 0.5166013263149601
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 1.302161750293962e-05,
+          "q_gradient_at_zero_per_label": -0.0013023769178845965,
+          "q_total_fisher_information_at_zero": 0.029742078624300738
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:log_group_variance:pair:2,3",
+        "common:spectral_exponent",
+        "task:log_group_variance:main:0",
+        "task:log_group_variance:main:1",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 8,
+      "conditional_q_fisher_information": 34.8836257993371,
+      "nuisance_adjusted_q_fisher_information": 1.0817631411498896,
+      "nuisance_adjusted_information_fraction": 0.031010627948269254,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "component_q_gradients_per_label": {
+        "level_variance": 3.913265178049722e-07,
+        "existing_task_shape_marginals": 2.1227392326452394e-07,
+        "new_task_group_marginals": 0.027878707218348064,
+        "level_shape_correlation": 0.0072273427220875645,
+        "shape_correlation": -0.002374625158190025
+      },
+      "probes": {
+        "full_template": {
+          "source_log_likelihood_gain_per_label": -0.00034275327510435716,
+          "q_gradient_at_zero_per_label": 0.032732028382686656,
+          "q_total_fisher_information_at_zero": 28.993760652050206
+        },
+        "diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.000294942595072456,
+          "q_gradient_at_zero_per_label": 0.02787931081878921,
+          "q_total_fisher_information_at_zero": 28.80233508866763
+        },
+        "shape_diagonal_template": {
+          "source_log_likelihood_gain_per_label": -0.0002774138340169152,
+          "q_gradient_at_zero_per_label": 0.027878919492271313,
+          "q_total_fisher_information_at_zero": 7.73304148871019
+        },
+        "native_task_shape_correlation": {
+          "source_log_likelihood_gain_per_label": 0.0,
+          "q_gradient_at_zero_per_label": 0.0,
+          "q_total_fisher_information_at_zero": 0.0
+        }
+      },
+      "nuisance_parameter_names": [
+        "common:log_group_variance:main:0",
+        "common:log_group_variance:main:1",
+        "common:log_group_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_group_variance:pair:1,3",
+        "task:log_intercept_variance"
+      ],
+      "nuisance_derivative_rank": 6,
+      "conditional_q_fisher_information": 28.993760652050206,
+      "nuisance_adjusted_q_fisher_information": 6.828638668504844,
+      "nuisance_adjusted_information_fraction": 0.23552097123427063,
+      "verification": {
+        "template_direction_and_score_decomposition_match": true,
+        "dense_and_whitened_fisher_match": true,
+        "all_four_fixed_probe_covariances_psd": true,
+        "native_shape_correlation_preserves_marginals_support_independent_v_and_tail": true
+      }
+    }
+  ],
+  "summary": {
+    "5": {
+      "mean_component_q_gradients_per_label": {
+        "level_variance": -1.3012525744837067e-06,
+        "existing_task_shape_marginals": 7.156138931013747e-08,
+        "new_task_group_marginals": 0.011208680968057725,
+        "level_shape_correlation": 0.005083602796171927,
+        "shape_correlation": 0.0006053211953308974
+      },
+      "probes": {
+        "full_template": {
+          "mean_source_log_likelihood_gain_per_label": -0.00020746144330681857,
+          "improving_folds": 0
+        },
+        "diagonal_template": {
+          "mean_source_log_likelihood_gain_per_label": -0.00015206355780642925,
+          "improving_folds": 0
+        },
+        "shape_diagonal_template": {
+          "mean_source_log_likelihood_gain_per_label": -0.00011266629331596612,
+          "improving_folds": 0
+        },
+        "native_task_shape_correlation": {
+          "mean_source_log_likelihood_gain_per_label": 7.047370017184326e-07,
+          "improving_folds": 4
+        }
+      },
+      "mean_nuisance_adjusted_q_information_fraction": 0.061499587675136774
+    },
+    "6": {
+      "mean_component_q_gradients_per_label": {
+        "level_variance": 0.04501730974327096,
+        "existing_task_shape_marginals": 6.016638056091843e-07,
+        "new_task_group_marginals": 0.008358971759478806,
+        "level_shape_correlation": 0.004956099534622249,
+        "shape_correlation": -0.0003294776088742348
+      },
+      "probes": {
+        "full_template": {
+          "mean_source_log_likelihood_gain_per_label": -0.0006759453502533189,
+          "improving_folds": 0
+        },
+        "diagonal_template": {
+          "mean_source_log_likelihood_gain_per_label": -0.0006305795537259554,
+          "improving_folds": 0
+        },
+        "shape_diagonal_template": {
+          "mean_source_log_likelihood_gain_per_label": -8.36817114269935e-05,
+          "improving_folds": 0
+        },
+        "native_task_shape_correlation": {
+          "mean_source_log_likelihood_gain_per_label": 7.4581942135498736e-06,
+          "improving_folds": 3
+        }
+      },
+      "mean_nuisance_adjusted_q_information_fraction": 0.2242289830205967
+    }
+  },
+  "all12_source_attributions_verified": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.13407628800000004,
+  "no_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

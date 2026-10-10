@@ -1,0 +1,151 @@
+{
+  "execution": {
+    "status": "frozen before saved two-task1 mean-error attribution",
+    "development_execution": "performance/manifests/legacy_joint_population_f_level_shape_development_execution_v1.json",
+    "development_results": "paper_artifacts/legacy_joint_population_f_level_shape_development_v1/results.json",
+    "question": "Does the remaining task1 mean error chiefly belong to a common level offset or centered policy shape,and which part explains the loss versus retained intercept mixture and source GP?",
+    "calculation": "Use the two already-frozen4episode joint-variance predictions and same-budget cached native/flat/sourceGP/intercept-only predictions. On the same already-opened12 query score labels,decompose MSE exactly as(mean error)^2+mean(centered error^2). For joint-versus-intercept mean changes decompose MSE difference as2mean(old_error*mean_change)+mean(mean_change^2),and split that contrast into level and centered-shape contributions. Record probability-weighted posterior f covariance trace using frozen values only.",
+    "interpretation": "The observed mean labels have their original known label noise;this is diagnostic error attribution,not oracle recovery,inner honest validation,new paired independent significance or task-generalization evidence. Do not change any source law,score or gate.",
+    "scope": "Only two already-opened task1 score sets/source0-5;no new forecasts,fits,simulator/verifier/terminal calls,source6/7,target,confirmation,server work or manuscript changes.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small saved JSON forecasts/labels only",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_mean_error_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_level_shape_mean_error.py",
+    "entrypoint_status": "implemented before execution",
+    "decision": "Retain joint-variance candidate as a numerical/calibration study,not replacement prior. Use actual level/shape error attribution to register a source-only predictive-mechanism diagnostic;do not add another covariance parameter or expand target experiments solely because raw density improved.",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_mean_error_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_level_shape_mean_error.py",
+    "frozen_before_error_attribution": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "error_breakdown": {
+        "joint_level_shape_variance_mixture": {
+          "mse": 0.0007132951674892746,
+          "signed_mean_error": -0.019767864620158133,
+          "level_mse": 0.0003907684716408996,
+          "centered_shape_mse": 0.0003225266958483749,
+          "level_fraction_of_mse": 0.547835579787207,
+          "average_posterior_f_variance": 0.0005244691108851927
+        },
+        "native_f": {
+          "mse": 0.0007175896455527599,
+          "signed_mean_error": -0.01994234297256736,
+          "level_mse": 0.0003976970432355067,
+          "centered_shape_mse": 0.0003198926023172532,
+          "level_fraction_of_mse": 0.5542123492168848,
+          "average_posterior_f_variance": 0.0005024773499486709
+        },
+        "flat": {
+          "mse": 0.0006455249198752918,
+          "signed_mean_error": -0.0182282671659784,
+          "level_mse": 0.00033226972387428625,
+          "centered_shape_mse": 0.00031325519600100554,
+          "level_fraction_of_mse": 0.5147279580445586,
+          "average_posterior_f_variance": 0.000483110367363206
+        },
+        "source_gp": {
+          "mse": 0.0006160738869505875,
+          "signed_mean_error": -0.01655706530113715,
+          "level_mse": 0.0002741364113861198,
+          "centered_shape_mse": 0.0003419374755644678,
+          "level_fraction_of_mse": 0.44497326894185835,
+          "average_posterior_f_variance": 0.00017299115978947334
+        },
+        "source_variance_mixture": {
+          "mse": 0.000705407645570438,
+          "signed_mean_error": -0.019712128452181465,
+          "level_mse": 0.00038856800811530205,
+          "centered_shape_mse": 0.00031683963745513595,
+          "level_fraction_of_mse": 0.5508417870933068,
+          "average_posterior_f_variance": 0.0005084671919432678
+        }
+      },
+      "joint_minus_intercept_mean_change": {
+        "bank_rms_change": 0.00021120832706884675,
+        "mse_difference": 7.887521918836533e-06,
+        "old_error_cross_term": 7.842912961413498e-06,
+        "mean_change_squared_term": 4.460895742322095e-08,
+        "level_mse_difference": 2.200463525597699e-06,
+        "centered_shape_mse_difference": 5.687058393239021e-06
+      },
+      "mean_known_label_noise_variance": 2.7929133095438194e-05
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "error_breakdown": {
+        "joint_level_shape_variance_mixture": {
+          "mse": 0.0013614061096848264,
+          "signed_mean_error": -0.03295693738847709,
+          "level_mse": 0.001086159722027999,
+          "centered_shape_mse": 0.00027524638765682714,
+          "level_fraction_of_mse": 0.7978219829492695,
+          "average_posterior_f_variance": 0.0005131151614321271
+        },
+        "native_f": {
+          "mse": 0.0016644787470942656,
+          "signed_mean_error": -0.03672154940113875,
+          "level_mse": 0.001348472190420274,
+          "centered_shape_mse": 0.00031600655667399187,
+          "level_fraction_of_mse": 0.8101468359234658,
+          "average_posterior_f_variance": 0.00046779387652052477
+        },
+        "flat": {
+          "mse": 0.0018609055510187943,
+          "signed_mean_error": -0.03781958494914837,
+          "level_mse": 0.0014303210057258497,
+          "centered_shape_mse": 0.00043058454529294483,
+          "level_fraction_of_mse": 0.7686155833877697,
+          "average_posterior_f_variance": 0.000426754131128068
+        },
+        "source_gp": {
+          "mse": 0.0010072267443907632,
+          "signed_mean_error": -0.027179732059072117,
+          "level_mse": 0.0007387378348029526,
+          "centered_shape_mse": 0.00026848890958781067,
+          "level_fraction_of_mse": 0.7334374696829459,
+          "average_posterior_f_variance": 0.00015439935778797562
+        },
+        "source_variance_mixture": {
+          "mse": 0.0013595941987211981,
+          "signed_mean_error": -0.0329355198354936,
+          "level_mse": 0.0010847484668341924,
+          "centered_shape_mse": 0.00027484573188700555,
+          "level_fraction_of_mse": 0.797847231074155,
+          "average_posterior_f_variance": 0.0005079252315948617
+        }
+      },
+      "joint_minus_intercept_mean_change": {
+        "bank_rms_change": 8.945949445760242e-05,
+        "mse_difference": 1.811910963628316e-06,
+        "old_error_cross_term": 1.8039079624795654e-06,
+        "mean_change_squared_term": 8.003001148609799e-09,
+        "level_mse_difference": 1.4112551938066175e-06,
+        "centered_shape_mse_difference": 4.0065576982155784e-07
+      },
+      "mean_known_label_noise_variance": 3.204019548553499e-05
+    }
+  ],
+  "cpu_seconds": 0.05013372300000002,
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_prior_or_model_adopted": true,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "diagnostic_is_not_oracle_mean_recovery": true
+}

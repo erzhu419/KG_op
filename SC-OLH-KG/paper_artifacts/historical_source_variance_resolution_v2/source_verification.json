@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "arm": "additive/head_specific/observed_task",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.6653345369377348e-15,
+      "precision_posterior_covariance_error": 1.4785436550356643e-17,
+      "passed": true,
+      "compensated_density_identity_error": 1.9895196601282805e-13,
+      "common_conditional_mean_identity_error": 1.249000902703301e-16,
+      "common_conditional_covariance_identity_error": 1.938011383317839e-18,
+      "four_real_source_blocks": true,
+      "maximum_conditional_density_ratio_error": 3.552713678800501e-15,
+      "joint_risk_direction_sites": [
+        44,
+        16,
+        8
+      ],
+      "maximum_joint_risk_line_density_ratio_error": 2.7478019859472624e-15,
+      "scientific_population_prior_and_exact_likelihood_unchanged": true,
+      "inverse_tilt_density_identity_max_error": 0.0,
+      "frozen_tilt_source_sites": [
+        44,
+        16,
+        8
+      ],
+      "inverse_weights_from_moments_max_log_error": 1.904587598744456e-13
+    }
+  ],
+  "execution_plan": "performance/manifests/historical_source_variance_resolution_v2.json"
+}

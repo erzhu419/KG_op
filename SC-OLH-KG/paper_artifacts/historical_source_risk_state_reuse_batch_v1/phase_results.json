@@ -1,0 +1,134 @@
+{
+  "status": "complete registered conditional-risk batch; joint source learning open",
+  "risk_batch_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/results.json",
+  "registered_cases": 32,
+  "conditional_risk_stationarity_cases_passed": 20,
+  "cases_stable_after_accepted_updates": 15,
+  "stationary_current_risk_laws_held": 5,
+  "stationary_retention_results": "paper_artifacts/historical_source_risk_stationary_retention_v1/results.json",
+  "original_case_stop_status_counts": {
+    "fixed-response risk stationarity reached": 15,
+    "source evidence improvement unresolved": 6,
+    "reweighted-law precision requires additional sampling": 1,
+    "full/split Q requires more precision": 10
+  },
+  "remaining_stop_status_counts": {
+    "reweighted-law precision requires additional sampling": 1,
+    "source evidence improvement unresolved": 3,
+    "full/split Q requires more precision": 8
+  },
+  "remaining_cases_with_single_iteration_stationarity_diagnostic": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_joint_deconvolved_task_g/results.json",
+      "status": "source evidence improvement unresolved"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_head_specific_observed_task_g/results.json",
+      "status": "full/split Q requires more precision"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_joint_deconvolved_task_f/results.json",
+      "status": "full/split Q requires more precision"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+      "status": "full/split Q requires more precision"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_joint_deconvolved_task_g/results.json",
+      "status": "full/split Q requires more precision"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_joint_deconvolved_task_g/results.json",
+      "status": "source evidence improvement unresolved"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "status": "source evidence improvement unresolved"
+    }
+  ],
+  "accepted_risk_updates": 561,
+  "risk_sampling_batches": 44,
+  "accepted_updates_per_risk_sampling_batch": 12.75,
+  "recorded_risk_learning_CPU_seconds": 549.9380196540001,
+  "final_response_conditioning_CPU_seconds": 3.541574951,
+  "failed_parent_reweighting_CPU_seconds": 0.26646542700000003,
+  "completed_candidate_MCMC_sweeps": 2992128,
+  "historical_sampler_prefix_check": {
+    "source_case": {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g"
+    },
+    "retained_sweeps_per_chain": 4096,
+    "saved_component_prefix_maximum_error": 0.0,
+    "completed_MCMC_sweeps": 18432,
+    "CPU_seconds": 2.538571043
+  },
+  "final_posterior_and_retention_certified_cases": 1,
+  "final_posterior_certification": "paper_artifacts/historical_source_risk_state_reuse_conditioning_v1/results.json",
+  "final_pilot_vs_parent_evidence_precision_passed": false,
+  "current_certified_source_registry": "paper_artifacts/historical_source_acceleration_selection_v1/phase_results.json",
+  "current_certified_source_cases": 32,
+  "current_complete_source_identities": 16,
+  "source_mixture_component_counts": {
+    "1024": 30,
+    "512": 2
+  },
+  "joint_source_learning_converged": false,
+  "source_registry_replaced": false,
+  "new_candidate_MCMC_sweeps_executed_on_replay": 0,
+  "original_source_cases_resampled": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "tests_run": 17,
+  "tests_passed": true,
+  "cached_replay_CPU_seconds": 0.008583746999999975,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "limitations": [
+    "Fixed response laws within risk updates; final response posteriors and joint convergence remain incomplete.",
+    "The pilot final-law direct parent evidence ratio fails overlap; the successful final response certificate does not fix that normalizer.",
+    "Updates per batch measures sampling economy,not measured end-to-end speedup or independent decision benefit."
+  ],
+  "next_work": "Resolve the actual stopped risk cases using their fixed current laws and precision requirements. Certify final response functionals and retention;check response stationarity at final risk laws. Complete source-evidence normalization before replacing the32-case registry or entering matched-control independent decisions."
+}

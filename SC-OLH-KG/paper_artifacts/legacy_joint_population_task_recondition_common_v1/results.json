@@ -1,0 +1,234 @@
+{
+  "execution": {
+    "status": "registered before all12 common reconditionings and all24 forecasts or scores",
+    "calibration_execution": "performance/manifests/legacy_joint_population_task_transcript_calibration_execution_v1.json",
+    "calibration_results": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1/results.json",
+    "calibration_profiles": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1/calibration_profiles.json",
+    "holdout_results": "paper_artifacts/legacy_joint_population_task_transcript_holdout_v1/results.json",
+    "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "basis_of_next_step": "Including paid evidence repairs the conditional-only objective and reduces assignment6 intercept multiplier345 to3.687. Whole-transcript calibration improves all4 source6/7 g/joint densities versus same-information native, but task6 MSE still increases under both assignments and the old gate fails. The two-stage candidate changes only new-task R while retaining beta,H inferred with the old source R. That is a valid predictive-prior calibration but not the common posterior under the same revised source task law. Isolate this remaining source-estimation difference without a new covariance family or source6/7 tuning.",
+    "candidate": "On each five-task training branch hold native common group scales, common spectral exponent, prior mean/intercept, task spectral exponent, weak tail, discrepancy, observation noise and all f/eta laws fixed. Use the already-fitted Stage80(a,b). Multiply only the task-intercept and task-group excess entries in the native complete optimizer vector. Evaluate the existing JointCovariancePopulationLikelihood once to infer common beta,H under this revised source R. Compare with the Stage80 target-only task scaling, keeping the new-task R identical. This is Gaussian source conditioning at fixed source-selected hyperparameters, not new hyperparameter optimization or a GP mean/posterior transplant.",
+    "replay": "At a=b=1 reproduce native source objective, beta,H,R,delta and all73 prior/paid moments using the restored original regularizer and source noise. Under fitted(a,b), verify the evaluator R equals scaled_task_diagonal and common prior coefficient variances/spectra remain unchanged. Reproduce the Stage80 fixed-common endpoint twelve-site mean/covariance. Save12 reconditioned source posterior laws and freeze all24 fixed/reconditioned prior/paid training forecasts before scoring.",
+    "scoring": "Only tasks0\u20135 and their original12 scoring sites may be indexed. Report per-task and assignment-average paid g MSE, proper raw three-repeat density, Gaussian mean density, raw paid predictive evidence and normalized sequential transcript density. Common/source NLL is descriptive only. These reused folds remain development data, not nested validation or independent confirmation.",
+    "development_acceptance": "Reconditioned common learning is provisionally preferred only if average paid g MSE does not increase AND average raw g density strictly improves versus BOTH Stage71 native and Stage80 fixed-common controls under BOTH assignments, with transcript density also nondecreasing versus Stage80. Preserve all fold regressions. No source6/7 or target data selects a parameter, support or version.",
+    "next_action": "Only a development pass permits separately registering fixed-hyperparameter full-six-source common conditioning and the original four-case source repair gate. Otherwise retain both negative families and reassess source population/information rather than launch a scalar/spectrum grid. A source-gate failure continues to block target/KG advancement.",
+    "cost": {
+      "planned_gaussian_common_conditionings": 12,
+      "new_scalar_fits": 0,
+      "new_native_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_task_recondition_common_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_task_recondition_common_plan_v1.json",
+    "entrypoint": "performance/check_legacy_task_recondition_common.py"
+  },
+  "summary": {
+    "5": {
+      "fixed_common": {
+        "g_mse": 0.004679180448812505,
+        "g_gaussian_mean_density": 1.5527971082433794,
+        "g_raw_batch_density": -0.266627900258441,
+        "raw_paid_log_evidence": 3.1711358020808866,
+        "sequential_transcript_density": 1.5574786500715314
+      },
+      "reconditioned_common": {
+        "g_mse": 0.004699874078446897,
+        "g_gaussian_mean_density": 1.5489387180470315,
+        "g_raw_batch_density": -0.2676789912668347,
+        "raw_paid_log_evidence": 3.1741655252584917,
+        "sequential_transcript_density": 1.5543878672730624
+      }
+    },
+    "6": {
+      "fixed_common": {
+        "g_mse": 0.0050265758380475195,
+        "g_gaussian_mean_density": 1.5997357713290457,
+        "g_raw_batch_density": -0.283593894088091,
+        "raw_paid_log_evidence": 2.908452348662674,
+        "sequential_transcript_density": 1.5789486860436586
+      },
+      "reconditioned_common": {
+        "g_mse": 0.004932666823128005,
+        "g_gaussian_mean_density": 1.599435833989442,
+        "g_raw_batch_density": -0.27038387693007027,
+        "raw_paid_log_evidence": 2.8823440036446875,
+        "sequential_transcript_density": 1.5768267151084279
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "reconditioned_minus_fixed": {
+        "g_mse": 5.698764819617782e-05,
+        "g_gaussian_mean_density": 0.0015958016980612832,
+        "g_raw_batch_density": 0.001125966860614877,
+        "raw_paid_log_evidence": 0.02041094283980538,
+        "sequential_transcript_density": 0.0028257545154670716
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "reconditioned_minus_fixed": {
+        "g_mse": 9.395986228242885e-05,
+        "g_gaussian_mean_density": -0.018846054722112093,
+        "g_raw_batch_density": -0.01077138306618719,
+        "raw_paid_log_evidence": -0.017220760456969852,
+        "sequential_transcript_density": -0.01738381550873669
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "reconditioned_minus_fixed": {
+        "g_mse": -3.3250809580581686e-05,
+        "g_gaussian_mean_density": 0.0034701597698285624,
+        "g_raw_batch_density": 0.0050993549168340535,
+        "raw_paid_log_evidence": 0.01110392559652551,
+        "sequential_transcript_density": 0.0037675602024620503
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "reconditioned_minus_fixed": {
+        "g_mse": 9.844157286743697e-06,
+        "g_gaussian_mean_density": -0.008472943388512233,
+        "g_raw_batch_density": -0.003946470052782369,
+        "raw_paid_log_evidence": -0.0040495221109271284,
+        "sequential_transcript_density": -0.007551774483790963
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "reconditioned_minus_fixed": {
+        "g_mse": -1.1268955176156094e-05,
+        "g_gaussian_mean_density": 0.0022875638981616486,
+        "g_raw_batch_density": 0.003156168030143569,
+        "raw_paid_log_evidence": 0.014568492844920122,
+        "sequential_transcript_density": 0.003001375687347263
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "reconditioned_minus_fixed": {
+        "g_mse": 7.889874797742565e-06,
+        "g_gaussian_mean_density": -0.003184868433512511,
+        "g_raw_batch_density": -0.0009701827389848594,
+        "raw_paid_log_evidence": -0.006634739647722654,
+        "sequential_transcript_density": -0.00320379720356212
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "reconditioned_minus_fixed": {
+        "g_mse": -0.00010276446977810355,
+        "g_gaussian_mean_density": 0.02136003278015286,
+        "g_raw_batch_density": 0.014740244287695742,
+        "raw_paid_log_evidence": -0.022480563001235243,
+        "sequential_transcript_density": 0.016702845025757362
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "reconditioned_minus_fixed": {
+        "g_mse": -0.0011157952172619993,
+        "g_gaussian_mean_density": 0.03328593447956596,
+        "g_raw_batch_density": 0.09448485752953695,
+        "raw_paid_log_evidence": -0.010035895937530181,
+        "sequential_transcript_density": 0.027813951272661397
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "reconditioned_minus_fixed": {
+        "g_mse": -2.230919023230157e-05,
+        "g_gaussian_mean_density": -0.007626517356720042,
+        "g_raw_batch_density": 0.003530446789160424,
+        "raw_paid_log_evidence": -0.03181661972276473,
+        "sequential_transcript_density": -0.008809630571671834
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "reconditioned_minus_fixed": {
+        "g_mse": 0.00037421027199691786,
+        "g_gaussian_mean_density": -0.027619189440039715,
+        "g_raw_batch_density": -0.021675813210859915,
+        "raw_paid_log_evidence": -0.06092538920273105,
+        "sequential_transcript_density": -0.028025404463086545
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "reconditioned_minus_fixed": {
+        "g_mse": -3.1403172270444164e-05,
+        "g_gaussian_mean_density": 0.004783487569940625,
+        "g_raw_batch_density": 0.011904581733622438,
+        "raw_paid_log_evidence": -0.027773593819359732,
+        "sequential_transcript_density": 0.0021163040728520155
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "reconditioned_minus_fixed": {
+        "g_mse": 0.0003346076880288394,
+        "g_gaussian_mean_density": -0.025983372070519817,
+        "g_raw_batch_density": -0.02372421418103134,
+        "raw_paid_log_evidence": -0.0036180084242962707,
+        "sequential_transcript_density": -0.02252989094789548
+      }
+    }
+  ],
+  "preferred_by_layout": {
+    "5": false,
+    "6": false
+  },
+  "reconditioned_common_preferred": false,
+  "native_and_fixed_endpoint_reproduction_passed": true,
+  "cost": {
+    "planned_gaussian_common_conditionings": 12,
+    "new_scalar_fits": 0,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_common_conditionings": 12
+  },
+  "cpu_seconds": 1.54110806,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

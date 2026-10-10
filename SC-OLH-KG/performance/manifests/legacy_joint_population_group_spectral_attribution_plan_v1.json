@@ -1,0 +1,36 @@
+{
+  "status": "completed; results in registered output, no fitted predictor changed",
+  "basis_of_next_step": "Frozen full27-column mean span reconstructs target g with unpaid MSE1.736e-6 versus actual1.082e-3/2.127e-3. Same-space source assignment shifts g63 prior error+.036014/-.096822. Complete mean ensembles fail all robust source gates; cross-fitted variance noise helps layout4 but fails layout3. Unrestricted capacity alone does not verify sparse-group or low-frequency assumptions.",
+  "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+  "target_snapshot": "paper_artifacts/legacy_joint_population_function_coverage_target_v1/inputs.json",
+  "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_covered_mean_attribution_v1/results.json",
+  "source_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "complete_mean_results": "paper_artifacts/legacy_joint_population_covered_complete_mean_uncertainty_v1/results.json",
+  "noise_results": "paper_artifacts/legacy_joint_population_crossfit_variance_noise_v1/results.json",
+  "layouts": [
+    "3",
+    "4"
+  ],
+  "mean_arms": [
+    "joint_structural",
+    "flat"
+  ],
+  "diagnostic_candidates": [
+    4,
+    63,
+    70,
+    71
+  ],
+  "diagnostics": [
+    "Restore the exact frozen source/target basis and full-catalog truth projection coefficients. Decompose prior-minus-projected-truth error into intercept, source-selected common function groups and main-effect frequency modes at all four reached candidates, separately for every task and assignment. Show full-truth projection residual separately.",
+    "Project cached target f/g truth onto the unchanged full library, the fitted nonzero common-group support plus intercept, and the first one/two main-effect frequency modes with the same low-order pairs. These are diagnostic projections only, not target-trained predictors. Report actual function rank and global/critical residuals for every restriction; never select a basis by target score.",
+    "Compare oracle projection coefficient and function contributions with frozen source common prior scales and spectral weights, preserving the actual product-marginal orthogonality and correlated public catalog. Report projection nonuniqueness or cancellation rather than interpreting coefficient magnitude alone as physical factors.",
+    "Judge whether the sparse/low-frequency assumption fails in these public coordinates, or whether the supported components are estimated/shrunk incorrectly. Then register a source-only fit change directed at the diagnosed cause; preserve current source gate failures and do not repeat unchanged variants."
+  ],
+  "execution": "local serial single-thread; cached JSON only, no new source fits, simulator/verifier calls, terminal integration, server jobs or pulls",
+  "interpretation": "opened-task function-space/regularization attribution, not evidence of independent risk-factor recovery, sparse-spectrum truth or deployment/KG superiority",
+  "output": "paper_artifacts/legacy_joint_population_group_spectral_attribution_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_group_spectral_attribution_execution_v1.json",
+  "result": "paper_artifacts/legacy_joint_population_group_spectral_attribution_v1/results.json"
+}

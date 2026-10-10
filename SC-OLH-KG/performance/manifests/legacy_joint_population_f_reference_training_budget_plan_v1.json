@@ -1,0 +1,48 @@
+{
+  "status": "completed;mixture improves native/flat at all budgets,but does not beat sourceGP",
+  "reference_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_development_execution_v1.json",
+  "source_rules": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/source_quadrature.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_f_task_level_reference_development_v1/calibration_profiles.json",
+  "controls_execution": "performance/manifests/legacy_joint_population_f_training_budget_controls_execution_v1.json",
+  "controls_results": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1/results.json",
+  "controls_profiles": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1/calibration_profiles.json",
+  "public_prefixes": "paper_artifacts/legacy_joint_population_f_training_information_budget_v1/public_prefixes.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "raw_episode_budgets": [
+    2,
+    4,
+    8
+  ],
+  "law": "Use all12 already-frozen Stage112 deleted-task conditional f-intercept variance posterior rules,with coherent beta(v),H(v),task R intercept v and original support/frequency/tail/nuisance parameters. Retain source variance components and update their weights by raw f paid evidence,using the identical single deleted-source eta_f map/prior as Stage113/121/122. No new fits or change to quadrature source laws.",
+  "query_rule": "Reuse each fold's frozen public-only eight-policy Stage121 prefix. Read only first f replicate from source0\u20135 at these policies. Preserve original12 score sites and all native/flat/sourceGP controls without replay. Two-episode mixture scores remain the already-passed Stage113 result;four/eight episodes are new development information contrasts.",
+  "freeze": "Freeze all source rule identities and prefixes before paid values. Save all24 selected-rule four/eight forecasts and compact local component marginals before scored labels. Retain only score-site means/covariances,local f/eta moments,weights and paid evidence rather than all73 full component fields on disk. No server data,checkpoints or large raw artifacts.",
+  "verification": "One native-v component must reproduce its existing two-episode native f moments/evidence,detecting rule/field plumbing errors. Selected source quadrature versus the unchanged32-nodes-per-frozen-adaptive-interval reference must satisfy Stage113 tolerances for all twelve fold means,covariances and paid evidence at four/eight episodes. On the two task1 folds compare selected/refined proper raw density too,using the already-verified vectorized density integration. Numerical disagreement stops interpretation;do not alter source posterior/support/scientific gate in response to scores.",
+  "comparison": "Reuse two-episode Stage113 mixture and Stage122 matched controls. At each same episode budget,report mixture versus native,flat and sourceGP MSE,proper raw density,Gaussian moment transcript score and actual mixture transcript score separately. Mixture has a development prediction advantage only when MSE nonincrease,raw density strict improvement,and cached-definition transcript density nondecrease hold against all three controls in both layouts. Report every task,task1 and other5 without reweighting or final budget selection.",
+  "decision": "This determines whether already-positive source task-variance uncertainty survives a longer paid update and helps against strong priors. Do not equate Stage122 original-native losses with failure of this untested mixture-at-eight case. If it still loses to source GP,next isolate source-derived f mean/covariance contributions under the identical paid prefix before another source-law change. No source6/7,target,KG,confirmation,original complete-gate waiver or manuscript claim.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1",
+  "planned_entrypoint": "performance/check_legacy_f_reference_training_budget.py",
+  "entrypoint_status": "implemented and completed",
+  "artifact_format": "Small JSON forecast/score summaries with compressed NPZ arrays containing only score-site component means,local f/eta covariance,f joint score covariance and weights;no full-bank fields saved.",
+  "results": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_sparse_task_template_plan_v1.json"
+}

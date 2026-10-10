@@ -1,0 +1,107 @@
+{
+  "stage": "meta_prior_scale_preserving_source_covariance_a20_20261003",
+  "status": "outer_source_validation_complete_passed_for_fixed_target_validation",
+  "complete": true,
+  "proceed_to_fixed_target_validation": true,
+  "basis": "Shared-source original-I and same-pool-I/R gains are positive in all16 seeds with positive nominal intervals. Separate-head source loss relative to A17 is repaired; gains over original I and same-pool I/R remain uncertain. The complete mixture has no coherent loss in either source group, so the frozen target forecast test can proceed. No branch selection or target tuning is supported.",
+  "shared_gain_vs_original": {
+    "mean_gain": 0.0029075236287331102,
+    "paired_seed_bootstrap95": [
+      0.0023549648646212155,
+      0.00344712186138666
+    ],
+    "better": 16,
+    "worse": 0,
+    "seed_gains": [
+      0.0024034322542884983,
+      0.003991959887653706,
+      0.00457141052947297,
+      0.0018382346766707648,
+      0.003310609393491077,
+      0.003534762737817611,
+      0.0028993699144879807,
+      0.0019251622523260292,
+      0.0015413048699802277,
+      0.003231557583711882,
+      0.0038519295391347035,
+      0.00263686086574452,
+      0.0010067293983054685,
+      0.004259734526446873,
+      0.004312146826557591,
+      0.001205172803639863
+    ]
+  },
+  "separate_head_gain_vs_original": {
+    "mean_gain": 0.00011445716713034513,
+    "paired_seed_bootstrap95": [
+      -0.00046031968112068605,
+      0.0007254894460475488
+    ],
+    "better": 7,
+    "worse": 9,
+    "seed_gains": [
+      -0.0007988779398420422,
+      -0.0003041696290925549,
+      -0.0003270521559024515,
+      0.001148956316727688,
+      -0.001728941757786534,
+      0.0009233775901741541,
+      0.00011726667472065108,
+      0.0014951037991712836,
+      0.0018163257625289594,
+      -0.000258370403401432,
+      0.0004759728053982579,
+      -0.00037078431183889854,
+      -0.0007017044670727254,
+      -0.001511254765428261,
+      -0.0009225405981237199,
+      0.002778007753853148
+    ]
+  },
+  "separate_head_gain_vs_a17": {
+    "mean_gain": 0.0035464940095419045,
+    "paired_seed_bootstrap95": [
+      0.0026620285986443098,
+      0.004386474027013287
+    ],
+    "better": 15,
+    "worse": 1,
+    "seed_gains": [
+      0.0034904928265216055,
+      0.0034035500202919673,
+      0.0017434115878103866,
+      0.0018132910563222631,
+      0.005370559739304202,
+      0.0034205000308579945,
+      -0.000893886423131687,
+      0.003470523066415733,
+      0.00370245721049216,
+      0.002728446058720357,
+      0.004205559454068045,
+      0.004387460058520605,
+      0.0035221373614232492,
+      0.0033478783960056344,
+      0.005843488009353394,
+      0.007188035699694569
+    ]
+  },
+  "source_folds": 256,
+  "source_prior_profiles": 512,
+  "source_forecasts": 8192,
+  "tests_passed": 7,
+  "numerical_controls_passed": true,
+  "cpu_seconds": 75.104818979,
+  "current_process_vm_hwm_mb": 163.609375,
+  "new_eta_ard_refits": 0,
+  "new_fg_selection_fits": 0,
+  "server_jobs": 0,
+  "server_pulls": 0,
+  "new_simulation_samples": 0,
+  "kg_calls": 0,
+  "new_searches": 0,
+  "next_plan": "performance/meta_prior_scale_preserving_target_validation_plan.json",
+  "target_validation": "planned_not_run",
+  "recommendation_replay": "hold",
+  "prospective_searches": "hold",
+  "a17_covariance_version": "stopped"
+}

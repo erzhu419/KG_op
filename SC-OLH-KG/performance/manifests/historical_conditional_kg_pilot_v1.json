@@ -1,0 +1,18 @@
+{
+  "status": "Registered before joint adaptive KG with the corrected terminal.",
+  "entrypoint": "performance/check_historical_conditional_kg.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "terminal_results": "paper_artifacts/historical_conditional_terminal_completion_v1/results.json",
+  "fixed_direct_tower": "paper_artifacts/historical_learned_direct_tower_v1/results.json",
+  "old_kg_results": "paper_artifacts/historical_learned_prior_kg_completion_v1/results.json",
+  "layout": "6",
+  "candidate": 1,
+  "terminal_power": 12,
+  "joint_fantasy_power": 2,
+  "fixed_direct_fantasy_power": 5,
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 240,
+  "scope": "One bounded joint-adaptive pilot for the previously diagnosed layout6/query1. All eight identities,positive source components,40 actual terminal actions,the two paid observations and360/359 budgets are unchanged. Reuse the32-fantasy analytic fixed-action expectation already computed,not the obsolete coarse baseline. Evaluate the real shared-identity paid filter and adaptive maximum under the new conditional terminal at4096 nodes and four fantasies per identity. Prefix adaptation is a diagnostic. This pilot connects the actual decision path and measures cost;it does not certify close KG rankings,independent benefit or a GP comparison. Preserve negative and incomplete outcomes.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_conditional_kg_pilot_v1"
+}

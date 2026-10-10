@@ -1,0 +1,26 @@
+{
+  "status": "completed;inverse/whitened Q equivalence and finite derivatives pass;failed GP6 optimizer converges under unchanged settings",
+  "entrypoint": "performance/check_legacy_f_level_risk_whitened_Q.py",
+  "failed_learning_results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/results.json",
+  "accepted_source_moments": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/round1_source_moments.json",
+  "bounded_learning_plan": "performance/manifests/legacy_joint_population_f_bounded_level_risk_learning_plan_v1.json",
+  "question": "Does Cholesky-whitened evaluation of exactly the same Q remove the observed GP6 line-search failure without changing parameters,data or convergence thresholds?",
+  "repair": "Replace explicit K^-1 products in Q and its covariance score by Swhite=L^-1 Cpost L^-T+(L^-1 delta)(L^-1 delta)^T,trace(Swhite),and trace[(I-Swhite)L^-1(dK)L^-T]. Mean derivative uses whitened ones/delta. Same mathematical objective and derivatives;reuse the existing whiten helper. Original failure and round1 source moments remain unchanged.",
+  "verification": "Reproduce failed round2's cached component Q improvements with its inverse implementation;compare inverse and whitened Q/gradients at both starting and failed-candidate points. Check the whitened analytic gradient against finite differences once on the actual failed GP6 state. Replay only its original optimizer from the same source moments,initial parameters,scales,bounds and settings. No new posterior samples or target losses.",
+  "decision": "Only mathematical equivalence,finite derivatives and optimizer convergence authorize a source-learning continuation from the accepted round1 state. If failure persists,stop and retain it;do not waive the optimizer success gate.",
+  "maximum_single_thread_cpu_seconds": 5,
+  "cost": {
+    "new_fixed_source_Q_optimizations": 1,
+    "new_source_chains": 0,
+    "new_source_labels": 0,
+    "new_future_predictions": 0,
+    "new_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached failing source moments only",
+  "scope": "Numerical implementation repair of a reachable failure;scientific laws,gates,original four priors and complete-model HOLD unchanged",
+  "output": "paper_artifacts/legacy_joint_population_f_level_risk_whitened_Q_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_level_risk_whitened_Q_v1/results.json"
+}

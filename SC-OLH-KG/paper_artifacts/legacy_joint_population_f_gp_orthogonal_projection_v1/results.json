@@ -1,0 +1,638 @@
+{
+  "execution": {
+    "status": "frozen before f GP projection and forecasts",
+    "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+    "f_centering_results": "paper_artifacts/legacy_joint_population_f_task_bank_centering_v1/results.json",
+    "native_f_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+    "native_gp_all73": "paper_artifacts/legacy_joint_population_training_paid_adaptation_v1/predictions.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "cases": [
+      "native_gp",
+      "full_dictionary",
+      "native_common_groups"
+    ],
+    "basis_of_next_step": "Source coefficient correlations are weakly identified; f tail-floor shrinkage and public-bank level/shape centering fail unchanged training acceptance. f task1 offset persists, while episode-noise shifts are negligible. Earlier Stage69 GP orthogonal projection tested g only. Check f function-space versus source estimation separately before widening the model or claiming a source-data shortage.",
+    "diagnostic": "Restore each original five-source GP f field and eta_f prior without a new GP fit. Project its existing73-public-policy f prior mean and nonwhite covariance into the unchanged27-column orthogonal dictionary and separately into the native source-selected f common groups, using the existing deterministic projection. Preserve GP white discrepancy variance, eta_f prior, original two raw f observations and same12 scoring policies. This is a diagnostic counterfactual, not an original structural meta-prior estimator or deployable replacement.",
+    "verification": "Check restored native GP f/eta_f prior and two-raw-paid73 means/diagonal covariance against Stage66 frozen rows; this newly tests f field/head mapping, not the already settled g mapping. Record existing projection rank/orthogonal covariance diagnostics. Freeze all24 projected and12 native forecasts before scores; no new source likelihood/gradient checks or unrelated unit tests.",
+    "scoring": "Report f MSE, proper raw three-repeat f density, Gaussian sample-mean density and whole-transcript descriptive score, all folds and task1 offset geometry. Compare native structural f as a cached descriptive control. No score gate selects a projected posterior or source hyperparameter; no deleted-fold/source6/7 fitting.",
+    "interpretation": "If full dictionary retains GP f predictions while native group projection loses them, investigate source sparse support selection/common inference. If full projection loses predictions, investigate representation truncation/public-bank projection. A projected GP result cannot establish original sparse low-frequency meta-prior learning or independent decision value.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_gp_orthogonal_projection_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_gp_orthogonal_projection_plan_v1.json",
+    "entrypoint": "performance/check_legacy_f_gp_orthogonal_projection.py"
+  },
+  "summary": {
+    "5": {
+      "native_gp": {
+        "prior": {
+          "f_mse": 0.00040015487193777714,
+          "f_gaussian_mean_density": 2.8962972247860232,
+          "f_raw_batch_density": 0.6180695425311133
+        },
+        "raw_paid": {
+          "f_mse": 0.00031502808683571973,
+          "f_gaussian_mean_density": 2.9603300701558837,
+          "f_raw_batch_density": 0.9311946283630371,
+          "raw_paid_log_evidence": 5.583336826095078,
+          "sequential_transcript_density": 2.9362355477118345
+        }
+      },
+      "full_dictionary": {
+        "prior": {
+          "f_mse": 0.00039755159731654676,
+          "f_gaussian_mean_density": 2.9006882332707566,
+          "f_raw_batch_density": 0.6208698743548219
+        },
+        "raw_paid": {
+          "f_mse": 0.00031325703471404403,
+          "f_gaussian_mean_density": 2.965071967091049,
+          "f_raw_batch_density": 0.9321503892602969,
+          "raw_paid_log_evidence": 5.578548008141143,
+          "sequential_transcript_density": 2.939957972373838
+        }
+      },
+      "native_common_groups": {
+        "prior": {
+          "f_mse": 0.00039255592228671065,
+          "f_gaussian_mean_density": 3.0006246666647383,
+          "f_raw_batch_density": 0.6280829338687223
+        },
+        "raw_paid": {
+          "f_mse": 0.0003095951611268984,
+          "f_gaussian_mean_density": 3.0533393208368014,
+          "f_raw_batch_density": 0.9490994322481187,
+          "raw_paid_log_evidence": 5.608067164884104,
+          "sequential_transcript_density": 3.0177242153518358
+        }
+      }
+    },
+    "6": {
+      "native_gp": {
+        "prior": {
+          "f_mse": 0.0004964094317754542,
+          "f_gaussian_mean_density": 2.9750525537814494,
+          "f_raw_batch_density": 0.6589364039208209
+        },
+        "raw_paid": {
+          "f_mse": 0.0003962582226681906,
+          "f_gaussian_mean_density": 3.0633816292778406,
+          "f_raw_batch_density": 0.9294090927744326,
+          "raw_paid_log_evidence": 5.5390207454447244,
+          "sequential_transcript_density": 3.0214000211984864
+        }
+      },
+      "full_dictionary": {
+        "prior": {
+          "f_mse": 0.0004985035211102702,
+          "f_gaussian_mean_density": 2.98185416878569,
+          "f_raw_batch_density": 0.6584613243530929
+        },
+        "raw_paid": {
+          "f_mse": 0.0003975981682860313,
+          "f_gaussian_mean_density": 3.0703406682059726,
+          "f_raw_batch_density": 0.9246298043371047,
+          "raw_paid_log_evidence": 5.543809431921989,
+          "sequential_transcript_density": 3.027706960742405
+        }
+      },
+      "native_common_groups": {
+        "prior": {
+          "f_mse": 0.00047750733717814284,
+          "f_gaussian_mean_density": 3.056748767606971,
+          "f_raw_batch_density": 0.671863030467
+        },
+        "raw_paid": {
+          "f_mse": 0.00038905088314701336,
+          "f_gaussian_mean_density": 3.1429097331119222,
+          "f_raw_batch_density": 0.9160111172230426,
+          "raw_paid_log_evidence": 5.573152971954258,
+          "sequential_transcript_density": 3.0920049835212375
+        }
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 4.872639240117169e-06,
+          "f_gaussian_mean_density": 0.013030856755817055,
+          "f_raw_batch_density": -0.0009749261898313747
+        },
+        "raw_paid": {
+          "f_mse": 2.0256493534855687e-06,
+          "f_gaussian_mean_density": 0.013914423825233335,
+          "f_raw_batch_density": 6.518727693860527e-05,
+          "raw_paid_log_evidence": -0.010220305251792183,
+          "sequential_transcript_density": 0.011196627189357766
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -6.613442175679033e-06,
+          "f_gaussian_mean_density": 0.062227061014680896,
+          "f_raw_batch_density": 0.017185212689253628
+        },
+        "raw_paid": {
+          "f_mse": -2.1779516628918447e-06,
+          "f_gaussian_mean_density": 0.035249667212048585,
+          "f_raw_batch_density": 0.016266082152109507,
+          "raw_paid_log_evidence": 0.024705692317591676,
+          "sequential_transcript_density": 0.03197869277586918
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 6.922818208491221e-06,
+          "f_gaussian_mean_density": -0.04259643740549013,
+          "f_raw_batch_density": -0.0035102288848776197
+        },
+        "raw_paid": {
+          "f_mse": 1.2848384508572426e-05,
+          "f_gaussian_mean_density": -0.03853806471159871,
+          "f_raw_batch_density": -0.013232500570885708,
+          "raw_paid_log_evidence": -0.002276870833747502,
+          "sequential_transcript_density": -0.033195260526638126
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 1.6396670424187964e-05,
+          "f_gaussian_mean_density": 0.29940734592978124,
+          "f_raw_batch_density": -0.004509883584400964
+        },
+        "raw_paid": {
+          "f_mse": 5.675434625730105e-05,
+          "f_gaussian_mean_density": 0.24691410321340213,
+          "f_raw_batch_density": -0.11618937750560776,
+          "raw_paid_log_evidence": 0.08053292035196336,
+          "sequential_transcript_density": 0.21739301135091305
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -1.4078004842038062e-06,
+          "f_gaussian_mean_density": 0.0383888343871539,
+          "f_raw_batch_density": 0.0006473070828313388
+        },
+        "raw_paid": {
+          "f_mse": -7.613321831803838e-06,
+          "f_gaussian_mean_density": 0.04538091589203219,
+          "f_raw_batch_density": 0.0024086909506222387,
+          "raw_paid_log_evidence": -0.00611241298196763,
+          "sequential_transcript_density": 0.038461326980173016
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -6.198513918932323e-05,
+          "f_gaussian_mean_density": 0.16530894664747287,
+          "f_raw_batch_density": 0.04230987980096579
+        },
+        "raw_paid": {
+          "f_mse": -7.887011810241157e-05,
+          "f_gaussian_mean_density": 0.17331551592316208,
+          "f_raw_batch_density": 0.19454202197436854,
+          "raw_paid_log_evidence": 0.026535138189676566,
+          "sequential_transcript_density": 0.15045152351911595
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -5.565765585579353e-07,
+          "f_gaussian_mean_density": 0.006610112493890874,
+          "f_raw_batch_density": 0.000825492619944912
+        },
+        "raw_paid": {
+          "f_mse": 1.7116651003066955e-06,
+          "f_gaussian_mean_density": 0.006458296518337292,
+          "f_raw_batch_density": -0.00010224207778275485,
+          "raw_paid_log_evidence": -0.0005403783805801865,
+          "sequential_transcript_density": 0.0054970842742476655
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 2.028508735366335e-06,
+          "f_gaussian_mean_density": 0.10347020327957246,
+          "f_raw_batch_density": 0.0034733725267833693
+        },
+        "raw_paid": {
+          "f_mse": 2.11414123391355e-05,
+          "f_gaussian_mean_density": 0.1052274914020761,
+          "f_raw_batch_density": -0.023864687421706554,
+          "raw_paid_log_evidence": 0.018989490291097866,
+          "sequential_transcript_density": 0.0915513847940006
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -2.222935651251376e-05,
+          "f_gaussian_mean_density": 0.012132728615150246,
+          "f_raw_batch_density": 0.01637313485237557
+        },
+        "raw_paid": {
+          "f_mse": -7.947514987057024e-06,
+          "f_gaussian_mean_density": 0.0013501552419978857,
+          "f_raw_batch_density": -0.001622980785012107,
+          "raw_paid_log_evidence": -0.014547030251005566,
+          "sequential_transcript_density": 0.00011820233235537714
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -1.3302497593471068e-05,
+          "f_gaussian_mean_density": 0.04390334675172802,
+          "f_raw_batch_density": 0.008659462211585867
+        },
+        "raw_paid": {
+          "f_mse": -1.6559212412827428e-05,
+          "f_gaussian_mean_density": 0.03817846945406389,
+          "f_raw_batch_density": 0.029137970447255412,
+          "raw_paid_log_evidence": -0.0026223029618543947,
+          "sequential_transcript_density": 0.03253709503477964
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -3.2213716207154575e-06,
+          "f_gaussian_mean_density": -0.0012200439381211403,
+          "f_raw_batch_density": 0.0034412114618083134
+        },
+        "raw_paid": {
+          "f_mse": -1.1651174873558506e-05,
+          "f_gaussian_mean_density": -0.00011434515500985398,
+          "f_raw_batch_density": 0.018218410589679213,
+          "raw_paid_log_evidence": 0.004964089975484143,
+          "sequential_transcript_density": 0.00025656772252657944
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 1.7882201892519998e-05,
+          "f_gaussian_mean_density": -0.048352252350945424,
+          "f_raw_batch_density": -0.007037695618533957
+        },
+        "raw_paid": {
+          "f_mse": -1.28860306712342e-05,
+          "f_gaussian_mean_density": -0.04082974311924792,
+          "f_raw_batch_density": 0.00753681366407033,
+          "raw_paid_log_evidence": 0.00024109454567522448,
+          "sequential_transcript_density": -0.03497970163466402
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 5.968232394973024e-07,
+          "f_gaussian_mean_density": 0.009423262408485567,
+          "f_raw_batch_density": 0.0002982004887587264
+        },
+        "raw_paid": {
+          "f_mse": 4.9546819991734645e-06,
+          "f_gaussian_mean_density": 0.008527360884215796,
+          "f_raw_batch_density": -0.007512939312559697,
+          "raw_paid_log_evidence": 0.006903091736748301,
+          "sequential_transcript_density": 0.007802244453381402
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -2.1742122166383234e-05,
+          "f_gaussian_mean_density": 0.048228116339284366,
+          "f_raw_batch_density": 0.013519185267673484
+        },
+        "raw_paid": {
+          "f_mse": -9.25416204057512e-06,
+          "f_gaussian_mean_density": 0.03538692749011929,
+          "f_raw_batch_density": 0.0407287502294984,
+          "raw_paid_log_evidence": 0.06343303004020662,
+          "sequential_transcript_density": 0.0348625828515452
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 1.1952851539352239e-05,
+          "f_gaussian_mean_density": 0.012938958121028854,
+          "f_raw_batch_density": -0.0073311436889307025
+        },
+        "raw_paid": {
+          "f_mse": 2.1174325754049167e-05,
+          "f_gaussian_mean_density": 0.01354314820365854,
+          "f_raw_batch_density": -0.05111202123437514,
+          "raw_paid_log_evidence": 0.007855318564473635,
+          "sequential_transcript_density": 0.012169506929170293
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 4.1010152700600606e-05,
+          "f_gaussian_mean_density": 0.04658041279491876,
+          "f_raw_batch_density": -0.030432303174744442
+        },
+        "raw_paid": {
+          "f_mse": 0.00011274521494767753,
+          "f_gaussian_mean_density": 0.03772242000223791,
+          "f_raw_batch_density": -0.34284153684584606,
+          "raw_paid_log_evidence": 0.05848763473540686,
+          "sequential_transcript_density": 0.036511191054447334
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 7.913532119940034e-06,
+          "f_gaussian_mean_density": -0.002946851821767016,
+          "f_raw_batch_density": -0.0034675219844391147
+        },
+        "raw_paid": {
+          "f_mse": 1.9505247101676967e-06,
+          "f_gaussian_mean_density": -0.005432487901222416,
+          "f_raw_batch_density": -0.009279244826128075,
+          "raw_paid_log_evidence": 0.010337512986724029,
+          "sequential_transcript_density": -0.003918024416281529
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -6.997965993648368e-05,
+          "f_gaussian_mean_density": 0.10200360070641734,
+          "f_raw_batch_density": 0.03781737411122288
+        },
+        "raw_paid": {
+          "f_mse": -9.873844005117661e-05,
+          "f_gaussian_mean_density": 0.12475478327877143,
+          "f_raw_batch_density": 0.25250500751142657,
+          "raw_paid_log_evidence": 0.05986677030234411,
+          "sequential_transcript_density": 0.11120886926054308
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -2.8909503320498917e-07,
+          "f_gaussian_mean_density": -0.010818295969983183,
+          "f_raw_batch_density": 0.0008904718557871671
+        },
+        "raw_paid": {
+          "f_mse": 1.479075726128578e-07,
+          "f_gaussian_mean_density": -0.009499673848825996,
+          "f_raw_batch_density": 0.0002437007785127676,
+          "raw_paid_log_evidence": 0.003715391057143691,
+          "sequential_transcript_density": -0.00787719250919805
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 4.020106374920542e-06,
+          "f_gaussian_mean_density": 0.10044277241571775,
+          "f_raw_batch_density": 0.00593958472807854
+        },
+        "raw_paid": {
+          "f_mse": 2.2497251287516686e-05,
+          "f_gaussian_mean_density": 0.09632158051312878,
+          "f_raw_batch_density": -0.04628508686606447,
+          "raw_paid_log_evidence": 0.018640974785245845,
+          "sequential_transcript_density": 0.08389285292448445
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -7.093342452065899e-06,
+          "f_gaussian_mean_density": 0.030328384331919978,
+          "f_raw_batch_density": 0.005696705341092123
+        },
+        "raw_paid": {
+          "f_mse": -1.7603049348544552e-05,
+          "f_gaussian_mean_density": 0.03024747272836592,
+          "f_raw_batch_density": 0.030724079280885386,
+          "raw_paid_log_evidence": -0.0025042884811572463,
+          "sequential_transcript_density": 0.025747527447088636
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -6.831462668073469e-05,
+          "f_gaussian_mean_density": 0.15148271249095124,
+          "f_raw_batch_density": 0.047996138668710664
+        },
+        "raw_paid": {
+          "f_mse": -4.271342329463751e-05,
+          "f_gaussian_mean_density": 0.13292994033033123,
+          "f_raw_batch_density": -0.01618293384710512,
+          "raw_paid_log_evidence": 0.007396219668013515,
+          "sequential_transcript_density": 0.11446825025942742
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "case": "full_dictionary",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": -5.162334046229875e-07,
+          "f_gaussian_mean_density": 0.0018842329557613446,
+          "f_raw_batch_density": 0.0010628105813637045
+        },
+        "raw_paid": {
+          "f_mse": -2.5847169804143035e-06,
+          "f_gaussian_mean_density": 0.004368413502603197,
+          "f_raw_batch_density": 0.008260694689697368,
+          "raw_paid_log_evidence": 0.0024250929996663118,
+          "sequential_transcript_density": 0.00391757535934989
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "case": "native_common_groups",
+      "projected_minus_gp": {
+        "prior": {
+          "f_mse": 1.5935821242111766e-06,
+          "f_gaussian_mean_density": 0.041439668205837776,
+          "f_raw_batch_density": 0.0027197796761332382
+        },
+        "raw_paid": {
+          "f_mse": -2.7780477975868556e-05,
+          "f_gaussian_mean_density": 0.050052971389900947,
+          "f_raw_batch_density": 0.031687946509751264,
+          "raw_paid_log_evidence": -0.0030312704740138585,
+          "sequential_transcript_density": 0.042686027586056774
+        }
+      }
+    }
+  ],
+  "native_structural_benchmark": {
+    "5": {
+      "prior": {
+        "f_mse": 0.00042362169399154495,
+        "f_gaussian_mean_density": 2.641085489417869,
+        "f_raw_batch_density": 0.6743920814649632
+      },
+      "raw_paid": {
+        "f_mse": 0.0003937045272706875,
+        "f_gaussian_mean_density": 2.672499213241919,
+        "f_raw_batch_density": 0.795169657346439,
+        "raw_paid_log_evidence": 5.635704702503221,
+        "sequential_transcript_density": 2.6932639472433038
+      }
+    },
+    "6": {
+      "prior": {
+        "f_mse": 0.0005080756171403308,
+        "f_gaussian_mean_density": 2.511554372556837,
+        "f_raw_batch_density": 0.6814771839083832
+      },
+      "raw_paid": {
+        "f_mse": 0.0005120454773049969,
+        "f_gaussian_mean_density": 2.5522763730185627,
+        "f_raw_batch_density": 0.7484473618483646,
+        "raw_paid_log_evidence": 5.657783634407231,
+        "sequential_transcript_density": 2.5917928650449986
+      }
+    }
+  },
+  "no_model_selected": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 2.9472154170000002,
+  "source_holdouts_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

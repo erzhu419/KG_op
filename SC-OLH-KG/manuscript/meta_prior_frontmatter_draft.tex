@@ -1,0 +1,40 @@
+% Draft front matter for the meta-prior manuscript.
+% This file is intentionally separate from main.tex, which preserves the
+% completed atlas manuscript until all downstream sections are rewritten.
+
+\TITLE{Source-Learned Structural Priors for Chance-Constrained Simulation Optimization}
+
+\RUNTITLE{Source-Learned Structural Priors for Chance Constraints}
+
+\ABSTRACT{We study how replicated simulations from related tasks can inform a
+new chance-constrained simulation optimization problem when policies are
+represented by ordered profiles.  A finite public function dictionary is used
+to learn response and cumulative-risk structure across source tasks.  A target
+task then updates the source structure and function posteriors using paid
+observations, while a correlated mean--risk knowledge-gradient rule allocates
+the remaining evaluation and verification budget.  The source archive contains
+8 tasks, 64 policies, and 12 repetitions per policy; the target protocols use
+the same 8-point initial design and fixed paired budgets.  Across the frozen
+mechanism and total-budget studies, the structural prior improves early target
+prediction and decision utility under matched mechanisms, while target evidence
+can downweight a mismatched source structure.  The gain is not universal:
+generic target learning catches up at larger budgets, risk-structure gains are
+small and unstable, and the current operational and mature-optimizer loops do
+not establish an independent deployment advantage.  These results support a
+bounded claim for source-learned structural meta-priors within a declared
+representation and dictionary, and identify risk calibration, candidate
+coverage, task feasibility, and knowledge-gradient cost as the remaining
+limits.}
+
+\KEYWORDS{simulation optimization, transfer learning, structured priors,
+chance constraints, knowledge gradient, independent verification}
+
+% Suggested contribution paragraph for the rebuilt introduction:
+% The paper contributes (i) a source-to-target structural prior with separate
+% mean, constraint, and log-variance heads; (ii) a target update and
+% verification-aware decision rule that preserves source mismatch and negative
+% transfer; and (iii) a paired evaluation that separates prediction, early
+% decision utility, risk calibration, and independent certification.  The
+% contribution is deliberately limited to the declared public representation
+% and finite dictionary; it does not claim learned trajectories, factor-level
+% risk identification, or general high-dimensional optimization.

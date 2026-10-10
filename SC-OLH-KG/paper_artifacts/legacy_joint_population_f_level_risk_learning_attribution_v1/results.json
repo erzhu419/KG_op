@@ -1,0 +1,316 @@
+{
+  "execution": {
+    "status": "registered before cached attribution;no sampling or optimization",
+    "entrypoint": "performance/diagnose_legacy_f_level_risk_learning_attribution.py",
+    "prediction_results": "paper_artifacts/legacy_joint_population_f_level_risk_predictive_mixture_v1/results.json",
+    "predictions": "paper_artifacts/legacy_joint_population_f_level_risk_predictive_mixture_v1/predictions.json",
+    "source_results": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/results.json",
+    "source_partitions": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/source_eta_partitions.json",
+    "Mstep_plan": "performance/manifests/legacy_joint_population_f_raw_level_risk_mstep_plan_v1.json",
+    "Mstep_results": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/results.json",
+    "previous_attribution": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_attribution_v1/results.json",
+    "question": "Which function mean-error component remains after level/risk learning,and are the source learning directions stationary under the fresh posterior?",
+    "calculation": "Cached task0 MSE decomposes exactly into squared mean error and centered policy-shape error. Assess MSE Monte Carlo sensitivity using per-component conditional mean influences2*error^T(component_mean-full_mean)/12,with chain ESS/Rhat and split forecast checks. Combine independent arm influence standard errors in quadrature;this is conditional computational error,not a task confidence interval. Evaluate full/half f/risk Fisher source scores at Stage213 parameters using Stage214's new posterior;do not use task0 errors to choose parameters or supports.",
+    "decision": "Keep Stage215 joint-density numerical failures unchanged. A stable MSE sign can diagnose mean representation independently of unresolved density precision,but does not pass the joint predictive gate. Nonzero matching source-score signs justify a bounded convergence pilot on the same frozen source objective,not a new task0 correction. Do not increase mixture size or run paid updates while the layout6 mean disadvantage persists.",
+    "maximum_single_thread_cpu_seconds": 5,
+    "cost": {
+      "new_covariance_optimizations": 0,
+      "new_source_chains": 0,
+      "new_density_integrations": 0,
+      "new_source_labels": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small JSON and48-dimensional source moments only",
+    "scope": "Original four priors retained;task0 development and conditional MC error only. No target,source6/7,KG,confirmation or manuscript changes. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_level_risk_learning_attribution_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "mean_error": -0.005770407970714375,
+      "level_MSE": 3.3297608148483994e-05,
+      "centered_shape_MSE": 0.0002623927752755989,
+      "f_MSE": 0.00029569038342408283,
+      "level_MSE_change_vs_previous": 3.3175015744974125e-06,
+      "shape_MSE_change_vs_previous": 1.564875811546618e-06,
+      "MSE_influence_Rhat": 0.9967634461888328,
+      "MSE_influence_ESS": 481.16394889857366,
+      "conditional_MSE_MCSE": 7.039904944962495e-08,
+      "mean_diagnostic_precision_gate_passed": true,
+      "joint_density_precision_gate_passed": false,
+      "fresh_source_raw_scores_full_first_second": [
+        [
+          0.0004798371622195911,
+          0.016231168685898217,
+          0.0010291889837028372,
+          0.03242723073068081
+        ],
+        [
+          0.00048626530617923436,
+          0.01627635182263299,
+          5.7604481337495773e-05,
+          0.03274398335146559
+        ],
+        [
+          0.0004734090182623163,
+          0.01618596930164813,
+          0.002000773486069085,
+          0.032091968141268135
+        ]
+      ],
+      "fresh_source_projected_scores_full_first_second": [
+        [
+          0.0004798371622195911,
+          0.016231168685898217,
+          0.0010291889837028372,
+          0.03242723073068081
+        ],
+        [
+          0.00048626530617923436,
+          0.01627635182263299,
+          5.7604481337495773e-05,
+          0.03274398335146559
+        ],
+        [
+          0.0004734090182623163,
+          0.01618596930164813,
+          0.002000773486069085,
+          0.032091968141268135
+        ]
+      ],
+      "fresh_source_stable_nonzero_projected_directions": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "mean_error": -0.0074237038989499555,
+      "level_MSE": 5.5111379579284774e-05,
+      "centered_shape_MSE": 0.00033486356262930824,
+      "f_MSE": 0.00038997494220859296,
+      "level_MSE_change_vs_previous": -2.3103004074853897e-06,
+      "shape_MSE_change_vs_previous": -4.704194923757434e-06,
+      "MSE_influence_Rhat": 0.9961389731739084,
+      "MSE_influence_ESS": 459.3647058737377,
+      "conditional_MSE_MCSE": 1.9274055520527422e-07,
+      "mean_diagnostic_precision_gate_passed": true,
+      "joint_density_precision_gate_passed": false,
+      "fresh_source_raw_scores_full_first_second": [
+        [
+          -0.0011033952472274677,
+          67.48057704544672,
+          0.001461550356413081,
+          0.03185340190803293
+        ],
+        [
+          -0.0010524898736458492,
+          67.53169690984716,
+          0.000973067669925276,
+          0.03043075877165542
+        ],
+        [
+          -0.0011543006208043494,
+          67.42943546834405,
+          0.001950033042900386,
+          0.03325590476601414
+        ]
+      ],
+      "fresh_source_projected_scores_full_first_second": [
+        [
+          -0.0011033952472274677,
+          0.0,
+          0.001461550356413081,
+          0.03185340190803293
+        ],
+        [
+          -0.0010524898736458492,
+          0.0,
+          0.000973067669925276,
+          0.03043075877165542
+        ],
+        [
+          -0.0011543006208043494,
+          0.0,
+          0.001950033042900386,
+          0.03325590476601414
+        ]
+      ],
+      "fresh_source_stable_nonzero_projected_directions": [
+        true,
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "mean_error": -0.0077862352922752065,
+      "level_MSE": 6.062546002667197e-05,
+      "centered_shape_MSE": 0.00022201502670539245,
+      "f_MSE": 0.00028264048673206434,
+      "level_MSE_change_vs_previous": 9.775725803564636e-06,
+      "shape_MSE_change_vs_previous": 1.407322549226215e-06,
+      "MSE_influence_Rhat": 1.000463694087571,
+      "MSE_influence_ESS": 482.4141859533173,
+      "conditional_MSE_MCSE": 6.147457384231749e-08,
+      "mean_diagnostic_precision_gate_passed": true,
+      "joint_density_precision_gate_passed": false,
+      "fresh_source_raw_scores_full_first_second": [
+        [
+          0.0006140826700609855,
+          0.03718834178845624,
+          0.002142162171373474,
+          0.009729977160282637
+        ],
+        [
+          0.0005774657263894293,
+          0.03700039773964529,
+          0.0026824308346439785,
+          0.01038873845875719
+        ],
+        [
+          0.0006506996137313573,
+          0.03737623581782208,
+          0.0016018935081025993,
+          0.009047630031268478
+        ]
+      ],
+      "fresh_source_projected_scores_full_first_second": [
+        [
+          0.0006140826700609855,
+          0.03718834178845624,
+          0.002142162171373474,
+          0.009729977160282637
+        ],
+        [
+          0.0005774657263894293,
+          0.03700039773964529,
+          0.0026824308346439785,
+          0.01038873845875719
+        ],
+        [
+          0.0006506996137313573,
+          0.03737623581782208,
+          0.0016018935081025993,
+          0.009047630031268478
+        ]
+      ],
+      "fresh_source_stable_nonzero_projected_directions": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "mean_error": -0.005359957931193944,
+      "level_MSE": 2.872914902416887e-05,
+      "centered_shape_MSE": 0.00020824285607953018,
+      "f_MSE": 0.00023697200510369907,
+      "level_MSE_change_vs_previous": -1.4445765708114415e-06,
+      "shape_MSE_change_vs_previous": -3.7060206046349363e-07,
+      "MSE_influence_Rhat": 1.0109976850274907,
+      "MSE_influence_ESS": 431.9349419869824,
+      "conditional_MSE_MCSE": 6.071111221800231e-08,
+      "mean_diagnostic_precision_gate_passed": true,
+      "joint_density_precision_gate_passed": false,
+      "fresh_source_raw_scores_full_first_second": [
+        [
+          -0.002144764078938858,
+          61.47715069244922,
+          0.0013669105626786294,
+          0.007621545795726862
+        ],
+        [
+          -0.0022142677081096926,
+          61.462476565092786,
+          0.0019581758503019187,
+          0.006696133563906325
+        ],
+        [
+          -0.0020752604497698,
+          61.4917897336105,
+          0.0007756452750539988,
+          0.008521811808815633
+        ]
+      ],
+      "fresh_source_projected_scores_full_first_second": [
+        [
+          -0.002144764078938858,
+          0.0,
+          0.0013669105626786294,
+          0.007621545795726862
+        ],
+        [
+          -0.0022142677081096926,
+          0.0,
+          0.0019581758503019187,
+          0.006696133563906325
+        ],
+        [
+          -0.0020752604497698,
+          0.0,
+          0.0007756452750539988,
+          0.008521811808815633
+        ]
+      ],
+      "fresh_source_stable_nonzero_projected_directions": [
+        true,
+        false,
+        true,
+        true
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "layout": "5",
+      "both_mean_diagnostic_gates_passed": true,
+      "structure_minus_GP_MSE": -9.428455878451013e-05,
+      "level_MSE_difference": -2.181377143080078e-05,
+      "centered_shape_MSE_difference": -7.247078735370935e-05,
+      "conditional_MSE_difference_MCSE": 2.0519490194507295e-07,
+      "nominal_conditional_MC_interval": [
+        -9.468674079232247e-05,
+        -9.388237677669778e-05
+      ],
+      "joint_predictive_gate_remains_unpassed": true
+    },
+    {
+      "layout": "6",
+      "both_mean_diagnostic_gates_passed": true,
+      "structure_minus_GP_MSE": 4.5668481628365266e-05,
+      "level_MSE_difference": 3.18963110025031e-05,
+      "centered_shape_MSE_difference": 1.3772170625862265e-05,
+      "conditional_MSE_difference_MCSE": 8.640001374908117e-08,
+      "nominal_conditional_MC_interval": [
+        4.549913760141707e-05,
+        4.583782565531346e-05
+      ],
+      "joint_predictive_gate_remains_unpassed": true
+    }
+  ],
+  "cpu_seconds": 0.32535806700000003,
+  "cost": {
+    "new_covariance_optimizations": 0,
+    "new_source_chains": 0,
+    "new_density_integrations": 0,
+    "new_source_labels": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Source stationarity and cached mean-error diagnosis. MSE intervals describe computational uncertainty at fixed source empirical laws and12 development labels;not task uncertainty or joint-density precision. Matching source score signs indicate remaining learning directions;no additional fit performed."
+}

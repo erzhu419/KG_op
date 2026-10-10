@@ -1,0 +1,166 @@
+{
+  "execution": {
+    "status": "registered before all frozen-hyperparameter source conditioning and forecasts",
+    "basis_of_next_step": "216-call cross-task source coverage raises g predictive density in all four source cases, and average g MSE falls. Structural layout5 task07 g MSE rises6.689e-5; layout6 task07 joint density falls.059282; the original all-case source improvement gate fails. Separate added information from source covariance hyperparameter refitting before any risk extension or target probe.",
+    "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "coverage_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "mean_arms": [
+      "joint_structural"
+    ],
+    "conditioning": "Restore each parent full48-record f/g regularizer and fitted joint common/task covariance, including source signal scale, prior origin, group variances, spectra, weak tails and discrepancy. Check the cached original common posterior. Evaluate the unchanged joint Gaussian source law on the already-frozen augmented72-record inputs. No covariance optimization or mean/risk representation change; the six existing source tasks share their original task-function latent coefficients across old/new sites.",
+    "invariant": "Check common posterior coefficient covariance decreases in the positive-semidefinite order. Freeze both updated full mean laws and all four two-paid-record heldout forecasts before raw three-repeat scoring. Keep every original risk law and identity unchanged.",
+    "comparators": "Reuse the completed216-call refitted structure, flat and strong complete-GP forecasts; all have the same paid source archive, fixed mean basis/risk prefixes, raw initialization and73-bank. Main repair gate compares with the original144-call structure separately for every parent assignment/source holdout.",
+    "source_gate": "Require g MSE nonincrease, joint three-repeat log density nondecrease and g density improvement on BOTH source holdouts in BOTH assignments. A failed gate blocks target prediction/decision and risk extension. No source-heldout-based mixing of old/new heads or assignment selection.",
+    "execution": "local serial single-thread; Gaussian source solves and cached raw updates only, zero optimizer fits/new simulator/verifier calls/terminal integrals, no server jobs/pulls or target archive reads",
+    "interpretation": "opened-source fixed-empirical-hyperparameter information attribution; not a full hyperparameter Bayesian posterior or independent superiority claim",
+    "output": "paper_artifacts/legacy_joint_population_counterbalanced_frozen_covariance_v1"
+  },
+  "summary": {
+    "5": {
+      "observed_head_mse": [
+        0.00020307079410855278,
+        0.0014216438593742514,
+        2.3063445039565345,
+        2.533427117207827
+      ],
+      "joint_batch_log_score": 1.09125564421308,
+      "response_batch_log_scores": [
+        1.0937775952372253,
+        0.0017538090466782258
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9577464788732395,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6225903752085526,
+        0.629269206375604,
+        1.0492542920659738,
+        1.126563000126429
+      ]
+    },
+    "6": {
+      "observed_head_mse": [
+        0.00015983820035734092,
+        0.0017594825999420792,
+        2.0493153611092803,
+        2.532402058375115
+      ],
+      "joint_batch_log_score": 1.174154467245533,
+      "response_batch_log_scores": [
+        1.1302292286452689,
+        0.04629695880485886
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9366197183098591,
+        0.9577464788732395
+      ],
+      "predictive_standardized_residual_rms": [
+        0.599205416227011,
+        0.6526622388900227,
+        0.9818697169664676,
+        1.0030328472702856
+      ]
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "g_mse_difference": -2.8926230844648817e-05,
+      "joint_batch_score_difference": 0.12553321792904715,
+      "g_batch_score_difference": 0.04280956783819179,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "g_mse_difference": 5.549564882114939e-05,
+      "joint_batch_score_difference": 0.06510680227200671,
+      "g_batch_score_difference": 0.014952100528734302,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "g_mse_difference": -0.0009108169778909866,
+      "joint_batch_score_difference": 0.22810374427328273,
+      "g_batch_score_difference": 0.13264774741923105,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "g_mse_difference": -7.781448785897224e-05,
+      "joint_batch_score_difference": 0.05417654240575276,
+      "g_batch_score_difference": 0.07807356511754315,
+      "passed": true
+    }
+  ],
+  "covariance_contractions": [
+    {
+      "head": 0,
+      "minimum_covariance_reduction_eigenvalue": -1.6369355528183115e-21,
+      "common_covariance_trace_before": 0.0004953498020887973,
+      "common_covariance_trace_after": 0.0003445233491675313,
+      "layout": "5"
+    },
+    {
+      "head": 1,
+      "minimum_covariance_reduction_eigenvalue": -2.4864696558287637e-20,
+      "common_covariance_trace_before": 0.004483004711616059,
+      "common_covariance_trace_after": 0.003351234082714712,
+      "layout": "5"
+    },
+    {
+      "head": 0,
+      "minimum_covariance_reduction_eigenvalue": -1.410044487715158e-21,
+      "common_covariance_trace_before": 0.00048522754854261126,
+      "common_covariance_trace_after": 0.00033646956710245716,
+      "layout": "6"
+    },
+    {
+      "head": 1,
+      "minimum_covariance_reduction_eigenvalue": -2.531244815780457e-20,
+      "common_covariance_trace_before": 0.004450383612127997,
+      "common_covariance_trace_after": 0.0032780656343215373,
+      "layout": "6"
+    }
+  ],
+  "source_gate_passed": false,
+  "cost": {
+    "source_calls_per_model": 216,
+    "new_source_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 11.474757484
+}

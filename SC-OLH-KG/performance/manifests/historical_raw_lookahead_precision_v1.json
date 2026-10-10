@@ -1,0 +1,36 @@
+{
+  "status": "completed numerical precision diagnostic;original CPU overrun retained;future inside-rule cutoff repaired",
+  "entrypoint": "performance/refine_historical_raw_lookahead.py",
+  "states": "paper_artifacts/historical_prior_posterior_connection_v1/states.json",
+  "reference": "paper_artifacts/historical_prior_posterior_connection_v1/lookahead.json",
+  "connection_plan": "performance/manifests/historical_prior_posterior_connection_v1.json",
+  "layout": "5",
+  "query": 5,
+  "selection": "Refine only the recorded apparent winner,which is in both one-new and balanced4 sets. No action reranking or new task/source data. Restore the existing four joint identities from saved moments and reproduce the old rule before refinement.",
+  "rules": [
+    [
+      7,
+      2
+    ],
+    [
+      7,
+      4
+    ],
+    [
+      7,
+      6
+    ],
+    [
+      8,
+      6
+    ]
+  ],
+  "precision": {
+    "maximum_absolute_tower_drift": 0.005,
+    "maximum_identity_martingale_residual": 0.01,
+    "maximum_log_evidence_error": 0.02
+  },
+  "interpretation": "The first three rules isolate predictive fantasy precision;the last isolates conditional importance draw precision. Fixed diagnostic thresholds,not confidence intervals or decision confirmation. Keep all rules and stop at budget;no automatic expansion if HOLD.",
+  "maximum_single_thread_cpu_seconds": 15,
+  "output": "paper_artifacts/historical_prior_posterior_connection_v1/precision.json"
+}

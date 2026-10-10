@@ -1,0 +1,244 @@
+{
+  "protocol": {
+    "closed_loop": "paper_artifacts/legacy_batch_closed_loop_v1/results.json",
+    "candidate_rule": "use retained_policy63, fixed in the earlier stage12 retention contract and in every current arm before observations; no candidate selection using postfreeze_ceiling truth",
+    "budget_rule": "existing direct128 terminal action, five previously paid calls,133 total calls under the shared362-call cap",
+    "verification_seeds": [
+      83651,
+      83652,
+      83653,
+      83654
+    ],
+    "verification_budget": 128,
+    "freeze_order": "one deterministic frozen action for all four fresh independent verifier streams; no new search, no posterior fitting or updates from verification; score truth after all four verifications",
+    "endpoints": "independently certified safe deployment reward and actual total calls, compared descriptively with the original three-arm results; new verifier streams do not constitute additional independent tasks",
+    "execution": "local serial single-thread; reuse public bank and existing frontend-chosen retained policy; no source refit or source calls; exactly512 new terminal calls,0 search calls, no server work or pulls",
+    "scope": "a separately registered development control after the three-arm result; preserve that original result and budget-frontier analysis; this control is not confirmation of a new general deployment rule",
+    "output": "paper_artifacts/legacy_batch_closed_loop_v1/retained_direct_control.json"
+  },
+  "rows": [
+    {
+      "group": 0,
+      "verification_seed": 83651,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          128
+        ]
+      },
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 128,
+        "safety_verification_budget": 128,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 128,
+        "total_evaluation_count": 133,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 128,
+            "sample_mean": -0.06800535619453557,
+            "sample_std": 0.026847319352985868,
+            "upper_margin": -0.017254273280353193,
+            "delta": 0.05,
+            "tolerance_factor": 1.8903594152888124
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "disabled",
+          "comparison_budget_per_policy": 0,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      },
+      "truth": {
+        "deployed_feasible": true,
+        "safe_reward": 0.8061229823788613,
+        "false_certificate": false
+      }
+    },
+    {
+      "group": 1,
+      "verification_seed": 83652,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          128
+        ]
+      },
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 128,
+        "safety_verification_budget": 128,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 128,
+        "total_evaluation_count": 133,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 128,
+            "sample_mean": -0.06701896976276939,
+            "sample_std": 0.024890893216413745,
+            "upper_margin": -0.019966235416173234,
+            "delta": 0.05,
+            "tolerance_factor": 1.8903594152888124
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "disabled",
+          "comparison_budget_per_policy": 0,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      },
+      "truth": {
+        "deployed_feasible": true,
+        "safe_reward": 0.8061229823788613,
+        "false_certificate": false
+      }
+    },
+    {
+      "group": 2,
+      "verification_seed": 83653,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          128
+        ]
+      },
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 128,
+        "safety_verification_budget": 128,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 128,
+        "total_evaluation_count": 133,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 128,
+            "sample_mean": -0.06697809803064697,
+            "sample_std": 0.025714706219595825,
+            "upper_margin": -0.018368061017048222,
+            "delta": 0.05,
+            "tolerance_factor": 1.8903594152888124
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "disabled",
+          "comparison_budget_per_policy": 0,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      },
+      "truth": {
+        "deployed_feasible": true,
+        "safe_reward": 0.8061229823788613,
+        "false_certificate": false
+      }
+    },
+    {
+      "group": 3,
+      "verification_seed": 83654,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          128
+        ]
+      },
+      "deployed": 63,
+      "verification": {
+        "status": "certified",
+        "certified": true,
+        "verification_budget": 128,
+        "safety_verification_budget": 128,
+        "objective_comparison_budget": 0,
+        "max_verification_budget": 128,
+        "total_evaluation_count": 133,
+        "selected_shortlist_rank": 1,
+        "search_samples_reused": false,
+        "posterior_updated_from_verification": false,
+        "attempts": [
+          {
+            "candidate_index": 0,
+            "certified": true,
+            "sample_count": 128,
+            "sample_mean": -0.06751972984383442,
+            "sample_std": 0.02291816083011868,
+            "upper_margin": -0.02419616873751631,
+            "delta": 0.05,
+            "tolerance_factor": 1.8903594152888124
+          }
+        ],
+        "objective_comparison": {
+          "enabled": false,
+          "status": "disabled",
+          "comparison_budget_per_policy": 0,
+          "simulation_calls": 0,
+          "delta": 0.05,
+          "target_oracle_used": false,
+          "comparison_samples_logged": false
+        }
+      },
+      "truth": {
+        "deployed_feasible": true,
+        "safe_reward": 0.8061229823788613,
+        "false_certificate": false
+      }
+    }
+  ],
+  "new_calls": {
+    "source": 0,
+    "search": 0,
+    "terminal": 512
+  },
+  "source_refits": 0,
+  "cpu_seconds": 0.16853726799999996
+}

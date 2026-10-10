@@ -1,0 +1,19 @@
+{
+  "status": "frozen before source-only initial-design comparison",
+  "parent_results": "paper_artifacts/legacy_joint_population_f_inner_shape_geometry_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "intercept_source_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/source_laws.json",
+  "layouts": ["5", "6"],
+  "deleted_task": 1,
+  "prefix_length": 4,
+  "entrypoint": "performance/diagnose_legacy_f_source_information_design.py",
+  "question": "Can the retained source prior obtain materially more information at the same four-call budget by changing the fixed public prefix rather than its law?",
+  "law": "Keep retained coherent source intercept mixture and matched sourceGP unchanged. Use exact prior first/second mixture moments and shared source eta_f expected noise only for initial-design information. This is not an averaged-Gaussian raw update or KG replacement.",
+  "selection": "Greedy expected reduction in integrated f posterior variance over all73 public policies,without outcome values. Candidate pool is public73 minus the original twelve scoring sites,identical for both arms. Four distinct sites,no target/deleted-source response descriptors or score-roster-weighted objective. Compute both arms' own prefixes and every arm/prefix combination,including the fixed public four-prefix.",
+  "verification": "Sequential covariance reductions must equal the joint four-point Schur complement. A mismatch stops interpretation. Source law identities exclude task1;selected points cannot enter the original scoring roster.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;source JSON/public metadata only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_source_information_design_v1",
+  "decision": "If both layouts have material same-budget source-prior information improvement,register a frozen raw-likelihood pilot with fixed versus both prior-derived prefixes and common-design controls. Numerical information gain alone cannot waive the existing prediction or independent decision gates. Otherwise inspect source coverage/model support without a new query experiment. Complete-model HOLD remains."
+}

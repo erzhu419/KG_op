@@ -1,0 +1,100 @@
+{
+  "cases": [
+    {
+      "case": "source_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        16
+      ],
+      "net": 0.008826170742110286,
+      "fixed_action_tower_residual": 0.003454569188163087,
+      "numerical_changes": [
+        1.202548305456741e-05,
+        0.008994736681392697,
+        6.741553945643908e-08,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": false,
+        "native_action": false,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": false,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 0.00021269867556933386,
+      "maximum_native_action_difference": 0.00018800228805759822,
+      "predictive_log_evidence_error": 7.720349934547954e-05
+    },
+    {
+      "case": "source_n4",
+      "replicates": 4,
+      "action_count": 365,
+      "prefixes": [
+        16,
+        16
+      ],
+      "net": 0.03313362214499333,
+      "fixed_action_tower_residual": -0.015250807320219023,
+      "numerical_changes": [
+        1.0620768625568822e-05,
+        0.033180605596492885,
+        4.2339739135532906e-06,
+        6.351140552363077e-07
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": false,
+        "native_action": false,
+        "evidence": false,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": false,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 0.00023919811752937115,
+      "maximum_native_action_difference": 0.00020704347289568492,
+      "predictive_log_evidence_error": 0.0002013836652103862
+    },
+    {
+      "case": "gp_n4",
+      "replicates": 4,
+      "action_count": 365,
+      "prefixes": [
+        16,
+        16
+      ],
+      "net": 0.0020093259304879707,
+      "fixed_action_tower_residual": -0.009341646988525909,
+      "numerical_changes": [
+        5.273496195279392e-09,
+        0.0021780700152762567,
+        4.5775312829121617e-07,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": false,
+        "native_action": false,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": false,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 0.00019257247760241097,
+      "maximum_native_action_difference": 0.00024706571239391933,
+      "predictive_log_evidence_error": 3.3471645291882623e-05
+    }
+  ],
+  "scope": "Development preview with unresolved terminal precision; not admitted.",
+  "collection_cpu_seconds": 13.680318797,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

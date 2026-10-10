@@ -1,0 +1,2143 @@
+{
+  "execution": {
+    "status": "frozen after full inner raw diagnosis and cached outer attribution;before sixty new matched forecasts",
+    "entrypoint": "performance/check_legacy_f_inner_query_design.py",
+    "plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+    "inner_results": "paper_artifacts/legacy_joint_population_f_inner_raw_folds_v1/results.json",
+    "source_packages": [
+      "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1",
+      "paper_artifacts/legacy_joint_population_f_inner_raw_remaining_v1"
+    ],
+    "designs": [
+      "source_anchors",
+      "fixed_public_prefix"
+    ],
+    "fixed_public_prefix": [
+      0,
+      1,
+      29,
+      58
+    ],
+    "arms": [
+      "native_point",
+      "native_mixture",
+      "shape_point",
+      "shape_mixture",
+      "source_gp"
+    ],
+    "question": "Do internal gains survive the same response-free four-policy prefix used in the outer pilot,and do they beat the source4 GP prior under a common raw-risk contract?",
+    "freeze": "Reuse all forty existing anchor forecasts;add ten anchor GP controls and fifty fixed-prefix forecasts. Reuse the frozen ten source4 f/GP fits,risk maps,eta laws and twenty variance rules without any refit. Public mean coordinates are computed from metadata and must reproduce the cached source-site coordinates before paid values. Freeze all sixty laws/prefixes before cached first-replicate paid values,then all sixty forecasts before scoring the same eight future sites. All arms share144 source calls and four query episodes;the96 risk calls are a subset. No source-informed task1-greedy prefix is reused,as its five-source selection included these inner tasks.",
+    "prediction_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "raw_density_tolerance": 1e-05,
+    "decision": "Report both layouts and all ten tasks. Require the twenty new mixture refinements before interpretation. Separate source-mean gains from common-design GP comparison;no parameter tuning,prefix reselection,source6/7,target,KG,confirmation,manuscript or candidate promotion. This remains overlapping training diagnosis. GP uses the common raw moment filter,not a full GP BO/HyperBO online algorithm.",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1",
+    "execution": "local serial single-thread;small cached arrays,no server jobs or pulls"
+  },
+  "all_sixty_priors_and_prefixes_frozen_before_new_paid_values": true,
+  "rows": [
+    {
+      "layout": "5",
+      "query_task": 0,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 160,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 160,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 104,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 104,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 160,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 160,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 176,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 176,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 160,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 160,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 96,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "design": "source_anchors",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        45,
+        10,
+        51,
+        31
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "native_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "native_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "shape_point",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "shape_mixture",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 88,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "source_label_count": 48,
+      "source_calls": 144,
+      "risk_calls_subset": 96,
+      "component_count": 1,
+      "eta_law_shared": true,
+      "source_q_unchanged": true
+    }
+  ]
+}

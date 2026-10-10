@@ -18,6 +18,18 @@ from scipy.special import logsumexp
 from scipy.stats import norm
 
 
+def gaussian_replication_log_score(log_variance, sample_variance, degrees_of_freedom):
+    """Gaussian sample-variance log likelihood without data-only constants.
+
+    This is the replication score used by the historical variance experts.
+    A density for log sample variance additionally needs its normalization
+    and transformation Jacobian; neither changes the relative expert score.
+    """
+    eta = np.asarray(log_variance)
+    return -0.5 * degrees_of_freedom * (
+        eta + np.asarray(sample_variance) * np.exp(-eta))
+
+
 @dataclass(frozen=True)
 class MixtureMoments:
     """Hierarchical predictive moments under a finite task posterior."""
@@ -869,8 +881,8 @@ class ReplicationVarianceTaskPosterior:
             )
             # Exact Gaussian sample-variance log likelihood up to terms that
             # are common to every expert.
-            cumulative_score += -0.5 * float(dof) * (
-                np.log(predicted) + sample_variance / predicted)
+            cumulative_score += gaussian_replication_log_score(
+                np.log(predicted), sample_variance, float(dof))
         log_weights += self.temperature * cumulative_score
         log_weights -= logsumexp(log_weights)
         if self.minimum_weight > 0.0:

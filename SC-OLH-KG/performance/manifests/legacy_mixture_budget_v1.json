@@ -1,0 +1,17 @@
+{
+  "source_fit_contract":"performance/manifests/legacy_observable_budget_v1.json",
+  "paid_paths":"paper_artifacts/legacy_joint_bridge_v1/results.json",
+  "hypotheses":["legacy_source_orthogonal","observable_source_full","observable_source_orthogonal"],
+  "initial_weights":[0.3333333333333333,0.3333333333333333,0.3333333333333333],
+  "weight_update":"joint pre-observation predictive density of raw f,g, summed within each complete hypothesis; one common posterior weight for all four response/risk fields; no tempering, floors or target-based initial weights",
+  "prefixes":[2,4,6,10,13],
+  "terminal_draw_power":12,
+  "integration_seed":80530,
+  "total_target_call_cap":362,
+  "controls":"three component models conditioned on identical observations, fixed equal-weight mixture and paid-evidence mixture; complete identical terminal action class and exact joint-marginal integration",
+  "lookahead_probe":{"domain":"InventorySupplyChain","prefix":4,"draw_power":8,"fantasy_power":2,"points":"initial empirical safe, incumbent and current mixture primary, distinct; stratified raw fantasies for every hypothesis"},
+  "source_calls":"reuse existing archives and same fitted objective, new calls zero; omit repeated source-site validation",
+  "target_truth":"only post-decision conditional expected deployment scoring after all actions and fantasies freeze; no independent certificate or adaptive action executed",
+  "execution":"local serial single-thread, no simulator calls, no scheduler tasks",
+  "scope":"three opened seed80 development laws and original frozen frontend; no independent generalization claim"
+}

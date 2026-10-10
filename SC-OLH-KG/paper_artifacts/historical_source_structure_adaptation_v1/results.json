@@ -1,0 +1,1832 @@
+{
+  "execution": {
+    "status": "registered historical implementation adaptation",
+    "historical_source_commit": "aa1f61e0",
+    "source_inputs_by_layout": {
+      "5": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/layout5/task1/inputs.json",
+      "6": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/layout6/task1/inputs.json"
+    },
+    "source_tasks": [
+      "related_inventory_02",
+      "related_inventory_03",
+      "related_inventory_04",
+      "related_inventory_05"
+    ],
+    "raw_source_fields": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/frozen_inputs.json",
+    "risk_laws": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/risk_reconstruction.json",
+    "spectral_config": {
+      "active_dim": 6,
+      "max_library_size": 64,
+      "low_frequency_components": 8,
+      "n_neighbors": 10,
+      "pilot_cv_size": 10,
+      "pilot_cv_repeats": 3,
+      "orthogonalization": "symmetric"
+    },
+    "additive_config": {
+      "max_groups": 8,
+      "max_library_size": 64,
+      "low_frequency_components": 8,
+      "n_neighbors": 10,
+      "strong_heredity": true,
+      "max_interactions": 2
+    },
+    "source_Gram_tolerance": 1e-05,
+    "joint_input": "Concatenate the existing4 mean and10 risk coordinates for joint four-response selection. Distinct fitted maps keep distinct axes;no coordinate learner is refit. This14-dimensional selector is an auxiliary source fit,not a replacement of the frozen scientific law.",
+    "maximum_single_thread_cpu_seconds": 10,
+    "scope": "Historical source selectors and exact replication posterior adapted to current cached source rows. Same upstream coordinates and raw labels. No replacement of current scientific covariance law;no independent query or target outcome scoring. Source orthogonality is under the pooled source measure,not the current public-reference measure.",
+    "output": "paper_artifacts/historical_source_structure_adaptation_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "raw_mean_and_sample_variance_rows_matched": true,
+      "historical_and_current_variance_posterior_max_error": 9.769962616701378e-15,
+      "replicated_policies": 48,
+      "effective_variance_dof": 96
+    },
+    {
+      "layout": "6",
+      "raw_mean_and_sample_variance_rows_matched": true,
+      "historical_and_current_variance_posterior_max_error": 9.992007221626409e-15,
+      "replicated_policies": 48,
+      "effective_variance_dof": 96
+    }
+  ],
+  "rows": [
+    {
+      "layout": "5",
+      "head": "f",
+      "selector": "spectral",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 1.2023715356690445e-13,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 4,
+        "library_dim": 22,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi2^2",
+          "psi0^2",
+          "cos(pi*psi0)",
+          "cos(pi*psi2)",
+          "sin(pi*psi1)",
+          "sin(pi*psi0)"
+        ],
+        "selected_scores": [
+          0.7491481152889657,
+          0.7571403294200212,
+          0.7354808447543563,
+          0.7441389716989216,
+          0.36868337474965107,
+          0.2550478331527925
+        ],
+        "selected_low_frequency": [
+          0.9037957096196202,
+          0.9173188594979276,
+          0.9247701218441381,
+          0.9225011345722618,
+          0.933866475377314,
+          0.9943126649005447
+        ],
+        "selected_relevance": [
+          0.853402173403444,
+          0.8340931883681382,
+          0.8092585461556179,
+          0.8289473301520415,
+          0.4490625560156396,
+          0.2839501858555956
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          0.6588685320562279,
+          0.7550250320864746,
+          0.9355339584084964,
+          1.272965448420516,
+          1.1819851461550968,
+          0.4885718094103186
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 9.943369374930849e-14,
+        "max_diag_error": 1.2023715356690445e-13
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "f",
+      "selector": "additive",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 1.1102230246251565e-15,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 22,
+        "feature_dim": 6,
+        "group_names": [
+          "main:0",
+          "main:2",
+          "main:1",
+          "main:3",
+          "interaction:1:2",
+          "interaction:0:2"
+        ],
+        "function_names": [
+          "psi0^2",
+          "psi2^2",
+          "cos(pi*psi1)",
+          "sin(pi*psi3)",
+          "psi1*psi2",
+          "psi0*psi2"
+        ],
+        "source_scores": [
+          0.7571403294200212,
+          0.7491481152889657,
+          0.6149924118156092,
+          0.17250173856576131,
+          0.5325166432471105,
+          0.49620214745791646
+        ],
+        "source_weights": [
+          0.23371080805579456,
+          0.23000477274605316,
+          0.17587766230974639,
+          0.07258855801647929,
+          0.14913278978896777,
+          0.13868540908295876
+        ],
+        "source_clip_low": [
+          -1.3626420685022909,
+          -2.7506436377880137,
+          -2.041673661822936,
+          -1.3248434285829154,
+          -2.823776815105378,
+          -1.9062870960333633
+        ],
+        "source_clip_high": [
+          2.006517210082674,
+          2.3724439295724946,
+          1.8489042065535375,
+          1.871054177000488,
+          1.8639461860250626,
+          2.064656313492041
+        ],
+        "max_offdiag_gram": 7.953347123958661e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 8.881784197001252e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "g",
+      "selector": "spectral",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 4.2743586448068527e-13,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 4,
+        "library_dim": 22,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi2^2",
+          "cos(pi*psi2)",
+          "psi0^2",
+          "psi1",
+          "cos(pi*psi0)",
+          "psi1*psi2"
+        ],
+        "selected_scores": [
+          0.7785407985590623,
+          0.7615535061870955,
+          0.7525040563233928,
+          0.3720672646668775,
+          0.7175230889388828,
+          0.557320416949135
+        ],
+        "selected_low_frequency": [
+          0.9037957096196202,
+          0.9225011345722618,
+          0.9173188594979276,
+          0.9645960058216566,
+          0.9247701218441381,
+          0.9314646426013937
+        ],
+        "selected_relevance": [
+          0.8711970118610441,
+          0.8367816468681171,
+          0.8404101077546882,
+          0.44383011148956264,
+          0.7993318864705043,
+          0.6206965846234261
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          0.9580627827378728,
+          0.7953440683154857,
+          1.207395289397842,
+          0.3650939918964939,
+          0.4930767304907635,
+          1.098688816038315
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 1.1717777423637183e-13,
+        "max_diag_error": 4.276579090856103e-13
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "g",
+      "selector": "additive",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 5.551115123125783e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 22,
+        "feature_dim": 6,
+        "group_names": [
+          "main:2",
+          "main:0",
+          "main:1",
+          "main:3",
+          "interaction:1:2",
+          "interaction:0:2"
+        ],
+        "function_names": [
+          "psi2^2",
+          "psi0^2",
+          "cos(pi*psi1)",
+          "sin(pi*psi3)",
+          "psi1*psi2",
+          "psi0*psi2"
+        ],
+        "source_scores": [
+          0.7785407985590623,
+          0.7525040563233928,
+          0.5969413800502367,
+          0.16544145414527897,
+          0.557320416949135,
+          0.5143578524809265
+        ],
+        "source_weights": [
+          0.23979969826253708,
+          0.22763204778553192,
+          0.16676825386945232,
+          0.0703586192413058,
+          0.15406324825992454,
+          0.14137813258124832
+        ],
+        "source_clip_low": [
+          -1.2881354871860708,
+          -2.627934032228132,
+          -2.0416736618229354,
+          -1.3248434285829154,
+          -2.823776815105378,
+          -1.9062870960333635
+        ],
+        "source_clip_high": [
+          1.8358858673404723,
+          2.520718225469661,
+          1.8489042065535368,
+          1.8710541770004878,
+          1.8639461860250617,
+          2.06465631349204
+        ],
+        "max_offdiag_gram": 4.030014662719274e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 4.440892098500626e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "eta_g",
+      "selector": "spectral",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 1.2434497875801753e-14,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 10,
+        "library_dim": 64,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi5",
+          "sin(pi*psi5)",
+          "sin(pi*psi9)",
+          "cos(pi*psi8)",
+          "psi2*psi5",
+          "psi0^2"
+        ],
+        "selected_scores": [
+          0.5626072120033018,
+          0.5178938926618878,
+          0.22049085857926176,
+          0.2390248955198091,
+          0.10294892946707765,
+          0.23702509663650076
+        ],
+        "selected_low_frequency": [
+          0.9710836402792147,
+          0.9559089919677832,
+          0.8412074925906701,
+          0.811436823241865,
+          0.8603776317171884,
+          0.7045249059366832
+        ],
+        "selected_relevance": [
+          0.6360576917770473,
+          0.6083158434512537,
+          0.3316768520692701,
+          0.3787737757600704,
+          0.18200243995784954,
+          0.36687914142676786
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.75,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          0.75,
+          0.75,
+          0.75,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          1.6967502108379253,
+          2.1357291859931418,
+          1.5790409690399876,
+          2.1400697370996657,
+          5.5913213706919835,
+          5.93563772450594
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 1.1371077870862778e-15,
+        "max_diag_error": 1.2212453270876722e-14
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "eta_g",
+      "selector": "additive",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 6.661338147750939e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 64,
+        "feature_dim": 8,
+        "group_names": [
+          "main:5",
+          "main:0",
+          "main:2",
+          "main:9",
+          "main:4",
+          "main:8",
+          "interaction:0:5",
+          "interaction:2:9"
+        ],
+        "function_names": [
+          "psi5",
+          "psi0",
+          "sin(pi*psi2)",
+          "psi9",
+          "sin(pi*psi4)",
+          "cos(pi*psi8)",
+          "psi0*psi5",
+          "psi2*psi9"
+        ],
+        "source_scores": [
+          0.5626072120033018,
+          0.38382070592739037,
+          0.27311984983607,
+          0.2639700077031271,
+          0.2618317457252051,
+          0.2390248955198091,
+          0.14543795816486035,
+          0.14250691769284451
+        ],
+        "source_weights": [
+          0.21064034672747198,
+          0.14731588357204004,
+          0.1180581662008129,
+          0.11591738657139172,
+          0.11542272156808506,
+          0.11027613388594656,
+          0.09145194596143628,
+          0.0909174155128154
+        ],
+        "source_clip_low": [
+          -1.7031541776256387,
+          -1.6466156045230853,
+          -2.3727993889683323,
+          -1.8997488366817232,
+          -1.7177322230256817,
+          -2.7569369269278527,
+          -2.324400154868991,
+          -2.0893107575938266
+        ],
+        "source_clip_high": [
+          1.3932096055879655,
+          2.1470804180735916,
+          1.8084737811627698,
+          2.1619241278845007,
+          3.1438501582286995,
+          1.1682518788270104,
+          1.8021294506156642,
+          1.5125334452227077
+        ],
+        "max_offdiag_gram": 2.040722403486602e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 3.3306690738754696e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "eta_f",
+      "selector": "spectral",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 6.328271240363392e-15,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 10,
+        "library_dim": 64,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi7",
+          "psi5",
+          "sin(pi*psi5)",
+          "cos(pi*psi8)",
+          "psi0*psi3",
+          "cos(pi*psi9)"
+        ],
+        "selected_scores": [
+          0.3666416244268585,
+          0.3965024618445414,
+          0.3437045944182105,
+          0.21409935332488733,
+          0.17124159159916058,
+          0.2146293427124432
+        ],
+        "selected_low_frequency": [
+          0.9700467746194474,
+          0.9710836402792147,
+          0.9559089919677832,
+          0.811436823241865,
+          0.8514318683998506,
+          0.7130746539111177
+        ],
+        "selected_relevance": [
+          0.42005063079291594,
+          0.435107485440153,
+          0.3960194844377277,
+          0.341251908939329,
+          0.26320280297332227,
+          0.34227559849804856
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          0.75,
+          0.75,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          1.9088368908419875,
+          2.9604107763180534,
+          2.907470665973774,
+          3.0095188379261066,
+          13.905820446471743,
+          8.823516482402782
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 1.6931234586685929e-15,
+        "max_diag_error": 6.328271240363392e-15
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "eta_f",
+      "selector": "additive",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 4.82456704878024e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 64,
+        "feature_dim": 8,
+        "group_names": [
+          "main:5",
+          "main:7",
+          "main:4",
+          "main:9",
+          "main:1",
+          "main:0",
+          "interaction:0:9",
+          "interaction:1:4"
+        ],
+        "function_names": [
+          "psi5",
+          "psi7",
+          "psi4",
+          "psi9",
+          "sin(pi*psi1)",
+          "psi0",
+          "psi0*psi9",
+          "psi1*psi4"
+        ],
+        "source_scores": [
+          0.3965024618445414,
+          0.3666416244268585,
+          0.31758703277521144,
+          0.31064069960939295,
+          0.22393467187243016,
+          0.21763423288886746,
+          0.2801931893351958,
+          0.21294707682822603
+        ],
+        "source_weights": [
+          0.15312052093769052,
+          0.14424361702512706,
+          0.13076403922013072,
+          0.12895993895336721,
+          0.10842836775300685,
+          0.10707064732260224,
+          0.121341245236197,
+          0.10607162355187824
+        ],
+        "source_clip_low": [
+          -1.7031541776256387,
+          -1.9197340628646016,
+          -1.0235376478638523,
+          -1.8984989639296437,
+          -2.247573185412546,
+          -1.7005282077537904,
+          -2.3192418475015533,
+          -2.028038732730022
+        ],
+        "source_clip_high": [
+          1.3932096055879655,
+          1.798701013947408,
+          3.8351956442171256,
+          2.366827835801132,
+          1.1872642660235915,
+          1.8705696879618352,
+          1.8775139146162363,
+          2.661832592025716
+        ],
+        "max_offdiag_gram": 4.666647554142774e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 8.881784197001252e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "joint_f_g_eta_g_eta_f",
+      "selector": "spectral",
+      "input_dimension": 14,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 4.574118861455645e-14,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 14,
+        "library_dim": 64,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi4",
+          "sin(pi*psi4)",
+          "psi0^2",
+          "cos(pi*psi0)",
+          "psi2^2",
+          "psi1^2"
+        ],
+        "selected_scores": [
+          0.9120367948585679,
+          0.8903718507067552,
+          0.7249680920621379,
+          0.647474094849449,
+          0.7632007075097774,
+          0.6824017942717381
+        ],
+        "selected_low_frequency": [
+          0.973273726924796,
+          0.9604151101573117,
+          0.8617654949060147,
+          0.805923922816997,
+          0.8782103672970687,
+          0.9603488227961636
+        ],
+        "selected_relevance": [
+          0.9436374619063886,
+          0.9345681446008267,
+          0.8528656138108925,
+          0.8172950417328524,
+          0.8816220858844434,
+          0.7385113230656994
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          1.2167158707281693,
+          1.6729833179494882,
+          2.825688357862448,
+          5.660645959790139,
+          10.748684373624044,
+          8.550597990545644
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 2.0420746625038222e-14,
+        "max_diag_error": 4.574118861455645e-14
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "5",
+      "head": "joint_f_g_eta_g_eta_f",
+      "selector": "additive",
+      "input_dimension": 14,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 1.6381300107020502e-15,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 64,
+        "feature_dim": 8,
+        "group_names": [
+          "main:4",
+          "main:6",
+          "main:5",
+          "main:2",
+          "main:0",
+          "main:1",
+          "interaction:0:2",
+          "interaction:0:1"
+        ],
+        "function_names": [
+          "psi4",
+          "psi6",
+          "cos(pi*psi5)",
+          "psi2^2",
+          "psi0^2",
+          "psi1^2",
+          "psi0*psi2",
+          "psi0*psi1"
+        ],
+        "source_scores": [
+          0.9120367948585679,
+          0.8514827902808387,
+          0.7847183204747121,
+          0.7632007075097774,
+          0.7249680920621379,
+          0.6824017942717381,
+          0.5495075286234951,
+          0.5116526410328903
+        ],
+        "source_weights": [
+          0.17678501584046408,
+          0.15662061020838047,
+          0.1370433701009889,
+          0.13127078093613997,
+          0.121607298584558,
+          0.1116829879703116,
+          0.08561631511362557,
+          0.07937362124553152
+        ],
+        "source_clip_low": [
+          -1.1692016693052063,
+          -2.5909984727521347,
+          -2.517027359527685,
+          -1.666627634715765,
+          -2.291762304802524,
+          -1.8072072587197296,
+          -2.8440744581741324,
+          -3.063901917698757
+        ],
+        "source_clip_high": [
+          1.476045858098208,
+          1.2744795138472675,
+          2.1716630710579645,
+          2.0234130133208685,
+          2.3481605106913226,
+          2.286326996329541,
+          1.2074711478367903,
+          1.8699236889941004
+        ],
+        "max_offdiag_gram": 1.6424040245905584e-15,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 1.5543122344752192e-15
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "f",
+      "selector": "spectral",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 3.519406988061746e-13,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 4,
+        "library_dim": 22,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "cos(pi*psi0)",
+          "psi2^2",
+          "cos(pi*psi2)",
+          "psi1^2",
+          "cos(pi*psi1)",
+          "psi0^2"
+        ],
+        "selected_scores": [
+          0.7513453378954561,
+          0.6578176384938884,
+          0.6581167111534483,
+          0.581694831145475,
+          0.5994320417077794,
+          0.7085978722156566
+        ],
+        "selected_low_frequency": [
+          0.8841440383101645,
+          0.8140143507465388,
+          0.8480410588485777,
+          0.86183295019106,
+          0.8973697952592695,
+          0.8239131111448407
+        ],
+        "selected_relevance": [
+          0.8675061661559003,
+          0.8333212602963316,
+          0.8016546648244216,
+          0.6957289766020188,
+          0.6903241286129461,
+          0.8752709601853959
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          0.666388126155599,
+          0.49297459001036587,
+          0.6228842321664162,
+          0.8089783549649625,
+          1.9746803347344457,
+          1.3938513699645976
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 1.0944922940495922e-13,
+        "max_diag_error": 3.5127456499139953e-13
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "f",
+      "selector": "additive",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 6.661338147750939e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 22,
+        "feature_dim": 6,
+        "group_names": [
+          "main:0",
+          "main:2",
+          "main:1",
+          "main:3",
+          "interaction:1:2",
+          "interaction:0:2"
+        ],
+        "function_names": [
+          "cos(pi*psi0)",
+          "cos(pi*psi2)",
+          "cos(pi*psi1)",
+          "psi3^2",
+          "psi1*psi2",
+          "psi0*psi2"
+        ],
+        "source_scores": [
+          0.7513453378954561,
+          0.6581167111534483,
+          0.5994320417077794,
+          0.12089256432944047,
+          0.4920001361348333,
+          0.3980163260284518
+        ],
+        "source_weights": [
+          0.25381549445924956,
+          0.2106399651651158,
+          0.18731299934646192,
+          0.07193062092289423,
+          0.1510962724838814,
+          0.1252046476223971
+        ],
+        "source_clip_low": [
+          -1.6800160368736012,
+          -1.7674292692175981,
+          -1.9471193437084628,
+          -1.9511043368698113,
+          -2.195200509640083,
+          -2.4319543543704762
+        ],
+        "source_clip_high": [
+          1.5545555540217186,
+          2.5844609271086467,
+          2.0867640601728503,
+          1.4633341216585314,
+          1.1924057314608016,
+          1.3759442187706565
+        ],
+        "max_offdiag_gram": 2.3353414577960595e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 6.661338147750939e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "g",
+      "selector": "spectral",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 8.43769498715119e-14,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 4,
+        "library_dim": 22,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi2^2",
+          "cos(pi*psi2)",
+          "cos(pi*psi0)",
+          "sin(pi*psi1)",
+          "psi2",
+          "psi0^2"
+        ],
+        "selected_scores": [
+          0.6866380276897774,
+          0.682645346897272,
+          0.646058675655115,
+          0.4312514446776473,
+          0.2748990018679081,
+          0.5995391332049143
+        ],
+        "selected_low_frequency": [
+          0.8140143507465388,
+          0.8480410588485777,
+          0.8841440383101645,
+          0.984635364709135,
+          0.9747054034475282,
+          0.8239131111448407
+        ],
+        "selected_relevance": [
+          0.8551201634974278,
+          0.818574612583659,
+          0.742086317170298,
+          0.5000636623381327,
+          0.3987800898883608,
+          0.7377117905728635
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.75,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          0.9105881488614885,
+          0.9943362374488554,
+          1.3620185858533251,
+          0.8440900820947986,
+          0.42729079350493276,
+          0.33615684426593945
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 4.420154934635259e-14,
+        "max_diag_error": 8.43769498715119e-14
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "g",
+      "selector": "additive",
+      "input_dimension": 4,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 8.881784197001252e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 22,
+        "feature_dim": 6,
+        "group_names": [
+          "main:2",
+          "main:0",
+          "main:1",
+          "main:3",
+          "interaction:1:2",
+          "interaction:0:2"
+        ],
+        "function_names": [
+          "psi2^2",
+          "cos(pi*psi0)",
+          "cos(pi*psi1)",
+          "psi3",
+          "psi1*psi2",
+          "psi0*psi2"
+        ],
+        "source_scores": [
+          0.6866380276897774,
+          0.646058675655115,
+          0.5888476734543229,
+          0.12563207181520558,
+          0.5260475356510588,
+          0.3838552390621691
+        ],
+        "source_weights": [
+          0.2303571060599984,
+          0.21240015854347996,
+          0.1894357716911688,
+          0.07500980423498473,
+          0.16707615990558786,
+          0.12572099956478025
+        ],
+        "source_clip_low": [
+          -1.3722562556187334,
+          -2.2322945323036354,
+          -2.051504080640761,
+          -1.30597983085716,
+          -1.5995996091753377,
+          -2.60900842145203
+        ],
+        "source_clip_high": [
+          1.6802108803480167,
+          2.0070742539029798,
+          2.0412410072370806,
+          1.6798780267996827,
+          2.696163233079549,
+          1.6516302666639946
+        ],
+        "max_offdiag_gram": 7.687572850217597e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 8.881784197001252e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "eta_g",
+      "selector": "spectral",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 9.547918011776346e-15,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 10,
+        "library_dim": 64,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi5",
+          "sin(pi*psi5)",
+          "sin(pi*psi6)",
+          "psi0",
+          "sin(pi*psi0)",
+          "sin(pi*psi3)"
+        ],
+        "selected_scores": [
+          0.542912766226175,
+          0.46307763111533984,
+          0.25317751302794184,
+          0.3484894897713382,
+          0.3307138195566891,
+          0.38196869191003907
+        ],
+        "selected_low_frequency": [
+          0.9334357403750303,
+          0.9233049788314609,
+          0.849752466536955,
+          0.9536519851239806,
+          0.9399966430010538,
+          0.9342138564856343
+        ],
+        "selected_relevance": [
+          0.6101785875876667,
+          0.536610610443879,
+          0.34187184753678523,
+          0.4281835131061327,
+          0.42044700692795645,
+          0.43922668270367027
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          1.6347052889200908,
+          2.7578870429235436,
+          2.2537077688553357,
+          6.146550074298695,
+          15.808715821304077,
+          14.2518561688778
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 2.2344044515039666e-15,
+        "max_diag_error": 9.103828801926284e-15
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "eta_g",
+      "selector": "additive",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 6.661338147750939e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 64,
+        "feature_dim": 8,
+        "group_names": [
+          "main:5",
+          "main:3",
+          "main:0",
+          "main:6",
+          "main:7",
+          "main:9",
+          "interaction:0:5",
+          "interaction:0:3"
+        ],
+        "function_names": [
+          "psi5",
+          "psi3",
+          "psi0",
+          "sin(pi*psi6)",
+          "psi7",
+          "sin(pi*psi9)",
+          "psi0*psi5",
+          "psi0*psi3"
+        ],
+        "source_scores": [
+          0.542912766226175,
+          0.397506885129724,
+          0.3484894897713382,
+          0.25317751302794184,
+          0.22722429328236785,
+          0.2033847437766616,
+          0.08485532262936749,
+          0.06344159272810473
+        ],
+        "source_weights": [
+          0.20798615273019988,
+          0.15550217861077203,
+          0.1409809748543143,
+          0.11651278362543856,
+          0.11061929796551312,
+          0.1054688300156672,
+          0.08320909168183137,
+          0.07972069051626357
+        ],
+        "source_clip_low": [
+          -1.317302314435644,
+          -1.996792551057618,
+          -2.3684575536625005,
+          -1.7759123051256809,
+          -1.349245612965941,
+          -1.8998438931307384,
+          -1.8596784477943966,
+          -2.139780956249394
+        ],
+        "source_clip_high": [
+          1.8817693808774039,
+          1.3067119757453463,
+          1.6994336897761422,
+          2.0529252532741853,
+          2.1756701447748856,
+          1.8720499751588593,
+          1.6243203170270388,
+          1.7146172606789611
+        ],
+        "max_offdiag_gram": 2.0107489032088383e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 6.661338147750939e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "eta_f",
+      "selector": "spectral",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 3.3306690738754696e-15,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 10,
+        "library_dim": 64,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "sin(pi*psi7)",
+          "psi0*psi4",
+          "psi1",
+          "cos(pi*psi0)",
+          "sin(pi*psi0)",
+          "psi7"
+        ],
+        "selected_scores": [
+          0.3971961699609709,
+          0.21506890776968007,
+          0.2203133817849938,
+          0.1318302974194209,
+          0.15575845563808716,
+          0.3655845778466475
+        ],
+        "selected_low_frequency": [
+          0.8659631291709418,
+          0.6286384546214783,
+          0.9639310302933671,
+          0.5071902199125061,
+          0.9399966430010538,
+          0.8700459038554635
+        ],
+        "selected_relevance": [
+          0.5456917840838297,
+          0.37690352328709764,
+          0.2784950390032973,
+          0.3410012290257135,
+          0.20204730763411588,
+          0.5084379022485361
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          0.5,
+          0.5,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          1.5120367946624056,
+          1.6532808270462886,
+          2.2064570166464175,
+          2.7393852741095004,
+          9.083530224589786,
+          4.036857326160846
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 2.6543045650133757e-15,
+        "max_diag_error": 3.3306690738754696e-15
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "eta_f",
+      "selector": "additive",
+      "input_dimension": 10,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 2.220446049250313e-16,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 64,
+        "feature_dim": 8,
+        "group_names": [
+          "main:7",
+          "main:8",
+          "main:1",
+          "main:4",
+          "main:5",
+          "main:3",
+          "interaction:1:3",
+          "interaction:1:7"
+        ],
+        "function_names": [
+          "sin(pi*psi7)",
+          "psi8",
+          "psi1",
+          "sin(pi*psi4)",
+          "sin(pi*psi5)",
+          "psi3^2",
+          "psi1*psi3",
+          "psi1*psi7"
+        ],
+        "source_scores": [
+          0.3971961699609709,
+          0.2221797408039419,
+          0.2203133817849938,
+          0.1975998272357944,
+          0.18534264934742434,
+          0.1732150977042578,
+          0.12173785000192716,
+          0.12024583143054716
+        ],
+        "source_weights": [
+          0.18108609099089343,
+          0.1276050185803396,
+          0.12712959289279446,
+          0.12148367280777952,
+          0.11854178539553059,
+          0.11570113158684395,
+          0.10438186141312207,
+          0.1040708463326964
+        ],
+        "source_clip_low": [
+          -1.0933656736789308,
+          -1.4783463702490853,
+          -1.3714726185378439,
+          -1.4322803041377943,
+          -2.0522562902130703,
+          -1.9689197328323007,
+          -2.0941376743134543,
+          -1.4664457585819346
+        ],
+        "source_clip_high": [
+          1.7904676044911139,
+          2.535112337037551,
+          1.7553108312561605,
+          2.16737951715738,
+          1.6790356256453691,
+          2.325097095009826,
+          2.0129514713567,
+          2.038632638321443
+        ],
+        "max_offdiag_gram": 2.0512759051075554e-16,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 4.440892098500626e-16
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "joint_f_g_eta_g_eta_f",
+      "selector": "spectral",
+      "input_dimension": 14,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 1.8318679906315083e-14,
+      "diagnostics": {
+        "status": "fit",
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_domains": 4,
+        "n_source_records": 48,
+        "psi_dim": 14,
+        "library_dim": 64,
+        "active_dim": 6,
+        "requested_active_dim": 6,
+        "source_identifiable_rank": 6,
+        "rank_truncated": false,
+        "selected_names": [
+          "psi4",
+          "sin(pi*psi4)",
+          "sin(pi*psi11)",
+          "psi0^2",
+          "cos(pi*psi2)",
+          "psi2^2"
+        ],
+        "selected_scores": [
+          0.8946386418228689,
+          0.8571066072120802,
+          0.5369027294790565,
+          0.7365853107131513,
+          0.707898898555879,
+          0.7350543854339264
+        ],
+        "selected_low_frequency": [
+          0.9401883657917963,
+          0.926988107152293,
+          0.9389387778418339,
+          0.8564551472270882,
+          0.8753490008552147,
+          0.8686297845428068
+        ],
+        "selected_relevance": [
+          0.9565897548065894,
+          0.9351296747835321,
+          0.6307545456733229,
+          0.875270960185396,
+          0.8244486152255652,
+          0.8595050178536408
+        ],
+        "selected_prevalence": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_sign_consistency": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "selected_pilot_cv_loss": [
+          1.1610809943390246,
+          1.484828641744544,
+          2.0452356580982127,
+          5.372941881832619,
+          30.776889484784864,
+          13.507285423524834
+        ],
+        "pilot_cv_size": 10,
+        "pilot_cv_repeats": 3,
+        "pilot_cv_weight": 1.0,
+        "orthogonalization": "symmetric",
+        "low_frequency_prior": true,
+        "max_offdiag_gram": 8.565407513464123e-15,
+        "max_diag_error": 1.8540724511240114e-14
+      },
+      "cached_map_reconstruction_passed": true
+    },
+    {
+      "layout": "6",
+      "head": "joint_f_g_eta_g_eta_f",
+      "selector": "additive",
+      "input_dimension": 14,
+      "source_record_count": 48,
+      "operational_adaptation_passed": true,
+      "source_orthogonality_passed": true,
+      "source_Gram_max_error": 1.9984014443252818e-15,
+      "diagnostics": {
+        "status": "fit",
+        "method": "source_low_frequency_orthogonal_anova_groups",
+        "strong_heredity": true,
+        "max_interactions": 2,
+        "target_data_used": false,
+        "source_domains": [
+          "related_inventory_02",
+          "related_inventory_03",
+          "related_inventory_04",
+          "related_inventory_05"
+        ],
+        "n_source_records": 48,
+        "library_dim": 64,
+        "feature_dim": 8,
+        "group_names": [
+          "main:4",
+          "main:0",
+          "main:2",
+          "main:7",
+          "main:1",
+          "main:9",
+          "interaction:0:2",
+          "interaction:0:1"
+        ],
+        "function_names": [
+          "psi4",
+          "psi0^2",
+          "psi2^2",
+          "psi7",
+          "psi1^2",
+          "psi9",
+          "psi0*psi2",
+          "psi0*psi1"
+        ],
+        "source_scores": [
+          0.8946386418228689,
+          0.7365853107131513,
+          0.7350543854339264,
+          0.6492481212757449,
+          0.5796130336093611,
+          0.5599561482096593,
+          0.4580739809470522,
+          0.43746585145743977
+        ],
+        "source_weights": [
+          0.2028026356366859,
+          0.14783940830941514,
+          0.14738743841975038,
+          0.1241452469859231,
+          0.10800548916577674,
+          0.1038417681700203,
+          0.08469901278143563,
+          0.08127900053099264
+        ],
+        "source_clip_low": [
+          -1.317869767586992,
+          -1.7637109348467521,
+          -2.15841002458363,
+          -1.5326878510520336,
+          -2.0835751285479565,
+          -3.051191427260002,
+          -3.0797028042945165,
+          -1.8215339718736627
+        ],
+        "source_clip_high": [
+          1.3654948318692983,
+          1.815097304709163,
+          1.5068377284569718,
+          2.163571836738158,
+          1.737693709172085,
+          1.7148014695220037,
+          1.1004228988684202,
+          1.541421137249342
+        ],
+        "max_offdiag_gram": 1.1398285395386691e-15,
+        "max_stage1_cross_gram": 0.0,
+        "max_diag_error": 1.9984014443252818e-15
+      },
+      "cached_map_reconstruction_passed": true
+    }
+  ],
+  "all_operational_adaptations_passed": true,
+  "all_source_orthogonality_passed": true,
+  "cpu_seconds": 4.506210327,
+  "cost": {
+    "existing_selector_fits": 20,
+    "new_simulator_calls": 0,
+    "new_source_chains": 0,
+    "new_target_predictions": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Historical source spectral/additive selectors now consume the same current48 source batches,with their existing algorithms. This establishes interface reuse and pooled-source orthogonality. Cached upstream coordinates,empirical source measure and auxiliary source selection scores remain unchanged;this is not independent validation,raw joint-likelihood hyperparameter convergence or decision evidence."
+}

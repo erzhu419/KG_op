@@ -1,0 +1,643 @@
+{
+  "execution": {
+    "status": "frozen before conditional extra-record innovation diagnosis",
+    "conditioning_execution": "performance/manifests/legacy_joint_population_f_nested_source_conditioning_execution_v1.json",
+    "conditioning_results": "paper_artifacts/legacy_joint_population_f_nested_source_conditioning_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "head": "f",
+    "law": "Only original144 native f law,its empirical m0,common A,task R,discrepancy and source-noise labels. Condition the joint72-label source Gaussian on its original48 labels;diagnose the24 extra labels without fitting or query outcomes. All six task residual functions remain included;extra observations are not independent repetitions of the common curve.",
+    "diagnostic": "Record conditional innovations,S covariance,total Mahalanobis energy and conditional source NLL. Attribute common-function update using the complete correlated conditional gain times innovations,grouped by source task. Record marginal standardized innovations and source-noise fraction;task effects are correlated signed accounting,not independent variance shares or causal recovery.",
+    "verification": "Conditional extra-label NLL equals total72 NLL minus total48 NLL under the same frozen oldlaw. Conditional update of common mean/covariance reproduces Stage116 oldlaw72 law and six source-task contributions sum to the same update. A disagreement detects conditioning/site-order mistakes and blocks interpretation.",
+    "interpretation": "Source parameters and empirical mean were estimated on the48 conditioning records;the24-dimensional energy is a conditional fitted-law diagnostic,not a calibrated hypothesis test or independent population evidence. Do not remove or downweight observations or select a new law from these results.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_extra_source_innovations_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_extra_source_innovations.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_extra_source_innovations_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_extra_source_innovations.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "extra_record_count": 24,
+      "conditional_mahalanobis_energy": 7.3506320371486655,
+      "energy_per_extra_dimension": 0.3062763348811944,
+      "conditional_extra_nll": -70.81867441945832,
+      "conditional_nll_reproduction_error": 2.1316282072803006e-12,
+      "common_curve_update": {
+        "bank_rms": 0.004551580196232296,
+        "bank_average_level_change": -0.0013585471708730677,
+        "centered_shape_rms": 0.004344103114251182
+      },
+      "maximum_absolute_marginal_standardized_innovation": 1.1487060615682176,
+      "median_observed_mean_noise_fraction": 0.04186006479286428,
+      "source_task_effects": [
+        {
+          "source_task": 0,
+          "extra_policy_indices": [
+            48,
+            64,
+            72,
+            14
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0006592168707756728,
+            "bank_average_level_change": 8.36876643005046e-05,
+            "centered_shape_rms": 0.0006538832140062904
+          }
+        },
+        {
+          "source_task": 1,
+          "extra_policy_indices": [
+            50,
+            57,
+            67,
+            36
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.001203155369599072,
+            "bank_average_level_change": 4.7360295816560646e-05,
+            "centered_shape_rms": 0.0012022228769139472
+          }
+        },
+        {
+          "source_task": 2,
+          "extra_policy_indices": [
+            49,
+            62,
+            59,
+            34
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0029421340284164067,
+            "bank_average_level_change": -0.0011580593629781173,
+            "centered_shape_rms": 0.002704635123816976
+          }
+        },
+        {
+          "source_task": 3,
+          "extra_policy_indices": [
+            23,
+            65,
+            19,
+            13
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0014691857539376196,
+            "bank_average_level_change": 0.0005667676064425929,
+            "centered_shape_rms": 0.0013554634852553519
+          }
+        },
+        {
+          "source_task": 4,
+          "extra_policy_indices": [
+            22,
+            20,
+            53,
+            33
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0007522056531613833,
+            "bank_average_level_change": -0.000200878514491292,
+            "centered_shape_rms": 0.0007248870029623342
+          }
+        },
+        {
+          "source_task": 5,
+          "extra_policy_indices": [
+            52,
+            24,
+            11,
+            42
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0024635571926862575,
+            "bank_average_level_change": -0.0006974248599633166,
+            "centered_shape_rms": 0.002362776461356711
+          }
+        }
+      ],
+      "records": [
+        {
+          "source_task": 0,
+          "policy": 48,
+          "conditional_innovation": -0.00406530556417084,
+          "marginal_standardized_innovation": -0.19096548655466558,
+          "conditional_variance": 0.0004531861423217598,
+          "observed_mean_noise_fraction": 0.00011634319755586921
+        },
+        {
+          "source_task": 0,
+          "policy": 64,
+          "conditional_innovation": -0.0033872502018048034,
+          "marginal_standardized_innovation": -0.11913970869021456,
+          "conditional_variance": 0.0008083165797636571,
+          "observed_mean_noise_fraction": 0.0011843122597180167
+        },
+        {
+          "source_task": 0,
+          "policy": 72,
+          "conditional_innovation": 0.008661746460318143,
+          "marginal_standardized_innovation": 0.42944726758727086,
+          "conditional_variance": 0.00040680965047934503,
+          "observed_mean_noise_fraction": 0.00983798465806465
+        },
+        {
+          "source_task": 0,
+          "policy": 14,
+          "conditional_innovation": -0.002301537637928952,
+          "marginal_standardized_innovation": -0.10616428254786983,
+          "conditional_variance": 0.0004699799217554035,
+          "observed_mean_noise_fraction": 0.003489419508042157
+        },
+        {
+          "source_task": 1,
+          "policy": 50,
+          "conditional_innovation": -0.014924607186508732,
+          "marginal_standardized_innovation": -0.679559444623469,
+          "conditional_variance": 0.0004823373725219571,
+          "observed_mean_noise_fraction": 0.08571662783460673
+        },
+        {
+          "source_task": 1,
+          "policy": 57,
+          "conditional_innovation": -0.001531222329527182,
+          "marginal_standardized_innovation": -0.0943777833847164,
+          "conditional_variance": 0.0002632309562137225,
+          "observed_mean_noise_fraction": 0.013956805314294081
+        },
+        {
+          "source_task": 1,
+          "policy": 67,
+          "conditional_innovation": -0.0014007532907884257,
+          "marginal_standardized_innovation": -0.07470011384863046,
+          "conditional_variance": 0.0003516258341444978,
+          "observed_mean_noise_fraction": 0.01341080172173791
+        },
+        {
+          "source_task": 1,
+          "policy": 36,
+          "conditional_innovation": 0.007568577105727503,
+          "marginal_standardized_innovation": 0.5358632661014386,
+          "conditional_variance": 0.00019948971314009967,
+          "observed_mean_noise_fraction": 0.13041338020004045
+        },
+        {
+          "source_task": 2,
+          "policy": 49,
+          "conditional_innovation": 0.00816173372040907,
+          "marginal_standardized_innovation": 0.359287384802903,
+          "conditional_variance": 0.0005160370763113153,
+          "observed_mean_noise_fraction": 0.0065530475187065024
+        },
+        {
+          "source_task": 2,
+          "policy": 62,
+          "conditional_innovation": 0.015707087358094896,
+          "marginal_standardized_innovation": 0.7865941361733931,
+          "conditional_variance": 0.0003987400961195098,
+          "observed_mean_noise_fraction": 0.06992372875892315
+        },
+        {
+          "source_task": 2,
+          "policy": 59,
+          "conditional_innovation": -0.020219085983290863,
+          "marginal_standardized_innovation": -1.0437402865802692,
+          "conditional_variance": 0.0003752650724806461,
+          "observed_mean_noise_fraction": 0.07181454878591617
+        },
+        {
+          "source_task": 2,
+          "policy": 34,
+          "conditional_innovation": -0.007634098207976392,
+          "marginal_standardized_innovation": -0.5189808453602409,
+          "conditional_variance": 0.00021637786281597515,
+          "observed_mean_noise_fraction": 0.09239102933023743
+        },
+        {
+          "source_task": 3,
+          "policy": 23,
+          "conditional_innovation": 0.0020126513566895987,
+          "marginal_standardized_innovation": 0.1162745880683101,
+          "conditional_variance": 0.0002996177108194886,
+          "observed_mean_noise_fraction": 0.053311222961919535
+        },
+        {
+          "source_task": 3,
+          "policy": 65,
+          "conditional_innovation": 0.018336268420968527,
+          "marginal_standardized_innovation": 0.9582847384253979,
+          "conditional_variance": 0.0003661278560059267,
+          "observed_mean_noise_fraction": 0.09998701665653673
+        },
+        {
+          "source_task": 3,
+          "policy": 19,
+          "conditional_innovation": 0.007623778746720378,
+          "marginal_standardized_innovation": 0.3551700121498393,
+          "conditional_variance": 0.00046075280478569125,
+          "observed_mean_noise_fraction": 0.03939925471977219
+        },
+        {
+          "source_task": 3,
+          "policy": 13,
+          "conditional_innovation": -0.000301633425124459,
+          "marginal_standardized_innovation": -0.017277446696229423,
+          "conditional_variance": 0.0003047893640511501,
+          "observed_mean_noise_fraction": 0.00706490569426727
+        },
+        {
+          "source_task": 4,
+          "policy": 22,
+          "conditional_innovation": -0.0029719218944961323,
+          "marginal_standardized_innovation": -0.19495727525300502,
+          "conditional_variance": 0.0002323784711174559,
+          "observed_mean_noise_fraction": 0.02708857831576257
+        },
+        {
+          "source_task": 4,
+          "policy": 20,
+          "conditional_innovation": -0.012526744151520997,
+          "marginal_standardized_innovation": -0.5457190890308175,
+          "conditional_variance": 0.0005269120417726869,
+          "observed_mean_noise_fraction": 0.04432087486595636
+        },
+        {
+          "source_task": 4,
+          "policy": 53,
+          "conditional_innovation": 0.0037102993183276145,
+          "marginal_standardized_innovation": 0.2783495526803344,
+          "conditional_variance": 0.0001776793012785438,
+          "observed_mean_noise_fraction": 0.08095742914506449
+        },
+        {
+          "source_task": 4,
+          "policy": 33,
+          "conditional_innovation": -0.0005395108277800875,
+          "marginal_standardized_innovation": -0.029884010482058194,
+          "conditional_variance": 0.0003259286744200507,
+          "observed_mean_noise_fraction": 0.11131200030725959
+        },
+        {
+          "source_task": 5,
+          "policy": 52,
+          "conditional_innovation": -0.030812825674286726,
+          "marginal_standardized_innovation": -1.1487060615682176,
+          "conditional_variance": 0.0007195239066262737,
+          "observed_mean_noise_fraction": 0.03141011808754014
+        },
+        {
+          "source_task": 5,
+          "policy": 24,
+          "conditional_innovation": -0.0054222546978416886,
+          "marginal_standardized_innovation": -0.3204275979281922,
+          "conditional_variance": 0.0002863518538832599,
+          "observed_mean_noise_fraction": 0.23732870871457482
+        },
+        {
+          "source_task": 5,
+          "policy": 11,
+          "conditional_innovation": -0.00608066448891853,
+          "marginal_standardized_innovation": -0.29459096377301586,
+          "conditional_variance": 0.0004260526194504455,
+          "observed_mean_noise_fraction": 0.01594060904713779
+        },
+        {
+          "source_task": 5,
+          "policy": 42,
+          "conditional_innovation": 0.0076518643468979075,
+          "marginal_standardized_innovation": 0.44835102421172285,
+          "conditional_variance": 0.00029127163390307853,
+          "observed_mean_noise_fraction": 0.08285991989733053
+        }
+      ],
+      "conditional_mean_covariance_and_log_density_reproduce_stage116": true
+    },
+    {
+      "layout": "6",
+      "extra_record_count": 24,
+      "conditional_mahalanobis_energy": 10.356439367277824,
+      "energy_per_extra_dimension": 0.43151830696990934,
+      "conditional_extra_nll": -69.67977495226008,
+      "conditional_nll_reproduction_error": 6.494360604847316e-12,
+      "common_curve_update": {
+        "bank_rms": 0.004719422519372016,
+        "bank_average_level_change": -0.0022923224839453134,
+        "centered_shape_rms": 0.004125312902793494
+      },
+      "maximum_absolute_marginal_standardized_innovation": 1.9324545878659045,
+      "median_observed_mean_noise_fraction": 0.05062082695503137,
+      "source_task_effects": [
+        {
+          "source_task": 0,
+          "extra_policy_indices": [
+            23,
+            65,
+            19,
+            13
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.002258777086910332,
+            "bank_average_level_change": -0.0008363679042167914,
+            "centered_shape_rms": 0.002098228456852861
+          }
+        },
+        {
+          "source_task": 1,
+          "extra_policy_indices": [
+            49,
+            62,
+            59,
+            34
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0016556477310728083,
+            "bank_average_level_change": 0.00020405382891908216,
+            "centered_shape_rms": 0.0016430250893732573
+          }
+        },
+        {
+          "source_task": 2,
+          "extra_policy_indices": [
+            50,
+            57,
+            67,
+            36
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0010811523166303603,
+            "bank_average_level_change": 1.1460214060956739e-05,
+            "centered_shape_rms": 0.0010810915757922042
+          }
+        },
+        {
+          "source_task": 3,
+          "extra_policy_indices": [
+            48,
+            64,
+            72,
+            14
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.002119530101240856,
+            "bank_average_level_change": -0.0007926054215328944,
+            "centered_shape_rms": 0.0019657529081303013
+          }
+        },
+        {
+          "source_task": 4,
+          "extra_policy_indices": [
+            52,
+            24,
+            11,
+            42
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0016688236829759426,
+            "bank_average_level_change": 3.5360480852671054e-06,
+            "centered_shape_rms": 0.0016688199367293427
+          }
+        },
+        {
+          "source_task": 5,
+          "extra_policy_indices": [
+            22,
+            20,
+            53,
+            33
+          ],
+          "signed_common_curve_update": {
+            "bank_rms": 0.0027376392349358096,
+            "bank_average_level_change": -0.0008823992492609335,
+            "centered_shape_rms": 0.0025915323933078022
+          }
+        }
+      ],
+      "records": [
+        {
+          "source_task": 0,
+          "policy": 23,
+          "conditional_innovation": -0.018400793188892983,
+          "marginal_standardized_innovation": -0.9015883761103377,
+          "conditional_variance": 0.0004165397775052204,
+          "observed_mean_noise_fraction": 0.0999500468728218
+        },
+        {
+          "source_task": 0,
+          "policy": 65,
+          "conditional_innovation": -0.008459004262327652,
+          "marginal_standardized_innovation": -0.5828949454518917,
+          "conditional_variance": 0.00021059977790222062,
+          "observed_mean_noise_fraction": 0.005849243654152376
+        },
+        {
+          "source_task": 0,
+          "policy": 19,
+          "conditional_innovation": -0.005500291013840253,
+          "marginal_standardized_innovation": -0.2501980202014895,
+          "conditional_variance": 0.00048328531453867285,
+          "observed_mean_noise_fraction": 0.06246713276973676
+        },
+        {
+          "source_task": 0,
+          "policy": 13,
+          "conditional_innovation": -0.004871542848349786,
+          "marginal_standardized_innovation": -0.2872584109775158,
+          "conditional_variance": 0.0002875991155090185,
+          "observed_mean_noise_fraction": 0.08371137882997817
+        },
+        {
+          "source_task": 1,
+          "policy": 49,
+          "conditional_innovation": 0.006980222163590066,
+          "marginal_standardized_innovation": 0.3352728158591171,
+          "conditional_variance": 0.00043345279410328397,
+          "observed_mean_noise_fraction": 0.09354640740298045
+        },
+        {
+          "source_task": 1,
+          "policy": 62,
+          "conditional_innovation": 0.004625594344795536,
+          "marginal_standardized_innovation": 0.2627717914379023,
+          "conditional_variance": 0.00030986862355852907,
+          "observed_mean_noise_fraction": 0.048462194388107435
+        },
+        {
+          "source_task": 1,
+          "policy": 59,
+          "conditional_innovation": 0.015848937641348093,
+          "marginal_standardized_innovation": 0.8474006358148783,
+          "conditional_variance": 0.0003498023656911542,
+          "observed_mean_noise_fraction": 0.021731910374649926
+        },
+        {
+          "source_task": 1,
+          "policy": 34,
+          "conditional_innovation": -0.004824327135736994,
+          "marginal_standardized_innovation": -0.37211175689323056,
+          "conditional_variance": 0.00016808413183883042,
+          "observed_mean_noise_fraction": 0.024758862972883794
+        },
+        {
+          "source_task": 2,
+          "policy": 50,
+          "conditional_innovation": 0.014014400541744798,
+          "marginal_standardized_innovation": 0.5063365628416118,
+          "conditional_variance": 0.0007660735595424462,
+          "observed_mean_noise_fraction": 0.058402806659073714
+        },
+        {
+          "source_task": 2,
+          "policy": 57,
+          "conditional_innovation": -0.008873700938887286,
+          "marginal_standardized_innovation": -0.5101816771195736,
+          "conditional_variance": 0.0003025240193819112,
+          "observed_mean_noise_fraction": 0.154320891992996
+        },
+        {
+          "source_task": 2,
+          "policy": 67,
+          "conditional_innovation": 0.007615218164210069,
+          "marginal_standardized_innovation": 0.4027996972898083,
+          "conditional_variance": 0.0003574262366243808,
+          "observed_mean_noise_fraction": 0.2728741380861014
+        },
+        {
+          "source_task": 2,
+          "policy": 36,
+          "conditional_innovation": -0.006532634331308018,
+          "marginal_standardized_innovation": -0.4707190070053626,
+          "conditional_variance": 0.0001925986453144568,
+          "observed_mean_noise_fraction": 0.05277945952195529
+        },
+        {
+          "source_task": 3,
+          "policy": 48,
+          "conditional_innovation": 0.011735523670356462,
+          "marginal_standardized_innovation": 0.5200446471757391,
+          "conditional_variance": 0.000509241380049652,
+          "observed_mean_noise_fraction": 0.006615980472062069
+        },
+        {
+          "source_task": 3,
+          "policy": 64,
+          "conditional_innovation": -0.017780910687089202,
+          "marginal_standardized_innovation": -0.6951683606981212,
+          "conditional_variance": 0.0006542263099847401,
+          "observed_mean_noise_fraction": 0.006967521895049437
+        },
+        {
+          "source_task": 3,
+          "policy": 72,
+          "conditional_innovation": -0.01423116479781833,
+          "marginal_standardized_innovation": -0.8009383129962878,
+          "conditional_variance": 0.0003157059436895704,
+          "observed_mean_noise_fraction": 0.11814123011453741
+        },
+        {
+          "source_task": 3,
+          "policy": 14,
+          "conditional_innovation": -0.00337860928203787,
+          "marginal_standardized_innovation": -0.1675411110502215,
+          "conditional_variance": 0.0004066615947537211,
+          "observed_mean_noise_fraction": 0.05966877831147022
+        },
+        {
+          "source_task": 4,
+          "policy": 52,
+          "conditional_innovation": 0.013182002619095412,
+          "marginal_standardized_innovation": 0.49012428117209106,
+          "conditional_variance": 0.0007233531057421194,
+          "observed_mean_noise_fraction": 0.04013249059121175
+        },
+        {
+          "source_task": 4,
+          "policy": 24,
+          "conditional_innovation": -0.009786575228677208,
+          "marginal_standardized_innovation": -0.511500488426558,
+          "conditional_variance": 0.0003660744109091896,
+          "observed_mean_noise_fraction": 0.1388522172930861
+        },
+        {
+          "source_task": 4,
+          "policy": 11,
+          "conditional_innovation": 0.002616042563368226,
+          "marginal_standardized_innovation": 0.12166577018096493,
+          "conditional_variance": 0.00046233076323914934,
+          "observed_mean_noise_fraction": 0.03297719223484099
+        },
+        {
+          "source_task": 4,
+          "policy": 42,
+          "conditional_innovation": -0.011622755175026755,
+          "marginal_standardized_innovation": -0.7302848899036767,
+          "conditional_variance": 0.000253299043504851,
+          "observed_mean_noise_fraction": 0.033404098044080864
+        },
+        {
+          "source_task": 5,
+          "policy": 22,
+          "conditional_innovation": 0.004595165341858276,
+          "marginal_standardized_innovation": 0.33925325337345735,
+          "conditional_variance": 0.0001834654299559535,
+          "observed_mean_noise_fraction": 0.02407638663506546
+        },
+        {
+          "source_task": 5,
+          "policy": 20,
+          "conditional_innovation": 0.0015553528281644913,
+          "marginal_standardized_innovation": 0.07835940569303675,
+          "conditional_variance": 0.0003939812733380066,
+          "observed_mean_noise_fraction": 0.04383969378359949
+        },
+        {
+          "source_task": 5,
+          "policy": 53,
+          "conditional_innovation": 0.007215805114746732,
+          "marginal_standardized_innovation": 0.5208693614415235,
+          "conditional_variance": 0.00019191634596027463,
+          "observed_mean_noise_fraction": 0.07521018356403184
+        },
+        {
+          "source_task": 5,
+          "policy": 33,
+          "conditional_innovation": -0.03626894568693323,
+          "marginal_standardized_innovation": -1.9324545878659045,
+          "conditional_variance": 0.0003522502162694452,
+          "observed_mean_noise_fraction": 0.031907247743613656
+        }
+      ],
+      "conditional_mean_covariance_and_log_density_reproduce_stage116": true
+    }
+  ],
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.033843177,
+  "no_model_adopted": true,
+  "source6_7_evaluated": false,
+  "query_paid_outcomes_read": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

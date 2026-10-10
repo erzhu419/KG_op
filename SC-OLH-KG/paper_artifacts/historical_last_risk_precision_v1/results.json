@@ -1,0 +1,226 @@
+{
+  "execution_plan": "performance/manifests/historical_last_risk_precision_v1.json",
+  "rows": [
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "previous_risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_joint_observed_task_g/results.json",
+      "same_seed": 202610112,
+      "sampling_anchor_scales": [
+        0.17421051368695156,
+        0.1804960407506651
+      ],
+      "old_retained_sweeps_per_chain": 32768,
+      "extended_retained_sweeps_per_chain": 65536,
+      "prefix_current_score_maximum_error": 8.673617379884035e-19,
+      "checked_current_scales": [
+        0.1749288413758205,
+        0.16125386512180548
+      ],
+      "fixed_rejected_proposal_scales": [
+        0.17471366798406468,
+        0.15911620425063325
+      ],
+      "full_and_split_Q_improvements": [
+        4.395652010547035e-06,
+        6.781016669954454e-06,
+        2.005588764231181e-06
+      ],
+      "current_score_summaries": [
+        {
+          "scaled_raw_score": [
+            1.2622925616229077e-05,
+            0.0008361827065912852
+          ],
+          "scaled_MCSE": [
+            0.0001418486146748269,
+            0.0001881400238067773
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00027802328476266074,
+            0.0003687544466612835
+          ],
+          "split_rhat": [
+            1.0001233768412112,
+            1.0001914580040152
+          ],
+          "autocorrelation_ess": [
+            42438.70969099465,
+            37061.28327790505
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            8.43469022960393e-05,
+            0.0010073386656545512
+          ],
+          "scaled_MCSE": [
+            0.00020033565429488246,
+            0.0002662031225276203
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00039265788241796956,
+            0.0005217581201541358
+          ],
+          "split_rhat": [
+            1.0002336124280449,
+            1.0003971085033982
+          ],
+          "autocorrelation_ess": [
+            21265.93479695975,
+            18479.873037303867
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -5.924232979915462e-05,
+            0.0006646896120455496
+          ],
+          "scaled_MCSE": [
+            0.00020020286933987905,
+            0.0002655782712574728
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0003923976239061629,
+            0.0005205334116646467
+          ],
+          "split_rhat": [
+            1.000292308216311,
+            1.0005420146192605
+          ],
+          "autocorrelation_ess": [
+            21314.52331208277,
+            18631.27191601207
+          ]
+        }
+      ],
+      "current_score_precision_passed": true,
+      "proposed_score_summaries": [
+        {
+          "scaled_raw_score": [
+            5.257653197129319e-06,
+            0.0007526342127356825
+          ],
+          "scaled_MCSE": [
+            0.00014213337048931063,
+            0.00018729845561040283
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0002785814061590488,
+            0.00036710497299638955
+          ],
+          "split_rhat": [
+            1.0001229412396453,
+            1.0001903201875926
+          ],
+          "autocorrelation_ess": [
+            42633.278065593324,
+            37363.30089952498
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            8.14806454829463e-05,
+            0.0009227259080525067
+          ],
+          "scaled_MCSE": [
+            0.00020065977154857167,
+            0.00026519546676387893
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0003932931522352005,
+            0.0005197831148572026
+          ],
+          "split_rhat": [
+            1.0002338507771664,
+            1.0004023135252758
+          ],
+          "autocorrelation_ess": [
+            21372.48173155765,
+            18612.462863269728
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -7.113285878271375e-05,
+            0.0005821686970281613
+          ],
+          "scaled_MCSE": [
+            0.0002006392077778956,
+            0.0002641282016902887
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0003932528472446753,
+            0.0005176912753129658
+          ],
+          "split_rhat": [
+            1.0002897234290182,
+            1.0005216038108664
+          ],
+          "autocorrelation_ess": [
+            21412.41174053406,
+            18812.56667110941
+          ]
+        }
+      ],
+      "proposed_score_precision_passed": true,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0005093038700145769,
+        "conditional_MC_interval_95": [
+          0.00027186807325921345,
+          0.0007467396667699403
+        ],
+        "importance_ESS": 249905.49110856684,
+        "split_Rhat": 1.0001850379818402,
+        "chain_functional_ESS": 37085.13300096982,
+        "split_log_ratio_difference": 0.0002275278966283878,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "fixed_proposal_qualified": true,
+      "new_current_stationarity_diagnostic_passed": true,
+      "new_diagnostic_covariance_change": 0.0029864116320124094,
+      "scaled_projected_current_score": [
+        1.2622925616464649e-05,
+        0.0008361827065911816
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "stationary_current_law_held": false,
+      "accepted_fixed_risk_update": true,
+      "final_risk_scales": [
+        0.17471366798406468,
+        0.15911620425063325
+      ],
+      "fixed_response_scales": [
+        0.2217829497815476,
+        0.17578691418630193
+      ],
+      "held_law_source_evidence_ratio": null,
+      "completed_candidate_MCMC_sweeps": 264192,
+      "additional_retained_sweeps_beyond_prefix": 131072,
+      "cpu_seconds": 36.247244511999995,
+      "source_registry_replaced": false,
+      "joint_source_learning_converged": false,
+      "independent_confirmation": false
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "registered_cases": 1,
+  "additional_stationary_risk_laws_held": 0,
+  "fixed_rejected_proposals_qualified": 1,
+  "fixed_risk_updates_accepted": 1,
+  "conditional_risk_stationarity_cases_passed": 26,
+  "recorded_CPU_seconds": 36.247244511999995,
+  "completed_candidate_MCMC_sweeps": 264192,
+  "source_registry_replaced": false,
+  "joint_source_learning_converged": false,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "independent_confirmation": false,
+  "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged."
+}

@@ -1,0 +1,77 @@
+{
+  "stage": "source_function_prior_budget80_bridge_v1",
+  "frozen_before_results": true,
+  "seeds": [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "difficulty_offsets": {
+    "baseline": 0.0,
+    "binding": 1.0
+  },
+  "arms": [
+    "fixed_source",
+    "conditional_hard",
+    "risk_ard",
+    "risk_ard_mixture",
+    "oracle_structure"
+  ],
+  "decision_schemes": [
+    "penalty",
+    "verification_recommendation",
+    "verification_kg"
+  ],
+  "psi_dim": 8,
+  "source_tasks": 8,
+  "source_points": 64,
+  "candidates": 96,
+  "initial_points": 8,
+  "target_points": 80,
+  "replicates": 12,
+  "verification_replicates": 256,
+  "learned_active_dim_per_head": 4,
+  "chance_alpha": 0.05,
+  "risk_penalty": 4.0,
+  "penalty_temperature": 0.15,
+  "backend": "old locally linearized penalty KG versus joint 27-node Gaussian-fantasy verification-utility KG",
+  "verification_utility": "Failed verification earns zero; successful deployment earns clip((5-f)/10,0,1). The declared simulator bounds the true objective within [-5,5]. This operational utility is distinct from the mathematical chance-constrained objective.",
+  "verification_power": "Use the unchanged Gaussian t/chi-square independent verifier, integrating uncertain constraint mean analytically and log variance/sample variance with 9x12 Gaussian quadrature.",
+  "recommendation_only_control": "Reuses the exact paid observations and final posterior from penalty search, changes only the final recommendation, and pays its own unchanged validation budget.",
+  "risk_ard": "Source-only marginal covariance likelihood across independent signed task coefficients, known log-variance label noise and projected task intercepts; nonnegative function variances and 1 percent weak total tail. Mean heads retain conditional source selection.",
+  "adaptive_corrected": {
+    "max_effective_fraction": 1.0,
+    "multiplicity_correction": 0.0,
+    "explanation": "Do not force all 68 PIPs to their .05 floor at n0=8; source selection frequencies already encode dictionary selection. Original V2 arm remains a control."
+  },
+  "transfer_mixture": "Per-head equal prior weights on the source structural model and the fixed-source full dictionary; update weights with pre-observation predictive densities using only paid target observations; retain between-model covariance. Weights stay fixed in Gaussian acquisition fantasies.",
+  "primary_comparisons": [
+    "risk_ard versus conditional_hard under the same scheme on binding shared_structure: risk RMSE, verification and expected deployment utility",
+    "adaptive_corrected versus adaptive_v2: preserve matching-source performance while allowing mismatch correction",
+    "risk_ard_mixture versus fixed_source under verification_kg: learned-prior added decision value",
+    "verification_recommendation versus penalty isolates final choice",
+    "verification_kg versus verification_recommendation isolates sequential sampling"
+  ],
+  "analysis_units": "Eight paired seed blocks shared with V3. This is a within-seed budget contrast, not independent confirmation.",
+  "scoring": "Retain feasibility, mathematical feasible regret and old penalized regret; also report realized verified reward, analytically expected verified reward, verifier power and posterior calibration. Simulator truth enters only observation generation and post-decision scoring.",
+  "interpretation": "No retuning this protocol. Better predictions alone do not establish deployment value. Empty feasible sets remain. All source and target simulation budgets are unchanged; 2025 data remain sealed.",
+  "scope": "Public canonical inputs and finite dictionary source priors. Not a learned state/trajectory encoder, a factor-level HVD recovery claim or a high-dimensional guarantee.",
+  "evaluation_regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "separate_head_structure"
+  ],
+  "budget_bridge": "Keep the same source archive, candidate set, initial design, target coefficients/noise streams and 256 validation replicas as V3. Target_points denotes batches of 12 simulator replicas: search calls are 288 versus 960. The original MD did not fully specify replication units, so this is a budget sensitivity bridge, not a reconstruction of the legacy experiment."
+}

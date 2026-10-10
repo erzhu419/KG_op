@@ -1,0 +1,325 @@
+{
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "optimizer": {
+    "maxiter": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "status": "Registered before four retrospective actual-predecessor checks;fixed original bank prefixes and thresholds.",
+  "current_phase": "paper_artifacts/historical_joint_source_stationarity_v1/phase_results.json",
+  "previous_learning_round": "paper_artifacts/historical_source_learning_round6/results.json",
+  "current_learning_round": "paper_artifacts/historical_source_learning_round7/results.json",
+  "cases": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.17506368109722562,
+        0.6737779680838393
+      ],
+      "fixed_response_scales": [
+        0.24726829820595253,
+        0.16963871259373028
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_joint_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_source_acceleration_selection_v1/phase_results.json",
+      "posterior_method": "unchanged-law parent certificate",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_spectral_joint_deconvolved_task_g/candidate_5_spectral_joint_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.24726829820595253,
+          0.16963871259373028
+        ],
+        "proposed_scales": [
+          0.24728382240202604,
+          0.16961122504204737
+        ],
+        "scaled_projected_raw_score": [
+          -3.1914360180434647e-06,
+          1.0153498464103807e-06
+        ],
+        "relative_covariance_change": 6.13069964895998e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.8238921484226012e-10,
+          -1.0804246386442173e-10,
+          4.723772484283018e-10
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/5_spectral_joint_deconvolved_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0,
+        "conditional_MC_interval_95": [
+          0.0,
+          0.0
+        ],
+        "importance_ESS": 65536.0,
+        "split_Rhat": 1.0,
+        "chain_functional_ESS": 65536.0,
+        "split_log_ratio_difference": 0.0,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": false
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "current_joint_stationarity_diagnostic_passed": true,
+      "two_consecutive_actual_law_joint_stationarity_confirmed": false,
+      "joint_stationarity_results": "paper_artifacts/historical_joint_source_stationarity_v1/cases/5_spectral_joint_deconvolved_task_g/results.json",
+      "replay_seed": 202610109,
+      "replay_retained_sweeps_per_chain": 32768
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.14984647466919782,
+        0.29663648063362613
+      ],
+      "fixed_response_scales": [
+        0.27201022085128557,
+        0.4755773624260396
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_head_specific_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_head_specific_observed_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_head_specific_observed_task_g/candidate_5_additive_head_specific_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.27201022085128557,
+          0.4755773624260396
+        ],
+        "proposed_scales": [
+          0.2721017467678673,
+          0.4761826584759347
+        ],
+        "scaled_projected_raw_score": [
+          -1.3374108533982365e-05,
+          -5.932445894259779e-05
+        ],
+        "relative_covariance_change": 0.00037225667754218323,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          3.997915820619369e-08,
+          5.9062688906319494e-08,
+          2.081965577716005e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/5_additive_head_specific_observed_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.021188238241769852,
+        "conditional_MC_interval_95": [
+          0.013824088763442155,
+          0.02855238772009755
+        ],
+        "importance_ESS": 58415.42122019869,
+        "split_Rhat": 1.000393227345606,
+        "chain_functional_ESS": 8634.98051816142,
+        "split_log_ratio_difference": 0.010244315365738998,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "current_joint_stationarity_diagnostic_passed": true,
+      "two_consecutive_actual_law_joint_stationarity_confirmed": false,
+      "joint_stationarity_results": "paper_artifacts/historical_joint_source_stationarity_v1/cases/5_additive_head_specific_observed_task_g/results.json",
+      "replay_seed": 202610109,
+      "replay_retained_sweeps_per_chain": 32768
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.1343733216131764,
+        0.4079169289332097
+      ],
+      "fixed_response_scales": [
+        0.18838733453290174,
+        0.9517787002369017
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_joint_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_deconvolved_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_deconvolved_task_g/candidate_5_additive_joint_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.18838733453290174,
+          0.9517787002369017
+        ],
+        "proposed_scales": [
+          0.18870154244178838,
+          0.9519994063028769
+        ],
+        "scaled_projected_raw_score": [
+          -0.00012392193394764362,
+          -6.676972899926329e-06
+        ],
+        "relative_covariance_change": 0.001474898272729023,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.040113750683247e-07,
+          1.930901851743272e-07,
+          1.561790097248661e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/5_additive_joint_deconvolved_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.002260520833768709,
+        "conditional_MC_interval_95": [
+          0.0013764373539449774,
+          0.0031446043135924403
+        ],
+        "importance_ESS": 65333.62431869852,
+        "split_Rhat": 1.0003807966532938,
+        "chain_functional_ESS": 15224.876969296027,
+        "split_log_ratio_difference": 0.0017585117506104808,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "current_joint_stationarity_diagnostic_passed": true,
+      "two_consecutive_actual_law_joint_stationarity_confirmed": false,
+      "joint_stationarity_results": "paper_artifacts/historical_joint_source_stationarity_v1/cases/5_additive_joint_deconvolved_task_g/results.json",
+      "replay_seed": 202610109,
+      "replay_retained_sweeps_per_chain": 32768
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.22446464756187245,
+        0.8934103539956525
+      ],
+      "fixed_response_scales": [
+        0.21268232992623218,
+        0.44820544496513387
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_head_specific_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_deconvolved_task_f/candidate_6_spectral_head_specific_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.21268232992623218,
+          0.44820544496513387
+        ],
+        "proposed_scales": [
+          0.21270180315379522,
+          0.4480947664766948
+        ],
+        "scaled_projected_raw_score": [
+          -6.325849075735036e-06,
+          7.757094638266218e-06
+        ],
+        "relative_covariance_change": 8.977267537522654e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.2474188348932103e-09,
+          -3.7110337025580975e-10,
+          2.9114752830849966e-09
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0007446064351608328,
+        "conditional_MC_interval_95": [
+          0.00020026331493241793,
+          0.0012889495553892478
+        ],
+        "importance_ESS": 65496.33287289958,
+        "split_Rhat": 1.000441332096667,
+        "chain_functional_ESS": 7852.122311638402,
+        "split_log_ratio_difference": 0.0001813163779242899,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "mixture_components": 512,
+      "current_joint_stationarity_diagnostic_passed": true,
+      "two_consecutive_actual_law_joint_stationarity_confirmed": false,
+      "joint_stationarity_results": "paper_artifacts/historical_joint_source_stationarity_v1/cases/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "replay_seed": 202610109,
+      "replay_retained_sweeps_per_chain": 32768
+    }
+  ],
+  "maximum_case_single_thread_cpu_seconds": 45,
+  "maximum_batch_single_thread_cpu_seconds": 120,
+  "output": "paper_artifacts/historical_previous_source_laws_v1",
+  "scope": "Requalify actual accepted predecessors with the existing 32768-sweep risk banks at their original seeds. Reuse three certified predecessor response diagnostics;certify the actual round6 predecessor of the unchanged round7 response law. Preserve the original accepted-transition contracts,including round7 evidence precision without requiring a positive evidence-ratio estimate. No parameter changes,new optimization iterations,extra bank length,favorable-seed retries,labels,target/verifier calls,server jobs or original-law resampling."
+}

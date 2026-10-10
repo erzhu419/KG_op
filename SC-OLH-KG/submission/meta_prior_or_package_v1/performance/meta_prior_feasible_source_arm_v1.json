@@ -1,0 +1,23 @@
+{
+  "contract_id": "inventory_feasible_source_structure_arm_v1",
+  "purpose": "Paired development control isolating source-selected mean structure from a same-source full dictionary on the feasible-deployment contract.",
+  "status": "frozen_before_execution",
+  "base_contract": "performance/meta_prior_feasible_deployment_contract.json",
+  "source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+  "representation": "observable_inventory_exposure_for_both_arms",
+  "mean_arms": ["source_selected_structure", "same_source_full_dictionary"],
+  "risk_arm": "same_source_pooled_factor_families",
+  "target_law_seeds": [95425, 95426, 95427, 95428, 95430, 95431, 95432, 95434],
+  "target_noise_seed_start": 96425,
+  "initial_policy_points": 8,
+  "target_search_points": 24,
+  "replicates": 12,
+  "verification_replicates": 928,
+  "confirmation_block_read": false,
+  "oracle_use": "post-decision scoring and independent verification only; never used for fitting or recommendation",
+  "paired_stream": "Use SeedSequence([noise_seed, 0, policy_index, visit]) for paid observations and SeedSequence([noise_seed, 1, final_choice]) for verification, matching the existing feasible-deployment arm.",
+  "decision_performance_gate": "development attribution only; no promotion or confirmation claim",
+  "new_source_episode_calls": 0,
+  "new_target_observations": "one additional model arm consumes the same keyed observations as the existing development arms",
+  "server_jobs": 0
+}

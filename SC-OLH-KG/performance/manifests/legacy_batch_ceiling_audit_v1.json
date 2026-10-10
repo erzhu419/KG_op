@@ -1,0 +1,11 @@
+{
+  "closed_loop": "paper_artifacts/legacy_batch_closed_loop_v1/results.json",
+  "primary_roster": [2, 3, 34, 50, 60, 63],
+  "retained_policy": 63,
+  "direct_budget": 128,
+  "question": "does the retained policy already attain the feasible-quality ceiling of the frozen six-primary class or entire legacy candidate bank, and is independent verification cost still reducible?",
+  "selection": "post-freeze scoring only; do not change recommendations, repeat the closed loop, or adopt a terminal rule using target truth",
+  "execution": "reconstruct the public candidate bank only, no source refit or simulations, no server calls; evaluate exact conditional verifier power for the already-supported direct128 action at63",
+  "scope": "finite-bank ceiling and diagnostic oracle cost, not proof that the algorithm can select this action without truth",
+  "output": "paper_artifacts/legacy_batch_closed_loop_v1/postfreeze_ceiling.json"
+}

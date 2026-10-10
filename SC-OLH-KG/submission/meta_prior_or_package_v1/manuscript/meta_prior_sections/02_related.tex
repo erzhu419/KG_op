@@ -1,0 +1,26 @@
+\section{Related Literature}\label{sec:mp_related}
+
+Simulation optimization studies expensive stochastic systems whose objective or
+constraints are available only through simulation \citep{Fu2002,AmaranEtAl2016}.
+Stochastic kriging separates response uncertainty from simulation noise
+\citep{AnkenmanNelsonStaum2010}, while constrained Bayesian optimization models
+noisy feasibility observations jointly \citep{LethamEtAl2019}.  We study the
+additional transfer question: how should a finite source archive influence the
+target posterior before the target has many observations?
+
+Transfer Bayesian optimization includes learned initializations
+\citep{WistubaEtAl2015,FeurerEtAl2022}, hierarchical and deep-kernel priors
+\citep{WistubaGrabocka2021,RothfussEtAl2021,RothfussEtAl2021FPACOH}, and
+multi-task hyperparameter models such as HyperBO
+\citep{WangEtAl2024HyperBO}.  Our transfer object is narrower.  We learn a
+finite function prior from replicated source responses, then update that prior
+with paid target observations.  The method does not retrieve related tasks
+from an unrestricted repository and does not reuse a source optimum as a
+target label.
+
+Chance-constrained ranking and selection separates search from a final
+independent decision \citep{HongLuoNelson2015,BoeselNelsonKim2003}.  We retain
+that separation: the posterior ranks candidates, while a fresh verifier makes
+the deployment decision.  The resulting claim is conditional on a declared
+ordered-profile representation and source-target task law; no distribution-free
+optimizer is claimed \citep{WolpertMacready1997}.

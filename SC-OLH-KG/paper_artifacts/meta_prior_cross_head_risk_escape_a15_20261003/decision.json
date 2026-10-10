@@ -1,0 +1,28 @@
+{
+  "stage": "meta_prior_cross_head_risk_escape_a15_20261003",
+  "status": "source_and_chronological_validation_complete_not_promoted_no_recommendation_replay",
+  "source_calibrations": 64,
+  "source_prior_profiles": 512,
+  "source_forecasts": 8192,
+  "target_paths": 160,
+  "target_forecasts": 2560,
+  "decomposition_complete": true,
+  "promotion_basis": "A15 repairs the coherent A14 high-frequency regression. It retains positive original-model gains for support mismatch and separate-head structure, but independent risk support still has a negative mean with an interval crossing zero, and high-frequency performance coherently trails A12. Broad risk-predictive improvement remains insufficient to justify recommendation replay. This is not a claim of a statistically established original-model regression in independent risk support.",
+  "mechanism": "At fixed A15 q, coordination costs 0.008487 log-score units in high-frequency risk; source-q recalibration costs 0.001327. Independent-risk support has a coordination effect of -0.005363 versus a source-q effect of +0.000112. Global model-choice coupling remains too coarse.",
+  "next_plan": "performance/meta_prior_source_head_association_audit_plan.json",
+  "cpu_seconds": 6.224143482,
+  "current_process_vm_hwm_mb": {
+    "source": 132.8828125,
+    "target": 81.37890625
+  },
+  "memory_measurement": "Current Python-image VmHWM; raw ru_maxrss is retained separately and not interpreted as an execution-memory reduction.",
+  "new_component_fits": 0,
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "new_simulation_samples": 0,
+  "kg_calls": 0,
+  "new_searches": 0,
+  "new_random_verifications": 0,
+  "recommendation_replay": "hold",
+  "prospective_searches": "hold"
+}

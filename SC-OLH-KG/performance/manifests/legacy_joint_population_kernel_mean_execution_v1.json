@@ -1,0 +1,31 @@
+{
+  "status": "registered before fitting or target recommendations",
+  "plan": "performance/manifests/legacy_joint_population_matched_baseline_preflight_plan_v1.json",
+  "attribution_plan": "performance/manifests/legacy_joint_population_kernel_mean_attribution_plan_v1.json",
+  "inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+  "source_kernel_regularizer": "paper_artifacts/legacy_joint_population_known_noise_gp_v1/source_fit.json",
+  "output": "paper_artifacts/legacy_joint_population_kernel_mean_v1",
+  "arms": ["joint_population_rbf_shared_raw"],
+  "source_tasks": [0, 1, 2, 3, 4, 5],
+  "head_order": ["f", "g", "eta_g", "eta_f"],
+  "shared_mean_prior": "frozen measurement-aware RBF signal kernel plus scalar-intercept uncertainty; frozen scalar-intercept mean; exclude its per-site discrepancy",
+  "residual_covariance": "a * unit RBF + b * ones + delta * identity; a,b,delta >= 0; frozen source-only lengthscales and response normalizers",
+  "initial_residual_parameters": "a = frozen signal variance, b = frozen scalar-intercept uncertainty, delta = frozen discrepancy variance",
+  "source_likelihood": "joint Gaussian marginal likelihood of all six source tasks, integrating the common function mean and independent task residuals; recorded label errors included; Cholesky-whitened common function, no statistical variance floor",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 512,
+    "ftol": 1e-9,
+    "gtol": 1e-5,
+    "bounds": "three nonnegative parameters per head"
+  },
+  "target_prior": "source-posterior common function mean; full common-function posterior covariance including interpolation, plus independent residual covariance",
+  "target_contract": "same cached four raw episodes, complete old73-policy bank, shared retained recommendation, guarded/direct action class and362 cap; recommendations saved before cached truth is read",
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "new_simulator_call_cap": 0,
+  "execution": "four source head fits once, local serial single-thread; no scheduler, server dispatch or data pulls",
+  "interpretation": "opened-six-task common-function-mean attribution; not independent confirmation, native HyperBO, generic GP optimality or incremental KG evidence"
+}

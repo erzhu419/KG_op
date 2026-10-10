@@ -1,0 +1,20 @@
+{
+  "status": "frozen_before_source_holdout_comparison",
+  "source_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+  "dictionary": "unchanged 68 functions plus four raw public billing quantities",
+  "source_holdout": "leave one task law out; all support and coefficient fitting use the other seven tasks",
+  "held_task_adaptation_positions": [0, 2, 4, 6, 8, 10, 12, 14],
+  "held_task_test_positions": [1, 3, 5, 7, 9, 11, 13, 15],
+  "arms": ["legacy_mixture", "augmented_mixture", "augmented_structural", "augmented_structural_no_discrepancy", "known_billing_control"],
+  "selected_functions_max": 4,
+  "source_selection": "existing conditional two-fold source-task CV, one-task-SE stopping",
+  "coefficient_prior": "existing source second moments; zero non-intercept target means",
+  "discrepancy_contrast": "augmented_structural preserves existing 0.02 lower bound; augmented_structural_no_discrepancy removes policy residual; known_billing_control uses the four public linear quantities with zero policy residual",
+  "observation_likelihood": "unchanged Gaussian plug-in batch noise, to isolate the mean interface; held-label densities use the recorded test batch noise and are working conditional scores",
+  "metrics": ["per-task held-label RMSE", "mean working conditional log density", "standardized residual RMS"],
+  "new_episode_calls": 0,
+  "target_records_used_for_selection": false,
+  "local_cpu_limit_seconds": 45,
+  "scientific_status": "source-only model comparison; known billing support is a control, not a learned contribution",
+  "dispatch": "local single thread; no server jobs"
+}

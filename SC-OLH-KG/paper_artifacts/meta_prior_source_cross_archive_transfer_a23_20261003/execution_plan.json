@@ -1,0 +1,114 @@
+{
+  "stage": "meta_prior_source_cross_archive_transfer_a23_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a21_a22_before_a23_results": true,
+  "question": "Does within-archive source calibration understate the need for risk adaptation when a learned seven-task source prior predicts an unseen source archive?",
+  "basis": "A21 does not establish improvement over original I in any of the five target regimes. A22 assigns94.4%/96.1% of support-mismatch/high-frequency regression against A12 to the changed source calibration pool; joint q is1.7%, same-pool I/R q1.8%, versus A12's shared-archive mean32.7%. Pure R helps these shifted targets but loses on shared and separate-head targets. A source-only transfer test is needed before proposing a different calibration, rather than setting q from target outcomes.",
+  "inputs": [
+    "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003/source_fold_contexts.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/validation.json",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003/summary.json",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "performance/meta_prior_risk_family_reweighting_plan.json"
+  ],
+  "source_pairing": "Use eight fixed disjoint neighboring seed pairs, both transfer directions:48<->49,50<->51,52<->53,54<->55,56<->57,58<->59,60<->61,62<->63. Keep source archive groups matched: shared predicts shared, separate_heads predicts separate_heads. No pairing is chosen using supports, forecasts or target outcomes.",
+  "whole_function_transfer": "For applied source seed A, group g and task index h, reuse the A19 eta covariance and f/g selections learned from the other seven tasks of archive A. Reconstruct the original full eta prior from exactly those seven tasks once. Predict held task h of partner archive B at steps9-24, using only B's earlier paid eta observations. No B source labels enter the applied A prior or source-selected directions. Use A's original public normalization bank when transforming B's coordinates.",
+  "matched_control": "The scored B task, labels, points, chronology and label noise are exactly those in the old A11/A20 within-B whole-function holdout. The matched prior uses seven B training tasks; the transferred prior uses seven A training tasks, each448 paid source labels. Reuse saved matched densities and evidence. Report the loss from transferring archives, as well as whether pure R and the frozen mixture respond to it.",
+  "predictors": "Keep A20's I/F/G/R covariance construction unchanged. For each scored target-source seed B, use A20's existing macro calibration excluding B. The generic arm duplicates F=G=I. Compute pure I,F,G,R and complete frozen-mixture scores. Source forecasts may update branch odds through strictly earlier B observations; no new calibration parameters or source-selected winning branch are fit in this diagnostic.",
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ],
+      [
+        56,
+        57
+      ],
+      [
+        58,
+        59
+      ],
+      [
+        60,
+        61
+      ],
+      [
+        62,
+        63
+      ]
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "tasks_per_archive": 8,
+    "transfer_whole_function_folds": 256,
+    "prior_arms": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "transfer_prior_profiles": 512,
+    "transfer_forecasts": 8192,
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "primary_analysis": "For each archive group and prior arm, report transferred pure R-minus-I and frozen mixture-minus-I; compare these with the corresponding matched-archive quantities on the same scored B tasks. Also report transferred-I minus matched-I and transferred mixture minus matched mixture. Average steps within task, then tasks within scored archive; average both directions within each of the eight disjoint seed-pair blocks. Bootstrap the eight pair blocks, not16 purportedly independent directed transfers. Retain per-direction values and signs descriptively.",
+  "secondary_analysis": "Report pure F/G gains, issued q and posterior masses at steps9/24 without modifying the predictor. Generic F/G must add no effect beyond I/R. Transfer is a source-data assay of the calibration assumption; target A21/A22 scores may motivate the question but are not inputs, conditioning features or weight-fitting labels.",
+  "controls": "Require all256 original seven-task contexts and unchanged A20 source calibration. Confirm source training ids exclude h and all training labels belong to applied A, not scored B. Match B step/candidate identities to the saved within-archive forecasts. Reproduce one retained matched fold in both arms before transfers, including saved A9 R/I evidence. Generic duplication and pure-branch scores must agree with their component densities. Stop if these controls or numerical accuracy fail.",
+  "numerics": "Primary rho32 for F/G and the six-family R mixture, with16/48 confirmation on all transfer folds. Keep A20's issued macro masses fixed; there is no new macro fit. Use signed-kernel whitening, shared component calculations where exact, and no Gaussian refit per quadrature node. Require maximum complete-mixture and pure-branch score changes <=1e-4 before a full-cohort conclusion.",
+  "resource_admission": "Retain the first complete transfer fold with both arms, all rho checks and matched controls. Project the remaining255 folds with a1.25 factor and20 CPU seconds for summaries. Stop with partial evidence if the180-local-CPU-second whole-stage cap would be exceeded. Reuse each of the256 cheap full eta prior fits between arms and all predictions; keep compact forecast arrays and stream source pairs.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 180,
+    "new_eta_ard_refits": 0,
+    "new_fg_selection_fits": 0,
+    "full_eta_prior_refits_max": 256,
+    "new_calibration_fits": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "candidate_recommendations": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "decision": "If transferred source prediction reveals adaptation value missed by the matched-archive calibration, freeze a distinct source-only calibration study that represents cross-task transfer and retains compatible controls before any new target test. If R does not help transferred source tasks, inspect the covariance model rather than increasing q. Incomplete or numerically unresolved data cannot support either conclusion. A20/A21 remain unpromoted and no recommendation replay or new search follows from this assay alone.",
+  "paired_bootstrap_seed": 20261101,
+  "limitations": "Eight disjoint source-pair blocks and one fixed partner per archive, not all possible transfers or independent target confirmation. Existing macro calibrations share training archives, so intervals remain nominal descriptive development intervals. Source tasks do not contain high-frequency risk shifts; cross-archive transfers probe the task-generalization assumption without creating those missing regimes or proving decision value."
+}

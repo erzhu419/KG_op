@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "case": "source_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        64
+      ],
+      "net": 0.01375673038831274,
+      "raw_optimal_net": 0.013782639864066666,
+      "native_choice_loss": 2.5909475753853155e-05,
+      "projected_bias_at_selected_action": 0.0022123026520148685,
+      "fixed_action_tower_residual": -5.2709665707723063e-05,
+      "numerical_changes": [
+        6.492176584993459e-06,
+        0.00034320488076491906,
+        7.053541473123204e-09,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": true,
+        "native_action": true,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": true,
+      "fixed_action_predictive_tower_diagnostic_passed": true,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 9.943988185578262e-05,
+      "maximum_native_action_difference": 9.976966853542102e-05,
+      "predictive_log_evidence_error": 7.720349934547954e-05
+    }
+  ],
+  "scope": "Frozen-query development, same365 actions and original gates.",
+  "collection_cpu_seconds": 56.603244937,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

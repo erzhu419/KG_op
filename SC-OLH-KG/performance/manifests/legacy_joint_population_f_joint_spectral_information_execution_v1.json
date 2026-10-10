@@ -1,0 +1,18 @@
+{
+  "status": "frozen after outer conditional-density attribution;before source information computation",
+  "entrypoint": "performance/diagnose_legacy_f_joint_spectral_information.py",
+  "inner_source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+  "outer_source_laws": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/source_laws.json",
+  "inner_templates": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_tail_attribution_v1/source_laws.json",
+  "inner_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "positive_tail_fraction": 0.01,
+  "law": "At the ten saved source4 and two source5 fits,compute conditional expected Gaussian covariance Fisher information for the four root-amplitude/spectral parameters: I_ab=.5*tr(K^-1 K_a K^-1 K_b). Record the source score gradient,parameter correlations and nuisance-adjusted task-spectrum information. Existing source-only GP/common/task templates and all nuisance estimates stay fixed. No candidate spectrum grid,source refit or query forecast.",
+  "verification": "A whitened derivative Gram must independently reproduce the Fisher trace formula. Positive information eigenvalues are required for local inverse summaries;failure leaves that summary unresolved without artificial eigenvalue floors. Reuse previous source fit/gradient/conditioning checks.",
+  "decision": "If task spectra have low conditional information and bind at4,register a proper source-only bounded spectral uncertainty probe before another predictor. If well identified,do not blame point-estimation uncertainty;investigate structural misspecification using the existing task contrast. Never treat unconstrained local SE as a posterior interval at a boundary,or use task1 coverage to choose a covariance scale.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {"new_source_fits": 0, "new_raw_forecasts": 0, "new_source_likelihood_integrations": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;small cached source JSON only;no server jobs,pulls or new NPZ",
+  "scope": "Source-only information diagnostic;stopped candidate remains stopped,retained mixture remains reference,complete-model HOLD. No task1 outcome arrays,source6/7,target,KG,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_joint_spectral_information_v1"
+}

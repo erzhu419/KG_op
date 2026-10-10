@@ -1,0 +1,60 @@
+\section{Introduction}\label{sec:meta_prior_introduction}
+
+Simulation optimization becomes difficult when a policy is written as a long
+ordered profile and each evaluation returns both a noisy objective and a
+probabilistic safety outcome. The profile may contain many coordinates, but the
+coordinates often arise from a smaller collection of response shapes. A new
+task therefore contains two kinds of uncertainty: which shapes matter in the
+target system, and how the target system changes their mean response and
+accumulated risk.
+
+Historical simulations can reduce the first uncertainty, but only through an
+explicit information path. Reusing a source policy that happened to perform
+well is an initialization heuristic. A structural meta-prior instead learns
+which functions explain source responses, assigns a distribution to their
+coefficients and residual risk, and lets paid target observations update that
+distribution. This distinction matters in chance-constrained problems:
+source evidence may improve early prediction, yet a mismatched safety model
+can move the recommended policy in the wrong direction. The method must
+therefore preserve target correction, negative transfer, and independent
+verification in the same protocol.
+
+We study this bounded problem in a declared public representation. Each
+policy is mapped to an eight-dimensional coordinate and evaluated through a
+finite dictionary of 68 centered and scaled functions. Separate source-task
+models describe the objective mean, the constraint mean, and the logarithm of
+cumulative risk variance. The target is evaluated with source-selected, same-source
+full-dictionary, and target-only controls. Target observations update the
+function posterior, while physical-risk family weights are updated from risk
+labels. A
+correlated Gaussian knowledge-gradient rule then values a candidate by its
+expected verified deployment utility under the remaining evaluation and
+verification budget.
+
+The resulting information contract is deliberately narrower than a general
+representation-learning claim. The coordinate is declared rather than
+learned from trajectories; the dictionary is finite and not orthogonalized;
+and the risk head models total log variance rather than recovering separate
+physical common and local factors. These choices make the source-to-target
+path auditable and allow negative transfer to remain visible.
+
+The paper makes three contributions. First, it specifies a reproducible
+source-to-target structural prior in which source observations learn function
+support and cross-task coefficient variation, while target observations can
+remove a mismatched structure. Second, it couples this posterior to a
+verification-aware decision rule and records the distinct roles of prediction,
+candidate ranking, and independent certification. Third, it evaluates the
+contract under paired source archives, initial designs, target budgets, and
+verification streams. The results show an early-budget advantage under
+matched mechanisms, a small and unstable contribution from learned risk
+structure, and no universal advantage for the knowledge-gradient or for
+operational deployment.
+
+This separation gives a precise interpretation of the evidence. A reduction
+in prediction error is not treated as a deployment certificate; a small
+knowledge-gradient increment is not treated as proof of a general sampling
+advantage; and an infeasible target task is retained as a failure of the
+end-to-end deployment protocol. The conclusions therefore apply to the
+declared representation and finite dictionary, while trajectory encoders,
+factor-level risk recovery, and general high-dimensional optimization remain
+open problems.

@@ -1,0 +1,57 @@
+{
+  "status": "frozen before twelve source-only shape integrals",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "retained_reference_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "failed_joint_results": "paper_artifacts/legacy_joint_population_f_joint_geometry_development_v1/results.json",
+  "task_score_results": "paper_artifacts/legacy_joint_population_f_joint_geometry_task_score_v1/results.json",
+  "question": "Does the retained native f law omit material source-supported uncertainty in task shape variance while integrating only task intercept variance? Repeated point estimation of GP-shaped task templates was not supported;the native low-frequency task spectrum has low source information and task1 adaptation remains weak.",
+  "source_law": "Use only twelve original native five-source f laws on tasks0-5,excluding the outer query task. Do not adopt stopped Stage130 common correlation or substitute GP moments. Keep original common A,empirical center,independent task intercept at its native point,all other task groups,original exponent0-4,1% independent weak tail,known label noise and discrepancy fixed. For each fold select the originally positive task group with largest source-only variance budget;no query-based selection.",
+  "parameter": "Vary only its physical task group variance a>=0. Let Ugroup=blockdiag(D_task,group*sqrt(original within-group spectral weights));C(a)=C0+a*Ugroup*Ugroupprime. Native a must reproduce original NLL,beta/H. Keep the source design identifiable directions and verify low-rank versus dense covariance,without an eigenvalue or variance floor.",
+  "reference_measure": "Conditional Jeffreys pi(a)da proportional sqrt(.5*sum((lambda_i/(1+a*lambda_i))^2))da,lambda the identifiable eigenvalues of Ugroupprime*C0^-1*Ugroup. Integrate coherent Gaussian source likelihood on all a>=0,without upper cutoff or chosen extra prior family. Reuse verified physical scalar-variance posterior numerical formulas;design rank determines tail integrability.",
+  "diagnostic": "Report source posterior mean/SD/quantiles,source likelihood slice width,integrated new-task shape budget and common beta/H uncertainty relative to the point law. Compare source uncertainty with the already positive intercept-variance mixture,without merging their separately conditional weights. This is a conditional source information diagnostic,not a new prior or forecast.",
+  "verification": "Native full source NLL and common moments reproduced. Dense interior likelihood/Fisher/beta/H checks for both task1 folds. Original supported group/frequency/tail contract and full-tail quadrature adequacy. Failed construction/integrability is reported;no ridge,tolerance relaxation or posterior cutoff.",
+  "decision": "If shape uncertainty is material,register coherent joint intercept/shape variance source integration with an explicitly defined joint reference measure and unchanged paid comparison;do not multiply separately conditional posterior weights or use averaged covariance as a raw mixture. If source shape variance is tightly identified,retain that evidence and examine representation/source-population support rather than adding another covariance parameter. No automatic prior adoption or complete-gate promotion.",
+  "scope": "source0-5 training folds only;no paid query labels,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls",
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_new_source_shape_variance_integrations": 12,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON only",
+  "output": "paper_artifacts/legacy_joint_population_f_task_shape_uncertainty_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_task_shape_uncertainty.py",
+  "entrypoint_status": "implemented;not yet executed",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_task_shape_uncertainty_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_task_shape_uncertainty.py",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "quadrature": {
+    "relative_tolerance": 1e-08,
+    "absolute_tolerance_for_scaled_integrals": 1e-09,
+    "maximum_subintervals": 128
+  },
+  "posterior_quantile_probabilities": [
+    0.025,
+    0.5,
+    0.975
+  ],
+  "source_likelihood_slice_drop": 0.5,
+  "slice_root_tolerance_in_signal_units": 1e-12,
+  "dense_verification_deleted_task": 1,
+  "dense_verification_variance_over_source_signal": 0.1,
+  "intercept_uncertainty_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+  "frozen_before_source_integration": true
+}

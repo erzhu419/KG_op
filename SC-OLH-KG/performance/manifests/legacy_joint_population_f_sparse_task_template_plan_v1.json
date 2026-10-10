@@ -1,0 +1,38 @@
+{
+  "status": "completed;all12 fixed source probes lose likelihood;direction stopped",
+  "geometry_execution": "performance/manifests/legacy_joint_population_f_task_covariance_geometry_execution_v1.json",
+  "geometry_results": "paper_artifacts/legacy_joint_population_f_task_covariance_geometry_v1/results.json",
+  "mixture_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "question": "Does a coherent source task covariance direction,using the source common/task sparse union and level-shape correlation,improve source likelihood while preserving the original dictionary and low-frequency/tail contract? This precedes any parameter fitting or query predictions.",
+  "template": "In each five-source fold project its already-fitted GP task RBF covariance onto the original27-column public basis using the Stage126 cached coefficient construction. Restrict the strong template to intercept plus the union of already-positive native common/task groups. Normalize its principal coefficient covariance to a correlation matrix. Set each template nonintercept group's marginal variance budget to that group's projected GP task variance,but redistribute within the group using the original native task spectral exponent/weights. Retain the projected GP task bank-level variance for its template intercept. Congruence-rescale the correlation matrix to these marginals;this gives a source-learned PSD template without adding dictionary functions or runtime GP predictions.",
+  "family": "R(v,q)=v*e0e0'+independent original1% nonintercept weak tail+(1-q)*original task-excess diagonal without intercept+q*source-template, q in[0,1]. At q=0 and original native v,the source law must recover exactly. At q>0,group budgets remain sparse on the pre-existing common/task union and follow the same low-frequency exponent. Template level-shape covariance does not impose a variance floor:q may be zero,and independent v remains nonnegative without a lower bound. Common prior A,empirical center m0,noise,white discrepancy and eta priors stay unchanged.",
+  "source_diagnostic": "Use only each fold's five training tasks'60 cached source records and noise labels. Recondition the common beta/H coherently under R(v_native,q). Compute source NLL,analytic derivative/information for q at zero and a fixedq=.01 likelihood probe. Source observations from the deleted query task never enter this calculation. There are no fits,source-variance posterior integrals or paid-query forecasts in this stage.",
+  "verification": "Verify template PSD,support,group marginal frequency weights and unchanged independent tail. At q=0 reproduce original beta/H/source NLL. Compare q derivative with a one-sided finite difference at the reached native-v boundary fold and an interior fold. Verify dense source covariance and component construction agree. A disagreement blocks interpretation;do not fit through a failed construction check.",
+  "decision": "If source likelihood at the fixed .01 probe improves on average in both layouts and the derivative/construction verify,register one-parameter q estimation on each fold using the original optimizer contract,then rebuild the conditional independent-v posterior under that fitted source law before any matched paid comparison. If not,retain the failed direction and revisit common/task covariance interaction. Do not choose q from query scores,alter current source priors,skip variance integration or open source6/7,target/KG/confirmation.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON inputs only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_sparse_task_template.py",
+  "entrypoint_status": "implemented and executed",
+  "results": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/results.json",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_task_template_attribution_plan_v1.json"
+}

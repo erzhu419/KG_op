@@ -1,0 +1,20 @@
+{
+  "status": "registered after Stage69, before projected task covariance compression forecasts or scores",
+  "projection_execution": "performance/manifests/legacy_joint_population_gp_orthogonal_projection_execution_v1.json",
+  "projection_results": "paper_artifacts/legacy_joint_population_gp_orthogonal_projection_v1/results.json",
+  "layouts": ["5", "6"],
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "paid_candidates": [0, 1],
+  "cases": ["projected_full_task", "diagonal_task", "native_group_spectrum_tail"],
+  "basis_of_next_step": "Stage69 full27-column projection retains GP transfer, discarding only.066%/.069% smooth covariance trace; native common-support projection loses g MSE/density. Projected total coefficient off-diagonal squared mass is only.23%/.25%. Separate common posterior from task covariance, then test whether task coefficient dependence or native group/spectrum/tail form limits propagation.",
+  "decomposition": "Reconstruct GP smooth task covariance as scale^2*(residual_parameters[0]*RBF+residual_parameters[1]*ones), and common posterior as full new-task covariance minus that task kernel and unchanged white discrepancy. Project both with the same full public27-column OLS operator. Retain GP projected mean, complete common posterior coefficient covariance and eta_g law throughout.",
+  "diagonal_task": "Replace projected task coefficient covariance by its diagonal, retaining every coefficient marginal variance including intercept. No other covariance or mean is changed.",
+  "native_group_spectrum_tail": "Retain projected task intercept variance. Use the branch's original task spectral exponent and original tail=.01*source_signal_scale/basis.feature_dim. For each group set excess variance=max(projected group diagonal trace-group_size*tail,0), redistribute excess with native spectral_weights, and add the native tail to each coefficient. This is the native residual covariance form with a different source-derived variance profile, not a new coherent source fit.",
+  "freeze_rule": "Reproduce projected-full-task prior/raw-paid g/eta_g moments at all73 policies against Stage69. Freeze all24 compressed branches before scoring the same12 unobserved sites; reuse baseline Stage69 scores afterward. Preserve two original raw paid updates, risk law and source180-call information; source holdout6/7 and target outcomes are not indexed.",
+  "scoring": "Report observed g MSE, proper raw g batch density and separately full-task Gaussian g mean density. Report task intercept, group mass change imposed by the existing tail, off-diagonal mass and paid variance reduction. No new support/spectrum search or arm selection.",
+  "interpretation": "Covariance-form attribution inside the original basis. Retaining common GP posterior/mean is a diagnostic; these arms are not refitted hierarchical models and do not establish sparse common support, physical-factor recovery or decision/KG value.",
+  "cost": {"new_source_fits": 0, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread, small cached JSON only, no server jobs or pulls",
+  "entrypoint": "performance/check_legacy_projected_task_spectrum.py",
+  "output": "paper_artifacts/legacy_joint_population_projected_task_spectrum_v1"
+}

@@ -1,0 +1,10 @@
+{
+  "purpose": "Detect quadrature error large enough to affect A6 predictive interpretation; raise integration order if changes exceed 1e-4 joint log-score units.",
+  "selection": "Minimum null-posterior fold in each of 20 strata, plus worst score-regression fold in four retained failure paths.",
+  "orders": [
+    48,
+    96,
+    144
+  ],
+  "tolerance": 0.0001
+}

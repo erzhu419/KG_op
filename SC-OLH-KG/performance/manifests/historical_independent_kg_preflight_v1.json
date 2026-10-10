@@ -1,0 +1,7 @@
+{
+  "pilot_plan": "performance/manifests/historical_independent_kg_pilot_v1.json",
+  "entrypoint": "performance/prepare_historical_independent_kg.py",
+  "maximum_single_thread_cpu_seconds": 300,
+  "scope": "Restore native source priors once per layout and Gaussian GP zero-paid priors,then share12 fresh physical initial episodes across24 model states. Freeze target-specific paid shortlists. Prepare all144 predictive label banks and density checks without terminal utilities,new search observations,verification or scoring. Do not replace failed tasks or loosen gates.",
+  "output": "paper_artifacts/historical_independent_kg_preflight_v1"
+}

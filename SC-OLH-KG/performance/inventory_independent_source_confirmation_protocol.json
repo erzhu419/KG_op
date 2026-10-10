@@ -1,0 +1,31 @@
+{
+  "status": "frozen_before_independent_source_and_target_observations",
+  "base_design": "paper_artifacts/inventory_meta_prior_interface_20261004/public_source_design.json",
+  "base_records_for_public_bank": "paper_artifacts/inventory_meta_prior_interface_20261004/check.json",
+  "source_law_seeds": [93008, 93009, 93010, 93011],
+  "source_noise_seeds": [94008, 94009, 94010, 94011],
+  "target_law_seeds": [95021, 95022, 95023, 95024],
+  "target_noise_seeds": [96021, 96022, 96023, 96024],
+  "source_tasks": 4,
+  "source_points_per_task": 16,
+  "target_initial_points": 8,
+  "replicates": 12,
+  "verification_replicates": 928,
+  "evaluation_budgets": [1.0, 1.175478957908771, 1.1885871647186317],
+  "mean_arms": ["source_billing", "same_source_full_dictionary", "target_only_full_dictionary"],
+  "risk_contexts": ["source_learned_factor_families", "same_source_pooled_scale"],
+  "source_risk_distribution": {
+    "seed": 105042,
+    "bits": 9,
+    "log_sd": 2.0,
+    "concentration": 1.0,
+    "maxiter": 2000,
+    "tolerance": 1e-7
+  },
+  "target_initial_indices": "same saved eight public indices from the base record",
+  "new_source_episode_calls": 768,
+  "new_target_episode_calls": 384,
+  "oracle_use": "post-decision scoring only; no oracle moments enter fitting or recommendation",
+  "scientific_status": "independent early mean-structure confirmation; not a full KG or mature-baseline comparison",
+  "dispatch": "local single thread only; no server jobs"
+}

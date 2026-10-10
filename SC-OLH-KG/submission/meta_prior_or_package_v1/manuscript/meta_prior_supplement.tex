@@ -1,0 +1,261 @@
+\pdfminorversion=7
+\documentclass[opre,dblanonrev]{informs4}
+\RequirePackage{tgtermes}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
+\RequirePackage{bm}
+\OneAndAHalfSpacedXI
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{microtype}
+\usepackage{natbib}
+\bibpunct[, ]{(}{)}{,}{a}{}{,}
+\def\newblock{\ }
+\def\BIBand{and}
+\usepackage{xr-hyper}
+\usepackage[hidelinks]{hyperref}
+\externaldocument[][nocite]{meta_prior_main}[meta_prior_main.pdf]
+\EquationsNumberedThrough
+\TheoremsNumberedThrough
+\ECRepeatTheorems
+\setlength{\emergencystretch}{2em}
+
+\ECRUNAUTHOR{Authors' names not included for peer review}
+\ECRUNTITLE{Source-Learned Structural Priors for Chance Constraints}
+\hypersetup{pdftitle={Online Supplement: Source-Learned Structural Priors for Chance-Constrained Simulation Optimization},pdfauthor={}}
+
+\begin{document}
+\ECSwitch
+\raggedbottom
+\begin{center}
+{\Large\bfseries Online Supplement}\par
+\vspace{0.6em}
+{\large Source-Learned Structural Priors for Chance-Constrained
+Simulation Optimization}\par
+\vspace{0.4em}
+Authors' names are not included for peer review
+\end{center}
+
+\section{Frozen Protocol and Accounting}
+
+\begin{table}[h]
+\centering
+\caption{The primary source-to-target information contract.}
+\label{tab:mp_protocol}
+\begin{tabular}{ll}
+\toprule
+Source tasks & 8\\
+Public candidates per source task & 64\\
+Source repetitions per candidate & 12\\
+Target initial points & 8\\
+Target search points & 24\\
+Independent verification repetitions & 928\\
+Mean/risk heads & $f$, $g$, $\eta=\log\operatorname{Var}(Y^g)$\\
+Dictionary size & 68 centered/scaled functions\\
+Original confirmation interval & not run as a block; seed 95434 overlaps development\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Source calls are 8$\times$64$\times$12$=6{,}144$.  The paired
+source-structure control uses two model arms but the same keyed target stream;
+its additional local execution made 4,608 simulator calls for the two arms and
+eight tasks.  These are paired development calls, not independent confirmation
+observations.  Oracle moments are read only after recommendation for scoring and
+are never supplied to fitting or acquisition.
+
+\subsection{Public coordinates and the finite dictionary}
+
+Each candidate is an ordered inventory policy
+$p=(p_1,p_2,p_3,p_4)\in[0,1]^4$.  With capacity $C=20$ and initial stock
+$s_0=8$, the observed stock bin is
+$b_t=\min\{\lfloor 4s_t/C\rfloor,3\}$, the order is
+$o_t=\max\{Cp_{b_t+1}-s_t,0\}$, and the next stock is
+$s_{t+1}=\max\{s_t+o_t-d_t,0\}$.  For the declared twelve-period demand schedule,
+the local trajectory weights are
+\[
+w_{t1}=o_t/(C T),\qquad w_{t2}=s_{t+1}/(C T),\qquad
+w_{t3}=\max\{d_t-s_t-o_t,0\}/\sum_t d_t.
+\]
+Let $A_j=\|w_{\cdot j}\|_2$ for $j=1,2,3$ and
+$(N_1,N_2)=(\sum_t w_{t1},\,\sum_t w_{t3})$ for the
+two shared volume exposures used by the simulator.  The public coordinate is
+\[
+\psi(p)=(A_1,A_2,A_3,N_1,N_2,h,\nu,s_T/C),
+\]
+where $h=\sum_t w_{t2}$, $\nu=T^{-1}\sum_t\mathbb{1}\{o_t>0\}$, and
+$s_T$ is terminal stock.  Thus the eight coordinates are observable from the
+trajectory and do not contain prices, outcomes, or a hidden optimum.
+
+The implementation uses a 68-function dictionary.  After pooled source
+standardization, it contains the eight coordinates $\psi_j$, their eight squares,
+the sixteen $\sin(\pi\psi_j)$ and $\cos(\pi\psi_j)$ terms, the 28 pairwise
+products $\psi_i\psi_j$ $(i<j)$, and the eight high-frequency controls
+$\sin(4\pi\tanh(\psi_j/2))$.  The source learner scores these fixed functions by
+low-frequency smoothness, cross-task relevance, sign consistency, and a pilot
+cross-validation loss, then greedily retains four functions per response head.
+The full-dictionary arm retains all 68 functions; the target-only arm uses the
+same 68 functions with a zero-mean coefficient prior and no source labels.
+No trajectory encoder or learned input coordinate is used.
+
+\subsection{Source prior, target update, and verifier}
+
+For each mean response head $t\in\{f,g\}$, source labels are fitted by
+weighted ridge regression on the selected standardized functions.  The source
+task coefficient vectors supply a head-specific mean and covariance; the target
+coefficient mean starts at zero in the target-only control.  Paid target labels
+update the Gaussian linear model with the observed diagonal noise.  The
+physical-risk head additionally updates a finite factor-family particle mixture
+by the exact Gaussian log-sample-variance likelihood.  The risk head is the total log variance
+$\eta=\log\operatorname{Var}(Y^g)$; its simulator law is
+\[
+\operatorname{Var}(Y^g)=\rho_0+A^\top\Lambda A+N^\top B N+N^\top\omega.
+\]
+The observation at a policy uses 12 independent episodes.  Its objective and
+constraint means have noise variances $\sigma_f^2/12$ and $\widehat v_g/12$;
+the log-sample-variance label uses the digamma bias correction and noise
+$\psi_1((12-1)/2)$.
+
+The acquisition rule uses a three-dimensional Gaussian approximation for
+$(f,g,\eta)$ and a 3-node Hermite rule per head, hence 27 joint fantasy nodes.
+For a candidate $x$, the reported deployment utility is
+\[
+U(x)=\Pr\{g(x)+z_{.95}\exp(\eta(x)/2)\le 0\}\,
+\mathbb{E}\left[\frac{5-f(x)}{10}\right],
+\]
+with objective quality clipped to the declared $[-5,5]$ simulator range.  The
+928-repetition verifier is independent of paid observations and returns zero
+realized utility when its chance certificate fails.  These definitions make the
+target-only baseline and the source-selected arm identical in candidate bank,
+budget, noise streams, acquisition, and verification.
+
+\section{Source-Structure Control}
+
+Table~\ref{tab:mp_taskwise} gives the complete paired final-reward comparison
+for the eight development tasks.  Both arms use observable inventory exposure,
+the same pooled factor-family risk prior, the same initial points, the same
+Gaussian KG rule, and the same verifier.
+
+\begin{table}[h]
+\centering
+\caption{Taskwise source-selected structure minus same-source full dictionary.}
+\label{tab:mp_taskwise}
+\input{meta_prior_supplement_tables.tex}
+\end{table}
+
+The positive-difference count is 3/8, the negative count is 1/8, and four
+tasks are tied.  The development contract therefore records an attribution
+signal but fails the preregistered stable-deployment gate.
+
+\section{Risk and Representation Diagnostics}
+
+The observable coordinate reduces eight-point holdout objective-mean RMSE from
+0.594 to 0.270 and constraint-mean RMSE from 0.204 to 0.141.  Constraint-rank
+Spearman correlation increases from 0.119 to 0.624, while the initial true
+recommendation is feasible in 7/8 tasks for both coordinate choices.
+
+The factor-family risk prior reduces initial target $\eta$ RMSE from 0.363 to
+0.301 on all eight development tasks.  Its coefficient RMSE is 0.255 versus
+0.251 for pooled risk, and its closed-loop mean final reward is 0.8599 versus
+0.8605.  These numbers separate total-risk prediction from factor recovery and
+ deployment value.
+
+\section{Same-Contract Target-Only Baseline}
+
+The target-only full-dictionary arm uses the same 68-function basis, target
+initial design, paid-observation budget, keyed noise streams, pooled risk arm,
+acquisition rule, and independent verifier.  Its only difference is that it
+starts without source labels.  The complete comparison is:
+
+\begin{table}[h]
+\centering
+\caption{Same-contract target-only baseline.  Parentheses give certified tasks.}
+\label{tab:mp_target_only}
+\input{meta_prior_baseline_table.tex}
+\end{table}
+
+On the development block, source-selected structure, same-source full
+dictionary, and target-only full dictionary obtain mean final rewards 0.86127,
+0.85582, and 0.76199, respectively.  On the independent v2 block the three
+means are 0.44274, 0.45160, and 0.45148.  The target-only arm therefore provides
+the required feasible nonempty comparator, while the independent block still
+does not support a stable source-structure deployment advantage.
+
+For a generic constrained-BO control, we additionally froze an isotropic RBF
+kernel (lengthscale 0.25, outputscale 1.0) and fit all three heads only to
+target observations.  This target-only RBF-KG arm obtains means 0.86239 and
+0.45912 on development and v2, respectively.  It is therefore a stronger
+generic control for decision ranking than the source-selected arm on both
+blocks; the source-structure attribution remains a comparison with the
+same-source full dictionary, not a claim of generic BO superiority.
+
+\section{Paired Uncertainty Summaries}
+
+All taskwise differences reported in the manuscript are accompanied by a
+seed-level paired percentile bootstrap with 100,000 resamples.  These intervals
+are descriptive because each block has eight law seeds; they are not a test of
+universal superiority.
+
+\begin{table}[h]
+\centering
+\caption{Paired bootstrap intervals for reported differences.}
+\label{tab:mp_uncertainty}
+\scriptsize
+\input{meta_prior_uncertainty_table.tex}
+\end{table}
+
+\section{Claim Audit}
+
+\begin{table}[h]
+\centering
+\caption{Permitted interpretation of each main claim.}
+\label{tab:mp_claim_audit}
+\begin{tabular}{p{0.27\textwidth}p{0.27\textwidth}p{0.34\textwidth}}
+\toprule
+Claim & Evidence status & Manuscript wording\\
+\midrule
+Source function structure improves early prediction & supported & Claim within the declared representation and dictionary.\\
+Target observations correct source mismatch & supported & State that component weights can be downweighted.\\
+Risk structure is learned & partial & Report total-risk calibration only.\\
+Risk factors are separately recovered & unsupported & Keep outside contributions.\\
+Stable independent deployment advantage & unsupported & Report the failed 3/8 gate and negative controls.\\
+General high-dimensional free-variable optimization & unsupported & Describe ordered profiles and nominal dimension only.\\
+Zero false certificates are universal safety & unsupported & Restrict the statement to the declared verifier law.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Reproducibility Pointers}
+
+The source archive and development artifact are in
+\texttt{paper\_artifacts/}\allowbreak\texttt{meta\_prior\_feasible\_deployment\_v1/}.
+The paired control is regenerated by
+\texttt{performance/}\allowbreak\texttt{run\_meta\_prior\_feasible\_source\_arm\_v1.py}
+from \texttt{performance/}\allowbreak\texttt{meta\_prior\_feasible\_source\_arm\_v1.json}.
+The same-contract target-only controls are regenerated from
+\texttt{performance/}\allowbreak\texttt{meta\_prior\_feasible\_baseline\_development\_v1.json}
+and \texttt{performance/}\allowbreak\texttt{meta\_prior\_feasible\_baseline\_v1.json}.
+The baseline table and paired bootstrap interval table are generated by
+\texttt{performance/render\_meta\_prior\_baseline.py} and
+\texttt{performance/summarize\_meta\_prior\_uncertainty.py}; neither script
+starts a simulator.
+The original confirmation interval was not run as a block.  Seed 95434 overlaps
+the development artifact and is excluded from any clean-confirmation claim.
+The separate v2 block is regenerated from its own
+frozen contract and retains all eight new seeds; it is reported as an
+independent bounded check, not as a replacement for the original block.  The
+legacy atlas manuscript and its supplement retain their own artifact identity
+and are not substituted for this source-to-target protocol.
+
+\section{Independent Fixed-Seed Block}
+
+The v2 block uses law seeds 95800--95807, with the same public candidate bank,
+paired keyed target streams, and independent verification procedure.  The
+oracle preflight was recorded before target observations and did not remove a
+seed.  The generated table below is read directly from the frozen result
+artifact.
+
+\input{meta_prior_confirmation_table.tex}
+
+\end{document}

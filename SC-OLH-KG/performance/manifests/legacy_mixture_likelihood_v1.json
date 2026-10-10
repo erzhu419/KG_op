@@ -1,0 +1,18 @@
+{
+  "replay":"paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "projected_reference":"paper_artifacts/legacy_mixture_budget_v1/precision.json",
+  "domain":"InventorySupplyChain",
+  "prefix":4,
+  "candidates":[2,63],
+  "draw_power":9,
+  "fantasy_power":5,
+  "seeds":[80561,80562],
+  "posterior_reference":"current saved-path Gaussian moment mixture; the next raw f/g observation conditions mean analytically given query eta, reweights eta by its marginal raw likelihood, and retains its non-Gaussian posterior",
+  "model_weights":"adaptive one-dimensional exact predictive integrals, same shared identity and likelihood as paid filtering; report Sobol evidence error separately",
+  "terminal_reference":"same complete guarded/direct action class and 362-call cap; conditional f/g independence exploited inside each complete identity, all cross-policy and mean/eta covariance retained",
+  "projection_contrast":"same query-first marginal draws, raw fantasies, identity weights and fixed debited terminal action; compare exact local update with actual-filter Gaussian moment completion",
+  "diagnostics":"adaptation, fixed-action tower drift, projection difference, verification opportunity cost, likelihood effective sample sizes, predictive evidence integration error, model-weight martingale residual, mean/eta variance reduction, equal first-16-fantasy subset matching saved reference",
+  "execution":"local serial single-thread, source fitted once, no simulator calls, server tasks or pulls; no target truth queries",
+  "scope":"one opened Inventory development node, two actions; numerical mechanism reference, not a replacement model or independent deployment trial",
+  "output":"paper_artifacts/legacy_mixture_likelihood_v1/replay.json"
+}

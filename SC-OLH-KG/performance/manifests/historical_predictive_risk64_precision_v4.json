@@ -1,0 +1,29 @@
+{
+  "parent_plan": "performance/manifests/historical_predictive_risk64_v4.json",
+  "output": "paper_artifacts/historical_predictive_risk64_precision_v4",
+  "cases": [
+    {
+      "name": "source_n1",
+      "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+      "n": 1,
+      "objective_prefixes": [
+        16,
+        32
+      ]
+    }
+  ],
+  "head_inputs": {
+    "source_n1": [
+      "paper_artifacts/historical_predictive_risk64_v4/learned_prior_independent_02_source_structural_mixture_layout6/n1/head/0_{origin}",
+      "paper_artifacts/historical_predictive_risk64_v4/learned_prior_independent_02_source_structural_mixture_layout6/n1/head/1_{origin}"
+    ]
+  },
+  "refinement_powers": [
+    12,
+    14,
+    16
+  ],
+  "maximum_case_cpu_seconds": 420,
+  "status": "Refine only unadmitted missing records. Existing admitted rules retained; original1e-4 gates unchanged.",
+  "policy_shards": 12
+}

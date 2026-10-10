@@ -1,0 +1,90 @@
+{
+  "status": "COMPLETE_SOURCE_PREDICTIVE_HOLD_GP_QUERY_ADMITTED",
+  "cases": [
+    {
+      "case": "source_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        128
+      ],
+      "net": 0.013488653380710482,
+      "raw_optimal_net": 0.013544078362585534,
+      "native_choice_loss": 5.542498187498983e-05,
+      "projected_bias_at_selected_action": 0.0023040681767827363,
+      "fixed_action_tower_residual": 0.00010375269891574335,
+      "numerical_changes": [
+        4.842025454671051e-06,
+        0.0002680770076022576,
+        8.307581156330457e-08,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": true,
+        "native_action": true,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": true,
+      "fixed_action_predictive_tower_diagnostic_passed": false,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 9.943988185578262e-05,
+      "maximum_native_action_difference": 9.976966853542102e-05,
+      "predictive_log_evidence_error": 7.720349934547954e-05
+    },
+    {
+      "case": "gp_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        128
+      ],
+      "net": -4.1906969492688795e-05,
+      "raw_optimal_net": -4.1906969492688795e-05,
+      "native_choice_loss": 0.0,
+      "projected_bias_at_selected_action": 0.0002603430156993211,
+      "fixed_action_tower_residual": 2.690814766270755e-05,
+      "numerical_changes": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": true,
+        "raw_action": true,
+        "native_action": true,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": true,
+      "fixed_action_predictive_tower_diagnostic_passed": true,
+      "full_predictive_integration_admitted": true,
+      "maximum_raw_action_difference": 7.766938803208112e-05,
+      "maximum_native_action_difference": 9.097434307067838e-05,
+      "predictive_log_evidence_error": 1.0851184919502543e-06
+    }
+  ],
+  "contract": "Already opened task02/layout6; frozen source STOP query63; same365 actions, two paid initial calls, one proposed new call and359 remaining verification budget.",
+  "numerical_scope": "Numerical admission of a single frozen-query bank; independent deployment and query/batch optimization remain open.",
+  "native_parallel_fix": {
+    "affected_records": 9,
+    "before_maximum_native_action_difference": 0.08874846573037765,
+    "repaired_at18_maximum_native_action_difference": 0.00011022559461448811,
+    "final_maximum_native_action_difference": 9.976966853542102e-05,
+    "source_net_changed_by_repair": false,
+    "historical_multiworker_native_only_groups_affected": 0,
+    "archives": "paper_artifacts/historical_predictive_risk128_precision_v5/policy18/native_direction_table_failure"
+  },
+  "next_plan": "paper_artifacts/historical_predictive_upper_risk_v6/plan.json",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "algorithmic_query_selection_complete": false
+}

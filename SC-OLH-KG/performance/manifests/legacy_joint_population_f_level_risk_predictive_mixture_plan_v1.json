@@ -1,0 +1,45 @@
+{
+  "status": "completed;all four source-development density split gates fail;MSE point changes -24.18percent/+19.27percent;no superiority or model adoption",
+  "entrypoint": "performance/check_legacy_f_level_risk_predictive_mixture.py",
+  "source_update_results": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/frozen_inputs.json",
+  "eta_components": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/mixtures.json",
+  "source_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/source_laws.json",
+  "risk_reconstruction": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/risk_reconstruction.json",
+  "previous_prediction_plan": "performance/manifests/legacy_joint_population_f_raw_source_predictive_mixture_plan_v1.json",
+  "previous_results": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1/results.json",
+  "native_cached_results": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_mixture_v1/results.json",
+  "source_validation_task": 0,
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "question": "Does source-only learning of function levels and risk population parameters improve the zero-shot source-development comparison without new simulator calls or precision rescue?",
+  "prediction": "Project the Stage214 positive512-component source posterior into the same12 task0 policies per layout. Use the active arm's learned scientific eta mean/covariance and recomputed risk coefficient gain,conditional common covariance and original future-task residual. Apply the learned structural task intercept covariance or GP task constant variance exactly once. Preserve mixture-induced f/eta covariance. Freeze all four forecasts before indexing the existing task0 responses.",
+  "metrics": [
+    "f_mse",
+    "f_raw_batch_density"
+  ],
+  "precision_gates": {
+    "maximum_split_raw_density_absolute_difference": 0.02,
+    "maximum_split_prediction_mean_rms_difference_in_full_sd": 0.1,
+    "maximum_split_prediction_variance_relative_difference": 0.15
+  },
+  "comparison": "Primary is learned structure versus equivalently source-learned GP,with identical source roster,batches,training step and zero target budget. Retain unchanged native-mixture selected/refined results from Stage208 as a secondary historical reference;its different Gaussian source information contract is explicit. Do not rerun its settled density integrals.",
+  "decision": "Require both arms' numerical gates per layout before comparing predictive merits;preserve failures. Scientific development gate requires no MSE increase and strictly higher raw density versus GP on both layouts. No extra chains,larger mixture,relaxed precision gate or target-offset search in this stage. Results remain task0 development diagnostics,not independent evidence or decision/KG advantage.",
+  "verification": "Detect stale prior/arm pairing by matching active source field,risk law and mixture key;the prediction helper uses the newly reconstructed scientific laws. New task residual appears once. Native selected/refined evidence is reused only if its existing refinement checks passed. Per-site batch density uses the established verified integrator.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_raw_batch_density_site_integrations": 48,
+    "new_source_chains": 0,
+    "new_source_labels": 0,
+    "new_covariance_optimizations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;retained512 source states,small JSON and cached native reference;no server work or NPZ",
+  "scope": "Original four priors retained. No source6/7,outer task1,target,paid update,KG,independent confirmation or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_level_risk_predictive_mixture_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_level_risk_predictive_mixture_v1/results.json"
+}

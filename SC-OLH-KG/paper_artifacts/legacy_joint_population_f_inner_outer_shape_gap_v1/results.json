@@ -1,0 +1,173 @@
+{
+  "execution": {
+    "status": "frozen after all ten honest inner raw folds;cached prediction attribution only",
+    "entrypoint": "performance/diagnose_legacy_f_inner_outer_shape_gap.py",
+    "inner_results": "paper_artifacts/legacy_joint_population_f_inner_raw_folds_v1/results.json",
+    "outer_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_pilot_v1/results.json",
+    "outer_reference_breakdown": "paper_artifacts/legacy_joint_population_f_source_design_error_v1/results.json",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_outer_shape_gap_v1",
+    "question": "Are the four already-scored outer candidate losses level or shape losses,and how does that differ from source training gains?",
+    "verification": "Reproduce cached outer MSE and candidate-minus-reference values,then require level+centered-shape differences to sum to each total gap. A mismatch blocks attribution. No new forecast or previously unscored outcome.",
+    "decision": "Retain the outer failure. Do not infer a universal filter defect from source4-versus-source5,task and query-design contrasts. No q tuning,source6/7,target,KG,independent confirmation or manuscript changes."
+  },
+  "outer_rows": [
+    {
+      "layout": "5",
+      "design": "fixed_public_prefix",
+      "candidate_breakdown": {
+        "mse": 0.0007374704033719097,
+        "signed_mean_error": -0.019898024015299953,
+        "level_mse": 0.00039593135971345366,
+        "centered_shape_mse": 0.00034153904365845605,
+        "level_fraction_of_mse": 0.5368776264147697
+      },
+      "comparisons": {
+        "source_variance_mixture": {
+          "candidate_minus_reference": {
+            "mse": 3.206275780147166e-05,
+            "level_mse": 7.363351598151612e-06,
+            "centered_shape_mse": 2.46994062033201e-05
+          },
+          "level_fraction_of_positive_mse_gap": 0.22965434363895046
+        },
+        "source_gp": {
+          "candidate_minus_reference": {
+            "mse": 0.00012139651642132222,
+            "level_mse": 0.00012179494832733386,
+            "centered_shape_mse": -3.9843190601174727e-07
+          },
+          "level_fraction_of_positive_mse_gap": 1.0032820703407075
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "design": "intercept_mixture_greedy",
+      "candidate_breakdown": {
+        "mse": 0.0006222952836900954,
+        "signed_mean_error": -0.015152562336623385,
+        "level_mse": 0.00022960014536525753,
+        "centered_shape_mse": 0.00039269513832483784,
+        "level_fraction_of_mse": 0.3689569106225124
+      },
+      "comparisons": {
+        "source_variance_mixture": {
+          "candidate_minus_reference": {
+            "mse": 2.7987098557987226e-05,
+            "level_mse": 2.513831979517202e-06,
+            "centered_shape_mse": 2.5473266578469834e-05
+          },
+          "level_fraction_of_positive_mse_gap": 0.08982110004396225
+        },
+        "source_gp": {
+          "candidate_minus_reference": {
+            "mse": 0.00026107407154861586,
+            "level_mse": 0.000196744211347825,
+            "centered_shape_mse": 6.432986020079087e-05
+          },
+          "level_fraction_of_positive_mse_gap": 0.7535953692405962
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "design": "fixed_public_prefix",
+      "candidate_breakdown": {
+        "mse": 0.001424567515393802,
+        "signed_mean_error": -0.03354181794725803,
+        "level_mse": 0.0011250535512070008,
+        "centered_shape_mse": 0.0002995139641868011,
+        "level_fraction_of_mse": 0.7897509518150113
+      },
+      "comparisons": {
+        "source_variance_mixture": {
+          "candidate_minus_reference": {
+            "mse": 6.497331667260379e-05,
+            "level_mse": 4.0305084372808464e-05,
+            "centered_shape_mse": 2.4668232299795544e-05
+          },
+          "level_fraction_of_positive_mse_gap": 0.6203328756619135
+        },
+        "source_gp": {
+          "candidate_minus_reference": {
+            "mse": 0.00041734077100303874,
+            "level_mse": 0.0003863157164040482,
+            "centered_shape_mse": 3.102505459899043e-05
+          },
+          "level_fraction_of_positive_mse_gap": 0.9256601397356296
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "design": "intercept_mixture_greedy",
+      "candidate_breakdown": {
+        "mse": 0.0009202451546226789,
+        "signed_mean_error": -0.02388717121742445,
+        "level_mse": 0.000570596948770551,
+        "centered_shape_mse": 0.00034964820585212786,
+        "level_fraction_of_mse": 0.6200488488358393
+      },
+      "comparisons": {
+        "source_variance_mixture": {
+          "candidate_minus_reference": {
+            "mse": 7.954080575060959e-06,
+            "level_mse": 2.143633820419241e-06,
+            "centered_shape_mse": 5.810446754641772e-06
+          },
+          "level_fraction_of_positive_mse_gap": 0.26950114475082654
+        },
+        "source_gp": {
+          "candidate_minus_reference": {
+            "mse": 0.0005155817763563444,
+            "level_mse": 0.0004288651620705749,
+            "centered_shape_mse": 8.671661428576952e-05
+          },
+          "level_fraction_of_positive_mse_gap": 0.8318082246843509
+        }
+      }
+    }
+  ],
+  "inner_mean_changes": {
+    "5": {
+      "point": {
+        "f_mse": -3.36999477348454e-05,
+        "level_mse": -1.3478423013212534e-06,
+        "centered_shape_mse": -3.235210543352411e-05
+      },
+      "mixture": {
+        "f_mse": -3.2988478310593515e-05,
+        "level_mse": -1.3917207530651757e-06,
+        "centered_shape_mse": -3.159675755752837e-05
+      }
+    },
+    "6": {
+      "point": {
+        "f_mse": -4.3523527646052146e-05,
+        "level_mse": -4.205651256247269e-06,
+        "centered_shape_mse": -3.93178763898049e-05
+      },
+      "mixture": {
+        "f_mse": -3.9539778357035036e-05,
+        "level_mse": -1.2148541817729029e-06,
+        "centered_shape_mse": -3.832492417526215e-05
+      }
+    }
+  },
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.009374200999999971,
+  "no_new_unscored_outcomes_read": true,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "no_model_adopted": true,
+  "observed_label_decomposition_not_oracle_recovery": true,
+  "interpretation": "Inner mean gains persist with honest source4 raw updates;outer task1 losses remain at two other frozen four-point designs. Level/shape arithmetic locates error,but task shift,source4-versus-source5 and anchor-versus-off-source query contracts are not causally separated."
+}

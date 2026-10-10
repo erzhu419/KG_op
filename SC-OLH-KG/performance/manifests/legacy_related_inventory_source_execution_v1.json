@@ -1,0 +1,19 @@
+{
+  "plan": "performance/manifests/legacy_related_inventory_source_plan_v1.json",
+  "legacy_replay": "paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "task_draw_order": "for each task in index order: draw the three shifts, then draw radius scale, with default_rng(task_seed)",
+  "raw_rng": "default_rng(SeedSequence([observation_seed, task_index])), site order then replicate order",
+  "adaptation_calls": 4,
+  "total_target_call_cap": 362,
+  "retention_draw_power": 9,
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "selectors": ["legacy_source_orthogonal", "observable_source_full", "observable_source_orthogonal", "paid_evidence_mixture", "fixed_retained_direct"],
+  "retention": "same 512-node complete-identity mixture rule at cap362, then keep every unique bank policy as a primary; shared retained fallback and terminal actions for all selectors",
+  "prediction_sites": "indices4 onward only; first four sites excluded because their first raw records condition the posterior",
+  "prediction_metrics": "four-head bias/MSE and Gaussian-moment 95-percent interval coverage against scoring truth; replicated heldout f/g exact joint log predictive densities and sample-variance PIT; moment intervals for the identity mixture are not exact mixture quantiles",
+  "terminal_metrics": "selected conditional expected safe reward/calls, estimation errors and loss to best same-class action; full truth only after all ten decisions are saved",
+  "source_fit": "existing legacy source_fit_contract, unchanged source-only objective, tolerances, discrepancy floor, group spectral ARD and zero non-intercept coefficient means",
+  "source_cost": "all eight tasks count once toward new source generation; only tasks0-5 train, first four raw records of tasks6/7 are reused adaptation; no new terminal simulation",
+  "scope": "two related source-population holdouts, not target-d1000 transfer, physical factor recovery or independent deployment certificates"
+}

@@ -1,0 +1,801 @@
+{
+  "execution": {
+    "status": "registered before preparation, source fits or new recommendations",
+    "plan": "performance/manifests/legacy_joint_population_source_budget_attribution_plan_v1.json",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "target_inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+    "full_kernel_population_fit": "paper_artifacts/legacy_joint_population_kernel_mean_v1/source_fit.json",
+    "output": "paper_artifacts/legacy_joint_population_source_budget_v1",
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "source_site_count": 16,
+    "full_source_site_count": 73,
+    "arms": [
+      "joint_population_structural",
+      "joint_population_full",
+      "joint_population_rbf_shared_raw"
+    ],
+    "head_order": [
+      "f",
+      "g",
+      "eta_g",
+      "eta_f"
+    ],
+    "encoder": "all four supervised maps retrained on the first16 sites of each training task, then source-only10-coordinate normalization; no73-site encoder, labels, GP lengthscales or response normalizers enter this branch",
+    "structural_regularizer": "native orthogonal low-order basis from the selected source coordinates; original group ARD/spectral regularizer fitted once per head with original.02 discrepancy lower bound",
+    "joint_structural_model": "native joint population fit using that regularizer, same relative weak tail and nonnegative residual/discrepancy rules; pooled full residual control shares its complete common mean and posterior covariance",
+    "structural_max_iterations": 1024,
+    "generic_anchor_max_iterations": 512,
+    "generic_population_optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 512,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "generic_model": "measurement-aware ARD RBF regularizer fitted only on the selected source labels, then native shared-function-mean/task-residual GP with interpolation uncertainty; known label noises and response normalizers retained",
+    "target_prefix": 2,
+    "total_target_call_cap": 362,
+    "retention_correction": "the previously proposed common retained22 was selected by a73-site supervised model and leaks that archive into the16-site branch; replace it with the first unobserved public-bank policy, index2, selected without any response labels",
+    "terminal_class": "same complete73-primary guarded/direct class and support roster from the two cached observations, with public index2 retention; identical across budgets and priors; source parameters at73 restored from cache, only its decisions reranked under the corrected class",
+    "freeze_rule": "save all36 new actions for both source budgets before reading any cached target scoring truth; no target-based source fitting, subset selection or hyperparameter tuning",
+    "terminal_draw_power": 13,
+    "integration_seed": 80771,
+    "bootstrap_seed": 80811,
+    "bootstrap_draws": 10000,
+    "new_simulator_call_cap": 0,
+    "execution": "local serial single-thread; four structural regularizer, four joint structural, four generic anchor and four generic population fits once; cache all results; no source optimization per target, scheduler/server dispatch or pulls",
+    "interpretation": "opened-task conditional source-record efficiency with inherited old public frontend bank;288/1314 count this response archive, not the historical frontend construction; no independent confirmation or KG gain"
+  },
+  "rows": [
+    {
+      "task_id": "independent_inventory_00",
+      "source_site_count": 16,
+      "arm": "joint_population_structural",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.684472640468255,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "source_site_count": 16,
+      "arm": "joint_population_full",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6585192488165902,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "source_site_count": 16,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.7260119975569933,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "source_site_count": 73,
+      "arm": "joint_population_structural",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6966908910750588,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "source_site_count": 73,
+      "arm": "joint_population_full",
+      "action_index": 133,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          131,
+          132
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5726035778132329,
+      "predicted_verification_calls": 269.5275052004095
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "source_site_count": 73,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6998916162764078,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "source_site_count": 16,
+      "arm": "joint_population_structural",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5957938189212507,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "source_site_count": 16,
+      "arm": "joint_population_full",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5840545326671958,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "source_site_count": 16,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6294799038201455,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "source_site_count": 73,
+      "arm": "joint_population_structural",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6088354947678923,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "source_site_count": 73,
+      "arm": "joint_population_full",
+      "action_index": 276,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5301605982966111,
+      "predicted_verification_calls": 270.60983983508817
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "source_site_count": 73,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5958696072671772,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "source_site_count": 16,
+      "arm": "joint_population_structural",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6708326531961317,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "source_site_count": 16,
+      "arm": "joint_population_full",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6449869907758751,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "source_site_count": 16,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.7178169496206581,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "source_site_count": 73,
+      "arm": "joint_population_structural",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6889347333932395,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "source_site_count": 73,
+      "arm": "joint_population_full",
+      "action_index": 276,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5656110735584258,
+      "predicted_verification_calls": 270.06978131990877
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "source_site_count": 73,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6956488458443536,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "source_site_count": 16,
+      "arm": "joint_population_structural",
+      "action_index": 566,
+      "action": {
+        "kind": "direct",
+        "primary": 64,
+        "shortlist": [
+          64
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5621217522683857,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "source_site_count": 16,
+      "arm": "joint_population_full",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5433395597146384,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "source_site_count": 16,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5339318329336191,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "source_site_count": 73,
+      "arm": "joint_population_structural",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5381679636519859,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "source_site_count": 73,
+      "arm": "joint_population_full",
+      "action_index": 276,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5169768569680548,
+      "predicted_verification_calls": 269.19849791965316
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "source_site_count": 73,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.4848471826419716,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "source_site_count": 16,
+      "arm": "joint_population_structural",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6051661995236254,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "source_site_count": 16,
+      "arm": "joint_population_full",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5918214788778124,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "source_site_count": 16,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6386111029231232,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "source_site_count": 73,
+      "arm": "joint_population_structural",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6090357036989154,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "source_site_count": 73,
+      "arm": "joint_population_full",
+      "action_index": 276,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5268550061122955,
+      "predicted_verification_calls": 270.61687090904803
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "source_site_count": 73,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5973003170969021,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "source_site_count": 16,
+      "arm": "joint_population_structural",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.585786319459825,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "source_site_count": 16,
+      "arm": "joint_population_full",
+      "action_index": 573,
+      "action": {
+        "kind": "direct",
+        "primary": 71,
+        "shortlist": [
+          71
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5755321679440547,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "source_site_count": 16,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.6192176852671126,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "source_site_count": 73,
+      "arm": "joint_population_structural",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5970169582966871,
+      "predicted_verification_calls": 360.0
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "source_site_count": 73,
+      "arm": "joint_population_full",
+      "action_index": 276,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5258515624905127,
+      "predicted_verification_calls": 270.4842284668961
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "source_site_count": 73,
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 565,
+      "action": {
+        "kind": "direct",
+        "primary": 63,
+        "shortlist": [
+          63
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "public_retained_candidate": 2,
+      "predicted_reward": 0.5839857374194902,
+      "predicted_verification_calls": 360.0
+    }
+  ]
+}

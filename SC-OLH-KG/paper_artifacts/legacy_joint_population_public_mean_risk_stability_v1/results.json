@@ -1,0 +1,1103 @@
+{
+  "execution": {
+    "status": "registered before all deleted-task risk fits and forecasts",
+    "basis_of_next_step": "144-call source reduction worsens structural g prediction and eta_g target MSE.263 to.849, with49% moment truth coverage. At63, source-input eta_g bias changes.007 to.709; paid update only-.003. Ateta_f63 query transfer shifts-1.208. Need distinguish learned-risk representation and fitted risk law instability before terminal or KG ranking.",
+    "source_execution": "performance/manifests/legacy_joint_population_public_mean_source_half_execution_v1.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/inputs.json",
+    "reference_risk_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/risk_source_fit.json",
+    "reference_target_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1/inputs.json",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "deletion_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "modes": [
+      "risk_fit_only_at_frozen48_label_map",
+      "relearn_map_and_risk_fit_on40_labels"
+    ],
+    "selected_information": "same registered8 sites/task and three repeats/site; union information144 historical response calls. Each deleted branch trains risk laws on five tasks40 records. No unselected label or new raw episode.",
+    "fixed_map_mode": "keep the full48-label risk encoder, normalizer and public reference; refit eta_g/eta_f priors on the five remaining tasks. This intentionally retains deleted-task map information to attribute risk-law estimation variability; it is not independent leave-task-out validation.",
+    "relearned_map_mode": "exclude the deleted task before any source label moments, supervised encoder or normalizer fitting; rebuild public reference and joint eta priors from only remaining40 records.",
+    "mean_control": "hold the144-call public f/g mean priors fixed; no mean refitting or target-truth-based tuning",
+    "source_fit": "eta_g/eta_f regularizer1024, fixed population1024, joint common/task covariance4096 withftol1e-9 andgtol1e-5; original intercept, tails, label noises, source likelihood and native stopping rules.12 branches x two heads x three native fits=72 fits, cached once; continue only actual capped joint objectives before forecasts.",
+    "queries": "public73-source catalog, opened source holdouts6/7 and response-free inputs of the six opened targets; compare prior mean/covariance variation at27/60/63 and across full banks, with learned-map versus fixed-map query-shift decomposition",
+    "freeze_rule": "save all completed branch priors and query forecasts before existing holdout or target outcome diagnostics; no best-branch selection on opened outcomes",
+    "next_action": "judge whether representation refitting or risk-population fitting dominates the observed variation; specify source-uncertainty treatment only after this attribution. No automatic variance floor, new representation replacement, target ranking or expensive KG sweep.",
+    "execution": "local serial single-thread, small source matrices; new simulator/verifier calls0, terminal integrations0, no server/scheduler dispatch or pulls",
+    "interpretation": "source estimation stability attribution within the original learned-risk meta-prior, not a validated uncertainty estimator, repaired deployment or complete method claim",
+    "output": "paper_artifacts/legacy_joint_population_public_mean_risk_stability_v1",
+    "plan": "performance/manifests/legacy_joint_population_public_mean_risk_stability_plan_v1.json",
+    "regularizer_max_iterations": 1024,
+    "fixed_population_max_iterations": 1024,
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 4096,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+    "diagnostic_candidates": [
+      27,
+      60,
+      63
+    ],
+    "public_reference_provider": "always source task0 public73-catalog even when task0 labels are deleted; response-free public reference provider remains fixed",
+    "moment_forecasts": "prior eta means and marginal variances only; no paid filtering or terminal utilities. Deletion spread is descriptive, not a calibrated uncertainty estimate."
+  },
+  "summary": {
+    "risk_fit_only_at_frozen48_label_map": {
+      "eta_g": {
+        "27": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": 0.6907415811289646,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.16704022817652597,
+              "deletion_prior_mean_range": 0.4628354256752072,
+              "deletion_mean_minus_full": 0.07914134847517484
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": 0.719616292856875,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.16704022817652597,
+              "deletion_prior_mean_range": 0.4628354256752072,
+              "deletion_mean_minus_full": 0.07914134847517484
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": 0.7447085654908658,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.16704022817652597,
+              "deletion_prior_mean_range": 0.4628354256752072,
+              "deletion_mean_minus_full": 0.07914134847517484
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": 0.6580572068679036,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.16704022817652597,
+              "deletion_prior_mean_range": 0.4628354256752072,
+              "deletion_mean_minus_full": 0.07914134847517484
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": 0.6855449529724522,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.16704022817652597,
+              "deletion_prior_mean_range": 0.4628354256752072,
+              "deletion_mean_minus_full": 0.07914134847517484
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": 0.5748326999429478,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.16704022817652597,
+              "deletion_prior_mean_range": 0.4628354256752072,
+              "deletion_mean_minus_full": 0.07914134847517484
+            }
+          ],
+          "full_prior_bias": 0.6789168832100015,
+          "full_prior_sd": 0.4508445487387291,
+          "deletion_prior_mean_sd": 0.16704022817652597,
+          "deletion_prior_mean_range": 0.4628354256752072,
+          "deletion_mean_minus_full": 0.07914134847517484
+        },
+        "60": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": 0.8694796981575061,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.3160659280232624,
+              "deletion_prior_mean_range": 0.8992298154421663,
+              "deletion_mean_minus_full": -0.08531753714035606
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": 0.97059063551065,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.3160659280232624,
+              "deletion_prior_mean_range": 0.8992298154421663,
+              "deletion_mean_minus_full": -0.08531753714035606
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": 0.9530542266084554,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.3160659280232624,
+              "deletion_prior_mean_range": 0.8992298154421663,
+              "deletion_mean_minus_full": -0.08531753714035606
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": 0.9526688531398948,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.3160659280232624,
+              "deletion_prior_mean_range": 0.8992298154421663,
+              "deletion_mean_minus_full": -0.08531753714035606
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": 0.914671309308968,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.3160659280232624,
+              "deletion_prior_mean_range": 0.8992298154421663,
+              "deletion_mean_minus_full": -0.08531753714035606
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": 0.9291810452146496,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.3160659280232624,
+              "deletion_prior_mean_range": 0.8992298154421663,
+              "deletion_mean_minus_full": -0.08531753714035606
+            }
+          ],
+          "full_prior_bias": 0.9316076279900206,
+          "full_prior_sd": 0.4724580305054449,
+          "deletion_prior_mean_sd": 0.31606592802326233,
+          "deletion_prior_mean_range": 0.8992298154421663,
+          "deletion_mean_minus_full": -0.08531753714035606
+        },
+        "63": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": 0.49850031769282843,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.28129541043432477,
+              "deletion_prior_mean_range": 0.7522042813542376,
+              "deletion_mean_minus_full": -0.24610770973431428
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": 0.6032854226664304,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.28129541043432477,
+              "deletion_prior_mean_range": 0.7522042813542376,
+              "deletion_mean_minus_full": -0.24610770973431428
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": 0.5730177356880821,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.28129541043432477,
+              "deletion_prior_mean_range": 0.7522042813542376,
+              "deletion_mean_minus_full": -0.24610770973431428
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": 0.5497810788093318,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.28129541043432477,
+              "deletion_prior_mean_range": 0.7522042813542376,
+              "deletion_mean_minus_full": -0.24610770973431428
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": 0.5894062128331496,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.28129541043432477,
+              "deletion_prior_mean_range": 0.7522042813542376,
+              "deletion_mean_minus_full": -0.24610770973431428
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": 0.5027539445857032,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.28129541043432477,
+              "deletion_prior_mean_range": 0.7522042813542376,
+              "deletion_mean_minus_full": -0.24610770973431428
+            }
+          ],
+          "full_prior_bias": 0.5527907853792543,
+          "full_prior_sd": 0.5181428033802734,
+          "deletion_prior_mean_sd": 0.28129541043432477,
+          "deletion_prior_mean_range": 0.7522042813542376,
+          "deletion_mean_minus_full": -0.24610770973431428
+        }
+      },
+      "eta_f": {
+        "27": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.21405158444480343,
+              "deletion_prior_mean_range": 0.6207394000161006,
+              "deletion_mean_minus_full": -0.14990541196708307
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.21405158444480343,
+              "deletion_prior_mean_range": 0.6207394000161006,
+              "deletion_mean_minus_full": -0.14990541196708307
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.21405158444480343,
+              "deletion_prior_mean_range": 0.6207394000161006,
+              "deletion_mean_minus_full": -0.14990541196708307
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.21405158444480343,
+              "deletion_prior_mean_range": 0.6207394000161006,
+              "deletion_mean_minus_full": -0.14990541196708307
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.21405158444480343,
+              "deletion_prior_mean_range": 0.6207394000161006,
+              "deletion_mean_minus_full": -0.14990541196708307
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.21405158444480343,
+              "deletion_prior_mean_range": 0.6207394000161006,
+              "deletion_mean_minus_full": -0.14990541196708307
+            }
+          ],
+          "full_prior_bias": -0.5846051494032292,
+          "full_prior_sd": 0.5050963649765765,
+          "deletion_prior_mean_sd": 0.21405158444480343,
+          "deletion_prior_mean_range": 0.6207394000161006,
+          "deletion_mean_minus_full": -0.14990541196708307
+        },
+        "60": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.32484191977676635,
+              "deletion_prior_mean_range": 0.7933396122589169,
+              "deletion_mean_minus_full": 0.11096391592598565
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.32484191977676635,
+              "deletion_prior_mean_range": 0.7933396122589169,
+              "deletion_mean_minus_full": 0.11096391592598565
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.32484191977676635,
+              "deletion_prior_mean_range": 0.7933396122589169,
+              "deletion_mean_minus_full": 0.11096391592598565
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.32484191977676635,
+              "deletion_prior_mean_range": 0.7933396122589169,
+              "deletion_mean_minus_full": 0.11096391592598565
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.32484191977676635,
+              "deletion_prior_mean_range": 0.7933396122589169,
+              "deletion_mean_minus_full": 0.11096391592598565
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.32484191977676635,
+              "deletion_prior_mean_range": 0.7933396122589169,
+              "deletion_mean_minus_full": 0.11096391592598565
+            }
+          ],
+          "full_prior_bias": -0.9201773954628063,
+          "full_prior_sd": 0.35087847652530374,
+          "deletion_prior_mean_sd": 0.3248419197767664,
+          "deletion_prior_mean_range": 0.7933396122589169,
+          "deletion_mean_minus_full": 0.11096391592598565
+        },
+        "63": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.4609696208444812,
+              "deletion_prior_mean_range": 1.327301494243713,
+              "deletion_mean_minus_full": -0.09473404249463435
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.4609696208444812,
+              "deletion_prior_mean_range": 1.327301494243713,
+              "deletion_mean_minus_full": -0.09473404249463435
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.4609696208444812,
+              "deletion_prior_mean_range": 1.327301494243713,
+              "deletion_mean_minus_full": -0.09473404249463435
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.4609696208444812,
+              "deletion_prior_mean_range": 1.327301494243713,
+              "deletion_mean_minus_full": -0.09473404249463435
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.4609696208444812,
+              "deletion_prior_mean_range": 1.327301494243713,
+              "deletion_mean_minus_full": -0.09473404249463435
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.4609696208444812,
+              "deletion_prior_mean_range": 1.327301494243713,
+              "deletion_mean_minus_full": -0.09473404249463435
+            }
+          ],
+          "full_prior_bias": -0.48851650836755134,
+          "full_prior_sd": 0.5455830930575302,
+          "deletion_prior_mean_sd": 0.4609696208444812,
+          "deletion_prior_mean_range": 1.327301494243713,
+          "deletion_mean_minus_full": -0.09473404249463435
+        }
+      }
+    },
+    "relearn_map_and_risk_fit_on40_labels": {
+      "eta_g": {
+        "27": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": 0.6907415811289646,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.734160602075856,
+              "deletion_prior_mean_range": 2.1153870882239074,
+              "deletion_mean_minus_full": -0.13085052170811284
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": 0.719616292856875,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.734160602075856,
+              "deletion_prior_mean_range": 2.1153870882239074,
+              "deletion_mean_minus_full": -0.13085052170811284
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": 0.7447085654908658,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.734160602075856,
+              "deletion_prior_mean_range": 2.1153870882239074,
+              "deletion_mean_minus_full": -0.13085052170811284
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": 0.6580572068679036,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.734160602075856,
+              "deletion_prior_mean_range": 2.1153870882239074,
+              "deletion_mean_minus_full": -0.13085052170811284
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": 0.6855449529724522,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.734160602075856,
+              "deletion_prior_mean_range": 2.1153870882239074,
+              "deletion_mean_minus_full": -0.13085052170811284
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": 0.5748326999429478,
+              "full_prior_sd": 0.45084454873872903,
+              "deletion_prior_mean_sd": 0.734160602075856,
+              "deletion_prior_mean_range": 2.1153870882239074,
+              "deletion_mean_minus_full": -0.13085052170811284
+            }
+          ],
+          "full_prior_bias": 0.6789168832100015,
+          "full_prior_sd": 0.4508445487387291,
+          "deletion_prior_mean_sd": 0.734160602075856,
+          "deletion_prior_mean_range": 2.115387088223908,
+          "deletion_mean_minus_full": -0.13085052170811284
+        },
+        "60": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": 0.8694796981575061,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.535076725271232,
+              "deletion_prior_mean_range": 1.5577589181246756,
+              "deletion_mean_minus_full": 0.06893024487788502
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": 0.97059063551065,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.535076725271232,
+              "deletion_prior_mean_range": 1.5577589181246756,
+              "deletion_mean_minus_full": 0.06893024487788502
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": 0.9530542266084554,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.535076725271232,
+              "deletion_prior_mean_range": 1.5577589181246756,
+              "deletion_mean_minus_full": 0.06893024487788502
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": 0.9526688531398948,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.535076725271232,
+              "deletion_prior_mean_range": 1.5577589181246756,
+              "deletion_mean_minus_full": 0.06893024487788502
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": 0.914671309308968,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.535076725271232,
+              "deletion_prior_mean_range": 1.5577589181246756,
+              "deletion_mean_minus_full": 0.06893024487788502
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": 0.9291810452146496,
+              "full_prior_sd": 0.4724580305054449,
+              "deletion_prior_mean_sd": 0.535076725271232,
+              "deletion_prior_mean_range": 1.5577589181246756,
+              "deletion_mean_minus_full": 0.06893024487788502
+            }
+          ],
+          "full_prior_bias": 0.9316076279900206,
+          "full_prior_sd": 0.4724580305054449,
+          "deletion_prior_mean_sd": 0.535076725271232,
+          "deletion_prior_mean_range": 1.5577589181246756,
+          "deletion_mean_minus_full": 0.06893024487788502
+        },
+        "63": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": 0.49850031769282843,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.7240529157282375,
+              "deletion_prior_mean_range": 2.095231105885932,
+              "deletion_mean_minus_full": -0.06781116906537754
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": 0.6032854226664304,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.7240529157282375,
+              "deletion_prior_mean_range": 2.095231105885932,
+              "deletion_mean_minus_full": -0.06781116906537754
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": 0.5730177356880821,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.7240529157282375,
+              "deletion_prior_mean_range": 2.095231105885932,
+              "deletion_mean_minus_full": -0.06781116906537754
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": 0.5497810788093318,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.7240529157282375,
+              "deletion_prior_mean_range": 2.095231105885932,
+              "deletion_mean_minus_full": -0.06781116906537754
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": 0.5894062128331496,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.7240529157282375,
+              "deletion_prior_mean_range": 2.095231105885932,
+              "deletion_mean_minus_full": -0.06781116906537754
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": 0.5027539445857032,
+              "full_prior_sd": 0.5181428033802733,
+              "deletion_prior_mean_sd": 0.7240529157282375,
+              "deletion_prior_mean_range": 2.095231105885932,
+              "deletion_mean_minus_full": -0.06781116906537754
+            }
+          ],
+          "full_prior_bias": 0.5527907853792543,
+          "full_prior_sd": 0.5181428033802734,
+          "deletion_prior_mean_sd": 0.7240529157282375,
+          "deletion_prior_mean_range": 2.0952311058859325,
+          "deletion_mean_minus_full": -0.06781116906537754
+        }
+      },
+      "eta_f": {
+        "27": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.32986970644792146,
+              "deletion_prior_mean_range": 0.7969948598125818,
+              "deletion_mean_minus_full": 0.18479870005360333
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.32986970644792146,
+              "deletion_prior_mean_range": 0.7969948598125818,
+              "deletion_mean_minus_full": 0.18479870005360333
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.32986970644792146,
+              "deletion_prior_mean_range": 0.7969948598125818,
+              "deletion_mean_minus_full": 0.18479870005360333
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.32986970644792146,
+              "deletion_prior_mean_range": 0.7969948598125818,
+              "deletion_mean_minus_full": 0.18479870005360333
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.32986970644792146,
+              "deletion_prior_mean_range": 0.7969948598125818,
+              "deletion_mean_minus_full": 0.18479870005360333
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": -0.5846051494032292,
+              "full_prior_sd": 0.5050963649765765,
+              "deletion_prior_mean_sd": 0.32986970644792146,
+              "deletion_prior_mean_range": 0.7969948598125818,
+              "deletion_mean_minus_full": 0.18479870005360333
+            }
+          ],
+          "full_prior_bias": -0.5846051494032292,
+          "full_prior_sd": 0.5050963649765765,
+          "deletion_prior_mean_sd": 0.32986970644792146,
+          "deletion_prior_mean_range": 0.7969948598125818,
+          "deletion_mean_minus_full": 0.18479870005360333
+        },
+        "60": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.2657823414491013,
+              "deletion_prior_mean_range": 0.6319409833249132,
+              "deletion_mean_minus_full": 0.1877077172679602
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.2657823414491013,
+              "deletion_prior_mean_range": 0.6319409833249132,
+              "deletion_mean_minus_full": 0.1877077172679602
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.2657823414491013,
+              "deletion_prior_mean_range": 0.6319409833249132,
+              "deletion_mean_minus_full": 0.1877077172679602
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.2657823414491013,
+              "deletion_prior_mean_range": 0.6319409833249132,
+              "deletion_mean_minus_full": 0.1877077172679602
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.2657823414491013,
+              "deletion_prior_mean_range": 0.6319409833249132,
+              "deletion_mean_minus_full": 0.1877077172679602
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": -0.9201773954628063,
+              "full_prior_sd": 0.35087847652530374,
+              "deletion_prior_mean_sd": 0.2657823414491013,
+              "deletion_prior_mean_range": 0.6319409833249132,
+              "deletion_mean_minus_full": 0.1877077172679602
+            }
+          ],
+          "full_prior_bias": -0.9201773954628063,
+          "full_prior_sd": 0.35087847652530374,
+          "deletion_prior_mean_sd": 0.26578234144910123,
+          "deletion_prior_mean_range": 0.6319409833249132,
+          "deletion_mean_minus_full": 0.1877077172679602
+        },
+        "63": {
+          "tasks": [
+            {
+              "task_id": "independent_inventory_00",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.47631394117722037,
+              "deletion_prior_mean_range": 1.2597039735546947,
+              "deletion_mean_minus_full": 0.3807056365366197
+            },
+            {
+              "task_id": "independent_inventory_01",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.47631394117722037,
+              "deletion_prior_mean_range": 1.2597039735546947,
+              "deletion_mean_minus_full": 0.3807056365366197
+            },
+            {
+              "task_id": "independent_inventory_02",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.47631394117722037,
+              "deletion_prior_mean_range": 1.2597039735546947,
+              "deletion_mean_minus_full": 0.3807056365366197
+            },
+            {
+              "task_id": "independent_inventory_03",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.47631394117722037,
+              "deletion_prior_mean_range": 1.2597039735546947,
+              "deletion_mean_minus_full": 0.3807056365366197
+            },
+            {
+              "task_id": "independent_inventory_04",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.47631394117722037,
+              "deletion_prior_mean_range": 1.2597039735546947,
+              "deletion_mean_minus_full": 0.3807056365366197
+            },
+            {
+              "task_id": "independent_inventory_05",
+              "full_prior_bias": -0.48851650836755134,
+              "full_prior_sd": 0.54558309305753,
+              "deletion_prior_mean_sd": 0.47631394117722037,
+              "deletion_prior_mean_range": 1.2597039735546947,
+              "deletion_mean_minus_full": 0.3807056365366197
+            }
+          ],
+          "full_prior_bias": -0.48851650836755134,
+          "full_prior_sd": 0.5455830930575302,
+          "deletion_prior_mean_sd": 0.47631394117722037,
+          "deletion_prior_mean_range": 1.2597039735546947,
+          "deletion_mean_minus_full": 0.3807056365366197
+        }
+      }
+    }
+  },
+  "paired_refit_contrasts": [
+    {
+      "head": "eta_g",
+      "query": "source_reference",
+      "paired_map_refit_delta_rms": 0.6419918765800854,
+      "points": {
+        "27": {
+          "mean_delta": -0.22564932904655896,
+          "rms_delta": 0.7602001879122274
+        },
+        "60": {
+          "mean_delta": -0.003044380811924411,
+          "rms_delta": 0.40905796777523545
+        },
+        "63": {
+          "mean_delta": -0.356100982192091,
+          "rms_delta": 0.5744255392361716
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "source_holdout_6",
+      "paired_map_refit_delta_rms": 0.6419918765800854,
+      "points": {
+        "27": {
+          "mean_delta": -0.22564932904655896,
+          "rms_delta": 0.7602001879122274
+        },
+        "60": {
+          "mean_delta": -0.003044380811924411,
+          "rms_delta": 0.40905796777523545
+        },
+        "63": {
+          "mean_delta": -0.356100982192091,
+          "rms_delta": 0.5744255392361716
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "source_holdout_7",
+      "paired_map_refit_delta_rms": 0.6419918765800854,
+      "points": {
+        "27": {
+          "mean_delta": -0.22564932904655896,
+          "rms_delta": 0.7602001879122274
+        },
+        "60": {
+          "mean_delta": -0.003044380811924411,
+          "rms_delta": 0.40905796777523545
+        },
+        "63": {
+          "mean_delta": -0.356100982192091,
+          "rms_delta": 0.5744255392361716
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "independent_inventory_00",
+      "paired_map_refit_delta_rms": 0.7365135756738638,
+      "points": {
+        "27": {
+          "mean_delta": -0.20999187018328783,
+          "rms_delta": 0.7239663158995661
+        },
+        "60": {
+          "mean_delta": 0.1542477820182405,
+          "rms_delta": 0.520153769037945
+        },
+        "63": {
+          "mean_delta": 0.1782965406689366,
+          "rms_delta": 0.7997604479115195
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "independent_inventory_01",
+      "paired_map_refit_delta_rms": 0.7365135756738638,
+      "points": {
+        "27": {
+          "mean_delta": -0.20999187018328783,
+          "rms_delta": 0.7239663158995661
+        },
+        "60": {
+          "mean_delta": 0.1542477820182405,
+          "rms_delta": 0.520153769037945
+        },
+        "63": {
+          "mean_delta": 0.1782965406689366,
+          "rms_delta": 0.7997604479115195
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "independent_inventory_02",
+      "paired_map_refit_delta_rms": 0.7365135756738638,
+      "points": {
+        "27": {
+          "mean_delta": -0.20999187018328783,
+          "rms_delta": 0.7239663158995661
+        },
+        "60": {
+          "mean_delta": 0.1542477820182405,
+          "rms_delta": 0.520153769037945
+        },
+        "63": {
+          "mean_delta": 0.1782965406689366,
+          "rms_delta": 0.7997604479115195
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "independent_inventory_03",
+      "paired_map_refit_delta_rms": 0.7365135756738638,
+      "points": {
+        "27": {
+          "mean_delta": -0.20999187018328783,
+          "rms_delta": 0.7239663158995661
+        },
+        "60": {
+          "mean_delta": 0.1542477820182405,
+          "rms_delta": 0.520153769037945
+        },
+        "63": {
+          "mean_delta": 0.1782965406689366,
+          "rms_delta": 0.7997604479115195
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "independent_inventory_04",
+      "paired_map_refit_delta_rms": 0.7365135756738638,
+      "points": {
+        "27": {
+          "mean_delta": -0.20999187018328783,
+          "rms_delta": 0.7239663158995661
+        },
+        "60": {
+          "mean_delta": 0.1542477820182405,
+          "rms_delta": 0.520153769037945
+        },
+        "63": {
+          "mean_delta": 0.1782965406689366,
+          "rms_delta": 0.7997604479115195
+        }
+      }
+    },
+    {
+      "head": "eta_g",
+      "query": "independent_inventory_05",
+      "paired_map_refit_delta_rms": 0.7365135756738638,
+      "points": {
+        "27": {
+          "mean_delta": -0.20999187018328783,
+          "rms_delta": 0.7239663158995661
+        },
+        "60": {
+          "mean_delta": 0.1542477820182405,
+          "rms_delta": 0.520153769037945
+        },
+        "63": {
+          "mean_delta": 0.1782965406689366,
+          "rms_delta": 0.7997604479115195
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "source_reference",
+      "paired_map_refit_delta_rms": 0.6940196226849413,
+      "points": {
+        "27": {
+          "mean_delta": 0.31743512371734006,
+          "rms_delta": 0.45511172072601896
+        },
+        "60": {
+          "mean_delta": 0.032493551948789445,
+          "rms_delta": 0.44527788718503636
+        },
+        "63": {
+          "mean_delta": -0.09968263221330383,
+          "rms_delta": 0.1794592358369821
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "source_holdout_6",
+      "paired_map_refit_delta_rms": 0.6940196226849413,
+      "points": {
+        "27": {
+          "mean_delta": 0.31743512371734006,
+          "rms_delta": 0.45511172072601896
+        },
+        "60": {
+          "mean_delta": 0.032493551948789445,
+          "rms_delta": 0.44527788718503636
+        },
+        "63": {
+          "mean_delta": -0.09968263221330383,
+          "rms_delta": 0.1794592358369821
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "source_holdout_7",
+      "paired_map_refit_delta_rms": 0.6940196226849413,
+      "points": {
+        "27": {
+          "mean_delta": 0.31743512371734006,
+          "rms_delta": 0.45511172072601896
+        },
+        "60": {
+          "mean_delta": 0.032493551948789445,
+          "rms_delta": 0.44527788718503636
+        },
+        "63": {
+          "mean_delta": -0.09968263221330383,
+          "rms_delta": 0.1794592358369821
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "independent_inventory_00",
+      "paired_map_refit_delta_rms": 0.7797198819023933,
+      "points": {
+        "27": {
+          "mean_delta": 0.33470411202068523,
+          "rms_delta": 0.4702968415930699
+        },
+        "60": {
+          "mean_delta": 0.07674380134197396,
+          "rms_delta": 0.36945952490105977
+        },
+        "63": {
+          "mean_delta": 0.47543967903125317,
+          "rms_delta": 0.7400198117591574
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "independent_inventory_01",
+      "paired_map_refit_delta_rms": 0.7797198819023933,
+      "points": {
+        "27": {
+          "mean_delta": 0.33470411202068523,
+          "rms_delta": 0.4702968415930699
+        },
+        "60": {
+          "mean_delta": 0.07674380134197396,
+          "rms_delta": 0.36945952490105977
+        },
+        "63": {
+          "mean_delta": 0.47543967903125317,
+          "rms_delta": 0.7400198117591574
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "independent_inventory_02",
+      "paired_map_refit_delta_rms": 0.7797198819023933,
+      "points": {
+        "27": {
+          "mean_delta": 0.33470411202068523,
+          "rms_delta": 0.4702968415930699
+        },
+        "60": {
+          "mean_delta": 0.07674380134197396,
+          "rms_delta": 0.36945952490105977
+        },
+        "63": {
+          "mean_delta": 0.47543967903125317,
+          "rms_delta": 0.7400198117591574
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "independent_inventory_03",
+      "paired_map_refit_delta_rms": 0.7797198819023933,
+      "points": {
+        "27": {
+          "mean_delta": 0.33470411202068523,
+          "rms_delta": 0.4702968415930699
+        },
+        "60": {
+          "mean_delta": 0.07674380134197396,
+          "rms_delta": 0.36945952490105977
+        },
+        "63": {
+          "mean_delta": 0.47543967903125317,
+          "rms_delta": 0.7400198117591574
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "independent_inventory_04",
+      "paired_map_refit_delta_rms": 0.7797198819023933,
+      "points": {
+        "27": {
+          "mean_delta": 0.33470411202068523,
+          "rms_delta": 0.4702968415930699
+        },
+        "60": {
+          "mean_delta": 0.07674380134197396,
+          "rms_delta": 0.36945952490105977
+        },
+        "63": {
+          "mean_delta": 0.47543967903125317,
+          "rms_delta": 0.7400198117591574
+        }
+      }
+    },
+    {
+      "head": "eta_f",
+      "query": "independent_inventory_05",
+      "paired_map_refit_delta_rms": 0.7797198819023933,
+      "points": {
+        "27": {
+          "mean_delta": 0.33470411202068523,
+          "rms_delta": 0.4702968415930699
+        },
+        "60": {
+          "mean_delta": 0.07674380134197396,
+          "rms_delta": 0.36945952490105977
+        },
+        "63": {
+          "mean_delta": 0.47543967903125317,
+          "rms_delta": 0.7400198117591574
+        }
+      }
+    }
+  ],
+  "cost": {
+    "historical_source_calls_total": 144,
+    "source_records_per_deleted_fit": 40,
+    "new_native_source_head_fits": 72,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "source_fit_cpu_seconds": 1.918463238,
+  "cpu_seconds": 3.302869078
+}

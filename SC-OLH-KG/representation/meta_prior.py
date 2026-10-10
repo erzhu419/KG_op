@@ -4004,25 +4004,11 @@ class LearnedMetaPrior:
                 self.spectral_features_from_descriptor(rec.descriptor)
                 for rec in domain_records
             ])
-            feature_mean = np.mean(features, axis=0)
-            feature_scale = np.std(features, axis=0)
-            feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
-            X = (features - feature_mean) / feature_scale
-            design = np.column_stack([np.ones(len(X), dtype=float), X])
             weights = np.asarray([
                 max(float(rec.sample_weight), 1e-8)
                 * self._boundary_sample_weight(rec)
                 for rec in domain_records
             ], dtype=float)
-            root_w = np.sqrt(weights / max(float(np.mean(weights)), 1e-8))
-            weighted_design = design * root_w[:, None]
-            penalty = self.ridge * np.eye(design.shape[1], dtype=float)
-            penalty[0, 0] = 0.0
-            lhs = weighted_design.T @ weighted_design + penalty
-            try:
-                lhs_inv = np.linalg.pinv(lhs)
-            except np.linalg.LinAlgError:
-                lhs_inv = np.eye(lhs.shape[0], dtype=float)
             for output_index in (0, 1):
                 if output_index == 0:
                     target = np.asarray([
@@ -4033,19 +4019,9 @@ class LearnedMetaPrior:
                         self._source_margin(rec) / self._source_margin_scale(rec)
                         for rec in domain_records
                     ], dtype=float)
-                target_scale = max(float(np.std(target)), 1e-8)
-                target_z = (target - float(np.mean(target))) / target_scale
-                weighted_target = target_z * root_w
-                beta = lhs_inv @ weighted_design.T @ weighted_target
-                residual = target_z - design @ beta
-                dof = max(len(target_z) - design.shape[1], 1)
-                sigma2 = max(float(np.sum(weights * residual ** 2) / dof), 1e-10)
-                se = np.sqrt(np.maximum(sigma2 * np.diag(lhs_inv), 1e-12))
-                z_score = np.abs(beta[1:]) / np.maximum(se[1:], 1e-8)
                 domain_stats[output_index].append({
                     "domain": str(domain),
-                    "coefficient": np.asarray(beta[1:], dtype=float),
-                    "z_score": np.asarray(z_score, dtype=float),
+                    **self.spectral_coefficient_statistics(features, target, weights),
                 })
 
         self.spectral_coefficient_prior = {
@@ -4055,6 +4031,36 @@ class LearnedMetaPrior:
         }
         if self.spectral_adaptive_sparsity:
             self._calibrate_adaptive_sparsity(records, domain_stats[1])
+
+    def spectral_coefficient_statistics(self, features, target, weights):
+        """Historical dimensionless coefficient evidence on a frozen map.
+
+        The record-based trainer and cached-map adaptation share this fit.
+        Callers retain their response semantics and source sampling weights.
+        """
+        features = np.asarray(features, dtype=float)
+        target = np.asarray(target, dtype=float)
+        weights = np.asarray(weights, dtype=float)
+        feature_scale = np.std(features, axis=0)
+        feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
+        X = (features - np.mean(features, axis=0)) / feature_scale
+        design = np.column_stack([np.ones(len(X), dtype=float), X])
+        root_w = np.sqrt(weights / max(float(np.mean(weights)), 1e-8))
+        weighted_design = design * root_w[:, None]
+        penalty = self.ridge * np.eye(design.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+        try:
+            lhs_inv = np.linalg.pinv(weighted_design.T @ weighted_design + penalty)
+        except np.linalg.LinAlgError:
+            lhs_inv = np.eye(design.shape[1], dtype=float)
+        target_z = (target - float(np.mean(target))) / max(float(np.std(target)), 1e-8)
+        beta = lhs_inv @ weighted_design.T @ (target_z * root_w)
+        residual = target_z - design @ beta
+        dof = max(len(target_z) - design.shape[1], 1)
+        sigma2 = max(float(np.sum(weights * residual ** 2) / dof), 1e-10)
+        se = np.sqrt(np.maximum(sigma2 * np.diag(lhs_inv), 1e-12))
+        return {"coefficient": beta[1:],
+                "z_score": np.abs(beta[1:]) / np.maximum(se[1:], 1e-8)}
 
     def _aggregate_spectral_coefficient_prior(self, rows):
         coefficients = np.vstack([row["coefficient"] for row in rows])

@@ -1,0 +1,192 @@
+{
+  "execution_plan": "performance/manifests/historical_conditional_efficiency_v2.json",
+  "rows": [
+    {
+      "layout": "5",
+      "candidate": 5,
+      "identity": 0,
+      "position": 0,
+      "raw_fantasy_labels": [
+        0.4674138761707244,
+        0.3320753150100336
+      ],
+      "maximum_direct_reward_difference": 2.5153490401663703e-17,
+      "maximum_identity_certificate_difference": 1.0477729794899915e-15,
+      "certificate_diagnostics": [
+        {
+          "accepted_orders": {
+            "32": 14,
+            "128": 2
+          },
+          "maximum_accepted_nested_difference": 1.9947654639196344e-12,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 14
+          },
+          "maximum_accepted_nested_difference": 6.263635443648496e-13,
+          "adaptive_fallback_actions": 2,
+          "adaptive_absolute_error_bound": 9.892984892265668e-14
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 6.938893903907228e-18,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 14,
+            "128": 2
+          },
+          "maximum_accepted_nested_difference": 2.0558750014887384e-13,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 5.421010862427522e-20,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 1.734723475976807e-18,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 1.3877787807814457e-17,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 4.794868225949382e-18,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        }
+      ],
+      "terminal_cpu_seconds": 2.4505471480000125,
+      "terminal_actions": 40,
+      "future_paid_episodes": 3,
+      "source_law_unchanged": true,
+      "maximum_raw_integration_relative_error": 1.663021606617911e-13,
+      "equivalent": true
+    },
+    {
+      "layout": "6",
+      "candidate": 1,
+      "identity": 7,
+      "position": 3,
+      "raw_fantasy_labels": [
+        0.6240120925510992,
+        0.8287835497010847
+      ],
+      "maximum_direct_reward_difference": 1.1102230246251565e-16,
+      "maximum_identity_certificate_difference": 2.220446049250313e-16,
+      "certificate_diagnostics": [
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 6.203371150093062e-15,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 1.6653345369377348e-16,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 1.6653345369377348e-16,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 3.3306690738754696e-16,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 14,
+            "64": 2
+          },
+          "maximum_accepted_nested_difference": 6.612987935028514e-12,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 16
+          },
+          "maximum_accepted_nested_difference": 6.810718655714254e-12,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 13,
+            "64": 1,
+            "128": 2
+          },
+          "maximum_accepted_nested_difference": 6.3216758217077285e-12,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        },
+        {
+          "accepted_orders": {
+            "32": 13,
+            "64": 1,
+            "128": 2
+          },
+          "maximum_accepted_nested_difference": 9.53311388163236e-12,
+          "adaptive_fallback_actions": 0,
+          "adaptive_absolute_error_bound": 0.0
+        }
+      ],
+      "terminal_cpu_seconds": 2.0899776400000007,
+      "terminal_actions": 40,
+      "future_paid_episodes": 3,
+      "source_law_unchanged": true,
+      "maximum_raw_integration_relative_error": 9.377144925443459e-14,
+      "equivalent": true
+    }
+  ],
+  "all_registered_anchors_complete": true,
+  "all_anchors_equivalent": true,
+  "cpu_seconds_this_execution": 95.672061084,
+  "anchor_cpu_seconds": 26.693177891000005,
+  "cpu_budget_stopped": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "independent_confirmation": false
+}

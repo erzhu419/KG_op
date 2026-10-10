@@ -1,0 +1,869 @@
+{
+  "execution": {
+    "status": "frozen before all12 joint common/task source fits and v integrations",
+    "template_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "source_templates": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/source_templates.json",
+    "attribution_results": "paper_artifacts/legacy_joint_population_f_task_template_attribution_v1/results.json",
+    "shape_reference_results": "paper_artifacts/legacy_joint_population_f_task_shape_correlation_reference_v1/results.json",
+    "common_execution": "performance/manifests/legacy_joint_population_f_common_scale_correlation_execution_v1.json",
+    "question": "Does joint source estimation of common and task geometry permit useful task coupling that is penalized with the original common law fixed? Task1 remains unchanged under native-marginal shape correlation. Stage109 common-only fitting kept task law fixed;Stage127 kept common law fixed. Neither jointly tested this family.",
+    "common_law": "Reuse Stage109 source common correlation matrix on originally positive native common groups: A00 fixed at native value,A0shape=0,Ashape=independent native tail+Bcommon*((1-p)*I+p*Ccommon)*Bcommon. Re-estimate original supported common standard-deviation amplitudes,shared gamma_common in[0,4],p in[0,1]. No new common groups or intercept correlation.",
+    "task_law": "R(v,q)=v*e0e0prime+independent native1% shape tail+(1-q)*diag(task group variances times weights(gamma_task),zero intercept)+q*Tsource(gamma_task). Tsource uses frozen Stage127 correlation,GP-projected source level variance and frozen union group budgets;rebuild only its within-group frequency marginals at gamma_task. Re-estimate nonnegative task group variances on the existing native common/task union,original gamma_task in[0,4],q in[0,1],and independent v>=0. Groups outside union remain zero excess. This family includes original native endpoint p=q=0 without a variance floor. Any nonzero coupled level variance is learned through q and source template,not imposed on independent v.",
+    "objective": "Coherent Gaussian source marginal likelihood,integrating common and task coefficients,with fixed original empirical center,known label noise and original discrepancy. Only five source tasks0-5 per deletion fold;no query scores,source6/7 or target data. Unchanged eta/g laws.",
+    "initialization": "One native endpoint only:common amplitudes/spectrum from native,p=0;task group variance parameters from native,zeros for union additions,original task exponent,q=0,original independent v. Keep task amplitudes as variance parameters so native-zero union groups have a defined one-sided gradient. Common positive group amplitudes retain Stage109 parameterization. No additional starts,grid or source-score selection among fitted candidates.",
+    "optimizer": "Use each cached original fold L-BFGS-B maxiter4096,ftol1e-9,gtol1e-5 contract. Record every convergence,iteration,gradient and learned group/spectrum/correlation parameter. A construction or optimizer failure stops;do not change bounds/tolerances based on scores.",
+    "verification": "Native p=q=0 must reproduce source NLL,beta/H. Verify full analytic gradient against finite differences at one declared interior p/q/gamma/v point in task1 folds and one-sided derivatives for zero task groups. At final laws verify PSD,original common support/task union,original independent weak tails,group frequency marginals,fixed common intercept/center/noise/discrepancy and coherent dense source conditioning. These checks distinguish an algebraic failure from an unsupported estimator.",
+    "freeze_and_integration": "Freeze all12 fitted source laws and convergence records before other data. Rebuild and integrate conditional independent-v posterior under each fitted full common/task covariance using the existing Jeffreys source measure on v>=0;retain component beta(v),H(v),full task base covariance and source weights. No plug-in mixture replacement or recycled old posterior weights. All other fitted parameters/support are conditional nuisance,not posterior population guarantees.",
+    "decision": "Compare source likelihood and task1 source-law changes with native and retained Stage129 control. If all constructions/fits/integrations verify,register an unchanged-prefix f prediction comparison using native,flat,sourceGP and original variance-mixture controls with identical eta/paid labels/budgets;freeze forecasts before scores and keep all three original development metrics in both layouts. No source likelihood or numerical PASS is decision superiority. If joint law stays at stopped/native task coupling,retain that result and do not spend on a claimed task1 repair. Original complete-model gate,source6/7,target/KG/independent confirmation remain unopened.",
+    "cost": {
+      "maximum_new_f_source_fits": 12,
+      "maximum_new_source_v_integrations": 12,
+      "new_g_or_risk_fits": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small source JSON only;no server jobs,pulls or scheduler",
+    "output": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1",
+    "planned_entrypoint": "performance/fit_legacy_f_joint_common_task_geometry.py",
+    "entrypoint_status": "implemented",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_plan_v1.json",
+    "entrypoint": "performance/fit_legacy_f_joint_common_task_geometry.py",
+    "planned_module": "representation/source_joint_geometry.py",
+    "gradient_verification_deleted_task": 1,
+    "gradient_common_amplitude_multiplier": 1.1,
+    "gradient_task_group_variance_offset": 0.001,
+    "gradient_step": 1e-06,
+    "gradient_tolerance": {
+      "atol": 1e-07,
+      "rtol": 1e-05
+    },
+    "boundary_gradient_tolerance": {
+      "atol": 1e-06,
+      "rtol": 0.0001
+    },
+    "dense_v_verification_deleted_task": 1,
+    "dense_v_verification_variance_over_source_signal": 0.1,
+    "quadrature_split_variance_over_signal": 0.1,
+    "posterior_quantile_probabilities": [
+      0.025,
+      0.5,
+      0.975
+    ],
+    "quadrature": {
+      "relative_tolerance": 1e-08,
+      "absolute_tolerance_for_scaled_integrals": 1e-09,
+      "maximum_subintervals": 128
+    }
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "converged": true,
+      "iterations": 51,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.2952024404293867,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00014577051934198165,
+      "total_source_log_likelihood_gain_over_native": 6.427058944600832,
+      "total_source_log_likelihood_gain_over_stage129": 6.396853670511948,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 1.509903313490213e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00030849773084946246,
+          "standard_deviation": 0.00093076382390744,
+          "quantiles": {
+            "0.025": 4.2636144774638204e-05,
+            "0.5": 0.00017764513980949057,
+            "0.975": 0.0013230667241206906
+          },
+          "normalization_integral": 0.014674674166502233,
+          "normalization_absolute_error": 6.432749463190295e-11,
+          "normalization_relative_error": 4.383572262118285e-09,
+          "normalized_vector_integral_error": 1.0639476662324975e-09,
+          "normalized_mass_error": 7.485123632022805e-13,
+          "normalized_vector_evaluations": 2037
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3990,
+        "maximum_scalar_quadrature_error": 4.54664042236145e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "converged": true,
+      "iterations": 57,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.4330966491990884,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 2.64723020116677e-05,
+      "total_source_log_likelihood_gain_over_native": 6.250499522762025,
+      "total_source_log_likelihood_gain_over_stage129": 6.250499522762025,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "gradient": {
+          "interior_maximum_absolute_error": 3.6581327300666544e-08,
+          "interior_parameters": [
+            0.3738872109778045,
+            0.5994366356351685,
+            0.16855862673754124,
+            2.0,
+            0.5,
+            0.002981842306225492,
+            0.0018999640743616844,
+            0.001,
+            2.0,
+            0.1,
+            0.5
+          ],
+          "native_zero_parameter_one_sided_checks": [
+            {
+              "parameter": "common_correlation_strength",
+              "analytic": -0.09065671228058955,
+              "one_sided_finite_difference": -0.0906568136116448
+            },
+            {
+              "parameter": "task_group_variance_over_signal:main:2",
+              "analytic": 3.4241652523541215,
+              "one_sided_finite_difference": 3.424174517707712
+            },
+            {
+              "parameter": "task_template_strength",
+              "analytic": 0.020802358836900507,
+              "one_sided_finite_difference": 0.020802380706896884
+            }
+          ]
+        },
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 1.1546319456101628e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 7.261560419933879e-05,
+          "standard_deviation": 0.00026854593779619354,
+          "quantiles": {
+            "0.025": 2.841546385180602e-06,
+            "0.5": 3.7329514151095066e-05,
+            "0.975": 0.00034419305982731266
+          },
+          "normalization_integral": 0.0037264768388912644,
+          "normalization_absolute_error": 6.579632521454024e-13,
+          "normalization_relative_error": 1.7656442816941422e-10,
+          "normalized_vector_integral_error": 1.2442443113891345e-09,
+          "normalized_mass_error": 5.3512749786932545e-14,
+          "normalized_vector_evaluations": 1701
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 4011,
+        "maximum_scalar_quadrature_error": 9.449242706101179e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true,
+          "interior_dense_v_likelihood_Fisher_beta_H_verified": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "converged": true,
+      "iterations": 56,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.4832885535609013,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00013058324249079647,
+      "total_source_log_likelihood_gain_over_native": 6.5551475800286685,
+      "total_source_log_likelihood_gain_over_stage129": 6.536955327942966,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 3.9968028886505635e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00027852764059278047,
+          "standard_deviation": 0.0008548135755646284,
+          "quantiles": {
+            "0.025": 3.579100804844889e-05,
+            "0.5": 0.00015897220686002304,
+            "0.975": 0.0012052407402843462
+          },
+          "normalization_integral": 0.013482780453196109,
+          "normalization_absolute_error": 1.9571269366404298e-11,
+          "normalization_relative_error": 1.4515751728171845e-09,
+          "normalized_vector_integral_error": 1.2228287051162775e-09,
+          "normalized_mass_error": 6.24167384444263e-13,
+          "normalized_vector_evaluations": 2037
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3969,
+        "maximum_scalar_quadrature_error": 3.214636931131777e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "converged": true,
+      "iterations": 71,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.5297661812425336,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00013455459427833466,
+      "total_source_log_likelihood_gain_over_native": 5.56663683419611,
+      "total_source_log_likelihood_gain_over_stage129": 5.5380853722917855,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 2.886579864025407e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.000287983103146418,
+          "standard_deviation": 0.0008776021349655306,
+          "quantiles": {
+            "0.025": 3.825851127174243e-05,
+            "0.5": 0.00016504616893226772,
+            "0.975": 0.0012410591319480578
+          },
+          "normalization_integral": 0.01374905310607924,
+          "normalization_absolute_error": 2.8961924455541102e-11,
+          "normalization_relative_error": 2.106466840449935e-09,
+          "normalized_vector_integral_error": 7.306715079884812e-10,
+          "normalized_mass_error": 6.603606550470431e-13,
+          "normalized_vector_evaluations": 2079
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3843,
+        "maximum_scalar_quadrature_error": 3.642311106830459e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "converged": true,
+      "iterations": 71,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.6019622648190914,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 9.391846507238225e-05,
+      "total_source_log_likelihood_gain_over_native": 6.064072793078337,
+      "total_source_log_likelihood_gain_over_stage129": 6.034020023971323,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 8.704148513061227e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00020691381005733485,
+          "standard_deviation": 0.0006540768223342948,
+          "quantiles": {
+            "0.025": 2.4261563316624128e-05,
+            "0.5": 0.00011691746912790749,
+            "0.975": 0.0009042469502539626
+          },
+          "normalization_integral": 0.010032313850367035,
+          "normalization_absolute_error": 5.574852555600298e-11,
+          "normalization_relative_error": 5.556896084741547e-09,
+          "normalized_vector_integral_error": 9.88654463133182e-10,
+          "normalized_mass_error": 3.517186542012496e-13,
+          "normalized_vector_evaluations": 1953
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 4137,
+        "maximum_scalar_quadrature_error": 7.046343192921305e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "converged": true,
+      "iterations": 55,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.5602603022972528,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00013763117844451384,
+      "total_source_log_likelihood_gain_over_native": 5.219271955960716,
+      "total_source_log_likelihood_gain_over_stage129": 5.219271955960716,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 2.7533531010703882e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.000290758702077132,
+          "standard_deviation": 0.0008805500513311294,
+          "quantiles": {
+            "0.025": 4.020941454668925e-05,
+            "0.5": 0.00016739441467017685,
+            "0.975": 0.0012471055502833762
+          },
+          "normalization_integral": 0.013879587605790214,
+          "normalization_absolute_error": 6.839287248245067e-11,
+          "normalization_relative_error": 4.92758678607417e-09,
+          "normalized_vector_integral_error": 1.0113184715486872e-09,
+          "normalized_mass_error": 6.672440377997191e-13,
+          "normalized_vector_evaluations": 2037
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3969,
+        "maximum_scalar_quadrature_error": 5.976573647407677e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "converged": true,
+      "iterations": 48,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.626144813527146,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00011952996100835877,
+      "total_source_log_likelihood_gain_over_native": 5.023942628759315,
+      "total_source_log_likelihood_gain_over_stage129": 4.9046227032624135,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 5.551115123125783e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00025814093160617053,
+          "standard_deviation": 0.0008060748814510486,
+          "quantiles": {
+            "0.025": 3.0012974532055686e-05,
+            "0.5": 0.0001458274433922924,
+            "0.975": 0.0011287579847337353
+          },
+          "normalization_integral": 0.012719190680184012,
+          "normalization_absolute_error": 1.7479480128390824e-11,
+          "normalization_relative_error": 1.3742604044472068e-09,
+          "normalized_vector_integral_error": 1.217148537386851e-09,
+          "normalized_mass_error": 5.508926648190027e-13,
+          "normalized_vector_evaluations": 1995
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3969,
+        "maximum_scalar_quadrature_error": 4.771035737116319e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "converged": true,
+      "iterations": 60,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.6114318550631854,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.0,
+      "total_source_log_likelihood_gain_over_native": 5.951706517807409,
+      "total_source_log_likelihood_gain_over_stage129": 5.951706517807409,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "gradient": {
+          "interior_maximum_absolute_error": 8.3678886930727e-08,
+          "interior_parameters": [
+            0.41497422472070167,
+            0.5564790325063051,
+            0.1705867360680011,
+            2.0,
+            0.5,
+            0.0022085364782902404,
+            0.00294863409421207,
+            0.0010315387958275155,
+            2.0,
+            0.1,
+            0.5
+          ],
+          "native_zero_parameter_one_sided_checks": [
+            {
+              "parameter": "common_correlation_strength",
+              "analytic": -0.10837171278270777,
+              "one_sided_finite_difference": -0.1083717307004406
+            },
+            {
+              "parameter": "independent_task_intercept_variance_over_signal",
+              "analytic": 9.35133109808168,
+              "one_sided_finite_difference": 9.351372526555934
+            },
+            {
+              "parameter": "task_template_strength",
+              "analytic": 0.27723791976237944,
+              "one_sided_finite_difference": 0.27723786288902375
+            }
+          ]
+        },
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 3.552713678800501e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 2.9999913198004834e-05,
+          "standard_deviation": 0.00013346276188231352,
+          "quantiles": {
+            "0.025": 4.0559859215633555e-07,
+            "0.5": 1.2718317849706894e-05,
+            "0.975": 0.00015812801983508721
+          },
+          "normalization_integral": 0.0007969549554242945,
+          "normalization_absolute_error": 6.743064437859536e-12,
+          "normalization_relative_error": 8.461035836422606e-09,
+          "normalized_vector_integral_error": 1.0691805344834518e-09,
+          "normalized_mass_error": 1.1324274851176597e-14,
+          "normalized_vector_evaluations": 1596
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 4809,
+        "maximum_scalar_quadrature_error": 8.673171220634083e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true,
+          "interior_dense_v_likelihood_Fisher_beta_H_verified": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "converged": true,
+      "iterations": 89,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.5723172624994923,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00011080629674121177,
+      "total_source_log_likelihood_gain_over_native": 6.014498329217748,
+      "total_source_log_likelihood_gain_over_stage129": 6.014498329217748,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 5.240252676230739e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.0002400820789871677,
+          "standard_deviation": 0.0007592426976008969,
+          "quantiles": {
+            "0.025": 2.6003736498707275e-05,
+            "0.5": 0.00013467398767045457,
+            "0.975": 0.0010570962810015805
+          },
+          "normalization_integral": 0.0120209999879767,
+          "normalization_absolute_error": 1.86024432644617e-11,
+          "normalization_relative_error": 1.5474954898151322e-09,
+          "normalized_vector_integral_error": 9.410825262603325e-10,
+          "normalized_mass_error": 4.845013279464183e-13,
+          "normalized_vector_evaluations": 1995
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 4032,
+        "maximum_scalar_quadrature_error": 4.58623336572512e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "converged": true,
+      "iterations": 47,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.4798127216242163,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00012361696559700804,
+      "total_source_log_likelihood_gain_over_native": 6.1221060940828576,
+      "total_source_log_likelihood_gain_over_stage129": 6.027040391890015,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 5.906386491005833e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00026622359949309617,
+          "standard_deviation": 0.0008252572360055628,
+          "quantiles": {
+            "0.025": 3.230430676031907e-05,
+            "0.5": 0.00015106907607220676,
+            "0.975": 0.0011589075820139572
+          },
+          "normalization_integral": 0.012992479035368034,
+          "normalization_absolute_error": 1.745836175409666e-11,
+          "normalization_relative_error": 1.3437282990083442e-09,
+          "normalized_vector_integral_error": 1.1856136610875853e-09,
+          "normalized_mass_error": 5.793143742494067e-13,
+          "normalized_vector_evaluations": 1995
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3948,
+        "maximum_scalar_quadrature_error": 4.4137930671384445e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "converged": true,
+      "iterations": 119,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.528844096606345,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00010637097784222718,
+      "total_source_log_likelihood_gain_over_native": 5.490188864379544,
+      "total_source_log_likelihood_gain_over_stage129": 5.413127408650347,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 4.75175454539567e-14
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00023113819893700688,
+          "standard_deviation": 0.0007242879268389095,
+          "quantiles": {
+            "0.025": 2.7532746389143427e-05,
+            "0.5": 0.00013087226248872116,
+            "0.975": 0.0010082305227560654
+          },
+          "normalization_integral": 0.011271687512582866,
+          "normalization_absolute_error": 2.584175276179076e-11,
+          "normalization_relative_error": 2.2926250158144437e-09,
+          "normalized_vector_integral_error": 1.2376171306632594e-09,
+          "normalized_mass_error": 4.3920422854171193e-13,
+          "normalized_vector_evaluations": 1953
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 4305,
+        "maximum_scalar_quadrature_error": 6.7144094960327024e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "converged": true,
+      "iterations": 46,
+      "p": 1.0,
+      "q": 0.0,
+      "common_spectral_exponent": 1.407453541818918,
+      "task_spectral_exponent": 4.0,
+      "fitted_independent_task_intercept_variance": 0.00013911186426588448,
+      "total_source_log_likelihood_gain_over_native": 5.536178663894855,
+      "total_source_log_likelihood_gain_over_stage129": 5.536178663894855,
+      "verification": {
+        "native_endpoint_nll_beta_H_reproduced": true,
+        "fitted": {
+          "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+          "dense_and_component_conditioning_verified": true,
+          "dense_component_nll_error": 1.1945999744966684e-13
+        }
+      },
+      "integration": {
+        "reference_posterior": {
+          "mean": 0.00029359941288828245,
+          "standard_deviation": 0.0008927624326552512,
+          "quantiles": {
+            "0.025": 3.9369656568393195e-05,
+            "0.5": 0.00016841748304135526,
+            "0.975": 0.0012640410656726186
+          },
+          "normalization_integral": 0.014163400750037594,
+          "normalization_absolute_error": 3.7300186310884777e-11,
+          "normalization_relative_error": 2.633561456685166e-09,
+          "normalized_vector_integral_error": 1.0121888181494269e-09,
+          "normalized_mass_error": 6.867839630331218e-13,
+          "normalized_vector_evaluations": 2037
+        },
+        "coupled_template_level_variance": 0.0,
+        "scalar_quadrature_evaluations": 3969,
+        "maximum_scalar_quadrature_error": 3.0987306356722536e-09,
+        "verification": {
+          "fitted_source_nll_beta_H_reproduced_under_new_v_law": true
+        },
+        "conditional_independent_v_integrated_without_floor_or_cutoff": true
+      }
+    }
+  ],
+  "summary": {
+    "5": {
+      "mean_total_source_log_likelihood_gain_over_native": 6.013781271771115,
+      "mean_total_source_log_likelihood_gain_over_stage129": 5.9959476455734615,
+      "fitted_q": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "task1": {
+        "layout": "5",
+        "deleted_task": 1,
+        "converged": true,
+        "iterations": 57,
+        "p": 1.0,
+        "q": 0.0,
+        "common_spectral_exponent": 1.4330966491990884,
+        "task_spectral_exponent": 4.0,
+        "fitted_independent_task_intercept_variance": 2.64723020116677e-05,
+        "total_source_log_likelihood_gain_over_native": 6.250499522762025,
+        "total_source_log_likelihood_gain_over_stage129": 6.250499522762025,
+        "verification": {
+          "native_endpoint_nll_beta_H_reproduced": true,
+          "gradient": {
+            "interior_maximum_absolute_error": 3.6581327300666544e-08,
+            "interior_parameters": [
+              0.3738872109778045,
+              0.5994366356351685,
+              0.16855862673754124,
+              2.0,
+              0.5,
+              0.002981842306225492,
+              0.0018999640743616844,
+              0.001,
+              2.0,
+              0.1,
+              0.5
+            ],
+            "native_zero_parameter_one_sided_checks": [
+              {
+                "parameter": "common_correlation_strength",
+                "analytic": -0.09065671228058955,
+                "one_sided_finite_difference": -0.0906568136116448
+              },
+              {
+                "parameter": "task_group_variance_over_signal:main:2",
+                "analytic": 3.4241652523541215,
+                "one_sided_finite_difference": 3.424174517707712
+              },
+              {
+                "parameter": "task_template_strength",
+                "analytic": 0.020802358836900507,
+                "one_sided_finite_difference": 0.020802380706896884
+              }
+            ]
+          },
+          "fitted": {
+            "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+            "dense_and_component_conditioning_verified": true,
+            "dense_component_nll_error": 1.1546319456101628e-14
+          }
+        },
+        "integration": {
+          "reference_posterior": {
+            "mean": 7.261560419933879e-05,
+            "standard_deviation": 0.00026854593779619354,
+            "quantiles": {
+              "0.025": 2.841546385180602e-06,
+              "0.5": 3.7329514151095066e-05,
+              "0.975": 0.00034419305982731266
+            },
+            "normalization_integral": 0.0037264768388912644,
+            "normalization_absolute_error": 6.579632521454024e-13,
+            "normalization_relative_error": 1.7656442816941422e-10,
+            "normalized_vector_integral_error": 1.2442443113891345e-09,
+            "normalized_mass_error": 5.3512749786932545e-14,
+            "normalized_vector_evaluations": 1701
+          },
+          "coupled_template_level_variance": 0.0,
+          "scalar_quadrature_evaluations": 4011,
+          "maximum_scalar_quadrature_error": 9.449242706101179e-09,
+          "verification": {
+            "fitted_source_nll_beta_H_reproduced_under_new_v_law": true,
+            "interior_dense_v_likelihood_Fisher_beta_H_verified": true
+          },
+          "conditional_independent_v_integrated_without_floor_or_cutoff": true
+        }
+      }
+    },
+    "6": {
+      "mean_total_source_log_likelihood_gain_over_native": 5.689770183023621,
+      "mean_total_source_log_likelihood_gain_over_stage129": 5.6411956691204646,
+      "fitted_q": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "task1": {
+        "layout": "6",
+        "deleted_task": 1,
+        "converged": true,
+        "iterations": 60,
+        "p": 1.0,
+        "q": 0.0,
+        "common_spectral_exponent": 1.6114318550631854,
+        "task_spectral_exponent": 4.0,
+        "fitted_independent_task_intercept_variance": 0.0,
+        "total_source_log_likelihood_gain_over_native": 5.951706517807409,
+        "total_source_log_likelihood_gain_over_stage129": 5.951706517807409,
+        "verification": {
+          "native_endpoint_nll_beta_H_reproduced": true,
+          "gradient": {
+            "interior_maximum_absolute_error": 8.3678886930727e-08,
+            "interior_parameters": [
+              0.41497422472070167,
+              0.5564790325063051,
+              0.1705867360680011,
+              2.0,
+              0.5,
+              0.0022085364782902404,
+              0.00294863409421207,
+              0.0010315387958275155,
+              2.0,
+              0.1,
+              0.5
+            ],
+            "native_zero_parameter_one_sided_checks": [
+              {
+                "parameter": "common_correlation_strength",
+                "analytic": -0.10837171278270777,
+                "one_sided_finite_difference": -0.1083717307004406
+              },
+              {
+                "parameter": "independent_task_intercept_variance_over_signal",
+                "analytic": 9.35133109808168,
+                "one_sided_finite_difference": 9.351372526555934
+              },
+              {
+                "parameter": "task_template_strength",
+                "analytic": 0.27723791976237944,
+                "one_sided_finite_difference": 0.27723786288902375
+              }
+            ]
+          },
+          "fitted": {
+            "psd_sparse_support_frequency_marginals_independent_tail_and_intercept_verified": true,
+            "dense_and_component_conditioning_verified": true,
+            "dense_component_nll_error": 3.552713678800501e-14
+          }
+        },
+        "integration": {
+          "reference_posterior": {
+            "mean": 2.9999913198004834e-05,
+            "standard_deviation": 0.00013346276188231352,
+            "quantiles": {
+              "0.025": 4.0559859215633555e-07,
+              "0.5": 1.2718317849706894e-05,
+              "0.975": 0.00015812801983508721
+            },
+            "normalization_integral": 0.0007969549554242945,
+            "normalization_absolute_error": 6.743064437859536e-12,
+            "normalization_relative_error": 8.461035836422606e-09,
+            "normalized_vector_integral_error": 1.0691805344834518e-09,
+            "normalized_mass_error": 1.1324274851176597e-14,
+            "normalized_vector_evaluations": 1596
+          },
+          "coupled_template_level_variance": 0.0,
+          "scalar_quadrature_evaluations": 4809,
+          "maximum_scalar_quadrature_error": 8.673171220634083e-09,
+          "verification": {
+            "fitted_source_nll_beta_H_reproduced_under_new_v_law": true,
+            "interior_dense_v_likelihood_Fisher_beta_H_verified": true
+          },
+          "conditional_independent_v_integrated_without_floor_or_cutoff": true
+        }
+      }
+    }
+  },
+  "all12_source_fits_and_v_integrations_verified": true,
+  "cost": {
+    "new_f_source_fits": 12,
+    "new_source_v_integrations": 12,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 1.8052951939999997,
+  "no_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

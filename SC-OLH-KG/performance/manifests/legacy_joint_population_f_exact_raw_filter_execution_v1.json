@@ -1,0 +1,56 @@
+{
+  "status": "frozen before unprojected four-observation conditioning or cached paid values",
+  "entrypoint": "performance/check_legacy_f_exact_raw_filter.py",
+  "source_package_results": "paper_artifacts/legacy_joint_population_f_source_package_transfer_v1/results.json",
+  "control_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "design_results": "paper_artifacts/legacy_joint_population_f_source_information_design_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "designs": [
+    "fixed_public_prefix",
+    "intercept_mixture_greedy"
+  ],
+  "arms": [
+    "native_f",
+    "source_gp"
+  ],
+  "question": "Does repeated Gaussian moment projection explain the already-scored outer-task1 bias and undercoverage? Existing checks established implementation equivalence,not exact multi-observation conditioning.",
+  "law": "Freeze each existing Gaussian native-point or sourceGP f prior and the shared Gaussian eta_f prior. Integrate the four correlated paid eta values jointly;conditional on them,f conditioning is analytic Gaussian. Preserve the resulting mixture without any intermediate projection. Future batch density integrates each future eta conditionally on paid eta. Same raw observation likelihood and bias-corrected log sample variance measure.",
+  "orders": [
+    5,
+    9,
+    13,
+    17
+  ],
+  "future_orders": [
+    13,
+    21
+  ],
+  "prediction_tolerances": {
+    "mean_max_absolute": 1e-07,
+    "covariance_relative_frobenius": 1e-05,
+    "paid_log_evidence_absolute": 1e-06
+  },
+  "density_refinement_tolerance": 1e-05,
+  "freeze": "All eight priors/designs freeze before cached paid data. All eight posterior moment rules freeze before previously scored future labels. Adjacent source-independent quadrature levels select the first rule satisfying original predictive tolerances;unresolved moments or future density stop interpretation without relaxing accuracy. No model/data-dependent parameter tuning.",
+  "verification": "At each prior/design,one-observation exact integral must reproduce the existing exact first-observation moment/evidence update at original tolerances. This checks Gaussian conditioning,risk correlations and field indexing. Four-observation posterior means/covariances/evidences require adjacent positive Hermite-rule refinement;future raw densities require simultaneous paid/future eta refinement. Compare with unchanged cached projected forecasts only after these checks.",
+  "decision": "Large verified accumulated differences require repairing the approximation and then separately checking the retained variance-mixture prior. Small differences rule out projection error as the dominant repair for these Gaussian controls;return to source mean/covariance transfer rather than changing risk scales. Point-prior success cannot promote the complete mixture or KG. Failed quadrature retains incomplete numerical results without a scientific verdict.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "maximum_four_observation_conditioning_integrals": 32,
+    "one_observation_checks": 8,
+    "reused_projected_forecasts": 8,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "maximum_single_thread_cpu_seconds": 120,
+  "execution": "local serial single-thread;small cached JSON and in-memory quadrature;no new component NPZ,no server work",
+  "scope": "Already-seen source0-5 development only. Native point and GP controls isolate projection;retained source-variance mixture and physical-factor claims remain untested. No source6/7,target,KG,independent confirmation,manuscript or legacy60/60 changes;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_exact_raw_filter_v1"
+}

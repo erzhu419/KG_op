@@ -1,0 +1,17 @@
+{
+  "ts": 1791520111.5895894,
+  "task_id": "t138145",
+  "signature": "KG_op/historical_full_bank_development_v1/learned_prior_independent_00_source_common_task_rbf_layout5",
+  "project": "KG-SYNTH",
+  "category": "APP_BUG_CAP",
+  "node": "node006",
+  "gpu_idx": null,
+  "reason": "Full-bank dimension-scaled replay roundoff amendment; corrected matching t138146 completed and native subset replay passed. Scientific terminal precision HOLD is unchanged.",
+  "tail": "wds)\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/site-packages/numpy/testing/_private/utils.py\", line 889, in assert_array_compare\n    raise AssertionError(msg)\nAssertionError: \nNot equal to tolerance rtol=1.42109e-14, atol=1.42109e-14\n\nMismatched elements: 1 / 2 (50%)\nMax absolute difference among violations: 1.69309011e-14\nMax relative difference among violations: 5.10449614e-13\n ACTUAL: array([[2.130377, 0.033169]])\n DESIRED: array([[2.130377, 0.033169]])",
+  "log_path": "/tmp/sched_t138145.log",
+  "retry_count": 3,
+  "cmd": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=. /home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python -u -m performance.historical_full_bank_development cas",
+  "cwd": "/home/erzhu419/mine_code/KG_op_independent_kg_parallel_deploy/SC-OLH-KG",
+  "status": "resolved",
+  "resolved_by_task": "t138146"
+}

@@ -1,0 +1,19 @@
+{
+  "status": "Registered before fast Gaussian-eta rule and paid-fantasy reference calculations;v1 negative4096-node timing retained.",
+  "entrypoint": "performance/check_historical_conditional_fast_rule.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "reference": "paper_artifacts/historical_conditional_terminal_completion_v1/results.json",
+  "previous_efficiency": "paper_artifacts/historical_conditional_efficiency_v1/results.json",
+  "powers": [12, 16],
+  "fantasy_anchors": [{"layout": "5", "candidate": 5, "identity": 0, "position": 0}, {"layout": "6", "candidate": 1, "identity": 7, "position": 3}],
+  "anchor_fantasy_power": 2,
+  "eta_orders": [16, 32, 64, 128],
+  "maximum_adjacent_eta_difference": 1e-11,
+  "seed": 202610077,
+  "maximum_reward_difference": 1e-10,
+  "maximum_cost_difference": 1e-7,
+  "maximum_single_thread_cpu_seconds": 120,
+  "scope": "Reuse historical Gaussian eta quadrature with adjacent-rule convergence;unresolved certificates keep adaptive integration. No quadrature threshold/seed changes after seeing values. Compare all40 terminal values/costs in the same8 registered prior cases against saved references. Check all16 direct actions against independent scalar adaptive references at two preselected real paid-filter fantasies. Keep all source components,complete identities,paid prefix,40 actions and budgets unchanged. Nested GH differences are diagnostics,not rigorous error bounds;scalar reference equivalence is required before KG extension.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_conditional_efficiency_v2"
+}

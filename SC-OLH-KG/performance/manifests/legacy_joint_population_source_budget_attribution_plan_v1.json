@@ -1,0 +1,43 @@
+{
+  "status": "registered next-stage source-sample-efficiency attribution; not executed",
+  "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "source_site_counts": [
+    16,
+    73
+  ],
+  "source_site_rule": "first16 sites in the existing frozen public bank, same sites and all three recorded replicates per source task; complete73-site results retained as the data-rich reference; no subset chosen using labels or target truth",
+  "historical_response_label_calls": {
+    "16": 288,
+    "73": 1314
+  },
+  "scientific_question": "does the orthogonal low-order sparse/spectral prior need fewer source response records than the generic common-function-mean GP, after both learn the same type of common mean and share target observations?",
+  "encoder_rule": "retrain all source-aligned mean and variance maps using only the selected source labels; never reuse the73-site supervised encoder for the16-site arm; unlabeled public descriptors are available to all methods",
+  "prior_rule": "rebuild the orthogonal basis and source regularizer and jointly fit structural residuals with the existing native rules; pooled full control shares the identical learned common mean; fit the measurement-aware generic RBF from the selected records then its shared-function/residual model; never reuse full-source kernel hyperparameters or response normalizers at16 sites",
+  "comparators": [
+    "joint_population_structural",
+    "joint_population_full",
+    "joint_population_rbf_shared_raw"
+  ],
+  "target_cache": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+  "target_contract": "same opened six tasks, same original73-policy bank, two cached raw episodes and362 cap; shared terminal roster/retention from the completed two-observation paid-prefix experiment, common to both source budgets and all priors",
+  "freeze_rule": "source fitting consumes only the declared subset; save all18 new16-site target actions before cached scoring truth; compare with the frozen complete-source two-observation actions",
+  "source_fitting_budget": "one shared encoder and four source head fits per model at16 sites, not per target; existing native512/1024 iteration caps; source-only continuation for an actual cap failure separately registered before target comparison",
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "endpoints": "conditional safe reward, total target calls, g/eta_g forecast errors, optimizer convergence and source fit CPU; paired differences against matched generic joint GP and pooled full control; report source-label count explicitly",
+  "adaptive_followup": "after early prior and fixed paid-query attribution, register a bounded same-prior stop/fixed-query/KG comparison; identical mean model and simulator/verifier budget for generic GP and structural prior; common initialization or predictive MSE is not KG benefit",
+  "new_simulator_call_cap": 0,
+  "execution": "cached small local JSON, serial single-thread, no source fitting per target, no scheduler/server dispatch or pulls",
+  "interpretation": "opened-cohort sample-efficiency diagnosis; inherited old source-informed frontend means the288/1314 figures count this response-model archive, not all historical frontend construction costs; no independent confirmation, favorable subset selection or universal superiority claim",
+  "execution_order": "first finish the registered actual-previous-recommendation terminal attribution and preserve its negative/positive outcomes; then evaluate source-label efficiency; adaptive KG remains a separately frozen followup"
+}

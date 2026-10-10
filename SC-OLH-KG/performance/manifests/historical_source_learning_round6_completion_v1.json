@@ -1,0 +1,28 @@
+{
+  "status": "registered before iteration6 actual functional repair",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_source_learning_round5/results.json",
+  "learning_results": "paper_artifacts/historical_source_learning_round6/results.json",
+  "fresh_results": "paper_artifacts/historical_changed_candidate_reconditioning_v6/results.json",
+  "functional_cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "sites": [
+        8
+      ],
+      "axis": 8
+    }
+  ],
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "integration_batch_size": 16,
+  "maximum_single_thread_cpu_seconds_per_case": 45,
+  "scope": "Same-law saved residuals:adjacent source evidence and conditional integrals only at actual failed variance sites. No further sampling or fitting.",
+  "output": "paper_artifacts/historical_source_learning_round6_completion_v1"
+}

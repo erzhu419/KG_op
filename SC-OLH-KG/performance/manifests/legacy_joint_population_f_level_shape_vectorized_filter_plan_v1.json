@@ -1,0 +1,36 @@
+{
+  "status": "completed;all scalar-equivalence checks passed;4096component raw update takes.055-.076 single-thread CPU seconds",
+  "compact_execution": "performance/manifests/legacy_joint_population_f_level_shape_reference64_execution_v1.json",
+  "compact_results": "paper_artifacts/legacy_joint_population_f_level_shape_reference64_v1/results.json",
+  "compact_rules": "paper_artifacts/legacy_joint_population_f_level_shape_reference64_v1/source_quadrature.json",
+  "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+  "question": "Can vectorizing the same raw local Gaussian likelihood and six posterior moments remove the per-component scalar quadrature cost before any joint-variance paid prediction?",
+  "algorithm": "Implement batched local moments with the existing raw Normal likelihood,marginalize eta over the same existing plus/minus12 prior SD interval,integrate six centered posterior moments together,and update the unchanged full Gaussian conditional field in batches. Preserve source component weights and update them by the same paid evidence;no averaged-Gaussian mixture replacement or altered filtering approximation.",
+  "verification": "Use eight predetermined source-rule components from each of the two task1 folds,real prior mean/covariance at the first public prefix site,and deterministic model-derived labels solely as numerical fixtures. Include a second fixture with nonzero f/eta covariance obtained from the existing scalar local update. Compare component mean/covariance/evidence and full conditional completion against representation.joint_function_risk.local_joint_moments;do not read paid query outcomes. Record vector quadrature errors and one4096-component batch CPU/peak working-array size to set a bounded forecast budget.",
+  "numerical_tolerances": {
+    "local_mean_max_absolute": 1e-08,
+    "local_covariance_max_absolute": 1e-08,
+    "component_log_evidence_max_absolute": 1e-08,
+    "full_conditional_mean_max_absolute": 1e-08,
+    "full_conditional_covariance_max_absolute": 1e-08
+  },
+  "scope": "Source0-5/source metadata only;no paid query outcomes,source6/7,target,KG,confirmation,simulator/verifier/terminal calls,server work,pulls or manuscript changes. Model-derived fixture labels are numerical verification inputs,not empirical observations or source prediction evidence.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON and compact local NPZ",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_vectorized_filter_v1",
+  "planned_entrypoints": [
+    "representation/vectorized_joint_function_risk.py",
+    "performance/check_legacy_f_level_shape_vectorized_filter.py"
+  ],
+  "entrypoint_status": "implemented and executed",
+  "decision": "After scalar-equivalence and batch cost pass,register and run only the two task1 four-paid-observation prefix forecasts,restricted to four prefix plus twelve score sites as an exact marginal of the frozen73-policy prior. Verify selected versus full source rule forecasts before score labels,then proper raw density refinement. Preserve original matching native/flat/sourceGP/intercept-only controls and complete-model HOLD;do not launch all-fold or target experiments automatically.",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_level_shape_vectorized_filter_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_f_level_shape_vectorized_filter_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_level_shape_development_plan_v1.json"
+}

@@ -1,0 +1,49 @@
+{
+  "status": "frozen before source joint-reference geometry checks",
+  "shape_execution": "performance/manifests/legacy_joint_population_f_task_shape_uncertainty_execution_v1.json",
+  "shape_results": "paper_artifacts/legacy_joint_population_f_task_shape_uncertainty_v1/results.json",
+  "intercept_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+  "question": "Are native independent task intercept and selected positive task shape group variance jointly identifiable, and how strongly do likelihood and Jeffreys measure couple their source uncertainty?",
+  "source_law": "Same twelve native f deletion laws and source-only group selection as Stage135. Set only v>=0,a>=0 free; retain original empirical center,common A,other task groups,spectral exponent,1% weak tail,known label noise and discrepancy. No Stage130 template or GP covariance is substituted. C(v,a)=C00+v UvUvprime+a UgUgprime.",
+  "reference_measure": "Joint Jeffreys measure sqrt(det I(v,a)) dv da, Iij=.5 trace(C^-1 Ci C^-1 Cj). Evaluate true joint likelihood times this measure;do not multiply separately conditional posterior weights. Full-tail integration and its numerical verification must precede any forecast.",
+  "diagnostic": "Native point and a fixed3x3 cross of existing .025,.5,.975 source conditional quantiles for v and a. Report joint Fisher correlation and joint-to-product Jeffreys factor sqrt(1-rho_I^2), likelihood nonseparability contrast NLL(v,a)-NLL(v,a_native)-NLL(v_native,a)+NLL(native). These fixed points measure dependence;no hyperparameter selection or source prior adoption.",
+  "verification": "Reproduce native NLL,beta,H;verify joint identifiable design rank and native Fisher positive definiteness. On task1 in both layouts verify low-rank against dense NLL,Fisher,beta,H at v=a=.1source_signal. Each variance direction rank>4 and joint full column rank support finite second moments at both individual and joint variance tails;retain failure with no ridge/floor/cutoff.",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "quantile_probabilities": [
+    0.025,
+    0.5,
+    0.975
+  ],
+  "dense_verification_deleted_task": 1,
+  "dense_verification_variance_over_signal": 0.1,
+  "scope": "source0-5 training folds only;no query outcomes,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls",
+  "cost": {
+    "new_source_fits": 0,
+    "source_reference_geometry_laws": 12,
+    "diagnostic_joint_density_points_per_law": 9,
+    "new_source_integrations": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON only",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_joint_reference_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_level_shape_joint_reference.py",
+  "decision": "If rank and dense verification pass,register coherent joint full-tail source integration under this fixed measure. No averaged-covariance replacement,no posterior product,no paid development before a frozen verified source quadrature.",
+  "entrypoint_status": "implemented before execution",
+  "entrypoint": "performance/diagnose_legacy_f_level_shape_joint_reference.py",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_joint_reference_plan_v1.json",
+  "frozen_before_source_evaluation": true
+}

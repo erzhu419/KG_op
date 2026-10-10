@@ -1,0 +1,1033 @@
+{
+  "execution": {
+    "status": "frozen after outer mixed results stopped the candidate;before diagnostic integration",
+    "entrypoint": "performance/diagnose_legacy_f_outer_joint_spectral_transfer.py",
+    "outer_results": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/results.json",
+    "cached_calibration_results": "paper_artifacts/legacy_joint_population_f_outer_conditional_calibration_v1/results.json",
+    "law": "Read only the two newly saved Gaussian raw-posterior states. Reuse previously verified fixed-prefix retained-mixture conditional calibration and all GP forecasts. Same twelve cached task1 labels;no source or query refit. Decompose proper batch density into variance-label and conditional-mean densities;decompose unconditional MSE into level and centered shape. Preserve all sites,including favorable and unfavorable ones.",
+    "verification": "The new conditional integration must reproduce saved proper raw density within1e-8;density components must add to the joint difference. Label/site/prefix and retained-cache identity must match. MSE decompositions must reproduce all three saved scores. Existing derivative and mixture-refinement checks are reused without rerun.",
+    "decision": "Identify whether the layout5 failure is concentrated in mean/variance or sites,and compare the remaining level bias in both layouts. These are attribution signals,not instructions to widen uncertainty on task1 or discard a policy. Stop new outer forecasts and source6/7 access;register any justified source-only uncertainty analysis separately.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_fits": 0,
+      "new_raw_forecasts": 0,
+      "new_local_conditional_integrals": 24,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;two compact existing NPZ and small cached JSON;no server jobs or pulls",
+    "scope": "Two already-scored task1 development cases only;candidate remains stopped,retained native mixture remains reference,complete-model HOLD. No target,KG,independent confirmation or manuscript changes.",
+    "output": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_transfer_v1"
+  },
+  "cost": {
+    "new_source_fits": 0,
+    "new_raw_forecasts": 0,
+    "new_local_conditional_integrals": 24,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "candidate_remains_stopped": true,
+  "no_new_forecasts_or_unscored_outcomes": true,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "training_diagnostic_only": true,
+  "rows": [
+    {
+      "layout": "5",
+      "query_task": 1,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "candidate_summary": {
+        "conditional_mean": 0.44084598115434864,
+        "conditional_batch_mean_variance": 0.00023593243258948746,
+        "expected_episode_noise_over_three": 5.38141285641425e-05,
+        "latent_f_conditional_variance": 0.00018211830402534496,
+        "conditional_squared_error": 0.0006334846190268374,
+        "squared_standardized_error": 2.490893926392527,
+        "conditional_cdf": 0.7587044564246286,
+        "covered_50": 0.16666666666666666,
+        "covered_90": 0.5833333333333334,
+        "covered_95": 0.8333333333333334,
+        "joint_batch_density": 0.2810521889525313,
+        "variance_label_density": -1.819227942321055,
+        "conditional_mean_density": 2.100280131273586,
+        "log_conditional_f_variance_score_gradient": 0.6415294354839314,
+        "gradient_volume_term": -0.40087574946786025,
+        "gradient_residual_term": 1.0424051849517917,
+        "maximum_integration_relative_error_bound": 2.3252083815366302e-12
+      },
+      "retained_summary": {
+        "conditional_mean": 0.43582958071929173,
+        "conditional_batch_mean_variance": 0.0005620181940805591,
+        "expected_episode_noise_over_three": 5.354375385659033e-05,
+        "latent_f_conditional_variance": 0.0005084744402239688,
+        "conditional_squared_error": 0.0007053601223697913,
+        "squared_standardized_error": 1.6355446276918613,
+        "conditional_cdf": 0.7760831485946283,
+        "covered_50": 0.4166666666666667,
+        "covered_90": 0.8333333333333334,
+        "covered_95": 0.8333333333333334,
+        "joint_batch_density": 0.34762773183355994,
+        "variance_label_density": -1.821065031975013,
+        "conditional_mean_density": 2.168692763808573,
+        "log_conditional_f_variance_score_gradient": 0.261244873788487,
+        "gradient_volume_term": -0.44226484848984987,
+        "gradient_residual_term": 0.703509722278337,
+        "maximum_integration_relative_error_bound": 1.4720938477753408e-12
+      },
+      "density_differences_from_retained": {
+        "joint_batch_density": -0.06657554288102863,
+        "variance_label_density": 0.0018370896539581238,
+        "conditional_mean_density": -0.06841263253498697
+      },
+      "mse_geometry": {
+        "candidate": {
+          "mse": 0.0006336565132211267,
+          "signed_mean_error": -0.014671002931761818,
+          "level_mse": 0.00021523832702376384,
+          "centered_shape_mse": 0.00041841818619736275,
+          "level_fraction_of_mse": 0.3396766584622042
+        },
+        "retained_mixture": {
+          "mse": 0.000705407645570438,
+          "signed_mean_error": -0.019712128452181465,
+          "level_mse": 0.00038856800811530205,
+          "centered_shape_mse": 0.00031683963745513595,
+          "level_fraction_of_mse": 0.5508417870933068
+        },
+        "source_gp": {
+          "mse": 0.0006160738869505875,
+          "signed_mean_error": -0.01655706530113715,
+          "level_mse": 0.0002741364113861198,
+          "centered_shape_mse": 0.0003419374755644678,
+          "level_fraction_of_mse": 0.44497326894185835
+        }
+      },
+      "latent_f_bank_variance": {
+        "candidate": {
+          "bank_average_variance": 0.00018212979209986484,
+          "bank_average_level_variance": 5.188456974453498e-05,
+          "centered_shape_variance": 0.00013024522235532987
+        },
+        "retained_mixture": {
+          "bank_average_variance": 0.0005084671919432678,
+          "bank_average_level_variance": 6.729964190962496e-05,
+          "centered_shape_variance": 0.00044116755003364283
+        },
+        "source_gp": {
+          "bank_average_variance": 0.00017299115978947334,
+          "bank_average_level_variance": 4.5569043216169525e-05,
+          "centered_shape_variance": 0.00012742211657330383
+        }
+      },
+      "sites": [
+        {
+          "scoring_policy": 45,
+          "candidate_calibration": {
+            "conditional_mean": 0.32683728386532535,
+            "conditional_batch_mean_variance": 8.421973905080988e-05,
+            "expected_episode_noise_over_three": 1.7861153124137597e-05,
+            "latent_f_conditional_variance": 6.635858592667228e-05,
+            "conditional_squared_error": 0.00029256083464566934,
+            "squared_standardized_error": 3.473779875631852,
+            "conditional_cdf": 0.9690189250077669,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": true,
+            "joint_batch_density": 0.05116199133027566,
+            "variance_label_density": -1.9804064255205664,
+            "conditional_mean_density": 2.031568416850842,
+            "log_conditional_f_variance_score_gradient": 0.9832940705970851,
+            "gradient_volume_term": -0.39530953277929026,
+            "gradient_residual_term": 1.3786036033763753,
+            "maximum_integration_relative_error_bound": 1.2557651811670336e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.7003887576424521,
+            "variance_label_density": -0.006741264980532735,
+            "conditional_mean_density": 0.7071300226229846
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0002957271138759556,
+            "retained_mixture": 0.0003994519361329642,
+            "source_gp": 0.0003751479033302623
+          }
+        },
+        {
+          "scoring_policy": 10,
+          "candidate_calibration": {
+            "conditional_mean": 0.6078701017988447,
+            "conditional_batch_mean_variance": 0.00030917307299064184,
+            "expected_episode_noise_over_three": 2.9189228651942897e-05,
+            "latent_f_conditional_variance": 0.0002799838443386989,
+            "conditional_squared_error": 0.0007461878226154272,
+            "squared_standardized_error": 2.413495507217128,
+            "conditional_cdf": 0.9398499353807118,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": -0.3408906834587875,
+            "variance_label_density": -2.2553675589585174,
+            "conditional_mean_density": 1.91447687549973,
+            "log_conditional_f_variance_score_gradient": 0.6411255233001639,
+            "gradient_volume_term": -0.452782275982763,
+            "gradient_residual_term": 1.093907799282927,
+            "maximum_integration_relative_error_bound": 1.080963266818615e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.03727229491254547,
+            "variance_label_density": -0.005211739999172682,
+            "conditional_mean_density": -0.032060554913372785
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0007446258446437893,
+            "retained_mixture": 0.0009077774891562937,
+            "source_gp": 0.0010306139207007273
+          }
+        },
+        {
+          "scoring_policy": 51,
+          "candidate_calibration": {
+            "conditional_mean": 0.5525746263243765,
+            "conditional_batch_mean_variance": 0.000440021747832249,
+            "expected_episode_noise_over_three": 7.257542114825967e-05,
+            "latent_f_conditional_variance": 0.00036744632668398933,
+            "conditional_squared_error": 0.0028918630501231814,
+            "squared_standardized_error": 6.572091184969467,
+            "conditional_cdf": 0.9947461611955354,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -1.4934891087218267,
+            "variance_label_density": -1.1561223243149645,
+            "conditional_mean_density": -0.3373667844068622,
+            "log_conditional_f_variance_score_gradient": 2.3007018438508573,
+            "gradient_volume_term": -0.4143735225491249,
+            "gradient_residual_term": 2.715075366399982,
+            "maximum_integration_relative_error_bound": 4.465206892102057e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.9111742614811884,
+            "variance_label_density": 0.0010836566255409963,
+            "conditional_mean_density": -0.9122579181067294
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0028917679555138867,
+            "retained_mixture": 0.0034360228228470743,
+            "source_gp": 0.0028888727742893226
+          }
+        },
+        {
+          "scoring_policy": 31,
+          "candidate_calibration": {
+            "conditional_mean": 0.6577226984396005,
+            "conditional_batch_mean_variance": 9.932799370665474e-05,
+            "expected_episode_noise_over_three": 2.8510957645429383e-05,
+            "latent_f_conditional_variance": 7.081703606122536e-05,
+            "conditional_squared_error": 9.629465873354949e-05,
+            "squared_standardized_error": 0.9694614291509441,
+            "conditional_cdf": 0.8379786811564932,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 1.0478543822015216,
+            "variance_label_density": -2.1592010523126466,
+            "conditional_mean_density": 3.207055434514168,
+            "log_conditional_f_variance_score_gradient": -0.010481182298013425,
+            "gradient_volume_term": -0.35976253353681126,
+            "gradient_residual_term": 0.34928135123879783,
+            "maximum_integration_relative_error_bound": 6.82331697475287e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.2553964810220908,
+            "variance_label_density": 0.025421984808798648,
+            "conditional_mean_density": 0.22997449621329213
+          },
+          "squared_mean_errors": {
+            "candidate": 8.978796686575493e-05,
+            "retained_mixture": 0.00010042148682668142,
+            "source_gp": 0.00010853995296581703
+          }
+        },
+        {
+          "scoring_policy": 48,
+          "candidate_calibration": {
+            "conditional_mean": 0.4200147260981164,
+            "conditional_batch_mean_variance": 0.0004963508106558801,
+            "expected_episode_noise_over_three": 0.0002514400570770738,
+            "latent_f_conditional_variance": 0.0002449107535788063,
+            "conditional_squared_error": 0.00013934768495221485,
+            "squared_standardized_error": 0.2807443484741774,
+            "conditional_cdf": 0.717737439071139,
+            "covered_50": true,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 0.28294543150767537,
+            "variance_label_density": -2.5092614982224397,
+            "conditional_mean_density": 2.7922069297301153,
+            "log_conditional_f_variance_score_gradient": -0.1938371002564845,
+            "gradient_volume_term": -0.32110437791624175,
+            "gradient_residual_term": 0.12726727765975723,
+            "maximum_integration_relative_error_bound": 9.456280826707388e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.4087954054434284,
+            "variance_label_density": -0.006252409921227109,
+            "conditional_mean_density": 0.41504781536465574
+          },
+          "squared_mean_errors": {
+            "candidate": 0.00014085527234016147,
+            "retained_mixture": 0.0004301807416784166,
+            "source_gp": 0.00025987879261404277
+          }
+        },
+        {
+          "scoring_policy": 64,
+          "candidate_calibration": {
+            "conditional_mean": 0.49564804395863193,
+            "conditional_batch_mean_variance": 0.00016818362522293606,
+            "expected_episode_noise_over_three": 3.11091912786786e-05,
+            "latent_f_conditional_variance": 0.00013707443394425745,
+            "conditional_squared_error": 0.00030537690831993223,
+            "squared_standardized_error": 1.8157350807198942,
+            "conditional_cdf": 0.9112387888595147,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 1.3907482333990184,
+            "variance_label_density": -1.1264991442033268,
+            "conditional_mean_density": 2.517247377602345,
+            "log_conditional_f_variance_score_gradient": 0.3363301971199101,
+            "gradient_volume_term": -0.4086581642311651,
+            "gradient_residual_term": 0.7449883613510752,
+            "maximum_integration_relative_error_bound": 9.027208360943228e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.19183192334915344,
+            "variance_label_density": 0.0029530582740473488,
+            "conditional_mean_density": 0.1888788650751061
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0003044992173898358,
+            "retained_mixture": 0.0005355453034145206,
+            "source_gp": 0.0006541960460606272
+          }
+        },
+        {
+          "scoring_policy": 72,
+          "candidate_calibration": {
+            "conditional_mean": 0.3455094800800823,
+            "conditional_batch_mean_variance": 0.00017483134618346297,
+            "expected_episode_noise_over_three": 1.75612056145727e-05,
+            "latent_f_conditional_variance": 0.00015727014056889026,
+            "conditional_squared_error": 0.0006940896158946196,
+            "squared_standardized_error": 3.9700524593928486,
+            "conditional_cdf": 0.023233858859313308,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": 0.23590122689131143,
+            "variance_label_density": -1.186300800757814,
+            "conditional_mean_density": 1.4222020276491254,
+            "log_conditional_f_variance_score_gradient": 1.3303164359614164,
+            "gradient_volume_term": -0.4488456803195217,
+            "gradient_residual_term": 1.7791621162809381,
+            "maximum_integration_relative_error_bound": 1.7367043723498587e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -1.4676726030473504,
+            "variance_label_density": 0.006357774441388742,
+            "conditional_mean_density": -1.474030377488739
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0006980252404139609,
+            "retained_mixture": 8.09700681992142e-05,
+            "source_gp": 0.0003579564827312723
+          }
+        },
+        {
+          "scoring_policy": 14,
+          "candidate_calibration": {
+            "conditional_mean": 0.34750280173107123,
+            "conditional_batch_mean_variance": 0.0002223502638859169,
+            "expected_episode_noise_over_three": 2.5224077594361493e-05,
+            "latent_f_conditional_variance": 0.00019712618629155542,
+            "conditional_squared_error": 0.0007941600826678499,
+            "squared_standardized_error": 3.5716624248096966,
+            "conditional_cdf": 0.97059230327583,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": true,
+            "joint_batch_density": -0.014472621644718742,
+            "variance_label_density": -1.5136736124545318,
+            "conditional_mean_density": 1.499200990809813,
+            "log_conditional_f_variance_score_gradient": 1.1419362784677005,
+            "gradient_volume_term": -0.4430134034223013,
+            "gradient_residual_term": 1.5849496818900017,
+            "maximum_integration_relative_error_bound": 4.694001076834482e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.3193509881649893,
+            "variance_label_density": -0.00045436724083147695,
+            "conditional_mean_density": -0.31889662092415794
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0007944789389411314,
+            "retained_mixture": 0.000953945138702045,
+            "source_gp": 0.0009827094807622221
+          }
+        },
+        {
+          "scoring_policy": 50,
+          "candidate_calibration": {
+            "conditional_mean": 0.3593849395902051,
+            "conditional_batch_mean_variance": 0.0002590394897767347,
+            "expected_episode_noise_over_three": 3.161707109643183e-05,
+            "latent_f_conditional_variance": 0.00022742241868030288,
+            "conditional_squared_error": 0.0002526124054398883,
+            "squared_standardized_error": 0.9751887855307857,
+            "conditional_cdf": 0.1615609736681196,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 1.5329923636081477,
+            "variance_label_density": -1.1882886045934486,
+            "conditional_mean_density": 2.7212809682015964,
+            "log_conditional_f_variance_score_gradient": -0.007875456149874838,
+            "gradient_volume_term": -0.4394554752364081,
+            "gradient_residual_term": 0.43158001908653326,
+            "maximum_integration_relative_error_bound": 5.035602749051459e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.00011606077554837668,
+            "variance_label_density": 0.005535670614115418,
+            "conditional_mean_density": -0.005419609838567041
+          },
+          "squared_mean_errors": {
+            "candidate": 0.00025513250625357805,
+            "retained_mixture": 9.490984256807238e-05,
+            "source_gp": 4.3337568564911496e-05
+          }
+        },
+        {
+          "scoring_policy": 57,
+          "candidate_calibration": {
+            "conditional_mean": 0.4159359282765166,
+            "conditional_batch_mean_variance": 0.00014859149223087905,
+            "expected_episode_noise_over_three": 4.8908286020722406e-05,
+            "latent_f_conditional_variance": 9.968320621015664e-05,
+            "conditional_squared_error": 3.1307928567865764e-05,
+            "squared_standardized_error": 0.210697988813653,
+            "conditional_cdf": 0.6772258310079327,
+            "covered_50": true,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 0.7219825336312176,
+            "variance_label_density": -2.664090725129469,
+            "conditional_mean_density": 3.3860732587606868,
+            "log_conditional_f_variance_score_gradient": -0.26789408431261263,
+            "gradient_volume_term": -0.3401219418677651,
+            "gradient_residual_term": 0.07222785755515249,
+            "maximum_integration_relative_error_bound": 9.387115070378788e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.2742835151286833,
+            "variance_label_density": -0.005032332209301327,
+            "conditional_mean_density": 0.27931584733798465
+          },
+          "squared_mean_errors": {
+            "candidate": 3.193814970250016e-05,
+            "retained_mixture": 9.181894875055267e-05,
+            "source_gp": 1.119157532643092e-08
+          }
+        },
+        {
+          "scoring_policy": 67,
+          "candidate_calibration": {
+            "conditional_mean": 0.36386545714800256,
+            "conditional_batch_mean_variance": 0.00035266289562683285,
+            "expected_episode_noise_over_three": 7.534613553644205e-05,
+            "latent_f_conditional_variance": 0.0002773167600903908,
+            "conditional_squared_error": 0.0011836172214218135,
+            "squared_standardized_error": 3.356228387219527,
+            "conditional_cdf": 0.9664986903747249,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": true,
+            "joint_batch_density": -1.4628329691468385,
+            "variance_label_density": -2.8342049325454592,
+            "conditional_mean_density": 1.3713719633986208,
+            "log_conditional_f_variance_score_gradient": 0.9356210483413248,
+            "gradient_volume_term": -0.39290292855622133,
+            "gradient_residual_term": 1.328523976897546,
+            "maximum_integration_relative_error_bound": 1.4617169502643707e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.41414242368067056,
+            "variance_label_density": -0.0010860373189158778,
+            "conditional_mean_density": -0.4130563863617547
+          },
+          "squared_mean_errors": {
+            "candidate": 0.001184429696763924,
+            "retained_mixture": 0.0010309334551110655,
+            "source_gp": 0.0005478235960765656
+          }
+        },
+        {
+          "scoring_policy": 36,
+          "candidate_calibration": {
+            "conditional_mean": 0.39728568654141094,
+            "conditional_batch_mean_variance": 7.643671391085159e-05,
+            "expected_episode_noise_over_three": 1.642675798165758e-05,
+            "latent_f_conditional_variance": 6.000995592919401e-05,
+            "conditional_squared_error": 0.00017439721494003703,
+            "squared_standardized_error": 2.281589644780349,
+            "conditional_cdf": 0.9347718892384623,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 1.4207254878333795,
+            "variance_label_density": -1.2573186288394747,
+            "conditional_mean_density": 2.6780441166728544,
+            "log_conditional_f_variance_score_gradient": 0.509115651185704,
+            "gradient_volume_term": -0.39417915721670954,
+            "gradient_residual_term": 0.9032948084024136,
+            "maximum_integration_relative_error_bound": 7.245376966831273e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.519893913353044,
+            "variance_label_density": 0.005471082753588208,
+            "conditional_mean_density": 0.514422830599456
+          },
+          "squared_mean_errors": {
+            "candidate": 0.00017261025594904304,
+            "retained_mixture": 0.0004029145134583545,
+            "source_gp": 0.0001437989337359531
+          }
+        }
+      ],
+      "negative_density_sites": 5,
+      "mse_improved_sites_vs_gp": 6
+    },
+    {
+      "layout": "6",
+      "query_task": 1,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "candidate_summary": {
+        "conditional_mean": 0.47002211198112803,
+        "conditional_batch_mean_variance": 0.00022546750346898065,
+        "expected_episode_noise_over_three": 3.5257752639137094e-05,
+        "latent_f_conditional_variance": 0.0001902097508298436,
+        "conditional_squared_error": 0.0009282550981018541,
+        "squared_standardized_error": 3.3954625630046174,
+        "conditional_cdf": 0.8805556514133989,
+        "covered_50": 0.08333333333333333,
+        "covered_90": 0.3333333333333333,
+        "covered_95": 0.5,
+        "joint_batch_density": -0.08162457350502943,
+        "variance_label_density": -1.7354705653350635,
+        "conditional_mean_density": 1.6538459918300346,
+        "log_conditional_f_variance_score_gradient": 1.0172055851407793,
+        "gradient_volume_term": -0.41221519899375864,
+        "gradient_residual_term": 1.429420784134538,
+        "maximum_integration_relative_error_bound": 1.901187088736391e-12
+      },
+      "retained_summary": {
+        "conditional_mean": 0.4629339669040253,
+        "conditional_batch_mean_variance": 0.0005430725625410213,
+        "expected_episode_noise_over_three": 3.5165653714356314e-05,
+        "latent_f_conditional_variance": 0.0005079069088266651,
+        "conditional_squared_error": 0.0013584843657375087,
+        "squared_standardized_error": 2.9814257942182127,
+        "conditional_cdf": 0.8982023083583194,
+        "covered_50": 0.08333333333333333,
+        "covered_90": 0.4166666666666667,
+        "covered_95": 0.6666666666666666,
+        "joint_batch_density": -0.22260862916868687,
+        "variance_label_density": -1.7374118777993866,
+        "conditional_mean_density": 1.5148032486306997,
+        "log_conditional_f_variance_score_gradient": 0.8176792671145493,
+        "gradient_volume_term": -0.45363637985050714,
+        "gradient_residual_term": 1.2713156469650564,
+        "maximum_integration_relative_error_bound": 2.6040929353486217e-12
+      },
+      "density_differences_from_retained": {
+        "joint_batch_density": 0.14098405566365746,
+        "variance_label_density": 0.0019413124643230528,
+        "conditional_mean_density": 0.13904274319933485
+      },
+      "mse_geometry": {
+        "candidate": {
+          "mse": 0.0009289531309026733,
+          "signed_mean_error": -0.025856953651557792,
+          "level_mse": 0.0006685820521388078,
+          "centered_shape_mse": 0.00026037107876386546,
+          "level_fraction_of_mse": 0.7197155915596515
+        },
+        "retained_mixture": {
+          "mse": 0.0013595941987211981,
+          "signed_mean_error": -0.0329355198354936,
+          "level_mse": 0.0010847484668341924,
+          "centered_shape_mse": 0.00027484573188700555,
+          "level_fraction_of_mse": 0.797847231074155
+        },
+        "source_gp": {
+          "mse": 0.0010072267443907632,
+          "signed_mean_error": -0.027179732059072117,
+          "level_mse": 0.0007387378348029526,
+          "centered_shape_mse": 0.00026848890958781067,
+          "level_fraction_of_mse": 0.7334374696829459
+        }
+      },
+      "latent_f_bank_variance": {
+        "candidate": {
+          "bank_average_variance": 0.00019021234228933605,
+          "bank_average_level_variance": 8.253849331622222e-05,
+          "centered_shape_variance": 0.00010767384897311383
+        },
+        "retained_mixture": {
+          "bank_average_variance": 0.0005079252315948617,
+          "bank_average_level_variance": 9.433305313304994e-05,
+          "centered_shape_variance": 0.00041359217846181174
+        },
+        "source_gp": {
+          "bank_average_variance": 0.00015439935778797562,
+          "bank_average_level_variance": 6.762017837878023e-05,
+          "centered_shape_variance": 8.677917940919539e-05
+        }
+      },
+      "sites": [
+        {
+          "scoring_policy": 45,
+          "candidate_calibration": {
+            "conditional_mean": 0.3292592384170941,
+            "conditional_batch_mean_variance": 6.593366772104327e-05,
+            "expected_episode_noise_over_three": 1.4070724145527326e-05,
+            "latent_f_conditional_variance": 5.1862943575515945e-05,
+            "conditional_squared_error": 0.0002155744921500773,
+            "squared_standardized_error": 3.269566211031135,
+            "conditional_cdf": 0.964839701775019,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": true,
+            "joint_batch_density": 0.4701363385926738,
+            "variance_label_density": -1.7864132594159243,
+            "conditional_mean_density": 2.256549598008598,
+            "log_conditional_f_variance_score_gradient": 0.8999251940349675,
+            "gradient_volume_term": -0.39420667211956933,
+            "gradient_residual_term": 1.294131866154537,
+            "maximum_integration_relative_error_bound": 1.317012553742134e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 1.4429373559348198,
+            "variance_label_density": 0.0008186184385272632,
+            "conditional_mean_density": 1.4421187374962923
+          },
+          "squared_mean_errors": {
+            "candidate": 0.00021703267738597953,
+            "retained_mixture": 0.00039680103762586923,
+            "source_gp": 0.00028722866598164846
+          }
+        },
+        {
+          "scoring_policy": 10,
+          "candidate_calibration": {
+            "conditional_mean": 0.6113752774348515,
+            "conditional_batch_mean_variance": 0.0002823595776611221,
+            "expected_episode_noise_over_three": 2.247220314948351e-05,
+            "latent_f_conditional_variance": 0.0002598873745116386,
+            "conditional_squared_error": 0.0005669762481487917,
+            "squared_standardized_error": 2.0079936825421107,
+            "conditional_cdf": 0.9218697531728622,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 0.13153969552218947,
+            "variance_label_density": -2.0314193053318528,
+            "conditional_mean_density": 2.162959000854042,
+            "log_conditional_f_variance_score_gradient": 0.46590316486179834,
+            "gradient_volume_term": -0.4611100095218022,
+            "gradient_residual_term": 0.9270131743836005,
+            "maximum_integration_relative_error_bound": 1.5441673424636733e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.26044442617621644,
+            "variance_label_density": 0.004975930181310151,
+            "conditional_mean_density": 0.25546849599490606
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0005748818098300017,
+            "retained_mixture": 0.0010735720664667267,
+            "source_gp": 0.0008548593394132874
+          }
+        },
+        {
+          "scoring_policy": 51,
+          "candidate_calibration": {
+            "conditional_mean": 0.5529501537978642,
+            "conditional_batch_mean_variance": 0.00044089372958083133,
+            "expected_episode_noise_over_three": 7.496942944007318e-05,
+            "latent_f_conditional_variance": 0.00036592430014075817,
+            "conditional_squared_error": 0.0028516153061411147,
+            "squared_standardized_error": 6.467806445902999,
+            "conditional_cdf": 0.9943979864151269,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -1.4672219093290726,
+            "variance_label_density": -1.1814989807966598,
+            "conditional_mean_density": -0.28572292853241277,
+            "log_conditional_f_variance_score_gradient": 2.2349670457655106,
+            "gradient_volume_term": -0.4105618181153879,
+            "gradient_residual_term": 2.6455288638808985,
+            "maximum_integration_relative_error_bound": 2.408397277611731e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.6759793779057286,
+            "variance_label_density": -0.00010692325630490274,
+            "conditional_mean_density": -0.6758724546494237
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0028517527839650794,
+            "retained_mixture": 0.0036232772135085817,
+            "source_gp": 0.0025531714062559975
+          }
+        },
+        {
+          "scoring_policy": 31,
+          "candidate_calibration": {
+            "conditional_mean": 0.6621008799142075,
+            "conditional_batch_mean_variance": 9.601482001264193e-05,
+            "expected_episode_noise_over_three": 3.300672556327701e-05,
+            "latent_f_conditional_variance": 6.300809444936492e-05,
+            "conditional_squared_error": 2.9537080566518994e-05,
+            "squared_standardized_error": 0.3076304320794431,
+            "conditional_cdf": 0.7117600283716928,
+            "covered_50": true,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 1.3626301810838326,
+            "variance_label_density": -2.1911715986872577,
+            "conditional_mean_density": 3.5538017797710904,
+            "log_conditional_f_variance_score_gradient": -0.2262693109523484,
+            "gradient_volume_term": -0.3348007693564862,
+            "gradient_residual_term": 0.10853145840413783,
+            "maximum_integration_relative_error_bound": 8.931993886762433e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.6372361271244797,
+            "variance_label_density": -0.013164144909741271,
+            "conditional_mean_density": 0.6504002720342212
+          },
+          "squared_mean_errors": {
+            "candidate": 3.153222376530992e-05,
+            "retained_mixture": 0.00016013287514036803,
+            "source_gp": 3.248834626272411e-05
+          }
+        },
+        {
+          "scoring_policy": 23,
+          "candidate_calibration": {
+            "conditional_mean": 0.38878574543712174,
+            "conditional_batch_mean_variance": 0.00016608665487606163,
+            "expected_episode_noise_over_three": 2.3610600886158423e-05,
+            "latent_f_conditional_variance": 0.0001424760539899032,
+            "conditional_squared_error": 0.0007314795659833312,
+            "squared_standardized_error": 4.404204338567606,
+            "conditional_cdf": 0.9820026027881527,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -0.3586325355916702,
+            "variance_label_density": -1.5862752224508228,
+            "conditional_mean_density": 1.2276426868591526,
+            "log_conditional_f_variance_score_gradient": 1.45944531774453,
+            "gradient_volume_term": -0.4276553370819875,
+            "gradient_residual_term": 1.8871006548265175,
+            "maximum_integration_relative_error_bound": 3.602735892367149e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.4213759568490758,
+            "variance_label_density": 0.012653757195204562,
+            "conditional_mean_density": -0.43402971404428037
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0007313549530311515,
+            "retained_mixture": 0.0009736105509036964,
+            "source_gp": 0.0006380279289666876
+          }
+        },
+        {
+          "scoring_policy": 65,
+          "candidate_calibration": {
+            "conditional_mean": 0.437043286741201,
+            "conditional_batch_mean_variance": 0.00026129362085815374,
+            "expected_episode_noise_over_three": 2.287422750404849e-05,
+            "latent_f_conditional_variance": 0.00023841939335410525,
+            "conditional_squared_error": 0.0012255979927279885,
+            "squared_standardized_error": 4.690501010712843,
+            "conditional_cdf": 0.9848289967628526,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -0.45137218031718973,
+            "variance_label_density": -1.3116478336037618,
+            "conditional_mean_density": 0.8602756532865721,
+            "log_conditional_f_variance_score_gradient": 1.6836883230578172,
+            "gradient_volume_term": -0.45604469014400917,
+            "gradient_residual_term": 2.1397330132018264,
+            "maximum_integration_relative_error_bound": 1.2528820509233539e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.18117829086266468,
+            "variance_label_density": -0.0021793508696612562,
+            "conditional_mean_density": -0.17899893999300343
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0012244243647416366,
+            "retained_mixture": 0.0016432576212215355,
+            "source_gp": 0.0015116975589938983
+          }
+        },
+        {
+          "scoring_policy": 19,
+          "candidate_calibration": {
+            "conditional_mean": 0.4620125913670465,
+            "conditional_batch_mean_variance": 0.0002705499799288787,
+            "expected_episode_noise_over_three": 0.00010341192042221768,
+            "latent_f_conditional_variance": 0.000167138059506661,
+            "conditional_squared_error": 0.0012948651493501376,
+            "squared_standardized_error": 4.7860478484992965,
+            "conditional_cdf": 0.9846210339987849,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -1.9204177296466505,
+            "variance_label_density": -2.6266682363887117,
+            "conditional_mean_density": 0.7062505067420612,
+            "log_conditional_f_variance_score_gradient": 1.1978750215253668,
+            "gradient_volume_term": -0.296302253093129,
+            "gradient_residual_term": 1.4941772746184958,
+            "maximum_integration_relative_error_bound": 2.5707667895236045e-13
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": -0.9636654264457223,
+            "variance_label_density": 0.021100956038136776,
+            "conditional_mean_density": -0.9847663824838591
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0012967097915402713,
+            "retained_mixture": 0.0011591755497028368,
+            "source_gp": 0.0016536898368543405
+          }
+        },
+        {
+          "scoring_policy": 13,
+          "candidate_calibration": {
+            "conditional_mean": 0.4032994723288083,
+            "conditional_batch_mean_variance": 7.766666178991113e-05,
+            "expected_episode_noise_over_three": 1.802973530735628e-05,
+            "latent_f_conditional_variance": 5.9636926482554856e-05,
+            "conditional_squared_error": 3.90428277564655e-05,
+            "squared_standardized_error": 0.5026973846523316,
+            "conditional_cdf": 0.2381085252413416,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 2.166456455796674,
+            "variance_label_density": -1.394880135991417,
+            "conditional_mean_density": 3.561336591788091,
+            "log_conditional_f_variance_score_gradient": -0.18780388442755303,
+            "gradient_volume_term": -0.3904150355951415,
+            "gradient_residual_term": 0.2026111511675885,
+            "maximum_integration_relative_error_bound": 1.535147624596899e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.27541072354636764,
+            "variance_label_density": -0.001983539963496206,
+            "conditional_mean_density": 0.27739426350986385
+          },
+          "squared_mean_errors": {
+            "candidate": 3.9358722061446704e-05,
+            "retained_mixture": 2.8361850162726103e-06,
+            "source_gp": 7.222390982505156e-09
+          }
+        },
+        {
+          "scoring_policy": 49,
+          "candidate_calibration": {
+            "conditional_mean": 0.5924273235096068,
+            "conditional_batch_mean_variance": 0.0003684260498521655,
+            "expected_episode_noise_over_three": 3.496962133898857e-05,
+            "latent_f_conditional_variance": 0.00033345642851317697,
+            "conditional_squared_error": 0.00156584657816115,
+            "squared_standardized_error": 4.250097350036624,
+            "conditional_cdf": 0.980308608353405,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -1.243504993790233,
+            "variance_label_density": -2.1483024889536564,
+            "conditional_mean_density": 0.9047974951634234,
+            "log_conditional_f_variance_score_gradient": 1.473968264120812,
+            "gradient_volume_term": -0.451470667790913,
+            "gradient_residual_term": 1.925438931911725,
+            "maximum_integration_relative_error_bound": 2.7327449438775285e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.3535102749894401,
+            "variance_label_density": 0.013805870170539247,
+            "conditional_mean_density": 0.33970440481890085
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0015623895679169636,
+            "retained_mixture": 0.0030748019782845756,
+            "source_gp": 0.0019978246844147307
+          }
+        },
+        {
+          "scoring_policy": 62,
+          "candidate_calibration": {
+            "conditional_mean": 0.4628198926629933,
+            "conditional_batch_mean_variance": 0.0002773869378637858,
+            "expected_episode_noise_over_three": 2.1236571035575086e-05,
+            "latent_f_conditional_variance": 0.0002561503668282107,
+            "conditional_squared_error": 0.0015898481561030305,
+            "squared_standardized_error": 5.7315177432174,
+            "conditional_cdf": 0.991665107996423,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": false,
+            "joint_batch_density": -0.757879978113637,
+            "variance_label_density": -1.068125362555414,
+            "conditional_mean_density": 0.31024538444177685,
+            "log_conditional_f_variance_score_gradient": 2.183966483925026,
+            "gradient_volume_term": -0.4615714138756918,
+            "gradient_residual_term": 2.645537897800718,
+            "maximum_integration_relative_error_bound": 3.0942927130212943e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.07410765656192064,
+            "variance_label_density": -0.000386547332082543,
+            "conditional_mean_density": 0.07449420389400319
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0015900743111503582,
+            "retained_mixture": 0.002402253139262424,
+            "source_gp": 0.001969736977288601
+          }
+        },
+        {
+          "scoring_policy": 59,
+          "candidate_calibration": {
+            "conditional_mean": 0.43920892154222785,
+            "conditional_batch_mean_variance": 0.0002735451399256251,
+            "expected_episode_noise_over_three": 3.567528705247296e-05,
+            "latent_f_conditional_variance": 0.00023786985287315216,
+            "conditional_squared_error": 0.0008973000217627191,
+            "squared_standardized_error": 3.280263074703825,
+            "conditional_cdf": 0.964931760430769,
+            "covered_50": false,
+            "covered_90": false,
+            "covered_95": true,
+            "joint_batch_density": -0.22159908927730843,
+            "variance_label_density": -1.7626778154035225,
+            "conditional_mean_density": 1.541078726126214,
+            "log_conditional_f_variance_score_gradient": 0.9943206011440953,
+            "gradient_volume_term": -0.4346855215872391,
+            "gradient_residual_term": 1.4290061227313344,
+            "maximum_integration_relative_error_bound": 1.8350969102996244e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.15580975285831233,
+            "variance_label_density": -0.0016853584529932242,
+            "conditional_mean_density": 0.15749511131130545
+          },
+          "squared_mean_errors": {
+            "candidate": 0.0008973354430284904,
+            "retained_mixture": 0.0013814095347063232,
+            "source_gp": 0.0005473019531386448
+          }
+        },
+        {
+          "scoring_policy": 34,
+          "candidate_calibration": {
+            "conditional_mean": 0.2989825606205129,
+            "conditional_batch_mean_variance": 0.00012545320155754779,
+            "expected_episode_noise_over_three": 1.8765985824466558e-05,
+            "latent_f_conditional_variance": 0.00010668721573308122,
+            "conditional_squared_error": 0.0001313777583709251,
+            "squared_standardized_error": 1.0472252341097856,
+            "conditional_cdf": 0.8473337116543562,
+            "covered_50": false,
+            "covered_90": true,
+            "covered_95": true,
+            "joint_batch_density": 1.3103708630100388,
+            "variance_label_density": -1.7365665444417635,
+            "conditional_mean_density": 3.0469374074518023,
+            "log_conditional_f_variance_score_gradient": 0.02648080088933108,
+            "gradient_volume_term": -0.42775819964374656,
+            "gradient_residual_term": 0.45423900053307764,
+            "maximum_integration_relative_error_bound": 2.3414916883047002e-12
+          },
+          "density_difference_from_retained": {
+            "joint_batch_density": 0.7345514028355242,
+            "variance_label_density": -0.010553517667565071,
+            "conditional_mean_density": 0.7451049205030893
+          },
+          "squared_mean_errors": {
+            "candidate": 0.00013059092241538974,
+            "retained_mixture": 0.00042400263281516657,
+            "source_gp": 4.068701272761629e-05
+          }
+        }
+      ],
+      "negative_density_sites": 4,
+      "mse_improved_sites_vs_gp": 7
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.296891925,
+  "interpretation": "Future-variance-conditioned diagnostic only. Local variance tangents do not specify an admissible learned repair. Retained mixture calibration and all GP forecasts are reused without replay;no candidate fit or query selection."
+}

@@ -1,0 +1,690 @@
+{
+  "execution": {
+    "status": "registered after identical-Q numerical repair passed;resume accepted source round1 before any new iteration",
+    "entrypoint": "performance/fit_legacy_f_bounded_level_risk_source.py",
+    "Mstep_plan": "performance/manifests/legacy_joint_population_f_raw_level_risk_mstep_plan_v1.json",
+    "initial_Mstep_results": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/results.json",
+    "initial_source_results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/source_results.json",
+    "initial_source_partitions": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/source_eta_partitions.json",
+    "initial_source_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/source_laws.json",
+    "initial_risk_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/risk_reconstruction.json",
+    "question": "Can a bounded source-only Monte Carlo EM run approach stationarity in the existing function-level/risk-center/risk-amplitude subproblem,without repeated task0 selection?",
+    "learning_contract": "Continue exactly Stage213's four parameters per arm using freshly conditioned source posterior moments after every accepted M step. Keep original coordinate systems,Stage205 function shape/spectral covariances,common function/risk intercept variances,original positive tails,risk task covariance and white=0. No group/support/representation changes. The convergence question is only this four-parameter subproblem,not all meta-prior hyperparameters.",
+    "maximum_additional_Msteps": 7,
+    "scaled_projected_source_score_tolerance": 0.001,
+    "stationarity": "Use fixed Stage213 optimization-coordinate scales:f-center prior SD,structural task-root1 or GP task variance prior average diagonal,risk center1 and risk amplitude1. Full and both half projected scores must all lie within tolerance to stop as approximately stationary. This is empirical Monte Carlo stationarity conditional on the fixed hyperparameter subproblem. Active directions exceeding tolerance require matching full/half signs before another M step;otherwise stop as unresolved sampling uncertainty.",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 200,
+      "ftol": 1e-12,
+      "gtol": 1e-08
+    },
+    "sampler": {
+      "chains": 4,
+      "warmup_sweeps_per_chain": 512,
+      "retained_sweeps_per_chain": 1024,
+      "seed": 202610076,
+      "round_seed_stride": 10000
+    },
+    "monte_carlo_gate": {
+      "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+      "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+      "maximum_first_second_half_f_variance_relative_difference": 0.15
+    },
+    "retained_mixture": {
+      "stride_per_chain": 8,
+      "components_per_arm": 512,
+      "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+      "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1,
+      "maximum_source_eta_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+      "maximum_source_eta_mean_rms_difference_in_full_posterior_sd": 0.1
+    },
+    "decision": "Require all four optimizer/full-and-half component Q gates,then all four fresh source posterior/retention gates before advancing the matched round. Stop at first scientific or numerical failure,budget,8-round cap or approximate stationarity. Preserve all round moments/Q/failed candidates. Save only the last accepted512-component mixture;earlier mixtures were never future-scored. No task0 outcomes are indexed,scored or used to choose rounds.",
+    "verification": "Reuse already verified Stage213 covariance/Q derivatives. Recompute and verify each NEW variance reference and common conditional law before its sampling;these checks detect stale prior/cross-covariance after parameter changes. No repeated derivative/integral validation of unchanged formulas.",
+    "maximum_single_thread_cpu_seconds": 55,
+    "cost": {
+      "maximum_new_joint_Mstep_optimizations": 28,
+      "maximum_new_source_conditioning_chains": 112,
+      "maximum_new_source_sweeps": 172032,
+      "new_source_labels": 0,
+      "new_coordinate_fits": 0,
+      "new_future_predictions": 0,
+      "new_density_integrations": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;existing source moments/labels and small JSON only;no server work or NPZ",
+    "scope": "Original four structural priors retained. No task0/task1 outcomes,source6/7,target,KG,independent confirmation or manuscript edits. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2",
+    "resume_accepted_results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/results.json",
+    "numerical_repair_results": "paper_artifacts/legacy_joint_population_f_level_risk_whitened_Q_v1/results.json",
+    "accepted_round_number_offset": 1,
+    "repair_contract": "Resume the accepted round1,not the failed round2 candidate. Same source objective,parameters,optimizer settings,posterior length and stationarity tolerance. Only its algebraically equivalent whitened Q evaluator changed;original line-search failure retained in v1. At most7 further steps keep the original8-additional-step cap;no extra source draws to rescue Stage215 density precision."
+  },
+  "rounds": [
+    {
+      "round": 2,
+      "source_scores_before_Mstep": [
+        {
+          "layout": "5",
+          "arm": "joint_spectral_geometry",
+          "raw_scores_full_first_second": [
+            [
+              -1.2674521875218522e-05,
+              0.001840612429536561,
+              -0.0003245730342675464,
+              0.02667929165469766
+            ],
+            [
+              -2.6019955699424502e-05,
+              0.0018641971823243966,
+              -0.00014322262842335343,
+              0.024279249229676392
+            ],
+            [
+              6.70911958331836e-07,
+              0.0018170090879783309,
+              -0.0005059234401107171,
+              0.02904754540041416
+            ]
+          ],
+          "scaled_projected_scores_full_first_second": [
+            [
+              -3.5719608338285168e-06,
+              0.001840612429536561,
+              -0.0003245730342675464,
+              0.02667929165469766
+            ],
+            [
+              -7.332999506515506e-06,
+              0.0018641971823243966,
+              -0.00014322262842335343,
+              0.024279249229676392
+            ],
+            [
+              1.8907784149192534e-07,
+              0.0018170090879783309,
+              -0.0005059234401107171,
+              0.02904754540041416
+            ]
+          ],
+          "maximum_absolute_scaled_score": 0.02904754540041416
+        },
+        {
+          "layout": "5",
+          "arm": "source_gp",
+          "raw_scores_full_first_second": [
+            [
+              -0.00020954703529970273,
+              67.3206103678483,
+              0.0007947195421771127,
+              0.024939651442256253
+            ],
+            [
+              -0.00026796910402293594,
+              67.29689613270415,
+              0.0008145631155726021,
+              0.02758818875272962
+            ],
+            [
+              -0.00015112496658716465,
+              67.34430540839497,
+              0.0007748759687819148,
+              0.02225807205333432
+            ]
+          ],
+          "scaled_projected_scores_full_first_second": [
+            [
+              -6.071470182571518e-05,
+              0.0,
+              0.0007947195421771127,
+              0.024939651442256253
+            ],
+            [
+              -7.764206363495944e-05,
+              0.0,
+              0.0008145631155726021,
+              0.02758818875272962
+            ],
+            [
+              -4.3787340019569764e-05,
+              0.0,
+              0.0007748759687819148,
+              0.02225807205333432
+            ]
+          ],
+          "maximum_absolute_scaled_score": 0.02758818875272962
+        },
+        {
+          "layout": "6",
+          "arm": "joint_spectral_geometry",
+          "raw_scores_full_first_second": [
+            [
+              3.865337265857952e-05,
+              0.007210188878765851,
+              -0.0009723619091622874,
+              0.006780206922500749
+            ],
+            [
+              8.762170512932599e-06,
+              0.006641692236134263,
+              -0.0010315458909043197,
+              0.00848387606822775
+            ],
+            [
+              6.854457480691874e-05,
+              0.007778616935050671,
+              -0.0009131779274202459,
+              0.0050490069627190486
+            ]
+          ],
+          "scaled_projected_scores_full_first_second": [
+            [
+              1.200371303934239e-05,
+              0.007210188878765851,
+              -0.0009723619091622874,
+              0.006780206922500749
+            ],
+            [
+              2.7210712340177887e-06,
+              0.006641692236134263,
+              -0.0010315458909043197,
+              0.00848387606822775
+            ],
+            [
+              2.1286354845503078e-05,
+              0.007778616935050671,
+              -0.0009131779274202459,
+              0.0050490069627190486
+            ]
+          ],
+          "maximum_absolute_scaled_score": 0.00848387606822775
+        },
+        {
+          "layout": "6",
+          "arm": "source_gp",
+          "raw_scores_full_first_second": [
+            [
+              -0.0003332086314905373,
+              61.48261131074964,
+              0.0012442204426342505,
+              0.006287807254163315
+            ],
+            [
+              -0.00019841858892042744,
+              61.55575275205146,
+              0.0007277909649787048,
+              0.006765570157230705
+            ],
+            [
+              -0.0004679986740634042,
+              61.40943465510841,
+              0.0017606499202893016,
+              0.005781744563479189
+            ]
+          ],
+          "scaled_projected_scores_full_first_second": [
+            [
+              -0.00010851673822973361,
+              0.0,
+              0.0012442204426342505,
+              0.006287807254163315
+            ],
+            [
+              -6.461938869192415e-05,
+              0.0,
+              0.0007277909649787048,
+              0.006765570157230705
+            ],
+            [
+              -0.00015241408776844095,
+              0.0,
+              0.0017606499202893016,
+              0.005781744563479189
+            ]
+          ],
+          "maximum_absolute_scaled_score": 0.006765570157230705
+        }
+      ],
+      "fits": [
+        {
+          "layout": "5",
+          "arm": "joint_spectral_geometry",
+          "old_parameters": [
+            0.861794066351986,
+            0.3230674684544479,
+            -0.2194003918212109,
+            0.34791641765667125
+          ],
+          "candidate_parameters": [
+            0.8618175973136084,
+            0.32106619541045767,
+            -0.2155028203788542,
+            0.28519227753686255
+          ],
+          "optimizer_converged": true,
+          "optimizer_iterations": 11,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "Q_component_improvements_full_first_second": [
+            [
+              1.8493568370026026e-06,
+              0.0009530666141781552
+            ],
+            [
+              1.8970080368774234e-06,
+              0.0007693564000872399
+            ],
+            [
+              1.80166810004323e-06,
+              0.0011343496523616992
+            ]
+          ],
+          "Mstep_gate_passed": true
+        },
+        {
+          "layout": "5",
+          "arm": "source_gp",
+          "old_parameters": [
+            0.9926318656670724,
+            0.0,
+            -0.2068568355759043,
+            0.34679342682185915
+          ],
+          "candidate_parameters": [
+            0.9929785198840986,
+            0.0,
+            -0.21639298926574516,
+            0.28848801943134805
+          ],
+          "optimizer_converged": true,
+          "optimizer_iterations": 13,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "Q_component_improvements_full_first_second": [
+            [
+              3.6316652352041956e-08,
+              0.0008235797215156992
+            ],
+            [
+              5.6568914885701815e-08,
+              0.0010090739679915472
+            ],
+            [
+              1.6064396035631034e-08,
+              0.0006357745280638483
+            ]
+          ],
+          "Mstep_gate_passed": true
+        },
+        {
+          "layout": "6",
+          "arm": "joint_spectral_geometry",
+          "old_parameters": [
+            0.8713795983237712,
+            0.21578218798646878,
+            -0.3234556306755113,
+            0.7212576354926652
+          ],
+          "candidate_parameters": [
+            0.8714008288516043,
+            0.21259578336661156,
+            -0.31177625041182205,
+            0.6577921017116809
+          ],
+          "optimizer_converged": true,
+          "optimizer_iterations": 11,
+          "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "Q_component_improvements_full_first_second": [
+            [
+              1.1600662700672615e-05,
+              0.00023340434231489127
+            ],
+            [
+              9.746884448880166e-06,
+              0.0003524444640539137
+            ],
+            [
+              1.3454217141273261e-05,
+              0.0001124793977944627
+            ]
+          ],
+          "Mstep_gate_passed": true
+        },
+        {
+          "layout": "6",
+          "arm": "source_gp",
+          "old_parameters": [
+            1.183154840093824,
+            0.0,
+            -0.29581578044613943,
+            0.7124645928039024
+          ],
+          "candidate_parameters": [
+            1.1838472326041527,
+            0.0,
+            -0.31074588888482657,
+            0.6546402023643482
+          ],
+          "optimizer_converged": true,
+          "optimizer_iterations": 8,
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "Q_component_improvements_full_first_second": [
+            [
+              1.1535461830192162e-07,
+              0.00020081293814344647
+            ],
+            [
+              2.2027002444247046e-08,
+              0.00022115619005269593
+            ],
+            [
+              2.086822341595962e-07,
+              0.00017871560497173533
+            ]
+          ],
+          "Mstep_gate_passed": true
+        }
+      ],
+      "round_accepted": true,
+      "posterior_gate_results": [
+        {
+          "layout": "5",
+          "arm": "joint_spectral_geometry",
+          "monte_carlo_gate_passed": true,
+          "maximum_split_rhat": 1.0091638001840855,
+          "minimum_autocorrelation_ess": 493.6644955915106
+        },
+        {
+          "layout": "5",
+          "arm": "source_gp",
+          "monte_carlo_gate_passed": true,
+          "maximum_split_rhat": 1.0145880571809671,
+          "minimum_autocorrelation_ess": 485.7879866662967
+        },
+        {
+          "layout": "6",
+          "arm": "joint_spectral_geometry",
+          "monte_carlo_gate_passed": true,
+          "maximum_split_rhat": 1.0153742581133758,
+          "minimum_autocorrelation_ess": 347.2037809138067
+        },
+        {
+          "layout": "6",
+          "arm": "source_gp",
+          "monte_carlo_gate_passed": true,
+          "maximum_split_rhat": 1.0068218989882156,
+          "minimum_autocorrelation_ess": 458.7224905411956
+        }
+      ],
+      "mixture_gate_results": [
+        {
+          "layout": "5",
+          "arm": "joint_spectral_geometry",
+          "mixture_gate_passed": true
+        },
+        {
+          "layout": "5",
+          "arm": "source_gp",
+          "mixture_gate_passed": true
+        },
+        {
+          "layout": "6",
+          "arm": "joint_spectral_geometry",
+          "mixture_gate_passed": true
+        },
+        {
+          "layout": "6",
+          "arm": "source_gp",
+          "mixture_gate_passed": true
+        }
+      ]
+    }
+  ],
+  "stop_reason": "source_direction_split_sign_uncertainty",
+  "accepted_additional_source_rounds": 1,
+  "final_source_scores": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "raw_scores_full_first_second": [
+        [
+          -5.412664346310381e-05,
+          0.00013251132493771745,
+          0.0010013613384254882,
+          0.019680227226947834
+        ],
+        [
+          -3.731744449330295e-05,
+          0.00019747488766602359,
+          0.0007490265149872471,
+          0.014917788464078346
+        ],
+        [
+          -7.093584242891711e-05,
+          6.753122239939666e-05,
+          0.0012536961618641828,
+          0.02440058263666443
+        ]
+      ],
+      "scaled_projected_scores_full_first_second": [
+        [
+          -1.5254086301655758e-05,
+          0.00013251132493771745,
+          0.0010013613384254882,
+          0.019680227226947834
+        ],
+        [
+          -1.0516881935347137e-05,
+          0.00019747488766602359,
+          0.0007490265149872471,
+          0.014917788464078346
+        ],
+        [
+          -1.9991290666840598e-05,
+          6.753122239939666e-05,
+          0.0012536961618641828,
+          0.02440058263666443
+        ]
+      ],
+      "maximum_absolute_scaled_score": 0.02440058263666443
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "raw_scores_full_first_second": [
+        [
+          -3.72462696275333e-05,
+          67.29822634818402,
+          -0.000938586496773928,
+          0.018158250480291696
+        ],
+        [
+          -7.933816120742065e-08,
+          67.3195538107267,
+          -0.0020636810940970474,
+          0.020455575278205913
+        ],
+        [
+          -7.441320108107312e-05,
+          67.27688054596629,
+          0.00018650810054892294,
+          0.01581971123980504
+        ]
+      ],
+      "scaled_projected_scores_full_first_second": [
+        [
+          -1.0791830823669421e-05,
+          0.0,
+          -0.000938586496773928,
+          0.018158250480291696
+        ],
+        [
+          -2.298764472720699e-08,
+          0.0,
+          -0.0020636810940970474,
+          0.020455575278205913
+        ],
+        [
+          -2.1560673998906966e-05,
+          0.0,
+          0.00018650810054892294,
+          0.01581971123980504
+        ]
+      ],
+      "maximum_absolute_scaled_score": 0.020455575278205913
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "raw_scores_full_first_second": [
+        [
+          -7.261979518779123e-05,
+          0.001072473761906459,
+          0.0009461792338256655,
+          0.0021758678277398434
+        ],
+        [
+          -1.9997215169126337e-05,
+          0.0011962968143064828,
+          -0.0004623141441754385,
+          0.0038921511197880514
+        ],
+        [
+          -0.00012524237520096979,
+          0.0009485852073101778,
+          0.00235467261182655,
+          0.0004282039658433706
+        ]
+      ],
+      "scaled_projected_scores_full_first_second": [
+        [
+          -2.2551904852126242e-05,
+          0.001072473761906459,
+          0.0009461792338256655,
+          0.0021758678277398434
+        ],
+        [
+          -6.210087657716917e-06,
+          0.0011962968143064828,
+          -0.0004623141441754385,
+          0.0038921511197880514
+        ],
+        [
+          -3.88937220448318e-05,
+          0.0009485852073101778,
+          0.00235467261182655,
+          0.0004282039658433706
+        ]
+      ],
+      "maximum_absolute_scaled_score": 0.0038921511197880514
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "raw_scores_full_first_second": [
+        [
+          0.00013118264997659854,
+          61.444493878424396,
+          -0.001308732016172776,
+          0.005209288994709033
+        ],
+        [
+          8.933638431426101e-05,
+          61.49298277031413,
+          -0.0008121351905338604,
+          0.004868365806890073
+        ],
+        [
+          0.0001730289156530914,
+          61.3959701018953,
+          -0.0018053288418103386,
+          0.005519909087106851
+        ]
+      ],
+      "scaled_projected_scores_full_first_second": [
+        [
+          4.272252259526952e-05,
+          0.0,
+          -0.001308732016172776,
+          0.005209288994709033
+        ],
+        [
+          2.909436345527818e-05,
+          0.0,
+          -0.0008121351905338604,
+          0.004868365806890073
+        ],
+        [
+          5.635068173987085e-05,
+          0.0,
+          -0.0018053288418103386,
+          0.005519909087106851
+        ]
+      ],
+      "maximum_absolute_scaled_score": 0.005519909087106851
+    }
+  ],
+  "approximately_stationary_four_parameter_subproblem": false,
+  "final_parameters": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "parameters": [
+        0.8618175973136084,
+        0.32106619541045767,
+        -0.2155028203788542,
+        0.28519227753686255
+      ]
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "parameters": [
+        0.9929785198840986,
+        0.0,
+        -0.21639298926574516,
+        0.28848801943134805
+      ]
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "parameters": [
+        0.8714008288516043,
+        0.21259578336661156,
+        -0.31177625041182205,
+        0.6577921017116809
+      ]
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "parameters": [
+        1.1838472326041527,
+        0.0,
+        -0.31074588888482657,
+        0.6546402023643482
+      ]
+    }
+  ],
+  "cpu_seconds": 4.9448180950000005,
+  "cost": {
+    "maximum_new_joint_Mstep_optimizations": 28,
+    "maximum_new_source_conditioning_chains": 112,
+    "maximum_new_source_sweeps": 172032,
+    "new_source_labels": 0,
+    "new_coordinate_fits": 0,
+    "new_future_predictions": 0,
+    "new_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_joint_Mstep_optimizations": 4,
+    "actual_new_source_chains": 16,
+    "actual_source_sweeps": 24576
+  },
+  "task0_outcomes_indexed": false,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Bounded source-only MCEM in the unchanged four-parameter subproblem. Approximate stationarity does not cover function shape/support hyperparameters,hyperparameter uncertainty,independent predictive performance or decision/KG advantage. Stop failures and intermediate moments retained."
+}

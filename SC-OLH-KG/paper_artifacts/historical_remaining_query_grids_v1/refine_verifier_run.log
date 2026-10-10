@@ -1,0 +1,17 @@
+learned prior connected 5 heads 16 paid 2 balanced4 [5 4 6 7 0 1]
+learned prior connected 6 heads 16 paid 2 balanced4 [6 4 2 7 0 1]
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/refine_historical_query_verifier.py", line 137, in <module>
+    run()
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/refine_historical_query_verifier.py", line 114, in run
+    anchors = read(str((directory/'anchors.json').relative_to(ROOT)))['rows']; assert all(a['passed'] for a in anchors)
+AssertionError
+learned prior connected 5 heads 16 paid 2 balanced4 [5 4 6 7 0 1]
+learned prior connected 6 heads 16 paid 2 balanced4 [6 4 2 7 0 1]
+verifier refinement source_structural_mixture_layout5_query0 net 0.0022930419145904563 changes {'terminal_absolute_contrast': 3.8968876778835146e-05, 'objective_prefix': 1.7547038638201715e-07, 'risk_complement_prefix': 1.6403306972688492e-06, 'risk_tail_order': 4.893869994136366e-06} pass True CPU 4.81
+verifier refinement source_common_task_rbf_layout5_query0 net 0.003381585045682818 changes {'terminal_absolute_contrast': 1.8829980374466665e-05, 'objective_prefix': 2.435973395927514e-07, 'risk_complement_prefix': 2.25385021732547e-05, 'risk_tail_order': 0.0} pass True CPU 56.24
+verifier refinement source_structural_mixture_layout6_query0 net 0.00039206524296436784 changes {'terminal_absolute_contrast': 6.986197304882512e-06, 'objective_prefix': 2.732838147293296e-07, 'risk_complement_prefix': 0.0, 'risk_tail_order': 3.288188213075604e-06} pass False CPU 196.03

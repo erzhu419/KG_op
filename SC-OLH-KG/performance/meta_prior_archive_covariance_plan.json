@@ -1,0 +1,101 @@
+{
+  "stage": "meta_prior_archive_covariance_a25_20261003",
+  "status": "source_validation_complete_partial_transfer_repair_matched_regression_not_promoted",
+  "fixed_after_a24_before_a25_results": true,
+  "question": "Does a source-learned distribution over archive risk covariances repair the source cross-archive generalization gap without replacing source structure by an unstructured covariance?",
+  "inputs": [
+    "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003/source_fold_contexts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/full_source_contexts.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/transfer_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_source_transfer_calibration_a24_20261003/decision.json"
+  ],
+  "cohort": {
+    "seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ],
+      [
+        56,
+        57
+      ],
+      [
+        58,
+        59
+      ],
+      [
+        60,
+        61
+      ],
+      [
+        62,
+        63
+      ]
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "held_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "forecast_steps": [
+      9,
+      24
+    ],
+    "paths": 256,
+    "conditions": [
+      "matched",
+      "transfer"
+    ]
+  },
+  "model": "For each held seed pair and held task index, use the recovered seven-task eta ARD covariances of all 28 archives outside that pair, pooling both archive groups. Preserve each covariance, source intercept, original variance floor and discrepancy as a separate empirical-population component, with equal archive-frequency weights. This is a distribution of source-learned functional covariances, not a pooled point covariance or transferred policy. All nonintercept coefficient means remain zero. Target prefix eta observations update component probabilities by exact marginal evidence.",
+  "primary": "Hierarchical model H: 1/4 local archive structural covariance, 1/4 empirical population covariance mixture (1/28 per archive), 1/2 local full-dictionary covariance. The old I has 1/2 local structural and 1/2 full covariance. H retains the old structural/full group weights while dividing the structural group equally between local and population structure; this division is fixed before results and is not calibrated or selected on outcomes.",
+  "secondary": "M: replace the local structural half by the empirical population, retaining the local full-dictionary half. P: pure empirical population. Keep both as diagnostics and do not select an outcome winner as a new primary.",
+  "outer_exclusion": "The entire held seed pair, in both archive groups and all tasks, is excluded from population learning. A local prior conditions only on its original seven tasks. Matched uses the scored archive local prior; transfer uses the fixed partner local prior. Population components are identical for both conditions. There is no macro calibration or nested fit; empirical archive-frequency weights are fixed.",
+  "coordinate_alignment": "Each source component uses its native public reference-bank normalization. Exact affine conversion to a common basis includes the intercept shift and intercept/function cross-covariance; never average differently normalized coefficient variances. Predictive computations can retain native bases as an algebraically equivalent alternative.",
+  "implementation": "Compute one joint Gaussian Cholesky per component and 24-point path; lower-triangular prefixes give all 16 prequential scores without refitting 16 Gaussian models. Repeated candidate discrepancies are shared, simulator observation noises remain independent. Cache the 28-component population forecasts once per scored path and reuse them in matched/transfer scoring.",
+  "controls": "Require original learned I and generic full-dictionary forecasts to reproduce A20/A23. Test affine normalization on complete function kernels including the intercept; test prefix independence from future labels; test repeated-candidate prequential forecasts against the grouped Gaussian reference. Population archive identities must exclude the held pair. No generator supports or truth enter meta-prior construction.",
+  "analysis": "Report all two source groups by two conditions. Paired eight-block bootstrap with 20000 draws. Primary H minus old I; also H minus the old scored-archive matched I, M/P diagnostics, H minus generic full baseline, posterior local/population/full masses and matched-versus-transfer residual gap. No pooling with previous stages or treating the two directions as independent.",
+  "decision": "Proceed to a separately frozen cached target forecast test only if H improves transferred forecasts in both groups with intervals above zero and there is no coherent matched regression. If not, retain the failed candidate and identify whether it loses through covariance support or posterior component selection; no new source collection or target-driven mixture tuning.",
+  "resource_admission": "Retain the first complete scored path including both conditions and baseline reconstruction; project 256 paths with 1.25 safety multiplier plus 15 CPU seconds summary reserve. Stop if projected cost exceeds 90 local CPU seconds.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 90,
+    "eta_ard_refits": 0,
+    "fg_selection_refits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "kg_calls": 0,
+    "candidate_recommendations": 0
+  },
+  "information_cost": "The empirical population uses 28 existing source archives, 172032 paid simulator calls, with seven eta tasks (448 labels) per component in each held-task fold. Local matched/transfer prior uses its own original seven tasks. Additional source information is explicit; this is not an equal-source-cost comparison with one-archive I.",
+  "paired_bootstrap_seed": 20261103,
+  "limitations": "Retrospective development on the same eight pair blocks; source ML covariances are empirical atoms, not fully Bayesian hyperposteriors. The finite population may omit unseen support patterns. This stage tests covariance transfer in source risk prediction; it does not establish target decision, KG, joint f/g/eta support learning, deployment or OR submission readiness.",
+  "artifacts": "paper_artifacts/meta_prior_archive_covariance_a25_20261003",
+  "next_plan": "performance/meta_prior_archive_covariance_frontier_plan.json"
+}

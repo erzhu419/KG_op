@@ -1,0 +1,96 @@
+\section{Results}\label{sec:mp_results}
+
+\subsection{Early prediction and target correction}
+
+On the feasible-deployment development block, observable exposure reduced the
+eight-point holdout RMSE for the objective mean from 0.594 to 0.270 and for the
+constraint mean from 0.204 to 0.141.  Constraint-ranking Spearman correlation
+rose from 0.119 to 0.624.  This is a prediction result; the initial true
+recommendation was feasible in 7/8 tasks for both representations and their
+mean initial rewards were essentially identical.
+
+The risk factor-family prior also improved total log-risk prediction.  In the
+source leave-one-task-out check its mean log predictive density gain over a
+pooled-risk control was 0.692, and all eight development targets had lower
+initial $\eta$ RMSE (0.301 versus 0.363).  The coefficient RMSE, however, was
+not lower (0.255 versus 0.251), so the evidence supports total-risk calibration
+rather than separate physical-factor recovery.
+
+\subsection{Decision attribution}
+
+The observable representation versus fixed policy-coordinate closed loop gave
+mean final true rewards 0.8613 and 0.8538, respectively.  Only 3/8 tasks had a
+positive search increment, so the predeclared stable-deployment gate failed.
+Adding the learned risk prior to observable exposure reduced mean final reward
+slightly to 0.8608; one task declined and the others were unchanged.
+
+The new same-source control isolates the mean structural prior on the
+development block:
+\begin{table}[t]
+\centering
+\caption{Paired source-structure attribution on the eight-task development block.}
+\label{tab:mp_structure_control}
+\input{meta_prior_tables.tex}
+\end{table}
+
+The paired final-reward differences were positive on 3 tasks, negative on 1,
+and zero on 4, with mean $+0.00545$.  Thus source structure has a measurable
+mean-prior contribution in this block, but not a stable deployment advantage.
+
+\subsection{Independent fixed-seed confirmation}
+
+The separate v2 block retained all eight predeclared law seeds after its
+oracle-only preflight.  The source-selected arm had mean final true reward
+0.44274 (5/8 certified), while the same-source full dictionary had 0.45160
+(4/8 certified); neither arm produced a false certificate.  The paired
+differences were positive on 2 tasks, negative on 2, and tied on 4.  Thus the
+development-block ordering is not confirmed by this independent block.  The
+original 95433--95440 interval was not run as a block; seed 95434 overlaps the
+development artifact and is excluded from any clean-confirmation claim.  The
+v2 block is a separate contract and does not repair that overlap retroactively.
+
+\input{meta_prior_confirmation_table.tex}
+
+\subsection{Same-contract target-only baseline}
+
+The target-only full-dictionary control uses the same 68-function dictionary,
+candidate bank, initial design, paid-observation budget, keyed noise streams,
+pooled factor-family risk arm, acquisition rule, and independent verifier; it
+starts without source labels.  Its mean final true rewards are 0.76199 on the
+development block and 0.45148 on v2, compared with 0.86127 and 0.44274 for
+source-selected structure.  The corresponding same-source full-dictionary
+means are 0.85582 and 0.45160.  The source-selected minus target-only
+difference is therefore +0.09928 in development but -0.00873 in v2.  This
+feasible nonempty baseline completes the information-contract comparison and
+does not restore an independent deployment claim.
+
+We also ran a generic target-only RBF-KG baseline with fixed isotropic
+lengthscale 0.25 and outputscale 1.0, using the same observable coordinates,
+budget, keyed streams, and verifier but no source labels or source-risk prior.
+Its means are 0.86239 on development and 0.45912 on v2, exceeding the
+source-selected arm by -0.00112 and -0.01638, respectively.  Thus the source
+structure is attributable relative to the deliberately full dictionary in the
+development block, but it is not superior to a generic target-only RBF control.
+
+\begin{table}[t]
+\centering
+\caption{Same-contract target-only baseline and paired mean differences.}
+\label{tab:mp_target_only_main}
+\input{meta_prior_baseline_table.tex}
+\end{table}
+
+\subsection{Independent verification and negative evidence}
+
+All 24 cells of the observable/risk development loop and all 16 cells of the
+source-structure control received valid independent certification with no
+false certificates.  This verifies the task and verifier contract; it does
+not turn the development block into confirmation.  The original physical-risk
+closed loop had seven of eight targets with no feasible candidate in the fixed
+bank, and the official HyperBO comparison used a target with no feasible
+candidate.  Those failures remain part of the result because candidate
+coverage and task feasibility are part of an end-to-end deployment claim.
+
+The risk-only A45 diagnostic found that refreshed mixture weights, moment
+collapse, and quadrature-node choices changed probe rankings only modestly; it
+did not identify the current Gaussian fantasy approximation as the cause of
+the weak deployment increment.

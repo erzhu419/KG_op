@@ -1,0 +1,33 @@
+{
+  "status": "completed;source decomposition verified;weak native shape correlation probe positive on average",
+  "template_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "template_results": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/results.json",
+  "source_templates": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/source_templates.json",
+  "question": "Which parts of the failed task template oppose source likelihood,and can preserved native task shape marginals separate correlation from support/scale changes?",
+  "diagnostic": "Decompose the exact q direction and Gaussian source score into level variance,existing task shape marginal changes,new task group marginals,level-shape correlation and shape correlation. Project total q covariance information on locally interior original common/task group amplitudes,spectra,task intercept and discrepancy directions. This information projection is not joint optimization or a feasible improvement claim.",
+  "fixed_probe_q": 0.01,
+  "probes": [
+    "full_template",
+    "diagonal_template",
+    "shape_diagonal_template",
+    "native_task_shape_correlation"
+  ],
+  "probes_contract": "All probes use the same fixed .01 and five training sources. Diagonal probes remove correlation and/or template level variance. The native_task_shape_correlation probe uses source template correlation rescaled to original positive task shape excess marginal variances;independent native v,task support/spectrum,1% independent tail,common A/center/noise/discrepancy remain fixed. No level-shape correlation is introduced by this control.",
+  "verification": "Exact covariance and source derivative decomposition;dense versus whitened Fisher;all fixed probe PSD;native shape correlation preserves existing task marginal budgets/support/spectrum and independent v/tail. A failure blocks interpretation.",
+  "decision": "Retain Stage127 failed family,do not fit its q or rebuild a posterior under it. If the native-task-shape correlation probe improves mean source likelihood in both layouts,register one scalar correlation fit and conditional independent-v integration before any paid test. Otherwise revisit jointly learned common/task geometry using these source attributions;do not infer a new adopted prior from local derivatives.",
+  "scope": "source0-5 five-task deletion folds only;no query paid labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+  "execution": "local serial single-thread;small cached JSON only",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "output": "paper_artifacts/legacy_joint_population_f_task_template_attribution_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_task_template_attribution.py",
+  "entrypoint_status": "implemented and executed",
+  "results": "paper_artifacts/legacy_joint_population_f_task_template_attribution_v1/results.json",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_task_template_attribution_execution_v1.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_task_shape_correlation_reference_plan_v1.json"
+}

@@ -1,0 +1,19 @@
+{
+  "status": "frozen before source-only level-information calculation",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_level_information_plan_v1.json",
+  "development_execution": "performance/manifests/legacy_joint_population_f_level_shape_development_execution_v1.json",
+  "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "intercept_source_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/source_laws.json",
+  "joint_source_laws": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+  "layouts": ["5", "6"],
+  "deleted_task": 1,
+  "entrypoint": "performance/diagnose_legacy_f_level_information.py",
+  "question": "Which prior mean,level-shape covariance and public four-site information differs from sourceGP?",
+  "calculation": "Exact source mixture first/second moments already integrated. Bank-average and original twelve-site-average means,variance components,level-to-prefix covariance,centered-shape coupling and Gaussian-linear level gain from source eta_f expected noise. Source design row-span and empirical-center audit. No new fitting,integration or paid-value reading.",
+  "verification": "Native moment reconstruction and native residual decomposition must agree with existing source law;GP covariance parts must sum to its prediction. A mismatch stops interpretation and requires a construction fix.",
+  "scope": "Only the five source0-5 training tasks in each task1 deletion,existing source laws and public metadata. Query paid/score values,source6/7,target and confirmation remain unopened.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_level_information_v1",
+  "decision": "Use this diagnostic to choose one source-learning follow-up or resolve a support/filter ambiguity. No variance floor,paid-label-selected geometry,expansion of the failed candidate or relaxation of its gate. Complete-model HOLD remains."
+}

@@ -1,0 +1,21 @@
+{
+  "status": "frozen after all ten source fits and structural/conditioning checks;before ten raw forecasts",
+  "entrypoint": "performance/check_legacy_f_inner_joint_spectral_geometry.py",
+  "source_results": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/results.json",
+  "source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+  "control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": ["5", "6"],
+  "query_tasks": [0, 2, 3, 4, 5],
+  "paid_prefix": [0, 1, 29, 58],
+  "controls": ["native_mixture", "native_point", "source_gp"],
+  "metrics": ["f_mse", "f_raw_batch_density", "sequential_transcript_density"],
+  "law": "Use exactly the ten frozen source4 joint coefficient laws,with original orthogonal low-order basis,source-selected strong support,source-learned separate spectra and strictly positive separate tails. Add common posterior uncertainty,independent task covariance and unchanged source GP latent discrepancy. No query-based parameter or support selection. Retain identical source4 eta_f,raw update and scoring measure.",
+  "freeze": "Reproduce outcome-free source coordinates;freeze ten priors before paid values and ten forecasts before scoring the same eight cached future batches. Each source law used144 historical mean calls;the96 risk calls are a subset. All controls share the same physical prefix,budget and validator-free prediction contract and are reused without replay.",
+  "decision": "Assess all three metrics against retained native mixture and same-source GP in both layouts,with per-task signs. Source NLL gain alone or improvement over only native point is insufficient. If the constrained law loses predictive benefit,retain the loss and diagnose source-to-held-task transfer before any outer expansion;no task-specific choice or another spectrum grid. Inner averages cannot establish stable independent decision value.",
+  "maximum_single_thread_cpu_seconds": 60,
+  "cost": {"new_source_fits": 0, "new_raw_forecasts": 10, "reused_control_forecasts": 30, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;small cached JSON and ten single-component score-site NPZ;no server jobs or pulls",
+  "scope": "Repeated inner development evidence only;no task1,source6/7,target,KG,independent confirmation or manuscript changes. Retained native mixture remains reference;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_raw_v1"
+}

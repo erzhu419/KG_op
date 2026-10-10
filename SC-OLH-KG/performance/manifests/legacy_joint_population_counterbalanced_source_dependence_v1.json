@@ -1,0 +1,21 @@
+{
+  "status": "registered after failed Stage58 source gates and before cached diagnostics; not a new confirmation",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "mixture_execution": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_execution_v1.json",
+  "mixture_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1/calibration_profiles.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "cached_diagnostic": "Compare frozen complete-deletion versus risk-only mixture forecasts, their mean shifts, latent mean variance ratios, full-identity paid weights and conditional three-repeat MSE uncertainty. These source holdouts are already opened; retain failed gates.",
+  "paired_source_preflight": "For each native216-call source fit, reconstruct f/g task coefficient means and conditional covariance from tasks0..5 only. Form the joint54-dimensional posterior residual second moment with paired task means and block-diagonal conditional covariance under the original independent-head law. Whiten by native residual variances and extract one paired direction. Compare its leading eigenvalue to the independent-head block maximum; evaluate fixed scale1 without optimization.",
+  "checks": "The dense144-label joint marginal at zero coupling must equal the average native f/g source NLL. A small fixed positive covariance perturbation must match the posterior-moment derivative. These detect incorrect head/task assembly or likelihood scaling and block further fitting if they fail.",
+  "interpretation": "A source-learned cross-function covariance direction and conditional cached score attribution, not a fitted joint predictor, physical risk-factor recovery, independent decision value or proof of causal failure. No holdout outcomes enter the joint direction.",
+  "execution": "local serial single-thread, no new source fits, target archive reads, simulator/verifier calls, terminal integration, server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_counterbalanced_source_dependence_v1"
+}

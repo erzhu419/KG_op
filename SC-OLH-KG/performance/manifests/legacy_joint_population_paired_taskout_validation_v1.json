@@ -1,0 +1,25 @@
+{
+  "status": "registered after four-field source gate failure and before12 task-out paired fits or validation labels",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "deleted_mean_execution": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_execution_v1.json",
+  "paid_results": "paper_artifacts/legacy_joint_population_paired_function_risk_filter_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "information": "For each assignment and whole-task deletion, use the cached60-record native mean fits from Stage58, not all72 records. Recompute the paired task direction from ONLY the remaining five tasks and fit one rho with original native optimizer. No source tasks6/7 or target data enter this validation.",
+  "prediction": "Evaluate both uncoupled and paired latent f/g priors at the deleted source task public coordinates, including native discrepancy and common-plus-task covariance. Freeze all12 new fits and24 whole-task predictions before scoring the deleted12-record sample means.",
+  "score": "Gaussian conditional mean-vector density of the complete deleted task, using its same observed three-repeat sample-mean variances as both models source approximation. Report joint density per paired record, f/g marginal vector densities and MSE. This is a Gaussian mean-law validation, not exact raw risk density.",
+  "selection_rule": "Choose the paired family for BOTH assignments only if its mean whole-task-out joint density strictly improves and its g density does not decrease under BOTH assignments. Otherwise retain the independent family for both; do not select task/head/layout-specific arms. Existing opened-source failures remain failed regardless of this selection.",
+  "checks": "For each fold, independent dense source NLL and analytic scale derivative must reproduce the native fit before optimization; all fits converge before selection. All mean dictionaries/normalizers remain the original cached deletion-specific public views.",
+  "execution": "local serial single-thread; reuse96 deleted mean objectives, fit12 scalar scales; no new risk fits, paid simulator/verifier calls, terminal integration, target archive reads, server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_paired_taskout_validation_v1"
+}

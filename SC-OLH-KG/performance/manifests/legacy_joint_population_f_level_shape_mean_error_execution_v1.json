@@ -1,0 +1,24 @@
+{
+  "status": "frozen before saved two-task1 mean-error attribution",
+  "development_execution": "performance/manifests/legacy_joint_population_f_level_shape_development_execution_v1.json",
+  "development_results": "paper_artifacts/legacy_joint_population_f_level_shape_development_v1/results.json",
+  "question": "Does the remaining task1 mean error chiefly belong to a common level offset or centered policy shape,and which part explains the loss versus retained intercept mixture and source GP?",
+  "calculation": "Use the two already-frozen4episode joint-variance predictions and same-budget cached native/flat/sourceGP/intercept-only predictions. On the same already-opened12 query score labels,decompose MSE exactly as(mean error)^2+mean(centered error^2). For joint-versus-intercept mean changes decompose MSE difference as2mean(old_error*mean_change)+mean(mean_change^2),and split that contrast into level and centered-shape contributions. Record probability-weighted posterior f covariance trace using frozen values only.",
+  "interpretation": "The observed mean labels have their original known label noise;this is diagnostic error attribution,not oracle recovery,inner honest validation,new paired independent significance or task-generalization evidence. Do not change any source law,score or gate.",
+  "scope": "Only two already-opened task1 score sets/source0-5;no new forecasts,fits,simulator/verifier/terminal calls,source6/7,target,confirmation,server work or manuscript changes.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small saved JSON forecasts/labels only",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_mean_error_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_level_shape_mean_error.py",
+  "entrypoint_status": "implemented before execution",
+  "decision": "Retain joint-variance candidate as a numerical/calibration study,not replacement prior. Use actual level/shape error attribution to register a source-only predictive-mechanism diagnostic;do not add another covariance parameter or expand target experiments solely because raw density improved.",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_mean_error_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_level_shape_mean_error.py",
+  "frozen_before_error_attribution": true
+}

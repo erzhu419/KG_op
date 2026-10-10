@@ -1,0 +1,55 @@
+{
+  "execution": {
+    "status": "registered after joint-covariance results, before this source optimization attribution",
+    "purpose": "separate common-covariance learning from extra optimization: restart each fixed-common structural source objective at its recorded solution with the same4096 iteration allowance and original ftol/gtol",
+    "source_execution": "performance/manifests/legacy_joint_population_joint_common_covariance_execution_v1.json",
+    "fixed_fit": "paper_artifacts/legacy_joint_population_public_design_source_check_v1/source_fit.json",
+    "output": "paper_artifacts/legacy_joint_population_fixed_common_completion_v1",
+    "max_iterations": 4096,
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "scoring": "same two cached raw records and71 unobserved source-policy batches; freeze predictive distributions before reusing opened source labels; no target terminal integration",
+    "execution": "four native source head continuations once, local serial single-thread; no new simulator/verifier calls or server dispatch",
+    "interpretation": "opened-source optimization attribution, cannot overwrite frozen old/joint outcomes or establish decision superiority"
+  },
+  "rows": [
+    {
+      "task_index": 6,
+      "scores": {
+        "observed_head_mse": [
+          0.0010239267863128355,
+          0.06709393662237631,
+          1.4605105686295576,
+          1.843150981153529
+        ],
+        "joint_batch_log_score": -5.254491030859399
+      }
+    },
+    {
+      "task_index": 7,
+      "scores": {
+        "observed_head_mse": [
+          0.0012873398373332964,
+          0.06863575679542856,
+          2.891630575061162,
+          3.1594681618254925
+        ],
+        "joint_batch_log_score": -6.053899004139221
+      }
+    }
+  ],
+  "summary": {
+    "observed_head_mse": [
+      0.001155633311823066,
+      0.06786484670890244,
+      2.1760705718453597,
+      2.501309571489511
+    ],
+    "joint_batch_log_score": -5.65419501749931
+  },
+  "source_fit_cpu_seconds": 0.04071726200000003,
+  "total_cpu_seconds": 0.9085603179999999,
+  "new_simulator_calls": 0
+}

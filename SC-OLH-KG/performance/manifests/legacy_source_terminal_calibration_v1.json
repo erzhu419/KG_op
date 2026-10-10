@@ -1,0 +1,23 @@
+{
+  "archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+  "replay": "paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "adaptation_calls": 4,
+  "source_folds": "leave FactorShock out and train on Queue only; leave Queue out and train on FactorShock only; encoder, dictionary and all four priors fitted without the heldout task",
+  "adaptation": "first raw replicate at the first four archived policy sites only; no sample variance or heldout remainder enters fitting, weights or recommendation",
+  "roster_rule": "start with the four paid sites, then add highest-ranked distinct primary policies until six; ranking uses the joint mixture's complete64-policy terminal class at362 calls,512 Sobol nodes,80701 seed; freeze retained policy as this pre-score best primary",
+  "terminal_class": "same guarded/direct class, paid empirical supports, retained-policy extension, alpha/delta and hard total cap; source archive policies rather than a new frontend experiment",
+  "selectors": ["legacy_source_orthogonal", "observable_source_full", "observable_source_orthogonal", "paid_evidence_mixture", "fixed_retained_direct"],
+  "control": "direct certification of pre-score retained primary using min128/cap-minus-four calls; policy fixed across budgets and independent of scoring truth",
+  "total_target_call_caps": [64, 128, 256, 362],
+  "roster_draw_power": 9,
+  "primary_roster_size": 6,
+  "terminal_draw_power": 13,
+  "integration_seed": 80701,
+  "freeze_order": "freeze all folds, rosters, retained policies and40 terminal choices before querying any heldout source scoring truth; never construct or score the Inventory target",
+  "endpoints": "predicted-minus-true conditional terminal reward/calls; true loss to the best action in the frozen terminal class; comparison to fixed retained direct; per-component and common-identity results",
+  "attribution": "at the already frozen mixture and fixed-control actions only, replace g mean, eta_g, both constraint heads, or both objective heads by heldout scoring truth; other marginal draws and original shared identity weights remain fixed; this is a diagnostic substitution, not a posterior update, reranking or deployable algorithm",
+  "precision": "8192-node same-action marginal integration; retain first choices; if a tested discrepancy of the attribution integration changes the conclusion, fix that implementation before interpreting; no result-dependent task additions or target tuning",
+  "execution": "local serial single-thread; reuse384 archived source calls,16 fits as before,40 frozen choices and16 selected-action attributions;0 new simulations or certificates, no server work or pulls",
+  "scope": "two fixed source laws with one other law for training per fold; source-terminal decision calibration, not independent deployment confirmation, frontend60/60 reproduction or general source-prior superiority",
+  "output": "paper_artifacts/legacy_source_terminal_calibration_v1/results.json"
+}

@@ -1,0 +1,104 @@
+{
+  "status": "TERMINAL_ADMITTED_PREDICTIVE_HOLD",
+  "scope": "Already opened development task02/layout6 and frozen query63; model-internal estimates, no independent deployment.",
+  "contract": {
+    "query": 63,
+    "action_count": 365,
+    "policy_count": 73,
+    "paid_initial_observation_indices": [
+      45,
+      10
+    ],
+    "sampling_calls": 1,
+    "remaining_verification_calls": 359,
+    "objective_prefixes": [
+      16,
+      32
+    ],
+    "risk_prefixes": [
+      32,
+      64
+    ],
+    "maximum_numerical_adaptation_difference": 0.0001,
+    "maximum_action_resolution_difference": 0.0001
+  },
+  "cases": [
+    {
+      "case": "source_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        64
+      ],
+      "net": 0.01375673038831274,
+      "raw_optimal_net": 0.013782639864066666,
+      "native_choice_loss": 2.5909475753853155e-05,
+      "projected_bias_at_selected_action": 0.0022123026520148685,
+      "fixed_action_tower_residual": -5.2709665707723063e-05,
+      "numerical_changes": [
+        6.492176584993459e-06,
+        0.00034320488076491906,
+        7.053541473123204e-09,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": true,
+        "native_action": true,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": true,
+      "fixed_action_predictive_tower_diagnostic_passed": true,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 9.943988185578262e-05,
+      "maximum_native_action_difference": 9.976966853542102e-05,
+      "predictive_log_evidence_error": 7.720349934547954e-05
+    },
+    {
+      "case": "gp_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        64
+      ],
+      "net": -4.1906969492688795e-05,
+      "raw_optimal_net": -4.1906969492688795e-05,
+      "native_choice_loss": 0.0,
+      "projected_bias_at_selected_action": 0.0002624819822691945,
+      "fixed_action_tower_residual": 0.0001895897636310373,
+      "numerical_changes": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": true,
+        "raw_action": true,
+        "native_action": true,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": true,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 5.71914226277781e-05,
+      "maximum_native_action_difference": 9.097434307067838e-05,
+      "predictive_log_evidence_error": 1.0851184919502543e-06,
+      "fixed_action_predictive_tower_diagnostic_passed": false
+    }
+  ],
+  "scientific_executions_complete": true,
+  "terminal_diagnostics_passed": true,
+  "full_predictive_integration_admitted": false,
+  "algorithmic_query_selection_complete": false,
+  "independent_confirmation": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "next_step": "Reuse admitted source192 and GP96 head states; evaluate only new risk64/128 states under the same contract."
+}

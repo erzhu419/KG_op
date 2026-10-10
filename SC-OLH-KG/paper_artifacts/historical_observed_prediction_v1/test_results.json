@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "test_count": 33,
+  "seconds": 5.993,
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_observed_batch_predictive test_achievable_precision test_raw_terminal_head_grid test_positive_batch_lookahead",
+  "checks": [
+    "batch inverse CDF versus independent adaptive CDF",
+    "positive-mixture joint density versus existing paid batch likelihood",
+    "dependence of batch mean and sample variance",
+    "existing joint-source and raw/native terminal behavior",
+    "public observed-batch entry preserves complete identities and prior weights"
+  ]
+}

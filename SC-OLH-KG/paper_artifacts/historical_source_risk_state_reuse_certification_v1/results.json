@@ -1,0 +1,69 @@
+{
+  "execution_plan": "performance/manifests/historical_source_risk_state_reuse_certification_v1.json",
+  "layout": "5",
+  "selector": "spectral",
+  "support": "head_specific",
+  "treatment": "observed_task",
+  "head": "f",
+  "final_risk_scales": [
+    0.13648896491231532,
+    0.02468364218090036
+  ],
+  "fixed_response_scales": [
+    0.1896847957320934,
+    1.31652536960412
+  ],
+  "candidate_component_file": "paper_artifacts/historical_source_risk_state_reuse_certification_v1/candidate_5_spectral_head_specific_observed_task_f.json",
+  "conditional_risk_stationarity_passed": true,
+  "source_evidence": {
+    "log_source_evidence_ratio": 0.28157061225237623,
+    "conditional_MC_interval_95": null,
+    "importance_ESS": 19.730423767298316,
+    "split_Rhat": 0.9987497060767699,
+    "chain_functional_ESS": 1024.0,
+    "split_log_ratio_difference": 0.5890522417577004,
+    "precision_gate_passed": false,
+    "eligible_improvement_excludes_zero": false
+  },
+  "posterior_functional_precision_passed": false,
+  "maximum_split_rhat": 1.0037753333383943,
+  "minimum_autocorrelation_ess": 980.260868783771,
+  "maximum_first_second_half_f_variance_relative_difference": 0.32725013815304127,
+  "final_candidate_posterior_certified": false,
+  "mixture_components": 1024,
+  "components_reduced": false,
+  "response_stationarity_at_final_risk": {
+    "current_scales": [
+      0.1896847957320934,
+      1.31652536960412
+    ],
+    "proposed_scales": [
+      0.18990069562603729,
+      1.3458725412731773
+    ],
+    "scaled_projected_raw_score": [
+      -4.1130040200550716e-06,
+      -0.0009136894707636953
+    ],
+    "relative_covariance_change": 0.002372063266950749,
+    "optimizer_converged": true,
+    "full_and_split_Q_improvements": [
+      1.0082898108443317e-05,
+      5.2800632497351785e-06,
+      1.2802187788985009e-05
+    ],
+    "single_iteration_stationarity_passed": true,
+    "response_parameters_changed": false
+  },
+  "joint_source_learning_converged": false,
+  "source_registry_replaced": false,
+  "new_candidate_MCMC_sweeps": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "cpu_seconds": 0.26646542700000003,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "scope": "Actual final conditional-risk law reweighted from the certified parent. Directly certify all retained states;no further component reduction. Response M-step is diagnostic only. A passing conditional-risk pilot does not establish joint or32-case convergence."
+}

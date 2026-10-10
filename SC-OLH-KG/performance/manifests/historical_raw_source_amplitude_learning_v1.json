@@ -1,0 +1,11 @@
+{
+  "status": "registered before source-only MCEM amplitude update",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "raw_scores": "paper_artifacts/historical_source_variance_resolution_v4/raw_learning_scores.json",
+  "maximum_single_thread_cpu_seconds": 90,
+  "optimizer": {"max_iterations": 200, "ftol": 1e-12, "gtol": 1e-7},
+  "evidence_precision": {"minimum_importance_ESS": 100, "maximum_split_log_ratio_difference": 0.1},
+  "scope": "All64 current f,g,eta_f,eta_g laws. Reuse historical expected_objective and raw-score identities. Scale common/task covariance blocks with nonnegative amplitudes;freeze source mean,whitening,sparse support,spectral/additive maps and point discrepancy. Reuse each passed retained eta mixture including inverse-tilt weights. Original32 cases unchanged. Require optimizer convergence and strict Q improvement in full and both split sufficient moments. Compute source-only Z(new)/Z(old) by exact collapsed raw-likelihood and Gaussian eta-prior ratios;new conditional f moments must be recomputed from the new covariance before any posterior use. ESS100 and split log-ratio difference.1 are an evidence-ratio diagnostic,not the original posterior precision certificate. Preserve all failures,no restarts,no new source sampling,no target outcome input,no model adoption. This is one M step,not converged structural learning or absolute model evidence.",
+  "cost": {"new_source_labels": 0, "new_source_MCMC_sweeps": 0, "new_covariance_Mstep_optimizations": 64, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_raw_source_amplitude_learning_v1"
+}

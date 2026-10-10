@@ -1,0 +1,29 @@
+{
+  "status": "registered source-data and calibration pilot plan; not executed",
+  "family": "InventorySupplyChain",
+  "public_bank": "reconstruct the existing73-policy legacy Inventory bank from its frozen frontend design and source-profile proposals; no filtering by nominal or new-task scoring truth",
+  "source_dimension": 50,
+  "policy_transport": "resample all public bank curves to source dimension and round to integer controls; freeze the resulting unique policy bank before simulating any new task",
+  "source_task_count": 8,
+  "task_seed": 80751,
+  "task_distribution": {
+    "task_geometry_shift": "three independent Uniform(-.035,.035) coordinates per task",
+    "task_geometry_radius_scale": "Uniform(.95,1.05)",
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "L": 100,
+    "weights": [0.5,0.5]
+  },
+  "replicates_per_site": 3,
+  "maximum_new_source_calls": 1752,
+  "observation_seed": 80761,
+  "source_records": "new independent parameterized tasks, each with a unique task id, original family name and generator config; training consumes public descriptors and observed f/g only, never geometry parameters, true sigma, chance margins or feasibility labels",
+  "reuse": "existing source-only observable maps, orthogonal low-order spectral/ARD priors, raw joint posterior, complete-identity mixture and full-dictionary control; retain original non-intercept mean rule and do not tune it in this pilot",
+  "source_holdouts": [6,7],
+  "fit_contract": "fit encoder/basis/priors on tasks0-5 only; heldout tasks6/7 supply first raw replicate at their first four unique policies; do not use their other observations for source fitting or selector tuning",
+  "calibration_contract": "full public candidate bank,362-call target adaptation/terminal cap, same guarded/direct action class and independent nominal family delta; freeze every recommendation before heldout scoring truth; same-source structural and full-dictionary selectors receive identical data",
+  "endpoints": "heldout f/g and eta calibration, selected-action reward/call estimation errors, conditional deployment reward and loss to best available action; report empty feasible banks and failures without task replacement",
+  "execution": "prepare small JSON observations locally, serial single-thread, no server dispatch or pulls; source generation maximum1752 calls; source fitting and holdout diagnosis precede any new target closed loop or independent certificate",
+  "interpretation": "related task-population pilot complements the preserved cross-law failure; it neither replaces old60/60 frontend evidence nor establishes stable deployment or physical factor recovery",
+  "output": "paper_artifacts/legacy_related_inventory_source_v1/"
+}

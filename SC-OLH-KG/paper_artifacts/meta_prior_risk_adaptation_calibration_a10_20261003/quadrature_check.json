@@ -1,0 +1,145 @@
+{
+  "purpose": "Largest absolute chronological score change in every source/regime group; refit the inner calibration at 64/96 points to test weight and prediction sensitivity.",
+  "orders": [
+    32,
+    64,
+    96
+  ],
+  "tolerance_log_score": 0.0001,
+  "checks": [
+    {
+      "seed": 51,
+      "regime": "shared_structure",
+      "arm": "fixed_source",
+      "step": 23,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 0.0,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 49,
+      "regime": "shared_structure",
+      "arm": "risk_ard_mixture",
+      "step": 13,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 8.881784197001252e-16,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 51,
+      "regime": "support_mismatch",
+      "arm": "fixed_source",
+      "step": 23,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 1.3322676295501878e-15,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 51,
+      "regime": "support_mismatch",
+      "arm": "risk_ard_mixture",
+      "step": 23,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 1.7763568394002505e-15,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 56,
+      "regime": "high_frequency_risk",
+      "arm": "fixed_source",
+      "step": 23,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 1.3322676295501878e-15,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 56,
+      "regime": "high_frequency_risk",
+      "arm": "risk_ard_mixture",
+      "step": 11,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 2.220446049250313e-15,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 50,
+      "regime": "separate_risk_support",
+      "arm": "fixed_source",
+      "step": 12,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 0.0,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 49,
+      "regime": "separate_risk_support",
+      "arm": "risk_ard_mixture",
+      "step": 14,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 0.0,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 53,
+      "regime": "separate_head_structure",
+      "arm": "fixed_source",
+      "step": 19,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 8.881784197001252e-16,
+      "max_abs_pi_change": 0.0
+    },
+    {
+      "seed": 57,
+      "regime": "separate_head_structure",
+      "arm": "risk_ard_mixture",
+      "step": 9,
+      "pi_by_order": {
+        "32": 1.0,
+        "64": 1.0,
+        "96": 1.0
+      },
+      "max_abs_log_score_change": 0.0,
+      "max_abs_pi_change": 0.0
+    }
+  ],
+  "cpu_seconds": 1.147770358,
+  "max_abs_log_score_change": 2.220446049250313e-15,
+  "max_abs_pi_change": 0.0,
+  "passed": true
+}

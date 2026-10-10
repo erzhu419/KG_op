@@ -1,0 +1,517 @@
+{
+  "execution": {
+    "status": "registered before12 deletion mean fits and8 source forecasts",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "coverage_results": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/results.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "previous_mixture_execution": "performance/manifests/legacy_joint_population_covered_complete_mean_uncertainty_v1.json",
+    "previous_mixture_results": "paper_artifacts/legacy_joint_population_covered_complete_mean_uncertainty_v1/results.json",
+    "direction_candidate_results": "paper_artifacts/legacy_joint_population_task_direction_fit_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "mean_arms": [
+      "joint_structural",
+      "flat"
+    ],
+    "basis_of_next_step": "Old144-call complete-mean deletion mixtures failed with40-record, rank24 mean branches. Counterbalanced216-call views have60 records and rank27 after each deletion, retaining all28 policies. Stage53\u201357 improves average prediction yet fails all-case repair gates; the fitted single task direction improves source likelihood but loses one holdout g density. Check complete-source estimation variability under the changed coverage rather than adopting the failed direction or adding source calls.",
+    "fit_rule": "Reuse Stage53 full72-record structural/flat mean fits and all Stage53 full/six-deletion GP fits. Fit only the original regularizer/fixed/joint structural/flat f/g objectives on each saved60-record task-deleted mean view, with its existing frozen public normalization/reference, original optimizer and recorded native completion when needed. Source-fitted rank-one covariance is not used in this candidate.",
+    "risk_rule": "Reuse original144-call full48-record and deleted40-record risk maps/priors. Additional source variance information remains unused. Pair each full/deleted mean law with the risk law and public representations bearing the same deleted task identity.",
+    "mixture_rule": "One full identity plus six whole-source-task-deletion identities, uniform1/7 prior weights; the same two raw paid holdout records jointly update mean/risk identity weights. Use the complete Gaussian field covariance already supported by each component. This is a source-estimation ensemble, not a proved Bayesian hyperparameter posterior.",
+    "controls": "Compare each candidate against its own Stage53 same216-call mean with the original risk-only identity mixture. Report the existing same216-call complete GP control and original144-call parent scores. Do not pool assignments or select heads/layouts by heldout scores.",
+    "freeze_rule": "Complete all12 deletion mean fits before any holdout scoring; freeze all8 new source forecasts before evaluating the71 heldout scoring policies, using identical two raw updates and proper three-repeat density. Verify the full identity reproduces the Stage53 full component after identical updates. No target input/truth/posterior access.",
+    "source_gate": "For each arm require g MSE nonincrease, joint batch density nondecrease and g batch density improvement versus its own Stage53 counterpart on BOTH source holdouts in BOTH layouts. The structural candidate must also satisfy the original144-call repair gate before advancing. Report every failed case; conditional scoring-noise intervals do not waive any criterion.",
+    "next_action": "Only a structural candidate passing both gates may enter a separately registered target diagnostic. Otherwise preserve failures and reassess the source model; do not launch KG, confirmation or a broad matrix automatically.",
+    "execution": "local serial single-thread using cached labels; no new simulator/verifier calls, risk fits, terminal integration, server jobs or pulls",
+    "cost": {
+      "native_mean_objectives_before_original_joint_completions": 96,
+      "new_risk_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "output": "paper_artifacts/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1.json"
+  },
+  "summary": {
+    "5": {
+      "joint_structural": {
+        "observed_head_mse": [
+          0.00019659343400680674,
+          0.0016005736840303312,
+          2.3213083298166124,
+          2.5467100250651296
+        ],
+        "joint_batch_log_score": 1.0249264501967248,
+        "response_batch_log_scores": [
+          1.0834877926197946,
+          -0.06479734771971292
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9577464788732395,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6026924942905332,
+          0.6307821469567116,
+          1.052499581302574,
+          1.1302517569897956
+        ]
+      },
+      "flat": {
+        "observed_head_mse": [
+          0.0002285695394748017,
+          0.0015588341127515432,
+          2.3210575838285514,
+          2.540900763606602
+        ],
+        "joint_batch_log_score": 0.920119204236375,
+        "response_batch_log_scores": [
+          1.0028344978328096,
+          -0.08810917428459768
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9929577464788732,
+          1.0,
+          0.9647887323943662,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6814936539288734,
+          0.6660353791405589,
+          1.0524451102745258,
+          1.1291058472007232
+        ]
+      }
+    },
+    "6": {
+      "joint_structural": {
+        "observed_head_mse": [
+          0.0001974721442504488,
+          0.0012863664448116868,
+          2.0422803692132794,
+          2.5420638325364293
+        ],
+        "joint_batch_log_score": 1.0936295589567817,
+        "response_batch_log_scores": [
+          1.0537182378281282,
+          0.031271957664689695
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9366197183098591,
+          0.9436619718309859
+        ],
+        "predictive_standardized_residual_rms": [
+          0.5807468606302579,
+          0.5377861700106978,
+          0.9771156315995804,
+          1.0169711111335833
+        ]
+      },
+      "flat": {
+        "observed_head_mse": [
+          0.00019444650062681285,
+          0.0011870185056434305,
+          2.042572061385178,
+          2.531353082755376
+        ],
+        "joint_batch_log_score": 1.0270142113336775,
+        "response_batch_log_scores": [
+          1.0213787531562044,
+          -0.0008679429702501476
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9295774647887324,
+          0.9436619718309859
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6202501997931904,
+          0.5602697556128802,
+          0.980395317009576,
+          1.0252171981530052
+        ]
+      }
+    }
+  },
+  "same216_call_control_summary": {
+    "5": {
+      "joint_structural": {
+        "observed_head_mse": [
+          0.0001969073331220352,
+          0.0013679478986038563,
+          2.30663630211776,
+          2.5335965759496153
+        ],
+        "joint_batch_log_score": 1.0996610134152445,
+        "response_batch_log_scores": [
+          1.094761975122452,
+          0.009166522177022324
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9577464788732395,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6266988017005114,
+          0.6362661685793989,
+          1.0492599565923622,
+          1.1266010762552856
+        ]
+      },
+      "flat": {
+        "observed_head_mse": [
+          0.00024203962831173737,
+          0.001536389396646847,
+          2.3072531327213355,
+          2.532766301273316
+        ],
+        "joint_batch_log_score": 0.9755234184587188,
+        "response_batch_log_scores": [
+          1.020855875509194,
+          -0.041408116796990344
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.971830985915493,
+          1.0,
+          0.9577464788732395,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.755327740217135,
+          0.7051766897465022,
+          1.0493282253758012,
+          1.1263511969893545
+        ]
+      },
+      "joint_gp": {
+        "observed_head_mse": [
+          0.00015302038718630165,
+          0.0012101979713561248,
+          2.330621582283259,
+          2.531468301370953
+        ],
+        "joint_batch_log_score": 1.3874744062879094,
+        "response_batch_log_scores": [
+          1.3069797026857457,
+          0.08186589007267484
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          1.0,
+          0.9647887323943662,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.7641352834019586,
+          0.6546948743690139,
+          1.0525822958035371,
+          1.1254643960605317
+        ]
+      }
+    },
+    "6": {
+      "joint_structural": {
+        "observed_head_mse": [
+          0.00020971434387379652,
+          0.001241567331510946,
+          2.049542883950001,
+          2.5321703948930936
+        ],
+        "joint_batch_log_score": 1.123456138163191,
+        "response_batch_log_scores": [
+          1.051427648023326,
+          0.0744770251357193
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9366197183098591,
+          0.9577464788732395
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6245338540867558,
+          0.5719250983944859,
+          0.9818106724957116,
+          1.0035889168176069
+        ]
+      },
+      "flat": {
+        "observed_head_mse": [
+          0.00022057601507729515,
+          0.0012015810878651073,
+          2.0498138133759074,
+          2.532158533832765
+        ],
+        "joint_batch_log_score": 1.0603484837860795,
+        "response_batch_log_scores": [
+          1.02039091108768,
+          0.04247552085748307
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9366197183098591,
+          0.9577464788732395
+        ],
+        "predictive_standardized_residual_rms": [
+          0.7026555188766033,
+          0.5962474299958551,
+          0.9817286555557255,
+          1.0039814522160893
+        ]
+      },
+      "joint_gp": {
+        "observed_head_mse": [
+          0.0001398043989805426,
+          0.0011407142991697035,
+          2.0531568626903764,
+          2.5106615413337763
+        ],
+        "joint_batch_log_score": 1.5040418486384302,
+        "response_batch_log_scores": [
+          1.3318281013634024,
+          0.16846909653730502
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9366197183098591,
+          0.9577464788732395
+        ],
+        "predictive_standardized_residual_rms": [
+          0.7021784304981771,
+          0.6676533405283915,
+          0.9854462818436704,
+          1.0048493069429862
+        ]
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 0.00033258229211611536,
+      "joint_batch_score_difference": -0.11259932229270087,
+      "g_batch_score_difference": -0.10232007461340695,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 2.5030119270770014e-05,
+      "joint_batch_score_difference": -0.09989312465423184,
+      "g_batch_score_difference": -0.05568269331755146,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 0.00013266927873683415,
+      "joint_batch_score_difference": -0.0368698041443386,
+      "g_batch_score_difference": -0.04560766518006354,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 1.9859312938621957e-05,
+      "joint_batch_score_difference": -0.010915303790455688,
+      "g_batch_score_difference": -0.037719421657663205,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 8.278352929340328e-05,
+      "joint_batch_score_difference": -0.04175602219073071,
+      "g_batch_score_difference": -0.04660234850318648,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": -4.4012060240104095e-05,
+      "joint_batch_score_difference": -0.020807234133686903,
+      "g_batch_score_difference": -0.04215378841948865,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 6.814697308078202e-06,
+      "joint_batch_score_difference": -0.017897136222087662,
+      "g_batch_score_difference": -0.03980778643887274,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "reference": "same216_call_risk_only_mixture",
+      "g_mse_difference": 1.4886895796750559e-05,
+      "joint_batch_score_difference": -0.04586131077111699,
+      "g_batch_score_difference": -0.04453313923597779,
+      "passed": false
+    }
+  ],
+  "parent_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": 0.0001848723108951332,
+      "joint_batch_score_difference": 0.035064299886353956,
+      "g_batch_score_difference": -0.03577835396154742,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": -0.00021136180779743525,
+      "joint_batch_score_difference": 0.20219927977950136,
+      "g_batch_score_difference": 0.07660444885146811,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": 0.00019955675639352663,
+      "joint_batch_score_difference": 0.02291733228198911,
+      "g_batch_score_difference": -0.03956229120430879,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": -0.000560736874196459,
+      "joint_batch_score_difference": 0.25018613738715284,
+      "g_batch_score_difference": 0.11456399066397796,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": -0.0014096305601575358,
+      "joint_batch_score_difference": 0.19840946612376387,
+      "g_batch_score_difference": 0.1334614515025566,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": -0.0008891771120914465,
+      "joint_batch_score_difference": 0.3681266588382097,
+      "g_batch_score_difference": 0.11629783255355809,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": -0.0005252332158532081,
+      "joint_batch_score_difference": -0.0771789960222311,
+      "g_batch_score_difference": 0.047209858753879286,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "reference": "original144_call_risk_only_mixture",
+      "g_mse_difference": -0.0009811456612153352,
+      "joint_batch_score_difference": 0.23994552176486672,
+      "g_batch_score_difference": 0.14600043593892484,
+      "passed": true
+    }
+  ],
+  "source_gates": {
+    "joint_structural": false,
+    "flat": false
+  },
+  "parent_source_gates": {
+    "joint_structural": false,
+    "flat": true
+  },
+  "structural_advance_gate_passed": false,
+  "full_identity_reproduction_passed": true,
+  "source_identity_pairing_passed": true,
+  "native_mean_fits": 96,
+  "source_mean_fit_cpu_seconds": 6.843968213000001,
+  "cost": {
+    "native_mean_objectives_before_original_joint_completions": 96,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 29.429919836
+}

@@ -1,0 +1,375 @@
+{
+  "execution": {
+    "status": "registered after public-descriptor coverage inspection, before selected-label refitting or heldout prediction/scoring",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "original_inputs": "paper_artifacts/legacy_joint_population_source_budget_v1/inputs.json",
+    "original_public_reference_fit": "paper_artifacts/legacy_joint_population_public_reference_v1/source_fit.json",
+    "original_gp_fit": "paper_artifacts/legacy_joint_population_source_budget_v1/gp_population_fit.json",
+    "public_selection": "paper_artifacts/legacy_joint_population_source_budget_v1/public_design_diagnostic.json",
+    "output": "paper_artifacts/legacy_joint_population_public_design_source_check_v1",
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "source_sites": [
+      45,
+      10,
+      51,
+      31,
+      20,
+      50,
+      19,
+      11,
+      26,
+      52,
+      49,
+      48,
+      64,
+      15,
+      18,
+      36
+    ],
+    "source_site_count": 16,
+    "replicates_per_source_site": 3,
+    "designs": [
+      "first16",
+      "public_maxmin16"
+    ],
+    "arms": [
+      "joint_population_structural",
+      "joint_population_full",
+      "joint_population_rbf_shared_raw"
+    ],
+    "selection_contract": "centroid-start maxmin in standardized public exposure descriptors; no response labels, fitted supervised coordinates or target data select sites; same selected16 for every arm",
+    "information_contract": "retrain all supervised coordinate maps and feature/response normalization from only the selected16 training sites; orthogonalize over the complete public73-site catalog using that encoder; retain the stage23 structural/GP objectives, source error models and parameter bounds",
+    "source_max_iterations": 1024,
+    "generic_anchor_max_iterations": 512,
+    "generic_population_optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 512,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "heldout_adaptation": "the first raw replicate at original bank indices0 and1; two cached paired records for each heldout source task, shared by all designs and arms",
+    "freeze_rule": "save all12 local joint predictive distributions before using unobserved heldout labels for scoring; never use heldout responses for encoder or source hyperparameter fitting",
+    "endpoints": "observed four-head MSE and exact replicated mean/log-sample-variance joint log density averaged over unobserved original sites2..72; retain separate task6/task7 outcomes",
+    "continuation_rule": "use paired source-heldout prediction to decide whether public coverage merits a target-decision comparison; no automatic target reranking, scheduler matrix or independent confirmation",
+    "new_simulator_call_cap": 0,
+    "execution": "local serial single-thread;16 new source head fits once, cache small JSON; no terminal integration, server dispatch or pulls",
+    "interpretation": "two previously opened source-heldout tasks atd50; development attribution of source-policy design, not fresh confirmation, d1000 decision evidence, independent safe deployment or structure-specific efficiency"
+  },
+  "head_order": [
+    "f",
+    "g",
+    "eta_g",
+    "eta_f"
+  ],
+  "rows": [
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "design": "first16",
+      "arm": "joint_population_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.004588355217381896,
+          0.04710285928529084,
+          1.6371161634037543,
+          1.9711307976425676
+        ],
+        "joint_batch_log_score": -3.524467552533125,
+        "response_batch_log_scores": [
+          -0.8058026813172137,
+          -2.718664871215913
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "design": "first16",
+      "arm": "joint_population_full",
+      "scores": {
+        "observed_head_mse": [
+          0.004580033485547416,
+          0.04667065126808992,
+          1.6522279520808534,
+          1.9712915314376485
+        ],
+        "joint_batch_log_score": -2.775083342734688,
+        "response_batch_log_scores": [
+          -0.2605019617824181,
+          -2.514581380952271
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "design": "first16",
+      "arm": "joint_population_rbf_shared_raw",
+      "scores": {
+        "observed_head_mse": [
+          0.0028722107141383292,
+          0.05262577667065841,
+          1.5432233636409616,
+          1.7332272394137898
+        ],
+        "joint_batch_log_score": -1.3936693128470061,
+        "response_batch_log_scores": [
+          0.15690530071239886,
+          -1.5505746135594043
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "design": "public_maxmin16",
+      "arm": "joint_population_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0010239201584912603,
+          0.06709407301355506,
+          1.4605111805374444,
+          1.8431513117284712
+        ],
+        "joint_batch_log_score": -5.254523748763467,
+        "response_batch_log_scores": [
+          0.1771936634068723,
+          -5.431717412170338
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "design": "public_maxmin16",
+      "arm": "joint_population_full",
+      "scores": {
+        "observed_head_mse": [
+          0.0010444123835376558,
+          0.06797077017245289,
+          1.4658577750889765,
+          1.8482308144605077
+        ],
+        "joint_batch_log_score": -5.345896345061938,
+        "response_batch_log_scores": [
+          0.1670229107600173,
+          -5.512919255821955
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "design": "public_maxmin16",
+      "arm": "joint_population_rbf_shared_raw",
+      "scores": {
+        "observed_head_mse": [
+          0.0012973811555342535,
+          0.0062026148383936604,
+          1.3991264062043183,
+          2.0249386329224786
+        ],
+        "joint_batch_log_score": -0.4865608069083316,
+        "response_batch_log_scores": [
+          0.11765664170920656,
+          -0.6042174486175382
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "design": "first16",
+      "arm": "joint_population_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0061221515154106735,
+          0.04803709298607634,
+          3.1364916104689766,
+          3.344483324108167
+        ],
+        "joint_batch_log_score": -4.385655926266237,
+        "response_batch_log_scores": [
+          -1.6000044169391927,
+          -2.785651509327045
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "design": "first16",
+      "arm": "joint_population_full",
+      "scores": {
+        "observed_head_mse": [
+          0.006223293155609552,
+          0.048080515776023625,
+          3.1485649379681515,
+          3.344204687013467
+        ],
+        "joint_batch_log_score": -3.015154614790104,
+        "response_batch_log_scores": [
+          -0.5410016389642286,
+          -2.4741529758258753
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "design": "first16",
+      "arm": "joint_population_rbf_shared_raw",
+      "scores": {
+        "observed_head_mse": [
+          0.004375395846923563,
+          0.057888795324080373,
+          2.5986114232911075,
+          3.0141146321119425
+        ],
+        "joint_batch_log_score": -2.3026619215646256,
+        "response_batch_log_scores": [
+          -0.4992684118751881,
+          -1.8033935096894376
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "design": "public_maxmin16",
+      "arm": "joint_population_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0012873375818900103,
+          0.06863585642127507,
+          2.891630971188097,
+          3.1594679687983516
+        ],
+        "joint_batch_log_score": -6.053931671037339,
+        "response_batch_log_scores": [
+          -0.20325468038591046,
+          -5.850676990651429
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "design": "public_maxmin16",
+      "arm": "joint_population_full",
+      "scores": {
+        "observed_head_mse": [
+          0.00130986341536987,
+          0.06888454610144855,
+          2.883042758417696,
+          3.1657158396958933
+        ],
+        "joint_batch_log_score": -5.943478612158461,
+        "response_batch_log_scores": [
+          -0.21327529868471168,
+          -5.73020331347375
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "design": "public_maxmin16",
+      "arm": "joint_population_rbf_shared_raw",
+      "scores": {
+        "observed_head_mse": [
+          0.0015670316572689278,
+          0.007703936780766218,
+          2.9471988014448027,
+          3.192524143220465
+        ],
+        "joint_batch_log_score": -1.7630282671586623,
+        "response_batch_log_scores": [
+          -0.6731371112327142,
+          -1.0898911559259474
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "first16": {
+      "joint_population_structural": {
+        "observed_head_mse": [
+          0.005355253366396285,
+          0.04756997613568359,
+          2.3868038869363657,
+          2.657807060875367
+        ],
+        "joint_batch_log_score": -3.9550617393996808
+      },
+      "joint_population_full": {
+        "observed_head_mse": [
+          0.005401663320578484,
+          0.04737558352205677,
+          2.4003964450245023,
+          2.6577481092255577
+        ],
+        "joint_batch_log_score": -2.895118978762396
+      },
+      "joint_population_rbf_shared_raw": {
+        "observed_head_mse": [
+          0.0036238032805309462,
+          0.05525728599736939,
+          2.0709173934660345,
+          2.373670935762866
+        ],
+        "joint_batch_log_score": -1.8481656172058158
+      }
+    },
+    "public_maxmin16": {
+      "joint_population_structural": {
+        "observed_head_mse": [
+          0.0011556288701906354,
+          0.06786496471741507,
+          2.1760710758627706,
+          2.501309640263411
+        ],
+        "joint_batch_log_score": -5.654227709900403
+      },
+      "joint_population_full": {
+        "observed_head_mse": [
+          0.001177137899453763,
+          0.06842765813695072,
+          2.174450266753336,
+          2.5069733270782004
+        ],
+        "joint_batch_log_score": -5.6446874786102
+      },
+      "joint_population_rbf_shared_raw": {
+        "observed_head_mse": [
+          0.0014322064064015907,
+          0.00695327580957994,
+          2.1731626038245606,
+          2.6087313880714715
+        ],
+        "joint_batch_log_score": -1.1247945370334969
+      }
+    }
+  },
+  "cost": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "source_response_archive_calls_per_design": 288,
+    "cached_logical_adaptation_records_per_arm_design": 4,
+    "new_native_source_head_fits": 16
+  },
+  "source_fit_cpu_seconds": 0.9072809180000001,
+  "prediction_scoring_cpu_seconds": 5.279597196999999
+}

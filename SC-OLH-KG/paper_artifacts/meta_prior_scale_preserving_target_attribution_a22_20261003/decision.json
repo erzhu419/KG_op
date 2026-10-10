@@ -1,0 +1,28 @@
+{
+  "stage": "meta_prior_scale_preserving_target_attribution_a22_20261003",
+  "status": "frozen_target_attribution_complete_source_calibration_shift_gap_identified",
+  "complete": true,
+  "basis": "Exact attribution assigns most support-mismatch/high-frequency losses against A12 to the changed source calibration scope and information pool. A20 q is about1.7% versus A12 shared-archive q32.7%. Adaptation helps these shifted target forecasts but harms compatible/separate-head forecasts; no target-selected increase in q is supported. A source-only cross-archive transfer diagnostic is frozen next.",
+  "source_calibration_share_of_a12_loss": {
+    "support_mismatch": 0.9439529061043536,
+    "high_frequency_risk": 0.961279935224582
+  },
+  "controls": {
+    "max_saved_score_error": 0.0,
+    "max_total_accounting_error": 0.0,
+    "max_head_accounting_error": 0.0,
+    "max_generic_fg_effect": 8.881784197001252e-16
+  },
+  "cpu_seconds": 0.18640928,
+  "a21_a22_combined_cpu_seconds": 58.329444951999996,
+  "next_plan": "performance/meta_prior_source_cross_archive_transfer_plan.json",
+  "recommendation_replay": "hold",
+  "prospective_searches": "hold",
+  "a20_a21_model": "not_promoted",
+  "new_model_fits": 0,
+  "new_predictive_forecasts": 0,
+  "new_simulation_samples": 0,
+  "server_jobs": 0,
+  "server_pulls": 0,
+  "kg_calls": 0
+}

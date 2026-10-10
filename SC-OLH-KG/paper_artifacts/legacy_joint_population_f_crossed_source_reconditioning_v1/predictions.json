@@ -1,0 +1,345 @@
+{
+  "execution": {
+    "status": "registered after current correlated-law information/geometry checks;before added source labels",
+    "entrypoint": "performance/check_legacy_f_crossed_source_reconditioning.py",
+    "information_results": "paper_artifacts/legacy_joint_population_f_joint_source_information_ceiling_v1/results.json",
+    "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+    "source_gp_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+    "latent_noise_results": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "source_validation_task": 0,
+    "law": "NEW information contrast only. Freeze each source4 sparse joint A,R,center,white,support,spectra and same-source GP kernels/center/noise hyperparameters. Expand each of its four sources from its original12 policies to the outcome-free union24 of these four source rosters. Keep the old12 in order,append sorted missing policies,and recondition on ALL96 mean labels once. Source4/task1 validation identities remain excluded. Extra source f mean and sample-variance/3 labels are shared by both arms. Risk eta prior stays at its original honest source4 law;extra g and risk data are not used.",
+    "information_contract": "Each expanded arm uses288 historical mean calls versus144 at baseline;the original96 risk calls are a subset. This is not a144-call superiority claim. No newly generated samples. Both expanded arms have the same source identities,policy records,Gaussian plug-in source noise,validation roster and conditional raw-batch evaluation measure. Hyperparameters/support/templates are NOT refit;the test isolates additional conditioning labels.",
+    "freeze": "Save appended policy rosters before indexing added source raw labels. All four expanded zero-shot priors freeze before reading the same12-site source-validation task0 mean/variance labels. Reuse Stage192 source-only eta marginals and baseline scores. No paid query updates or task1 forecasts.",
+    "verification": "Reproduce old same-source GP full12-site zero-shot mean/covariance with the NEW fixed-kernel conditioner before added labels. Old48 f labels/psi/noise must be unchanged in the new96. Retain exact sparse A/R after new conditioning and require source H/new validation covariances to decrease in PSD order for both arms. Stop on mismatch,unchanged1e-8 reproduction/1e-10 PSD tolerances;no old raw-filter or derivative rerun.",
+    "evaluation": "At each source-validation site,use the shared source4 eta_f prior and same proper conditional-mean density after its variance-label integral,plus observed-mean MSE split into level/shape. Reuse baseline predictions/scores without rerunning their integrals. New shared variance/joint integrals retain existing1e-7 error bounds.",
+    "decision": "Screen for a complete inner source-coverage comparison only if structure MSE does not increase and conditional mean density does not decrease versus its own baseline in BOTH layouts,and each layout improves either its MSE ratio to matched GP or its conditional-density gap to matched GP. Preserve all comparisons. Otherwise stop coverage expansion;no full tenfold fit/raw/task1 experiment. Information or numerical PASS is not decision advantage.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_optimizations": 0,
+      "expanded_source_conditionings": 4,
+      "old_GP_conditioner_reproduction_checks": 2,
+      "new_zero_shot_source_forecasts": 4,
+      "maximum_joint_batch_components_integrated": 48,
+      "maximum_shared_variance_integrations": 24,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;only declared cached source f values and small summaries;no server work,pulls or NPZ",
+    "scope": "Source-only development under explicit doubled historical information. Original four prior principles/tails kept. Earlier candidates stopped;native intercept mixture reference;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript change.",
+    "output": "paper_artifacts/legacy_joint_population_f_crossed_source_reconditioning_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "sites": [
+        45,
+        10,
+        51,
+        31,
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "f_means": [
+        [
+          0.3180268941991835,
+          0.3208407357227321
+        ],
+        [
+          0.5954642079565974,
+          0.5966030873927579
+        ],
+        [
+          0.5385331441526859,
+          0.5403316503622788
+        ],
+        [
+          0.6509753055120802,
+          0.6491436155211288
+        ],
+        [
+          0.3134732902182235,
+          0.31200338468373
+        ],
+        [
+          0.2975835004512704,
+          0.29592293295577843
+        ],
+        [
+          0.658753593314061,
+          0.6577748027332815
+        ],
+        [
+          0.5028359613368842,
+          0.5053341320069036
+        ],
+        [
+          0.41980618913435347,
+          0.3958786879733429
+        ],
+        [
+          0.4734669933086439,
+          0.46127179627816073
+        ],
+        [
+          0.34164747171617293,
+          0.3416279610163775
+        ],
+        [
+          0.3423294076581694,
+          0.3394206579579615
+        ]
+      ],
+      "f_variances": [
+        [
+          0.0005766264322531946,
+          0.0005746573140320149
+        ],
+        [
+          0.0006975444541417424,
+          0.0005821081424069591
+        ],
+        [
+          0.0006769505324538762,
+          0.0005904623488018762
+        ],
+        [
+          0.0006461029744290528,
+          0.0005812369971537057
+        ],
+        [
+          0.000674950277132419,
+          0.0005886364281168927
+        ],
+        [
+          0.0006055480615404845,
+          0.0005764658307414045
+        ],
+        [
+          0.0006482256714599275,
+          0.0005809362557161607
+        ],
+        [
+          0.0006273893741320414,
+          0.0005755541473809744
+        ],
+        [
+          0.0007393300957209176,
+          0.0008109971227149293
+        ],
+        [
+          0.0007816168763501385,
+          0.0011009425509588278
+        ],
+        [
+          0.0006858841576407143,
+          0.0006502343702542712
+        ],
+        [
+          0.0006400164812660223,
+          0.0005874554735276621
+        ]
+      ],
+      "eta_mean": [
+        -10.418578067739954,
+        -9.515180997738929,
+        -8.278403433830547,
+        -9.748677024943245,
+        -8.803093650049025,
+        -9.223817541727591,
+        -8.68391465874047,
+        -8.99444971168913,
+        -7.569491108397001,
+        -11.296051772784349,
+        -7.968637027538697,
+        -9.262931201163486
+      ],
+      "eta_variance": [
+        0.12849828280647815,
+        0.052862547975378385,
+        0.3204996665368848,
+        0.20752697333615547,
+        0.9368739086511834,
+        0.05642950082629056,
+        1.5293742031878823,
+        0.435559948133035,
+        3.13822563128212,
+        2.116202436874313,
+        0.2763951202167994,
+        0.09817365067022171
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "common_H_and_GP_predictive_covariance_information_order_verified": true
+    },
+    {
+      "layout": "6",
+      "sites": [
+        45,
+        10,
+        51,
+        31,
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "f_means": [
+        [
+          0.31794941029341234,
+          0.3194052431169092
+        ],
+        [
+          0.5947918670482447,
+          0.5965173677189541
+        ],
+        [
+          0.5383537162514429,
+          0.540295267912265
+        ],
+        [
+          0.6516913424356182,
+          0.6509447448045991
+        ],
+        [
+          0.29544227013700014,
+          0.29181731528913857
+        ],
+        [
+          0.3104425416474219,
+          0.3129308367276715
+        ],
+        [
+          0.3588619259836665,
+          0.3586576558504271
+        ],
+        [
+          0.388765975110542,
+          0.39363482654430526
+        ],
+        [
+          0.3752743767993499,
+          0.3871940570958452
+        ],
+        [
+          0.42606179275894673,
+          0.42364720131522815
+        ],
+        [
+          0.44084819409855586,
+          0.45513937544010985
+        ],
+        [
+          0.3932226391478571,
+          0.3862637838026879
+        ]
+      ],
+      "f_variances": [
+        [
+          0.000778439075355718,
+          0.0007588195529134173
+        ],
+        [
+          0.0008943909596172156,
+          0.0007640182226025527
+        ],
+        [
+          0.0008656631921535436,
+          0.0007721272403386353
+        ],
+        [
+          0.0008384831295491418,
+          0.0007637390089284407
+        ],
+        [
+          0.000780803416703289,
+          0.0007585670840684205
+        ],
+        [
+          0.0008242612309908385,
+          0.0007648292753304614
+        ],
+        [
+          0.0008041549571259578,
+          0.0007606684689770021
+        ],
+        [
+          0.0008395345234721853,
+          0.0007599992801558403
+        ],
+        [
+          0.0008647453224986535,
+          0.000770053979577412
+        ],
+        [
+          0.0008626039402025694,
+          0.0007768372115071892
+        ],
+        [
+          0.0008540753014771741,
+          0.00078684640974723
+        ],
+        [
+          0.000812771918910892,
+          0.0007642731188828439
+        ]
+      ],
+      "eta_mean": [
+        -10.245572314393849,
+        -9.640940293972621,
+        -8.339343459440725,
+        -9.550176276116977,
+        -9.403600293429639,
+        -8.50365833827232,
+        -9.800729668273245,
+        -10.272739804091538,
+        -9.340651564718197,
+        -9.766029736284917,
+        -8.666165056709215,
+        -10.286206088297309
+      ],
+      "eta_variance": [
+        0.13460540708267876,
+        0.06334332077128427,
+        0.23208895700308652,
+        0.0690809873018699,
+        0.06497137262855318,
+        0.40512825440658745,
+        0.06609405801295735,
+        0.1445730156321144,
+        0.1778361774253746,
+        0.06456075393302951,
+        0.43999370053578646,
+        0.1482458805334925
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "common_H_and_GP_predictive_covariance_information_order_verified": true
+    }
+  ],
+  "all_four_zero_shot_forecasts_frozen_before_source_validation_labels": true
+}

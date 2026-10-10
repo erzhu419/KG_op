@@ -1,0 +1,57 @@
+{
+  "stages": [
+    {
+      "name": "initial_terminal_refinement",
+      "jobs": 66,
+      "cpu_seconds": 10520.229529435,
+      "initial_timeout_records": 1,
+      "recovered_by_policy_shards": true
+    },
+    {
+      "name": "policy18",
+      "jobs": 270,
+      "cpu_seconds": 31615.225671488
+    },
+    {
+      "name": "policy20",
+      "jobs": 18,
+      "cpu_seconds": 4283.642360259
+    },
+    {
+      "name": "gp_fixed_action",
+      "jobs": 2,
+      "cpu_seconds": 23.405680154000002,
+      "all_inner_rules_passed": true,
+      "tower_drift_512": 1.0561751502158323e-05
+    },
+    {
+      "name": "source_fixed_action_qmc",
+      "jobs": 4,
+      "cpu_seconds": 253.536454075,
+      "all_inner_rules_passed": false,
+      "tower_drift_512": -0.001553586604498891
+    },
+    {
+      "name": "source_fixed_action_full_component",
+      "jobs": 4,
+      "cpu_seconds": 215.355478826,
+      "all_inner_rules_passed": true,
+      "tower_drift_512": -0.0015553785664144115
+    }
+  ],
+  "terminal_cpu_seconds": 46419.09756118201,
+  "measured_cpu_seconds": 46911.395174237,
+  "scheduler_status_counts": {
+    "done": 364,
+    "failed": 8
+  },
+  "failed_diagnostic_attempts": 8,
+  "failed_attempt_reason": "Diagnostic parity read missing old-cache rule12; corrected to the original rule10. Scheduler retries are retained in execution_account.json.",
+  "failed_attempt_cpu_seconds": null,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "recommendation_frozen": false,
+  "full_predictive_KG_admitted": false
+}

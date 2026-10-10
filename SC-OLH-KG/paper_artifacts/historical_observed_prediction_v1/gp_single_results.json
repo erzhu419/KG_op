@@ -1,0 +1,76 @@
+{
+  "heads": [
+    {
+      "head": 0,
+      "case": "gp_n1",
+      "origin": 0,
+      "complete": true,
+      "new_physical_calls": 0,
+      "new_source_fits": 0,
+      "new_verifier_calls": 0,
+      "scope": "Fixed direct action within one complete identity; no adaptive maximum factorization.",
+      "origin_prior_mass": 1.0,
+      "old_label_roundoff": 2.636779683484747e-16,
+      "full_cache_parity_error": 1.1102230246251565e-16,
+      "prefixes": {
+        "8": 0.8034892121124138,
+        "64": 0.8034760691501612,
+        "512": 0.8034815825211181
+      },
+      "baseline_reward": 0.5845189109446132,
+      "maximum_evidence_error": 4.3575322727917865e-07,
+      "all_inner_rules_passed": true,
+      "inner_rule_failed_count": 0,
+      "inner_rule_type": "Sobol_power",
+      "cpu_seconds": 8.449750933
+    },
+    {
+      "head": 1,
+      "case": "gp_n1",
+      "origin": 0,
+      "complete": true,
+      "new_physical_calls": 0,
+      "new_source_fits": 0,
+      "new_verifier_calls": 0,
+      "scope": "Fixed direct action within one complete identity; no adaptive maximum factorization.",
+      "origin_prior_mass": 1.0,
+      "old_label_roundoff": 2.636779683484747e-16,
+      "full_cache_parity_error": 2.220446049250313e-16,
+      "prefixes": {
+        "8": 0.7266153198833338,
+        "64": 0.7277233591508641,
+        "512": 0.7275350178162202
+      },
+      "baseline_reward": 0.5845189109446132,
+      "maximum_evidence_error": 3.5114110334077964e-05,
+      "all_inner_rules_passed": true,
+      "inner_rule_failed_count": 0,
+      "inner_rule_type": "Sobol_power",
+      "cpu_seconds": 8.491654148
+    }
+  ],
+  "all_complete": true,
+  "cpu_seconds": 16.941405081,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "all_inner_rules_passed": true,
+  "diagnostic_case": "gp_n1",
+  "scope": "Fixed direct action only; original adaptive KG bank is unchanged.",
+  "prefixes": {
+    "8": {
+      "expected_reward": 0.5838275708818694,
+      "tower_drift": -0.0006913400627437394
+    },
+    "64": {
+      "expected_reward": 0.5847083040392873,
+      "tower_drift": 0.00018939309467413956
+    },
+    "512": {
+      "expected_reward": 0.5845609874545065,
+      "tower_drift": 4.2076509893296254e-05
+    }
+  },
+  "omitted_prior_mass": 0.0,
+  "fixed_action_tower_diagnostic_passed": true
+}

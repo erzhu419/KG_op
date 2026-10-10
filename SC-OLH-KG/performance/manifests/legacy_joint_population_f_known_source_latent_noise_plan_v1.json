@@ -1,0 +1,42 @@
+{
+  "status": "completed;original risk coordinate/statistics and known-source conditioning verified;predictive variance materially changes",
+  "incremental_source_results": "paper_artifacts/legacy_joint_population_f_source_incremental_calibration_v1/results.json",
+  "coverage_plan": "performance/manifests/legacy_joint_population_f_crossed_source_reconditioning_plan_v1.json",
+  "source_rosters": "paper_artifacts/legacy_joint_population_f_crossed_source_reconditioning_v1/source_rosters.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "risk_source_execution": "performance/manifests/legacy_joint_population_f_inner_raw_source_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "source_tasks": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "question": "Does integrating variance uncertainty matter for the ADDED observations of already-known source tasks,where Gaussian label-noise information share is23-30percent rather than the small new-task marginal effect?",
+  "mean_conditionals": "Use Stage195 old48-label-conditioned added-source f means/latent variances for sparse joint and matched GP. Recover cached conditional means from observed added means minus the saved innovation residuals,and latent variances from saved total conditional diagonals minus their frozen sample-variance/3 values;this algebra reconstructs the old-data predictor and does not refit it to new means. Verify one reconstructed case against direct old-data conditioning before interpretation.",
+  "risk_conditionals": "Use ONLY each existing honest source4 eta_f risk law and its original32 source labels. Rebuild its deterministic LegacyObservableCoordinate using the exact original source subset/descriptors when needed;require saved training/public coordinates to reproduce at1e-8 before transforms. No risk covariance objective refit or extra source labels enter the encoder. For each known source task use its conditional task residual plus common posterior,NOT the new-task eta covariance. If B=Dq R Dt^T(Dt R Dt^T+noise+white I)^-1,then eta mean=Dq beta+B(y_t-Dt beta),and covariance=Dq R Dq^T-B Dt R Dq^T+(Dq-B Dt)H(Dq-B Dt)^T+white I. Source risk observation noise remains its original log-variance approximation;document this limitation.",
+  "labels_and_measure": "Only the already-opened extra12 policies in each source2/3/4/5 from Stage194. Confirm these policies are disjoint from the original8 risk-label policies. At each new batch jointly integrate its Gaussian mean/chi-square variance likelihood using the old source-conditional eta marginal;factor variance-label evidence once. Compare proper conditional mean density/variance/covariance tangent with S_f^2/3 plug-in for both f arms. No validation-task0,task1,source6/7 or additional policy labels used.",
+  "verification": "Verify deterministic source risk coordinate restoration and known-source conditioning on original source statistics. Reproduce the existing source-deleted new-task eta marginals only if needed to detect map/head mismatch;do not re-evaluate their scores. Source noise reconstructions must match three-replicate bias correction. Require positive local latent variances and unchanged adaptive1e-7 integral bounds. Stop on drift/mismatch without coordinate retraining on extra data or tolerance relaxation.",
+  "decision": "If latent variance integration makes material training-conditional changes,design a coherent source raw-batch update that retains variance uncertainty and source/task correlations,with equal-information GP controls. Do not feed an eta posterior that already consumed the extra S^2 back into a joint S^2 likelihood. Single-site diagnostics do not define an exact full source posterior. If changes are small,do not blame sample-variance uncertainty;assess source population mean/functional bias next. Coverage candidate remains stopped;no outer forecast or gate relaxation.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "maximum_original_source_coordinate_restorations": 2,
+    "new_risk_covariance_fits": 0,
+    "new_f_covariance_fits": 0,
+    "maximum_joint_batch_components_integrated": 192,
+    "maximum_shared_variance_integrations": 96,
+    "new_source_data": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;existing small source records/risk metadata;no server work,pulls or NPZ",
+  "scope": "Known-source likelihood feasibility under the original source-learned risk representation. No new independent evidence or deployment claims. Original orthogonal,sparse,low-order,low-frequency core remains;prior candidates stopped,native intercept mixture reference,complete-model HOLD. No manuscript edits.",
+  "output": "paper_artifacts/legacy_joint_population_f_known_source_latent_noise_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_known_source_latent_noise_v1/results.json",
+  "entrypoint": "performance/diagnose_legacy_f_known_source_latent_noise.py"
+}

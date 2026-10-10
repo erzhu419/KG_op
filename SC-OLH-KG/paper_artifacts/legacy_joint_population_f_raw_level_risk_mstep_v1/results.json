@@ -1,0 +1,508 @@
+{
+  "execution": {
+    "status": "registered before implementation and optimization;strong risk shape source scores have matching full/half signs in all four arms",
+    "entrypoint": "performance/check_legacy_f_raw_level_risk_mstep.py",
+    "level_risk_plan": "performance/manifests/legacy_joint_population_f_raw_source_level_risk_score_plan_v1.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+    "source_posterior_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+    "risk_partitions": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1/source_eta_partitions.json",
+    "risk_score_results": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1/results.json",
+    "question": "Can one constrained source-only M step learn the still-fixed function level and risk center/selected-shape amplitude with consistent expected complete-likelihood improvement?",
+    "parameters": "Four per arm:function center,function task intercept root multiplier(structure) or constant variance(GP),eta center offset,and common eta strong-shape covariance multiplier. Common function and risk intercept covariance remain fixed:jointly fitting a free global mean and its common intercept variance can collapse uncertainty from one common function draw. Function shape law is Stage205's learned law. Risk selected-shape ratios/spectrum and support stay unchanged;scale only their excess above the original positive weak tail. Keep risk task weak tail and white=0 fixed because Stage212 supplies no stable negative absent-variance direction.",
+    "risk_original_shape_tail_budget": 0.0002,
+    "objective": "Q=.5/48[48log(2pi)+logdet(K)+tr(K^-1(Cpost+(mpost-m)(mpost-m)^T))] for f and eta,using the Stage206 raw posterior under the current scientific law. Add Qf+Qeta;original48 means and48 sample variances appear only through the original posterior. Reuse full-chain first/second eta moments saved in Stage212,not its thinned approximations. This is one Monte Carlo EM M step,not a converged fit or marginal-likelihood comparison.",
+    "verification": "New constrained covariance builders must reproduce the old laws and Gaussian marginal-score/finite-derivative identities. Verify analytic Q derivatives once against finite differences at the candidate. Positive structural shape tails,orthogonal coordinates,selected supports,spectral exponents and common intercept variances remain exact. A failure stops adoption;no restart or alternative parameter search.",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 200,
+      "ftol": 1e-12,
+      "gtol": 1e-08
+    },
+    "decision": "Require convergence and strictly positive full/first/second joint Q improvements,with neither f nor eta component worsening beyond1e-10. If all four pass,register fresh conditioning under the new function AND risk laws before any future prediction. Never attach old posterior moments to a new prior. No held-task outcome affects learning.",
+    "maximum_single_thread_cpu_seconds": 15,
+    "cost": {
+      "new_joint_source_Mstep_optimizations": 4,
+      "new_source_labels": 0,
+      "new_coordinate_fits": 0,
+      "new_posterior_chains": 0,
+      "new_density_integrations": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;existing small source JSON and48-dimensional linear algebra only",
+    "scope": "Original orthogonality,sparsity,low-order/additive and low-frequency priors retained. No source6/7,task0/task1 outcomes,target,KG,confirmation or manuscript edits. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "old_parameters": [
+        0.940751667561126,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "learned_parameters": [
+        0.8627171130509789,
+        0.34295535099630875,
+        -0.20705418088836153,
+        0.5137251546720297
+      ],
+      "parameter_names": [
+        "f_center",
+        "task_intercept_root_multiplier",
+        "eta_mean_offset",
+        "eta_common_strong_shape_covariance_multiplier"
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "optimizer_iterations": 13,
+      "optimizer_function_evaluations": 20,
+      "old_Q_components_full_first_second": [
+        [
+          -2.559031605190255,
+          -2.0980889595339387
+        ],
+        [
+          -2.559179155470965,
+          -2.1015658532678576
+        ],
+        [
+          -2.558883585586541,
+          -2.0943907676312024
+        ]
+      ],
+      "new_Q_components_full_first_second": [
+        [
+          -2.5966315130150366,
+          -2.1091605950473036
+        ],
+        [
+          -2.5967817484186377,
+          -2.111907350815611
+        ],
+        [
+          -2.59648080603348,
+          -2.1061848990367396
+        ]
+      ],
+      "Q_component_improvements_full_first_second": [
+        [
+          0.03759990782478173,
+          0.011071635513364875
+        ],
+        [
+          0.037602592947672875,
+          0.010341497547753598
+        ],
+        [
+          0.03759722044693925,
+          0.0117941314055372
+        ]
+      ],
+      "joint_Q_improvements_full_first_second": [
+        0.048671543338146606,
+        0.04794409049542647,
+        0.04939135185247645
+      ],
+      "initial_risk_scores_full_first_second": [
+        [
+          0.017254664304840756,
+          0.025159615473631963
+        ],
+        [
+          0.01690183750907209,
+          0.0244582695745529
+        ],
+        [
+          0.017607491100609773,
+          0.025852851341906267
+        ]
+      ],
+      "initial_joint_score": [
+        0.03884825250036587,
+        0.053104496481335126,
+        0.017254664304742484,
+        0.025159615473454966
+      ],
+      "final_joint_score": [
+        1.1986192779052847e-09,
+        -1.4190537724056984e-08,
+        -1.378408887031668e-09,
+        -1.3724080760724178e-09
+      ],
+      "candidate_gate_passed": true,
+      "final_Q_derivative_max_error": 1.1565185030093773e-08
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "old_parameters": [
+        0.940751667561126,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "learned_parameters": [
+        0.9908066912963656,
+        0.0,
+        -0.18932099726003304,
+        0.5031814505141153
+      ],
+      "parameter_names": [
+        "f_center",
+        "task_constant_variance",
+        "eta_mean_offset",
+        "eta_common_strong_shape_covariance_multiplier"
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "optimizer_iterations": 10,
+      "optimizer_function_evaluations": 14,
+      "old_Q_components_full_first_second": [
+        [
+          -2.5740846642668496,
+          -2.098282633053786
+        ],
+        [
+          -2.574142170568467,
+          -2.0963816117223875
+        ],
+        [
+          -2.5740265458439953,
+          -2.0999620437375928
+        ]
+      ],
+      "new_Q_components_full_first_second": [
+        [
+          -2.5748420067045674,
+          -2.109591232181977
+        ],
+        [
+          -2.5749010160766947,
+          -2.1092349404998068
+        ],
+        [
+          -2.574782385210996,
+          -2.1097180102425352
+        ]
+      ],
+      "Q_component_improvements_full_first_second": [
+        [
+          0.0007573424377178561,
+          0.011308599128191155
+        ],
+        [
+          0.0007588455082276901,
+          0.012853328777419293
+        ],
+        [
+          0.0007558393670006325,
+          0.009755966504942482
+        ]
+      ],
+      "joint_Q_improvements_full_first_second": [
+        0.01206594156590901,
+        0.013612174285646983,
+        0.010511805871943114
+      ],
+      "initial_risk_scores_full_first_second": [
+        [
+          0.01577677790086292,
+          0.025713464756782125
+        ],
+        [
+          0.015359619164236152,
+          0.027367396150562148
+        ],
+        [
+          0.016193936637490042,
+          0.02405149285621652
+        ]
+      ],
+      "initial_joint_score": [
+        -0.030260405970292226,
+        67.92707877083208,
+        0.015776777900752492,
+        0.02571346475678782
+      ],
+      "final_joint_score": [
+        9.266518811538541e-09,
+        67.95206872838737,
+        -7.246278614185068e-09,
+        -1.4864719510843116e-08
+      ],
+      "candidate_gate_passed": true,
+      "final_Q_derivative_max_error": 0.00013799283341597857
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "old_parameters": [
+        1.0625327607225346,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "learned_parameters": [
+        0.872362054974673,
+        0.23521570235239142,
+        -0.29775747420315785,
+        0.8445187925352702
+      ],
+      "parameter_names": [
+        "f_center",
+        "task_intercept_root_multiplier",
+        "eta_mean_offset",
+        "eta_common_strong_shape_covariance_multiplier"
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "optimizer_iterations": 10,
+      "optimizer_function_evaluations": 19,
+      "old_Q_components_full_first_second": [
+        [
+          -2.6498313175238803,
+          -2.1337912368739094
+        ],
+        [
+          -2.649860816135632,
+          -2.134230283955953
+        ],
+        [
+          -2.6498014723073786,
+          -2.133129345526632
+        ]
+      ],
+      "new_Q_components_full_first_second": [
+        [
+          -2.7173648937804606,
+          -2.138252622005933
+        ],
+        [
+          -2.717391399609989,
+          -2.1386798353529346
+        ],
+        [
+          -2.717338039498182,
+          -2.13759878350652
+        ]
+      ],
+      "Q_component_improvements_full_first_second": [
+        [
+          0.0675335762565803,
+          0.004461385132023654
+        ],
+        [
+          0.06753058347435736,
+          0.004449551396981555
+        ],
+        [
+          0.06753656719080325,
+          0.004469437979888191
+        ]
+      ],
+      "joint_Q_improvements_full_first_second": [
+        0.07199496138860395,
+        0.07198013487133892,
+        0.07200600517069145
+      ],
+      "initial_risk_scores_full_first_second": [
+        [
+          0.02481194669719705,
+          0.008904219706820472
+        ],
+        [
+          0.024456278261781716,
+          0.009417982440560772
+        ],
+        [
+          0.02516761513261227,
+          0.008369319260368248
+        ]
+      ],
+      "initial_joint_score": [
+        0.0703760491540395,
+        0.05984845827221158,
+        0.02481194669722031,
+        0.008904219706740157
+      ],
+      "final_joint_score": [
+        -1.714418059369412e-08,
+        3.029013043165385e-08,
+        2.160000067696899e-08,
+        -1.1581311631925217e-08
+      ],
+      "candidate_gate_passed": true,
+      "final_Q_derivative_max_error": 8.421060625652397e-09
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "old_parameters": [
+        1.0625327607225346,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "learned_parameters": [
+        1.178698148384518,
+        0.0,
+        -0.2794179119547256,
+        0.7997122448788568
+      ],
+      "parameter_names": [
+        "f_center",
+        "task_constant_variance",
+        "eta_mean_offset",
+        "eta_common_strong_shape_covariance_multiplier"
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "optimizer_iterations": 8,
+      "optimizer_function_evaluations": 28,
+      "old_Q_components_full_first_second": [
+        [
+          -2.6306565392261017,
+          -2.12503630494422
+        ],
+        [
+          -2.6305353065639334,
+          -2.120389012667987
+        ],
+        [
+          -2.630777243298598,
+          -2.1294565268594443
+        ]
+      ],
+      "new_Q_components_full_first_second": [
+        [
+          -2.633903610210819,
+          -2.1295862238760166
+        ],
+        [
+          -2.633780449899327,
+          -2.124734134439613
+        ],
+        [
+          -2.6340262419318887,
+          -2.1342064660471802
+        ]
+      ],
+      "Q_component_improvements_full_first_second": [
+        [
+          0.0032470709847172152,
+          0.0045499189317967925
+        ],
+        [
+          0.0032451433353934966,
+          0.004345121771625937
+        ],
+        [
+          0.003248998633290867,
+          0.004749939187735919
+        ]
+      ],
+      "joint_Q_improvements_full_first_second": [
+        0.007796989916514008,
+        0.007590265107019434,
+        0.007998937821026786
+      ],
+      "initial_risk_scores_full_first_second": [
+        [
+          0.02328361158344659,
+          0.011301320742080106
+        ],
+        [
+          0.023283633084530447,
+          0.010454187600432254
+        ],
+        [
+          0.02328359008236221,
+          0.01212856161652007
+        ]
+      ],
+      "initial_joint_score": [
+        -0.055904225980958934,
+        61.437606133596816,
+        0.023283611583343095,
+        0.011301320742467313
+      ],
+      "final_joint_score": [
+        -5.06717263704104e-08,
+        61.513849050395145,
+        2.7598562731453075e-08,
+        -1.0805730699114946e-08
+      ],
+      "candidate_gate_passed": true,
+      "final_Q_derivative_max_error": 6.543871135278323e-05
+    }
+  ],
+  "Gaussian_checks": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "f_Gaussian": {
+        "moment_identity_error": 4.461708780212348e-15,
+        "finite_difference_max_error": 1.2787246816969855e-09
+      },
+      "risk_Gaussian": {
+        "moment_identity_error": 3.469446951953614e-17,
+        "finite_difference_max_error": 1.124573351107827e-11
+      }
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "f_Gaussian": {
+        "moment_identity_error": 3.808509063674137e-11,
+        "finite_difference_max_error": 3.762440226751096e-05
+      },
+      "risk_Gaussian": {
+        "moment_identity_error": 3.469446951953614e-17,
+        "finite_difference_max_error": 1.124573351107827e-11
+      }
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "f_Gaussian": {
+        "moment_identity_error": 1.6583956430338276e-14,
+        "finite_difference_max_error": 9.65438326505641e-10
+      },
+      "risk_Gaussian": {
+        "moment_identity_error": 1.3877787807814457e-16,
+        "finite_difference_max_error": 3.114415843274987e-12
+      }
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "f_Gaussian": {
+        "moment_identity_error": 2.6766144856082974e-11,
+        "finite_difference_max_error": 0.00014909605084767463
+      },
+      "risk_Gaussian": {
+        "moment_identity_error": 1.3877787807814457e-16,
+        "finite_difference_max_error": 3.114415843274987e-12
+      }
+    }
+  ],
+  "all_source_Mstep_gates_passed": true,
+  "cpu_seconds": 0.31460264400000004,
+  "cost": {
+    "new_joint_source_Mstep_optimizations": 4,
+    "new_source_labels": 0,
+    "new_coordinate_fits": 0,
+    "new_posterior_chains": 0,
+    "new_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "One source-only constrained joint M step;Q improvement does not establish marginal-likelihood or independent decision gain. Function common intercept and risk common intercept/positive tails stay fixed. Fresh raw conditioning is required."
+}

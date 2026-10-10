@@ -1,0 +1,32 @@
+{
+  "status": "completed;exact original state replay verified;both layout6 predictive functional gates pass;both layout5 split density bounds still fail;no expansion",
+  "entrypoint": "performance/check_legacy_f_raw_source_full_state_prediction.py",
+  "failed_pilot_results": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_mixture_v1/results.json",
+  "frozen_pilot_predictions": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_mixture_v1/predictions.json",
+  "original_source_execution": "performance/manifests/legacy_joint_population_f_learned_covariance_source_update_plan_v1.json",
+  "original_source_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+  "frozen_source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+  "question": "Is the predictive-density precision failure caused by retaining only512 thinned source eta states,or does it persist when the original4096 states per arm are used?",
+  "replay": "Reconstruct EXACTLY Stage206's original four chains,512 warmup and1024 retained sweeps per chain,same seed202610074 and same frozen learned covariance/eta law/raw data/reference. The original retained states were discarded after aggregation;this deterministic replay restores them,not an additional independent posterior run. Require replayed posterior mean/covariance and eta moments to match the original package at1e-10 before using the full states. No altered seed,length,reference,covariance,prior or likelihood.",
+  "calculation": "For both new arms and both layouts,project all4096 original states to the same12 task0 policies using Stage208's outcome-free new-task law. Integrate the same scalar raw batch densities with the existing adaptive1e-7 bound;retain per-chain conditional predictive-density values. Do not rerun native quadrature,whose selected/refined prediction and density checks passed. Use those unchanged native references. Save only predictive summaries and per-chain scalar functional records,not all dense source/query conditional covariance files.",
+  "verification": "In addition to unchanged source posterior gates,measure split Rhat<=1.05 and autocorrelation ESS>=100 of future-batch density functionals. Scale each conditional density by its maximum log density before diagnostics;this numerical unit change leaves Rhat/ESS and mixture density unchanged. Keep the original full-versus-half mean RMS .1,variance .15 and per-site density .02 bounds. Retain Stage208 failures;do not reinterpret extra correlated states as extra independent samples.",
+  "decision": "If all future-functional gates pass,report the same matched zero-shot predictive comparison before any paid-update decision. BOTH-layout structure-versus-GP MSE/nondecreasing and raw-density/strict-improvement requirements remain. If the density gate still fails,stop without adding samples or loosening thresholds;diagnose source-risk functional mixing. If density stabilizes but layout6 prediction still loses,stop expansion and attribute mean/risk transfer bias using cached predictions. No new independent task or generic-GP substitution for the structural core.",
+  "maximum_single_thread_cpu_seconds": 60,
+  "cost": {
+    "replayed_original_chains": 16,
+    "recomputed_original_sweeps": 24576,
+    "additional_independent_chains": 0,
+    "additional_retained_draws_beyond_original4096_per_arm": 0,
+    "new_source_labels": 0,
+    "new_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small existing JSON inputs,in-memory original state replay and scalar functional records;no NPZ,HPC,scheduler,server pulls or manuscript edits",
+  "scope": "Source-training computational precision plus already-opened task0 development only. Original four priors,native mixture reference and prior failures preserved;complete-model HOLD. No outer task1,source6/7,target,KG or independent confirmation.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1/results.json"
+}

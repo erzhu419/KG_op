@@ -1,0 +1,15 @@
+{
+  "status": "frozen after verified Stage166:conditional mean explains95.5-98.3 percent of GP joint gain;before covariance calibration diagnosis",
+  "entrypoint": "performance/diagnose_legacy_f_inner_conditional_calibration.py",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_inner_raw_density_attribution_v1/results.json",
+  "arms": ["shape_point", "shape_mixture", "source_gp"],
+  "derivative_step": 1e-4,
+  "refinement_tolerances": {"conditional_mean_max_absolute": 1e-7, "variance_relative": 1e-5, "cdf_max_absolute": 1e-5, "gradient_max_absolute": 1e-5},
+  "question": "Is structural conditional-mean density worse because of predictive location,excessive or insufficient latent f uncertainty,or heterogeneity across source folds?",
+  "calculation": "Use the same30 fixed-prefix cached posteriors and eight future three-repeat batches. Condition eta only on the already-scored log sample variance;compute predictive batch-mean moments,CDF and central50/90/95 coverage. Split predictive variance into latent f and episode noise. Compute the local proper-score derivative when multiplying only conditional f|eta variance by exp(log_scale),at log_scale0. Keep f mean,eta distribution,regression loading and mixture weights unchanged. No variance fit or adopted scaling.",
+  "verification": "Reproduce frozen joint/variance densities. Check ten saved mixture refinements for all new finite quantities;verify analytic score derivatives at one fixed site for all three arms in each layout against the fixed central finite difference. A mismatch blocks interpretation;unchanged numerical tolerances.",
+  "decision": "Positive score derivative supports locally increasing latent uncertainty;negative supports locally decreasing it. Report score-volume/residual terms,PIT/coverage and mean error together;do not interpret a local tangent as a coherent learned-source repair. Thirty overlapping training forecasts give diagnosis,not independent calibration or superiority. No q optimization,source6/7,target,KG,confirmation or manuscript changes.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_raw_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "output": "paper_artifacts/legacy_joint_population_f_inner_conditional_calibration_v1",
+  "execution": "local serial single-thread,cached small JSON/NPZ only;no server jobs or pulls"
+}

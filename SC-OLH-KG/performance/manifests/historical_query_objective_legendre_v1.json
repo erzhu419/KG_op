@@ -1,0 +1,23 @@
+{
+  "status": "Registered after the objective32/64 Sobol mass failure,before positive Legendre density precheck or terminal evaluation.",
+  "parent_plan": "performance/manifests/historical_remaining_query_grids_v1.json",
+  "risk_refinement_plan": "performance/manifests/historical_query_verifier_refinement_v1.json",
+  "anchor_results": "paper_artifacts/historical_query_objective_refinement_v1/results.json",
+  "case": "source_structural_mixture_layout6_query0",
+  "layout": "6",
+  "query": 0,
+  "objective_prefixes": [32, 64],
+  "risk_complement_prefixes": [32, 64],
+  "risk_tail_orders": [16, 32],
+  "low_constraint_probability": 0.125,
+  "raw_powers": [12, 14],
+  "seed": 202610077,
+  "proposal_origin": 4,
+  "predictive_origins": [4, 5],
+  "maximum_inverse_cdf_error": 1e-8,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_fixed_action_tower_residual": 0.0001,
+  "maximum_single_thread_cpu_seconds": 160,
+  "scope": "Reuse the existing positive Gauss-Legendre probability-space rule for the remaining failed objective axis,orders32/64. First compute only conditional predictive labels and density integrals;skip terminal evaluation if the unchanged1e-3 mass or[0.5,2] density gates fail. All120 risk heads and successful actual branch anchors are reused unchanged. Restore both predictive identities4/5 and retain all8 posterior identities without finite normalization. Keep the Sobol failures. No source fits,physical observations,independent targets or server jobs.",
+  "output": "paper_artifacts/historical_query_objective_legendre_v1"
+}

@@ -1,0 +1,274 @@
+{
+  "execution": {
+    "status": "frozen after source-only joint attribution;before shape allocation probe",
+    "joint_results": "paper_artifacts/legacy_joint_population_f_inner_task_level_shape_v1/results.json",
+    "attribution_results": "paper_artifacts/legacy_joint_population_f_inner_joint_attribution_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "outer_deleted_task": 1,
+    "entrypoint": "performance/diagnose_legacy_f_inner_shape_allocation.py",
+    "question": "Does a coherent diagonal shape-budget learner improve honest inner source prediction without adding unsupported common level variance?",
+    "law": "Use Stage153 projected source4 GP task shape group budgets on native common/task support union,reweighted by each native low-frequency spectrum. Keep task intercept,common A,empirical center,discrepancy,label noise and independent1% tail unchanged. Rshape(q) has the convexly interpolated diagonal shape excess;no level increment or coefficient correlation. This is a new conditional source-predictive family selected from training-only attribution,not an independent validation claim.",
+    "fixed_probe_q": 0.01,
+    "gradient_verification_task": "related_inventory_00",
+    "gradient_point": 0.2,
+    "gradient_step": 1e-05,
+    "verification": "PSD endpoint diagonals and unchanged intercept/no correlation;source predictive derivative must equal the saved sum of existing/new shape-margin contributions. Compare derivative with finite difference on one fold per layout. No raw filter replay or q sweep.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_integrations": 0,
+      "new_outer_query_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;source training JSON only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_shape_allocation_v1",
+    "decision": "Only negative mean predictive gradient and positive q=.01 predictive density gain in both layouts permits a separately frozen one-parameter source-predictive fit. Otherwise stop this family. Failed joint and shape-correlation candidates stay stopped;no outer task1 outcomes,source6/7,target,KG,confirmation or manuscript changes;complete-model HOLD remains."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_00",
+      "baseline": {
+        "predictive_nll_per_label": -2.6550380847463146,
+        "predictive_q_gradient_per_label": -0.014788803363556294,
+        "training_nll_per_label": -2.250161515250496,
+        "training_q_gradient_per_label": 0.007458759911758011
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.6551845681209976,
+        "predictive_q_gradient_per_label": -0.014508778824516178,
+        "training_nll_per_label": -2.2500869484206714,
+        "training_q_gradient_per_label": 0.007454556056415293
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.00014648337468292638,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true,
+        "predictive_gradient_finite_difference_error": 1.3357345767656126e-09
+      }
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_02",
+      "baseline": {
+        "predictive_nll_per_label": -2.181202327340651,
+        "predictive_q_gradient_per_label": -0.06859366184816794,
+        "training_nll_per_label": -2.178710806414443,
+        "training_q_gradient_per_label": 0.008888323877415153
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.181880677064393,
+        "predictive_q_gradient_per_label": -0.06708413999588107,
+        "training_nll_per_label": -2.17862108842115,
+        "training_q_gradient_per_label": 0.009054502284981223
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.0006783497237421443,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_03",
+      "baseline": {
+        "predictive_nll_per_label": -2.7065311653799022,
+        "predictive_q_gradient_per_label": 0.010030334788190797,
+        "training_nll_per_label": -2.2369607974671157,
+        "training_q_gradient_per_label": 0.0044488908171619644
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.706429472561366,
+        "predictive_q_gradient_per_label": 0.010306641967253019,
+        "training_nll_per_label": -2.236915552608446,
+        "training_q_gradient_per_label": 0.004599439694739448
+      },
+      "fixed_probe_predictive_density_gain_per_label": -0.00010169281853622536,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_04",
+      "baseline": {
+        "predictive_nll_per_label": -2.7027439424892497,
+        "predictive_q_gradient_per_label": -0.003189195389457028,
+        "training_nll_per_label": -2.2261892276215494,
+        "training_q_gradient_per_label": 0.0022319204979047665
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.7027744967423923,
+        "predictive_q_gradient_per_label": -0.002923047578305448,
+        "training_nll_per_label": -2.2261666454321394,
+        "training_q_gradient_per_label": 0.0022843644562855338
+      },
+      "fixed_probe_predictive_density_gain_per_label": 3.055425314268945e-05,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_05",
+      "baseline": {
+        "predictive_nll_per_label": -2.631813096586137,
+        "predictive_q_gradient_per_label": -0.2965743139023974,
+        "training_nll_per_label": -2.242013754535058,
+        "training_q_gradient_per_label": 0.012668022752449723
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.6347337581002344,
+        "predictive_q_gradient_per_label": -0.28761968769072066,
+        "training_nll_per_label": -2.241885568264794,
+        "training_q_gradient_per_label": 0.012966847010206914
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.0029206615140973113,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_00",
+      "baseline": {
+        "predictive_nll_per_label": -2.828034178566996,
+        "predictive_q_gradient_per_label": -0.02806025305288853,
+        "training_nll_per_label": -2.251811277662323,
+        "training_q_gradient_per_label": -8.915989024305127e-07
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.8283128303538496,
+        "predictive_q_gradient_per_label": -0.027671158793616216,
+        "training_nll_per_label": -2.2518105231124483,
+        "training_q_gradient_per_label": 0.00015142390989706286
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.0002786517868536009,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true,
+        "predictive_gradient_finite_difference_error": 3.4160424558504765e-09
+      }
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_02",
+      "baseline": {
+        "predictive_nll_per_label": -2.7606660160826855,
+        "predictive_q_gradient_per_label": -0.024688750879953213,
+        "training_nll_per_label": -2.2655218852432504,
+        "training_q_gradient_per_label": 2.4020754276071754e-06
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.7609111672614097,
+        "predictive_q_gradient_per_label": -0.024342403589719952,
+        "training_nll_per_label": -2.2655214298315447,
+        "training_q_gradient_per_label": 8.84279094149204e-05
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.0002451511787242566,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_03",
+      "baseline": {
+        "predictive_nll_per_label": -2.844029954647288,
+        "predictive_q_gradient_per_label": -0.010513374516478454,
+        "training_nll_per_label": -2.2493785464088223,
+        "training_q_gradient_per_label": 0.0027928638954199322
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.844133646316625,
+        "predictive_q_gradient_per_label": -0.010226045390291951,
+        "training_nll_per_label": -2.2493501745935935,
+        "training_q_gradient_per_label": 0.002881144780041381
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.00010369166933710261,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_04",
+      "baseline": {
+        "predictive_nll_per_label": -2.6518338766456133,
+        "predictive_q_gradient_per_label": -0.04122544660760575,
+        "training_nll_per_label": -2.2965586522750434,
+        "training_q_gradient_per_label": 0.00789966280782837
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.6522431836491904,
+        "predictive_q_gradient_per_label": -0.040637800065027235,
+        "training_nll_per_label": -2.2964795934777253,
+        "training_q_gradient_per_label": 0.00791206536936387
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.0004093070035771085,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_05",
+      "baseline": {
+        "predictive_nll_per_label": -2.5432445095881895,
+        "predictive_q_gradient_per_label": -0.6121350938969523,
+        "training_nll_per_label": -2.29109048446978,
+        "training_q_gradient_per_label": 0.02201403076498597
+      },
+      "fixed_probe": {
+        "predictive_nll_per_label": -2.5492552294343445,
+        "predictive_q_gradient_per_label": -0.590200189055159,
+        "training_nll_per_label": -2.2908704662551167,
+        "training_q_gradient_per_label": 0.021989167987740237
+      },
+      "fixed_probe_predictive_density_gain_per_label": 0.006010719846154977,
+      "verification": {
+        "original_task_intercept_and_no_correlation_preserved": true,
+        "shape_allocation_derivative_matches_saved_attribution": true
+      }
+    }
+  ],
+  "summary": {
+    "5": {
+      "mean_predictive_q_gradient": -0.07462312794307757,
+      "mean_training_q_gradient": 0.0071391835713379235,
+      "mean_fixed_probe_predictive_density_gain": 0.0007348712094257693,
+      "fixed_probe_improved_inner_tasks": 4
+    },
+    "6": {
+      "mean_predictive_q_gradient": -0.14332458379077564,
+      "mean_training_q_gradient": 0.006541613588951891,
+      "mean_fixed_probe_predictive_density_gain": 0.0014095042969294092,
+      "fixed_probe_improved_inner_tasks": 5
+    }
+  },
+  "source_predictive_shape_allocation_supported": true,
+  "cpu_seconds": 0.06300952300000001,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_outer_query_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "outer_query_paid_or_score_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

@@ -1,0 +1,89 @@
+{
+  "stage": "meta_prior_source_calibrated_adaptation_a12_20261003",
+  "status": "chronological_validation_complete_not_promoted_no_recommendation_replay",
+  "gate_passed": false,
+  "reason": "Source-calibrated initial adaptation odds reduce compatible-task regression relative to A9, but shared and separate-head target scores still have negative nominal intervals. Broad target improvement is not established.",
+  "partial_success": "Calibrated learned-source adaptation probability is about 0.32 rather than 0.5; high-frequency target gains remain positive with 14/16 improving seeds. No hard target-only maximum is used.",
+  "learned_source_groups": [
+    {
+      "regime": "shared_structure",
+      "mean_gain": -0.0029952830745837537,
+      "paired_seed_bootstrap95": [
+        -0.005009655647138714,
+        -0.0006334980745624798
+      ],
+      "better": 3,
+      "worse": 13,
+      "mean_gain_vs_a9": 0.001664115339015538,
+      "mean_source_q": 0.32739096479197327,
+      "mean_target_adaptation_mass": 0.2987259019439027
+    },
+    {
+      "regime": "support_mismatch",
+      "mean_gain": 0.014010778322824477,
+      "paired_seed_bootstrap95": [
+        0.002871707916118177,
+        0.02967601401250823
+      ],
+      "better": 12,
+      "worse": 4,
+      "mean_gain_vs_a9": -0.0047528674586304895,
+      "mean_source_q": 0.32739096479197327,
+      "mean_target_adaptation_mass": 0.3944296977150211
+    },
+    {
+      "regime": "high_frequency_risk",
+      "mean_gain": 0.034059317988783575,
+      "paired_seed_bootstrap95": [
+        0.005663594222503097,
+        0.08411280770917326
+      ],
+      "better": 14,
+      "worse": 2,
+      "mean_gain_vs_a9": -0.005473528518856014,
+      "mean_source_q": 0.32739096479197327,
+      "mean_target_adaptation_mass": 0.41323345885314555
+    },
+    {
+      "regime": "separate_risk_support",
+      "mean_gain": 7.627494939541719e-05,
+      "paired_seed_bootstrap95": [
+        -0.001563206291619954,
+        0.0018894818192208378
+      ],
+      "better": 7,
+      "worse": 9,
+      "mean_gain_vs_a9": 0.00021275327941336786,
+      "mean_source_q": 0.32739096479197327,
+      "mean_target_adaptation_mass": 0.3465235557968308
+    },
+    {
+      "regime": "separate_head_structure",
+      "mean_gain": -0.005266436950098247,
+      "paired_seed_bootstrap95": [
+        -0.007820203243068405,
+        -0.0026489744613388145
+      ],
+      "better": 2,
+      "worse": 14,
+      "mean_gain_vs_a9": 0.0035171860692365213,
+      "mean_source_q": 0.3156846492009083,
+      "mean_target_adaptation_mass": 0.248472965650995
+    }
+  ],
+  "max_a9_formula_error": 2.6645352591003757e-15,
+  "targeted_tests_passed": 4,
+  "numerical_check_passed": true,
+  "local_analysis_cpu_seconds": 0.35705889500000004,
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "new_source_fits": 0,
+  "new_source_calls": 0,
+  "new_target_calls": 0,
+  "kg_calls": 0,
+  "new_searches": 0,
+  "recommendation_replays": 0,
+  "new_random_verifications": 0,
+  "evidence_scope": "Source-CV empirical calibration, reused target-policy development prediction; not independent confirmation or verified decision gains.",
+  "next_plan": "performance/meta_prior_cross_head_information_diagnostic_plan.json"
+}

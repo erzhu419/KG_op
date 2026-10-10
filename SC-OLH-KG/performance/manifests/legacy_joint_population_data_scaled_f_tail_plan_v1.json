@@ -1,0 +1,43 @@
+{
+  "status": "completed in Stage93: 12 f fits converge; unchanged development acceptance fails at layout6 raw density; no source6/7",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "signal_results": "paper_artifacts/legacy_joint_population_function_signal_floor_audit_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Source coefficient-correlation direction information is weak; do not fit that broader family. The absolute signal floor inflates f signal1.376/1.370 times the nonnegative data estimate, with task weak tail about54% of new-task latent variance at source coordinates. g scale is not floor-inflated. Test only the f signal-floor contribution; do not change the tail fraction or g model.",
+  "tail_rule": "For each five-source f branch use s_data=mean_t max(var_ddof0(y_t)-mean(S2_t/3),0), determined from training inputs only. Preserve a strictly positive original weak tail, with per-nonintercept coefficient variance.01*s_data/feature_dim in BOTH common and residual f covariance. All current training s_data are positive. Keep source_signal_scale at its original value for amplitude parameter units, preserving original optimizer coordinates; alter only likelihood.tail. Keep original prior mean and fixed common intercept covariance, dictionary/groups/spectral bounds, noise, discrepancy family and all physical amplitude initializations. Save tail_signal_scale and actual tail budget separately from parameter scale.",
+  "fit": "Fit only12 f heads, one solve per branch from the unchanged Stage71 native parameter vector, with original L-BFGS-B4096/ftol1e-9/gtol1e-5 and unchanged bounds. No GP restart, covariance correlation, spectrum/support grid or completion. Preserve incomplete fits and stop without scoring if any is incomplete. Use the original uncentered f residual design; g remains exactly the Stage88 centered law, with no new g fit.",
+  "verification": "At the same source input/noise reproduce native f law and objective before changing the tail. On actual assignment5/6 deleted-task1 f data compare data-tail source likelihood/posterior/all gradients to dense Gaussian calculations. Check original initial physical amplitudes and exact1% positive tail, symmetry/PSD and unchanged eta_f. Reproduce all73 native f prior/paid moments and existing same12-site f mean/batch scores against Stage66; do not repeat g filtering checks.",
+  "forecast_and_gate": "Freeze all12 f laws and prior/two-raw-paid forecasts before scoring original12 unobserved policies. Use proper raw three-repeat f density, f MSE, Gaussian mean density, raw paid evidence and sequential transcript density. Prefer only if BOTH assignments have average paid f MSE nonincrease, raw f density strict improvement and sequential density nondecrease versus unchanged native f. Keep the identical Stage88 g profiles to report joint raw density. Show every fold and results with task1 excluded descriptively, without replacing the gate.",
+  "next_action": "A complete development pass permits separately registered full-source f fitting with cached Stage89 centered g and the unchanged original complete-model source6/7 gates. A failure retains results and stops this tail-floor repair; do not retune the fraction, alter the g tail, adopt correlations or relax source gates. All folds remain development evidence; no target/confirmation or manuscript claims.",
+  "cost": {
+    "planned_new_f_source_fits": 12,
+    "new_g_source_fits": 0,
+    "maximum_completion_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_data_scaled_f_tail_execution_v1.json",
+  "result": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage91_96_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_data_scaled_f_tail_endpoint_plan_v1.json"
+}

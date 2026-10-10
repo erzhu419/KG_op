@@ -1,0 +1,29 @@
+{
+  "status": "registered after source gate passes and before diversified target recommendations",
+  "source_results": "paper_artifacts/legacy_joint_population_diverse_source_v1/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_diverse_source_v1/inputs.json",
+  "source_fit": "paper_artifacts/legacy_joint_population_diverse_source_v1/source_fit.json",
+  "target_inputs": "paper_artifacts/legacy_joint_population_source_budget_v1/inputs.json",
+  "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+  "output": "paper_artifacts/legacy_joint_population_diverse_source_decision_v1",
+  "arms": [
+    "fixed_common_structural",
+    "joint_common_structural",
+    "joint_common_full",
+    "fixed_common_rbf",
+    "joint_common_rbf"
+  ],
+  "source_information": "new selected-label encoder and all source priors; same per-task16site layouts and288 historical response calls for every arm; restore cached priors, no target-conditioned fitting",
+  "target_prefix": 2,
+  "total_target_call_cap": 362,
+  "target_tasks": 6,
+  "primary_candidates": 73,
+  "public_retained_candidate": 2,
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "freeze_rule": "freeze all30 actions before reading cached independent-pilot truth for scoring; candidates27 and63 used only in post-selection diagnosis",
+  "interpretation": "opened-target development attribution of diversified source observation design and retrained representation; conditional analytic verifier scoring, no new independent deployment/confirmation or incremental KG evidence",
+  "execution": "local serial single-thread, no scheduler/server jobs or pulls; new simulator/verifier calls0"
+}

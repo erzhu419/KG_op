@@ -1,0 +1,12 @@
+{
+  "input": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+  "states": "baseline four-point state and all four saved observe_primary states",
+  "retained_policy": "original four-point posterior recommendation, point 63, frozen before all saved new observations",
+  "terminal_class": "retain all original actions and add three-policy alternatives placing the pre-update recommendation in the final non-primary, non-objective-incumbent support slot; unchanged three-policy family delta, allocations and 362-call cap",
+  "comparison": "same augmented terminal class at baseline and after paid observations, as well as original-class saved decisions; no claim of observation benefit from differing terminal classes",
+  "draw_power": 13,
+  "seed": 80591,
+  "execution": "local serial single-thread, reconstruct already observed posteriors; simulator disabled; freeze all recommendations before scoring truth",
+  "scope": "post-hoc development repair on one opened law, not an independent certificate, a new paid trajectory, or generalization evidence",
+  "output": "paper_artifacts/legacy_one_step_closed_loop_v1/retention.json"
+}

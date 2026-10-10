@@ -1,0 +1,590 @@
+{
+  "execution": {
+    "status": "registered after eligible layout6 mean/density loss;not implemented or executed",
+    "entrypoint": "performance/diagnose_legacy_f_raw_source_level_risk_score.py",
+    "attribution_results": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_attribution_v1/results.json",
+    "source_posterior_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+    "risk_reconstruction": "paper_artifacts/legacy_joint_population_f_raw_source_shared_mixture_v1/reconstruction.json",
+    "source_laws": "paper_artifacts/legacy_joint_population_f_raw_covariance_mstep_v1/source_laws.json",
+    "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+    "question": "Do the still-frozen common/task level parameters or empirical eta population law have coherent raw-source learning directions after the one shape/spectrum M step?",
+    "motivation": "The eligible layout6 MSE excess decomposes into63percent bank-level and37percent centered-shape error. Source risk population parameters/center remain old Gaussian empirical estimates. Increasing target-density sample count cannot repair stable mean error;assess the source-learning objective before another held-task candidate.",
+    "calculation": "Use Stage206 source posterior sufficient moments only. For each f arm evaluate the common-center score -1^T K_f^-1(Ef-m)/48,and common/task constant covariance directions under the raw Fisher score .5/48 tr[(K^-1-K^-1 E[(z-m)(z-m)^T] K^-1)dK]. Structural constant directions must correspond to PSD-preserving common/task intercept row-column scaling in its actual orthogonal coefficient covariance,with original shape/tails unchanged. GP uses its existing common/task constant-kernel directions. Separately restore eta common/task/discrepancy covariance components from Stage207 and evaluate their scalar amplitude scores using the ACTUAL eta posterior from each f arm. This is a gradient/learning-feasibility diagnostic,not an optimization,hyperparameter posterior or recovered factor claim.",
+    "reachable_zero_risk_components": "Source inspection before execution finds both task risk covariance diagonals contain only original weak tails,and risk white variance=0. In addition to common/task covariance multipliers at1,inspect eta mean offset,task intercept variance at0 and white variance itself at0. Derivatives use block constant kernel and I,not zero times I. These are existing intercept/discrepancy directions;no new dictionary or strong shape support. Project variance scores to their nonnegative bounds. Record full versus two512-state subset halves;unstable moment-based scores cannot authorize optimization.",
+    "verification": "Covariance directions must reproduce the existing source laws;validate new constant/risk derivatives against their Gaussian fixed-noise score identities before raw interpretation. Assess eta split score stability by exact deterministic reconstruction of Stage206's original states only IF full posterior moments cannot decide a material direction;no new independent chains or relaxed split gates. Avoid target0/task1 losses entering any parameter,prior,coordinate or support choice.",
+    "decision": "Only stable source-only directions justify a subsequent constrained joint level/risk learning pilot. Keep orthogonality,sparsity,low order,low frequency and positive shape tails;no ad hoc target offset or GP substitution. If level/risk scores are negligible,do not perform another nominal covariance repair:assess source common-mean/selected-support shrinkage with existing source conditional laws. No further layout5 precision rescue because the candidate already loses on eligible layout6.",
+    "maximum_single_thread_cpu_seconds": 10,
+    "cost": {
+      "new_covariance_optimizations": 0,
+      "new_coordinate_fits": 0,
+      "new_source_labels": 0,
+      "additional_independent_source_chains": 0,
+      "new_density_integrations": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;source matrices/moments and small JSON only,no server jobs,pulls,NPZ or manuscript changes",
+    "scope": "Source-learning feasibility under original four priors;not a target-tuned correction or independent evidence. Earlier losses and native mixture remain;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_raw_source_level_risk_score_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "f_parameter_names": [
+        "f_center",
+        "common_intercept_root_multiplier",
+        "task_intercept_root_multiplier"
+      ],
+      "f_parameters": [
+        0.940751667561126,
+        1.0,
+        1.0
+      ],
+      "f_raw_scores_full_first_second": [
+        [
+          0.03884825250026758,
+          -0.0003904449820139478,
+          0.05310449648136867
+        ],
+        [
+          0.03885520074554094,
+          -0.0003940749832130998,
+          0.05311127342107062
+        ],
+        [
+          0.038841304254997766,
+          -0.00038681497249061893,
+          0.05309771971593293
+        ]
+      ],
+      "f_projected_scores_full_first_second": [
+        [
+          0.03884825250026758,
+          -0.0003904449820139478,
+          0.05310449648136867
+        ],
+        [
+          0.03885520074554094,
+          -0.0003940749832130998,
+          0.05311127342107062
+        ],
+        [
+          0.038841304254997766,
+          -0.00038681497249061893,
+          0.05309771971593293
+        ]
+      ],
+      "f_split_sign_agreement": [
+        true,
+        true,
+        true
+      ],
+      "risk_parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "risk_parameters": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "risk_raw_scores_full_thinned_first_second": [
+        [
+          0.017254664304840756,
+          0.03247531364161631,
+          -9.289222673925087e-05,
+          4.746633048020833,
+          -17.155071130485613
+        ],
+        [
+          0.016606356668898276,
+          0.03231754597031089,
+          0.010513712176589276,
+          138.20414568949798,
+          117.3059983836871
+        ],
+        [
+          0.01791045184862942,
+          0.03199148107933743,
+          -0.002949221152817031,
+          39.66571202252166,
+          -99.51443448318112
+        ]
+      ],
+      "risk_projected_scores_full_thinned_first_second": [
+        [
+          0.017254664304840756,
+          0.03247531364161631,
+          -9.289222673925087e-05,
+          0.0,
+          -17.155071130485613
+        ],
+        [
+          0.016606356668898276,
+          0.03231754597031089,
+          0.010513712176589276,
+          0.0,
+          0.0
+        ],
+        [
+          0.01791045184862942,
+          0.03199148107933743,
+          -0.002949221152817031,
+          0.0,
+          -99.51443448318112
+        ]
+      ],
+      "risk_split_sign_agreement": [
+        true,
+        true,
+        false,
+        true,
+        false
+      ],
+      "risk_original_task_diagonal_max": 2.105263157894737e-06,
+      "risk_original_white_variance": 0.0
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "f_parameter_names": [
+        "f_center",
+        "common_constant_variance",
+        "task_constant_variance"
+      ],
+      "f_parameters": [
+        0.940751667561126,
+        0.009224904511245857,
+        0.0
+      ],
+      "f_raw_scores_full_first_second": [
+        [
+          -0.030260405970196896,
+          0.27280148372269014,
+          67.92707877077335
+        ],
+        [
+          -0.03029043433758538,
+          0.2727583885758951,
+          67.89206770095156
+        ],
+        [
+          -0.030230377602814922,
+          0.27284455873343666,
+          67.96206464532176
+        ]
+      ],
+      "f_projected_scores_full_first_second": [
+        [
+          -0.030260405970196896,
+          0.27280148372269014,
+          0.0
+        ],
+        [
+          -0.03029043433758538,
+          0.2727583885758951,
+          0.0
+        ],
+        [
+          -0.030230377602814922,
+          0.27284455873343666,
+          0.0
+        ]
+      ],
+      "f_split_sign_agreement": [
+        true,
+        true,
+        true
+      ],
+      "risk_parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "risk_parameters": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "risk_raw_scores_full_thinned_first_second": [
+        [
+          0.01577677790086292,
+          0.030737741775313524,
+          0.0018383531594594593,
+          53.789999897558836,
+          14.842060693240436
+        ],
+        [
+          0.014880902264896578,
+          0.0270323957113584,
+          -0.004971504842640017,
+          -57.347015856490856,
+          -46.05828232938035
+        ],
+        [
+          0.01707966418080853,
+          0.028743185758607476,
+          -0.0007889390765239979,
+          12.790987473307716,
+          -26.130004770572782
+        ]
+      ],
+      "risk_projected_scores_full_thinned_first_second": [
+        [
+          0.01577677790086292,
+          0.030737741775313524,
+          0.0018383531594594593,
+          0.0,
+          0.0
+        ],
+        [
+          0.014880902264896578,
+          0.0270323957113584,
+          -0.004971504842640017,
+          -57.347015856490856,
+          -46.05828232938035
+        ],
+        [
+          0.01707966418080853,
+          0.028743185758607476,
+          -0.0007889390765239979,
+          0.0,
+          -26.130004770572782
+        ]
+      ],
+      "risk_split_sign_agreement": [
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "risk_original_task_diagonal_max": 2.105263157894737e-06,
+      "risk_original_white_variance": 0.0
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "f_parameter_names": [
+        "f_center",
+        "common_intercept_root_multiplier",
+        "task_intercept_root_multiplier"
+      ],
+      "f_parameters": [
+        1.0625327607225346,
+        1.0,
+        1.0
+      ],
+      "f_raw_scores_full_first_second": [
+        [
+          0.0703760491540999,
+          -0.026207902354640093,
+          0.059848458272206265
+        ],
+        [
+          0.0704048430023625,
+          -0.026227251812832933,
+          0.0598449451473817
+        ],
+        [
+          0.07034725530583004,
+          -0.026188552897895793,
+          0.059851972821759754
+        ]
+      ],
+      "f_projected_scores_full_first_second": [
+        [
+          0.0703760491540999,
+          -0.026207902354640093,
+          0.059848458272206265
+        ],
+        [
+          0.0704048430023625,
+          -0.026227251812832933,
+          0.0598449451473817
+        ],
+        [
+          0.07034725530583004,
+          -0.026188552897895793,
+          0.059851972821759754
+        ]
+      ],
+      "f_split_sign_agreement": [
+        true,
+        true,
+        true
+      ],
+      "risk_parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "risk_parameters": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "risk_raw_scores_full_thinned_first_second": [
+        [
+          0.02481194669719705,
+          0.018214280592182625,
+          0.005762566201388402,
+          33.70876921096036,
+          27.456239841614742
+        ],
+        [
+          0.02407785903041972,
+          0.015449756019829796,
+          0.0049922695816551205,
+          -59.940984382604235,
+          35.298704754699706
+        ],
+        [
+          0.025393399359468088,
+          0.02074262426350572,
+          0.0024171787121442107,
+          119.4863044763606,
+          -23.703227606387593
+        ]
+      ],
+      "risk_projected_scores_full_thinned_first_second": [
+        [
+          0.02481194669719705,
+          0.018214280592182625,
+          0.005762566201388402,
+          0.0,
+          0.0
+        ],
+        [
+          0.02407785903041972,
+          0.015449756019829796,
+          0.0049922695816551205,
+          -59.940984382604235,
+          0.0
+        ],
+        [
+          0.025393399359468088,
+          0.02074262426350572,
+          0.0024171787121442107,
+          0.0,
+          -23.703227606387593
+        ]
+      ],
+      "risk_split_sign_agreement": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "risk_original_task_diagonal_max": 2.105263157894737e-06,
+      "risk_original_white_variance": 0.0
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "f_parameter_names": [
+        "f_center",
+        "common_constant_variance",
+        "task_constant_variance"
+      ],
+      "f_parameters": [
+        1.0625327607225346,
+        0.012096132962717497,
+        0.0
+      ],
+      "f_raw_scores_full_first_second": [
+        [
+          -0.055904225981187494,
+          0.1573442981195231,
+          61.437606133722305
+        ],
+        [
+          -0.055887631975834275,
+          0.15740221802830695,
+          61.40242585037896
+        ],
+        [
+          -0.05592081998654782,
+          0.15728632147396782,
+          61.47274785893012
+        ]
+      ],
+      "f_projected_scores_full_first_second": [
+        [
+          -0.055904225981187494,
+          0.1573442981195231,
+          0.0
+        ],
+        [
+          -0.055887631975834275,
+          0.15740221802830695,
+          0.0
+        ],
+        [
+          -0.05592081998654782,
+          0.15728632147396782,
+          0.0
+        ]
+      ],
+      "f_split_sign_agreement": [
+        true,
+        true,
+        true
+      ],
+      "risk_parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "risk_parameters": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "risk_raw_scores_full_thinned_first_second": [
+        [
+          0.02328361158344659,
+          0.015897735629866516,
+          -0.0006758207659767336,
+          111.78397872035671,
+          8.295052384418465
+        ],
+        [
+          0.023151084050449595,
+          0.0137493981890687,
+          -0.003971747123200193,
+          174.74987460645315,
+          -38.796795006264254
+        ],
+        [
+          0.02376907444101743,
+          0.010875993731556037,
+          -0.0014292615753622815,
+          48.389489297127994,
+          -23.145504232714487
+        ]
+      ],
+      "risk_projected_scores_full_thinned_first_second": [
+        [
+          0.02328361158344659,
+          0.015897735629866516,
+          -0.0006758207659767336,
+          0.0,
+          0.0
+        ],
+        [
+          0.023151084050449595,
+          0.0137493981890687,
+          -0.003971747123200193,
+          0.0,
+          -38.796795006264254
+        ],
+        [
+          0.02376907444101743,
+          0.010875993731556037,
+          -0.0014292615753622815,
+          0.0,
+          -23.145504232714487
+        ]
+      ],
+      "risk_split_sign_agreement": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "risk_original_task_diagonal_max": 2.105263157894737e-06,
+      "risk_original_white_variance": 0.0
+    }
+  ],
+  "Gaussian_verification_checks": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "f": {
+        "moment_identity_error": 2.7532067337771027e-14,
+        "finite_difference_max_error": 2.8363741794721134e-09
+      },
+      "eta": {
+        "moment_identity_error": 4.0468500772661287e-10,
+        "finite_difference_max_error": 1.2196216259141579e-11
+      }
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "f": {
+        "moment_identity_error": 3.808509063674137e-11,
+        "finite_difference_max_error": 3.762440226751096e-05
+      },
+      "eta": {
+        "moment_identity_error": 4.0468500772661287e-10,
+        "finite_difference_max_error": 1.2196216259141579e-11
+      }
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "f": {
+        "moment_identity_error": 1.6583956430338276e-14,
+        "finite_difference_max_error": 9.65438326505641e-10
+      },
+      "eta": {
+        "moment_identity_error": 3.8907470301108305e-10,
+        "finite_difference_max_error": 4.507495210415158e-10
+      }
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "f": {
+        "moment_identity_error": 2.6766144856082974e-11,
+        "finite_difference_max_error": 0.00014909605084767463
+      },
+      "eta": {
+        "moment_identity_error": 3.8907470301108305e-10,
+        "finite_difference_max_error": 4.507495210415158e-10
+      }
+    }
+  ],
+  "all_Gaussian_score_and_derivative_checks_passed": true,
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.197560018,
+  "cost": {
+    "new_covariance_optimizations": 0,
+    "new_coordinate_fits": 0,
+    "new_source_labels": 0,
+    "additional_independent_source_chains": 0,
+    "new_density_integrations": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Raw source Fisher moment scores at fixed learned shape law. Small risk prior eigenvalues can make absent-variance moment gradients Monte Carlo unstable;thinned half disagreement cannot authorize optimization. Zero task/white directions use their actual variance derivatives. No held-task outcomes or new sampling."
+}

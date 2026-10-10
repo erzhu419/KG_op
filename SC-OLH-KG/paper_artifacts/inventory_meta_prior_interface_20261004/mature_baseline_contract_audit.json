@@ -1,0 +1,212 @@
+{
+  "protocol": {
+    "status": "frozen_contract_audit_no_new_observations",
+    "source_records": "paper_artifacts/inventory_meta_prior_interface_20261004/check.json",
+    "target_records": "same_saved_eight_initial_records_in_source_file",
+    "official_method": "google-research/hyperbo",
+    "required_operation": "meta_fit -> adapt -> predict(full_cov=True)",
+    "paper_core_smoke": "same observable scalar tasks and target initial labels",
+    "new_source_episode_calls": 0,
+    "new_target_episode_calls": 0,
+    "truth_used": false
+  },
+  "source_shapes": [
+    {
+      "head": "objective",
+      "tasks": 8,
+      "points_per_task": [
+        16
+      ],
+      "dimension": [
+        8
+      ]
+    },
+    {
+      "head": "constraint_mean",
+      "tasks": 8,
+      "points_per_task": [
+        16
+      ],
+      "dimension": [
+        8
+      ]
+    },
+    {
+      "head": "log_variance",
+      "tasks": 8,
+      "points_per_task": [
+        16
+      ],
+      "dimension": [
+        8
+      ]
+    }
+  ],
+  "paper_core_smoke": [
+    {
+      "head": "objective",
+      "finite_mean": true,
+      "finite_covariance": true,
+      "covariance_shape": [
+        8,
+        8
+      ],
+      "target_points": 8,
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "paper_core_reimplementation",
+        "official_reference": "google-research/hyperbo@e720fc1",
+        "source_prior_frozen_online": true,
+        "n_target": 8,
+        "model": {
+          "kernel": "rbf",
+          "lengthscale": 0.2,
+          "outputscale": 4.0,
+          "n_train": 8,
+          "jitter": 1e-10
+        }
+      }
+    },
+    {
+      "head": "constraint_mean",
+      "finite_mean": true,
+      "finite_covariance": true,
+      "covariance_shape": [
+        8,
+        8
+      ],
+      "target_points": 8,
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "paper_core_reimplementation",
+        "official_reference": "google-research/hyperbo@e720fc1",
+        "source_prior_frozen_online": true,
+        "n_target": 8,
+        "model": {
+          "kernel": "rbf",
+          "lengthscale": 0.1,
+          "outputscale": 1.0,
+          "n_train": 8,
+          "jitter": 1e-10
+        }
+      }
+    },
+    {
+      "head": "log_variance",
+      "finite_mean": true,
+      "finite_covariance": true,
+      "covariance_shape": [
+        8,
+        8
+      ],
+      "target_points": 8,
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "paper_core_reimplementation",
+        "official_reference": "google-research/hyperbo@e720fc1",
+        "source_prior_frozen_online": true,
+        "n_target": 8,
+        "model": {
+          "kernel": "rbf",
+          "lengthscale": 0.05,
+          "outputscale": 0.25,
+          "n_train": 8,
+          "jitter": 1e-10
+        }
+      }
+    }
+  ],
+  "official_runtime_report": {
+    "safe_fpacoh_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/jonasrothfuss__f-pacoh-torch",
+      "official_adapter_configured": true
+    },
+    "fsbo_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/machinelearningnuremberg__FSBO",
+      "official_adapter_configured": true
+    },
+    "malibo_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/boschresearch__MALIBO",
+      "official_adapter_configured": true
+    },
+    "hyperbo_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/google-research__hyperbo",
+      "official_adapter_configured": true
+    },
+    "metabo_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/boschresearch__MetaBO",
+      "official_adapter_configured": true
+    },
+    "rgpe_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/boschresearch__transfergpbo",
+      "official_adapter_configured": true
+    },
+    "stacked_transfer_gp_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/boschresearch__transfergpbo",
+      "official_adapter_configured": true
+    },
+    "mtgp_cbo": {
+      "repository_present": true,
+      "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/boschresearch__transfergpbo",
+      "official_adapter_configured": true
+    }
+  },
+  "official_provenance": {
+    "repository_present": true,
+    "repository_path": "/home/erzhu419/mine_code/KG_op/repo/clones/google-research__hyperbo",
+    "checked_commit": "e720fc1",
+    "expected_commit_prefix": "e720fc1",
+    "commit_matches": true
+  },
+  "official_boundary": {
+    "executed": true,
+    "failure": null,
+    "missing_python_modules": [],
+    "fallback_used": false,
+    "reason": "runtime import succeeded"
+  },
+  "official_smoke": {
+    "executed": true,
+    "finite_mean": true,
+    "finite_covariance": true,
+    "covariance_shape": [
+      8,
+      8
+    ],
+    "target_points": 8,
+    "source_steps": 1,
+    "observation_noise_variance": 0.018167923061502115,
+    "diagnostics": {
+      "family": "hyperbo_pretrained_gp_prior",
+      "adaptation_kind": "posterior_conditioning",
+      "implementation_fidelity": "official_hyperbo_code_with_gfile_shim",
+      "official_provenance": {
+        "repository": "google-research/hyperbo",
+        "commit": "e720fc1"
+      },
+      "compatibility_shims": [
+        "tensorflow_io_gfile_only"
+      ],
+      "source_prior_frozen_online": true,
+      "online_parameters_changed": [
+        "target_gp_posterior"
+      ],
+      "source_steps": 1,
+      "n_target": 8,
+      "conditioning_noise": "source_learned_scalar_label_variance",
+      "supplied_per_point_noise_consumed": false,
+      "prediction_covariance": "latent_function_without_fresh_label_noise"
+    }
+  },
+  "local_cpu_seconds": 4.861426646
+}

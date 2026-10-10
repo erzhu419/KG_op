@@ -1,0 +1,25 @@
+{
+  "status": "registered before retaining the one already stationary continuation law",
+  "risk_batch": "paper_artifacts/historical_risk_precision_continuation_v1/current32_cases.json",
+  "cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/5_additive_joint_deconvolved_task_f/results.json"
+    }
+  ],
+  "required_consecutive_iterations": 2,
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "maximum_scaled_projected_raw_score": 0.001,
+  "maximum_relative_covariance_change": 0.01,
+  "output": "paper_artifacts/historical_risk_precision_stationary_retention_v1",
+  "historical_policy": "performance/retain_historical_stationary_source_heads.py",
+  "scope": "Adapt the existing source-head stationary-parameter hold to the5 conditional-risk cases with two successive actual precise stationarity diagnostics at distinct current laws. Keep the last accepted parameters exactly. A further failed proposal is preserved and not accepted. Held-law Q change is exactly0 and its evidence ratio exactly1;no improvement is fabricated or accepted-update count increased. This changes the stopping handling,not any numerical threshold. No source-registry replacement,joint convergence declaration,new sampling,labels,target calls or server work."
+}

@@ -1,0 +1,23 @@
+{
+  "status": "Registered before Gauss-Legendre tail labels;the32-point Sobol fixed tower gate remains failed.",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "source_reference": "paper_artifacts/historical_source_head_grid_v2/results.json",
+  "proposal_calibration": "paper_artifacts/historical_source_head_grid_v2/proposal_calibration.json",
+  "completed_objective_heads": "paper_artifacts/historical_source_head_grid_v2/origin4_head0.json",
+  "completed_risk_heads": "paper_artifacts/historical_source_head_grid_v2/origin4_head1.json",
+  "layout": "5",
+  "candidate": 5,
+  "objective_prefixes": [16, 32],
+  "risk_complement_prefixes": [32, 64],
+  "risk_tail_orders": [16, 32],
+  "low_constraint_probability": 0.125,
+  "raw_powers": [12, 14],
+  "seed": 202610077,
+  "maximum_inverse_cdf_error": 1e-8,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_fixed_action_tower_residual": 0.0001,
+  "maximum_single_thread_cpu_seconds": 180,
+  "scope": "Reuse historical Gauss-Legendre probability quadrature and raw predictive CDF. Only replace the existing lowest1/8 risk-axis numerical rule by16/32 positive-weight nodes. Reuse all objective and body-risk statistics. Restore predictive mixture4/5 by the calibrated source4 density ratio;all8 posterior identities and positive components,40 actions,raw law,two paid observations,budgets and prior remain unchanged. No fitting quadrature weights to the tower identity. Report tower and adaptive gates separately,including failures. No new physical observations,source fits,independent outcomes or server jobs.",
+  "cost": {"new_source_fits": 0, "new_source_labels": 0, "new_physical_target_episodes": 0, "new_verifier_calls": 0, "server_jobs": 0, "independent_targets_opened": 0},
+  "output": "paper_artifacts/historical_gauss_risk_tail_v1"
+}

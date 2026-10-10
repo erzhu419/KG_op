@@ -1,0 +1,81 @@
+{
+  "execution_plan": "performance/manifests/historical_conditional_kg_extension_v1.json",
+  "rows": [
+    {
+      "layout": "6",
+      "joint_fantasy_power": 4,
+      "terminal_power": 12,
+      "fixed_reference_fantasy_power": 5,
+      "stop_expected_reward": 0.29399285573629175,
+      "stop_action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "provisional_choice": "stop",
+      "candidate": 1,
+      "expected_future_reward": 0.2939569429659116,
+      "net_reward_of_paid_episode": -3.591277038011986e-05,
+      "adaptation_value": 0.0,
+      "nested_prefix_adaptation_value": 0.0,
+      "nested_adaptation_difference": 0.0,
+      "raw_joint_expected_future_reward": 0.29388711251685695,
+      "raw_joint_baseline_drift": -7.69029668217791e-05,
+      "fixed_action_expected_reward": 0.2939569429659116,
+      "projection_tower_drift": -7.072517767103825e-06,
+      "filter_and_quadrature_baseline_drift": -7.072517767103825e-06,
+      "verification_budget_opportunity_cost": 2.8840252613016037e-05,
+      "expected_eta_variance_reduction_fraction": 0.07285231515279955,
+      "expected_model_weights": [
+        3.2727113016373794e-35,
+        3.228641438530454e-35,
+        2.9569782386580344e-23,
+        2.654803558725791e-23,
+        0.6963751652778104,
+        0.3036248346787862,
+        2.7826464950186832e-11,
+        1.5576732382483003e-11
+      ],
+      "model_weight_martingale_residual": [
+        -1.2852887305135639e-36,
+        -1.3014717871106634e-36,
+        -4.1329720955502203e-25,
+        -3.219937035389416e-25,
+        3.865858033536007e-05,
+        -3.865858034435288e-05,
+        2.6719248862306855e-15,
+        6.221482071249585e-15
+      ],
+      "maximum_raw_integration_relative_error": 1.7481252731882365e-13,
+      "fantasies_per_component": 16,
+      "reused_fantasies": 32,
+      "new_terminal_fantasies": 96,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "old_coarse_net_reward": 0.0038985216166433356,
+      "old_coarse_adaptation_value": 0.0,
+      "completed_prefix_artifact": "paper_artifacts/historical_conditional_kg_pilot_v1/results.json",
+      "adaptive_maximum_evaluated": true,
+      "terminal_action_count": 40,
+      "all_eight_complete_identities_retained": true
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "cpu_seconds": 251.584426446,
+  "cpu_budget_stopped": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scope": "Only after same-law scalar equivalence passes,use the optimized integrator to extend the frozen layout6/query1 pilot from four to16 fantasies per shared identity. Reuse the exact stored aggregate four-fantasy prefix,skip its32 terminal calculations,and evaluate the new96 futures. Keep all32 source heads,16 complete identities,all positive source components,40 actions,paid prefix and360/359 budgets. Same seed and fixed32-fantasy analytic baseline;record full and eight-fantasy nested adaptation,identity martingale residual and raw-filter error. No precision relaxation,selection by sign,new data or server jobs. This is still development/numerical evidence,not a complete candidate ranking or independent decision advantage.",
+  "decision_ranking_certified": false,
+  "independent_confirmation": false
+}

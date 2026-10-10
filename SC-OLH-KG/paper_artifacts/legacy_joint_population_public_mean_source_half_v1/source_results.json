@@ -1,0 +1,464 @@
+{
+  "summary": {
+    "public_mean_joint_structural": {
+      "observed_head_mse": [
+        0.0002127655092429614,
+        0.0049580011406792635,
+        2.533970527989057,
+        3.171608691638186
+      ],
+      "joint_batch_log_score": 0.37288049997074846,
+      "response_batch_log_scores": [
+        0.8803219497502917,
+        -0.5074414497795435
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        0.9295774647887324,
+        0.9154929577464789,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6249588001155104,
+        1.0068184826612363,
+        1.1670719769957822,
+        1.2591617053112123
+      ]
+    },
+    "public_mean_common_flat": {
+      "observed_head_mse": [
+        0.0003333821783773578,
+        0.0019092378496199003,
+        2.5337473091816967,
+        3.1750206521319115
+      ],
+      "joint_batch_log_score": 0.3440812611523697,
+      "response_batch_log_scores": [
+        0.6650466936322088,
+        -0.3209654324798392
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9929577464788732,
+        0.9929577464788732,
+        0.9154929577464789,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.7384729155181677,
+        0.6388754131163441,
+        1.1670420387399516,
+        1.259860067571775
+      ]
+    },
+    "public_mean_joint_rbf": {
+      "observed_head_mse": [
+        0.0003029725120513943,
+        0.005282849332042978,
+        2.53554002967085,
+        3.169014276276342
+      ],
+      "joint_batch_log_score": 0.20653310193802515,
+      "response_batch_log_scores": [
+        0.8561228574713473,
+        -0.6495897555333223
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9647887323943662,
+        0.9154929577464789,
+        0.9154929577464789,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.8606645878452489,
+        1.0685829040676045,
+        1.167459512215145,
+        1.25870378667125
+      ]
+    }
+  },
+  "budget_contrasts": [
+    {
+      "task_id": "related_inventory_06",
+      "arm": "public_mean_joint_structural",
+      "source_calls": [
+        144,
+        288
+      ],
+      "scores_144": {
+        "observed_head_mse": [
+          0.0001839069691624133,
+          0.00337955743299621,
+          1.8400802480115246,
+          2.8756018643557013
+        ],
+        "joint_batch_log_score": 0.7264498188823938,
+        "response_batch_log_scores": [
+          0.9415925954363551,
+          -0.2151427765539614
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          0.9436619718309859,
+          0.971830985915493,
+          0.9154929577464789
+        ],
+        "predictive_standardized_residual_rms": [
+          0.5695898066648997,
+          0.8618580156589458,
+          1.013867039188324,
+          1.1748743367432979
+        ]
+      },
+      "scores_288": {
+        "observed_head_mse": [
+          9.294649054905255e-05,
+          0.0010079129730879812,
+          1.620171200385602,
+          1.8588393265326117
+        ],
+        "joint_batch_log_score": 1.4762748120123268,
+        "response_batch_log_scores": [
+          1.2541838848517324,
+          0.22209092716059434
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.971830985915493,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.4881430479816873,
+          0.5676518629097852,
+          0.9500988288114068,
+          0.9902435529935375
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "arm": "public_mean_common_flat",
+      "source_calls": [
+        144,
+        288
+      ],
+      "scores_144": {
+        "observed_head_mse": [
+          0.0002394641470804097,
+          0.0015530933118277368,
+          1.841149566062376,
+          2.8767158240281177
+        ],
+        "joint_batch_log_score": 0.6310225059776811,
+        "response_batch_log_scores": [
+          0.7591204656055648,
+          -0.1280979596278839
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.971830985915493,
+          0.9154929577464789
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6451286019017995,
+          0.5619820908190472,
+          1.0141680062745702,
+          1.1751680518686978
+        ]
+      },
+      "scores_288": {
+        "observed_head_mse": [
+          0.00011837479094933287,
+          0.0013184016927168813,
+          1.6195074759620987,
+          1.8584688173969588
+        ],
+        "joint_batch_log_score": 1.4688949131007953,
+        "response_batch_log_scores": [
+          1.2461937610682008,
+          0.22270115203259458
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.971830985915493,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.5828009036206945,
+          0.6849264042948605,
+          0.9498901842911974,
+          0.9902157499561189
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "arm": "public_mean_joint_rbf",
+      "source_calls": [
+        144,
+        288
+      ],
+      "scores_144": {
+        "observed_head_mse": [
+          0.0003175333148012158,
+          0.004992066664658283,
+          1.841844436151335,
+          2.8772775530768
+        ],
+        "joint_batch_log_score": 0.4343890361086233,
+        "response_batch_log_scores": [
+          0.8668046497338364,
+          -0.43241561362521325
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.971830985915493,
+          0.9295774647887324,
+          0.971830985915493,
+          0.9154929577464789
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8876807935873521,
+          1.001205105851404,
+          1.0143392391402872,
+          1.1753147807116495
+        ]
+      },
+      "scores_288": {
+        "observed_head_mse": [
+          8.692374847360954e-05,
+          0.000886240007019492,
+          1.6210939871616934,
+          1.859127182897748
+        ],
+        "joint_batch_log_score": 1.8245159862935598,
+        "response_batch_log_scores": [
+          1.5114411500834728,
+          0.31307483621008736
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.971830985915493,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6611675794130686,
+          0.5686226816748793,
+          0.9503749945926454,
+          0.9902005232272678
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "arm": "public_mean_joint_structural",
+      "source_calls": [
+        144,
+        288
+      ],
+      "scores_144": {
+        "observed_head_mse": [
+          0.0002416240493235095,
+          0.006536444848362316,
+          3.22786080796659,
+          3.4676155189206708
+        ],
+        "joint_batch_log_score": 0.0193111810591031,
+        "response_batch_log_scores": [
+          0.8190513040642283,
+          -0.7997401230051256
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          0.9154929577464789,
+          0.8591549295774648,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.680327793566121,
+          1.1517789496635267,
+          1.3202769148032405,
+          1.3434490738791265
+        ]
+      },
+      "scores_288": {
+        "observed_head_mse": [
+          0.00034899955963823767,
+          0.0019526686092750964,
+          2.7648160308701595,
+          3.312844838882192
+        ],
+        "joint_batch_log_score": 0.5980447701580586,
+        "response_batch_log_scores": [
+          0.7303276646411266,
+          -0.13228289448306832
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.971830985915493,
+          1.0,
+          0.8873239436619719,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8839611045882291,
+          0.7545627921073593,
+          1.2446782110218184,
+          1.3131315505386403
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "arm": "public_mean_common_flat",
+      "source_calls": [
+        144,
+        288
+      ],
+      "scores_144": {
+        "observed_head_mse": [
+          0.000427300209674306,
+          0.002265382387412064,
+          3.2263450523010175,
+          3.4733254802357054
+        ],
+        "joint_batch_log_score": 0.05714001632705834,
+        "response_batch_log_scores": [
+          0.5709729216588527,
+          -0.5138329053317945
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          0.9859154929577465,
+          0.8591549295774648,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8318172291345359,
+          0.715768735413641,
+          1.319916071205333,
+          1.3445520832748525
+        ]
+      },
+      "scores_288": {
+        "observed_head_mse": [
+          0.0003085969549654837,
+          0.001399134145182411,
+          2.769399647599671,
+          3.299437974132774
+        ],
+        "joint_batch_log_score": 0.7284957681639063,
+        "response_batch_log_scores": [
+          0.7550098820768368,
+          -0.026514113912930574
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9859154929577465,
+          1.0,
+          0.8732394366197183,
+          0.9436619718309859
+        ],
+        "predictive_standardized_residual_rms": [
+          0.9050772534735706,
+          0.7069017158207642,
+          1.2456174498550348,
+          1.3100244244735828
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "arm": "public_mean_joint_rbf",
+      "source_calls": [
+        144,
+        288
+      ],
+      "scores_144": {
+        "observed_head_mse": [
+          0.0002884117093015728,
+          0.005573631999427673,
+          3.2292356231903647,
+          3.460750999475884
+        ],
+        "joint_batch_log_score": -0.021322832232572992,
+        "response_batch_log_scores": [
+          0.8454410652088583,
+          -0.8667638974414315
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9577464788732394,
+          0.9014084507042254,
+          0.8591549295774648,
+          0.9295774647887324
+        ],
+        "predictive_standardized_residual_rms": [
+          0.8336483821031457,
+          1.1359607022838052,
+          1.3205797852900028,
+          1.3420927926308506
+        ]
+      },
+      "scores_288": {
+        "observed_head_mse": [
+          0.00021681933364437104,
+          0.0018678730602667297,
+          2.763637323820993,
+          3.3161666973208597
+        ],
+        "joint_batch_log_score": 0.9522251684440944,
+        "response_batch_log_scores": [
+          1.0462973050257816,
+          -0.09407213658168763
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9436619718309859,
+          1.0,
+          0.8873239436619719,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          0.922538620404662,
+          0.8228778803929809,
+          1.2444119554804143,
+          1.3144216256806212
+        ]
+      }
+    }
+  ],
+  "matched_contrasts": [
+    {
+      "task_id": "related_inventory_06",
+      "arm": "public_mean_joint_structural",
+      "reference": "public_mean_common_flat",
+      "g_mse_difference": 0.0018264641211684733,
+      "joint_batch_score_difference": 0.09542731290471274,
+      "constraint_batch_score_difference": -0.08704481692607752
+    },
+    {
+      "task_id": "related_inventory_06",
+      "arm": "public_mean_joint_structural",
+      "reference": "public_mean_joint_rbf",
+      "g_mse_difference": -0.001612509231662073,
+      "joint_batch_score_difference": 0.2920607827737705,
+      "constraint_batch_score_difference": 0.21727283707125183
+    },
+    {
+      "task_id": "related_inventory_07",
+      "arm": "public_mean_joint_structural",
+      "reference": "public_mean_common_flat",
+      "g_mse_difference": 0.004271062460950252,
+      "joint_batch_score_difference": -0.03782883526795524,
+      "constraint_batch_score_difference": -0.28590721767333116
+    },
+    {
+      "task_id": "related_inventory_07",
+      "arm": "public_mean_joint_structural",
+      "reference": "public_mean_joint_rbf",
+      "g_mse_difference": 0.0009628128489346426,
+      "joint_batch_score_difference": 0.0406340132916761,
+      "constraint_batch_score_difference": 0.0670237744363058
+    }
+  ],
+  "cpu_seconds": 2.6291200330000004
+}

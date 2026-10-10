@@ -1,0 +1,19 @@
+{
+  "contract_id": "orthogonal_meta_prior_paid_response_replay_v1",
+  "study_role": "development replay of previously paid observations, not a new search or independent confirmation",
+  "source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+  "target_response_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_arm.json",
+  "recorded_path_arm": "source_selected_structure",
+  "reference_measure": "product marginals of pooled public source and target coordinates",
+  "initial_points": 8,
+  "stages": [8, 24],
+  "replicates": 12,
+  "verification_replicates": 928,
+  "chance_alpha": 0.05,
+  "arms": ["source_group_spectral_mixture", "same_source_orthogonal_full"],
+  "target_truth_used": false,
+  "new_source_calls": 0,
+  "new_target_calls": 0,
+  "new_verification_calls": 0,
+  "output": "paper_artifacts/orthogonal_meta_prior_replay_v1/replay.json"
+}

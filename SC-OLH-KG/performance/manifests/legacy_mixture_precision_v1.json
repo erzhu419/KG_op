@@ -1,0 +1,18 @@
+{
+  "replay":"paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "cases":[
+    {"domain":"FactorShockStatePolicyRZDT1","prefix":13},
+    {"domain":"InventorySupplyChain","prefix":4},
+    {"domain":"InventorySupplyChain","prefix":13},
+    {"domain":"QueueResourceControl","prefix":4},
+    {"domain":"QueueResourceControl","prefix":13}
+  ],
+  "draw_power":13,
+  "seeds":[80561,80562],
+  "views":["observable_source_full","fixed_equal_mixture","paid_evidence_mixture"],
+  "lookahead_probe":{"domain":"InventorySupplyChain","prefix":4,"candidates":[2,63],"draw_power":9,"fantasy_power":4,"seed":80561},
+  "purpose":"detect whether retained early benefit and late regressions are numerical ranking artifacts; separate increased-fantasy baseline drift from adaptation before any new paid action",
+  "diagnostics":"pre-observation head log score sums; selected action posterior g/eta and feasible-probability compared with opened truth only after all recommendations freeze; repeat no source holdout",
+  "execution":"local serial single-thread; no simulator calls or server tasks; same frozen method, no parameters changed",
+  "output":"precision.json"
+}

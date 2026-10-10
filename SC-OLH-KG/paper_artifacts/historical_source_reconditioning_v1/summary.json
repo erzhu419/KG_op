@@ -1,0 +1,80 @@
+{
+  "complete_cases": 16,
+  "usable_cases": 10,
+  "failed_cases": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "reasons": [
+        "half_variance_stability"
+      ]
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "reasons": [
+        "half_variance_stability"
+      ]
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "reasons": [
+        "half_variance_stability"
+      ]
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "reasons": [
+        "split_Rhat",
+        "autocorrelation_ESS",
+        "half_variance_stability"
+      ]
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "reasons": [
+        "half_variance_stability"
+      ]
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "reasons": [
+        "half_variance_stability"
+      ]
+    }
+  ],
+  "fresh_chain_ESS_range": [
+    91.55908251650207,
+    424.7096468505793
+  ],
+  "usable_by_covariance_treatment": {
+    "observed_task": 4,
+    "deconvolved_task": 6
+  },
+  "all_fixed512_retention_checks_passed": true,
+  "new_law_pre_sampling_checks": 16,
+  "source_chain_cpu_seconds": 21.714257051,
+  "saved_failure_diagnostic_cpu_seconds": 0.407534724,
+  "retained_worst_site_conditional_variance_fraction_range": [
+    0.7626117915160219,
+    0.9995479947395922
+  ],
+  "model_ranking_not_established": true,
+  "full_four_head_source_posterior_not_completed": true
+}

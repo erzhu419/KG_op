@@ -1,0 +1,18 @@
+{
+  "status": "registered after Stage39 source scoring and before all36 new target forecasts",
+  "source_execution": "performance/manifests/legacy_joint_population_source_layout_robustness_execution_v1.json",
+  "source_results": "paper_artifacts/legacy_joint_population_source_layout_robustness_v1/results.json",
+  "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "target_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1/inputs.json",
+  "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+  "reference_risk_profiles": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1/calibration_profiles.json",
+  "reference_gp_profiles": "paper_artifacts/legacy_joint_population_complete_gp_control_v1/calibration_profiles.json",
+  "diagnostic_candidates": [4, 63, 70, 71],
+  "information": "all priors/maps already frozen at Stage39; fixed structural/flat risk-only mixtures and GP complete mixtures, same144 source calls per model, two raw target records and old73-policy bank. Reconstruct source maps from their selected48/40 cached labels and reproduce saved centers/scales/reference before applying public target descriptors.",
+  "freeze_rule": "save all36 new target prior/posterior forecasts before reading cached target truth for scoring; no variant or source-layout selection based on target scores",
+  "scoring": "g/f/eta truth MSE and moment-band calibration on71 unpaid sites, same-point prior/posterior bias and uncertainty at four reached candidates, with layout0 as an explicitly opened development reference. Plug-in chance margin is descriptive, not a certification probability or a selected action.",
+  "next_action": "attribute changed critical-policy forecasts to mean versus eta priors and source coverage before registering any decision or independent confirmation. Do not infer failed deployment from MSE or plug-in signs.",
+  "execution": "local serial single-thread, no source refits, simulator/verifier calls, terminal integrations, server jobs or pulls",
+  "interpretation": "opened-target source-layout diagnosis within the original function/risk meta-prior; not a new decision comparison or independent evidence",
+  "output": "paper_artifacts/legacy_joint_population_source_layout_target_diagnosis_v1"
+}

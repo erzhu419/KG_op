@@ -1,0 +1,103 @@
+{
+  "status": "registered before conditioning all8 third-step HOLD candidates",
+  "cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_variance_resolution_v4/source_cases/f_layout5_additive_head_specific_observed_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout5_additive_head_specific_deconvolved_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/f_layout5_additive_joint_observed_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout6_additive_joint_deconvolved_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_joint_deconvolved_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_variance_resolution_v1/source_cases/f_layout6_additive_joint_observed_task.json"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_joint_deconvolved_task.json"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_head_specific_deconvolved_task.json"
+    }
+  ],
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "learning_results": "paper_artifacts/historical_stationary_source_continuation_v1/results.json",
+  "previous_posterior_precision": "paper_artifacts/historical_stationary_source_continuation_v1/posterior_precision.json",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 4096,
+    "seed": 202610092
+  },
+  "retained_mixture": {
+    "stride_per_chain": 16,
+    "components_per_arm": 1024,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "maximum_single_thread_cpu_seconds": 20,
+  "scope": "All8 actual HOLD cases in the third source step after retaining six stationary mean heads;reuse24 certified current mixtures. Same historical sampler and1024 retained components. Fixed local serial seed,no search,new labels,prior fitting,target reads or server work. Reverse evidence in this sampler is Z(round3)/Z(original),not the adjacent ratio. Adjacent evidence will use the actual previous round2 law.",
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_changed_candidate_reconditioning_v3"
+}

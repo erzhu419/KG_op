@@ -1,0 +1,12 @@
+{
+  "closed_loop": "paper_artifacts/legacy_batch_closed_loop_v1/results.json",
+  "candidate_rule": "use retained_policy63, fixed in the earlier stage12 retention contract and in every current arm before observations; no candidate selection using postfreeze_ceiling truth",
+  "budget_rule": "existing direct128 terminal action, five previously paid calls,133 total calls under the shared362-call cap",
+  "verification_seeds": [83651, 83652, 83653, 83654],
+  "verification_budget": 128,
+  "freeze_order": "one deterministic frozen action for all four fresh independent verifier streams; no new search, no posterior fitting or updates from verification; score truth after all four verifications",
+  "endpoints": "independently certified safe deployment reward and actual total calls, compared descriptively with the original three-arm results; new verifier streams do not constitute additional independent tasks",
+  "execution": "local serial single-thread; reuse public bank and existing frontend-chosen retained policy; no source refit or source calls; exactly512 new terminal calls,0 search calls, no server work or pulls",
+  "scope": "a separately registered development control after the three-arm result; preserve that original result and budget-frontier analysis; this control is not confirmation of a new general deployment rule",
+  "output": "paper_artifacts/legacy_batch_closed_loop_v1/retained_direct_control.json"
+}

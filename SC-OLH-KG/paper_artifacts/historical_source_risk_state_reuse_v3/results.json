@@ -1,0 +1,634 @@
+{
+  "execution_plan": "performance/manifests/historical_source_risk_state_reuse_v3.json",
+  "layout": "5",
+  "selector": "spectral",
+  "support": "head_specific",
+  "treatment": "observed_task",
+  "head": "f",
+  "status": "fixed-response risk stationarity reached",
+  "initial_risk_scales": [
+    0.1403715862990509,
+    0.026383388867903597
+  ],
+  "final_risk_scales": [
+    0.13648896491231532,
+    0.02468364218090036
+  ],
+  "fixed_response_scales": [
+    0.1896847957320934,
+    1.31652536960412
+  ],
+  "accepted_risk_updates": 3,
+  "attempts": [
+    {
+      "attempt": 1,
+      "bank": 1,
+      "current_theta": [
+        0.1403715862990509,
+        0.026383388867903597
+      ],
+      "proposed_theta": [
+        0.1385231166309994,
+        0.025795386903781543
+      ],
+      "full_and_split_Q_improvements": [
+        1.6145710677914482e-05,
+        1.1085861124790486e-05,
+        2.120556023096909e-05
+      ],
+      "optimizer_converged": true,
+      "relative_covariance_change": 0.013425231673499361,
+      "stationarity_diagnostic_passed": false,
+      "old_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.000803373245959189,
+            0.0009593502601100924
+          ],
+          "scaled_MCSE": [
+            0.0002388458154535961,
+            0.0002383864262512137
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0004681377982890484,
+            0.00046723739545237886
+          ],
+          "split_rhat": [
+            1.0003875677608718,
+            1.000228174623807
+          ],
+          "autocorrelation_ess": [
+            13927.47942117267,
+            14842.931073023983
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.000686789011039816,
+            0.0008055330499342826
+          ],
+          "scaled_MCSE": [
+            0.0003402776771848497,
+            0.0003425029982614667
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006669442472823055,
+            0.0006713058765924748
+          ],
+          "split_rhat": [
+            1.000358690613763,
+            1.0004822508604734
+          ],
+          "autocorrelation_ess": [
+            6897.579927975669,
+            7189.791999558361
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0009199574808785606,
+            0.0011131674702859263
+          ],
+          "scaled_MCSE": [
+            0.0003352289451848309,
+            0.00033065854714816234
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006570487325622686,
+            0.0006480907524103982
+          ],
+          "split_rhat": [
+            1.0009065495886422,
+            1.0001374732628134
+          ],
+          "autocorrelation_ess": [
+            7033.241403217286,
+            7715.245190166355
+          ]
+        }
+      ],
+      "update_accepted": true,
+      "evidence": {
+        "log_source_evidence_ratio": 0.0014510104001317359,
+        "conditional_MC_interval_95": [
+          0.000852618670349379,
+          0.002049402129914093
+        ],
+        "importance_ESS": 65449.101662254485,
+        "split_Rhat": 1.0001958512026201,
+        "chain_functional_ESS": 14244.768099003028,
+        "split_log_ratio_difference": 0.00048442446162333397,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "new_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.0005420742323701683,
+            0.0009319758706671925
+          ],
+          "scaled_MCSE": [
+            0.00023696288701573765,
+            0.00023381354252684653
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00046444725855084577,
+            0.00045827454335261913
+          ],
+          "split_rhat": [
+            1.0003789613794605,
+            1.000222444540483
+          ],
+          "autocorrelation_ess": [
+            14024.920273397087,
+            14841.830523961653
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00042575678236137757,
+            0.0007749824458639031
+          ],
+          "scaled_MCSE": [
+            0.0003379181284899233,
+            0.0003357514100425408
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006623195318402497,
+            0.00065807276368338
+          ],
+          "split_rhat": [
+            1.0003615980356542,
+            1.000474504318463
+          ],
+          "autocorrelation_ess": [
+            6928.248172009859,
+            7204.35767371522
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0006583353490066128,
+            0.0010888932624327906
+          ],
+          "scaled_MCSE": [
+            0.00033219000808689243,
+            0.00032403592529276333
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006510924158503091,
+            0.0006351104135738162
+          ],
+          "split_rhat": [
+            1.000886440556267,
+            1.0001532158537099
+          ],
+          "autocorrelation_ess": [
+            7103.855238449484,
+            7720.103702493446
+          ]
+        }
+      ],
+      "new_score_precision_passed": true,
+      "consecutive_stationarity_iterations": 0
+    },
+    {
+      "attempt": 2,
+      "bank": 1,
+      "current_theta": [
+        0.1385231166309994,
+        0.025795386903781543
+      ],
+      "proposed_theta": [
+        0.13730512985200036,
+        0.025228543006449534
+      ],
+      "full_and_split_Q_improvements": [
+        1.2750204650080477e-05,
+        8.19496703230449e-06,
+        1.7303236133248134e-05
+      ],
+      "optimizer_converged": true,
+      "relative_covariance_change": 0.009268886629837363,
+      "stationarity_diagnostic_passed": true,
+      "old_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.0005420742323701683,
+            0.0009319758706671925
+          ],
+          "scaled_MCSE": [
+            0.00023696288701573765,
+            0.00023381354252684653
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00046444725855084577,
+            0.00045827454335261913
+          ],
+          "split_rhat": [
+            1.0003789613794605,
+            1.000222444540483
+          ],
+          "autocorrelation_ess": [
+            14024.920273397087,
+            14841.830523961653
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00042575678236137757,
+            0.0007749824458639031
+          ],
+          "scaled_MCSE": [
+            0.0003379181284899233,
+            0.0003357514100425408
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006623195318402497,
+            0.00065807276368338
+          ],
+          "split_rhat": [
+            1.0003615980356542,
+            1.000474504318463
+          ],
+          "autocorrelation_ess": [
+            6928.248172009859,
+            7204.35767371522
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0006583353490066128,
+            0.0010888932624327906
+          ],
+          "scaled_MCSE": [
+            0.00033219000808689243,
+            0.00032403592529276333
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006510924158503091,
+            0.0006351104135738162
+          ],
+          "split_rhat": [
+            1.000886440556267,
+            1.0001532158537099
+          ],
+          "autocorrelation_ess": [
+            7103.855238449484,
+            7720.103702493446
+          ]
+        }
+      ],
+      "update_accepted": true,
+      "evidence": {
+        "log_source_evidence_ratio": 0.001172580524167799,
+        "conditional_MC_interval_95": [
+          0.0006384499097668048,
+          0.001706711138568793
+        ],
+        "importance_ESS": 65225.307683315805,
+        "split_Rhat": 1.000186836615452,
+        "chain_functional_ESS": 14465.753895441701,
+        "split_log_ratio_difference": 0.0004363062396990358,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "new_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.000372098000135592,
+            0.0009036913500090773
+          ],
+          "scaled_MCSE": [
+            0.00023590978314121507,
+            0.0002298474811026494
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0004623831749567815,
+            0.00045050106296119286
+          ],
+          "split_rhat": [
+            1.0003728031300758,
+            1.0002171616504467
+          ],
+          "autocorrelation_ess": [
+            14110.82344161901,
+            14851.936443442364
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00025555346487202873,
+            0.0007440621879696464
+          ],
+          "scaled_MCSE": [
+            0.0003366428793473687,
+            0.00032976238720505994
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006598200435208426,
+            0.0006463342789219175
+          ],
+          "split_rhat": [
+            1.0003657638910883,
+            1.00046662553554
+          ],
+          "autocorrelation_ess": [
+            6957.477990728583,
+            7227.982247476805
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0004885352786523274,
+            0.0010631736042198325
+          ],
+          "scaled_MCSE": [
+            0.00033051622638778844,
+            0.00031835549952476946
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006478118037200653,
+            0.0006239767790685481
+          ],
+          "split_rhat": [
+            1.0008712422784125,
+            1.0001669300936797
+          ],
+          "autocorrelation_ess": [
+            7159.898350128481,
+            7727.984170600287
+          ]
+        }
+      ],
+      "new_score_precision_passed": true,
+      "consecutive_stationarity_iterations": 1
+    },
+    {
+      "attempt": 3,
+      "bank": 1,
+      "current_theta": [
+        0.13730512985200036,
+        0.025228543006449534
+      ],
+      "proposed_theta": [
+        0.13648896491231532,
+        0.02468364218090036
+      ],
+      "full_and_split_Q_improvements": [
+        1.0975383184508303e-05,
+        6.759711124459944e-06,
+        1.5187175531977681e-05
+      ],
+      "optimizer_converged": true,
+      "relative_covariance_change": 0.00657439712386635,
+      "stationarity_diagnostic_passed": true,
+      "old_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.000372098000135592,
+            0.0009036913500090773
+          ],
+          "scaled_MCSE": [
+            0.00023590978314121507,
+            0.0002298474811026494
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0004623831749567815,
+            0.00045050106296119286
+          ],
+          "split_rhat": [
+            1.0003728031300758,
+            1.0002171616504467
+          ],
+          "autocorrelation_ess": [
+            14110.82344161901,
+            14851.936443442364
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00025555346487202873,
+            0.0007440621879696464
+          ],
+          "scaled_MCSE": [
+            0.0003366428793473687,
+            0.00032976238720505994
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006598200435208426,
+            0.0006463342789219175
+          ],
+          "split_rhat": [
+            1.0003657638910883,
+            1.00046662553554
+          ],
+          "autocorrelation_ess": [
+            6957.477990728583,
+            7227.982247476805
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0004885352786523274,
+            0.0010631736042198325
+          ],
+          "scaled_MCSE": [
+            0.00033051622638778844,
+            0.00031835549952476946
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006478118037200653,
+            0.0006239767790685481
+          ],
+          "split_rhat": [
+            1.0008712422784125,
+            1.0001669300936797
+          ],
+          "autocorrelation_ess": [
+            7159.898350128481,
+            7727.984170600287
+          ]
+        }
+      ],
+      "update_accepted": true,
+      "evidence": {
+        "log_source_evidence_ratio": 0.0010228579982367592,
+        "conditional_MC_interval_95": [
+          0.0005284371852833438,
+          0.0015172788111901744
+        ],
+        "importance_ESS": 64898.30572171293,
+        "split_Rhat": 1.0001852290244473,
+        "chain_functional_ESS": 14627.137110575572,
+        "split_log_ratio_difference": 0.0004035224010241478,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "new_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.0002609160404846917,
+            0.0008754815045383669
+          ],
+          "scaled_MCSE": [
+            0.00023538815844297318,
+            0.00022636546564332885
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0004613607905482275,
+            0.0004436763126609245
+          ],
+          "split_rhat": [
+            1.000368162762312,
+            1.0002121184759194
+          ],
+          "autocorrelation_ess": [
+            14188.643257567624,
+            14875.1713764129
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00014382528408278793,
+            0.0007137339195439354
+          ],
+          "scaled_MCSE": [
+            0.00033606678699494,
+            0.00032440817287971026
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006586909025100825,
+            0.0006358400188442321
+          ],
+          "split_rhat": [
+            1.000370355556193,
+            1.0004587784038999
+          ],
+          "autocorrelation_ess": [
+            6985.465153986323,
+            7259.619325817316
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.000377851841711753,
+            0.0010370150365530038
+          ],
+          "scaled_MCSE": [
+            0.0003296385169493577,
+            0.0003134209780435271
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006460914932207411,
+            0.0006143051169653131
+          ],
+          "split_rhat": [
+            1.0008593776257169,
+            1.000179231548671
+          ],
+          "autocorrelation_ess": [
+            7209.318224387944,
+            7740.961351453514
+          ]
+        }
+      ],
+      "new_score_precision_passed": true,
+      "consecutive_stationarity_iterations": 2
+    }
+  ],
+  "sampling_batches": [
+    {
+      "anchor_theta": [
+        0.1403715862990509,
+        0.026383388867903597
+      ],
+      "seed": 202610105,
+      "completed_sweeps": 67584,
+      "sampler_CPU_seconds": 7.018188156
+    }
+  ],
+  "final_score_summaries": [
+    {
+      "scaled_raw_score": [
+        0.0002609160404846917,
+        0.0008754815045383669
+      ],
+      "scaled_MCSE": [
+        0.00023538815844297318,
+        0.00022636546564332885
+      ],
+      "scaled_95_MC_halfwidth": [
+        0.0004613607905482275,
+        0.0004436763126609245
+      ],
+      "split_rhat": [
+        1.000368162762312,
+        1.0002121184759194
+      ],
+      "autocorrelation_ess": [
+        14188.643257567624,
+        14875.1713764129
+      ]
+    },
+    {
+      "scaled_raw_score": [
+        0.00014382528408278793,
+        0.0007137339195439354
+      ],
+      "scaled_MCSE": [
+        0.00033606678699494,
+        0.00032440817287971026
+      ],
+      "scaled_95_MC_halfwidth": [
+        0.0006586909025100825,
+        0.0006358400188442321
+      ],
+      "split_rhat": [
+        1.000370355556193,
+        1.0004587784038999
+      ],
+      "autocorrelation_ess": [
+        6985.465153986323,
+        7259.619325817316
+      ]
+    },
+    {
+      "scaled_raw_score": [
+        0.000377851841711753,
+        0.0010370150365530038
+      ],
+      "scaled_MCSE": [
+        0.0003296385169493577,
+        0.0003134209780435271
+      ],
+      "scaled_95_MC_halfwidth": [
+        0.0006460914932207411,
+        0.0006143051169653131
+      ],
+      "split_rhat": [
+        1.0008593776257169,
+        1.000179231548671
+      ],
+      "autocorrelation_ess": [
+        7209.318224387944,
+        7740.961351453514
+      ]
+    }
+  ],
+  "consecutive_risk_stationarity_iterations": 2,
+  "conditional_risk_stationarity_passed": true,
+  "completed_candidate_MCMC_sweeps": 67584,
+  "risk_states_written_to_disk": 0,
+  "KG_components_changed": 0,
+  "source_registry_replaced": false,
+  "original_source_cases_resampled": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "cpu_seconds": 7.978389039,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "scope": "One fixed-response source-risk learning pilot. Every accepted update has positive full/split Q,precise current/new risk scores and source evidence improvement outside95percent numerical error. Final response posterior precision,retention and independent decisions are not certified here."
+}

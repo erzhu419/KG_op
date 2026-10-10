@@ -1,0 +1,19 @@
+{
+  "status": "registered after Stage78 failed the original source gate, before conditional MSE intervals or source transcript-density diagnostics",
+  "calibration_execution": "performance/manifests/legacy_joint_population_task_transfer_calibration_execution_v1.json",
+  "calibration_results": "paper_artifacts/legacy_joint_population_task_transfer_calibration_v1/results.json",
+  "holdout_execution": "performance/manifests/legacy_joint_population_task_transfer_holdout_execution_v1.json",
+  "holdout_profiles": "paper_artifacts/legacy_joint_population_task_transfer_holdout_v1/calibration_profiles.json",
+  "native_profiles": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1/calibration_profiles.json",
+  "layouts": ["5", "6"],
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "heldout_tasks": [6, 7],
+  "basis_of_next_step": "Both scalar fits pass the average training gate and lower source6/7 average paid g MSE10.6%/12.4%, yet task6 loses .000040/.000153 MSE and assignment6 also loses raw density. The345-fold task intercept multiplier greatly worsens training prior raw density. Diagnose scoring resolution and the conditional-only objective before another fit, without changing the source gate.",
+  "holdout_noise_diagnostic": "On frozen Stage78 versus Stage72 g means at71 sites, reuse the existing paired_interval calculation:4*sum((new-old)^2*S2/3)/71^2 with Welch-Satterthwaite approximate95% interval. The cached supported simulator uses independent Gaussian site/repeat draws. Reproduce saved MSE differences. These are conditional fixed-bank measurement intervals, not task-population or selection-adjusted confirmation; do not replace the failed gate.",
+  "source_objective_diagnostic": "Replay only fixed native and Stage77 calibrated single-risk g fields on training tasks0–5, recording predictive evidence for the same two raw updates. Reproduce cached twelve-site prior/paid g mean/covariance before reporting. Add raw-paid predictive log evidence to12 times the already-scored Gaussian conditional mean density, then divide by14. Report paired evidence, conditional density, combined score and native/scaled intercept variances. This normalized sequential score uses Gaussian moment projection and fixed mean-label noises; it is not the exact raw whole-task density. No new fit or selection.",
+  "next_action": "If large-intercept conditional gains reverse when paid evidence is included, register a source-only predictive calibration objective for the whole existing observation transcript, retaining the same two-parameter family and original acceptance/source gates. Otherwise do not guess a multiplier cap or add a covariance grid; reassess common-function estimation/source information. Holdout noise intervals alone cannot authorize target promotion.",
+  "cost": {"new_scalar_fits": 0, "new_native_source_fits": 0, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread, cached small JSON and fixed-model raw updates only, no server jobs or pulls",
+  "entrypoint": "performance/diagnose_legacy_task_transfer.py",
+  "output": "paper_artifacts/legacy_joint_population_task_transfer_diagnosis_v1"
+}

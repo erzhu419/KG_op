@@ -1,0 +1,44 @@
+{
+  "status": "registered before all12 common reconditionings and all24 forecasts or scores",
+  "calibration_execution": "performance/manifests/legacy_joint_population_task_transcript_calibration_execution_v1.json",
+  "calibration_results": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1/results.json",
+  "calibration_profiles": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1/calibration_profiles.json",
+  "holdout_results": "paper_artifacts/legacy_joint_population_task_transcript_holdout_v1/results.json",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Including paid evidence repairs the conditional-only objective and reduces assignment6 intercept multiplier345 to3.687. Whole-transcript calibration improves all4 source6/7 g/joint densities versus same-information native, but task6 MSE still increases under both assignments and the old gate fails. The two-stage candidate changes only new-task R while retaining beta,H inferred with the old source R. That is a valid predictive-prior calibration but not the common posterior under the same revised source task law. Isolate this remaining source-estimation difference without a new covariance family or source6/7 tuning.",
+  "candidate": "On each five-task training branch hold native common group scales, common spectral exponent, prior mean/intercept, task spectral exponent, weak tail, discrepancy, observation noise and all f/eta laws fixed. Use the already-fitted Stage80(a,b). Multiply only the task-intercept and task-group excess entries in the native complete optimizer vector. Evaluate the existing JointCovariancePopulationLikelihood once to infer common beta,H under this revised source R. Compare with the Stage80 target-only task scaling, keeping the new-task R identical. This is Gaussian source conditioning at fixed source-selected hyperparameters, not new hyperparameter optimization or a GP mean/posterior transplant.",
+  "replay": "At a=b=1 reproduce native source objective, beta,H,R,delta and all73 prior/paid moments using the restored original regularizer and source noise. Under fitted(a,b), verify the evaluator R equals scaled_task_diagonal and common prior coefficient variances/spectra remain unchanged. Reproduce the Stage80 fixed-common endpoint twelve-site mean/covariance. Save12 reconditioned source posterior laws and freeze all24 fixed/reconditioned prior/paid training forecasts before scoring.",
+  "scoring": "Only tasks0–5 and their original12 scoring sites may be indexed. Report per-task and assignment-average paid g MSE, proper raw three-repeat density, Gaussian mean density, raw paid predictive evidence and normalized sequential transcript density. Common/source NLL is descriptive only. These reused folds remain development data, not nested validation or independent confirmation.",
+  "development_acceptance": "Reconditioned common learning is provisionally preferred only if average paid g MSE does not increase AND average raw g density strictly improves versus BOTH Stage71 native and Stage80 fixed-common controls under BOTH assignments, with transcript density also nondecreasing versus Stage80. Preserve all fold regressions. No source6/7 or target data selects a parameter, support or version.",
+  "next_action": "Only a development pass permits separately registering fixed-hyperparameter full-six-source common conditioning and the original four-case source repair gate. Otherwise retain both negative families and reassess source population/information rather than launch a scalar/spectrum grid. A source-gate failure continues to block target/KG advancement.",
+  "cost": {
+    "planned_gaussian_common_conditionings": 12,
+    "new_scalar_fits": 0,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_task_recondition_common_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_task_recondition_common_plan_v1.json",
+  "entrypoint": "performance/check_legacy_task_recondition_common.py"
+}

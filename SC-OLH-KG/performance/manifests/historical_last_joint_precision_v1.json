@@ -1,0 +1,36 @@
+{
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "optimizer": {
+    "maxiter": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "status": "Registered before one 32768->65536 prefix extension of the unchanged last proposal;one seed and no retry.",
+  "source_closure": "paper_artifacts/historical_previous_source_laws_v1/phase_results.json",
+  "qualified_fixed_proposal": "paper_artifacts/historical_stopped_risk_precision_v1/cases/6_spectral_head_specific_deconvolved_task_f/results.json",
+  "maximum_single_thread_cpu_seconds": 55,
+  "output": "paper_artifacts/historical_last_joint_precision_v1",
+  "scope": "Only the previously rejected fixed proposal for 6/spectral/head_specific/deconvolved_task/f,whose original full/two-half Q were positive but evidence interval included zero. Double the same original seed prefix once to 65536 per chain;do not refit a proposal,change thresholds or retry. Adopt only if source Q/precision/evidence,both-head stationarity,retained response posterior and composed parent evidence all pass. Otherwise preserve HOLD and original parameters. No labels,target/verifier calls,server jobs or original-law resampling.",
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "retained_sweeps_per_chain": 65536
+}

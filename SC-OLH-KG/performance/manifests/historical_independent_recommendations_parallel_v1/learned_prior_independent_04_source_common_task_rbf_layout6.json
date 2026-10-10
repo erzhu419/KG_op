@@ -1,0 +1,29 @@
+{
+  "status": "Registered before adaptive search or deployment outcomes; execute freeze and verify as separate stages.",
+  "pilot_plan": "performance/manifests/historical_independent_kg_pilot_v1.json",
+  "preflight": "paper_artifacts/historical_independent_kg_preflight_v1/results.json",
+  "frozen_inputs": "paper_artifacts/historical_independent_kg_preflight_v1/frozen_inputs.json",
+  "query_diagnostics": "paper_artifacts/historical_independent_query_axes_v1/phase_results.json",
+  "baselines": "paper_artifacts/historical_independent_terminal_baselines_v4/phase_results.json",
+  "importance_precision_plan": "performance/manifests/historical_learned_prior_kg_precision_v1.json",
+  "post_query_raw_powers": [
+    12,
+    14,
+    16,
+    18
+  ],
+  "integration_seed": 202610077,
+  "maximum_freeze_cpu_seconds": 900,
+  "total_target_call_cap": 362,
+  "maximum_physical_calls": 17292,
+  "bootstrap_draws": 20000,
+  "query_choice": "Each model maximizes its own six accepted net KG estimates, ties in registered order; stop when maximum<=0. Record intervals and tower diagnostics; no strict ranking certificate is inferred.",
+  "post_query_recommendation": "Reuse historical paid_update and raw_terminal_values with guarded_mean_position0. Keep all forty initialization-frozen actions. Reuse saved actual observations and every completed power on resume. Require adjacent action differences<=1e-4, stable best action and historical importance gates. Source utility identities4/5 use original weights; add omitted identities in descending posterior mass if the realized observation would otherwise violate2e-6. Preserve every failed numerical comparison.",
+  "verification_streams": "Common verifier seed per task/layout across models and policies. Search seed namespaces task/layout/model; each adaptive model receives at most one paired episode. Freeze all48 accepted recommendations on disk before any verifier or truth call.",
+  "statistics": "Three paired comparisons: source KG versus GP KG, KG versus stopping within source, KG versus stopping within GP. Average the two layouts within each of six tasks; resample whole tasks for95-percent intervals.",
+  "scope": "Resource-only per-model parallel freeze. Require the same complete144-query registration. Preserve frozen queries, raw search streams, forty actions and numerical gates. A shard never creates the global48-recommendation verification barrier.",
+  "output": "paper_artifacts/historical_independent_recommendations_parallel_v1/shards/learned_prior_independent_04_source_common_task_rbf_layout6",
+  "state_names": [
+    "learned_prior_independent_04_source_common_task_rbf_layout6"
+  ]
+}

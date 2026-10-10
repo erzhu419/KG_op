@@ -1,0 +1,115 @@
+{
+  "execution_plan": "performance/manifests/historical_conditional_guarded_reference_v1.json",
+  "rows": [
+    {
+      "candidate": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 5,
+        "shortlist": [
+          5,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "terminal_power": 14,
+      "fantasy_power": 3,
+      "fantasies_per_head_identity": 8,
+      "prior_fixed_reward": 0.015567909929340127,
+      "expected_future_fixed_reward": 0.01642587874914353,
+      "projected_fixed_action_drift": 0.0008579688198034029,
+      "maximum_inverse_cdf_error": 1.0993540943310771e-12,
+      "maximum_raw_integration_relative_error": 1.9257462109770443e-13,
+      "shared_identity_retained": true,
+      "adaptive_maximum_evaluated": false,
+      "previous_paid_projection_retained": true,
+      "layout": "5",
+      "same_rule_prior_reference_error": 0.0
+    },
+    {
+      "candidate": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 5,
+        "shortlist": [
+          5,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "terminal_power": 14,
+      "fantasy_power": 4,
+      "fantasies_per_head_identity": 16,
+      "prior_fixed_reward": 0.015567909929340127,
+      "expected_future_fixed_reward": 0.013016581751507867,
+      "projected_fixed_action_drift": -0.0025513281778322596,
+      "maximum_inverse_cdf_error": 1.0993540943310771e-12,
+      "maximum_raw_integration_relative_error": 1.9257462109770443e-13,
+      "shared_identity_retained": true,
+      "adaptive_maximum_evaluated": false,
+      "previous_paid_projection_retained": true,
+      "nested_expected_future_difference": 0.0034092969976356625,
+      "layout": "5",
+      "same_rule_prior_reference_error": 0.0
+    },
+    {
+      "candidate": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 5,
+        "shortlist": [
+          5,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "terminal_power": 14,
+      "fantasy_power": 5,
+      "fantasies_per_head_identity": 32,
+      "prior_fixed_reward": 0.015567909929340127,
+      "expected_future_fixed_reward": 0.014758481749998078,
+      "projected_fixed_action_drift": -0.0008094281793420491,
+      "maximum_inverse_cdf_error": 1.0993540943310771e-12,
+      "maximum_raw_integration_relative_error": 1.9257462109770443e-13,
+      "shared_identity_retained": true,
+      "adaptive_maximum_evaluated": false,
+      "previous_paid_projection_retained": true,
+      "nested_expected_future_difference": 0.0017418999984902105,
+      "layout": "5",
+      "same_rule_prior_reference_error": 0.0
+    }
+  ],
+  "completed_heads": 16,
+  "all_registered_rules_complete": true,
+  "cpu_seconds": 65.368234285,
+  "cpu_seconds_this_execution": 65.368234285,
+  "cpu_budget_stopped": false,
+  "previous_cpu_budget_stop": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scope": "Freeze original layout5/query5,debited guarded action21 with[5,0,1] and[130,130,83],final learned source laws/weights and two paid observations. Reuse historical fixed-action head factorization and exact source-mixture predictive CDF. Use corrected16384-node guarded utility and the actual batched paid filter. Compute the32-fantasy head bank once and retain8/16/32 prefixes. Save each completed identity/head so interrupted work can resume without repeating it. Check the fixed prior against the saved same-rule terminal. This estimates projected fixed-action drift,not exact likelihood drift or adaptive maximum. No new labels,verification outcomes,source fits or server jobs.",
+  "independent_confirmation": false,
+  "exact_likelihood_drift_isolated": false
+}

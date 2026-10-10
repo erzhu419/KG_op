@@ -1,0 +1,35 @@
+{
+  "status": "completed source-only conditional innovations;no observation removed or downweighted",
+  "conditioning_execution": "performance/manifests/legacy_joint_population_f_nested_source_conditioning_execution_v1.json",
+  "conditioning_results": "paper_artifacts/legacy_joint_population_f_nested_source_conditioning_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "head": "f",
+  "law": "Only original144 native f law,its empirical m0,common A,task R,discrepancy and source-noise labels. Condition the joint72-label source Gaussian on its original48 labels;diagnose the24 extra labels without fitting or query outcomes. All six task residual functions remain included;extra observations are not independent repetitions of the common curve.",
+  "diagnostic": "Record conditional innovations,S covariance,total Mahalanobis energy and conditional source NLL. Attribute common-function update using the complete correlated conditional gain times innovations,grouped by source task. Record marginal standardized innovations and source-noise fraction;task effects are correlated signed accounting,not independent variance shares or causal recovery.",
+  "verification": "Conditional extra-label NLL equals total72 NLL minus total48 NLL under the same frozen oldlaw. Conditional update of common mean/covariance reproduces Stage116 oldlaw72 law and six source-task contributions sum to the same update. A disagreement detects conditioning/site-order mistakes and blocks interpretation.",
+  "interpretation": "Source parameters and empirical mean were estimated on the48 conditioning records;the24-dimensional energy is a conditional fitted-law diagnostic,not a calibrated hypothesis test or independent population evidence. Do not remove or downweight observations or select a new law from these results.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_extra_source_innovations_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_extra_source_innovations.py",
+  "entrypoint_status": "implemented and completed",
+  "results": "paper_artifacts/legacy_joint_population_f_extra_source_innovations_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_reference_training_budget_plan_v1.json"
+}

@@ -1,0 +1,41 @@
+{
+  "incidents": [
+    {
+      "type": "development_API_mismatch",
+      "detail": "ParametricGPR exposes posterior_mean_many,not mean_many;fixed before any paid state was saved."
+    },
+    {
+      "type": "development_API_mismatch",
+      "detail": "posterior_mixture_weights returns prior and posterior;unpacked before the joint update check."
+    },
+    {
+      "type": "snapshot_alias",
+      "detail": "Initial history list shared the live model list;changed snapshot to copy it and repaired only prior history to empty. Numerical priors,posteriors and lookahead values unchanged."
+    },
+    {
+      "type": "legacy_action_metadata",
+      "detail": "With canonical_plus_posterior and requested new count1,the loop appended an inactive second point before checking its limit. Moved the count check before append;only one-new metadata repaired,all active actions and lookahead values unchanged.",
+      "repairs": [
+        {
+          "layout": "5",
+          "previous_baseline_new_action_indices": [
+            5
+          ],
+          "active_new_action_indices": [
+            5
+          ]
+        },
+        {
+          "layout": "6",
+          "previous_baseline_new_action_indices": [
+            6,
+            4
+          ],
+          "active_new_action_indices": [
+            6
+          ]
+        }
+      ]
+    }
+  ]
+}

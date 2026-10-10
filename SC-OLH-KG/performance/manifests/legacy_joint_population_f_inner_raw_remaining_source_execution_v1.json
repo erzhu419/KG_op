@@ -1,0 +1,19 @@
+{
+  "status": "frozen after the canonical source4 raw numerical pilot completed;before remaining eight inner source refits",
+  "plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+  "entrypoint": "performance/check_legacy_f_inner_raw_folds.py",
+  "cases": [
+    {"layout": "5", "query_task": 2, "folder": "layout5/task2"},
+    {"layout": "5", "query_task": 3, "folder": "layout5/task3"},
+    {"layout": "5", "query_task": 4, "folder": "layout5/task4"},
+    {"layout": "5", "query_task": 5, "folder": "layout5/task5"},
+    {"layout": "6", "query_task": 2, "folder": "layout6/task2"},
+    {"layout": "6", "query_task": 3, "folder": "layout6/task3"},
+    {"layout": "6", "query_task": 4, "folder": "layout6/task4"},
+    {"layout": "6", "query_task": 5, "folder": "layout6/task5"}
+  ],
+  "cost": {"maximum_risk_coordinate_refits": 8, "maximum_risk_objective_fits": 24, "maximum_source_variance_integrations": 16, "maximum_inner_raw_forecasts": 32, "maximum_numerical_reference_forecasts": 16},
+  "finite_moment_tolerances": {"raw_mass_absolute": 1e-8, "mean_variance_relative": 1e-6, "coefficient_mean_max_absolute": 1e-8, "common_covariance_relative_frobenius": 1e-6},
+  "output": "paper_artifacts/legacy_joint_population_f_inner_raw_remaining_v1",
+  "decision": "Complete source4 risk and finite-moment rules for all eight remaining training folds before paid raw values. This expands the protocol diagnosis after its numerical pilot,not the stopped candidate's outer evaluation. Keep q,anchors,source6/7,target and independent gates unchanged."
+}

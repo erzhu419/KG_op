@@ -1,0 +1,12 @@
+{
+  "status": "frozen before source-only spectral fits and covariance diagnostics",
+  "plan": "performance/manifests/legacy_joint_population_f_inner_joint_spectral_compatibility_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_inner_joint_spectral_compatibility.py",
+  "layouts": ["5", "6"],
+  "query_tasks": [0, 2, 3, 4, 5],
+  "arms": ["joint_full_dictionary", "joint_native_support"],
+  "components": ["common", "task"],
+  "objective": "For each component's source-only coefficient covariance,weight each positive support group's mean squared log-fraction error by its share of total shape coefficient variance. Fit one global exponent p in[0,4] to the original spectral_weights(basis,p);explicitly compare p=0 and4 with the bounded scalar optimizer result. Preserve each group total variance and every coefficient correlation,including intercept/shape correlations,by diagonal congruence. No response likelihood fitting or query outcomes.",
+  "verification": "Saved with-tail minus no-tail prior matrices must equal exactly the native weak-tail diagonal within atol1e-14/rtol1e-12. Basis names and roughness must match the source fit. PSD,group budgets,coefficient correlations and bank variance decompositions must pass before interpretation. No tolerance relaxation.",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_compatibility_v1"
+}

@@ -1,0 +1,31 @@
+{
+  "status": "registered before source iteration6",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_source_learning_round5/results.json",
+  "previous_precision": "paper_artifacts/historical_source_learning_round5/phase_results.json",
+  "maximum_single_thread_cpu_seconds": 90,
+  "optimizer": {
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "scope": "Continue64 source covariance heads from certified actual parameters. Reuse historical MCEM,stationary mean retention,exact raw source sampling,adjacent evidence and local variance integration. Original thresholds:covariance change0.01,scaled raw score0.001,two consecutive stable iterations. Accept risk updates only with positive full/split Q;mean proposals failing Q can only remain at their old parameters after two registered stationary iterations. Stop dependent learning at any unresolved Q or posterior gate. Fixed per-round seeds,no search,new labels,target evaluation or server work. One local serial computing process,one numerical-library thread.",
+  "cost": {
+    "new_source_labels": 0,
+    "new_source_MCMC_sweeps": 0,
+    "new_covariance_Mstep_optimizations": 64,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_raw_source_amplitude_learning_v6"
+}

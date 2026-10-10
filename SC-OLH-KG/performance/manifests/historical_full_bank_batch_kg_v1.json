@@ -1,0 +1,26 @@
+{
+  "status": "Development numerical admission; the six opened tasks remain development only.",
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "observations": "paper_artifacts/historical_full_bank_replicates_v1/observations.json",
+  "terminal_powers": [10, 12, 14],
+  "raw_powers": [10, 12],
+  "projected_power": 10,
+  "seed": 202610077,
+  "maximum_action_resolution_difference": 0.0001,
+  "maximum_identity_integration_error_bound": 0.000002,
+  "maximum_case_cpu_seconds": 480,
+  "anchor_query": 63,
+  "anchor_replicates": 4,
+  "precision_states": [
+    "learned_prior_independent_02_source_structural_mixture_layout6",
+    "learned_prior_independent_05_source_structural_mixture_layout5",
+    "learned_prior_independent_05_source_common_task_rbf_layout6"
+  ],
+  "batch_states": [
+    "learned_prior_independent_02_source_structural_mixture_layout6",
+    "learned_prior_independent_02_source_common_task_rbf_layout6"
+  ],
+  "cost": "Five isolated one-core admission shards, each at most480 CPU seconds. All source mixtures and initial two paid calls are restored natively. Reuse stored four-call batches; no new physical simulation, source fits or verifier calls. At most40 CPU minutes including timeout caps; do not launch a fantasy campaign from an unresolved smoke.",
+  "scope": "Preserve the old8/10 all365-action HOLD. The new12/14 comparison uses the same1e-4 tolerance, same seed, same action set and utility. One observed batch checks native cache/likelihood/budget wiring, not algorithmic query choice or independent decision gains.",
+  "output": "paper_artifacts/historical_full_bank_batch_kg_v1"
+}

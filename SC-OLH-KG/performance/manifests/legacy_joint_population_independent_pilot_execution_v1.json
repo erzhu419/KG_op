@@ -1,0 +1,18 @@
+{
+  "plan": "performance/manifests/legacy_joint_population_independent_pilot_plan_v1.json",
+  "output": "paper_artifacts/legacy_joint_population_independent_pilot_v1",
+  "legacy_replay": "paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "adaptation_calls": 4,
+  "total_target_call_cap": 362,
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "initialization_seed": 80792,
+  "verification_seed": 80793,
+  "verification_seed_mapping": "int(SeedSequence([80793,task_index,arm_index]).generate_state(1)[0]); existing verifier creates its separate safety and paired comparison streams from this seed",
+  "bootstrap_seed": 80794,
+  "bootstrap_draws": 10000,
+  "bootstrap_unit": "six whole tasks with all three arm outcomes retained together; percentile 95 percent intervals of paired mean differences",
+  "restoration": "reconstruct deterministic encoder/basis once from training source observations only; restore frozen common mean and spectral parameters, reproduce the original source GLS intercept variance without optimization; restore joint/full coefficient mean, residual diagonal and full population mean covariance directly from source_fit.json",
+  "verification_barrier": "write all18 recommendations and all initialization records before any execute_terminal or scoring call",
+  "scope": "single frozen source fit, six independent related d1000 tasks, one independent terminal stream per arm/task; pilot uncertainty includes target tasks and verifier outcomes, not source retraining variation"
+}

@@ -1,0 +1,95 @@
+\pdfminorversion=7
+\documentclass[opre,dblanonrev]{informs4}
+
+\RequirePackage{tgtermes}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
+\RequirePackage{bm}
+\OneAndAHalfSpacedXI
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{microtype}
+\usepackage{natbib}
+\bibpunct[, ]{(}{)}{,}{a}{}{,}
+\def\bibfont{\small}
+\def\bibsep{\smallskipamount}
+\def\bibhang{24pt}
+\def\newblock{\ }
+\def\BIBand{and}
+\usepackage[hidelinks]{hyperref}
+\EquationsNumberedThrough
+\TheoremsNumberedThrough
+\ECRepeatTheorems
+\graphicspath{{figures/}}
+\setlength{\emergencystretch}{2em}
+
+% Keep the submission PDF's abstract metadata block free of the distributed
+% class instruction panel.
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{18pt}
+\def\theARTICLEABSTRACT{%
+  \HOOKb
+  \vspace*{12pt}
+  \begin{minipage}[t]{\dimexpr\textwidth-2pt\relax}\parindent1em
+    \ABSfont
+    \noindent\theABSTRACT\endgraf
+    \vskip5pt
+    \theFUNDING
+    \theKEYWORDS
+    \theSUBJECTCLASS
+    \theAREAOFREVIEW
+    \theMSCCLASS
+    \theORMSCLASS
+    \if@BLINDREV\else\theHISTORY\fi
+    \noindent\hrulefill
+  \end{minipage}
+}
+\makeatother
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Var}{\operatorname{Var}}
+
+\MANUSCRIPTNO{}
+\RUNAUTHOR{Authors' names not included for peer review}
+\RUNTITLE{Source-Learned Structural Priors for Chance Constraints}
+\TITLE{Source-Learned Structural Priors for Chance-Constrained Simulation Optimization}
+\ARTICLEAUTHORS{\AUTHOR{Authors omitted for peer review}}
+\ABSTRACT{We study chance-constrained simulation optimization when a policy is
+represented by an ordered profile and related source tasks are available before
+the target opens.  A finite public function dictionary learns objective,
+constraint, and cumulative-risk structure from replicated source simulations.
+Paid target observations update the target function posteriors and the
+physical-risk family weights, while a correlated verification-aware
+knowledge-gradient rule allocates the remaining budget.  On a declared development contract,
+observable trajectory exposures improve early mean prediction, and a paired
+source-structure control has higher mean final reward than a same-source full
+dictionary.  The evidence is bounded: only three of eight development tasks
+improve, an independently frozen eight-task block does not replicate the mean
+ordering, a generic target-only RBF-KG control is at least as strong on both
+blocks, and learned risk has no independent deployment gain.  We therefore
+claim a source-learned structural prior within the declared representation and
+dictionary as a development-block effect, rather than a stable deployment
+advantage, learned trajectory embeddings, factor-level risk recovery, or
+general high-dimensional optimization.}
+\KEYWORDS{simulation optimization, transfer learning, structured priors, chance constraints, knowledge gradient}
+\SUBJECTCLASS{Simulation: initial designs and independent verification; programming, stochastic-chance constrained}
+\AREAOFREVIEW{Simulation}
+\hypersetup{pdftitle={Source-Learned Structural Priors for Chance-Constrained Simulation Optimization},pdfauthor={}}
+
+\begin{document}
+\maketitle
+\input{meta_prior_sections/01_introduction_draft}
+\input{meta_prior_sections/02_related}
+\input{meta_prior_sections/03_model}
+\input{meta_prior_sections/04_decision}
+\input{meta_prior_sections/05_experiments}
+\input{meta_prior_sections/06_results}
+\input{meta_prior_sections/07_discussion}
+\input{meta_prior_sections/08_conclusion}
+\clearpage
+\bibliographystyle{informs2014}
+\bibliography{references}
+\end{document}

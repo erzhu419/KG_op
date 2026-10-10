@@ -1,0 +1,30 @@
+{
+  "stage": "meta_prior_source_context_accounting_a44_20261004",
+  "status": "complete_context_identity_and_mixture_accounting_verified",
+  "fixed_after_a43_before_cached_accounting": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_task_direction_moment_a43_20261003/validation.json",
+    "paper_artifacts/meta_prior_task_direction_moment_a43_20261003/forecasts.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz"
+  ],
+  "question": "Does the remaining loss involve inconsistent mixture updates, finite-history cost of an added empirical prior, or source contexts that cannot distinguish target mechanisms before observations?",
+  "source_context": "Compare the complete original local eta prior parameters and f/g selected functions for the four shared-source mechanisms at each seed48-55. Also compare their public initial8 candidate identities, separately from source parameters. Report actual equalities and differences; do not assert in advance that source contexts match. Mechanism and seed names are diagnostic indexing only.",
+  "accounting": "For each of80 A43 paths at steps9-24, use cached U,I and empirical mass w. Reconstruct the pure empirical predictive density relative to I through exp(U-I)=1-w+w*exp(E-I). Check that post-observation empirical mass 1-(1-w)*exp(I-U) equals the next cached pre-observation mass. Check cumulative U-I=log((1-w9)/(1-w25)); its lower bound log(1-w9) describes only finite-history log predictive cost, not simulation calls or regret. Report all mechanisms, empirical-minus-local mean and past mass on worse empirical-density steps. Do not use the current label to select a model or change weights.",
+  "decision": "A failed accounting identity requires fixing forecasts before interpreting scientific contrasts. Identical source contexts cannot justify a static mechanism-dependent prior gate; use paid target history for identification. Consistent finite-history mixing costs do not remove the failed source gate, prove optimality or justify a tuned mass. Preserve A43 and its negative evidence.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 5,
+    "new_covariance_fits": 0,
+    "new_gaussian_forecasts": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "limitations": "Accounting is exact for the cached approximation. Source-context identity shows a restriction on static context-only rules, not an impossibility of learning from target observations. This reused development cohort is not independent confirmation.",
+  "next_plan": "performance/meta_prior_risk_fantasy_consistency_plan.json"
+}

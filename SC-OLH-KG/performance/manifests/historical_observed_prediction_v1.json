@@ -1,0 +1,18 @@
+{
+  "parent_plan": "performance/manifests/historical_achievable_precision_v4.json",
+  "output": "paper_artifacts/historical_observed_prediction_v1",
+  "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+  "origins": [4, 5],
+  "replicates": [1, 4],
+  "predictive_power": 9,
+  "prefixes": [8, 64, 512],
+  "cdf_order": 256,
+  "batch_cdf_orders": [64, 128, 256],
+  "maximum_inverse_cdf_error": 1e-8,
+  "maximum_adaptive_cdf_error_bound": 1e-9,
+  "inner_orders": [16, 32, 64, 128, 256],
+  "maximum_inner_error": 0.0001,
+  "maximum_tower_drift": 0.0001,
+  "maximum_job_cpu_seconds": 420,
+  "scope": "Source-only fixed-action development diagnostic. Existing one-call CDF and new conditional batch-mean/variance CDF retain the same positive law. Original adaptive KG bank and previous result files remain unchanged. No physical calls, source fits or verifier calls."
+}

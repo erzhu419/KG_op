@@ -1,0 +1,23 @@
+{
+  "replay":"paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "domain":"InventorySupplyChain",
+  "prefix":4,
+  "arms":{"stop_now":null,"observe_primary":63,"repeat_support":2},
+  "observation_seeds":[80581,80582,80583,80584],
+  "observation_stream_tag":1398031183,
+  "verification_seeds":[81581,81582,81583,81584],
+  "terminal_draw_power":13,
+  "integration_seed":80591,
+  "total_target_call_cap":362,
+  "initial_support":"same frozen four paid records, empirical incumbent and safe support retained in all branches; no terminal data enters posterior",
+  "posterior":"actual JointResponseMixture.update_raw and Gaussian paid filter, no new prior parameters; one raw f/g episode debits one simulation call",
+  "search_action":"restricted one-step intervention, new point 63 and repeat 2 frozen from earlier predictive probes; not a search over every candidate's KG",
+  "terminal_selection":"same complete guarded/direct action class and shared-budget marginal integration; terminal action frozen before independent safety/objective streams",
+  "randomness":"new/repeat arms share observation seed and noise coordinates within each group; terminal verifier uses existing seed/count/position stream rules, so stop and sampled branches have different verification streams",
+  "primary_endpoints":"certified true-feasible reward, certification count, actual total calls; report true conditional expected terminal reward/calls after all twelve actions and verifications have frozen",
+  "numerical_followup":"if a gap to another primary is below .003 and numerical ranking could change the adoption conclusion, audit only that saved posterior at 8192 nodes with seed 80592; do not replace the first decision or generate more episodes",
+  "source_cost":"384 source simulator calls per reused archive already paid; source fitted once; zero new source calls",
+  "execution":"local serial single-thread; four groups, twelve terminal branches, exactly eight new search episodes; each branch at most 362 total calls including reused initial four; no server jobs or pulls",
+  "scope":"one opened fixed Inventory law, same initial noise realization; four new episode/verifier randomizations are not independent tasks or confirmation of generalization",
+  "output":"paper_artifacts/legacy_one_step_closed_loop_v1/results.json"
+}

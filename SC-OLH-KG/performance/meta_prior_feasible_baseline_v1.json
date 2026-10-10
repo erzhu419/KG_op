@@ -1,0 +1,21 @@
+{
+  "contract_id": "inventory_feasible_target_only_baseline_v1",
+  "status": "frozen_before_target_only_execution",
+  "purpose": "Complete the same-contract target-only full-dictionary baseline for the already frozen development and independent v2 seed blocks.",
+  "base_contract": "performance/meta_prior_feasible_deployment_contract.json",
+  "source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+  "representation": "observable_inventory_exposure",
+  "mean_arms": ["target_only_full_dictionary"],
+  "risk_arm": "same_source_pooled_factor_families",
+  "target_law_seeds": [95800, 95801, 95802, 95803, 95804, 95805, 95806, 95807],
+  "target_noise_seed_start": 96800,
+  "initial_policy_points": 8,
+  "target_search_points": 24,
+  "replicates": 12,
+  "verification_replicates": 928,
+  "original_confirmation_block_read": false,
+  "oracle_preflight": "inherited fixed all-seed preflight from the independent v2 contract; no seed is removed",
+  "paired_stream": "SeedSequence([noise_seed, 0, policy_index, visit]) for paid observations and SeedSequence([noise_seed, 1, final_choice]) for verification.",
+  "decision_gate": "baseline only; report all eight tasks and do not promote a deployment claim",
+  "server_jobs": 0
+}

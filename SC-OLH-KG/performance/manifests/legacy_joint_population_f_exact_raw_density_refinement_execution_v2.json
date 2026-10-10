@@ -1,0 +1,36 @@
+{
+  "status": "frozen after6/8 density checks passed;refine only two unresolved layout6 source-greedy rows",
+  "entrypoint": "performance/refine_legacy_f_exact_raw_density.py",
+  "original_results": "paper_artifacts/legacy_joint_population_f_exact_raw_filter_v1/results.json",
+  "paid_orders": [
+    13,
+    17
+  ],
+  "future_orders": [
+    65,
+    97
+  ],
+  "prediction_tolerances": {
+    "mean_max_absolute": 1e-07,
+    "covariance_relative_frobenius": 1e-05,
+    "paid_log_evidence_absolute": 1e-06
+  },
+  "density_refinement_tolerance": 1e-05,
+  "law": "Identical eight frozen Gaussian native/GP priors,paid observations and score labels. Increase paid-eta and future-eta positive quadrature orders;no model/parameter/support/design or scientific gate change. Original unresolved density record retained. Six passed rows are reused without recomputation;only the two unresolved four-dimensional paid-eta quadratures are refined.",
+  "verification": "Reuse all passed one-observation checks. Refined paid-eta moments must reproduce the original frozen moment reference and pass9/13 checks. Future raw density41/65 plus paid-eta9/13 must agree at unchanged1e-5 sitewise tolerance. Failure remains unresolved,not a model failure or success.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "conditioning_integrals": 4,
+    "reused_one_observation_checks": 8,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "reused_verified_density_rows": 6
+  },
+  "maximum_single_thread_cpu_seconds": 120,
+  "execution": "local serial single-thread;in-memory grids and small JSON;no new NPZ or server work",
+  "scope": "Already-seen source0-5 development only. Native point and GP controls isolate projection;retained source-variance mixture and physical-factor claims remain untested. No source6/7,target,KG,independent confirmation,manuscript or legacy60/60 changes;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_exact_raw_density_refinement_v2",
+  "previous_results": "paper_artifacts/legacy_joint_population_f_exact_raw_density_refinement_v1/results.json"
+}

@@ -1,0 +1,663 @@
+{
+  "execution_plan": "performance/manifests/historical_risk_precision_continuation_v1.json",
+  "rows": [
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+      "status": "fixed-response risk stationarity reached",
+      "conditional_risk_stationarity_passed": true,
+      "final_risk_scales": [
+        0.22287850086369035,
+        0.009793598264634764
+      ],
+      "fixed_response_scales": [
+        0.27581838307620604,
+        0.40737873026279925
+      ],
+      "accepted_risk_updates": 41,
+      "sampling_batches": 2,
+      "recorded_CPU_seconds": 60.437418488,
+      "completed_candidate_MCMC_sweeps": 266240,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.00041486213237647816,
+            0.0007272801073444281
+          ],
+          "scaled_MCSE": [
+            0.00022319998682396143,
+            0.00012997633325123232
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0004374719741749644,
+            0.0002547536131724153
+          ],
+          "split_rhat": [
+            1.0000846225475004,
+            1.0000636297646235
+          ],
+          "autocorrelation_ess": [
+            20332.766407260282,
+            23769.602950159126
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0006580988140917375,
+            0.0008429208906910292
+          ],
+          "scaled_MCSE": [
+            0.000327442252656659,
+            0.00018111570336566815
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006417868152070516,
+            0.0003549867785967095
+          ],
+          "split_rhat": [
+            1.000102357714043,
+            1.0000025790143452
+          ],
+          "autocorrelation_ess": [
+            9537.906686126882,
+            12228.619172229459
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00017147978491379237,
+            0.0006115700708694892
+          ],
+          "scaled_MCSE": [
+            0.0003057300252903612,
+            0.00018663831748162753
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.000599230849569108,
+            0.00036581110226398993
+          ],
+          "split_rhat": [
+            1.0002401276238746,
+            1.0005122162900904
+          ],
+          "autocorrelation_ess": [
+            10732.07820374998,
+            11539.549027735651
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_head_specific_observed_task_g/results.json",
+      "status": "fixed-response risk stationarity reached",
+      "conditional_risk_stationarity_passed": true,
+      "final_risk_scales": [
+        0.17340126523784147,
+        0.073954714170203
+      ],
+      "fixed_response_scales": [
+        0.241455598850828,
+        0.3890538313246821
+      ],
+      "accepted_risk_updates": 19,
+      "sampling_batches": 1,
+      "recorded_CPU_seconds": 27.030373917000006,
+      "completed_candidate_MCMC_sweeps": 133120,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            6.053408497811551e-05,
+            0.0009214814066199639
+          ],
+          "scaled_MCSE": [
+            0.00018882144906318615,
+            0.00020445428159541183
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00037009004016384485,
+            0.00040073039192700715
+          ],
+          "split_rhat": [
+            1.000155608264219,
+            1.0001207655407753
+          ],
+          "autocorrelation_ess": [
+            30000.503916417736,
+            32425.681054466513
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00044023309516920086,
+            0.0007686445386932345
+          ],
+          "scaled_MCSE": [
+            0.00026958953332841424,
+            0.00028715187710733287
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0005283954853236919,
+            0.0005628176791303723
+          ],
+          "split_rhat": [
+            0.9999830341196655,
+            1.000096691990632
+          ],
+          "autocorrelation_ess": [
+            14843.050092841073,
+            16623.701168174783
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -0.00031606832077018664,
+            0.0010730718258819738
+          ],
+          "scaled_MCSE": [
+            0.0002622226339018438,
+            0.0002901493058179262
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0005139563624476138,
+            0.0005686926394031353
+          ],
+          "split_rhat": [
+            1.0003878863529307,
+            1.000401062508985
+          ],
+          "autocorrelation_ess": [
+            15417.535587442564,
+            15921.57652881253
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/5_additive_joint_deconvolved_task_f/results.json",
+      "status": "source evidence improvement unresolved",
+      "conditional_risk_stationarity_passed": false,
+      "final_risk_scales": [
+        0.09926211041743023,
+        0.6787651135612859
+      ],
+      "fixed_response_scales": [
+        0.16826430672869275,
+        0.5503211300600782
+      ],
+      "accepted_risk_updates": 1,
+      "sampling_batches": 1,
+      "recorded_CPU_seconds": 15.735475909000002,
+      "completed_candidate_MCMC_sweeps": 133120,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.0003575611307569984,
+            0.00012314686966992782
+          ],
+          "scaled_MCSE": [
+            0.000238396137330177,
+            0.00012550044154632103
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0004672564291671469,
+            0.00024598086543078923
+          ],
+          "split_rhat": [
+            1.0002627578966536,
+            1.0000450574772253
+          ],
+          "autocorrelation_ess": [
+            17942.037058548915,
+            27350.14165185444
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0004444318300526622,
+            0.00027716487703196907
+          ],
+          "scaled_MCSE": [
+            0.00033663432881893897,
+            0.0001767859900125717
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006598032844851203,
+            0.0003465005404246405
+          ],
+          "split_rhat": [
+            1.000237305240217,
+            1.0002038660334882
+          ],
+          "autocorrelation_ess": [
+            8942.42485536814,
+            13837.820608902406
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.0002706777109906793,
+            -3.089369053858698e-05
+          ],
+          "scaled_MCSE": [
+            0.00033747332561061115,
+            0.0001781053215003979
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006614477181967978,
+            0.00034908643014077995
+          ],
+          "split_rhat": [
+            1.0005352518769626,
+            1.000223841406332
+          ],
+          "autocorrelation_ess": [
+            9008.950349310087,
+            13524.932378558697
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+      "status": "fixed-response risk stationarity reached",
+      "conditional_risk_stationarity_passed": true,
+      "final_risk_scales": [
+        0.20991759164869433,
+        0.736366838431112
+      ],
+      "fixed_response_scales": [
+        0.17609284771352263,
+        0.43152147080602565
+      ],
+      "accepted_risk_updates": 3,
+      "sampling_batches": 1,
+      "recorded_CPU_seconds": 19.453176060999994,
+      "completed_candidate_MCMC_sweeps": 133120,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.0001030722536939983,
+            0.0005700328504087057
+          ],
+          "scaled_MCSE": [
+            0.00023745186230971776,
+            0.000268005156943167
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00046540565012704677,
+            0.0005252901076086073
+          ],
+          "split_rhat": [
+            1.0001049832086657,
+            1.0003577006986197
+          ],
+          "autocorrelation_ess": [
+            15022.093504161181,
+            13987.501043036022
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00022788949461046887,
+            0.0006471728613518237
+          ],
+          "scaled_MCSE": [
+            0.0003533737106864245,
+            0.0003680625075030401
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006926124729453919,
+            0.0007214025147059585
+          ],
+          "split_rhat": [
+            1.0003862235644263,
+            1.0005584125103728
+          ],
+          "autocorrelation_ess": [
+            6868.336190623357,
+            7315.692673187502
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -2.179911797555928e-05,
+            0.0004928593853781955
+          ],
+          "scaled_MCSE": [
+            0.00031445091270050575,
+            0.0003861043823100794
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0006163237888929913,
+            0.0007567645893277556
+          ],
+          "split_rhat": [
+            1.0001863842579963,
+            1.0009308121652287
+          ],
+          "autocorrelation_ess": [
+            8457.704963049231,
+            6830.862704693519
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_joint_observed_task_g/results.json",
+      "status": "full/split Q requires more precision",
+      "conditional_risk_stationarity_passed": false,
+      "final_risk_scales": [
+        0.1749288413758205,
+        0.16125386512180548
+      ],
+      "fixed_response_scales": [
+        0.2217829497815476,
+        0.17578691418630193
+      ],
+      "accepted_risk_updates": 6,
+      "sampling_batches": 1,
+      "recorded_CPU_seconds": 21.140722409000006,
+      "completed_candidate_MCMC_sweeps": 133120,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            8.434690229603977e-05,
+            0.001007338665654552
+          ],
+          "scaled_MCSE": [
+            0.00020033565429488238,
+            0.0002662031225276202
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00039265788241796946,
+            0.0005217581201541357
+          ],
+          "split_rhat": [
+            1.0002336124280449,
+            1.0003971085033982
+          ],
+          "autocorrelation_ess": [
+            21265.93479695975,
+            18479.87303730386
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00025194898732751493,
+            0.0015174596847953629
+          ],
+          "scaled_MCSE": [
+            0.0002800054860888209,
+            0.000375541471701318
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.000548810752734089,
+            0.0007360612845345833
+          ],
+          "split_rhat": [
+            1.0005062403770844,
+            1.0000848945485985
+          ],
+          "autocorrelation_ess": [
+            10756.275834002392,
+            9221.581274628597
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -8.420016984509533e-05,
+            0.0004943414425132927
+          ],
+          "scaled_MCSE": [
+            0.0002869633579893072,
+            0.00037730296381233136
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0005624481816590422,
+            0.0007395138090721694
+          ],
+          "split_rhat": [
+            1.0004274327505698,
+            1.0008597912387653
+          ],
+          "autocorrelation_ess": [
+            10488.522271286703,
+            9259.832954414955
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/5_spectral_head_specific_deconvolved_task_f/results.json",
+      "status": "fixed-response risk stationarity reached",
+      "conditional_risk_stationarity_passed": true,
+      "final_risk_scales": [
+        0.1350918649015507,
+        0.035380020333173084
+      ],
+      "fixed_response_scales": [
+        0.1897298804403307,
+        1.3736783159334187
+      ],
+      "accepted_risk_updates": 16,
+      "sampling_batches": 1,
+      "recorded_CPU_seconds": 23.17132240800001,
+      "completed_candidate_MCMC_sweeps": 133120,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            6.881355799374404e-05,
+            0.0009366788121054427
+          ],
+          "scaled_MCSE": [
+            0.0001994939106702693,
+            0.00011686459672152945
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00039100806491372786,
+            0.00022905460957419772
+          ],
+          "split_rhat": [
+            1.000152504631268,
+            1.000010297800208
+          ],
+          "autocorrelation_ess": [
+            31166.10351732398,
+            38270.02950364808
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00019592212251147342,
+            0.0010727311621818957
+          ],
+          "scaled_MCSE": [
+            0.0002852230681854444,
+            0.0001675492219233179
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.000559037213643471,
+            0.00032839647496970306
+          ],
+          "split_rhat": [
+            1.0001778465576425,
+            1.0000158727456874
+          ],
+          "autocorrelation_ess": [
+            15223.583922077718,
+            18731.659915799904
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -5.8767216643018176e-05,
+            0.0008001210256198398
+          ],
+          "scaled_MCSE": [
+            0.00027807183567054504,
+            0.0001631297409070682
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0005450207979142683,
+            0.00031973429217785365
+          ],
+          "split_rhat": [
+            1.0003161451191314,
+            1.0001534688300748
+          ],
+          "autocorrelation_ess": [
+            16065.333264587885,
+            19515.810244661905
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_spectral_joint_deconvolved_task_f/results.json",
+      "status": "fixed-response risk stationarity reached",
+      "conditional_risk_stationarity_passed": true,
+      "final_risk_scales": [
+        0.20834695295544925,
+        0.45625528497521206
+      ],
+      "fixed_response_scales": [
+        0.17667140035505166,
+        0.47310493526157926
+      ],
+      "accepted_risk_updates": 5,
+      "sampling_batches": 1,
+      "recorded_CPU_seconds": 18.899746074999996,
+      "completed_candidate_MCMC_sweeps": 133120,
+      "final_score_summaries": [
+        {
+          "scaled_raw_score": [
+            0.00010395021020134596,
+            0.0007382949285247036
+          ],
+          "scaled_MCSE": [
+            0.0001921259104557943,
+            0.00018384383671690837
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.00037656678449335683,
+            0.0003603339199651404
+          ],
+          "split_rhat": [
+            1.0000039853634466,
+            1.0000847621807414
+          ],
+          "autocorrelation_ess": [
+            19511.510178755525,
+            23005.876985856576
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            -7.687937505716591e-05,
+            0.0009014723285957888
+          ],
+          "scaled_MCSE": [
+            0.0002798061912014481,
+            0.0002607716647155262
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0005484201347548381,
+            0.0005111124628424314
+          ],
+          "split_rhat": [
+            1.0000419968645577,
+            1.000739398812458
+          ],
+          "autocorrelation_ess": [
+            9226.35167649456,
+            11446.427537770234
+          ]
+        },
+        {
+          "scaled_raw_score": [
+            0.00028505358554131103,
+            0.000574870465155899
+          ],
+          "scaled_MCSE": [
+            0.0002620954512413406,
+            0.0002591525955597707
+          ],
+          "scaled_95_MC_halfwidth": [
+            0.0005137070844330275,
+            0.0005079390872971506
+          ],
+          "split_rhat": [
+            1.000175709449454,
+            1.0004028226296393
+          ],
+          "autocorrelation_ess": [
+            10452.567616659666,
+            11564.859273035292
+          ]
+        }
+      ],
+      "completed_pilot_reused": false
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "registered_cases": 7,
+  "conditional_risk_stationarity_cases_passed": 5,
+  "accepted_risk_updates": 91,
+  "sampling_batches": 8,
+  "recorded_risk_learning_CPU_seconds": 185.86823526700002,
+  "completed_candidate_MCMC_sweeps": 1064960,
+  "execution_CPU_seconds": 185.906459316,
+  "source_registry_replaced": false,
+  "joint_source_learning_converged": false,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "original_source_cases_resampled": 0,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "limitations": [
+    "Fixed response covariance within each case. All final response posteriors and evidence normalizers need their own certification.",
+    "Numerical stopping and sampling economy do not establish independent decision value."
+  ]
+}

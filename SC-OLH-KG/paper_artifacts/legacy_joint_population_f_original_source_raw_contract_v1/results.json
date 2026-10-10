@@ -1,0 +1,91 @@
+{
+  "execution": {
+    "status": "registered after all collapsed added-source precision gates pass",
+    "entrypoint": "performance/prepare_legacy_f_original_source_raw_contract.py",
+    "collapsed_results": "paper_artifacts/legacy_joint_population_f_collapsed_source_raw_update_v1/results.json",
+    "known_source_plan": "performance/manifests/legacy_joint_population_f_known_source_latent_noise_plan_v1.json",
+    "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "source_tasks": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "question": "Can the original48-source raw training law be restored from unconditioned empirical population priors,without using the already-source-conditioned eta or f posterior as its prior?",
+    "contract": "Use only each source's ORIGINAL12 policies and their three f repeats,48 means and48 sample variances. The structural f prior uses the frozen population common/task A/R and anchor center;the GP prior uses its frozen same-source common/task kernels and center. Risk eta prior uses the old regularizer coefficient center plus common_prior_coefficient_diagonal and residual_coefficient_diagonal at all48 policies,NOT joint-fit coefficient_mean or population_mean_covariance. Original maps and population parameters stay fixed empirical-Bayes estimates trained on source data. No extra32 Gaussian risk-label likelihood is applied during the later raw update;every original S^2 enters the raw likelihood once.",
+    "verification": "Original source means/noises must match saved source records at1e-8. Recondition the unconditioned f population law with old plug-in noise to reproduce the old common beta/H and source NLL. Separately replay the original32 Gaussian eta labels from the unconditioned risk law ONLY as a verification to reproduce old beta/H/NLL at1e-8;do not store that verification posterior as the new prior. Risk coordinates/reference restore at1e-8,all48-source priors must have positive Cholesky factors,source rosters exclude tasks0/1/6/7. Stop on mismatch without floors or parameter refits.",
+    "decision": "If reconstruction passes,register the original48 raw source update with the collapsed sampler and exact Gaussian/chi-square likelihood. Retain uncertainty and matched GP controls. This replaces conditional source conditioning only;it does not yet refit covariance hyperparameters,establish physical factor recovery,or authorize new independent target decisions.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "maximum_original_source_coordinate_restorations": 2,
+      "new_source_labels": 0,
+      "new_covariance_fits": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small source records and saved empirical population fits;JSON only,no NPZ or server work",
+    "scope": "Original48-source training contract under unchanged orthogonal,sparse,low-order,low-frequency function laws. No source conditioning double-use,target,KG,confirmation or manuscript edits. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "source_roster": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "source_label_and_map_reconstruction_passed": true,
+      "f_plugin_common_beta_H_and_NLL_replayed": true,
+      "GP_plugin_NLL_replayed": true,
+      "GP_stored_NLL_measure": "normalized f units",
+      "GP_replayed_NLL_measure": "physical f units",
+      "GP_NLL_log_scale_Jacobian": -2.1177106182902965,
+      "risk_original32_Gaussian_beta_H_and_NLL_replayed_for_verification_only": true,
+      "all_original48_priors_positive": true,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "source_roster": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "source_label_and_map_reconstruction_passed": true,
+      "f_plugin_common_beta_H_and_NLL_replayed": true,
+      "GP_plugin_NLL_replayed": true,
+      "GP_stored_NLL_measure": "normalized f units",
+      "GP_replayed_NLL_measure": "physical f units",
+      "GP_NLL_log_scale_Jacobian": -2.087735902088368,
+      "risk_original32_Gaussian_beta_H_and_NLL_replayed_for_verification_only": true,
+      "all_original48_priors_positive": true,
+      "passed": true
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "all_original48_raw_contracts_complete": true,
+  "cpu_seconds": 0.31647787999999993,
+  "cost": {
+    "maximum_original_source_coordinate_restorations": 2,
+    "new_source_labels": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "original32_risk_Gaussian_label_likelihood_added_to_raw_update": false,
+  "validation_task0_or_task1_outcomes_indexed": false,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Unconditioned population priors at original48 source sites,with parameters/coordinate fixed at old source empirical estimates. Raw batch likelihood consumes each original mean and S^2 once;no old risk posterior reused as prior. Hyperparameter/encoder uncertainty and covariance relearning remain outside this repair."
+}

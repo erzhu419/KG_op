@@ -1,0 +1,399 @@
+{
+  "stage": "meta_prior_calibration_next_20261003",
+  "status": "a1_a45_diagnosis_closed_m1_method_frozen_decisive_pilot_prepared",
+  "frozen_before_results": false,
+  "base_protocol": "performance/meta_prior_total_budget_protocol.json",
+  "hypothesis": "Replacing current-batch plug-in g noise with pre-observation risk-predictive noise may reduce selected-candidate optimism while retaining learned source-structure value.",
+  "control_noise_g": "current_batch_sample_variance / replicates",
+  "proposed_noise_g": "exp(pre_batch_moment_matched_eta_mean + pre_batch_moment_matched_eta_variance / 2) / replicates",
+  "change_scope": "Target g observation variance for both g mixture-weight and component updates only; calculate before observing any current-batch responses.",
+  "stage_a": {
+    "type": "retrospective_fixed_query_replay",
+    "cohort": "meta_prior_total_budget_v6_20261002",
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "difficulty": "binding",
+    "allocation": "n24_v928",
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "existing_paths": 160,
+    "updates_per_path": [
+      "sample_variance_plugin",
+      "pre_batch_risk_predictive"
+    ],
+    "new_searches": 0,
+    "kg_calls": 0,
+    "new_random_verifications": 0,
+    "threads": 1,
+    "local_cpu_hours_cap": 0.5,
+    "source_reconstruction": "Reuse logged source selection indices and ARD variances; reconstruct deterministic archived source observations without rerunning source CV.",
+    "data_transfer": "Compact compressed JSON containing required query paths and prior parameters only.",
+    "analysis": "Score calibration and expected verified reward after recommendation for all five regimes; do not use truth or previous verification outcomes as model inputs.",
+    "interpretation": "Development evidence on unchanged old query paths, not a prospective closed-loop result.",
+    "plan_fixed_before_replay": true,
+    "status": "complete",
+    "artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003"
+  },
+  "stage_b": {
+    "status": "hold_stage_a_did_not_support_proposed_update",
+    "type": "prospective_paired_pilot",
+    "execution_protocol_required": "Freeze separate protocol, implementation and analysis definitions before generating new target observations.",
+    "seeds": [
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "difficulty": "binding",
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "noise_updates": [
+      "sample_variance_plugin",
+      "pre_batch_risk_predictive"
+    ],
+    "independent_searches": 160,
+    "candidates": 384,
+    "initial_points": 8,
+    "target_points": 24,
+    "replicates": 12,
+    "verification_replicates": 928,
+    "total_target_calls_per_search": 1216,
+    "source_calls_per_common_archive": 6144,
+    "source_fit_reuse": "Fit once per seed/regime; reuse across four methods, with source calls reported separately.",
+    "primary_contrast": "risk_ard_mixture minus fixed_source, both with pre_batch_risk_predictive update, separately in each regime",
+    "secondary_contrasts": "New minus old update within each prior, and their paired difference in differences.",
+    "analysis_units": "Eight paired new seed blocks; all five regimes and nominal unadjusted intervals; no pooling with development cohorts.",
+    "scheduler": "scheduler only",
+    "priority": "low",
+    "scheduler_task_count": 1,
+    "declared_cpus": 8,
+    "maximum_workers": 8,
+    "threads_per_worker": 1,
+    "maximum_nodes": 1,
+    "declared_cpu_slot_hours_cap": 12,
+    "scheduler_task_wall_minutes_cap": 90,
+    "rough_planning_cpu_slot_hours": [
+      7,
+      9
+    ],
+    "resource_admission": "Measure one complete search and actual worker thread usage before proceeding; stop if completing the remaining cohort would exceed the hard resource budget.",
+    "partial_completion": "Preserve results; incomplete cohort does not support the full-cohort conclusion.",
+    "automatic_expansion": false,
+    "hold_reason": "One structural-prior failure was rescued, but a new severe high-frequency-risk failure appeared; the other two diagnosed failures persisted. The proposed update feeds risk-prior bias into g observation precision."
+  },
+  "limitations": "The proposed noise rule remains a moment-matched Gaussian approximation. Stage A cannot establish acquisition gains; eight-seed stage B is a pilot, not submission-complete confirmation or a cross-allocation superiority test.",
+  "stage_a2": {
+    "status": "local_diagnosis_complete",
+    "artifacts": "paper_artifacts/meta_prior_local_likelihood_a2_20261003",
+    "next_plan": "performance/meta_prior_target_risk_residual_plan.json"
+  },
+  "stage_a3": {
+    "status": "grouped_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_target_risk_residual_a3_20261003",
+    "next_diagnostic": "performance/meta_prior_target_risk_support_diagnostic_protocol.json"
+  },
+  "stage_a4": {
+    "status": "oracle_support_diagnosis_complete_not_deployable",
+    "artifacts": "paper_artifacts/meta_prior_target_risk_support_a4_20261003",
+    "next_plan": "performance/meta_prior_target_risk_direction_plan.json"
+  },
+  "current_next_stage": "A45 frozen original-I risk fantasy consistency probe: isolate posterior model-probability learning, Gaussian moment matching and3/9-node quadrature under the same verifier utility. Forty historical initial states, up to8 sampling probes each, full384 recommendation population;30 CPU seconds cap. No new observations, server jobs, live policy changes or evaluation56-63.",
+  "stage_a5": {
+    "status": "grouped_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_target_risk_direction_a5_20261003",
+    "next_plan": "performance/meta_prior_target_risk_direction_mixture_plan.json"
+  },
+  "stage_a6": {
+    "status": "grouped_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_target_risk_direction_mixture_a6_20261003",
+    "next_plan": "performance/meta_prior_target_risk_joint_plan.json"
+  },
+  "stage_a7": {
+    "status": "grouped_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_target_risk_joint_a7_20261003",
+    "next_diagnostic": "performance/meta_prior_risk_reallocation_diagnostic_protocol.json"
+  },
+  "stage_a8": {
+    "status": "oracle_reallocation_diagnosis_complete_not_deployable",
+    "artifacts": "paper_artifacts/meta_prior_risk_reallocation_a8_20261003",
+    "next_plan": "performance/meta_prior_risk_family_reweighting_plan.json"
+  },
+  "stage_a9": {
+    "status": "grouped_and_prequential_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_risk_family_reweighting_a9_20261003",
+    "next_plan": "performance/meta_prior_risk_adaptation_calibration_plan.json"
+  },
+  "stage_a10": {
+    "status": "chronological_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_risk_adaptation_calibration_a10_20261003",
+    "next_diagnostic": "performance/meta_prior_source_holdout_calibration_diagnostic_plan.json"
+  },
+  "stage_a11": {
+    "status": "source_holdout_diagnosis_complete_coherent_source_signal",
+    "artifacts": "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003",
+    "next_plan": "performance/meta_prior_source_calibrated_adaptation_plan.json"
+  },
+  "stage_a12": {
+    "status": "chronological_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_source_calibrated_adaptation_a12_20261003",
+    "next_diagnostic": "performance/meta_prior_cross_head_information_diagnostic_plan.json"
+  },
+  "stage_a13": {
+    "status": "information_diagnosis_complete_coherent_bounded_signal",
+    "artifacts": "paper_artifacts/meta_prior_cross_head_information_a13_20261003",
+    "next_plan": "performance/meta_prior_cross_head_structure_mixture_plan.json"
+  },
+  "stage_a14": {
+    "status": "source_and_chronological_validation_complete_not_promoted",
+    "artifacts": "paper_artifacts/meta_prior_cross_head_structure_mixture_a14_20261003",
+    "next_plan": "performance/meta_prior_cross_head_risk_escape_plan.json"
+  },
+  "stage_a15": {
+    "status": "source_and_chronological_validation_complete_not_promoted_no_recommendation_replay",
+    "artifacts": "paper_artifacts/meta_prior_cross_head_risk_escape_a15_20261003",
+    "next_diagnostic": "performance/meta_prior_source_head_association_audit_plan.json"
+  },
+  "stage_a16": {
+    "status": "source_association_audit_complete_supports_head_specific_covariance_test",
+    "artifacts": "paper_artifacts/meta_prior_source_head_association_a16_20261003",
+    "next_plan": "performance/meta_prior_function_covariance_source_plan.json"
+  },
+  "stage_a17": {
+    "status": "outer_source_validation_complete_not_promoted_head_covariance_version_stopped",
+    "artifacts": "paper_artifacts/meta_prior_function_covariance_source_a17_20261003",
+    "next_diagnostic": "performance/meta_prior_function_covariance_attribution_plan.json"
+  },
+  "stage_a18": {
+    "status": "source_attribution_complete_covariance_branch_loss_identified",
+    "artifacts": "paper_artifacts/meta_prior_function_covariance_attribution_a18_20261003",
+    "next_diagnostic": "performance/meta_prior_source_covariance_geometry_plan.json"
+  },
+  "stage_a19": {
+    "status": "source_covariance_metadata_and_geometry_complete_scale_distortion_identified",
+    "artifacts": "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003",
+    "next_plan": "performance/meta_prior_scale_preserving_source_covariance_plan.json"
+  },
+  "stage_a20": {
+    "status": "outer_source_validation_complete_passed_for_fixed_target_validation",
+    "artifacts": "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003",
+    "next_plan": "performance/meta_prior_scale_preserving_target_validation_plan.json",
+    "execution_cpu_seconds": 75.104818979
+  },
+  "stage_a21": {
+    "status": "chronological_target_validation_complete_not_promoted_shift_regressions",
+    "artifacts": "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003",
+    "next_diagnostic": "performance/meta_prior_scale_preserving_target_attribution_plan.json",
+    "execution_cpu_seconds": 58.143035671999996
+  },
+  "stage_a22": {
+    "status": "frozen_target_attribution_complete_source_calibration_shift_gap_identified",
+    "artifacts": "paper_artifacts/meta_prior_scale_preserving_target_attribution_a22_20261003",
+    "next_plan": "performance/meta_prior_source_cross_archive_transfer_plan.json",
+    "execution_cpu_seconds": 0.18640928
+  },
+  "stage_a23": {
+    "status": "source_transfer_diagnostic_complete_calibration_and_covariance_gap_identified",
+    "artifacts": "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003",
+    "next_plan": "performance/meta_prior_source_transfer_calibration_plan.json",
+    "execution_cpu_seconds": 31.647604979
+  },
+  "stage_a24": {
+    "status": "complete_not_promoted_calibration_only_closed",
+    "artifacts": "paper_artifacts/meta_prior_source_transfer_calibration_a24_20261003",
+    "execution_cpu_seconds": 66.982814863,
+    "next_plan": "performance/meta_prior_archive_covariance_plan.json"
+  },
+  "stage_a25": {
+    "status": "source_validation_complete_partial_transfer_repair_matched_regression_not_promoted",
+    "artifacts": "paper_artifacts/meta_prior_archive_covariance_a25_20261003",
+    "execution_cpu_seconds": 3.558380158,
+    "next_plan": "performance/meta_prior_archive_covariance_frontier_plan.json"
+  },
+  "stage_a26": {
+    "status": "complete_weight_only_modification_closed",
+    "artifacts": "paper_artifacts/meta_prior_archive_covariance_frontier_a26_20261003",
+    "execution_cpu_seconds": 0.9366394089999999,
+    "next_plan": "performance/meta_prior_joint_archive_plan.json"
+  },
+  "stage_a27": {
+    "status": "source_validation_complete_passed_for_cached_target_forecasts",
+    "artifacts": "paper_artifacts/meta_prior_joint_archive_a27_20261003",
+    "execution_cpu_seconds": 9.448291603,
+    "next_plan": "performance/meta_prior_joint_archive_target_plan.json"
+  },
+  "stage_a28": {
+    "status": "target_validation_complete_whole_support_transfer_repaired_risk_only_gap_not_promoted",
+    "artifacts": "paper_artifacts/meta_prior_joint_archive_target_a28_20261003",
+    "execution_cpu_seconds": 8.219956448,
+    "next_plan": "performance/meta_prior_joint_archive_attribution_plan.json"
+  },
+  "stage_a29": {
+    "status": "complete_joint_sharing_and_inherited_risk_covariance_gaps_separated",
+    "artifacts": "paper_artifacts/meta_prior_joint_archive_attribution_a29_20261003",
+    "execution_cpu_seconds": 0.053932494,
+    "next_plan": "performance/meta_prior_conditional_sharing_plan.json"
+  },
+  "stage_a30": {
+    "status": "reference_source_validation_complete_matched_regression_not_promoted",
+    "plan": "performance/meta_prior_conditional_sharing_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_conditional_sharing_a30_20261003",
+    "execution_cpu_seconds": 13.211528954,
+    "next_plan": "performance/meta_prior_conditional_sharing_calibration_plan.json"
+  },
+  "current_next": "performance/meta_prior_risk_fantasy_consistency_plan.json",
+  "stage_a31": {
+    "status": "nested_source_calibration_complete_small_matched_regression_not_promoted",
+    "plan": "performance/meta_prior_conditional_sharing_calibration_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_conditional_sharing_calibration_a31_20261003",
+    "execution_cpu_seconds": 4.111376463,
+    "next_plan": "performance/meta_prior_conditional_sharing_stress_plan.json"
+  },
+  "stage_a32": {
+    "status": "record_stress_complete_sharing_release_information_gap_identified",
+    "plan": "performance/meta_prior_conditional_sharing_stress_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_conditional_sharing_stress_a32_20261003",
+    "execution_cpu_seconds": 0.6526861669999999,
+    "next_plan": "performance/meta_prior_heterogeneous_archive_plan.json"
+  },
+  "stage_a33": {
+    "status": "complete_joint_historical_meta_training_split_prepared",
+    "plan": "performance/meta_prior_heterogeneous_archive_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003",
+    "execution_cpu_seconds": 0.22371809700000006,
+    "next_plan": "performance/meta_prior_heterogeneous_covariance_plan.json"
+  },
+  "stage_a34": {
+    "status": "source_covariance_validation_complete_regime_regressions_not_promoted",
+    "plan": "performance/meta_prior_heterogeneous_covariance_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_heterogeneous_covariance_a34_20261003",
+    "execution_cpu_seconds": 0.48152779900000003,
+    "next_plan": "performance/meta_prior_heterogeneous_covariance_attribution_plan.json"
+  },
+  "stage_a35": {
+    "status": "complete_pooled_covariance_and_finite_posterior_release_gaps_identified",
+    "plan": "performance/meta_prior_heterogeneous_covariance_attribution_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_heterogeneous_covariance_attribution_a35_20261003",
+    "execution_cpu_seconds": 0.134634476,
+    "next_plan": "performance/meta_prior_heterogeneous_covariance_mixture_plan.json"
+  },
+  "stage_a36": {
+    "status": "complete_limited_optimizer_source_regressions_not_promoted",
+    "plan": "performance/meta_prior_heterogeneous_covariance_mixture_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_heterogeneous_covariance_mixture_a36_20261003",
+    "execution_cpu_seconds": 3.5807467859999997,
+    "next_plan": "performance/meta_prior_covariance_mixture_optimizer_completion_plan.json"
+  },
+  "stage_a37": {
+    "status": "complete_all_optimizers_converged_source_regressions_not_promoted",
+    "plan": "performance/meta_prior_covariance_mixture_optimizer_completion_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003",
+    "execution_cpu_seconds": 4.127094768,
+    "next_plan": "performance/meta_prior_covariance_mixture_family_diagnostic_plan.json"
+  },
+  "stage_a38": {
+    "status": "complete_family_identification_and_within_family_loss_separated",
+    "plan": "performance/meta_prior_covariance_mixture_family_diagnostic_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_covariance_mixture_family_diagnostic_a38_20261003",
+    "execution_cpu_seconds": 0.08062572800000001,
+    "next_plan": "performance/meta_prior_risk_information_design_plan.json"
+  },
+  "stage_a39": {
+    "status": "complete_initial_query_information_opportunity_identified",
+    "plan": "performance/meta_prior_risk_information_design_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_risk_information_design_a39_20261003",
+    "execution_cpu_seconds": 2.917314837,
+    "next_plan": "performance/meta_prior_paid_record_information_intervention_plan.json"
+  },
+  "stage_a40": {
+    "status": "complete_information_improves_some_recognition_without_structural_prediction_advantage",
+    "plan": "performance/meta_prior_paid_record_information_intervention_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_paid_record_information_intervention_a40_20261003",
+    "execution_cpu_seconds": 1.0073183600000002,
+    "next_plan": "performance/meta_prior_latent_risk_error_plan.json"
+  },
+  "stage_a41": {
+    "status": "complete_latent_function_and_uncertainty_errors_separated",
+    "plan": "performance/meta_prior_latent_risk_error_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_latent_risk_error_a41_20261003",
+    "execution_cpu_seconds": 1.552550216,
+    "next_plan": "performance/meta_prior_task_direction_prior_plan.json"
+  },
+  "stage_a42": {
+    "status": "complete_limited_task_optimizer_source_regressions_not_promoted",
+    "plan": "performance/meta_prior_task_direction_prior_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_task_direction_prior_a42_20261003",
+    "execution_cpu_seconds": 1.48235573,
+    "next_plan": "performance/meta_prior_task_direction_moment_plan.json"
+  },
+  "stage_a43": {
+    "status": "complete_source_uncertainty_retained_compatible_losses_not_promoted",
+    "plan": "performance/meta_prior_task_direction_moment_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_task_direction_moment_a43_20261003",
+    "execution_date": "2026-10-04",
+    "execution_cpu_seconds": 1.739901871,
+    "next_plan": "performance/meta_prior_source_context_accounting_plan.json"
+  },
+  "stage_a44": {
+    "status": "complete_context_identity_and_mixture_accounting_verified",
+    "plan": "performance/meta_prior_source_context_accounting_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_source_context_accounting_a44_20261004",
+    "execution_cpu_seconds": 0.021211058000000005,
+    "next_plan": "performance/meta_prior_risk_fantasy_consistency_plan.json"
+  },
+  "stage_a45": {
+    "status": "complete_risk_fantasy_effects_separated_live_kg_retained",
+    "plan": "performance/meta_prior_risk_fantasy_consistency_plan.json",
+    "artifacts": "paper_artifacts/meta_prior_risk_fantasy_consistency_a45_20261004",
+    "execution_cpu_seconds": 9.343594054999999,
+    "next_plan": "performance/meta_prior_decisive_pilot_protocol.json"
+  },
+  "active_method_contract": "docs/meta_prior_method_contract_20261004.md",
+  "next_phase": "M1 fixed; first new pair complete. Mature functional-prior comparison and Inventory/Queue state-cumulative-risk interface precede further matrix execution. No automatic A46.",
+  "decisive_pilot": {
+    "status": "first_pair_complete_remaining_cells_not_launched",
+    "plan": "performance/meta_prior_decisive_pilot_protocol.json",
+    "completed_cells": 2,
+    "planned_cells": 120,
+    "remaining_cells_launched": 0,
+    "artifacts": "paper_artifacts/meta_prior_decisive_pilot_m1_20261004",
+    "execution_cpu_seconds": 58.989164345
+  }
+}

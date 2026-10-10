@@ -1,0 +1,29 @@
+{
+  "status": "Development numerical admission; the six opened tasks remain development only.",
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "observations": "paper_artifacts/historical_full_bank_replicates_v1/observations.json",
+  "terminal_powers": [
+    14,
+    16
+  ],
+  "raw_powers": [
+    10,
+    12
+  ],
+  "projected_power": 10,
+  "seed": 202610077,
+  "maximum_action_resolution_difference": 0.0001,
+  "maximum_identity_integration_error_bound": 2e-06,
+  "maximum_case_cpu_seconds": 480,
+  "anchor_query": 63,
+  "anchor_replicates": 4,
+  "precision_states": [
+    "learned_prior_independent_02_source_structural_mixture_layout6",
+    "learned_prior_independent_05_source_common_task_rbf_layout6"
+  ],
+  "batch_states": [],
+  "cost": "Only the two remaining precision failures; reuse stored14th-order rules and evaluate16th-order rules. At most16 CPU minutes for two one-core shards. No new physical calls, source fits or verifier.",
+  "scope": "Preserve the old8/10 all365-action HOLD. The new12/14 comparison uses the same1e-4 tolerance, same seed, same action set and utility. One observed batch checks native cache/likelihood/budget wiring, not algorithmic query choice or independent decision gains.",
+  "output": "paper_artifacts/historical_full_bank_batch_kg_precision_v2",
+  "precision_rule_inputs": "paper_artifacts/historical_full_bank_batch_kg_v1/precision"
+}

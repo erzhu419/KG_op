@@ -1,0 +1,537 @@
+{
+  "scope": "Executable adapters and preserved contracts by implementation family;not a scientific superiority scorecard.",
+  "routes": [
+    {
+      "family": "observable_and_trajectory",
+      "historical": [
+        "policy_state_encoder.py",
+        "ssl_encoder.py",
+        "observable_exposure.py"
+      ],
+      "current": [
+        "representation/legacy_observable_prior.py",
+        "representation/public_control_mean.py"
+      ],
+      "connected_by": "performance/connect_complete_historical_reuse.py:design_for",
+      "status": "cached source coordinates restored;no new encoder fitting",
+      "historical_version_count": 14,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "48005c50d3a377d7a2195b86961372228050498f",
+          "date": "2026-07-03T21:57:10+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "b1c41e9e229702dafb7f138d1ced1439ecea7817",
+          "date": "2026-07-03T22:03:02+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "5907409beeec68d6a6101e57232b327b314cd2d9",
+          "date": "2026-07-03T23:05:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "0338973a499717430ae299fdd177631e22e3be3b",
+          "date": "2026-07-04T11:31:14+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "e2ff0860678e81da18e8fff5d1b732de0440bf50",
+          "date": "2026-07-04T15:10:51+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/encoders/policy_state_encoder.py",
+          "first_commit": "e81e2a0244f1d14a3cc818360c5cdf2b20c68a1d",
+          "date": "2026-07-05T09:18:02+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/ssl_encoder.py",
+          "first_commit": "e81e2a0244f1d14a3cc818360c5cdf2b20c68a1d",
+          "date": "2026-07-05T09:18:02+08:00"
+        }
+      ]
+    },
+    {
+      "family": "orthogonal_low_frequency_additive",
+      "historical": [
+        "transferable_spectral.py",
+        "additive_groups.py"
+      ],
+      "current": [
+        "representation/transferable_spectral.py",
+        "representation/additive_groups.py"
+      ],
+      "connected_by": "performance/adapt_historical_source_structure.py:restore_selector",
+      "artifact": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+      "status": "20 frozen maps;current sources and query axes aligned",
+      "historical_version_count": 5,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/representation/transferable_spectral.py",
+          "first_commit": "dca86ac253660a1c98c2231298955df07234371b",
+          "date": "2026-07-10T14:01:48+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/additive_groups.py",
+          "first_commit": "8588b507a16b488fc1429b1ea85b3f37a374f11e",
+          "date": "2026-07-11T03:26:06+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/transferable_spectral.py",
+          "first_commit": "8588b507a16b488fc1429b1ea85b3f37a374f11e",
+          "date": "2026-07-11T03:26:06+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/transferable_spectral.py",
+          "first_commit": "bab3ce1e1c76f86162f8268cc7ceb43e3dcefa32",
+          "date": "2026-07-15T08:10:05+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/transferable_spectral.py",
+          "first_commit": "1ded0d72dc17db53c3bc1dda7636d29a8e37de71",
+          "date": "2026-07-16T12:54:23+08:00"
+        }
+      ]
+    },
+    {
+      "family": "coefficient_sparsity",
+      "historical": [
+        "meta_prior.py",
+        "adaptive_sparsity.py"
+      ],
+      "current": [
+        "representation/meta_prior.py",
+        "representation/adaptive_sparsity.py"
+      ],
+      "connected_by": "performance/connect_historical_prior_posterior.py:source_prior",
+      "artifact": "paper_artifacts/historical_prior_posterior_connection_v1/source_priors.json",
+      "status": "historical Gaussian sparse reference retained;not a raw-likelihood sparse hyperposterior",
+      "historical_version_count": 77,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/performance/benchmark_lodo_meta_prior.py",
+          "first_commit": "30e4fb78ff3ef66005b1e7f3423e4bdf9c67183a",
+          "date": "2026-07-06T22:31:17+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/meta_prior.py",
+          "first_commit": "30e4fb78ff3ef66005b1e7f3423e4bdf9c67183a",
+          "date": "2026-07-06T22:31:17+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_meta_prior.py",
+          "first_commit": "30e4fb78ff3ef66005b1e7f3423e4bdf9c67183a",
+          "date": "2026-07-06T22:31:17+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/performance/benchmark_lodo_meta_prior.py",
+          "first_commit": "050ab1b8b8955885437995c3f836fdccb0fac71d",
+          "date": "2026-07-07T12:29:09+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/meta_prior.py",
+          "first_commit": "050ab1b8b8955885437995c3f836fdccb0fac71d",
+          "date": "2026-07-07T12:29:09+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_meta_prior.py",
+          "first_commit": "050ab1b8b8955885437995c3f836fdccb0fac71d",
+          "date": "2026-07-07T12:29:09+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/performance/benchmark_lodo_meta_prior.py",
+          "first_commit": "617f7c9b6e5586a492e7e5ee9111665d6c91c0be",
+          "date": "2026-07-07T14:24:14+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/performance/benchmark_lodo_meta_prior.py",
+          "first_commit": "dca86ac253660a1c98c2231298955df07234371b",
+          "date": "2026-07-10T14:01:48+08:00"
+        }
+      ]
+    },
+    {
+      "family": "source_common_and_task_laws",
+      "historical": [
+        "exchangeable_mean.py"
+      ],
+      "current": [
+        "representation/exchangeable_mean.py"
+      ],
+      "connected_by": "performance/adapt_historical_source_covariance.py:population_law",
+      "artifact": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+      "status": "V47 noise pushforward/deconvolution and real four-task covariance blocks restored",
+      "historical_version_count": 4,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/representation/exchangeable_mean.py",
+          "first_commit": "d092d98261a1a1966ac1906349e87192bfdad765",
+          "date": "2026-07-19T17:40:34+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_exchangeable_mean.py",
+          "first_commit": "d092d98261a1a1966ac1906349e87192bfdad765",
+          "date": "2026-07-19T17:40:34+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/exchangeable_mean.py",
+          "first_commit": "ebf89cb01cbc2298fd2acfc338f4303f0713a81a",
+          "date": "2026-07-21T06:31:16+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_exchangeable_mean.py",
+          "first_commit": "ebf89cb01cbc2298fd2acfc338f4303f0713a81a",
+          "date": "2026-07-21T06:31:16+08:00"
+        }
+      ]
+    },
+    {
+      "family": "cumulative_physical_HVD",
+      "historical": [
+        "orthogonal_hvd.py",
+        "source_archive_hvd.py"
+      ],
+      "current": [
+        "variance/orthogonal_hvd.py",
+        "variance/source_archive_hvd.py"
+      ],
+      "connected_by": "algorithms/single_olhkg.py",
+      "status": "original physical shape/amplitude path retained;log-risk amplitude scores remain a different parameterization",
+      "historical_version_count": 40,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/tests/test_orthogonal_hvd.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/variance/orthogonal_hvd.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_orthogonal_hvd.py",
+          "first_commit": "c1bc315dfafc43c14fc48a052b48b30002739ec3",
+          "date": "2026-07-03T21:16:24+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/variance/orthogonal_hvd.py",
+          "first_commit": "c1bc315dfafc43c14fc48a052b48b30002739ec3",
+          "date": "2026-07-03T21:16:24+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_orthogonal_hvd.py",
+          "first_commit": "06afe4b861d04f9ca50523d151deb9d131a7c95e",
+          "date": "2026-07-03T21:40:53+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/variance/orthogonal_hvd.py",
+          "first_commit": "06afe4b861d04f9ca50523d151deb9d131a7c95e",
+          "date": "2026-07-03T21:40:53+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_orthogonal_hvd.py",
+          "first_commit": "f2266fe809a2099272b39181f307d5c8f490275c",
+          "date": "2026-07-03T22:49:47+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/variance/orthogonal_hvd.py",
+          "first_commit": "f2266fe809a2099272b39181f307d5c8f490275c",
+          "date": "2026-07-03T22:49:47+08:00"
+        }
+      ]
+    },
+    {
+      "family": "raw_source_and_paid_posterior",
+      "historical": [
+        "task_posterior.py"
+      ],
+      "current": [
+        "performance/check_legacy_f_collapsed_source_raw_update.py",
+        "performance/prepare_legacy_f_variance_reference.py",
+        "representation/joint_function_risk.py",
+        "representation/vectorized_joint_function_risk.py"
+      ],
+      "connected_by": "performance/complete_historical_source_heads.py;performance/complete_historical_source_blocks.py;performance/connect_complete_historical_reuse.py",
+      "artifact": "paper_artifacts/historical_complete_reuse_v1/blocked_source_results.json",
+      "status": "all32 response/risk cases complete;29 usable,3 retained HOLD;exact compensated source density and batched raw paid filtering",
+      "historical_version_count": 15,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/representation/task_posterior.py",
+          "first_commit": "e711dda626d1d610f7b7697942aa492646de4381",
+          "date": "2026-07-11T07:54:09+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_task_posterior.py",
+          "first_commit": "e711dda626d1d610f7b7697942aa492646de4381",
+          "date": "2026-07-11T07:54:09+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/task_posterior.py",
+          "first_commit": "3e42c4cb3cc76e4ff603f7ec8bfa0db37a74c242",
+          "date": "2026-07-12T05:34:08+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_task_posterior.py",
+          "first_commit": "3e42c4cb3cc76e4ff603f7ec8bfa0db37a74c242",
+          "date": "2026-07-12T05:34:08+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/task_posterior.py",
+          "first_commit": "704fe4cf5959f568e6e8b426ad1a0c534aac9ff4",
+          "date": "2026-07-15T06:29:17+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_task_posterior.py",
+          "first_commit": "704fe4cf5959f568e6e8b426ad1a0c534aac9ff4",
+          "date": "2026-07-15T06:29:17+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/task_posterior.py",
+          "first_commit": "1ded0d72dc17db53c3bc1dda7636d29a8e37de71",
+          "date": "2026-07-16T12:54:23+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/task_posterior.py",
+          "first_commit": "5108417b111279c094c6a52c0bce3f4114ab8559",
+          "date": "2026-07-17T00:04:57+08:00"
+        }
+      ]
+    },
+    {
+      "family": "raw_source_learning_scores",
+      "historical": [
+        "exchangeable_mean.py"
+      ],
+      "current": [
+        "performance/diagnose_legacy_f_raw_source_covariance_score.py",
+        "performance/check_legacy_f_raw_covariance_mstep.py"
+      ],
+      "connected_by": "performance/connect_historical_raw_learning_scores.py",
+      "artifact": "paper_artifacts/historical_complete_reuse_v1/raw_learning_scores.json",
+      "status": "all64 scalar-head scores connected;old M step available for a separately registered source-only fit after precision is resolved",
+      "historical_version_count": 4,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/representation/exchangeable_mean.py",
+          "first_commit": "d092d98261a1a1966ac1906349e87192bfdad765",
+          "date": "2026-07-19T17:40:34+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_exchangeable_mean.py",
+          "first_commit": "d092d98261a1a1966ac1906349e87192bfdad765",
+          "date": "2026-07-19T17:40:34+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/representation/exchangeable_mean.py",
+          "first_commit": "ebf89cb01cbc2298fd2acfc338f4303f0713a81a",
+          "date": "2026-07-21T06:31:16+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_exchangeable_mean.py",
+          "first_commit": "ebf89cb01cbc2298fd2acfc338f4303f0713a81a",
+          "date": "2026-07-21T06:31:16+08:00"
+        }
+      ]
+    },
+    {
+      "family": "KG_terminal_and_efficiency",
+      "historical": [
+        "kg.py",
+        "decision_backends.py"
+      ],
+      "current": [
+        "core/mixture_guarded_kg.py",
+        "core/budgeted_guarded_kg.py",
+        "core/raw_likelihood_lookahead.py",
+        "core/positive_mixture_lookahead.py",
+        "core/terminal_verification.py",
+        "acquisition/decision_backends.py"
+      ],
+      "connected_by": "performance/connect_complete_historical_reuse.py",
+      "artifact": "paper_artifacts/historical_complete_reuse_v1/mixture_lookahead.json",
+      "status": "V51 balanced4,shared identity,V53 factorization,positive-component RQMC and original paid/fantasy loop;all12 cached actions;no verifier execution",
+      "historical_version_count": 150,
+      "historical_origins": [
+        {
+          "path": "Final_Submission/GPR_KG_Code/gpr_kg.py",
+          "first_commit": "772b29cdb79450b01494ede57f0f0fb4c81c9fcc",
+          "date": "2026-06-29T23:48:13+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/acquisition/olhkg.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/algorithms/single_olhkg.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/core/kg.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/runners/run_sc_olhkg.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/runners/run_single_olhkg.py",
+          "first_commit": "5c1f82b0b18cb700e20d87708d03b6e34025160f",
+          "date": "2026-07-03T21:08:18+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/acquisition/olhkg.py",
+          "first_commit": "c1bc315dfafc43c14fc48a052b48b30002739ec3",
+          "date": "2026-07-03T21:16:24+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/algorithms/single_olhkg.py",
+          "first_commit": "c1bc315dfafc43c14fc48a052b48b30002739ec3",
+          "date": "2026-07-03T21:16:24+08:00"
+        }
+      ]
+    },
+    {
+      "family": "legacy_frontend_backend_and_strong_controls",
+      "historical": [
+        "transfer_external_models.py",
+        "source_archive_hvd.py"
+      ],
+      "current": [
+        "baselines/transfer_external_models.py",
+        "performance/compare_legacy_complete_gp_control.py",
+        "performance/run_legacy_joint_population_matched_baselines.py"
+      ],
+      "artifacts": [
+        "performance/baselines/v51_observed_terminal_closure_evidence.json",
+        "paper_artifacts/legacy_frontend_evidence.json",
+        "paper_artifacts/legacy_joint_population_complete_gp_control_v1/results.json"
+      ],
+      "status": "existing old full HVD/KG gains,frontend causal contrasts and GP control decisions retained without replaying paid streams;new-source law matched ranking remains unperformed",
+      "historical_version_count": 11,
+      "historical_origins": [
+        {
+          "path": "SC-OLH-KG/baselines/transfer_external_models.py",
+          "first_commit": "0e9a4ffa9ced001898ad3b7dfa79bb22879ff8ac",
+          "date": "2026-07-15T12:04:13+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/baselines/transfer_external_models.py",
+          "first_commit": "8a32bcbd184c7c6bd42003bc2c8050a092b56c5d",
+          "date": "2026-07-26T23:07:15+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_transfer_external_models.py",
+          "first_commit": "8a32bcbd184c7c6bd42003bc2c8050a092b56c5d",
+          "date": "2026-07-26T23:07:15+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/baselines/transfer_external_models.py",
+          "first_commit": "5d0e83fc07f240da222e241aad2d5fe94d44aa22",
+          "date": "2026-07-27T10:29:07+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_transfer_external_models.py",
+          "first_commit": "5d0e83fc07f240da222e241aad2d5fe94d44aa22",
+          "date": "2026-07-27T10:29:07+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/tests/test_source_archive_hvd.py",
+          "first_commit": "33e920be2e361de0beadc1a0b44b4e4442025bbd",
+          "date": "2026-07-29T08:31:52+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/variance/source_archive_hvd.py",
+          "first_commit": "33e920be2e361de0beadc1a0b44b4e4442025bbd",
+          "date": "2026-07-29T08:31:52+08:00"
+        },
+        {
+          "path": "SC-OLH-KG/baselines/transfer_external_models.py",
+          "first_commit": "e180f67bbf31b14904b297f4a41321c1dbd66b9c",
+          "date": "2026-07-29T12:13:46+08:00"
+        }
+      ]
+    },
+    {
+      "family": "proof_and_reproduction",
+      "historical": [
+        "proof/",
+        "artifact",
+        "repro"
+      ],
+      "current": [
+        "performance/replay_historical_complete_reuse.py"
+      ],
+      "connected_by": "performance/manifests/historical_complete_reuse_v1.json",
+      "artifact": "paper_artifacts/historical_complete_reuse_v1/batch_results.json",
+      "status": "one cached batch entrypoint;reuse completed cases;original formal results retain their own assumptions",
+      "historical_version_count": 233,
+      "historical_origins": [
+        {
+          "path": "proof/SCOLHKG.lean",
+          "first_commit": "dd2883b44f4f9ec8e0b7176d3de7975cb594d862",
+          "date": "2026-07-04T08:01:29+08:00"
+        },
+        {
+          "path": "proof/SCOLHKG/Certification.lean",
+          "first_commit": "dd2883b44f4f9ec8e0b7176d3de7975cb594d862",
+          "date": "2026-07-04T08:01:29+08:00"
+        },
+        {
+          "path": "proof/SCOLHKG/Information.lean",
+          "first_commit": "dd2883b44f4f9ec8e0b7176d3de7975cb594d862",
+          "date": "2026-07-04T08:01:29+08:00"
+        },
+        {
+          "path": "proof/SCOLHKG/Variance.lean",
+          "first_commit": "dd2883b44f4f9ec8e0b7176d3de7975cb594d862",
+          "date": "2026-07-04T08:01:29+08:00"
+        },
+        {
+          "path": "proof/lakefile.lean",
+          "first_commit": "dd2883b44f4f9ec8e0b7176d3de7975cb594d862",
+          "date": "2026-07-04T08:01:29+08:00"
+        },
+        {
+          "path": "proof/SCOLHKG.lean",
+          "first_commit": "e7e071df7beae971a3670327965f260256e8c123",
+          "date": "2026-07-04T08:07:35+08:00"
+        },
+        {
+          "path": "proof/SCOLHKG/HVD.lean",
+          "first_commit": "e7e071df7beae971a3670327965f260256e8c123",
+          "date": "2026-07-04T08:07:35+08:00"
+        },
+        {
+          "path": "proof/SCOLHKG/KG.lean",
+          "first_commit": "e7e071df7beae971a3670327965f260256e8c123",
+          "date": "2026-07-04T08:07:35+08:00"
+        }
+      ]
+    },
+    {
+      "family": "conditional_variance_precision",
+      "historical": [
+        "task_posterior.py"
+      ],
+      "current": [
+        "performance/diagnose_legacy_f_inner_conditional_calibration.py"
+      ],
+      "connected_by": "performance/reuse_historical_conditional_variance_integral.py",
+      "artifact": "paper_artifacts/historical_complete_reuse_v1/conditional_variance_diagnostic.json",
+      "status": "all three worst retained source sites integrated;single-coordinate integration does not resolve the full joint variance HOLD"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "status": "registered after joint-covariance results, before this source optimization attribution",
+  "purpose": "separate common-covariance learning from extra optimization: restart each fixed-common structural source objective at its recorded solution with the same4096 iteration allowance and original ftol/gtol",
+  "source_execution": "performance/manifests/legacy_joint_population_joint_common_covariance_execution_v1.json",
+  "fixed_fit": "paper_artifacts/legacy_joint_population_public_design_source_check_v1/source_fit.json",
+  "output": "paper_artifacts/legacy_joint_population_fixed_common_completion_v1",
+  "max_iterations": 4096,
+  "heldout_tasks": [6, 7],
+  "scoring": "same two cached raw records and71 unobserved source-policy batches; freeze predictive distributions before reusing opened source labels; no target terminal integration",
+  "execution": "four native source head continuations once, local serial single-thread; no new simulator/verifier calls or server dispatch",
+  "interpretation": "opened-source optimization attribution, cannot overwrite frozen old/joint outcomes or establish decision superiority"
+}

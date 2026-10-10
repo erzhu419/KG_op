@@ -1,0 +1,198 @@
+{
+  "execution": {
+    "status": "frozen after source-only scalar fitting and before four cached outer-task1 forecasts",
+    "reference_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_scale_v1/results.json",
+    "source_rules": "paper_artifacts/legacy_joint_population_f_predictive_shape_scale_v1/full_source_rules.json",
+    "design_results": "paper_artifacts/legacy_joint_population_f_source_information_design_v1/results.json",
+    "control_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "designs": [
+      "fixed_public_prefix",
+      "intercept_mixture_greedy"
+    ],
+    "controls": [
+      "native_f",
+      "flat",
+      "source_gp",
+      "source_variance_mixture",
+      "source_predictive_shape_mixture"
+    ],
+    "entrypoint": "performance/check_legacy_f_predictive_shape_scale_pilot.py",
+    "law": "Source-only learned excess shape-budget scales0.43364224622540537/0.5779399678566043 at frozen q1;common moments and the full-tail conditional source5 Jeffreys intercept-variance mixture rebuilt coherently. Keep source5 eta law,public basis,raw component/moment filter and both previously frozen query designs.",
+    "freeze": "Two source5 laws were frozen by the scalar learner without task1 outcomes. Freeze all four design/prior states before paid task1 values and all forecasts before future labels. Learning used only internal source0/2/3/4/5;task1 is already-seen outer development,not independent confirmation. Same180 historical source calls,four raw query values,twelve future scores. Reuse20 matching native/flat/GP/retained/q1 forecasts without fitting or replay.",
+    "verification": "Selected source rule versus unchanged32-node-per-adaptive-interval reference for all four posterior means/covariances/paid evidences and raw densities. Failed numerical check stops scoring or interpretation;no tolerance relaxation.",
+    "predictive_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "density_refinement_tolerance": 1e-05,
+    "gates": "At both already-frozen designs and both layouts,require candidate MSE nonincrease,proper raw density strict increase and original cached-definition transcript density nondecrease against retained mixture. Complete prior advantage additionally requires the same three metrics against native,flat and sourceGP controls at each common design. Report every failure;do not select a better design after scores.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_integrations": 0,
+      "maximum_new_query_forecasts": 4,
+      "maximum_numerical_reference_forecasts": 4,
+      "reused_control_forecasts": 20,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "maximum_single_thread_cpu_seconds": 120,
+    "execution": "local serial single-thread;small cached source/query JSON and score-site NPZ only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_predictive_shape_scale_pilot_v1",
+    "decision": "Retained-mixture gate failure stops this learned-budget candidate without wider replay. Preserve MSE,density and transcript failures against every control. A complete development pass only supports a separately frozen next experiment;no source6/7,target,KG,confirmation or paper promotion. Complete-model HOLD remains.",
+    "candidate_arm": "source_predictive_shape_scale_mixture",
+    "additional_control_results": [
+      "paper_artifacts/legacy_joint_population_f_predictive_shape_pilot_v1/results.json"
+    ]
+  },
+  "all_four_prior_designs_frozen_before_paid_values": true,
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "design": "fixed_public_prefix",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_q": 1.0,
+      "source_component_count": 176,
+      "reference_component_count": 352
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_q": 1.0,
+      "source_component_count": 176,
+      "reference_component_count": 352
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "design": "fixed_public_prefix",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_q": 1.0,
+      "source_component_count": 96,
+      "reference_component_count": 384
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_q": 1.0,
+      "source_component_count": 96,
+      "reference_component_count": 384
+    }
+  ]
+}

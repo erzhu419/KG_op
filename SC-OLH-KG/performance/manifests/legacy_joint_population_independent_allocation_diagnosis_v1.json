@@ -1,0 +1,12 @@
+{
+  "status": "registered opened-pilot allocation diagnosis; no new simulations",
+  "pilot": "paper_artifacts/legacy_joint_population_independent_pilot_v1",
+  "output": "paper_artifacts/legacy_joint_population_independent_pilot_v1/allocation_diagnosis.json",
+  "arms": ["joint_population_structural", "joint_population_full"],
+  "panel": "per task/arm keep its frozen selected primary, original three-policy shortlist and incumbent; compare all three existing guarded allocations and both existing direct allocations, without changing the full-bank recommendation",
+  "integration_power": 15,
+  "integration_seeds": [80771, 80772],
+  "source_rule": "restore the same frozen source priors once; replay the four cached raw initialization records; no source optimization or observation generation",
+  "endpoints": "allocation rank stability across two independent32768-node rules, model reward/call premium of larger guarded budgets, and scoring conditional safe reward/calls for each frozen-panel action",
+  "interpretation": "opened-task numerical/efficiency diagnosis only, not new independent confirmation, a changed selector, global action reranking or incremental KG evidence"
+}

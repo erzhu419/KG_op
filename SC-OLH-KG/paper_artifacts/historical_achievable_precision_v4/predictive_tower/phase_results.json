@@ -1,0 +1,66 @@
+{
+  "heads": [
+    {
+      "head": 0,
+      "complete": true,
+      "new_physical_calls": 0,
+      "new_source_fits": 0,
+      "new_verifier_calls": 0,
+      "scope": "Fixed direct action on same-source GP, no adaptive maximum factorization.",
+      "full_cache_parity_error": 4.440892098500626e-16,
+      "prefixes": {
+        "8": 0.8036331455420433,
+        "64": 0.8034694196695781,
+        "512": 0.8034817993041403
+      },
+      "baseline_reward": 0.5843920738293176,
+      "maximum_evidence_error": 8.597734968418536e-06,
+      "all_inner_rules_passed": true,
+      "inner_rule_failed_count": 0,
+      "cpu_seconds": 9.958672794
+    },
+    {
+      "head": 1,
+      "complete": true,
+      "new_physical_calls": 0,
+      "new_source_fits": 0,
+      "new_verifier_calls": 0,
+      "scope": "Fixed direct action on same-source GP, no adaptive maximum factorization.",
+      "full_cache_parity_error": 4.440892098500626e-16,
+      "prefixes": {
+        "8": 0.7419379260254342,
+        "64": 0.7270209219516306,
+        "512": 0.727337739432237
+      },
+      "baseline_reward": 0.5843920738293176,
+      "maximum_evidence_error": 9.970438747686217e-05,
+      "all_inner_rules_passed": true,
+      "inner_rule_failed_count": 0,
+      "cpu_seconds": 13.44700736
+    }
+  ],
+  "all_complete": true,
+  "cpu_seconds": 23.405680154000002,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "all_inner_rules_passed": true,
+  "diagnostic_case": "gp_n4",
+  "scope": "Fixed direct action only; original adaptive KG bank is unchanged.",
+  "prefixes": {
+    "8": {
+      "expected_reward": 0.5962459092887595,
+      "tower_drift": 0.011853835459441964
+    },
+    "64": {
+      "expected_reward": 0.5841390782481183,
+      "tower_drift": -0.000252995581199289
+    },
+    "512": {
+      "expected_reward": 0.5844026355808197,
+      "tower_drift": 1.0561751502158323e-05
+    }
+  },
+  "omitted_prior_mass": 0.0,
+  "fixed_action_tower_diagnostic_passed": true
+}

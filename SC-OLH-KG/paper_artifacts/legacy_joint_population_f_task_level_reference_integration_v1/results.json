@@ -1,0 +1,683 @@
+{
+  "execution": {
+    "status": "frozen before all14 conditional task-level reference integrations",
+    "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+    "native_full_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+    "level_information_results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+    "failure_attribution": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_development_v1/failure_attribution.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "head": "f",
+    "question": "Do source-supported uncertainty tails for the native f task intercept variance materially differ from its plug-in value, particularly at the task1-deleted zero boundary? Stage105 measured a conditional half-log-likelihood slice, not posterior mass. Joint common geometry failed to repair task1 unseen prediction. Do not return to that rejected common candidate or invent a variance floor.",
+    "native_law": "Use all12 original native five-source f laws and two full-six-source native f laws, not Stage109 laws. Fix original common covariance/empirical center/support, task shape spectrum/tail/discrepancy and observation noise. Vary only nonnegative physical task intercept variance v; integrate the coherent source Gaussian likelihood, not a heldout-score surrogate.",
+    "reference_measure": "With C(v)=C0+v*U*U.T, B=U.T*C0^-1*U and eigenvalues lambda_i>0, use the one-dimensional conditional Jeffreys measure pi(v)dv proportional to sqrt(I(v))dv, I(v)=0.5*sum((lambda_i/(1+v*lambda_i))^2). The design/noise/fixed nuisance parameters determine this measure. It is finite at v=0 and proportional to1/v in the tail; no chosen variance floor, upper cutoff, extra prior family or outcome-dependent prior scale.",
+    "likelihood": "Source log likelihood difference from v=0 is -0.5*sum(log1p(v*lambda_i))+0.5*sum(v*z_i^2/(1+v*lambda_i)), z_i the eigenbasis projection of U.T*C0^-1*(y-D*m0). Source task count T is5/6; the posterior tail is proportional to v^(-T/2-1), so normalization and first/second moments are integrable. Transform v=source_signal*q/(1-q) with the actual Jacobian; this is a quadrature coordinate, not a prior scale.",
+    "diagnostic": "Normalize the conditional reference posterior; record posterior mean/SD/quantiles and mass above the existing Stage105 slice upper endpoint. Compare the implied new-task intercept scale and source common mean/covariance uncertainty with the cached plug-in law. No query or source6/7 outcomes and no predictive gate in this diagnostic.",
+    "verification": "Check low-rank likelihood and Fisher formulas against one dense source calculation at an interior physical variance on task1-deleted folds. Check the full native source likelihood at its existing variance. Require reported quadrature errors to meet declared tolerances; retain failure rather than adding a cutoff or variance correction. No rerun of settled fits, source paid forecasts or g checks.",
+    "interpretation": "A substantial source-supported tail can motivate a separately registered coherent mixture prediction test, not an adopted covariance addition. Concentration near zero is evidence against variance inflation within this conditional family. Fixed empirical nuisance/support selection is omitted; these are conditional posterior intervals, not coverage guarantees or recovered population heterogeneity.",
+    "next_action": "Judge whether native task-level uncertainty supports a coherent integration test. Keep the rejected fixed-marginal and joint common f candidates stopped; retain g and complete-model HOLD. No hidden task descriptors, additional starts, frequency/tail changes, target/KG/confirmation or server experiments.",
+    "quadrature": {
+      "relative_tolerance": 1e-08,
+      "absolute_tolerance_for_scaled_integrals": 1e-09,
+      "maximum_subintervals": 128
+    },
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_task_level_reference_integration.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_integration_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_task_level_reference_integration.py",
+    "dense_verification_deleted_task": 1,
+    "dense_verification_variance_over_source_signal": 0.1,
+    "posterior_quantile_probabilities": [
+      0.025,
+      0.5,
+      0.975
+    ],
+    "quadrature_points": "Native variance and Stage105 source slice upper endpoint in q; points split integration but do not truncate either tail.",
+    "normalization": "Scalar source reference normalizer with relative tolerance and zero absolute tolerance; normalized vector moments/CDF use declared tolerances. Common coefficient mixture covariance includes both average conditional H and covariance of conditional beta.",
+    "frozen_before_source_integration": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": null,
+      "source_task_count": 6,
+      "source_label_count": 72,
+      "native_task_intercept_variance": 0.00012042144721420908,
+      "source_signal_scale": 0.020017710146864886,
+      "reference_posterior": {
+        "mean": 0.00021302137744904802,
+        "standard_deviation": 0.0003205144905245647,
+        "quantiles": {
+          "0.025": 3.740932445425516e-05,
+          "0.5": 0.00014177424169339395,
+          "0.975": 0.0008114947352959287
+        },
+        "normalization_integral": 0.011058508826932555,
+        "normalization_absolute_error": 2.270389456224611e-12,
+        "normalization_relative_error": 2.0530701668340385e-10,
+        "normalized_vector_integral_error": 4.659597067571574e-10,
+        "normalized_mass_error": 2.9976021664879227e-15,
+        "normalized_vector_evaluations": 399
+      },
+      "posterior_task_intercept_standard_deviation": 0.014595251880287919,
+      "mean_variance_over_native": 1.7689654324625377,
+      "stage105_slice_upper_variance": 0.0002609015252510728,
+      "posterior_mass_above_stage105_slice_upper": 0.2207553359605412,
+      "common_mean_bank_rms_change": 1.3529567213492952e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00011660063879303606,
+        "integrated": 0.0001323289845279356
+      },
+      "public_average_common_level_variance": {
+        "native": 2.4221845581900043e-05,
+        "integrated": 3.964198029672953e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 4.836278954096278e-10,
+      "scalar_quadrature_evaluations": 4578,
+      "maximum_scalar_quadrature_error": 7.425588946096194e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00015037040134829394,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00031868303921924384,
+        "standard_deviation": 0.0009613542495716605,
+        "quantiles": {
+          "0.025": 4.354858305029769e-05,
+          "0.5": 0.000183254286203565,
+          "0.975": 0.0013687488151326408
+        },
+        "normalization_integral": 0.01518943252559934,
+        "normalization_absolute_error": 8.022183384563592e-11,
+        "normalization_relative_error": 5.281424023605553e-09,
+        "normalized_vector_integral_error": 1.1314752589119532e-09,
+        "normalized_mass_error": 9.5723429183181e-13,
+        "normalized_vector_evaluations": 2079
+      },
+      "posterior_task_intercept_standard_deviation": 0.01785169569590642,
+      "mean_variance_over_native": 2.119320267564475,
+      "stage105_slice_upper_variance": 0.00035554089662157375,
+      "posterior_mass_above_stage105_slice_upper": 0.2281211538330309,
+      "common_mean_bank_rms_change": 8.506995362999283e-06,
+      "common_posterior_average_bank_variance": {
+        "native": 0.0001471687138622654,
+        "integrated": 0.00018109976383916403
+      },
+      "public_average_common_level_variance": {
+        "native": 3.5187583701285325e-05,
+        "integrated": 6.87430022336541e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.5804774643930135e-08,
+      "scalar_quadrature_evaluations": 3969,
+      "maximum_scalar_quadrature_error": 3.3181447425098193e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 3.780945079229659e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 9.660336249237974e-05,
+        "standard_deviation": 0.00034494171384616775,
+        "quantiles": {
+          "0.025": 4.963619395154017e-06,
+          "0.5": 5.0741598176095185e-05,
+          "0.975": 0.0004504383901827734
+        },
+        "normalization_integral": 0.004966979558570149,
+        "normalization_absolute_error": 1.1201207992222276e-12,
+        "normalization_relative_error": 2.255134707147211e-10,
+        "normalized_vector_integral_error": 1.0764054885070302e-09,
+        "normalized_mass_error": 1.1213252548714081e-13,
+        "normalized_vector_evaluations": 1785
+      },
+      "posterior_task_intercept_standard_deviation": 0.009828700956503853,
+      "mean_variance_over_native": 2.555005705400566,
+      "stage105_slice_upper_variance": 0.00010470703069046978,
+      "posterior_mass_above_stage105_slice_upper": 0.23896097716894427,
+      "common_mean_bank_rms_change": 0.00012536257090826897,
+      "common_posterior_average_bank_variance": {
+        "native": 0.0001212374901015572,
+        "integrated": 0.00013401872849852454
+      },
+      "public_average_common_level_variance": {
+        "native": 1.2614258255127461e-05,
+        "integrated": 2.4376762903435312e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 6.84248804213401e-10,
+      "scalar_quadrature_evaluations": 3822,
+      "maximum_scalar_quadrature_error": 1.3769039221581667e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true,
+        "interior_physical_variance": 0.0020021252176237866,
+        "interior_total_nll_error": 2.5579538487363607e-13,
+        "interior_fisher_relative_error": 6.8833827526759706e-15
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.0001281354356714859,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.0002747391231524315,
+        "standard_deviation": 0.0008474646165657799,
+        "quantiles": {
+          "0.025": 3.4281858994423896e-05,
+          "0.5": 0.00015626809459488915,
+          "0.975": 0.0011929595764753973
+        },
+        "normalization_integral": 0.01335875300152583,
+        "normalization_absolute_error": 1.1316813282526565e-10,
+        "normalization_relative_error": 8.471459335488847e-09,
+        "normalized_vector_integral_error": 1.1158290058276813e-09,
+        "normalized_mass_error": 7.37410132956029e-13,
+        "normalized_vector_evaluations": 2037
+      },
+      "posterior_task_intercept_standard_deviation": 0.016575256352540417,
+      "mean_variance_over_native": 2.1441307138238375,
+      "stage105_slice_upper_variance": 0.0003083422412128718,
+      "posterior_mass_above_stage105_slice_upper": 0.22666045871112872,
+      "common_mean_bank_rms_change": 1.039797708539218e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.0001388277603304334,
+        "integrated": 0.00016850506563495586
+      },
+      "public_average_common_level_variance": {
+        "native": 3.080127612419117e-05,
+        "integrated": 6.003138992269614e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 4.253649130280835e-09,
+      "scalar_quadrature_evaluations": 3822,
+      "maximum_scalar_quadrature_error": 5.969441840446449e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00015096993331069006,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00032249564071209824,
+        "standard_deviation": 0.0009744979720235306,
+        "quantiles": {
+          "0.025": 4.3391744082915046e-05,
+          "0.5": 0.0001850850702473901,
+          "0.975": 0.0013878892310140326
+        },
+        "normalization_integral": 0.015340174079676526,
+        "normalization_absolute_error": 6.514745605620031e-11,
+        "normalization_relative_error": 4.2468524618968375e-09,
+        "normalized_vector_integral_error": 1.1644017137147302e-09,
+        "normalized_mass_error": 9.849898674474389e-13,
+        "normalized_vector_evaluations": 2079
+      },
+      "posterior_task_intercept_standard_deviation": 0.017958163623046156,
+      "mean_variance_over_native": 2.1361580656488415,
+      "stage105_slice_upper_variance": 0.00035825680710785613,
+      "posterior_mass_above_stage105_slice_upper": 0.22954539822359066,
+      "common_mean_bank_rms_change": 1.1467912427990116e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00015101586567797516,
+        "integrated": 0.0001856237260410431
+      },
+      "public_average_common_level_variance": {
+        "native": 3.655221192012259e-05,
+        "integrated": 7.073648826516966e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 2.6039989896271483e-09,
+      "scalar_quadrature_evaluations": 3843,
+      "maximum_scalar_quadrature_error": 2.26712758735185e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00010108773715136559,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00022281188839490246,
+        "standard_deviation": 0.000700943195282341,
+        "quantiles": {
+          "0.025": 2.6324845920197765e-05,
+          "0.5": 0.0001259547899720641,
+          "0.975": 0.0009732626865397696
+        },
+        "normalization_integral": 0.010773898926466505,
+        "normalization_absolute_error": 9.437516396991127e-12,
+        "normalization_relative_error": 8.759611039052444e-10,
+        "normalized_vector_integral_error": 1.1980315753623197e-09,
+        "normalized_mass_error": 4.949374243778948e-13,
+        "normalized_vector_evaluations": 1953
+      },
+      "posterior_task_intercept_standard_deviation": 0.01492688475184633,
+      "mean_variance_over_native": 2.2041435951946475,
+      "stage105_slice_upper_variance": 0.00024581027997775035,
+      "posterior_mass_above_stage105_slice_upper": 0.23218357103492737,
+      "common_mean_bank_rms_change": 3.407649652693899e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013515215540387443,
+        "integrated": 0.00015997681202496974
+      },
+      "public_average_common_level_variance": {
+        "native": 2.504729723462171e-05,
+        "integrated": 4.932968144915906e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.1409277564923808e-10,
+      "scalar_quadrature_evaluations": 4515,
+      "maximum_scalar_quadrature_error": 9.101629242093744e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00014258519526246945,
+      "source_signal_scale": 0.02,
+      "reference_posterior": {
+        "mean": 0.00030145307356416266,
+        "standard_deviation": 0.0009117247995106476,
+        "quantiles": {
+          "0.025": 4.1502594232230855e-05,
+          "0.5": 0.00017344000779424785,
+          "0.975": 0.001293837188948334
+        },
+        "normalization_integral": 0.01439631458329514,
+        "normalization_absolute_error": 1.1068791842839612e-10,
+        "normalization_relative_error": 7.688628765922744e-09,
+        "normalized_vector_integral_error": 1.0145694211996485e-09,
+        "normalized_mass_error": 8.599787548746463e-13,
+        "normalized_vector_evaluations": 2079
+      },
+      "posterior_task_intercept_standard_deviation": 0.017362404026060523,
+      "mean_variance_over_native": 2.114196168888718,
+      "stage105_slice_upper_variance": 0.00033696791180997515,
+      "posterior_mass_above_stage105_slice_upper": 0.22744703192479832,
+      "common_mean_bank_rms_change": 1.4365578616640131e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013092986053843967,
+        "integrated": 0.00016288519335082072
+      },
+      "public_average_common_level_variance": {
+        "native": 3.300426308998146e-05,
+        "integrated": 6.466752324593338e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 5.657348545949433e-10,
+      "scalar_quadrature_evaluations": 3738,
+      "maximum_scalar_quadrature_error": 5.6447557033690985e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": null,
+      "source_task_count": 6,
+      "source_label_count": 72,
+      "native_task_intercept_variance": 0.00010356717003526439,
+      "source_signal_scale": 0.020017710146864886,
+      "reference_posterior": {
+        "mean": 0.00018522600054394678,
+        "standard_deviation": 0.0002848476147030569,
+        "quantiles": {
+          "0.025": 2.9236364348482113e-05,
+          "0.5": 0.00012195204114787959,
+          "0.975": 0.0007167479524584128
+        },
+        "normalization_integral": 0.009885755622145916,
+        "normalization_absolute_error": 7.189031956253894e-13,
+        "normalization_relative_error": 7.272111744446865e-11,
+        "normalized_vector_integral_error": 2.482359308457474e-10,
+        "normalized_mass_error": 2.4424906541753444e-15,
+        "normalized_vector_evaluations": 399
+      },
+      "posterior_task_intercept_standard_deviation": 0.013609775918212129,
+      "mean_variance_over_native": 1.788462506804789,
+      "stage105_slice_upper_variance": 0.00022887806081680327,
+      "posterior_mass_above_stage105_slice_upper": 0.21906419633249408,
+      "common_mean_bank_rms_change": 1.2220575419814651e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00011650163320312489,
+        "integrated": 0.00013050548008841076
+      },
+      "public_average_common_level_variance": {
+        "native": 2.1496294946075734e-05,
+        "integrated": 3.510073508281838e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 5.0756363507018075e-09,
+      "scalar_quadrature_evaluations": 4494,
+      "maximum_scalar_quadrature_error": 6.18172602135924e-11,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.0001252372914134237,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00027121281851258145,
+        "standard_deviation": 0.0008435730179795684,
+        "quantiles": {
+          "0.025": 3.1855715476122005e-05,
+          "0.5": 0.00015333842123999743,
+          "0.975": 0.0011849139459087223
+        },
+        "normalization_integral": 0.013291690157748896,
+        "normalization_absolute_error": 1.207897380807214e-10,
+        "normalization_relative_error": 9.087613136264874e-09,
+        "normalized_vector_integral_error": 1.2347436891433409e-09,
+        "normalized_mass_error": 7.30304705598428e-13,
+        "normalized_vector_evaluations": 1995
+      },
+      "posterior_task_intercept_standard_deviation": 0.01646854026659866,
+      "mean_variance_over_native": 2.1655915378852657,
+      "stage105_slice_upper_variance": 0.00030424646508588315,
+      "posterior_mass_above_stage105_slice_upper": 0.2270945431662803,
+      "common_mean_bank_rms_change": 1.876172885829651e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00014851714441020341,
+        "integrated": 0.00017832176372276342
+      },
+      "public_average_common_level_variance": {
+        "native": 2.9934390181807327e-05,
+        "integrated": 5.9047121822158046e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.1368737956878292e-08,
+      "scalar_quadrature_evaluations": 3822,
+      "maximum_scalar_quadrature_error": 6.51224993618547e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.0,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 3.288436968269356e-05,
+        "standard_deviation": 0.00014859160517840796,
+        "quantiles": {
+          "0.025": 4.189820847527311e-07,
+          "0.5": 1.355451226436129e-05,
+          "0.975": 0.00017558839788674196
+        },
+        "normalization_integral": 0.0008218197472134325,
+        "normalization_absolute_error": 3.103446333394777e-14,
+        "normalization_relative_error": 3.776310247980437e-11,
+        "normalized_vector_integral_error": 1.2095534384372038e-09,
+        "normalized_mass_error": 1.9095836023552692e-14,
+        "normalized_vector_evaluations": 1638
+      },
+      "posterior_task_intercept_standard_deviation": 0.0057344894875388484,
+      "mean_variance_over_native": null,
+      "stage105_slice_upper_variance": 1.4935879453708563e-05,
+      "posterior_mass_above_stage105_slice_upper": 0.47144194779709736,
+      "common_mean_bank_rms_change": 0.0009617401288607958,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00011117099989325391,
+        "integrated": 0.00012155338046118074
+      },
+      "public_average_common_level_variance": {
+        "native": 5.779898908156626e-06,
+        "integrated": 1.256689352369848e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 3.551402094153962e-08,
+      "scalar_quadrature_evaluations": 4620,
+      "maximum_scalar_quadrature_error": 5.667040026103524e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true,
+        "interior_physical_variance": 0.0020021252176237866,
+        "interior_total_nll_error": 3.694822225952521e-13,
+        "interior_fisher_relative_error": 7.771561172376096e-15
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00011034024093508753,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00024066842070007556,
+        "standard_deviation": 0.0007676064058266542,
+        "quantiles": {
+          "0.025": 2.4182092821232674e-05,
+          "0.5": 0.0001340162945280568,
+          "0.975": 0.0010672128091974405
+        },
+        "normalization_integral": 0.01220141056217682,
+        "normalization_absolute_error": 1.2598266427875775e-11,
+        "normalization_relative_error": 1.032525408736689e-09,
+        "normalized_vector_integral_error": 9.82748950143533e-10,
+        "normalized_mass_error": 5.984102102729594e-13,
+        "normalized_vector_evaluations": 1995
+      },
+      "posterior_task_intercept_standard_deviation": 0.015513491570245416,
+      "mean_variance_over_native": 2.18114822534835,
+      "stage105_slice_upper_variance": 0.0002744549146554568,
+      "posterior_mass_above_stage105_slice_upper": 0.22275976209164672,
+      "common_mean_bank_rms_change": 1.5067275331696786e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013904129564101158,
+        "integrated": 0.0001670389234549021
+      },
+      "public_average_common_level_variance": {
+        "native": 2.8059570735755264e-05,
+        "integrated": 5.4171977975526944e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.2510256079632942e-07,
+      "scalar_quadrature_evaluations": 4116,
+      "maximum_scalar_quadrature_error": 9.038258525009617e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00012768978328252972,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.0002758249772127363,
+        "standard_deviation": 0.0008519445302734462,
+        "quantiles": {
+          "0.025": 3.3878373929485876e-05,
+          "0.5": 0.00015671156284749135,
+          "0.975": 0.0011992155766648162
+        },
+        "normalization_integral": 0.013376397475273525,
+        "normalization_absolute_error": 1.1532577665566874e-10,
+        "normalization_relative_error": 8.62158715520006e-09,
+        "normalized_vector_integral_error": 9.927176214591313e-10,
+        "normalized_mass_error": 7.454037387333301e-13,
+        "normalized_vector_evaluations": 2037
+      },
+      "posterior_task_intercept_standard_deviation": 0.016607979323588293,
+      "mean_variance_over_native": 2.160117827143921,
+      "stage105_slice_upper_variance": 0.0003080052249194559,
+      "posterior_mass_above_stage105_slice_upper": 0.22832598787040037,
+      "common_mean_bank_rms_change": 1.3417023281906219e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00015051367404635244,
+        "integrated": 0.00018044095916409735
+      },
+      "public_average_common_level_variance": {
+        "native": 3.10111455753671e-05,
+        "integrated": 6.054295365006575e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.5091766148493442e-10,
+      "scalar_quadrature_evaluations": 3738,
+      "maximum_scalar_quadrature_error": 6.077488556475029e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.00011374219751657884,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.0002472374324672494,
+        "standard_deviation": 0.0007701983591998442,
+        "quantiles": {
+          "0.025": 2.996357704640213e-05,
+          "0.5": 0.0001402104578889197,
+          "0.975": 0.001076718670501119
+        },
+        "normalization_integral": 0.011990948215273132,
+        "normalization_absolute_error": 1.2514506107667942e-11,
+        "normalization_relative_error": 1.0436627598581356e-09,
+        "normalized_vector_integral_error": 1.0770112153417684e-09,
+        "normalized_mass_error": 6.024070131616099e-13,
+        "normalized_vector_evaluations": 1995
+      },
+      "posterior_task_intercept_standard_deviation": 0.015723785564146102,
+      "mean_variance_over_native": 2.1736649885915256,
+      "stage105_slice_upper_variance": 0.00027509323287231043,
+      "posterior_mass_above_stage105_slice_upper": 0.2294596691515508,
+      "common_mean_bank_rms_change": 2.1975585969334533e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00014219873704333105,
+        "integrated": 0.0001692269245510784
+      },
+      "public_average_common_level_variance": {
+        "native": 2.7867339300937403e-05,
+        "integrated": 5.449336286255701e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 3.603214082726782e-09,
+      "scalar_quadrature_evaluations": 4263,
+      "maximum_scalar_quadrature_error": 8.271915030735853e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.0001462819783882909,
+      "source_signal_scale": 0.02,
+      "reference_posterior": {
+        "mean": 0.00030879728305695497,
+        "standard_deviation": 0.0009344879068189487,
+        "quantiles": {
+          "0.025": 4.1938492011492695e-05,
+          "0.5": 0.00017738996111606872,
+          "0.975": 0.0013275393419735402
+        },
+        "normalization_integral": 0.014825381290222643,
+        "normalization_absolute_error": 8.34330155686911e-11,
+        "normalization_relative_error": 5.627714656061849e-09,
+        "normalized_vector_integral_error": 1.0703977968218119e-09,
+        "normalized_mass_error": 9.052758542793526e-13,
+        "normalized_vector_evaluations": 2079
+      },
+      "posterior_task_intercept_standard_deviation": 0.01757262880325408,
+      "mean_variance_over_native": 2.1109728379341672,
+      "stage105_slice_upper_variance": 0.0003464172388255253,
+      "posterior_mass_above_stage105_slice_upper": 0.22640105372994035,
+      "common_mean_bank_rms_change": 1.2262019339488912e-05,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013017285965228917,
+        "integrated": 0.00016287138763752267
+      },
+      "public_average_common_level_variance": {
+        "native": 3.3961851835008004e-05,
+        "integrated": 6.634878366230226e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 2.7517070285237524e-10,
+      "scalar_quadrature_evaluations": 3843,
+      "maximum_scalar_quadrature_error": 3.6672134028797144e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true
+    }
+  ],
+  "all14_source_integrations_verified": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 1.324594051,
+  "no_prior_or_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

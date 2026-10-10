@@ -1,0 +1,42 @@
+{
+  "status": "completed;all twelve compact positive source rules verified;eleven reused without replay",
+  "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+  "reference_results": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/results.json",
+  "retained_rules": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/source_quadrature.json",
+  "retained_results": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/results.json",
+  "fold": {
+    "layout": "5",
+    "deleted_task": 5
+  },
+  "question": "Can the original64x64 source rule complete the package,using the already-passing128-versus64 source refinement result rather than further coordinate experiments?",
+  "evidence": "Stage137 recorded full original64-to128 normalization and moment differences below1e-8 for all folds. Its selection required agreement with the previous lower rule;that does not imply its64 rule fails direct comparison with the stored128 reference. Reconstruct only the unsaved64 rule for the one missing fold.",
+  "source_law": "Unchanged native two-variance source likelihood and joint Jeffreys measure. Both coordinates use original source_signal and full squared-rational maps;all support/spectral/tail/nuisance parameters remain frozen.",
+  "nodes_per_axis": [
+    64,
+    64
+  ],
+  "acceptance": {
+    "normalizer_relative_difference_vs_stage137": 1e-08,
+    "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+    "maximum_positive_nodes_per_fold": 4096
+  },
+  "reference": "Reuse the saved Stage141 full moment vector and physical reference normalizer;do not reconstruct the16k reference or replay the eleven accepted source rules.",
+  "scope": "Source0-5 only;no query labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_rule_nodes": 4096,
+    "retained_source_rules_without_replay": 11,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON and compact NPZ",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_reference64_v1",
+  "planned_entrypoint": "performance/prepare_legacy_f_level_shape_reference64.py",
+  "entrypoint_status": "implemented and executed",
+  "decision": "After all twelve positive source rules pass their unchanged full-moment precision,register a vectorized raw filter verification and bounded task1 four-episode forecast. Do not run scalar filtering over tens of thousands of components or promote the model from source numerical evidence.",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_level_shape_reference64_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_f_level_shape_reference64_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_level_shape_vectorized_filter_plan_v1.json"
+}

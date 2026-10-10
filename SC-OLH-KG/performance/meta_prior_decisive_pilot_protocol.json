@@ -1,0 +1,92 @@
+{
+  "stage": "meta_prior_decisive_pilot_m1_20261004",
+  "status": "first_pair_complete_remaining_cells_not_launched",
+  "frozen_before_new_source_or_target_outcomes": true,
+  "method_contract": "docs/meta_prior_method_contract_20261004.md",
+  "role": "Development pilot of the frozen existing M1 complete decision loop; not final OR confirmation or a new algorithm claim.",
+  "method_entry": "performance/run_meta_prior_total_budget.py:run_shard",
+  "method_variant": "Existing V6 M1 with the algebraically equivalent local KG speedup; no A37/A42/A43 prior and no mixture-aware fantasy replacement.",
+  "seeds": [
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "difficulty_offsets": {
+    "binding": 1.0
+  },
+  "arms": [
+    "target_only",
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "decision_schemes": [
+    "verification_kg"
+  ],
+  "psi_dim": 8,
+  "source_tasks": 8,
+  "source_points": 64,
+  "candidates": 384,
+  "initial_points": 8,
+  "initial_bank_size": 96,
+  "reference_bank_size": 96,
+  "replicates": 12,
+  "learned_active_dim_per_head": 4,
+  "chance_alpha": 0.05,
+  "risk_penalty": 4.0,
+  "penalty_temperature": 0.15,
+  "total_target_calls": 1216,
+  "allocations": {
+    "n24_v928": {
+      "target_points": 24,
+      "verification_replicates": 928
+    }
+  },
+  "primary_endpoint": "Expected independently verified deployment reward, paired M1 minus fixed_source, reported separately in all five regimes.",
+  "secondary_endpoints": [
+    "Realized verified reward and certification",
+    "M1 minus target_only",
+    "Final minus initial-posterior expected reward under the same928-replicate hypothetical verification law",
+    "Selected-candidate predicted versus true verifier power",
+    "True feasibility and mathematical feasible regret",
+    "Target/source calls and measured local CPU time"
+  ],
+  "initial_control": "Save the common8-observation recommendation. Its expected reward is postdecision analytic scoring under the same verifier law, not an extra observed certificate. No new validation is supplied to the initial-only control.",
+  "pairing": "All three arms share candidate bank, initial8, objective law, constraint offsets, observation noise streams and independent verifier seed. Source-informed arms fit the same supplied archive; target_only receives no source labels.",
+  "source_accounting": "6144 source calls per supplied archive, disclosed separately. No claim of source acquisition savings or observed amortization. Reuse archives only across matching arms/targets under the existing generator.",
+  "training_evaluation_separation": "A1-A45 used seeds48-63 for development. Pilot seeds64-71 are reserved for this mechanism line. They become development data once inspected; no later variant may call them untouched confirmation.",
+  "analysis": "Eight paired seed blocks per regime; mean differences and nominal paired seed bootstrap95 intervals. Do not pool160-style cells as independent tasks, select a winning regime/allocation, or require every adverse regime to win. No comparison endpoint changes after outcomes.",
+  "runtime": {
+    "status": "first_pair_complete_remaining_on_hold_for_mature_baseline_and_operational_interface",
+    "local_threads": 1,
+    "server_jobs": 0,
+    "max_active_local_searches": 1,
+    "first_pair": {
+      "seed": 64,
+      "regime": "shared_structure",
+      "arms": [
+        "risk_ard_mixture",
+        "fixed_source"
+      ],
+      "allocation": "n24_v928"
+    },
+    "first_pair_cpu_cap_seconds": 120,
+    "whole_pilot_cpu_budget_seconds": 6000,
+    "execution_scope": "Run the first complete matched pair locally to measure whole-method cost and preserve results. The full120-cell pilot is prepared but not launched by the preflight. Compare the measured cost to the declared6000CPU-second envelope before arranging the remaining cells; no replacement of the candidate bank, query actions, quadrature or model. No scheduler use or automatic restart."
+  },
+  "final_confirmation": "After pilot interpretation and mature-baseline/application integration, freeze final method and a separate source/task cohort. This pilot is not sufficient to claim OR readiness.",
+  "limitations": "Public eight-dimensional finite dictionary and simulator-generated response law. No unified orthogonal function decomposition, learned trajectory encoder, factor HVD or universal high-dimensional guarantee. Current KG uses documented Gaussian fantasies. Independent verification protects certification but does not guarantee profitable recommendation.",
+  "execution_artifact": "paper_artifacts/meta_prior_decisive_pilot_m1_20261004/preflight.json",
+  "next_work": "Integrate a faithful mature functional-prior comparator and an Inventory/Queue state-cumulative-risk interface before scheduling further old-generator cells. Keep the frozen pair and planned120-cell specification; do not interpret the preflight as final confirmation."
+}

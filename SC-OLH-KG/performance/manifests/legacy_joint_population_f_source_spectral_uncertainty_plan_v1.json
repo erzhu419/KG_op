@@ -1,0 +1,41 @@
+{
+  "status": "completed;both canonical source quadratures pass;small shape effect;no raw expansion",
+  "information_results": "paper_artifacts/legacy_joint_population_f_joint_spectral_information_v1/results.json",
+  "source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+  "source_templates": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_tail_attribution_v1/source_laws.json",
+  "source_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "query_task": 0,
+  "source_task_count": 4,
+  "question": "Does proper bounded source-only uncertainty in the weakly identified task spectral exponent materially alter predictive prior moments,without changing sparsity,low order,orthogonality or positive tails?",
+  "law": "Use each canonical source4 law's frozen common amplitude/common exponent/task amplitude,source-derived correlation templates,center,intercept variances,white discrepancy and separate positive tails. Treat only task exponent p as uncertain under the proper uniform prior on its ORIGINAL declared interval[0,4]. Weight components by exp(-48*source_NLL(p)) from the exact Gaussian source likelihood. This is a conditional empirical-Bayes uncertainty diagnostic,not a full joint posterior over hyperparameters or templates.",
+  "calculation": "Gauss-Legendre16 versus32 nodes per fixed subinterval[0,2],[2,3],[3,4],so the two declared tail probabilities use smooth subinterval integrals rather than discontinuous indicator quadrature. Record normalized source weights,evidence under the normalized uniform prior,posterior p mean/variance,and probability p<=2 and p>=3. For each p compute its coherently source-conditioned beta,H and task covariance in memory. Compute public-bank predictive coefficient mean and covariance E[H+R]+Cov(beta);retain between-component uncertainty. Save aggregate moments and source node/weight/NLL summaries only;reconstruct components from the same source data if a later raw test is justified. Do not project these components to a single Gaussian for any paid update.",
+  "verification": "Require evidence,parameter moments and public-bank predictive moments to converge at unchanged tolerances. Explicitly reproduce the source point law at p=4 from saved NLL,beta,H,R before integration. Check normalized mass,PSD and within/between covariance identity;no derivative rerun,tail cutoff or source score-based node selection.",
+  "tolerances": {
+    "log_evidence_absolute": 1e-06,
+    "p_mean_absolute": 1e-06,
+    "p_variance_absolute": 1e-06,
+    "f_mean_max_absolute": 1e-07,
+    "f_covariance_relative_frobenius": 1e-05
+  },
+  "freeze": "Only four source identities and48 batch-label means with original known label noise. Query0 and outer task1 absent. Use outcome-free public reference coordinates only;do not index query paid/future values or score arrays. Preserve both layouts and all quadrature results.",
+  "decision": "If verified posterior spread changes predictive moments materially,register a matched inner raw-mixture test of this NEW conditional spectral-uncertainty candidate before any more outer task1 forecasts. If the effect is small or source posterior is concentrated,do not expand raw tests or claim this explains the outer failure. Stop on numerical mismatch without relaxed tolerances. No covariance scale selected from task1 coverage.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "maximum_source_conditionings": 290,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON and source-component summaries;no server jobs,pulls or new NPZ",
+  "scope": "Canonical source-only diagnostic,new candidate design. The stopped point-spectral law remains stopped;retained native intercept mixture remains reference;complete-model HOLD. No task1 outcomes,source6/7,target,KG,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_spectral_uncertainty_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_spectral_uncertainty_v1/results.json",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

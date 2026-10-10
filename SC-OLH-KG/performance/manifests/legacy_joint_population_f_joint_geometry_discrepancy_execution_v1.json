@@ -1,0 +1,26 @@
+{
+  "status": "frozen before all12 source discrepancy scores/probes",
+  "source_execution": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_execution_v1.json",
+  "fitted_source_laws": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1/fitted_source_laws.json",
+  "question": "Does the original nonnegative f white model discrepancy have source support after joint common/task geometry learning? Stage130 retained the original value;GP covariance attribution includes a separate white component,so original zero discrepancy need not remain optimal after changing common covariance.",
+  "law": "Use fixed fitted Stage130 full common/task covariance and empirical center,original known label noise. Add delta=source_signal*a to each source label covariance diagonal,a>=0. This is the original latent f function model discrepancy,distinct from environmental variance modeled by eta_f. No dictionary/support/frequency expansion.",
+  "diagnostic": "Compute the exact source gradient and Fisher information at the current discrepancy. Test the predeclared fixed increment a=.001 on each of12 five-source deletion folds. No fit or v integration in this diagnostic.",
+  "fixed_probe_over_signal": 0.001,
+  "gradient_step": 1e-07,
+  "gradient_verification_deleted_task": 1,
+  "verification": "Cached source NLL reproduction;one-sided discrepancy finite difference on both task1 folds. Algebraic failure blocks interpretation.",
+  "decision": "If fixed probe improves average source likelihood in both layouts,register joint re-estimation including this original discrepancy parameter,starting once at Stage130 fitted source parameters and original discrepancy. Reuse original optimizer and rebuild conditional v posterior after source-law freeze. Otherwise stop this direction. No paid query,source6/7,target/KG or confirmation data.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_v_integrations": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_joint_geometry_discrepancy_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_joint_geometry_discrepancy.py",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_joint_geometry_discrepancy_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_joint_geometry_discrepancy.py"
+}

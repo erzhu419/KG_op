@@ -1,0 +1,30 @@
+{
+  "status": "frozen_before_new_target_observations",
+  "source_mean_priors": "paper_artifacts/inventory_physical_risk_20261004/mean_posterior_group.json",
+  "source_risk_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+  "source_archive_calls_per_arm": 1536,
+  "cost_budgets": [1.0, 1.175478957908771, 1.1885871647186317],
+  "target_law_seeds": [95019, 95020],
+  "target_noise_seeds": [96019, 96020],
+  "replicates": 12,
+  "initial_points": 8,
+  "total_target_calls_per_arm": 1216,
+  "chance_alpha": 0.05,
+  "quadrature_order": 5,
+  "arms": {
+    "learned_budgeted_kg": {"risk_prior": "risk", "target_points": 24, "allocation": "one_step_net_value"},
+    "pooled_budgeted_kg": {"risk_prior": "pooled", "target_points": 24, "allocation": "one_step_net_value"},
+    "learned_initial_only": {"risk_prior": "risk", "target_points": 8, "verification_replicates": 1120},
+    "pooled_initial_only": {"risk_prior": "pooled", "target_points": 8, "verification_replicates": 1120}
+  },
+  "allocation": "At each step compute centered KG with verification calls remaining minus 12, add the change in current optimal verification utility, and stop if every net value is nonpositive. All unused target calls go to independent validation. Maximum 24 paid search points is unchanged.",
+  "numerics": "Five nodes per dimension, 125 joint fantasies. The earlier three-node pilot remains separate; its observed zero tails and fixed 24-point allocation are not silently replaced.",
+  "posterior_and_utility": "unchanged source-selected billing means and exact paid joint particle updates; acquisition and recommendation use correlated Gaussian projected verifier utility; terminal finite-particle comparison remains diagnostic",
+  "budget_shift": "learn residual cost at source budget one; subtract public cost-budget difference only for constraint decisions and validation",
+  "paired_streams": "same seeds and policy/visit search cache across arms and cost budgets; independent verification seed includes policy and actual validation size",
+  "initial_comparisons": "record initial recommendation with 1120 validation calls and also recompute the initial posterior recommendation with the eventual validation size; distinguish equal-allocation from equal-total-budget increments",
+  "local_cpu_limit_seconds": 45,
+  "checkpoint_unit": "complete task law; two full blocks, resume without redoing completed laws",
+  "scientific_status": "new-task development check of budget-aware search versus equal-total-budget initial-only control; two independent laws, one source archive; no claim of matched superiority over the earlier fixed-search pilot",
+  "dispatch": "local single thread only; no server jobs"
+}

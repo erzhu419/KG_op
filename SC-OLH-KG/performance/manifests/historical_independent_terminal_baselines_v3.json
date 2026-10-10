@@ -1,0 +1,43 @@
+{
+  "status": "Registered after all24 primary-mean baselines completed;refine only18 failed states before any65536-node baseline.",
+  "parent_plan": "performance/manifests/historical_independent_terminal_baselines_v2.json",
+  "pilot_plan": "performance/manifests/historical_independent_kg_pilot_v1.json",
+  "preflight": "paper_artifacts/historical_independent_kg_preflight_v1/results.json",
+  "raw_powers": [
+    14,
+    16
+  ],
+  "remaining_budgets": [
+    360,
+    359
+  ],
+  "guarded_mean_position": 0,
+  "seed": 202610077,
+  "maximum_terminal_action_difference": 0.0001,
+  "maximum_opportunity_cost_difference": 1e-06,
+  "maximum_identity_integration_error_bound": 2e-06,
+  "maximum_single_thread_cpu_seconds": 240,
+  "scope": "Reuse every12/14 primary-mean vector and positive source component;append only power16 in the18 failed states. Keep all40 actions,paid records,source weights and original1e-4/1e-6/2e-6 gates. Preserve all original failures. No search,verifier,truth,independent outcome scoring or server jobs.",
+  "output": "paper_artifacts/historical_independent_terminal_baselines_v3",
+  "case_names": [
+    "learned_prior_independent_00_source_structural_mixture_layout5",
+    "learned_prior_independent_00_source_structural_mixture_layout6",
+    "learned_prior_independent_00_source_common_task_rbf_layout6",
+    "learned_prior_independent_01_source_structural_mixture_layout5",
+    "learned_prior_independent_01_source_common_task_rbf_layout5",
+    "learned_prior_independent_01_source_structural_mixture_layout6",
+    "learned_prior_independent_01_source_common_task_rbf_layout6",
+    "learned_prior_independent_02_source_structural_mixture_layout5",
+    "learned_prior_independent_02_source_common_task_rbf_layout5",
+    "learned_prior_independent_02_source_structural_mixture_layout6",
+    "learned_prior_independent_02_source_common_task_rbf_layout6",
+    "learned_prior_independent_03_source_structural_mixture_layout5",
+    "learned_prior_independent_03_source_structural_mixture_layout6",
+    "learned_prior_independent_03_source_common_task_rbf_layout6",
+    "learned_prior_independent_04_source_structural_mixture_layout6",
+    "learned_prior_independent_04_source_common_task_rbf_layout6",
+    "learned_prior_independent_05_source_common_task_rbf_layout5",
+    "learned_prior_independent_05_source_structural_mixture_layout6"
+  ],
+  "reuse_output": "paper_artifacts/historical_independent_terminal_baselines_v2"
+}

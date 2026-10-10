@@ -1,0 +1,324 @@
+{
+  "protocol": {
+    "status": "frozen_replay_existing_independent_eight_point_records",
+    "source_target_records": "paper_artifacts/inventory_physical_risk_20261004/independent_source_confirmation.json",
+    "method": "official_hyperbo",
+    "repository_commit": "e720fc1",
+    "source_training_steps": 200,
+    "heads": [
+      "objective",
+      "constraint_mean",
+      "log_variance"
+    ],
+    "candidates": 96,
+    "target_initial_points": 8,
+    "verification_replicates": 928,
+    "evaluation_budgets": [
+      1.0,
+      1.175478957908771,
+      1.1885871647186317
+    ],
+    "target_noise_contract": "pass saved per-point noise at adapt boundary; official HyperBO uses source-trained scalar likelihood noise",
+    "new_source_episode_calls": 0,
+    "new_target_episode_calls": 0,
+    "oracle_use": "post-recommendation scoring only",
+    "scientific_status": "mature-baseline initial-posterior comparison; not a full online search or final SOTA matrix",
+    "dispatch": "local isolated HyperBO environment only"
+  },
+  "rows": [
+    {
+      "law_seed": 95021,
+      "evaluation_budget": 1.0,
+      "choice": 86,
+      "predicted_utility": 0.0603342669117527,
+      "predicted_verifier_power": 0.09037426582047992,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 0.0,
+      "true_shortfall": 0.0,
+      "true_verifier_power": 0.0,
+      "rmse_f": 0.6618276342310226,
+      "rmse_g": 0.23644958553515305,
+      "rmse_eta": 1.1398659222880614,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95021,
+      "evaluation_budget": 1.175478957908771,
+      "choice": 22,
+      "predicted_utility": 0.0954834302735272,
+      "predicted_verifier_power": 0.13993670306856884,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 6.4747983935832824e-285,
+      "true_shortfall": 6.4747983935832824e-285,
+      "true_verifier_power": 0.0,
+      "rmse_f": 0.6618276342310226,
+      "rmse_g": 0.23644958553515305,
+      "rmse_eta": 1.1398659222880614,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95021,
+      "evaluation_budget": 1.1885871647186317,
+      "choice": 22,
+      "predicted_utility": 0.09895880366872974,
+      "predicted_verifier_power": 0.1450300715563126,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 4.5386588833113155e-256,
+      "true_shortfall": 4.5386588833113155e-256,
+      "true_verifier_power": 0.0,
+      "rmse_f": 0.6618276342310226,
+      "rmse_g": 0.23644958553515305,
+      "rmse_eta": 1.1398659222880614,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95022,
+      "evaluation_budget": 1.0,
+      "choice": 31,
+      "predicted_utility": 0.07714603346191443,
+      "predicted_verifier_power": 0.08637597528975682,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 0.0,
+      "true_shortfall": 0.0,
+      "true_verifier_power": 0.0,
+      "rmse_f": 1.4072654167776746,
+      "rmse_g": 0.48562256529990266,
+      "rmse_eta": 1.1960081087410508,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95022,
+      "evaluation_budget": 1.175478957908771,
+      "choice": 31,
+      "predicted_utility": 0.15155321247768483,
+      "predicted_verifier_power": 0.1696854128283645,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 1.7296560122248287e-230,
+      "true_shortfall": 1.7296560122248287e-230,
+      "true_verifier_power": 0.0,
+      "rmse_f": 1.4072654167776746,
+      "rmse_g": 0.48562256529990266,
+      "rmse_eta": 1.1960081087410508,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95022,
+      "evaluation_budget": 1.1885871647186317,
+      "choice": 31,
+      "predicted_utility": 0.1585299605384057,
+      "predicted_verifier_power": 0.17749687624460336,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 4.221239759917623e-207,
+      "true_shortfall": 4.221239759917623e-207,
+      "true_verifier_power": 0.0,
+      "rmse_f": 1.4072654167776746,
+      "rmse_g": 0.48562256529990266,
+      "rmse_eta": 1.1960081087410508,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95023,
+      "evaluation_budget": 1.0,
+      "choice": 31,
+      "predicted_utility": 0.14934299271897855,
+      "predicted_verifier_power": 0.18583006392210316,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 6.725873196638376e-153,
+      "true_shortfall": 6.725873196638376e-153,
+      "true_verifier_power": 0.0,
+      "rmse_f": 0.5200432603717888,
+      "rmse_g": 0.5106570386158732,
+      "rmse_eta": 1.0993043810869039,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95023,
+      "evaluation_budget": 1.175478957908771,
+      "choice": 85,
+      "predicted_utility": 0.3523805738551478,
+      "predicted_verifier_power": 0.42198833242216827,
+      "true_expected_verified_reward": 3.411721420770908e-24,
+      "best_true_expected_verified_reward": 3.7310093337604444e-14,
+      "true_shortfall": 3.731009333419272e-14,
+      "true_verifier_power": 4.114919990951394e-24,
+      "rmse_f": 0.5200432603717888,
+      "rmse_g": 0.5106570386158732,
+      "rmse_eta": 1.0993043810869039,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95023,
+      "evaluation_budget": 1.1885871647186317,
+      "choice": 85,
+      "predicted_utility": 0.3795308535927343,
+      "predicted_verifier_power": 0.45450176284744803,
+      "true_expected_verified_reward": 9.689665273183163e-19,
+      "best_true_expected_verified_reward": 6.407529405435827e-11,
+      "true_shortfall": 6.407529308539175e-11,
+      "true_verifier_power": 1.1686826801128279e-18,
+      "rmse_f": 0.5200432603717888,
+      "rmse_g": 0.5106570386158732,
+      "rmse_eta": 1.0993043810869039,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95024,
+      "evaluation_budget": 1.0,
+      "choice": 91,
+      "predicted_utility": 0.16378616095481222,
+      "predicted_verifier_power": 0.21369124980947682,
+      "true_expected_verified_reward": 0.0,
+      "best_true_expected_verified_reward": 0.0,
+      "true_shortfall": 0.0,
+      "true_verifier_power": 0.0,
+      "rmse_f": 0.4932417268601653,
+      "rmse_g": 0.22690674971379377,
+      "rmse_eta": 1.0652531780409817,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95024,
+      "evaluation_budget": 1.175478957908771,
+      "choice": 11,
+      "predicted_utility": 0.28996634953800937,
+      "predicted_verifier_power": 0.36610060146035983,
+      "true_expected_verified_reward": 2.2674843630219383e-204,
+      "best_true_expected_verified_reward": 9.587800608552231e-53,
+      "true_shortfall": 9.587800608552231e-53,
+      "true_verifier_power": 2.9790754596083606e-204,
+      "rmse_f": 0.4932417268601653,
+      "rmse_g": 0.22690674971379377,
+      "rmse_eta": 1.0652531780409817,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "law_seed": 95024,
+      "evaluation_budget": 1.1885871647186317,
+      "choice": 67,
+      "predicted_utility": 0.30245766782958544,
+      "predicted_verifier_power": 0.3918813141572256,
+      "true_expected_verified_reward": 1.6996869399833956e-144,
+      "best_true_expected_verified_reward": 4.072275527504409e-42,
+      "true_shortfall": 4.072275527504409e-42,
+      "true_verifier_power": 2.2111601189144503e-144,
+      "rmse_f": 0.4932417268601653,
+      "rmse_g": 0.22690674971379377,
+      "rmse_eta": 1.0652531780409817,
+      "source_noise_variances": [
+        0.0206073586590702,
+        0.014750329449448664,
+        0.022070444991783667
+      ],
+      "adapted_points_per_head": [
+        8,
+        8,
+        8
+      ]
+    }
+  ],
+  "source_tasks": 4,
+  "target_tasks": 4,
+  "new_source_episode_calls": 0,
+  "new_target_episode_calls": 0,
+  "official_fallback_used": false,
+  "local_cpu_seconds": 13.866135978
+}

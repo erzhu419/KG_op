@@ -1,0 +1,63 @@
+{
+  "status": "All32 risk-score banks precise;seventh source iteration conditioned;convergence remains open",
+  "risk_score_precision_cases_passed": 32,
+  "maximum_scaled_score_95_MC_halfwidth": 0.000983687585215966,
+  "median_scaled_score_MCSE": 0.0002981856720998782,
+  "source_posterior_precision_cases_passed": 32,
+  "complete_learned_source_identities": 16,
+  "source_covariance_change_by_head": {
+    "f": {
+      "single_step_stationarity_heads": 16,
+      "two_consecutive_stationarity_heads": 16,
+      "median_relative_covariance_change": 3.549453916479337e-05,
+      "maximum_relative_covariance_change": 0.0006695399320435126
+    },
+    "g": {
+      "single_step_stationarity_heads": 16,
+      "two_consecutive_stationarity_heads": 16,
+      "median_relative_covariance_change": 0.0,
+      "maximum_relative_covariance_change": 0.00046995209776530924
+    },
+    "eta_f": {
+      "single_step_stationarity_heads": 0,
+      "two_consecutive_stationarity_heads": 0,
+      "median_relative_covariance_change": 0.04781626952394888,
+      "maximum_relative_covariance_change": 0.08768684263105438
+    },
+    "eta_g": {
+      "single_step_stationarity_heads": 0,
+      "two_consecutive_stationarity_heads": 0,
+      "median_relative_covariance_change": 0.028391491174098615,
+      "maximum_relative_covariance_change": 0.06427172847290039
+    }
+  },
+  "source_learning_converged": false,
+  "latest_learning": "paper_artifacts/historical_source_learning_round7/results.json",
+  "latest_certified_precision": "paper_artifacts/historical_source_learning_round7/phase_results.json",
+  "risk_statistics_registry": "paper_artifacts/historical_source_risk_score_banks_v1/results.json",
+  "median_local_missing_information_fraction": 0.6745944272081641,
+  "fixed_acceleration_Q_cases_passed": 31,
+  "fixed_acceleration_evidence_precision_cases_passed": 32,
+  "fixed_acceleration_Q_and_evidence_improvement_cases_passed": 23,
+  "acceleration_parameters_adopted": false,
+  "recorded_main_stage_single_thread_CPU_seconds": 306.1497341090001,
+  "candidate_MCMC_sweeps_executed": 2150400,
+  "KG_components_changed": 0,
+  "original_source_cases_resampled": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "tests_run": 13,
+  "tests_passed": true,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "limitations": [
+    "The32 precise score banks describe the sixth-law E-step used in iteration7;they cannot be reused as seventh-law moments.",
+    "Source7 risk covariance still moves;score precision is distinct from hyperparameter convergence.",
+    "The curvature diagnostic supplies local diagonals without curvature error intervals or off-diagonal score covariance.",
+    "The fixed acceleration probe compares with source6 at fixed source6 response parameters;it has no changed-law posterior certificate or proven advantage over source7.",
+    "Learned candidates have not entered the original12 KG-action comparison or independent target evaluation."
+  ],
+  "next_work": "Compare source-qualified accelerated candidates with the certified seventh law and condition only candidates retaining an improvement. Preserve failed Q/evidence proposals. Then complete source-risk convergence,comparable source evidence,matched completeGP controls and independent decisions."
+}

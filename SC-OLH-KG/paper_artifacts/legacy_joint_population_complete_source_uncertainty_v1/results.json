@@ -1,0 +1,174 @@
+{
+  "execution": {
+    "status": "registered before deleted-source mean fits and complete-identity source forecasts",
+    "basis_of_next_step": "Stage35 risk-only source-estimation mixtures improve eta calibration but leave structural constraint mean MSE effectively unchanged. Mean covariance hyperparameters are still point estimates fitted on six tasks. Test whether source-estimation uncertainty in f/g as well as eta accounts for the remaining constraint prediction error.",
+    "source_execution": "performance/manifests/legacy_joint_population_public_mean_source_half_execution_v1.json",
+    "risk_prediction_execution": "performance/manifests/legacy_joint_population_public_mean_risk_uncertainty_execution_v1.json",
+    "risk_prediction_inputs": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1/inputs.json",
+    "reference_predictions": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1/source_predictions.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_public_mean_risk_uncertainty_v1/calibration_profiles.json",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "full_mean_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/inputs.json",
+    "full_mean_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/source_fit.json",
+    "mean_arms": [
+      "joint_structural",
+      "flat",
+      "joint_gp"
+    ],
+    "deletion_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "risk_mode": "relearn_map_and_risk_fit_on40_labels",
+    "query_tasks": [
+      6,
+      7
+    ],
+    "information": "same48 selected records/144 historical response calls; each deleted branch fits public-coordinate f/g laws on its remaining40 records and pairs them with its cached40-record learned-map eta laws. No unselected source labels, target inputs or target truth enter fitting. Public reference provider remains task0, even when task0 response labels are deleted.",
+    "source_fit": "existing mean fitter and original stopping rules, two heads x seven native objectives x six deletions=84 fits. Cache each once. Branch mean normalization uses only the remaining40 public inputs. Preserve native continuation if a joint fit actually reaches its cap; failed fits block forecasts.",
+    "model_law": "seven complete source identities, full144 plus six joint f/g/eta source deletions, with uniform1/7 initial weights. Both raw f/g values jointly update one identity weight and native paired fields. Never take f/g from one deleted source archive and eta from another.",
+    "reference": "Stage35 refitted-map risk-only mixture: mean priors stay fixed at full48 records. Compare same source identities, raw observations, source budget, native posterior, proper complete-identity densities and moment bands. Full component must reproduce the Stage35 single-risk forecast before scoring.",
+    "freeze_rule": "save all completed84 mean fits and all six source forecasts before unobserved source-label scoring. No target forecast, terminal integration, simulator/verifier call, scheduler job or server pull in this stage.",
+    "progress_rule": "for structural means, require g observed MSE not to increase, joint batch density not to decrease, and g batch density to improve on each opened source holdout versus Stage35 risk-only mixture before a separately registered target-action step. Report flat/GP contrasts regardless of this development gate. No broad advantage inferred from source prediction alone.",
+    "output": "paper_artifacts/legacy_joint_population_complete_source_uncertainty_v1",
+    "execution": "run locally, serially with one BLAS/OpenMP thread, only after the separately registered Stage36 terminal integration ends",
+    "interpretation": "opened-source complete-function/risk estimation attribution within the original meta-prior, not a formally calibrated Bayesian uncertainty model or independent confirmation"
+  },
+  "summary": {
+    "joint_structural": {
+      "observed_head_mse": [
+        0.00022254721247783402,
+        0.00471755959484219,
+        2.1735297711942967,
+        2.8213970889958233
+      ],
+      "joint_batch_log_score": 0.5731304917812857,
+      "response_batch_log_scores": [
+        0.8959346252110999,
+        -0.3237355375849048
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        0.9507042253521126,
+        0.9577464788732395,
+        0.9295774647887324
+      ],
+      "predictive_standardized_residual_rms": [
+        0.5952919011000095,
+        0.9054495938331,
+        0.9988442744550725,
+        1.1405550578245274
+      ]
+    },
+    "flat": {
+      "observed_head_mse": [
+        0.00036156287886942814,
+        0.0019881097977340135,
+        2.2138265421267302,
+        2.8254742690752774
+      ],
+      "joint_batch_log_score": 0.3747482284829867,
+      "response_batch_log_scores": [
+        0.6269194323859009,
+        -0.2756733892596749
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9507042253521127,
+        0.9295774647887324
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6372678549657839,
+        0.5631340089591649,
+        1.012426256248471,
+        1.142338123540961
+      ]
+    },
+    "joint_gp": {
+      "observed_head_mse": [
+        0.0002765040190735188,
+        0.002020654988929796,
+        2.1581009784929197,
+        2.8113026930435465
+      ],
+      "joint_batch_log_score": 0.593210160624937,
+      "response_batch_log_scores": [
+        0.8754508167193038,
+        -0.3099073488222819
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9929577464788732,
+        1.0,
+        0.9647887323943662,
+        0.9295774647887324
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6503742504484611,
+        0.5297285155373427,
+        0.9974222278248275,
+        1.1374971761147818
+      ]
+    }
+  },
+  "contrasts": [
+    {
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "g_mse_difference": 8.587382483307617e-06,
+      "joint_batch_score_difference": -0.04300304505545971,
+      "g_batch_score_difference": -0.010252226354679761
+    },
+    {
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "g_mse_difference": -9.785336960641293e-05,
+      "joint_batch_score_difference": -0.1334197759914706,
+      "g_batch_score_difference": -0.0741245872234789
+    },
+    {
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_gp",
+      "g_mse_difference": -0.0032760313188473743,
+      "joint_batch_score_difference": 0.20350859328436066,
+      "g_batch_score_difference": 0.19741565815443873
+    },
+    {
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "g_mse_difference": -0.00046154844261789285,
+      "joint_batch_score_difference": 0.004800275449526548,
+      "g_batch_score_difference": 0.040775132401251746
+    },
+    {
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "g_mse_difference": 0.0002703635245452315,
+      "joint_batch_score_difference": -0.23265219972468715,
+      "g_batch_score_difference": -0.15749825237495318
+    },
+    {
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_gp",
+      "g_mse_difference": -0.003242408417388365,
+      "joint_batch_score_difference": 0.15029181353825471,
+      "g_batch_score_difference": 0.15564736002758356
+    }
+  ],
+  "full_component_reproduction_passed": true,
+  "source_progress_gate_passed": false,
+  "cost": {
+    "historical_source_calls_per_arm": 144,
+    "new_native_mean_head_fits": 84,
+    "new_source_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "source_mean_fit_cpu_seconds": 1.8397935000000003,
+  "cpu_seconds": 19.061010426
+}

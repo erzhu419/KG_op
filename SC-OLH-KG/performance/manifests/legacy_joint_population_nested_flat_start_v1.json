@@ -1,0 +1,22 @@
+{
+  "status": "registered before all nested-flat-start fits and source predictions",
+  "basis_of_next_step": "Stage49: selected three-main-group g span oracle MSE4.46e-5 versus full1.745e-6 and actual>1e-3; omitted groups are a secondary capacity loss. First one/two modes plus all pairs have g MSE.003121/.002965, ruling out hard low-frequency truncation on these coordinates. Main residual lies in already-supported groups. Test native group/spectral likelihood initialization before changing the model or source information.",
+  "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_group_spectral_attribution_v1/results.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "3",
+    "4"
+  ],
+  "mean_arms": [
+    "joint_structural"
+  ],
+  "initialization": "Embed each cached flat optimum exactly in the unchanged common/task group-spectral objective: distribute total excess scales by group dimensions/26, common and task spectral exponents0, unchanged intercept/discrepancy. Check objective and complete common/task moments against the cached flat model before fitting.",
+  "fit_rule": "Four additional f/g fits only. Restore the original regularizer and optimize the original joint source likelihood with unchanged bounds, noise and optimizer stopping. Complete an iteration-limited fit once under original rules if needed; preserve the failed attempt. No new basis, hard spectral truncation or target-informed fit.",
+  "selection": "For each head choose the converged alternative only if source negative log likelihood per label improves the cached structure by more than the original ftol; otherwise retain the original. Freeze both layouts and all four selected predictions before holdout scoring. Holdout labels never choose an initialization.",
+  "source_gate": "Across BOTH task assignments and BOTH opened source holdouts require g MSE not to increase, joint three-repeat log density not to decrease, and g density to improve relative to the cached original structure. Retain all cases; no best-layout selection. No target forecast or terminal work unless this gate passes in a separate contract.",
+  "controls": "All source labels144 calls, public mean basis, mean noise, risk maps/full-plus-six-deletion priors, two raw heldout updates,73 catalog and cached same-risk flat/complete GP controls unchanged.",
+  "execution": "local serial single-thread; cached source JSON only; no server/scheduler work, pulls, simulator/verifier calls or terminal integrations",
+  "interpretation": "opened-source initialization and predictive calibration development test, not independent confirmation or structural-prior superiority",
+  "output": "paper_artifacts/legacy_joint_population_nested_flat_start_v1"
+}

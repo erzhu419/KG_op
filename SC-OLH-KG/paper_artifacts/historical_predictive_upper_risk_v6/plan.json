@@ -1,0 +1,67 @@
+{
+  "status": "TERMINAL_COMPLETE_PREDICTIVE_HOLD",
+  "historical_implementation": "performance.refine_historical_remaining_query_failures.positive_risk_tail",
+  "source_reused_states": 320,
+  "new_risk_states": 96,
+  "low_groups": 8,
+  "maximum_workers": 12,
+  "cdf_tail_interval": [
+    0.9,
+    1.0
+  ],
+  "tail_orders": [
+    16,
+    32
+  ],
+  "body_prefixes": [
+    64,
+    128
+  ],
+  "objective_prefixes": [
+    16,
+    32
+  ],
+  "numerical_scope": "Same frozen query and original numerical gates; no independent decision claim.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "source128_terminal_prerequisite_passed": true,
+  "source128_predictive_admitted": false,
+  "prepare_task_ids": [
+    "t140581"
+  ],
+  "low_task_ids": [
+    "t140583",
+    "t140584",
+    "t140585",
+    "t140586",
+    "t140587",
+    "t140588",
+    "t140589",
+    "t140590"
+  ],
+  "inverse_cdf_maximum_error": 1.0198792903596204e-12,
+  "low_posterior_loads": 8,
+  "per_record_alternative_posterior_loads": 96,
+  "precision_strategy": "Initialize from the completed low rules, then reuse existing policy groups; refine only currently unadmitted heads.",
+  "low_complete_states": 96,
+  "low_measured_group_cpu_seconds": 2741.045436409,
+  "stage_task_ids": [
+    "t140591"
+  ],
+  "precision_phase": 26,
+  "actual_target_powers": [],
+  "precision_records": 0,
+  "precision_group_shards": 0,
+  "requested_cpu_slots": 0,
+  "tests_passed": 59,
+  "completed_precision_group_tasks": 72,
+  "fixed_axis_diagnostic_complete": true,
+  "body_rule_screening_status": "FIXED_ACTION_PASS",
+  "full_body_bank_status": "LOW_GROUP_RUNNING",
+  "selected_body_orders": [
+    16,
+    32
+  ],
+  "source_upper_terminal_admitted": true
+}

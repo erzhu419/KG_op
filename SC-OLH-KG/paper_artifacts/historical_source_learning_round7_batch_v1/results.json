@@ -1,0 +1,52 @@
+{
+  "execution_plan": "performance/manifests/historical_source_learning_round7_v1.json",
+  "status": "registered source iterations complete",
+  "iterations": [
+    {
+      "round": 7,
+      "phase_results": "paper_artifacts/historical_source_learning_round7/phase_results.json",
+      "cases_passed": 32,
+      "complete_identities": 16,
+      "new_conditioned_cases": 3,
+      "local_functional_cases": 0,
+      "cpu_seconds": 25.311346444999998,
+      "covariance_changes": {
+        "f": {
+          "single_step_stationarity_heads": 16,
+          "two_consecutive_stationarity_heads": 16,
+          "median_relative_covariance_change": 3.549453916479337e-05,
+          "maximum_relative_covariance_change": 0.0006695399320435126
+        },
+        "g": {
+          "single_step_stationarity_heads": 16,
+          "two_consecutive_stationarity_heads": 16,
+          "median_relative_covariance_change": 0.0,
+          "maximum_relative_covariance_change": 0.00046995209776530924
+        },
+        "eta_f": {
+          "single_step_stationarity_heads": 0,
+          "two_consecutive_stationarity_heads": 0,
+          "median_relative_covariance_change": 0.04781626952394888,
+          "maximum_relative_covariance_change": 0.08768684263105438
+        },
+        "eta_g": {
+          "single_step_stationarity_heads": 0,
+          "two_consecutive_stationarity_heads": 0,
+          "median_relative_covariance_change": 0.028391491174098615,
+          "maximum_relative_covariance_change": 0.06427172847290039
+        }
+      }
+    }
+  ],
+  "all_registered_iterations_conditioned": true,
+  "cpu_seconds_this_execution": 26.18692807,
+  "latest_learning": "paper_artifacts/historical_source_learning_round7/results.json",
+  "latest_certified_precision": "paper_artifacts/historical_source_learning_round7/phase_results.json",
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "original_source_cases_unchanged": true,
+  "no_model_adopted": true,
+  "independent_confirmation": false
+}

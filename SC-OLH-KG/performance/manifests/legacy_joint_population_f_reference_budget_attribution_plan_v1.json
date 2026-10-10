@@ -1,0 +1,37 @@
+{
+  "status": "completed;cached mean/shape and Gaussian scoring accounting verified",
+  "mixture_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+  "mixture_results": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/results.json",
+  "mixture_profiles": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/calibration_profiles.json",
+  "control_profiles": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "episode_count": 8,
+  "diagnostic": "Use only already-saved eight-episode mixture/sourceGP f predictions and original twelve score-site sample means/noises from source0\u20135. Decompose each MSE into squared bank-score average residual and centered-shape residual variance. Compute the mixture-minus-GP MSE gap and signed level/shape contributions. Report all six tasks,task1 and other5. Propagate score-mean noise through the paired difference at fixed forecasts as an approximate measurement interval;not a source-task confidence interval.",
+  "gaussian_accounting": "For the same saved Gaussian moment covariances plus original sample-mean noise,split log score difference into log determinant and Mahalanobis contributions. Descriptively swap saved posterior f means/covariances only in this Gaussian scoring identity to locate dependence of the score gap;these are arithmetic probes,not new raw-filter forecasts or a coherent refit of source priors. Preserve actual mixture and raw three-repeat density results separately.",
+  "verification": "Squared-level plus centered-shape error must reproduce every cached MSE and Gaussian scores must reproduce cached f Gaussian mean densities. Signed mean/covariance score differences must sum to the full score gap. A disagreement detects mismatched labels/site order or moment-versus-mixture score substitution and blocks attribution.",
+  "decision": "Use existing prediction accounting to select a separately frozen source-mean/covariance intervention question. Do not increase arbitrary variances,alter prefixes/source laws,select by source6/7 or call a component an identified causal physical factor. Keep previous failed complete gate and positive mixture development results intact.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_reference_budget_attribution_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_reference_budget_attribution.py",
+  "entrypoint_status": "implemented and completed",
+  "results": "paper_artifacts/legacy_joint_population_f_reference_budget_attribution_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_sparse_task_template_plan_v1.json"
+}

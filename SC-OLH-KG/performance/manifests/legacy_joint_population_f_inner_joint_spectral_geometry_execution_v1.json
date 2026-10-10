@@ -1,0 +1,23 @@
+{
+  "status": "frozen after source-only spectral incompatibility diagnosis;before ten source fits",
+  "entrypoint": "performance/fit_legacy_f_inner_joint_spectral_geometry.py",
+  "source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_tail_attribution_v1/source_laws.json",
+  "spectral_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_compatibility_v1/spectral_laws.json",
+  "source_fit_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "law": "Use each honest source4 GP-compressed coefficient covariance as a source-learned correlation template on the existing union of native positive common/task groups. Keep its group total budgets,intercept variance,source prior center and white discrepancy as fixed source estimates. Learn separate common/task root shape amplitudes and spectral exponents by the exact joint48-label source Gaussian likelihood. Diagonal congruence preserves PSD and level/shape correlations;strong coefficients outside selected groups remain zero. Original orthogonal basis and interaction order2 stay fixed.",
+  "positive_tail_fraction": 0.01,
+  "tail_rule": "For each component separately,use strictly positive independent weak-tail budget .01 times the sum of its source-only teacher shape coefficient variances,uniform over all original shape columns. This replaces the original shared .01*max(source signal,.02) budget. No query-based tail optimization,no zero-tail endpoint,no new arbitrary numerical floor.",
+  "parameters": ["common_root_shape_scale", "common_spectral_exponent", "task_root_shape_scale", "task_spectral_exponent"],
+  "bounds": [[0, null], [0, 4], [0, null], [0, 4]],
+  "optimizer": {"method": "L-BFGS-B", "max_iterations": 512, "ftol": 1e-9, "gtol": 1e-5},
+  "gradient_step": 0.00001,
+  "verification": "One initial interior finite-difference check detects analytic gradient mistakes. Each final law must pass PSD,original group/spectral marginal,weak-tail support and independent coefficient-conditioning checks for NLL,mean and common covariance. All ten optimizers must converge before any paid forecast. Incomplete fit stops the pilot;no extra start or tolerance relaxation.",
+  "freeze": "Exactly four source tasks,48 mean labels and known batch-label noise per law;outer task1 and inner query absent. Source-only spectral compatibility supplies initialization. Save all ten laws before any future query evaluation.",
+  "decision": "Source likelihood improvement alone is insufficient for adoption. If all fits complete,freeze a matched four-raw-observation internal pilot against retained native mixture,native point and same-source GP;only then judge predictive transfer. No outer expansion or independent confirmation is authorized by source-fit success alone.",
+  "maximum_single_thread_cpu_seconds": 60,
+  "cost": {"new_source_population_fits": 10, "new_source_gp_fits": 0, "new_source_likelihood_integrations": 0, "new_raw_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;small source JSON only;no server jobs,pulls or NPZ",
+  "scope": "Source development pilot only;no query outcomes,source6/7,target,KG,independent confirmation or manuscript changes. Retained native mixture remains reference;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1"
+}

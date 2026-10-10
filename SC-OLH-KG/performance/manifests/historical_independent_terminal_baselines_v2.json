@@ -1,0 +1,16 @@
+{
+  "status": "Registered after all24 first-pass baselines failed all-action resolution;before any primary-mean baseline calculation.",
+  "parent_plan": "performance/manifests/historical_independent_terminal_baselines_v1.json",
+  "pilot_plan": "performance/manifests/historical_independent_kg_pilot_v1.json",
+  "preflight": "paper_artifacts/historical_independent_kg_preflight_v1/results.json",
+  "raw_powers": [12, 14],
+  "remaining_budgets": [360, 359],
+  "guarded_mean_position": 0,
+  "seed": 202610077,
+  "maximum_terminal_action_difference": 0.0001,
+  "maximum_opportunity_cost_difference": 0.000001,
+  "maximum_identity_integration_error_bound": 0.000002,
+  "maximum_single_thread_cpu_seconds": 240,
+  "scope": "Reuse historical risk_coordinates_from_moments and guarded_risk_statistics to integrate each guarded action's primary mean,leaving all other covariance/source/draw laws unchanged. Native joint positive-mixture fixture tests must pass before calculation. All24 first-pass failures remain in v1. Both original all-action and opportunity-cost thresholds remain;no query,verifier,truth or independent outcome scoring.",
+  "output": "paper_artifacts/historical_independent_terminal_baselines_v2"
+}

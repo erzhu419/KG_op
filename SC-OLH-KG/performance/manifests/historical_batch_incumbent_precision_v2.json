@@ -1,0 +1,46 @@
+{
+  "status": "Development numerical admission; the six opened tasks remain development only.",
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "observations": "paper_artifacts/historical_full_bank_replicates_v1/observations.json",
+  "terminal_powers": [
+    10,
+    12,
+    14
+  ],
+  "raw_powers": [
+    14,
+    16
+  ],
+  "projected_power": 10,
+  "seed": 202610077,
+  "maximum_action_resolution_difference": 0.0001,
+  "maximum_identity_integration_error_bound": 2e-06,
+  "maximum_case_cpu_seconds": 360,
+  "anchor_query": 63,
+  "anchor_replicates": 4,
+  "precision_states": [],
+  "batch_states": [
+    "learned_prior_independent_02_source_structural_mixture_layout6",
+    "learned_prior_independent_02_source_common_task_rbf_layout6"
+  ],
+  "cost": "Two bounded native batch anchors at raw powers14/16 after the measured covariance-copy fix. At most12 CPU minutes; same1e-4 all-action resolution and1e-4 evidence diagnostic gates. No new physical calls or fits.",
+  "scope": "Same raw paid-batch likelihood, shared identity, full365 actions, budget356 and positive components. Gaussian conditioning is reordered using a rank-one covariance downdate; independent full-field transport validates the law. Keep the1e-4 action gate and2e-6 utility omission bound.",
+  "output": "paper_artifacts/historical_batch_incumbent_precision_v2",
+  "guarded_mean_position": 1,
+  "anchors": "paper_artifacts/historical_full_bank_batch_kg_raw_precision_v6/batch",
+  "states": [
+    "learned_prior_independent_02_source_common_task_rbf_layout6"
+  ],
+  "query": 63,
+  "replicates": 4,
+  "powers": [
+    14,
+    16
+  ],
+  "require_archived_parity": false,
+  "head_inputs": {
+    "0": "paper_artifacts/historical_batch_head_precision_v1"
+  },
+  "failed_guarded_input": "paper_artifacts/historical_full_bank_batch_kg_raw_precision_v6/batch",
+  "original_risk_input": "paper_artifacts/historical_batch_head_precision_v1"
+}

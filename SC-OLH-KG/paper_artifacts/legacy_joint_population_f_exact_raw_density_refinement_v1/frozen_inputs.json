@@ -1,0 +1,238 @@
+{
+  "execution": {
+    "status": "frozen after unresolved future-density13/21 accuracy;only numerical refinement",
+    "entrypoint": "performance/refine_legacy_f_exact_raw_density.py",
+    "original_results": "paper_artifacts/legacy_joint_population_f_exact_raw_filter_v1/results.json",
+    "paid_orders": [
+      9,
+      13
+    ],
+    "future_orders": [
+      41,
+      65
+    ],
+    "prediction_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "density_refinement_tolerance": 1e-05,
+    "law": "Identical eight frozen Gaussian native/GP priors,paid observations and score labels. Increase paid-eta and future-eta positive quadrature orders;no model/parameter/support/design or scientific gate change. Original unresolved density record retained.",
+    "verification": "Reuse all passed one-observation checks. Refined paid-eta moments must reproduce the original frozen moment reference and pass9/13 checks. Future raw density41/65 plus paid-eta9/13 must agree at unchanged1e-5 sitewise tolerance. Failure remains unresolved,not a model failure or success.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_integrations": 0,
+      "conditioning_integrals": 16,
+      "reused_one_observation_checks": 8,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "maximum_single_thread_cpu_seconds": 120,
+    "execution": "local serial single-thread;in-memory grids and small JSON;no new NPZ or server work",
+    "scope": "Already-seen source0-5 development only. Native point and GP controls isolate projection;retained source-variance mixture and physical-factor claims remain untested. No source6/7,target,KG,independent confirmation,manuscript or legacy60/60 changes;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_exact_raw_density_refinement_v1"
+  },
+  "same_eight_prior_design_identities": [
+    {
+      "layout": "5",
+      "design": "fixed_public_prefix",
+      "arm": "native_f",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ]
+    },
+    {
+      "layout": "5",
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ]
+    },
+    {
+      "layout": "5",
+      "design": "intercept_mixture_greedy",
+      "arm": "native_f",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ]
+    },
+    {
+      "layout": "5",
+      "design": "intercept_mixture_greedy",
+      "arm": "source_gp",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ]
+    },
+    {
+      "layout": "6",
+      "design": "fixed_public_prefix",
+      "arm": "native_f",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ]
+    },
+    {
+      "layout": "6",
+      "design": "fixed_public_prefix",
+      "arm": "source_gp",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ]
+    },
+    {
+      "layout": "6",
+      "design": "intercept_mixture_greedy",
+      "arm": "native_f",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ]
+    },
+    {
+      "layout": "6",
+      "design": "intercept_mixture_greedy",
+      "arm": "source_gp",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ]
+    }
+  ]
+}

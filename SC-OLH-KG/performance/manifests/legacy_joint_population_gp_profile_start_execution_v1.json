@@ -1,0 +1,20 @@
+{
+  "status": "registered after Stage69-70, before native GP-profile initialization, fitting or scoring",
+  "projection_execution": "performance/manifests/legacy_joint_population_gp_orthogonal_projection_execution_v1.json",
+  "spectrum_results": "paper_artifacts/legacy_joint_population_projected_task_spectrum_v1/results.json",
+  "layouts": ["5", "6"],
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "paid_candidates": [0, 1],
+  "cases": ["native_structural", "native_source_nll_selection"],
+  "basis_of_next_step": "The original27-column projection retains GP transfer; diagonal/native-spectral task covariance retains low MSE with some density loss. GP projected task intercept variance averages .02269/.02348 versus native .000568/.001052. Check a source-derived variance initialization in the same native joint likelihood, distinguishing a worse local fit from estimation-criterion limitations. Stage50's flat-spectrum initialization on the earlier144-call full-source design did not repair the original fit; this is the counterbalanced five-task180-call source design and a GP-derived common/task variance profile, not another spectrum grid.",
+  "initialization": "On all73 public policies, project the cached GP common PRIOR kernel and independent task kernel separately using the Stage69 full native design OLS operator. Physical scale is anchor.normalization.scale squared. For each common/task group initialize excess variance as max(projected diagonal group mass minus the original native group tail budget,0). Retain both native fitted spectral exponents, original native regularizer mean, fixed common intercept variance, weak tail and bounds. Initialize task intercept with its GP-projected coefficient variance and discrepancy with cached GP discrepancy. No GP posterior mean/covariance is transplanted into the fitted model.",
+  "fit": "Fit only the native g head once per five-task branch, using its unchanged Gaussian source marginal likelihood and registered optimizer. Allow at most one completion from the reached point if the first solve is incomplete; preserve that first fit. Reproduce the original native objective before fitting. Choose the candidate only when converged and source NLL per label improves beyond the existing optimizer ftol. This source-NLL choice is frozen before the deleted task's scores; no score-based arm or hyperparameter selection.",
+  "freeze_rule": "Freeze all24 native/selected prior and raw-paid forecasts before any twelve-site score. Reproduce native all73 prior/paid g/eta moments against Stage66. Use only the deleted training task's two raw paid observations and its registered12 unobserved scoring sites; no source holdout6/7 or target labels are indexed.",
+  "scoring": "Report both assignments, all branches, observed g MSE, proper raw g three-repeat batch density and separately Gaussian task-mean density with original S2/3 noise. Report source NLL, selected starts, convergence, support and intercept/variance profile changes.",
+  "next_action": "If all starts return the original fit, stop initialization experiments and diagnose the source estimation criterion/regularization using only training tasks. If source NLL improves but forecast density worsens, do not promote the candidate: require whole-task training validation before a coherent estimation change. If both improve consistently, register a source-only validated repair before opening source6/7 or target decisions.",
+  "interpretation": "A coherent native source refit and reused training-fold diagnostic. It establishes neither an independent source gate nor decision/KG superiority; historical failures and60/60 evidence remain under their original contracts.",
+  "cost": {"planned_new_g_source_fits": 12, "maximum_completion_fits": 12, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread using cached small JSON, no server jobs or pulls",
+  "entrypoint": "performance/check_legacy_gp_profile_start.py",
+  "output": "paper_artifacts/legacy_joint_population_gp_profile_start_v1"
+}

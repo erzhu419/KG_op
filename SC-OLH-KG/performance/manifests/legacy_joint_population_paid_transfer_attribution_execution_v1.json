@@ -1,0 +1,20 @@
+{
+  "status": "registered after Stage75 and before prefix loss, weight or gain attribution",
+  "component_execution": "performance/manifests/legacy_joint_population_common_task_attribution_execution_v1.json",
+  "component_results": "paper_artifacts/legacy_joint_population_common_task_attribution_v1/results.json",
+  "layouts": ["5", "6"],
+  "heldout_tasks": [6, 7],
+  "paid_candidates": [0, 1],
+  "cases": ["native_common_native_task", "native_common_restricted_task"],
+  "basis_of_next_step": "Preserving native common(beta,H) reduces task6 MSE regressions, but replacing only task(R,delta) still adds.000091/.000126 paid g MSE. The prior means are identical, so those residual regressions arise during conditioning. Use the already-frozen two-step means to identify their update component before any fitted family.",
+  "replay": "Reconstruct only native-common/native-task and native-common/restricted-task under the same Stage75 full source fits, f/eta identities and actual paired raw observations. Reproduce every prior/final and both paid-prefix g mean against Stage75; no new predictions, policy actions, parameter selection or labels. These supported fields have one Gaussian per head/identity.",
+  "identity_decomposition": "At each prefix compute per-identity g mean matrices M_N,M_R and native/restricted posterior identity weights w_N,w_R. Exactly split mixed mean difference into w_N*(M_R-M_N) plus(w_R-w_N)*M_R. Report component-only and subsequent reweighting MSE effects on the same71 noisy scoring means, plus component/weight shift RMS. This ordered decomposition is not an independent causal effect.",
+  "field_update_decomposition": "Before each paid update retain local2x2 covariance C_j and full cross-covariance, giving g gain G=K_g,j*C_j^-1. After raw Gaussian moment conditioning retain local innovation d=(g_after,eta_after)-(g_before,eta_before). Check actual full g mean increment equals G*d. Split restricted-minus-native increment into(G_R-G_N)*d_N plus G_R*(d_R-d_N). Aggregate with native posterior identity weights and report both paths/RMS, including eta-gain paths; this does not remove latent eta from the local likelihood.",
+  "scoring": "Use previously-scored three-repeat g means at all71 unobserved policies to report prefix0/1/2 g MSE differences and incremental effects. Score means only, not new batch densities. Validate exact algebra against saved Stage75 final MSE; retain both heldout tasks and assignments, all regressions and the old failed gate.",
+  "next_action": "If identity reweighting is negligible and gain propagation dominates, prioritize source-training-task validation of controlled task covariance transfer while preserving common learning. If local innovations dominate, inspect their raw-likelihood/noise contribution before a covariance repair. No new covariance/spectrum grid, target KG, hybrid adoption or gate waiver follows from this diagnostic.",
+  "interpretation": "Controlled computational attribution of fixed priors on reused development data; no new fitted method, independent confirmation or decision value.",
+  "cost": {"new_source_fits": 0, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+  "entrypoint": "performance/diagnose_legacy_paid_transfer.py",
+  "output": "paper_artifacts/legacy_joint_population_paid_transfer_attribution_v1"
+}

@@ -1,0 +1,109 @@
+{
+  "stage": "meta_prior_cross_head_structure_mixture_a14_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a13_before_a14_results": true,
+  "basis": "A13 found strong source-supported f/g directional information in shared structure and weaker information after target support mismatch, with failures when risk separates. A11 supports the source risk prior. Test a small joint structure mixture before developing a larger joint-support model.",
+  "question": "Can source-calibrated dependence between the three existing structural/full model choices improve chronological risk prediction while allowing independent risk transfer?",
+  "model_level": "Coarse joint structural/full model choice, not new per-function support learning, shared coefficient signs or HVD recovery.",
+  "components": "Keep the original two priors per head: conditional source-selected f/g versus their generic full priors, and source-ARD eta versus its generic full prior. Keep head-specific functions, coefficient covariances, discrepancy variances, zero nonintercept means and original observation noises. Only joint model-index prior weights change.",
+  "joint_prior": "For z in {0,1}^3, Q_alpha(z)=(1-alpha)/8+alpha/2 times I(z=000 or z=111), where 1 denotes each head's own structural component. The independent part includes every combination; eta is never restricted to the f/g functions. Alpha=0 is exactly the original factorized mixture.",
+  "target_update": "Each head/component is updated once with the old paid label and original noise. Joint configuration evidence is the product of its three head likelihoods on previous batches, evaluated in log space. The original per-head Gaussian approximation is retained. A chronological eta forecast uses only previous batches' f/g/eta labels, never current-batch labels. Marginalize the eight configurations without selecting a best one.",
+  "source_cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "tasks_per_archive": 8,
+    "held_function_fits": 256,
+    "initial_held_function_points": 8,
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "source_holdout": "Leave an entire source function out of all component fitting and f/g function selection. Refit source structural/full priors on the other seven functions using the original algorithms and outcome-free public reference. Do not reuse full-archive f/g selections for held-function validation. Forecast each held function on its fixed point order.",
+  "source_implementation": "Use conditional_selection and SourceFunctionPrior.from_basis for the original hard f/g prior; do not compute the unused soft/adaptive priors or their extra source selection frequencies. All alpha=0 eta forecasts must reproduce the saved A11 learned-source forecasts within 1e-8.",
+  "source_calibration": "For each seed/archive, calibrate alpha from the eight held functions' chronological eta predictive densities with a uniform alpha reference density and exp(sum of CV log scores). This is overlapping-fold empirical CV calibration, not an exact Bayesian posterior. Retain calibration spread. Use the source-fitted mean alpha in the linear Q_alpha prior on target paths; no target scores, support truth or verifier outcomes tune alpha.",
+  "source_gate_scope": "Source scores used to fit alpha are also used for the source gate; this is a source calibration diagnostic, not an independent nested evaluation of the fitted alpha. Component priors and function selection still exclude the whole held function. The target-path scores remain separate from alpha fitting.",
+  "numerics": "Use 64-point Gauss-Legendre source calibration; compare 32/96-point rules at 1e-4 maximum target log-score tolerance. Exact eight-configuration marginalization needs no posterior sampling.",
+  "source_gate": "Complete both archive groups and inspect all 16 seed-level held-function contrasts against alpha=0. Proceed to target-path prediction only if source prediction coherently supports the dependence model in both groups; otherwise preserve the negative result and stop.",
+  "target_cohort": {
+    "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "paths": 160,
+    "allocation": "n24_v928",
+    "difficulty": "binding",
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "target_controls": "For every old path, alpha=0 must reproduce the original eta mixture density and all three head weights; the fixed-source control is unchanged. Reconstruct original target priors from logged source parameters without source model selection. Retain all five regimes and both priors.",
+  "primary_target_contrast": "Mean chronological eta log-score, calibrated joint minus original factorized, first average batches 9-24 within path and then pair all 16 seeds separately in every regime. Report negative cases and nominal unadjusted paired seed intervals. No pooling with other cohorts.",
+  "promotion": "Source compatibility alone does not permit recommendation replay. Target chronological evidence must preserve shared-structure and separate-head prediction, with no coherent new failure in the three mismatch/risk-separation cases. Judge the complete pattern; do not retune alpha or components after target outcomes. KG/search/verification remain on hold.",
+  "resource_admission": "Measure and retain the first complete source fold, including source function selection and all three head forecasts. Conservatively forecast all 256 folds plus target replay before proceeding. Stop with partial evidence if the 900-local-CPU-second cap cannot cover the complete stage. Keep only the current archive context and compact forecasts; no server escalation or reduced cohort.",
+  "resource_forecast": {
+    "source_fold_safety_factor": 1.25,
+    "target_calibration_and_io_reserve_cpu_seconds": 90
+  },
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "new_source_simulation_calls": 0,
+    "new_target_simulation_calls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "paired_bootstrap_seed": 20261023,
+  "implementation_checks": "Alpha=0 factorizes exactly; each old observation updates each Gaussian component once; independent configurations permit different risk transfer; scoring a held function cannot influence its fitted component priors; alpha depends only on source forecasts; target chronology uses no current-batch labels.",
+  "limitations": "The source archives contain fixed support within each group and no high-frequency risk examples. Dependence learned here need not survive target shifts. This is retrospective development on public eight-dimensional coordinates; it cannot establish new support discovery, high-dimensional structural learning, acquisition benefit or independently verified decision improvement."
+}

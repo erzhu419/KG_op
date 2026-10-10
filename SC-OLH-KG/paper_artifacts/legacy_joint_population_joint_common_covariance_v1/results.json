@@ -1,0 +1,284 @@
+{
+  "execution": {
+    "status": "registered before source fits or new heldout forecasts",
+    "plan": "performance/manifests/legacy_joint_population_joint_common_covariance_plan_v1.json",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "previous_fit": "paper_artifacts/legacy_joint_population_public_design_source_check_v1/source_fit.json",
+    "previous_predictions": "paper_artifacts/legacy_joint_population_public_design_source_check_v1/predictions.json",
+    "previous_results": "paper_artifacts/legacy_joint_population_public_design_source_check_v1/results.json",
+    "output": "paper_artifacts/legacy_joint_population_joint_common_covariance_v1",
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "source_sites": [
+      45,
+      10,
+      51,
+      31,
+      20,
+      50,
+      19,
+      11,
+      26,
+      52,
+      49,
+      48,
+      64,
+      15,
+      18,
+      36
+    ],
+    "replicates_per_source_site": 3,
+    "structural_covariances": "distinct common/task group variances and spectral exponents in the existing95-function basis; each retains the original relative1% weak tail; common intercept variance and prior intercept mean fixed to the existing regularizer, task intercept/discrepancy remain nonnegative",
+    "generic_covariances": "learn common and task RBF amplitudes plus task intercept/discrepancy; common scalar mean, common intercept variance, response normalization and ARD lengthscales stay at the existing source anchor; same source noise model",
+    "initialization": "start at each recorded fixed-common population solution; reconstruct structural regularizer without optimization and require identical initial source objective; retain source objective changes and projected gradients",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 4096,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "arms": [
+      "joint_common_structural",
+      "joint_common_full",
+      "joint_common_rbf"
+    ],
+    "head_order": [
+      "f",
+      "g",
+      "eta_g",
+      "eta_f"
+    ],
+    "adaptation": "same cached first raw replicate at original bank sites0 and1, centered constraint by public tau;2 paired records per heldout task",
+    "freeze_rule": "save all6 new local joint predictions before using unobserved heldout responses; retain the existing6 same-design fixed-common predictions/results as paired controls",
+    "endpoints": "71 unobserved original sites per task: observed four-head MSE and exact mean/log-sample-variance replicated batch log density, with separate objective and constraint densities; report both tasks, not site-level significance",
+    "progress_rule": "no target decision comparison without improvement in the reached g/batch-predictive failure; MSE improvement with worse batch density does not pass",
+    "execution": "eight new source head fits once, cached small JSON; local serial single-thread, no terminal integration, scheduler/server jobs or pulls; new simulator/verifier calls0",
+    "interpretation": "two previously opened source-task holdouts atd50, development attribution of covariance learning; not fresh confirmation, full kernel hyperparameter joint learning, universal source efficiency or incremental KG"
+  },
+  "summary": {
+    "joint_common_structural": {
+      "observed_head_mse": [
+        0.001295195371252627,
+        0.01431720674117399,
+        2.2167753381688575,
+        2.4780840020102852
+      ],
+      "joint_batch_log_score": -1.5843844003750718,
+      "response_batch_log_scores": [
+        -0.14843605887880068,
+        -1.4359483414962715
+      ]
+    },
+    "joint_common_full": {
+      "observed_head_mse": [
+        0.0013093159573997737,
+        0.014842846749069164,
+        2.241969909517441,
+        2.485618361032034
+      ],
+      "joint_batch_log_score": -1.5167519180242865,
+      "response_batch_log_scores": [
+        -0.15402530173859133,
+        -1.3627266162856952
+      ]
+    },
+    "joint_common_rbf": {
+      "observed_head_mse": [
+        0.0014323356209707066,
+        0.007161880565893631,
+        2.1774196785845943,
+        2.612905796880354
+      ],
+      "joint_batch_log_score": -1.208511813794842,
+      "response_batch_log_scores": [
+        -0.33720970004107637,
+        -0.8713021137537659
+      ]
+    }
+  },
+  "paired_comparisons": [
+    {
+      "arm": "joint_common_structural",
+      "fixed_common_reference": "joint_population_structural",
+      "paired_tasks": [
+        {
+          "task_id": "related_inventory_06",
+          "g_observed_mse_change": -0.053830122695906056,
+          "joint_batch_log_score_change": 4.176055426500073,
+          "constraint_batch_log_score_change": 4.288499102379641
+        },
+        {
+          "task_id": "related_inventory_07",
+          "g_observed_mse_change": -0.053265393256576095,
+          "joint_batch_log_score_change": 3.9636311925505896,
+          "constraint_batch_log_score_change": 4.1219986174495835
+        }
+      ]
+    },
+    {
+      "arm": "joint_common_full",
+      "fixed_common_reference": "joint_population_full",
+      "paired_tasks": [
+        {
+          "task_id": "related_inventory_06",
+          "g_observed_mse_change": -0.05401310933229619,
+          "joint_batch_log_score_change": 4.308682685210252,
+          "constraint_batch_log_score_change": 4.418138646600739
+        },
+        {
+          "task_id": "related_inventory_07",
+          "g_observed_mse_change": -0.05315651344346692,
+          "joint_batch_log_score_change": 3.9471884359615728,
+          "constraint_batch_log_score_change": 4.099530690123575
+        }
+      ]
+    },
+    {
+      "arm": "joint_common_rbf",
+      "fixed_common_reference": "joint_population_rbf_shared_raw",
+      "paired_tasks": [
+        {
+          "task_id": "related_inventory_06",
+          "g_observed_mse_change": 0.00023474764051329214,
+          "joint_batch_log_score_change": -0.08110904157330834,
+          "constraint_batch_log_score_change": -0.02294888064002043
+        },
+        {
+          "task_id": "related_inventory_07",
+          "g_observed_mse_change": 0.00018246187211409196,
+          "joint_batch_log_score_change": -0.08632551194938198,
+          "constraint_batch_log_score_change": -0.02554674232402565
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "joint_common_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0011548668096618242,
+          0.013263950317649006,
+          1.4403275535683187,
+          1.813278015036384
+        ],
+        "joint_batch_log_score": -1.078468322263394,
+        "response_batch_log_scores": [
+          0.06474998752730271,
+          -1.1432183097906972
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "joint_common_full",
+      "scores": {
+        "observed_head_mse": [
+          0.0011675700470102819,
+          0.013957660840156696,
+          1.4815667463491156,
+          1.8194617357022007
+        ],
+        "joint_batch_log_score": -1.0372136598516855,
+        "response_batch_log_scores": [
+          0.05756694936953031,
+          -1.094780609221216
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_06",
+      "task_index": 6,
+      "arm": "joint_common_rbf",
+      "scores": {
+        "observed_head_mse": [
+          0.00129462464284213,
+          0.006437362478906953,
+          1.3991021598008218,
+          2.048343311444603
+        ],
+        "joint_batch_log_score": -0.5676698484816399,
+        "response_batch_log_scores": [
+          0.05949648077591888,
+          -0.6271663292575587
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "joint_common_structural",
+      "scores": {
+        "observed_head_mse": [
+          0.0014355239328434299,
+          0.015370463164698972,
+          2.993223122769397,
+          3.142889988984186
+        ],
+        "joint_batch_log_score": -2.0903004784867494,
+        "response_batch_log_scores": [
+          -0.36162210528490407,
+          -1.7286783732018456
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "joint_common_full",
+      "scores": {
+        "observed_head_mse": [
+          0.0014510618677892656,
+          0.01572803265798163,
+          3.0023730726857663,
+          3.151774986361868
+        ],
+        "joint_batch_log_score": -1.9962901761968879,
+        "response_batch_log_scores": [
+          -0.365617552846713,
+          -1.6306726233501745
+        ]
+      }
+    },
+    {
+      "task_id": "related_inventory_07",
+      "task_index": 7,
+      "arm": "joint_common_rbf",
+      "scores": {
+        "observed_head_mse": [
+          0.001570046599099283,
+          0.00788639865288031,
+          2.9557371973683666,
+          3.1774682823161053
+        ],
+        "joint_batch_log_score": -1.8493537791080443,
+        "response_batch_log_scores": [
+          -0.7339158808580716,
+          -1.115437898249973
+        ]
+      }
+    }
+  ],
+  "cost": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "source_response_archive_calls": 288,
+    "new_native_source_head_fits": 8
+  },
+  "source_fit_cpu_seconds": 4.482894558,
+  "prediction_scoring_cpu_seconds": 2.2591973380000008
+}

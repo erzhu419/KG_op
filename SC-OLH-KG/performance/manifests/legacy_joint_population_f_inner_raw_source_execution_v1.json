@@ -1,0 +1,10 @@
+{
+  "status": "frozen before honest source4 risk fitting and finite-moment rules",
+  "plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+  "entrypoint": "performance/prepare_legacy_f_inner_raw_contract.py",
+  "cases": [{"layout": "5", "query_task": 0, "folder": "layout5"}, {"layout": "6", "query_task": 0, "folder": "layout6"}],
+  "cost": {},
+  "finite_moment_tolerances": {"raw_mass_absolute": 1e-8, "mean_variance_relative": 1e-6, "coefficient_mean_max_absolute": 1e-8, "common_covariance_relative_frobenius": 1e-6},
+  "output": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1",
+  "decision": "All source fits and four finite full-tail rules must complete before any raw forecast. Existing second-moment routines remain unchanged;four-task law uses only its finite predictive moments. No q tuning,independent confirmation or manuscript claims."
+}

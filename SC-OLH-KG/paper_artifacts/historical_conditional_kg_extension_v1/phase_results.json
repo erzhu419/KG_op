@@ -1,0 +1,205 @@
+{
+  "all_terminal_cases_equivalent": true,
+  "all_paid_anchors_equivalent": true,
+  "maximum_terminal_reward_difference": 5.551115123125783e-17,
+  "maximum_paid_identity_certificate_difference": 1.0477729794899915e-15,
+  "timing": [
+    {
+      "terminal_power": 12,
+      "reference_cpu_seconds": 22.457514026,
+      "optimized_cpu_seconds": 9.039079571999999,
+      "speedup": 2.4844912412947173
+    },
+    {
+      "terminal_power": 16,
+      "reference_cpu_seconds": 112.510879128,
+      "optimized_cpu_seconds": 51.140421647000004,
+      "speedup": 2.200038159728394
+    }
+  ],
+  "first_batched_adaptive_timing_retained": [
+    {
+      "layout": "5",
+      "remaining_calls": 360,
+      "power": 12,
+      "maximum_reward_difference": 3.469446951953614e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 6.5066548589999975,
+      "reference_cpu_seconds": 5.226136817,
+      "speedup_over_saved_reference": 0.803198714278077
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 359,
+      "power": 12,
+      "maximum_reward_difference": 1.734723475976807e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 6.5410214579999995,
+      "reference_cpu_seconds": 5.253928759999997,
+      "speedup_over_saved_reference": 0.8032275683141472
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 360,
+      "power": 12,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 5.785861009000005,
+      "reference_cpu_seconds": 6.026403911999999,
+      "speedup_over_saved_reference": 1.0415742622620603
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 359,
+      "power": 12,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 5.806984405999998,
+      "reference_cpu_seconds": 5.951044537000001,
+      "speedup_over_saved_reference": 1.024808079534561
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 360,
+      "power": 16,
+      "maximum_reward_difference": 3.469446951953614e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 15.856549444999999,
+      "reference_cpu_seconds": 28.061804535000007,
+      "speedup_over_saved_reference": 1.7697295765598395
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 359,
+      "power": 16,
+      "maximum_reward_difference": 1.734723475976807e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 16.127736278,
+      "reference_cpu_seconds": 28.035512730999997,
+      "speedup_over_saved_reference": 1.7383414663869168
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 360,
+      "power": 16,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 14.906101058000004,
+      "reference_cpu_seconds": 28.253853257999992,
+      "speedup_over_saved_reference": 1.8954556357872228
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 359,
+      "power": 16,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 15.31311006,
+      "reference_cpu_seconds": 28.159708604000002,
+      "speedup_over_saved_reference": 1.838928114123409
+    }
+  ],
+  "adaptive_fallbacks_in_paid_anchors": 2,
+  "kg_extension_complete": true,
+  "kg_rows": [
+    {
+      "layout": "6",
+      "joint_fantasy_power": 4,
+      "terminal_power": 12,
+      "fixed_reference_fantasy_power": 5,
+      "stop_expected_reward": 0.29399285573629175,
+      "stop_action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "provisional_choice": "stop",
+      "candidate": 1,
+      "expected_future_reward": 0.2939569429659116,
+      "net_reward_of_paid_episode": -3.591277038011986e-05,
+      "adaptation_value": 0.0,
+      "nested_prefix_adaptation_value": 0.0,
+      "nested_adaptation_difference": 0.0,
+      "raw_joint_expected_future_reward": 0.29388711251685695,
+      "raw_joint_baseline_drift": -7.69029668217791e-05,
+      "fixed_action_expected_reward": 0.2939569429659116,
+      "projection_tower_drift": -7.072517767103825e-06,
+      "filter_and_quadrature_baseline_drift": -7.072517767103825e-06,
+      "verification_budget_opportunity_cost": 2.8840252613016037e-05,
+      "expected_eta_variance_reduction_fraction": 0.07285231515279955,
+      "expected_model_weights": [
+        3.2727113016373794e-35,
+        3.228641438530454e-35,
+        2.9569782386580344e-23,
+        2.654803558725791e-23,
+        0.6963751652778104,
+        0.3036248346787862,
+        2.7826464950186832e-11,
+        1.5576732382483003e-11
+      ],
+      "model_weight_martingale_residual": [
+        -1.2852887305135639e-36,
+        -1.3014717871106634e-36,
+        -4.1329720955502203e-25,
+        -3.219937035389416e-25,
+        3.865858033536007e-05,
+        -3.865858034435288e-05,
+        2.6719248862306855e-15,
+        6.221482071249585e-15
+      ],
+      "maximum_raw_integration_relative_error": 1.7481252731882365e-13,
+      "fantasies_per_component": 16,
+      "reused_fantasies": 32,
+      "new_terminal_fantasies": 96,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "old_coarse_net_reward": 0.0038985216166433356,
+      "old_coarse_adaptation_value": 0.0,
+      "completed_prefix_artifact": "paper_artifacts/historical_conditional_kg_pilot_v1/results.json",
+      "adaptive_maximum_evaluated": true,
+      "terminal_action_count": 40,
+      "all_eight_complete_identities_retained": true
+    }
+  ],
+  "successful_test_executions": 19,
+  "all_unit_tests_successful": true,
+  "cpu_seconds_recorded": 463.64837222,
+  "cached_replay_cpu_seconds": 0.00039738100000002996,
+  "server_jobs": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "decision_ranking_certified": false,
+  "independent_confirmation": false,
+  "next": "Prioritize layout5/query5,which originally had adaptive contrast. Reuse the historical fixed-action head factorization with the corrected guarded utility, then matched GP controls. Preserve the layout6 stopping-state negative result."
+}

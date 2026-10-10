@@ -1,0 +1,67 @@
+{
+  "stage": "meta_prior_source_calibrated_adaptation_a12_20261003",
+  "status": "chronological_validation_complete_not_promoted_no_recommendation_replay",
+  "fixed_before_a12_results": true,
+  "source_scores": "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003/summary.json",
+  "target_scores": "paper_artifacts/meta_prior_risk_adaptation_calibration_a10_20261003/validation.json",
+  "hypothesis": "Learn adaptation prior odds from source-only held-task prediction, retaining target evidence updates, instead of estimating a volatile target predictive weight from 8-23 labels.",
+  "single_change": "Replace A9 model prior adaptation probability 0.5 by a source-calibrated probability, separately for each actual source archive and prior type. Preserve P0/P1 source components, family/rho priors, total variance and observation likelihood.",
+  "offline_fit": "For each seed/archive/prior, use all eight held-source paths from A11. On each source forecast, p0 is the A9 null posterior mass after strictly earlier labels. For prior adaptation probability q, score Pq(next|history)=[(1-q)*p0*P0+q*(1-p0)*P1]/[(1-q)*p0+q*(1-p0)]. Sum log densities over all 8x16 forecasts.",
+  "uncertainty_rule": "Uniform reference density on q in [0,1]; integrate exp(source CV score(q)) times this density using 64-point Gauss-Legendre quadrature. Use its mean q as the learned prior model probability. Do not select a hard maximum or tune a temperature. These are empirical predictive calibration weights, not an exact Bayesian posterior over the overlapping source folds.",
+  "target_update": "For each old target forecast, apply the learned q to its existing P0/P1 densities and A9 null mass by the same normalized formula. The resulting target model weight updates from earlier paid target evidence. No target labels, scores, regimes or verifier outcomes enter q fitting.",
+  "source_archive_mapping": "Four ordinary source regimes use their common shared archive. separate_head_structure uses the actual separate_heads archive. This reflects the source generator, not selection by target performance.",
+  "implementation": "Reuse A11 and A10 saved exact conditional model scores and null posterior masses; no new source fit, simulation, KG or search is necessary. Verify normalization and the formula against the original branch mixture.",
+  "source_fit_units": 64,
+  "source_archives": 32,
+  "target_paths": 160,
+  "target_forecasts": 2560,
+  "primary_endpoint": "Mean calibrated-minus-original-source next-label log score on steps 9-24 in every target regime and both source priors; preserve all 16 seed blocks.",
+  "controls": "Original source P0 and unmodified A9, both on the same historical queries. Report learned q by archive and prior; no variant selection by target results.",
+  "checks": "q=0/0.5/1 recovers source/A9/adapted forecasts; dense branch reweighting equals the probability formula; target-score changes cannot change source-fitted q; compare 64/128/192-point q integration.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "paired_bootstrap_seed": 20261021,
+  "promotion_condition": "Broad learned-prior target predictive improvement without material compatible-regime regression before any retrospective recommendation assessment. A failed condition ends this stage without automatic model expansion; prospective searches remain on hold.",
+  "limitations": "Empirical calibration reuses development source archives; source folds overlap and targets reuse old query policies. Source examples are compatible and lack high-frequency/support shifts, so source calibration cannot validate such shifts. Seven-task CV calibration is applied to eight-task full source fits. Predictions do not establish decision or independent confirmation gains.",
+  "artifacts": "paper_artifacts/meta_prior_source_calibrated_adaptation_a12_20261003",
+  "target_cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ]
+  },
+  "marginalization": "For one source/adapted indicator per target function, integrating its q prior uses only mean(q); target branch weights retain their earlier-data likelihood ratios. Source calibration weights are empirical, not a posterior from an independent source likelihood.",
+  "next_diagnostic": "performance/meta_prior_cross_head_information_diagnostic_plan.json"
+}

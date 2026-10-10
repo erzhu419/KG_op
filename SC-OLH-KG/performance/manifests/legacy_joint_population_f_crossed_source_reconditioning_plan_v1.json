@@ -1,0 +1,37 @@
+{
+  "status": "completed;both layouts fail source coverage screening;candidate stopped;no further coverage/raw expansion",
+  "entrypoint": "performance/check_legacy_f_crossed_source_reconditioning.py",
+  "information_results": "paper_artifacts/legacy_joint_population_f_joint_source_information_ceiling_v1/results.json",
+  "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "source_gp_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "latent_noise_results": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "source_validation_task": 0,
+  "law": "NEW information contrast only. Freeze each source4 sparse joint A,R,center,white,support,spectra and same-source GP kernels/center/noise hyperparameters. Expand each of its four sources from its original12 policies to the outcome-free union24 of these four source rosters. Keep the old12 in order,append sorted missing policies,and recondition on ALL96 mean labels once. Source4/task1 validation identities remain excluded. Extra source f mean and sample-variance/3 labels are shared by both arms. Risk eta prior stays at its original honest source4 law;extra g and risk data are not used.",
+  "information_contract": "Each expanded arm uses288 historical mean calls versus144 at baseline;the original96 risk calls are a subset. This is not a144-call superiority claim. No newly generated samples. Both expanded arms have the same source identities,policy records,Gaussian plug-in source noise,validation roster and conditional raw-batch evaluation measure. Hyperparameters/support/templates are NOT refit;the test isolates additional conditioning labels.",
+  "freeze": "Save appended policy rosters before indexing added source raw labels. All four expanded zero-shot priors freeze before reading the same12-site source-validation task0 mean/variance labels. Reuse Stage192 source-only eta marginals and baseline scores. No paid query updates or task1 forecasts.",
+  "verification": "Reproduce old same-source GP full12-site zero-shot mean/covariance with the NEW fixed-kernel conditioner before added labels. Old48 f labels/psi/noise must be unchanged in the new96. Retain exact sparse A/R after new conditioning and require source H/new validation covariances to decrease in PSD order for both arms. Stop on mismatch,unchanged1e-8 reproduction/1e-10 PSD tolerances;no old raw-filter or derivative rerun.",
+  "evaluation": "At each source-validation site,use the shared source4 eta_f prior and same proper conditional-mean density after its variance-label integral,plus observed-mean MSE split into level/shape. Reuse baseline predictions/scores without rerunning their integrals. New shared variance/joint integrals retain existing1e-7 error bounds.",
+  "decision": "Screen for a complete inner source-coverage comparison only if structure MSE does not increase and conditional mean density does not decrease versus its own baseline in BOTH layouts,and each layout improves either its MSE ratio to matched GP or its conditional-density gap to matched GP. Preserve all comparisons. Otherwise stop coverage expansion;no full tenfold fit/raw/task1 experiment. Information or numerical PASS is not decision advantage.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "expanded_source_conditionings": 4,
+    "old_GP_conditioner_reproduction_checks": 2,
+    "new_zero_shot_source_forecasts": 4,
+    "maximum_joint_batch_components_integrated": 48,
+    "maximum_shared_variance_integrations": 24,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;only declared cached source f values and small summaries;no server work,pulls or NPZ",
+  "scope": "Source-only development under explicit doubled historical information. Original four prior principles/tails kept. Earlier candidates stopped;native intercept mixture reference;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript change.",
+  "output": "paper_artifacts/legacy_joint_population_f_crossed_source_reconditioning_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_crossed_source_reconditioning_v1/results.json"
+}

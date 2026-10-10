@@ -1,0 +1,840 @@
+{
+  "execution_plan": "performance/manifests/historical_source_risk_stationary_retention_v1.json",
+  "rows": [
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_head_specific_observed_task_f/results.json",
+      "status": "source evidence improvement unresolved",
+      "held_risk_scales": [
+        0.248963196891758,
+        0.4583068077874955
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "consecutive_stationarity_checks": 2,
+      "stationary_current_law_held": true,
+      "further_proposal_accepted": false,
+      "held_law_relative_covariance_change": 0.0,
+      "held_law_full_and_split_Q_improvements": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "held_law_source_evidence_ratio": 1.0,
+      "additional_accepted_risk_updates": 0,
+      "rejected_proposal": {
+        "attempt": 7,
+        "bank": 1,
+        "current_theta": [
+          0.248963196891758,
+          0.4583068077874955
+        ],
+        "proposed_theta": [
+          0.2485967961125897,
+          0.45431669123636054
+        ],
+        "full_and_split_Q_improvements": [
+          3.5881769545956232e-06,
+          2.5299566968825515e-06,
+          4.643896020464777e-06
+        ],
+        "optimizer_converged": true,
+        "relative_covariance_change": 0.005377695445779396,
+        "stationarity_diagnostic_passed": true,
+        "old_score_summaries": [
+          {
+            "scaled_raw_score": [
+              8.799373374531652e-05,
+              0.0008049828354313404
+            ],
+            "scaled_MCSE": [
+              0.0002956326055750175,
+              0.00041454760269096086
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0005794399069270343,
+              0.0008125133012742832
+            ],
+            "split_rhat": [
+              1.0000456856331257,
+              1.000211328345795
+            ],
+            "autocorrelation_ess": [
+              7774.476886855456,
+              8378.646712467238
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              -6.622302080506215e-05,
+              0.0007103407153822988
+            ],
+            "scaled_MCSE": [
+              0.00041356450116373464,
+              0.0006179703831335944
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0008105864222809199,
+              0.001211221950941845
+            ],
+            "split_rhat": [
+              1.000548734216581,
+              1.0006425351351789
+            ],
+            "autocorrelation_ess": [
+              4010.387346319479,
+              3832.597938503356
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.00024184598414549898,
+              0.0008994012609431401
+            ],
+            "scaled_MCSE": [
+              0.00042417639993293634,
+              0.000562699979128731
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0008313857438685552,
+              0.0011028919590923127
+            ],
+            "split_rhat": [
+              0.9999712437195337,
+              1.0005841143792253
+            ],
+            "autocorrelation_ess": [
+              3740.779796614797,
+              4473.039609460007
+            ]
+          }
+        ],
+        "update_accepted": false,
+        "evidence": {
+          "log_source_evidence_ratio": 0.0003119324318507921,
+          "conditional_MC_interval_95": [
+            -3.5226026941677585e-05,
+            0.0006590908906432618
+          ],
+          "importance_ESS": 62067.78294060261,
+          "split_Rhat": 1.0002116758587827,
+          "chain_functional_ESS": 8340.817655588482,
+          "split_log_ratio_difference": 9.558133079323738e-05,
+          "precision_gate_passed": true,
+          "eligible_improvement_excludes_zero": false
+        },
+        "new_score_summaries": [
+          {
+            "scaled_raw_score": [
+              7.262763876209584e-05,
+              0.0006545894756547086
+            ],
+            "scaled_MCSE": [
+              0.0002958403585012324,
+              0.0004137685879366768
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0005798471026624155,
+              0.0008109864323558865
+            ],
+            "split_rhat": [
+              1.000042465301596,
+              1.0002101033174657
+            ],
+            "autocorrelation_ess": [
+              7810.113602724904,
+              8451.275881939955
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              -7.930876493722258e-05,
+              0.0005727865844093164
+            ],
+            "scaled_MCSE": [
+              0.00041380222610506735,
+              0.000616136736739948
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.000811052363165932,
+              0.001207628004010298
+            ],
+            "split_rhat": [
+              1.0005496556653255,
+              1.0006302397931541
+            ],
+            "autocorrelation_ess": [
+              4030.6517440793027,
+              3871.107309003292
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.00022419044084380428,
+              0.0007361912189740579
+            ],
+            "scaled_MCSE": [
+              0.00042437877214177765,
+              0.0005617230662972806
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0008317823933978841,
+              0.00110097720994267
+            ],
+            "split_rhat": [
+              0.9999709599358904,
+              1.000594033821219
+            ],
+            "autocorrelation_ess": [
+              3758.8406333674684,
+              4514.306584301379
+            ]
+          }
+        ],
+        "new_score_precision_passed": true
+      },
+      "scope": "Two successive precise stationarity diagnostics at actual distinct current laws. Keep the last accepted law exactly;the failed next proposal is not adopted. This is conditional risk stationarity,not joint source convergence."
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_head_specific_observed_task_g/results.json",
+      "status": "full/split Q requires more precision",
+      "held_risk_scales": [
+        0.15052252471314392,
+        0.023247589290787806
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "consecutive_stationarity_checks": 2,
+      "stationary_current_law_held": true,
+      "further_proposal_accepted": false,
+      "held_law_relative_covariance_change": 0.0,
+      "held_law_full_and_split_Q_improvements": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "held_law_source_evidence_ratio": 1.0,
+      "additional_accepted_risk_updates": 0,
+      "rejected_proposal": {
+        "attempt": 52,
+        "bank": 2,
+        "current_theta": [
+          0.15052252471314392,
+          0.023247589290787806
+        ],
+        "proposed_theta": [
+          0.15042627060875907,
+          0.02266623493243174
+        ],
+        "full_and_split_Q_improvements": [
+          1.2000048629529081e-05,
+          -7.710356308976429e-07,
+          2.4864792131318314e-05
+        ],
+        "optimizer_converged": true,
+        "relative_covariance_change": 0.001898651478138525,
+        "stationarity_diagnostic_passed": true,
+        "old_score_summaries": [
+          {
+            "scaled_raw_score": [
+              4.217784495647372e-05,
+              0.0009461186391967666
+            ],
+            "scaled_MCSE": [
+              0.0004713821746173542,
+              0.0004798682608633994
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0009239090622500142,
+              0.0009405417912922628
+            ],
+            "split_rhat": [
+              1.0002365554032036,
+              1.0000068781286229
+            ],
+            "autocorrelation_ess": [
+              28109.32439178586,
+              34223.38824372338
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              4.613694260919326e-05,
+              0.00044786175308928394
+            ],
+            "scaled_MCSE": [
+              0.0006608832393788618,
+              0.0006697472786298625
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0012953311491825691,
+              0.0013127046661145305
+            ],
+            "split_rhat": [
+              1.0006769586847981,
+              1.0000039590912897
+            ],
+            "autocorrelation_ess": [
+              14070.85942204922,
+              17424.114308920693
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              3.818971248764721e-05,
+              0.001448029589521516
+            ],
+            "scaled_MCSE": [
+              0.0006700796976393545,
+              0.0006854594526222274
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0013133562073731348,
+              0.0013435005271395656
+            ],
+            "split_rhat": [
+              1.000059800668735,
+              1.0003439765026525
+            ],
+            "autocorrelation_ess": [
+              14137.117610834894,
+              16888.889461381546
+            ]
+          }
+        ],
+        "update_accepted": false
+      },
+      "scope": "Two successive precise stationarity diagnostics at actual distinct current laws. Keep the last accepted law exactly;the failed next proposal is not adopted. This is conditional risk stationarity,not joint source convergence."
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_joint_observed_task_g/results.json",
+      "status": "full/split Q requires more precision",
+      "held_risk_scales": [
+        0.1734374664843743,
+        0.39851215544492424
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "consecutive_stationarity_checks": 2,
+      "stationary_current_law_held": true,
+      "further_proposal_accepted": false,
+      "held_law_relative_covariance_change": 0.0,
+      "held_law_full_and_split_Q_improvements": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "held_law_source_evidence_ratio": 1.0,
+      "additional_accepted_risk_updates": 0,
+      "rejected_proposal": {
+        "attempt": 4,
+        "bank": 1,
+        "current_theta": [
+          0.1734374664843743,
+          0.39851215544492424
+        ],
+        "proposed_theta": [
+          0.1731608091509411,
+          0.39573032060014246
+        ],
+        "full_and_split_Q_improvements": [
+          2.400909170807708e-06,
+          -2.083184621470835e-07,
+          5.006065942003701e-06
+        ],
+        "optimizer_converged": true,
+        "relative_covariance_change": 0.004027677209497212,
+        "stationarity_diagnostic_passed": true,
+        "old_score_summaries": [
+          {
+            "scaled_raw_score": [
+              7.76643495258448e-05,
+              0.0006672022471234728
+            ],
+            "scaled_MCSE": [
+              0.00019241633844421332,
+              0.00032243344021479903
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.00037713602335065813,
+              0.0006319695428210062
+            ],
+            "split_rhat": [
+              1.0002302764108582,
+              1.000494867587203
+            ],
+            "autocorrelation_ess": [
+              12939.90460487473,
+              12412.502475545793
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.0001711362925820286,
+              0.000274761414026883
+            ],
+            "scaled_MCSE": [
+              0.00027007186326509156,
+              0.0004507595454379245
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0005293408519995794,
+              0.0008834887090583319
+            ],
+            "split_rhat": [
+              1.0004281991864172,
+              1.0005082090799473
+            ],
+            "autocorrelation_ess": [
+              6666.674826876106,
+              6356.157156922018
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              -1.5661760566566746e-05,
+              0.0010590308022688046
+            ],
+            "scaled_MCSE": [
+              0.00027296802117831605,
+              0.0004608200182239382
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0005350173215094995,
+              0.0009032072357189189
+            ],
+            "split_rhat": [
+              1.0003957204571974,
+              1.0005243884173325
+            ],
+            "autocorrelation_ess": [
+              6333.732318830815,
+              6070.688685483666
+            ]
+          }
+        ],
+        "update_accepted": false
+      },
+      "scope": "Two successive precise stationarity diagnostics at actual distinct current laws. Keep the last accepted law exactly;the failed next proposal is not adopted. This is conditional risk stationarity,not joint source convergence."
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_joint_observed_task_f/results.json",
+      "status": "source evidence improvement unresolved",
+      "held_risk_scales": [
+        0.20547952294890903,
+        0.31393272871874517
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "consecutive_stationarity_checks": 2,
+      "stationary_current_law_held": true,
+      "further_proposal_accepted": false,
+      "held_law_relative_covariance_change": 0.0,
+      "held_law_full_and_split_Q_improvements": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "held_law_source_evidence_ratio": 1.0,
+      "additional_accepted_risk_updates": 0,
+      "rejected_proposal": {
+        "attempt": 9,
+        "bank": 1,
+        "current_theta": [
+          0.20547952294890903,
+          0.31393272871874517
+        ],
+        "proposed_theta": [
+          0.20506590262344818,
+          0.3112794379542558
+        ],
+        "full_and_split_Q_improvements": [
+          3.620867872727862e-06,
+          5.885245075804013e-06,
+          1.3373290725926523e-06
+        ],
+        "optimizer_converged": true,
+        "relative_covariance_change": 0.005125997866273028,
+        "stationarity_diagnostic_passed": true,
+        "old_score_summaries": [
+          {
+            "scaled_raw_score": [
+              0.0001538218508423032,
+              0.0008157420300415541
+            ],
+            "scaled_MCSE": [
+              0.00034704094546802555,
+              0.00043632124597179625
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0006802002531173301,
+              0.0008551896421047206
+            ],
+            "split_rhat": [
+              1.0002245684764424,
+              1.0004247594453815
+            ],
+            "autocorrelation_ess": [
+              7810.314992844862,
+              8367.156910495627
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.0001386732849105067,
+              0.00108512832434927
+            ],
+            "scaled_MCSE": [
+              0.0004778166506221347,
+              0.0006122766116268956
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0009365206352193841,
+              0.0012000621587887155
+            ],
+            "split_rhat": [
+              1.0016389514771677,
+              1.0012751011782384
+            ],
+            "autocorrelation_ess": [
+              3974.5242652845304,
+              4189.0451218877115
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.00016909860686746233,
+              0.0005440761368349817
+            ],
+            "scaled_MCSE": [
+              0.0005011114636753911,
+              0.0006209555419474388
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0009821784688037666,
+              0.0012170728622169801
+            ],
+            "split_rhat": [
+              1.0007955557345192,
+              1.0016340910543733
+            ],
+            "autocorrelation_ess": [
+              3880.450694318906,
+              4190.6510679937655
+            ]
+          }
+        ],
+        "update_accepted": false,
+        "evidence": {
+          "log_source_evidence_ratio": 0.0003157643469702265,
+          "conditional_MC_interval_95": [
+            -5.395036663641723e-05,
+            0.0006854790605768702
+          ],
+          "importance_ESS": 56705.13807441246,
+          "split_Rhat": 1.0004642500820435,
+          "chain_functional_ESS": 8038.143847171618,
+          "split_log_ratio_difference": 0.0002130650050826688,
+          "precision_gate_passed": true,
+          "eligible_improvement_excludes_zero": false
+        },
+        "new_score_summaries": [
+          {
+            "scaled_raw_score": [
+              0.00012023366299151888,
+              0.0006695105458295144
+            ],
+            "scaled_MCSE": [
+              0.0003474033959922672,
+              0.00043623770216005137
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0006809106561448437,
+              0.0008550258962337007
+            ],
+            "split_rhat": [
+              1.0002195920962733,
+              1.0004136445266993
+            ],
+            "autocorrelation_ess": [
+              7881.428299286362,
+              8471.108047056954
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              9.318106094545768e-05,
+              0.0009308942389341635
+            ],
+            "scaled_MCSE": [
+              0.0004782645544748795,
+              0.0006123538383728758
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0009373985267707637,
+              0.0012002135232108367
+            ],
+            "split_rhat": [
+              1.0016123070976897,
+              1.0012574589486802
+            ],
+            "autocorrelation_ess": [
+              4011.9456711706052,
+              4238.0418666579535
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.00014752100274361736,
+              0.0004058588044088267
+            ],
+            "scaled_MCSE": [
+              0.0005019151224343013,
+              0.0006208087341131212
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0009837536399712307,
+              0.0012167851188617175
+            ],
+            "split_rhat": [
+              1.0007771276157214,
+              1.0016357547128734
+            ],
+            "autocorrelation_ess": [
+              3911.0469928912958,
+              4243.483314563048
+            ]
+          }
+        ],
+        "new_score_precision_passed": true
+      },
+      "scope": "Two successive precise stationarity diagnostics at actual distinct current laws. Keep the last accepted law exactly;the failed next proposal is not adopted. This is conditional risk stationarity,not joint source convergence."
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_joint_observed_task_g/results.json",
+      "status": "source evidence improvement unresolved",
+      "held_risk_scales": [
+        0.2053605418517499,
+        0.33034937057591446
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "consecutive_stationarity_checks": 2,
+      "stationary_current_law_held": true,
+      "further_proposal_accepted": false,
+      "held_law_relative_covariance_change": 0.0,
+      "held_law_full_and_split_Q_improvements": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "held_law_source_evidence_ratio": 1.0,
+      "additional_accepted_risk_updates": 0,
+      "rejected_proposal": {
+        "attempt": 6,
+        "bank": 1,
+        "current_theta": [
+          0.2053605418517499,
+          0.33034937057591446
+        ],
+        "proposed_theta": [
+          0.20505530321092122,
+          0.32764353682031444
+        ],
+        "full_and_split_Q_improvements": [
+          3.1276004749947184e-06,
+          2.6390763054884303e-06,
+          3.6157219078236658e-06
+        ],
+        "optimizer_converged": true,
+        "relative_covariance_change": 0.004439906004223183,
+        "stationarity_diagnostic_passed": true,
+        "old_score_summaries": [
+          {
+            "scaled_raw_score": [
+              8.32797273122926e-05,
+              0.0007447595083836196
+            ],
+            "scaled_MCSE": [
+              0.00022140904068281835,
+              0.0003995628290525732
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.00043396171973832397,
+              0.0007831431449430435
+            ],
+            "split_rhat": [
+              1.0003274912391862,
+              1.0000816440447988
+            ],
+            "autocorrelation_ess": [
+              10403.374504077106,
+              9005.04766074038
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              -0.0001574160810534889,
+              0.000729373395561197
+            ],
+            "scaled_MCSE": [
+              0.0003221570879186292,
+              0.0005850992457735882
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0006314278923205132,
+              0.0011467945217162327
+            ],
+            "split_rhat": [
+              1.0009133935628078,
+              1.0008830953476093
+            ],
+            "autocorrelation_ess": [
+              4976.218725189842,
+              4223.604481743837
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.0003237771074966583,
+              0.0007601329369868823
+            ],
+            "scaled_MCSE": [
+              0.000306490795074238,
+              0.0005550434479159687
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0006007219583455064,
+              0.0010878851579152987
+            ],
+            "split_rhat": [
+              1.0003517050390807,
+              1.0003453770394128
+            ],
+            "autocorrelation_ess": [
+              5359.433638597136,
+              4640.016382115276
+            ]
+          }
+        ],
+        "update_accepted": false,
+        "evidence": {
+          "log_source_evidence_ratio": 0.0002730727625372964,
+          "conditional_MC_interval_95": [
+            -4.250955349717527e-05,
+            0.000588655078571768
+          ],
+          "importance_ESS": 63838.741710875955,
+          "split_Rhat": 1.0000548190156522,
+          "chain_functional_ESS": 8905.80712957454,
+          "split_log_ratio_difference": 4.523502003550561e-05,
+          "precision_gate_passed": true,
+          "eligible_improvement_excludes_zero": false
+        },
+        "new_score_summaries": [
+          {
+            "scaled_raw_score": [
+              6.531092849523137e-05,
+              0.0006120958102749282
+            ],
+            "scaled_MCSE": [
+              0.00022141216442960962,
+              0.00039912933066083413
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.00043396784228203486,
+              0.0007822934880952349
+            ],
+            "split_rhat": [
+              1.000330633122867,
+              1.0000874344696171
+            ],
+            "autocorrelation_ess": [
+              10444.320894726556,
+              9036.3497260445
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              -0.0001750836590389948,
+              0.0005998642160020124
+            ],
+            "scaled_MCSE": [
+              0.00032226032649534996,
+              0.0005844884082356209
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0006316302399308859,
+              0.001145597280141817
+            ],
+            "split_rhat": [
+              1.00092556771401,
+              1.0008898155944548
+            ],
+            "autocorrelation_ess": [
+              4996.4191135515375,
+              4236.793850280827
+            ]
+          },
+          {
+            "scaled_raw_score": [
+              0.00030549647112912523,
+              0.0006243167680670861
+            ],
+            "scaled_MCSE": [
+              0.00030619791745874653,
+              0.0005544910237696271
+            ],
+            "scaled_95_MC_halfwidth": [
+              0.0006001479182191432,
+              0.001086802406588469
+            ],
+            "split_rhat": [
+              1.0003367076007081,
+              1.0003582507192963
+            ],
+            "autocorrelation_ess": [
+              5386.935984100092,
+              4656.58127074003
+            ]
+          }
+        ],
+        "new_score_precision_passed": true
+      },
+      "scope": "Two successive precise stationarity diagnostics at actual distinct current laws. Keep the last accepted law exactly;the failed next proposal is not adopted. This is conditional risk stationarity,not joint source convergence."
+    }
+  ],
+  "stationary_current_risk_laws_held": 5,
+  "conditional_risk_stationarity_cases_passed": 20,
+  "registered_source_cases": 32,
+  "additional_accepted_risk_updates": 0,
+  "new_candidate_MCMC_sweeps": 0,
+  "source_registry_replaced": false,
+  "joint_source_learning_converged": false,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "cpu_seconds": 0.0033211180000000118,
+  "no_model_adopted": true,
+  "independent_confirmation": false
+}

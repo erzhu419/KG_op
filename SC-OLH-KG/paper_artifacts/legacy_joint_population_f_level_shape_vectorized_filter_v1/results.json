@@ -1,0 +1,218 @@
+{
+  "execution": {
+    "status": "frozen before source-only batched raw-filter verification",
+    "compact_execution": "performance/manifests/legacy_joint_population_f_level_shape_reference64_execution_v1.json",
+    "compact_results": "paper_artifacts/legacy_joint_population_f_level_shape_reference64_v1/results.json",
+    "compact_rules": "paper_artifacts/legacy_joint_population_f_level_shape_reference64_v1/source_quadrature.json",
+    "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+    "question": "Can vectorizing the same raw local Gaussian likelihood and six posterior moments remove the per-component scalar quadrature cost before any joint-variance paid prediction?",
+    "algorithm": "Implement batched local moments with the existing raw Normal likelihood,marginalize eta over the same existing plus/minus12 prior SD interval,integrate six centered posterior moments together,and update the unchanged full Gaussian conditional field in batches. Preserve source component weights and update them by the same paid evidence;no averaged-Gaussian mixture replacement or altered filtering approximation.",
+    "verification": "Use eight predetermined source-rule components from each of the two task1 folds,real prior mean/covariance at the first public prefix site,and deterministic model-derived labels solely as numerical fixtures. Include a second fixture with nonzero f/eta covariance obtained from the existing scalar local update. Compare component mean/covariance/evidence and full conditional completion against representation.joint_function_risk.local_joint_moments;do not read paid query outcomes. Record vector quadrature errors and one4096-component batch CPU/peak working-array size to set a bounded forecast budget.",
+    "numerical_tolerances": {
+      "local_mean_max_absolute": 1e-08,
+      "local_covariance_max_absolute": 1e-08,
+      "component_log_evidence_max_absolute": 1e-08,
+      "full_conditional_mean_max_absolute": 1e-08,
+      "full_conditional_covariance_max_absolute": 1e-08
+    },
+    "scope": "Source0-5/source metadata only;no paid query outcomes,source6/7,target,KG,confirmation,simulator/verifier/terminal calls,server work,pulls or manuscript changes. Model-derived fixture labels are numerical verification inputs,not empirical observations or source prediction evidence.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached source JSON and compact local NPZ",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_vectorized_filter_v1",
+    "planned_entrypoints": [
+      "representation/vectorized_joint_function_risk.py",
+      "performance/check_legacy_f_level_shape_vectorized_filter.py"
+    ],
+    "entrypoint_status": "implemented before execution",
+    "decision": "After scalar-equivalence and batch cost pass,register and run only the two task1 four-paid-observation prefix forecasts,restricted to four prefix plus twelve score sites as an exact marginal of the frozen73-policy prior. Verify selected versus full source rule forecasts before score labels,then proper raw density refinement. Preserve original matching native/flat/sourceGP/intercept-only controls and complete-model HOLD;do not launch all-fold or target experiments automatically.",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_vectorized_filter_plan_v1.json",
+    "entrypoint": "performance/check_legacy_f_level_shape_vectorized_filter.py",
+    "mixture_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "deleted_task": 1,
+    "component_index_rule": "Eight linearly spaced integer indices spanning the saved4096 source nodes,including both endpoints;fixed before any fixture calculation.",
+    "fixture_labels": "Native prior f mean plus one prior predictive SD for the first raw update,and native prior f mean minus half a prior predictive SD for the second update. The second field includes the first scalar update-induced f/eta covariance.",
+    "source_field_sites": "First four frozen public-prefix policies plus original twelve score sites;only prior metadata/source laws are used in this numerical verification.",
+    "quadrature": {
+      "relative_tolerance": 1e-10,
+      "absolute_tolerance": 1e-10,
+      "maximum_subintervals": 128,
+      "normal_eta_standardized_interval": [
+        -12,
+        12
+      ],
+      "maximum_error_over_minimum_component_mass": 1e-08
+    },
+    "frozen_before_source_evaluation": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "component_indices": [
+        0,
+        585,
+        1170,
+        1755,
+        2340,
+        2925,
+        3510,
+        4095
+      ],
+      "checks": [
+        {
+          "phase": 0,
+          "model_derived_fixture_label": 0.5261503804750886,
+          "incoming_max_f_eta_covariance": 0.0,
+          "errors": {
+            "local_mean_max_absolute": 0.0,
+            "local_covariance_max_absolute": 4.718447854656915e-16,
+            "component_log_evidence_max_absolute": 1.7763568394002505e-15,
+            "full_conditional_mean_max_absolute": 0.0,
+            "full_conditional_covariance_max_absolute": 4.718447854656915e-16
+          },
+          "mixture_log_evidence_error": 0.0,
+          "component_log_weight_error": 3.552713678800501e-15,
+          "passed": true,
+          "scalar_eight_component_cpu_seconds": 0.014651336999999987,
+          "batched_eight_component_cpu_seconds": 0.004783421999999982,
+          "vector_quadrature_relative_error": 6.191757151586111e-13,
+          "integrand_evaluations": 210
+        },
+        {
+          "phase": 1,
+          "model_derived_fixture_label": 0.49564647363344755,
+          "incoming_max_f_eta_covariance": 0.0004551232307259848,
+          "errors": {
+            "local_mean_max_absolute": 1.7763568394002505e-15,
+            "local_covariance_max_absolute": 8.881784197001252e-16,
+            "component_log_evidence_max_absolute": 4.6629367034256575e-15,
+            "full_conditional_mean_max_absolute": 1.7763568394002505e-15,
+            "full_conditional_covariance_max_absolute": 8.881784197001252e-16
+          },
+          "mixture_log_evidence_error": 2.7755575615628914e-15,
+          "component_log_weight_error": 3.552713678800501e-15,
+          "passed": true,
+          "scalar_eight_component_cpu_seconds": 0.014876342000000098,
+          "batched_eight_component_cpu_seconds": 0.0046759889999999915,
+          "vector_quadrature_relative_error": 3.0816446145578178e-12,
+          "integrand_evaluations": 210
+        }
+      ],
+      "native_component_reproduced": true,
+      "batch_component_count": 4096,
+      "batch_field_site_count": 16,
+      "batch_update_cpu_seconds": 0.07555202399999994,
+      "batch_field_array_bytes": 34635776,
+      "batch_max_quadrature_relative_error": 6.203681335466883e-13,
+      "resource_peak_rss_including_exec_history_bytes": 2239303680
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "component_indices": [
+        0,
+        585,
+        1170,
+        1755,
+        2340,
+        2925,
+        3510,
+        4095
+      ],
+      "checks": [
+        {
+          "phase": 0,
+          "model_derived_fixture_label": 0.519917691031917,
+          "incoming_max_f_eta_covariance": 0.0,
+          "errors": {
+            "local_mean_max_absolute": 1.7763568394002505e-15,
+            "local_covariance_max_absolute": 4.440892098500626e-16,
+            "component_log_evidence_max_absolute": 2.220446049250313e-15,
+            "full_conditional_mean_max_absolute": 1.7763568394002505e-15,
+            "full_conditional_covariance_max_absolute": 8.881784197001252e-16
+          },
+          "mixture_log_evidence_error": 4.440892098500626e-16,
+          "component_log_weight_error": 3.552713678800501e-15,
+          "passed": true,
+          "scalar_eight_component_cpu_seconds": 0.01459586200000007,
+          "batched_eight_component_cpu_seconds": 0.004284949999999954,
+          "vector_quadrature_relative_error": 6.507164527469977e-13,
+          "integrand_evaluations": 210
+        },
+        {
+          "phase": 1,
+          "model_derived_fixture_label": 0.48943357671183985,
+          "incoming_max_f_eta_covariance": 0.0006016648756533,
+          "errors": {
+            "local_mean_max_absolute": 1.7763568394002505e-15,
+            "local_covariance_max_absolute": 8.604228440844963e-16,
+            "component_log_evidence_max_absolute": 3.1086244689504383e-15,
+            "full_conditional_mean_max_absolute": 3.552713678800501e-15,
+            "full_conditional_covariance_max_absolute": 1.7763568394002505e-15
+          },
+          "mixture_log_evidence_error": 3.1086244689504383e-15,
+          "component_log_weight_error": 7.105427357601002e-15,
+          "passed": true,
+          "scalar_eight_component_cpu_seconds": 0.014721229000000058,
+          "batched_eight_component_cpu_seconds": 0.004287935999999992,
+          "vector_quadrature_relative_error": 1.4341040256414531e-12,
+          "integrand_evaluations": 210
+        }
+      ],
+      "native_component_reproduced": true,
+      "batch_component_count": 4096,
+      "batch_field_site_count": 16,
+      "batch_update_cpu_seconds": 0.05518129500000013,
+      "batch_field_array_bytes": 34635776,
+      "batch_max_quadrature_relative_error": 6.523867354488787e-13,
+      "resource_peak_rss_including_exec_history_bytes": 2239303680
+    }
+  ],
+  "all_scalar_equivalence_checks_passed": true,
+  "cpu_seconds": 0.7417328980000001,
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "fixture_labels_are_not_empirical_evidence": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "process_memory_probe": {
+    "scope": "separate fresh Python process,layout5 task1 source prior4096 components/16sites;one model-derived raw fixture;no query outcomes",
+    "status_kib": {
+      "start": {
+        "VmHWM": 10372,
+        "VmRSS": 10372
+      },
+      "imports": {
+        "VmHWM": 109316,
+        "VmRSS": 109316
+      },
+      "field": {
+        "VmHWM": 146784,
+        "VmRSS": 146784
+      },
+      "update": {
+        "VmHWM": 219096,
+        "VmRSS": 148008
+      }
+    },
+    "peak_rss_bytes": 224354304,
+    "measurement": "Linux current address space /proc/self/status VmHWM;ru_maxrss may include pre-exec history and is kept separately"
+  }
+}

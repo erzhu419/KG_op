@@ -1,0 +1,49 @@
+{
+  "status": "frozen before all14 source-only common-prior compressions",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "native_full_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "level_information_results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+  "spectral_results": "paper_artifacts/legacy_joint_population_f_group_spectral_restriction_v1/results.json",
+  "source_bank_results": "paper_artifacts/legacy_joint_population_f_source_bank_projection_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "head": "f",
+  "basis_of_next_step": "Native f task-level zero-boundary slice is narrow conditional on fitted model, with86% information retained after nuisance adjustment; otherfolds have broader positive variance slices. Shared-frequency source scores are modest and task frequency information tiny. No task variance floor or independent group-frequency fit is chosen. Prior Stages99/101 showed GP POSTERIOR projection inside native finite span can improve predictions, but did not establish a coherent finite coefficient PRIOR estimated before source conditioning. Diagnose this distinction before another fitting rule or basis expansion.",
+  "diagnostic": "Use all12 cached five-source GP f fits and two full-six-source GP f fits, native f laws and73-coordinate reference; source0–5 only. Reconstruct full GP common prior kernel and common posterior field. Project the common PRIOR onto original27-column public design and separately original native selected common groups plus intercept. Retain each GP control residual-task kernel, white discrepancy, source observation noise and common prior constant. Condition each projected common prior on the actual five/six source batches, obtaining coefficient beta/H and source Gaussian NLL. This is a GP-control compression diagnostic, not adoption of the native f prior or a new source fit.",
+  "projection_and_conditioning": "Compare prior-projected-then-conditioned common moments with the existing full-GP-posterior-then-projected moments. Use the original uniform public73 measure to project, not source-outcome-dependent weights. Source policy coordinates must match cached public reference rows; no new public task construction, hidden task shifts or simulator calls. Rank-deficient or zero GP common covariance directions must be represented algebraically; no artificial ridge.",
+  "source_space_attribution": "Decompose full GP common posterior mean and prior covariance into within-column-space, orthogonal-complement and cross components on public73 and actual source rows. Report mean projection RMS, covariance mass and cross effects. Compare coherent full GP source NLL with projected-prior source NLL at fixed existing parameters. Native f mean/H are descriptive controls, not truth. Distinguish full27 span from native selected-group span.",
+  "verification": "Reconstruct actual full GP source covariance and physical response NLL; match cached GP objective with its documented normalization correction. Reproduce cached full GP common posterior moments using independent dense Gaussian conditioning. Verify column-space mean decomposition and covariance decomposition algebra. A mismatch stops compression interpretation; no repeat of settled old paid predictions or native covariance tests.",
+  "interpretation": "Near-equivalence would suggest current finite representation can support a coherent source prior and focus attention on covariance/estimator restrictions. A substantial discrepancy or aliasing would show that good posthoc projections do not validate the same finite source prior; distinguish additional representation capacity from source residual treatment before proposing a repair. Same-source adapted GP control is not independent or universal evidence, and a projected GP kernel need not satisfy native spectral/tail budgets.",
+  "next_action": "Use source compression evidence to choose one coherent next estimator question. Do not automatically adopt a projected GP prior, reopen f common-correlation/group-frequency variants, score source6/7, or run target/confirmation/KG. Maintain g development repair and complete-model HOLD.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_coherent_common_compression_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_coherent_common_compression_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_coherent_common_compression.py",
+  "common_prior_mean": "anchor.normalization.mean + anchor.normalization.scale * anchor.constant; coefficient prior mean has only this intercept.",
+  "objective_units": "Cached GP NLL is in normalized response units. Physical per-label NLL equals cached NLL + log(anchor.normalization.scale).",
+  "source_covariance": "physical common kernel plus blockdiag(scale^2*(residual_amplitude*RBF + residual_intercept) + diag(source_mean_noise+scale^2*white_discrepancy)). No GP task-kernel projection in this diagnostic.",
+  "covariance_conditioning": "Condition finite coefficient covariance A directly: beta=m0+A*D_source.T*C_source^-1*(y-D_source*m0), H=A-A*D_source.T*C_source^-1*D_source*A. No A inverse, jitter or correlation repair.",
+  "scopes": [
+    "full_dictionary",
+    "native_common_groups"
+  ],
+  "freeze": "Save reconstructed finite prior and conditioned source laws before interpreting source contrasts; no paid/query outcomes read."
+}

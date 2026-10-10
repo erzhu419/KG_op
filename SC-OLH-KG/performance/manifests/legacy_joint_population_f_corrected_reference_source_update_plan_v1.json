@@ -1,0 +1,44 @@
+{
+  "status": "completed;all four original-source raw posterior precision gates pass;old sampler failure retained",
+  "entrypoint": "performance/check_legacy_f_corrected_reference_source_update.py",
+  "reference_results": "paper_artifacts/legacy_joint_population_f_variance_reference_v1/results.json",
+  "references": "paper_artifacts/legacy_joint_population_f_variance_reference_v1/references.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+  "original_source_results": "paper_artifacts/legacy_joint_population_f_original_source_raw_update_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "arms": [
+    "joint_spectral_geometry",
+    "source_gp"
+  ],
+  "law": "Exactly the original Stage201 raw posterior;Stage202 Gaussian variance-informed q is a computational reference only. Its approximate variance likelihood is divided out of the residual density. Original empirical population f/eta priors,48 means,48 S^2 labels and raw Gaussian/chi-square likelihood stay fixed. No model hyperparameter,source roster or observation measure changes.",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610073
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "verification": "Use Stage202 pointwise density/evidence identity,verified before sampling. Conditional f moments still use the exact Gaussian mean covariance at each eta. Retain full within/between covariance and common-latent projection. Store split moment summaries to assess a later raw-training covariance score without regenerating chains;no full draws saved.",
+  "decision": "If any gate fails,stop without extra draws or new references in this turn. If all pass,close original-source conditioning precision and assess whether covariance learning under the old fixed-noise objective must also change,using posterior-moment score identities. No held-task forecasts until the source-learning objective is coherent. Earlier sampler failures stay recorded.",
+  "maximum_single_thread_cpu_seconds": 40,
+  "cost": {
+    "new_source_labels": 0,
+    "new_source_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;source frozen matrices and reference summaries,in-memory sampling;small JSON posterior/split summaries,no NPZ or server work",
+  "scope": "Same original-source posterior,new corrected reference sampler. Original four priors unchanged;no task0/task1,source6/7,target,KG,independent confirmation or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json"
+}

@@ -1,0 +1,153 @@
+{
+  "stage": "meta_prior_risk_family_reweighting_a9_20261003",
+  "status": "grouped_and_prequential_validation_complete_not_promoted_no_recommendation_replay",
+  "fixed_before_validation_results": true,
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "control_scores": "paper_artifacts/meta_prior_target_risk_residual_a3_20261003/validation.json",
+  "hypothesis": "Paid target risk labels can shift source functional variance toward a public function family, reducing incompatible source directions without knowing target support.",
+  "model": "Each original eta source component has prior mass 0.5 unchanged and 0.5 on covariance reweighting. On family B and rho in [0,1], C_function=(1-rho)*C_source_function + rho*trace(C_source_function)*diag(1_B/|B|). Keep the source intercept, means and candidate discrepancy; total function variance is fixed at its source value.",
+  "public_families": {
+    "linear": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "squared": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "sin_pi": [
+      16,
+      18,
+      20,
+      22,
+      24,
+      26,
+      28,
+      30
+    ],
+    "cos_pi": [
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      31
+    ],
+    "pair_interactions": [
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59
+    ],
+    "sin_4pi": [
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67
+    ]
+  },
+  "prior_and_inference": "Uniform prior on the six public families and uniform rho on [0,1], integrated with 32-node Gauss-Legendre quadrature. Preserve equal initial original source-component weights; infer family/rho/component weights only from paid training eta labels and retain the full predictive mixture. No hyperparameter search or hard winning-family selection.",
+  "validation": "All 160 old paths, seeds 48-63, all five regimes, both source priors and 8/24 prefixes. Reuse exact A3 candidate-group holdouts and control scores; exclude every held candidate repeat. No target truth/support, verifier outcomes or future labels enter fitting. Both controls receive the same reweighting family.",
+  "preserved": "Source-learned risk covariance informs every branch, including its nonuniform within-family shape at rho<1. All f/g models, dictionary normalization, old query paths, recommendation utility and independent verifier are retained.",
+  "resource_admission": "Measure the first complete learned-prior path and retain it. Stop with partial evidence if the full-cohort forecast exceeds the 0.25-hour local CPU cap.",
+  "recommendation_replay_gate": "Broad learned-prior predictive improvement without material compatible-regime regression is required before retrospective recommendation replay. Predictive results do not authorize new closed-loop searches.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "limitations": "Tests coarse family-level covariance adaptation, not sparse exact-support recovery, variance-scale learning or high-dimensional representation learning. Fixed source variance may still be insufficient under amplitude shift. Same development cohort as A3-A8, not independent confirmation. Preserve negative results without automatically expanding model families.",
+  "paths": 160,
+  "seeds": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "priors": [
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "prefix_batches": [
+    8,
+    24
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "quadrature_nodes": 32,
+  "paired_bootstrap_seed": 20261017,
+  "artifacts": "paper_artifacts/meta_prior_risk_family_reweighting_a9_20261003",
+  "admission_first_path": {
+    "seed": 48,
+    "regime": "shared_structure",
+    "arm": "risk_ard_mixture"
+  },
+  "scoring": "All five strata, both source controls, both prefixes, paired seed changes and nominal bootstrap intervals. Primary endpoint remains 24-batch learned-source held-out log score.",
+  "numerical_check": "Minimum null-posterior fold per stratum plus worst-regression fold of four retained failure paths. Compare 32/64/96 Gauss-Legendre points; changes above 1e-4 joint log-score units require higher integration order before interpretation.",
+  "numerical_fit": "Whiten the source training covariance and diagonalize each signed family covariance change. Retain negative eigenvalues to permit variance reduction; evaluate the full branch predictive mixture at fixed rho quadrature points.",
+  "result_artifacts": "paper_artifacts/meta_prior_risk_family_reweighting_a9_20261003",
+  "next_plan": "performance/meta_prior_risk_adaptation_calibration_plan.json"
+}

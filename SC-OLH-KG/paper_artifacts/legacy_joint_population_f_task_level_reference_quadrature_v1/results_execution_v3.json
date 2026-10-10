@@ -1,0 +1,794 @@
+{
+  "execution": {
+    "status": "frozen after median-coordinate compression missed covariance tolerance; before source-law stiffness coordinate rerun",
+    "reference_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_integration_execution_v1.json",
+    "reference_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+    "reference_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/source_laws.json",
+    "law": "Same original native conditional Jeffreys posterior over physical task-intercept v, with source common beta/H conditioned at each v. No source parameter refit or new prior scale. Quadrature coordinates alone may use the cached source posterior median.",
+    "construction": "First produce a positive adaptive source quadrature on the Stage111 q coordinate. Compress via fully reorthogonalized Lanczos/Gaussian quadrature on t=v/(median_v+v), for the tilted source measure posterior(v)dv/(1-t)^2. Undo the tilt at Gaussian nodes to obtain positive posterior weights. This preserves normalization, mean v and second moment v of the base quadrature for at least two nodes; it is numerical integration, not added uncertainty or a source estimator.",
+    "adaptive_positive_rule": "Use the exact u=sqrt(1-q) coordinate on0\u20131, v=source_signal*(1-u^2)/u^2 with Jacobian2*source_signal/u^3. The scaled second moment has a finite endpoint limit at u=0 for T=5 and tends to zero for T=6. Use source native/slice upper points transformed into u, adapt the same vector, and apply16 positive Gauss-Legendre nodes per resulting interval. No cutoff or prior change.",
+    "compression_resolutions": [
+      16,
+      32,
+      64
+    ],
+    "resolution_rule": "Use the first resolution meeting all source-only approximation tolerances; otherwise retain incomplete status with no paid forecasts. This refines integration accuracy, not task-score hyperparameters. Save all source weights before any query observation.",
+    "tolerances": {
+      "raw_mass_absolute": 1e-08,
+      "mean_variance_relative": 1e-06,
+      "coefficient_mean_max_absolute": 1e-08,
+      "common_covariance_relative_frobenius": 1e-06,
+      "second_moment_extra_relative": 1e-06
+    },
+    "second_moment_bound": "Compare second moment with Stage111 allowing its declared normalized vector error times source_signal^2, plus the new numerical tolerance. The rare tail is included; do not silently alter its variance.",
+    "quadrature": {
+      "relative_tolerance": 1e-08,
+      "absolute_tolerance_for_scaled_integrals": 1e-09,
+      "maximum_subintervals": 128
+    },
+    "interpretation": "A validated compressed rule enables the existing raw Bayesian mixture update to learn component weights after target observations at much lower cost. Moment agreement is a source quadrature check, not a prediction or deployment claim. Future predictive numerical adequacy still needs the registered development comparison.",
+    "next_action": "If all14 source rules verify, separately register the original12 five-source development forecasts with coherent variance-mixture weights, unchanged eta_f and two paid records. No point-Gaussian covariance inflation or retuning of rejected common candidates. Keep source6/7, target/KG and confirmation closed.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1",
+    "planned_entrypoint": "performance/prepare_legacy_f_task_level_reference_quadrature.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_plan_v1.json",
+    "entrypoint": "performance/prepare_legacy_f_task_level_reference_quadrature.py",
+    "previous_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_execution_v2.json",
+    "numerical_failure": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/numerical_failure_v1.json",
+    "compression_coordinate": "t=v/(c+v), c=1/min(source covariance task eigenvalues). Tilt posterior by(1+v/c)^2 and undo it at Gaussian nodes. This makes the common weakest source shrinkage direction exactly linear in t, while physical v first/second moments remain polynomial after undoing the tilt. No prior/model/accuracy change.",
+    "incomplete_previous_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1/results_execution_v2.json"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": null,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 2.475894819013667e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 8.215650382226158e-15,
+        "mean_variance_relative_error": 8.659739592076221e-15,
+        "coefficient_mean_max_absolute_error": 1.1102230246251565e-16,
+        "common_covariance_relative_frobenius_error": 6.319308299890577e-15,
+        "second_moment_absolute_error": 1.3965455717855277e-19
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 8.326672684688674e-15,
+            "mean_variance_relative_error": 8.881784197001252e-15,
+            "coefficient_mean_max_absolute_error": 0.00020506117347091068,
+            "common_covariance_relative_frobenius_error": 0.004131591496438679,
+            "second_moment_absolute_error": 1.3965455717855277e-19
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 8.215650382226158e-15,
+            "mean_variance_relative_error": 8.881784197001252e-15,
+            "coefficient_mean_max_absolute_error": 9.685077577001322e-05,
+            "common_covariance_relative_frobenius_error": 0.0034127016676288257,
+            "second_moment_absolute_error": 1.3976043629695956e-19
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 8.992806499463768e-15,
+            "mean_variance_relative_error": 8.659739592076221e-15,
+            "coefficient_mean_max_absolute_error": 2.8470508761091473e-06,
+            "common_covariance_relative_frobenius_error": 0.0004147033275372674,
+            "second_moment_absolute_error": 1.3965455717855277e-19
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 2.09575606406718e-13,
+      "base_errors": {
+        "raw_mass_absolute_error": 9.707790127322369e-13,
+        "mean_variance_relative_error": 9.64117674584486e-13,
+        "coefficient_mean_max_absolute_error": 5.676015213396113e-15,
+        "common_covariance_relative_frobenius_error": 8.58941937188185e-13,
+        "second_moment_absolute_error": 1.2218659269523017e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 9.707790127322369e-13,
+            "mean_variance_relative_error": 9.636735853746359e-13,
+            "coefficient_mean_max_absolute_error": 0.00023948624501346494,
+            "common_covariance_relative_frobenius_error": 0.004360756563166232,
+            "second_moment_absolute_error": 1.2218659904797728e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 9.703349235223868e-13,
+            "mean_variance_relative_error": 9.640066522820234e-13,
+            "coefficient_mean_max_absolute_error": 0.00010977345281666662,
+            "common_covariance_relative_frobenius_error": 0.0040164732096318895,
+            "second_moment_absolute_error": 1.2218660116555965e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 9.71223101942087e-13,
+            "mean_variance_relative_error": 9.644507414918735e-13,
+            "coefficient_mean_max_absolute_error": 3.1609240701696573e-06,
+            "common_covariance_relative_frobenius_error": 0.0005009412039559204,
+            "second_moment_absolute_error": 1.2218660540072438e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 5.027302372648333e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 1.0791367799356522e-13,
+        "mean_variance_relative_error": 1.0957901253050295e-13,
+        "coefficient_mean_max_absolute_error": 1.960237527853792e-16,
+        "common_covariance_relative_frobenius_error": 1.958335747052453e-14,
+        "second_moment_absolute_error": 1.3992150675872045e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 1.0813572259849025e-13,
+            "mean_variance_relative_error": 1.0969003483296547e-13,
+            "coefficient_mean_max_absolute_error": 0.000315967056302352,
+            "common_covariance_relative_frobenius_error": 0.01111048437211159,
+            "second_moment_absolute_error": 1.3992150728811605e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 1.0813572259849025e-13,
+            "mean_variance_relative_error": 1.0969003483296547e-13,
+            "coefficient_mean_max_absolute_error": 0.00018134196973218497,
+            "common_covariance_relative_frobenius_error": 0.008773995360347935,
+            "second_moment_absolute_error": 1.3992150808220943e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 1.0791367799356522e-13,
+            "mean_variance_relative_error": 1.0946799022804043e-13,
+            "coefficient_mean_max_absolute_error": 1.7091497743095332e-05,
+            "common_covariance_relative_frobenius_error": 0.0025176171928964044,
+            "second_moment_absolute_error": 1.3992150834690723e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 2.535636219961782e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 7.340794638821535e-13,
+        "mean_variance_relative_error": 7.328582185550658e-13,
+        "coefficient_mean_max_absolute_error": 3.1563293645398005e-15,
+        "common_covariance_relative_frobenius_error": 5.243509596395736e-13,
+        "second_moment_absolute_error": 8.981536408463194e-15
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 7.338574192772285e-13,
+            "mean_variance_relative_error": 7.328582185550658e-13,
+            "coefficient_mean_max_absolute_error": 0.00024353875879469522,
+            "common_covariance_relative_frobenius_error": 0.006186507559981723,
+            "second_moment_absolute_error": 8.98153672610055e-15
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 7.343015084870785e-13,
+            "mean_variance_relative_error": 7.328582185550658e-13,
+            "coefficient_mean_max_absolute_error": 0.00011536063527221863,
+            "common_covariance_relative_frobenius_error": 0.005517847994237769,
+            "second_moment_absolute_error": 8.981535561430247e-15
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 7.340794638821535e-13,
+            "mean_variance_relative_error": 7.320810624378282e-13,
+            "coefficient_mean_max_absolute_error": 3.7661480928249946e-06,
+            "common_covariance_relative_frobenius_error": 0.0007876231685595304,
+            "second_moment_absolute_error": 8.981536620221431e-15
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 1.2437559345366892e-09,
+      "base_errors": {
+        "raw_mass_absolute_error": 9.983125437429408e-13,
+        "mean_variance_relative_error": 1.0023093466315913e-12,
+        "coefficient_mean_max_absolute_error": 5.419276138951545e-15,
+        "common_covariance_relative_frobenius_error": 7.263063471040356e-13,
+        "second_moment_absolute_error": 1.2581318331714077e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 9.983125437429408e-13,
+            "mean_variance_relative_error": 1.0025313912365164e-12,
+            "coefficient_mean_max_absolute_error": 0.0002233179911850236,
+            "common_covariance_relative_frobenius_error": 0.00485386914938804,
+            "second_moment_absolute_error": 1.258131748468113e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 9.987566329527908e-13,
+            "mean_variance_relative_error": 1.0018652574217413e-12,
+            "coefficient_mean_max_absolute_error": 0.00010261368488994477,
+            "common_covariance_relative_frobenius_error": 0.0035679491986145722,
+            "second_moment_absolute_error": 1.258131684940642e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 9.99422766767566e-13,
+            "mean_variance_relative_error": 1.0025313912365164e-12,
+            "coefficient_mean_max_absolute_error": 2.986221201609074e-06,
+            "common_covariance_relative_frobenius_error": 0.0004096333816459883,
+            "second_moment_absolute_error": 1.258131621413171e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 5.501264189045064e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 4.873879078104437e-13,
+        "mean_variance_relative_error": 4.866107516932061e-13,
+        "coefficient_mean_max_absolute_error": 1.700029006457271e-15,
+        "common_covariance_relative_frobenius_error": 1.9190361921932563e-13,
+        "second_moment_absolute_error": 1.65949719879382e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 4.871658632055187e-13,
+            "mean_variance_relative_error": 4.862776847858186e-13,
+            "coefficient_mean_max_absolute_error": 0.0002522974262375022,
+            "common_covariance_relative_frobenius_error": 0.007652334034453339,
+            "second_moment_absolute_error": 1.659497188205908e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 4.882760862301438e-13,
+            "mean_variance_relative_error": 4.866107516932061e-13,
+            "coefficient_mean_max_absolute_error": 0.00012342572111702366,
+            "common_covariance_relative_frobenius_error": 0.004074998894938392,
+            "second_moment_absolute_error": 1.659497061150966e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 4.878319970202938e-13,
+            "mean_variance_relative_error": 4.863887070882811e-13,
+            "coefficient_mean_max_absolute_error": 4.4130131813535645e-06,
+            "common_covariance_relative_frobenius_error": 0.0005712980599104265,
+            "second_moment_absolute_error": 1.6594971458542608e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 2.3426285838018035e-13,
+      "base_errors": {
+        "raw_mass_absolute_error": 8.497647030480948e-13,
+        "mean_variance_relative_error": 8.5131901528257e-13,
+        "coefficient_mean_max_absolute_error": 4.1494585545365226e-15,
+        "common_covariance_relative_frobenius_error": 5.204799128877142e-13,
+        "second_moment_absolute_error": 1.0891261020628358e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 8.497647030480948e-13,
+            "mean_variance_relative_error": 8.507639037702575e-13,
+            "coefficient_mean_max_absolute_error": 0.00022585754249090928,
+            "common_covariance_relative_frobenius_error": 0.0026376477673862187,
+            "second_moment_absolute_error": 1.0891260491232766e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 8.493206138382448e-13,
+            "mean_variance_relative_error": 8.515410598874951e-13,
+            "coefficient_mean_max_absolute_error": 0.00010227677127734591,
+            "common_covariance_relative_frobenius_error": 0.0025056729295648856,
+            "second_moment_absolute_error": 1.089126155002395e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 8.484324354185446e-13,
+            "mean_variance_relative_error": 8.509859483751825e-13,
+            "coefficient_mean_max_absolute_error": 2.669326145038342e-06,
+            "common_covariance_relative_frobenius_error": 0.0003171357972700397,
+            "second_moment_absolute_error": 1.0891263032331607e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": null,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 7.974496582654621e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 1.1102230246251565e-15,
+        "mean_variance_relative_error": 1.5543122344752192e-15,
+        "coefficient_mean_max_absolute_error": 5.551115123125783e-17,
+        "common_covariance_relative_frobenius_error": 1.8664555845589936e-15,
+        "second_moment_absolute_error": 1.0654086289682996e-19
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 1.2212453270876722e-15,
+            "mean_variance_relative_error": 1.9984014443252818e-15,
+            "coefficient_mean_max_absolute_error": 0.00034581110655799996,
+            "common_covariance_relative_frobenius_error": 0.009009277759550524,
+            "second_moment_absolute_error": 1.0650115822742742e-19
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 1.1102230246251565e-15,
+            "mean_variance_relative_error": 1.9984014443252818e-15,
+            "coefficient_mean_max_absolute_error": 0.0001717581774085472,
+            "common_covariance_relative_frobenius_error": 0.008171985208313914,
+            "second_moment_absolute_error": 1.0659380245603336e-19
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 1.6653345369377348e-15,
+            "mean_variance_relative_error": 1.9984014443252818e-15,
+            "coefficient_mean_max_absolute_error": 6.39127437605802e-06,
+            "common_covariance_relative_frobenius_error": 0.001233725669942902,
+            "second_moment_absolute_error": 1.0648792333762657e-19
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 3.933344987681848e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 7.502887200416808e-13,
+        "mean_variance_relative_error": 7.459588502456427e-13,
+        "coefficient_mean_max_absolute_error": 5.8494875609937935e-15,
+        "common_covariance_relative_frobenius_error": 8.157588801514753e-13,
+        "second_moment_absolute_error": 1.774936428675176e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 7.502887200416808e-13,
+            "mean_variance_relative_error": 7.459588502456427e-13,
+            "coefficient_mean_max_absolute_error": 0.0004952573585890394,
+            "common_covariance_relative_frobenius_error": 0.01176221961911624,
+            "second_moment_absolute_error": 1.774936439263088e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 7.491784970170556e-13,
+            "mean_variance_relative_error": 7.459588502456427e-13,
+            "coefficient_mean_max_absolute_error": 0.0002356377820885644,
+            "common_covariance_relative_frobenius_error": 0.011476854764583785,
+            "second_moment_absolute_error": 1.7749365133784708e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 7.513989430663059e-13,
+            "mean_variance_relative_error": 7.467360063628803e-13,
+            "coefficient_mean_max_absolute_error": 7.936967764687886e-06,
+            "common_covariance_relative_frobenius_error": 0.001756032321995795,
+            "second_moment_absolute_error": 1.7749364710268234e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 2.1870608788219488e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 1.4876988529977098e-14,
+        "mean_variance_relative_error": 1.3211653993039363e-14,
+        "coefficient_mean_max_absolute_error": 6.938893903907228e-18,
+        "common_covariance_relative_frobenius_error": 7.450747192405741e-16,
+        "second_moment_absolute_error": 1.355984901474399e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 1.532107773982716e-14,
+            "mean_variance_relative_error": 1.3211653993039363e-14,
+            "coefficient_mean_max_absolute_error": 0.00021064104825557414,
+            "common_covariance_relative_frobenius_error": 0.007776147509361817,
+            "second_moment_absolute_error": 1.3559849018052712e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 1.4654943925052066e-14,
+            "mean_variance_relative_error": 1.3433698597964394e-14,
+            "coefficient_mean_max_absolute_error": 0.00012065903430671845,
+            "common_covariance_relative_frobenius_error": 0.004589039819930769,
+            "second_moment_absolute_error": 1.3559849034596325e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 1.554312234475219e-14,
+            "mean_variance_relative_error": 1.3433698597964394e-14,
+            "coefficient_mean_max_absolute_error": 7.783851767516684e-06,
+            "common_covariance_relative_frobenius_error": 0.0007079585766346353,
+            "second_moment_absolute_error": 1.3559849021361435e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 3.241247615870489e-12,
+      "base_errors": {
+        "raw_mass_absolute_error": 6.066258606551855e-13,
+        "mean_variance_relative_error": 6.061817714453355e-13,
+        "coefficient_mean_max_absolute_error": 5.800915303666443e-15,
+        "common_covariance_relative_frobenius_error": 7.903381496400699e-13,
+        "second_moment_absolute_error": 1.431767901649881e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 6.066258606551855e-13,
+            "mean_variance_relative_error": 6.061817714453355e-13,
+            "coefficient_mean_max_absolute_error": 0.0007681008926580801,
+            "common_covariance_relative_frobenius_error": 0.0257558148816524,
+            "second_moment_absolute_error": 1.4317679334136164e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 6.068479052601106e-13,
+            "mean_variance_relative_error": 6.069589275625731e-13,
+            "coefficient_mean_max_absolute_error": 0.00038138332095489363,
+            "common_covariance_relative_frobenius_error": 0.024565031391436454,
+            "second_moment_absolute_error": 1.4317678804740572e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 6.066258606551855e-13,
+            "mean_variance_relative_error": 6.061817714453355e-13,
+            "coefficient_mean_max_absolute_error": 1.511255459512445e-05,
+            "common_covariance_relative_frobenius_error": 0.004055741656877713,
+            "second_moment_absolute_error": 1.4317678381224098e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 1.1823418108719967e-10,
+      "base_errors": {
+        "raw_mass_absolute_error": 7.420730696594546e-13,
+        "mean_variance_relative_error": 7.442935157087049e-13,
+        "coefficient_mean_max_absolute_error": 5.037636974236648e-15,
+        "common_covariance_relative_frobenius_error": 6.488254759476727e-13,
+        "second_moment_absolute_error": 9.084073770134827e-15
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 7.418510250545296e-13,
+            "mean_variance_relative_error": 7.442935157087049e-13,
+            "coefficient_mean_max_absolute_error": 0.0003723981976415103,
+            "common_covariance_relative_frobenius_error": 0.007921236020325007,
+            "second_moment_absolute_error": 9.084074405409537e-15
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 7.425171588693047e-13,
+            "mean_variance_relative_error": 7.438494264988549e-13,
+            "coefficient_mean_max_absolute_error": 0.00017812088631599665,
+            "common_covariance_relative_frobenius_error": 0.007136035756785895,
+            "second_moment_absolute_error": 9.084074405409537e-15
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 7.431832926840798e-13,
+            "mean_variance_relative_error": 7.442935157087049e-13,
+            "coefficient_mean_max_absolute_error": 6.135802512470534e-06,
+            "common_covariance_relative_frobenius_error": 0.0010546147444829522,
+            "second_moment_absolute_error": 9.084072817222761e-15
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "base_node_count": 176,
+      "adaptive_interval_count": 11,
+      "adaptive_vector_error": 9.189970484159166e-11,
+      "base_errors": {
+        "raw_mass_absolute_error": 5.992983886926595e-13,
+        "mean_variance_relative_error": 6.031841692788475e-13,
+        "coefficient_mean_max_absolute_error": 3.524958103184872e-15,
+        "common_covariance_relative_frobenius_error": 3.9332206603351935e-13,
+        "second_moment_absolute_error": 1.440949167050878e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 5.992983886926595e-13,
+            "mean_variance_relative_error": 6.034062138837726e-13,
+            "coefficient_mean_max_absolute_error": 0.0003519087256953976,
+            "common_covariance_relative_frobenius_error": 0.006130120210906095,
+            "second_moment_absolute_error": 1.4409491564629662e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 5.995204332975845e-13,
+            "mean_variance_relative_error": 6.031841692788475e-13,
+            "coefficient_mean_max_absolute_error": 0.00017290288299774692,
+            "common_covariance_relative_frobenius_error": 0.005688424979723759,
+            "second_moment_absolute_error": 1.440949039995936e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 5.990763440877345e-13,
+            "mean_variance_relative_error": 6.025180354640725e-13,
+            "coefficient_mean_max_absolute_error": 6.622756697938215e-06,
+            "common_covariance_relative_frobenius_error": 0.0009600628474954707,
+            "second_moment_absolute_error": 1.440949167050878e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "base_node_count": 192,
+      "adaptive_interval_count": 12,
+      "adaptive_vector_error": 1.9238709689260578e-13,
+      "base_errors": {
+        "raw_mass_absolute_error": 9.00834962180852e-13,
+        "mean_variance_relative_error": 9.0427665355719e-13,
+        "coefficient_mean_max_absolute_error": 5.662137425588298e-15,
+        "common_covariance_relative_frobenius_error": 8.998878113111329e-13,
+        "second_moment_absolute_error": 1.1013048688334002e-14
+      },
+      "base_rule_passed": true,
+      "compression_trials": [
+        {
+          "node_count": 16,
+          "errors": {
+            "raw_mass_absolute_error": 9.00612917575927e-13,
+            "mean_variance_relative_error": 9.0427665355719e-13,
+            "coefficient_mean_max_absolute_error": 0.0002673515069507443,
+            "common_covariance_relative_frobenius_error": 0.005209924521595669,
+            "second_moment_absolute_error": 1.1013049111850476e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 32,
+          "errors": {
+            "raw_mass_absolute_error": 9.012790513907021e-13,
+            "mean_variance_relative_error": 9.04054608952265e-13,
+            "coefficient_mean_max_absolute_error": 0.00012243210454840336,
+            "common_covariance_relative_frobenius_error": 0.004830345002197107,
+            "second_moment_absolute_error": 1.1013049111850476e-14
+          },
+          "passed": false
+        },
+        {
+          "node_count": 64,
+          "errors": {
+            "raw_mass_absolute_error": 9.00612917575927e-13,
+            "mean_variance_relative_error": 9.0427665355719e-13,
+            "coefficient_mean_max_absolute_error": 3.498511775230917e-06,
+            "common_covariance_relative_frobenius_error": 0.0006018240534644508,
+            "second_moment_absolute_error": 1.1013049323608712e-14
+          },
+          "passed": false
+        }
+      ],
+      "rule_complete": false,
+      "selected_node_count": null
+    }
+  ],
+  "all14_source_rules_complete": false,
+  "no_model_adopted": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.24528862399999996,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

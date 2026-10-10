@@ -1,0 +1,61 @@
+{
+  "status": "registered before adjacent evidence and the three local functional repairs",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v1/results.json",
+  "learning_results": "paper_artifacts/historical_raw_source_amplitude_learning_v2/results.json",
+  "fresh_results": "paper_artifacts/historical_changed_candidate_reconditioning_v2/results.json",
+  "functional_cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "sites": [
+        8
+      ],
+      "axis": 8,
+      "previous_half_variance_relative_differences": [
+        0.4713073026272424
+      ]
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "sites": [
+        4,
+        42
+      ],
+      "axis": 42,
+      "previous_half_variance_relative_differences": [
+        0.15136438951035958,
+        0.22781919825803587
+      ]
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "sites": [
+        42
+      ],
+      "axis": 42,
+      "previous_half_variance_relative_differences": [
+        0.22488723931562754
+      ]
+    }
+  ],
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "integration_batch_size": 16,
+  "maximum_single_thread_cpu_seconds_per_case": 45,
+  "scope": "Compute reverse Z(round2)/Z(round1) on all14 saved new-law mixtures; original-law normalizers are separate. Only the three failed f variance cases are integrated along their fixed largest-gap risk coordinate,with functionals restricted to the failed sites. Saved fresh residuals are sampled from the actual untitled round2 law. Keep source means and all other full-chain estimates,raw likelihood,candidate parameters,components and precision gates unchanged. No new MCMC,labels,target reads or server jobs.",
+  "output": "paper_artifacts/historical_source_learning_round2_completion_v1"
+}

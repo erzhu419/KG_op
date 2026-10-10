@@ -1,0 +1,373 @@
+{
+  "execution": {
+    "status": "registered before12 deletion correlation fits and24 whole-task forecasts; no deleted labels scored",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "deleted_mean_execution": "performance/manifests/legacy_joint_population_counterbalanced_complete_mean_uncertainty_execution_v1.json",
+    "failed_additive_taskout_results": "paper_artifacts/legacy_joint_population_paired_taskout_validation_v1/results.json",
+    "variance_confound": "paper_artifacts/legacy_joint_population_paired_taskout_validation_v1/source_variance_confound.json",
+    "four_field_execution": "performance/manifests/legacy_joint_population_paired_function_risk_filter_execution_v2.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "basis_of_next_step": "Additive paired covariance lowers source training NLL but loses joint and g whole-task-out Gaussian mean density under both assignments. It also amplifies g marginal task variance along its selected direction by4.209/3.557. Separate correlation from this extra marginal variance using a single bounded correlation parameter, without increasing source information or fitting more mean spectra.",
+    "covariance_law": "Keep native task covariance blocks R_f,R_g and common prior covariance fixed. From the training-only paired direction v normalize each head u_h=v_h/sqrt(v_h^T R_h^{-1} v_h) on its positive native support. Set R(gamma)=[[R_f,gamma*u_f*u_g^T],[gamma*u_g*u_f^T,R_g]], gamma in[-1,1]. This preserves each task marginal covariance, is PSD, and retains the original orthogonal low-order basis and group/spectral marginal laws. Source conditioning still updates the common posterior.",
+    "source_fit": "Fit only gamma by paired Gaussian source marginal likelihood, starting at0 with original optimizer tolerances. Export full common posterior and task covariance. Do not add the earlier within-head task directions or refit ARD/spectra/risk maps.",
+    "validation_first": "Reuse the12 cached60-record native mean branches. Recompute direction and fit gamma using only the remaining five tasks for each deletion; freeze all12 fits and24 independent/correlation-only whole-task forecasts before scoring deleted source sample means with identical estimated mean noise.",
+    "selection_rule": "Choose correlation-only for both assignments only if its aggregate whole-task-out joint density improves and g density does not decrease in BOTH assignments. Otherwise retain independent for both and stop this family before full-source or paid holdout work. No selection by source tasks6/7 or target outcomes.",
+    "checks": "At gamma0 reproduce native independent source NLL/common posterior; compare correlation gradient to an independent dense marginal finite difference. Check actual fitted task diagonal blocks equal native ones and the source posterior retains cross-head covariance.",
+    "conditional_full_fit": "Only a family selected by the training-task rule receives two full72-record gamma fits. Register four-field paid source forecasts separately and apply the unchanged same216-call and original144-call source gates. Existing Stage53\u201364 failures remain; no target or KG work follows automatically.",
+    "cost": "At most12 deletion scalar fits and, conditional on training validation,2 full scalar fits. All native means, risk laws and Gaussian field interfaces are reused. No new simulator/verifier calls, risk fits or terminal integrations.",
+    "interpretation": "Source-only function-correlation ablation with native task marginal variances. It does not learn physical risk factors or establish independent deployment/KG value.",
+    "execution": "local serial single-thread and cached small JSON; no target archive reads, server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_fixed_marginal_correlation_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_fixed_marginal_correlation_plan_v1.json",
+    "entrypoint": "performance/validate_legacy_fixed_marginal_correlation.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "task_correlation": 0.7499986075252847,
+      "whitened_task_minimum_eigenvalue": 0.2500013924747153,
+      "training_nll_gain": 0.026138452049460748,
+      "joint_density_change": -0.0241922744262566,
+      "head_density_changes": [
+        -0.01214551739167602,
+        -0.00832312255953438
+      ],
+      "joint_dependence_contribution": -0.0037236344750462003,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.1867770128234574,
+          0.9380835025568862
+        ],
+        "correlation_only": [
+          0.21319253797250334,
+          0.955683366279834
+        ]
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "task_correlation": 0.7659822298385116,
+      "whitened_task_minimum_eigenvalue": 0.2340177701614884,
+      "training_nll_gain": 0.023105342491120284,
+      "joint_density_change": -0.007119291546835438,
+      "head_density_changes": [
+        0.03331779615799313,
+        0.0021976442992130973
+      ],
+      "joint_dependence_contribution": -0.042634732004041664,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          1.0663668798139776,
+          0.6195625393105361
+        ],
+        "correlation_only": [
+          1.0015643351145933,
+          0.6160871838960859
+        ]
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "task_correlation": 0.7482377753051139,
+      "whitened_task_minimum_eigenvalue": 0.25176222469488607,
+      "training_nll_gain": 0.018699325957149293,
+      "joint_density_change": 0.04414376193678837,
+      "head_density_changes": [
+        0.005861987331012841,
+        0.0013692977159560638
+      ],
+      "joint_dependence_contribution": 0.03691247688981947,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.578107561477893,
+          0.33586915656381583
+        ],
+        "correlation_only": [
+          0.5688396849648107,
+          0.33357140340827734
+        ]
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "task_correlation": 1.0,
+      "whitened_task_minimum_eigenvalue": 0.0,
+      "training_nll_gain": 0.04594154267433681,
+      "joint_density_change": -0.8760512282137847,
+      "head_density_changes": [
+        -0.02236075658052261,
+        -0.08902403395334424
+      ],
+      "joint_dependence_contribution": -0.7646664376799178,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.40845889849892264,
+          1.8941154963240177
+        ],
+        "correlation_only": [
+          0.45726167091013137,
+          2.0790066926098008
+        ]
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "task_correlation": 0.7561716387801963,
+      "whitened_task_minimum_eigenvalue": 0.24382836121980367,
+      "training_nll_gain": 0.02183015718879533,
+      "joint_density_change": 0.004851880662708474,
+      "head_density_changes": [
+        0.00749904689138603,
+        -0.007651578333396358
+      ],
+      "joint_dependence_contribution": 0.005004412104718803,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.4409201668369191,
+          0.46326895363792775
+        ],
+        "correlation_only": [
+          0.427501149281649,
+          0.47958843369551346
+        ]
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "task_correlation": 0.7079883647919535,
+      "whitened_task_minimum_eigenvalue": 0.2920116352080465,
+      "training_nll_gain": 0.024629782553696078,
+      "joint_density_change": -0.08937269055063046,
+      "head_density_changes": [
+        -0.0046188965156392925,
+        -0.01412634157536563
+      ],
+      "joint_dependence_contribution": -0.07062745245962554,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.7692689101792882,
+          1.2342602249647852
+        ],
+        "correlation_only": [
+          0.7795571889273817,
+          1.263369218574597
+        ]
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "task_correlation": 0.6047335879600773,
+      "whitened_task_minimum_eigenvalue": 0.39526641203992274,
+      "training_nll_gain": 0.02043651224848375,
+      "joint_density_change": 0.015204822296327691,
+      "head_density_changes": [
+        -0.006885792915164668,
+        0.005483418365457515
+      ],
+      "joint_dependence_contribution": 0.016607196846034844,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.2068125640506565,
+          0.712614958868936
+        ],
+        "correlation_only": [
+          0.2213124808175525,
+          0.7028808203851044
+        ]
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "task_correlation": 0.7313620444920745,
+      "whitened_task_minimum_eigenvalue": 0.26863795550792546,
+      "training_nll_gain": 0.022378263808545684,
+      "joint_density_change": -0.004574658193709169,
+      "head_density_changes": [
+        -0.03204487631156483,
+        0.004020393198426175
+      ],
+      "joint_dependence_contribution": 0.023449824919429485,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          2.9626740941843828,
+          1.9912379624451084
+        ],
+        "correlation_only": [
+          3.027866348169202,
+          1.9837471390682093
+        ]
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "task_correlation": 0.6065494703518963,
+      "whitened_task_minimum_eigenvalue": 0.3934505296481037,
+      "training_nll_gain": 0.01727272018681325,
+      "joint_density_change": 0.045336282662472804,
+      "head_density_changes": [
+        0.0016976662641354778,
+        0.0022822075957977805
+      ],
+      "joint_dependence_contribution": 0.041356408802539546,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.31631996393897494,
+          0.4367532115400336
+        ],
+        "correlation_only": [
+          0.3133539771461118,
+          0.43268793713405024
+        ]
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "task_correlation": 1.0,
+      "whitened_task_minimum_eigenvalue": 0.0,
+      "training_nll_gain": 0.05942473186393782,
+      "joint_density_change": -0.14270055869860165,
+      "head_density_changes": [
+        0.00337602893248512,
+        -0.0027422533858891818
+      ],
+      "joint_dependence_contribution": -0.1433343342451976,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.1956527168869788,
+          1.390338064013526
+        ],
+        "correlation_only": [
+          0.19141534470819488,
+          1.3978352037313788
+        ]
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "task_correlation": 0.6221099615758489,
+      "whitened_task_minimum_eigenvalue": 0.37789003842415114,
+      "training_nll_gain": 0.018315863705619995,
+      "joint_density_change": 0.006346845668909751,
+      "head_density_changes": [
+        0.009904973582254062,
+        0.001430800016600564
+      ],
+      "joint_dependence_contribution": -0.004988927929944875,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.445796446045619,
+          0.8778536055715703
+        ],
+        "correlation_only": [
+          0.4270506669437863,
+          0.8761899919874216
+        ]
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "task_correlation": 0.7715619829353118,
+      "whitened_task_minimum_eigenvalue": 0.22843801706468825,
+      "training_nll_gain": 0.027422930320891714,
+      "joint_density_change": -0.10033592042522299,
+      "head_density_changes": [
+        -0.0014184411124578133,
+        -0.008476881799792002
+      ],
+      "joint_dependence_contribution": -0.09044059751297318,
+      "head_mahalanobis_per_label": {
+        "independent": [
+          0.8887899531233724,
+          0.8483201669722708
+        ],
+        "correlation_only": [
+          0.8932263590424894,
+          0.8659346488184
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "5": {
+      "joint_improving_tasks": 2,
+      "g_improving_tasks": 2,
+      "training_nll_gain_range": [
+        0.018699325957149293,
+        0.04594154267433681
+      ],
+      "mean_joint_dependence_contribution": -0.1399558946040155,
+      "mean_head_density_changes": [
+        0.0012589433154256795,
+        -0.01925968906774524
+      ],
+      "mean_head_mahalanobis_per_label": {
+        "independent": [
+          0.574983238271743,
+          0.9141933122263283
+        ],
+        "correlation_only": [
+          0.5746527611951783,
+          0.9545510497440182
+        ]
+      }
+    },
+    "6": {
+      "joint_improving_tasks": 3,
+      "g_improving_tasks": 4,
+      "training_nll_gain_range": [
+        0.01727272018681325,
+        0.05942473186393782
+      ],
+      "mean_joint_dependence_contribution": -0.026225071520018628,
+      "mean_head_density_changes": [
+        -0.004228406926718775,
+        0.0003329473317668086
+      ],
+      "mean_head_mahalanobis_per_label": {
+        "independent": [
+          0.8360076230383306,
+          1.0428529949019076
+        ],
+        "correlation_only": [
+          0.8457041961378895,
+          1.0432126235207606
+        ]
+      }
+    }
+  },
+  "interpretation": "Frozen-score algebra: joint density change equals f marginal change plus g marginal change plus dependence contribution. Native task marginal covariance is unchanged, but source conditioning changes common means/covariances. Mahalanobis ratios are descriptive under fitted Gaussian sample-mean noise, not hypothesis tests or raw-risk calibration. No new model is selected here.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0
+  },
+  "cpu_seconds": 0.02057540499999999
+}

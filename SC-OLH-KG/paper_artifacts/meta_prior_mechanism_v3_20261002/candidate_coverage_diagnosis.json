@@ -1,0 +1,908 @@
+{
+  "scope": "Truth-only post-scoring coverage diagnostic on the same functions and unchanged verifier. Extra candidates have not been searched with paid observations. The 1536-bank optimum is not a continuous-domain optimum or an algorithm result.",
+  "original_96_candidate_truth_matches": true,
+  "groups": [
+    {
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "mean_nested_bank_best": {
+        "96": 0.5581926887518797,
+        "384": 0.5717894973791835,
+        "1536": 0.5759161275468246
+      },
+      "mean_96_to_1536_coverage_gap": 0.01772343879494495
+    },
+    {
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "mean_nested_bank_best": {
+        "96": 0.45885664448644264,
+        "384": 0.53319215717852,
+        "1536": 0.5435326678509855
+      },
+      "mean_96_to_1536_coverage_gap": 0.08467602336454284
+    },
+    {
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "mean_nested_bank_best": {
+        "96": 0.5611962187242416,
+        "384": 0.5758250545704366,
+        "1536": 0.5805984414885619
+      },
+      "mean_96_to_1536_coverage_gap": 0.019402222764320173
+    },
+    {
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "mean_nested_bank_best": {
+        "96": 0.30853319938104745,
+        "384": 0.4296331850933529,
+        "1536": 0.4830400636222969
+      },
+      "mean_96_to_1536_coverage_gap": 0.17450686424124945
+    },
+    {
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "mean_nested_bank_best": {
+        "96": 0.6051647348914864,
+        "384": 0.6091165836789966,
+        "1536": 0.6329040650102622
+      },
+      "mean_96_to_1536_coverage_gap": 0.02773933011877594
+    },
+    {
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "mean_nested_bank_best": {
+        "96": 0.5542051286627715,
+        "384": 0.5683008799051957,
+        "1536": 0.5786898341949177
+      },
+      "mean_96_to_1536_coverage_gap": 0.02448470553214621
+    },
+    {
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "mean_nested_bank_best": {
+        "96": 0.5993486101502836,
+        "384": 0.6107506385263823,
+        "1536": 0.619582494046853
+      },
+      "mean_96_to_1536_coverage_gap": 0.02023388389656927
+    },
+    {
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "mean_nested_bank_best": {
+        "96": 0.37910447300918915,
+        "384": 0.5098549993970802,
+        "1536": 0.5556186986339613
+      },
+      "mean_96_to_1536_coverage_gap": 0.1765142256247721
+    },
+    {
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "mean_nested_bank_best": {
+        "96": 0.6349030979559873,
+        "384": 0.6585313420643852,
+        "1536": 0.6691168774885163
+      },
+      "mean_96_to_1536_coverage_gap": 0.03421377953252894
+    },
+    {
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "mean_nested_bank_best": {
+        "96": 0.4432441351614205,
+        "384": 0.5454077336688384,
+        "1536": 0.619528331787141
+      },
+      "mean_96_to_1536_coverage_gap": 0.1762841966257204
+    }
+  ],
+  "rows": [
+    {
+      "seed": 16,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4944982100800182,
+        "384": 0.4960871459392278,
+        "1536": 0.4970686837041593
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.3777614247512606,
+        "384": 0.3788113401284161,
+        "1536": 0.38385207288023754
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6717958782233416,
+        "384": 0.6849692791771549,
+        "1536": 0.6849692791771549
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6182399621318877,
+        "384": 0.661848204634105,
+        "1536": 0.661848204634105
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6440582218692219,
+        "384": 0.6478533656270661,
+        "1536": 0.6508411118302312
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6440580529547018,
+        "384": 0.6478533656270661,
+        "1536": 0.6508411118302309
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5661053496836079,
+        "384": 0.6104895639482627,
+        "1536": 0.6145086798841862
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 1.5807414650630832e-07,
+        "384": 0.6104895639482627,
+        "1536": 0.6145086798841862
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6020903105964116,
+        "384": 0.6239860873805887,
+        "1536": 0.6239860873805887
+      }
+    },
+    {
+      "seed": 16,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.013646234315814559,
+        "384": 0.5636091271140624,
+        "1536": 0.5636091271140624
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5825156428099932,
+        "384": 0.6185896653719775,
+        "1536": 0.6185896653719775
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5825156428099932,
+        "384": 0.6185896653719775,
+        "1536": 0.6185896653719775
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6209686350013403,
+        "384": 0.6305518431157988,
+        "1536": 0.641690603269598
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.00907462015075265,
+        "384": 0.00907462015075265,
+        "1536": 0.3741148377315373
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.562127235338206,
+        "384": 0.562127235338206,
+        "1536": 0.5816176618773449
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.4874336452493847,
+        "384": 0.5048291721394698,
+        "1536": 0.5320354789717979
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6586522369873367,
+        "384": 0.6683948064967608,
+        "1536": 0.6773134362727969
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6127139420372959,
+        "384": 0.6444508212687023,
+        "1536": 0.6444508212687023
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6946391153098829,
+        "384": 0.6946391153098829,
+        "1536": 0.6946391153098829
+      }
+    },
+    {
+      "seed": 17,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6765452343920536,
+        "384": 0.6765452343920536,
+        "1536": 0.6765452343920536
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4913600164683131,
+        "384": 0.4958091312092273,
+        "1536": 0.49694227033577104
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.4493494677470644,
+        "384": 0.4771765265940402,
+        "1536": 0.48269976196655573
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4936133498462478,
+        "384": 0.49460453776265617,
+        "1536": 0.49460453776265617
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 9.575981074517798e-55,
+        "384": 0.39212214054385547,
+        "1536": 0.3939242699128971
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4956536986714516,
+        "384": 0.4956536986714516,
+        "1536": 0.5683390171634732
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.4799336841892513,
+        "384": 0.4799336841892513,
+        "1536": 0.4799336841892513
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6123746691160811,
+        "384": 0.6408175530102885,
+        "1536": 0.6570114839162454
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6089996818250825,
+        "384": 0.6408175530102885,
+        "1536": 0.6570114839162454
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5929831849620455,
+        "384": 0.6294594529170505,
+        "1536": 0.6294594529170505
+      }
+    },
+    {
+      "seed": 18,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5889170037221171,
+        "384": 0.6294594529170505,
+        "1536": 0.6294594529170505
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4997607612218429,
+        "384": 0.4997607612218429,
+        "1536": 0.5001140398506797
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.49390377166905086,
+        "384": 0.4974508812586033,
+        "1536": 0.4974508812586033
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6152746157099839,
+        "384": 0.6239632762248463,
+        "1536": 0.6307800804293399
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.4701346697776923,
+        "384": 0.5127657737296196,
+        "1536": 0.5240123765130267
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5425941954936141,
+        "384": 0.5647691674813502,
+        "1536": 0.5677913290867865
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5369638132489626,
+        "384": 0.5628322539862781,
+        "1536": 0.5628322539862781
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6163377127678055,
+        "384": 0.6163377127678055,
+        "1536": 0.6376874197337472
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5078607736664806,
+        "384": 0.5139423215460468,
+        "1536": 0.5432811414382689
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6356613266037778,
+        "384": 0.6805964343809994,
+        "1536": 0.7089048708255962
+      }
+    },
+    {
+      "seed": 19,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 2.912250091851032e-20,
+        "384": 0.11237843513836378,
+        "1536": 0.5761014767502893
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6179647847951316,
+        "384": 0.650095606481905,
+        "1536": 0.6610407253370758
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5489580246032973,
+        "384": 0.5786679538451143,
+        "1536": 0.5786679538451143
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4759549343870493,
+        "384": 0.49377990630503904,
+        "1536": 0.4967439763713593
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.381178563409401,
+        "384": 0.381178563409401,
+        "1536": 0.391627285486666
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6760047350134346,
+        "384": 0.6760047350134346,
+        "1536": 0.6948270497522224
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5238707110929594,
+        "384": 0.5447762625371205,
+        "1536": 0.5447762625371205
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5235633984603951,
+        "384": 0.5235633984603951,
+        "1536": 0.5259049575926029
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.3829226224521637,
+        "384": 0.3942598927768187,
+        "1536": 0.39769886739436233
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.650654394793794,
+        "384": 0.6695954739929468,
+        "1536": 0.6866185980482874
+      }
+    },
+    {
+      "seed": 20,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5969969956288846,
+        "384": 0.5969969956288846,
+        "1536": 0.6375458191181449
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6027353338356579,
+        "384": 0.6104144293221652,
+        "1536": 0.630014396287812
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5912238476843702,
+        "384": 0.6071376070392941,
+        "1536": 0.6300143962766981
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.4864502080705736,
+        "384": 0.4950888321828439,
+        "1536": 0.4950888321828439
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.3294478011076545,
+        "384": 0.45521868059329146,
+        "1536": 0.466315316380478
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5659348295922277,
+        "384": 0.5659348295922277,
+        "1536": 0.6069780247412392
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.4657479219210112,
+        "384": 0.4799092563127505,
+        "1536": 0.4799092563127505
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6183547928736453,
+        "384": 0.6183547928736453,
+        "1536": 0.6183547928736453
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5173443829054281,
+        "384": 0.521790739901877,
+        "1536": 0.5221982720242845
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5835821587469946,
+        "384": 0.6003599900347285,
+        "1536": 0.6086818043946489
+      }
+    },
+    {
+      "seed": 21,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.4688707477177723,
+        "384": 0.5119518500188043,
+        "1536": 0.5476403305463631
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6108101195293433,
+        "384": 0.6376625982123846,
+        "1536": 0.6376625982123846
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6106722245936934,
+        "384": 0.6376625982123846,
+        "1536": 0.6376625982123846
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.46637055108063047,
+        "384": 0.490980502396236,
+        "1536": 0.4916438649790759
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.001048400996225096,
+        "384": 0.3321952382868792,
+        "1536": 0.3432118605831987
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.690154016931826,
+        "384": 0.690154016931826,
+        "1536": 0.7121443348672595
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.690154016931826,
+        "384": 0.690154016931826,
+        "1536": 0.7121443348672595
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5228809705368863,
+        "384": 0.523685834463174,
+        "1536": 0.5303518576796717
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.40299368889336457,
+        "384": 0.4189675969620737,
+        "1536": 0.4209873596310585
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6552296172373767,
+        "384": 0.684581235587315,
+        "1536": 0.6893124061790891
+      }
+    },
+    {
+      "seed": 22,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.5657405828724908,
+        "384": 0.587287827229917,
+        "1536": 0.6402922665475924
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "shared_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.5658966412747373,
+        "384": 0.5658966412747373,
+        "1536": 0.5658966412747373
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "shared_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.01646875203281111,
+        "384": 0.47004068497832985,
+        "1536": 0.5193240129963129
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "support_mismatch",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6591415774747665,
+        "384": 0.6926622593989189,
+        "1536": 0.7092663577364667
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "support_mismatch",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6591415774747665,
+        "384": 0.6926622593989189,
+        "1536": 0.7092663577364667
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "high_frequency_risk",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6647909462219089,
+        "384": 0.6704356207764105,
+        "1536": 0.6806939907635414
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "high_frequency_risk",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6054791837140749,
+        "384": 0.6361190275178038,
+        "1536": 0.6670462908646528
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "separate_risk_support",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6765197507765115,
+        "384": 0.6843614461907273,
+        "1536": 0.6955273244219278
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "separate_risk_support",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 5.342195513017467e-07,
+        "384": 0.3341215057625718,
+        "1536": 0.6448129635145816
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "separate_head_structure",
+      "difficulty": "baseline",
+      "nested_truth_bank_best": {
+        "96": 0.6643846753976158,
+        "384": 0.6850329469115709,
+        "1536": 0.7113326848529868
+      }
+    },
+    {
+      "seed": 23,
+      "regime": "separate_head_structure",
+      "difficulty": "binding",
+      "nested_truth_bank_best": {
+        "96": 0.6352362826422309,
+        "384": 0.6850329469115709,
+        "1536": 0.6850329469115709
+      }
+    }
+  ]
+}

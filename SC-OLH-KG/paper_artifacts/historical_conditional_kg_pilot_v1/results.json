@@ -1,0 +1,77 @@
+{
+  "execution_plan": "performance/manifests/historical_conditional_kg_pilot_v1.json",
+  "rows": [
+    {
+      "layout": "6",
+      "joint_fantasy_power": 2,
+      "terminal_power": 12,
+      "fixed_reference_fantasy_power": 5,
+      "stop_expected_reward": 0.29399285573629175,
+      "stop_action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "provisional_choice": "stop",
+      "candidate": 1,
+      "expected_future_reward": 0.2939569429659116,
+      "net_reward_of_paid_episode": -3.591277038011986e-05,
+      "adaptation_value": 0.0,
+      "nested_prefix_adaptation_value": 0.0,
+      "nested_adaptation_difference": 0.0,
+      "raw_joint_expected_future_reward": 0.2909477022949646,
+      "raw_joint_baseline_drift": -0.003016313188714148,
+      "fixed_action_expected_reward": 0.2939569429659116,
+      "projection_tower_drift": -7.072517767103825e-06,
+      "filter_and_quadrature_baseline_drift": -7.072517767103825e-06,
+      "verification_budget_opportunity_cost": 2.8840252613016037e-05,
+      "expected_eta_variance_reduction_fraction": 0.054620208944957616,
+      "expected_model_weights": [
+        2.882182553093938e-35,
+        2.8337710916021604e-35,
+        2.717328684463583e-23,
+        2.4320226146712593e-23,
+        0.6945887766789585,
+        0.3054112232816829,
+        2.52302111548839e-11,
+        1.412828911528779e-11
+      ],
+      "model_weight_martingale_residual": [
+        -5.190576215947978e-36,
+        -5.250175256393599e-36,
+        -2.809792751499535e-24,
+        -2.549803144084258e-24,
+        -0.00174773001851658,
+        0.0017477300225523518,
+        -2.5935818704167003e-12,
+        -1.442221785123963e-12
+      ],
+      "maximum_raw_integration_relative_error": 1.4707978525569602e-13,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "old_coarse_net_reward": 0.0038985216166433356,
+      "old_coarse_adaptation_value": 0.0,
+      "adaptive_maximum_evaluated": true,
+      "terminal_action_count": 40,
+      "all_eight_complete_identities_retained": true
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "cpu_seconds": 210.154972906,
+  "cpu_budget_stopped": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scope": "One bounded joint-adaptive pilot for the previously diagnosed layout6/query1. All eight identities,positive source components,40 actual terminal actions,the two paid observations and360/359 budgets are unchanged. Reuse the32-fantasy analytic fixed-action expectation already computed,not the obsolete coarse baseline. Evaluate the real shared-identity paid filter and adaptive maximum under the new conditional terminal at4096 nodes and four fantasies per identity. Prefix adaptation is a diagnostic. This pilot connects the actual decision path and measures cost;it does not certify close KG rankings,independent benefit or a GP comparison. Preserve negative and incomplete outcomes.",
+  "decision_ranking_certified": false,
+  "independent_confirmation": false
+}

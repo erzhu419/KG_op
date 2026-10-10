@@ -1,0 +1,168 @@
+{
+  "execution_plan": "performance/manifests/historical_factorized_tower_v1.json",
+  "rows": [
+    {
+      "candidate": 7,
+      "action": {
+        "kind": "guarded",
+        "primary": 5,
+        "shortlist": [
+          5,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "seed": 202610077,
+      "fantasy_power": 4,
+      "likelihood_prior_reward": 0.1880450251949674,
+      "likelihood_expected_reward": 0.1878048010490883,
+      "likelihood_tower_drift": -0.00024022414587909768,
+      "projected_prior_reward": 0.18665817594396827,
+      "projected_expected_reward": 0.18643659930478562,
+      "projected_baseline_drift": -0.00022157663918265236,
+      "projection_minus_likelihood_tower_drift": 1.8647506696445326e-05,
+      "predictive_log_evidence_max_error": 0.0030539857316167485,
+      "effective_sample_size_min": 2476.925902264608,
+      "maximum_inverse_cdf_error": 5.414091363910956e-10,
+      "maximum_raw_integration_relative_error": 5.904684565095245e-12,
+      "head_raw_updates": 256,
+      "terminal_draw_count": 512,
+      "reference_draw_count": 4096,
+      "fantasies_per_head_identity": 16,
+      "shared_identity_retained": true,
+      "previous_paid_projection_retained": true,
+      "adaptive_maximum_factorized": false,
+      "layout": "5",
+      "cpu_seconds": 17.698665726999998,
+      "reference_adequate": true,
+      "likelihood_tower_precision_passed": true,
+      "projected_tower_precision_passed": true,
+      "cached_terminal_prior_reproduction_error": 0.0,
+      "control_variate_net_diagnostic": 0.0005207326210697472,
+      "adaptation_value_from_cached_joint_KG": 0.0008198949873945705,
+      "raw_joint_KG_baseline_drift": 0.0010282966243249925
+    },
+    {
+      "candidate": 4,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "seed": 202610077,
+      "fantasy_power": 4,
+      "likelihood_prior_reward": 0.37375205299018005,
+      "likelihood_expected_reward": 0.3622313311221208,
+      "likelihood_tower_drift": -0.011520721868059247,
+      "projected_prior_reward": 0.37413549963194936,
+      "projected_expected_reward": 0.3648343276232711,
+      "projected_baseline_drift": -0.009301172008678249,
+      "projection_minus_likelihood_tower_drift": 0.002219549859380998,
+      "predictive_log_evidence_max_error": 0.0031510708887285688,
+      "effective_sample_size_min": 3496.6308343842798,
+      "maximum_inverse_cdf_error": 1.1381896730553834e-12,
+      "maximum_raw_integration_relative_error": 1.7889682857188873e-12,
+      "head_raw_updates": 256,
+      "terminal_draw_count": 512,
+      "reference_draw_count": 4096,
+      "fantasies_per_head_identity": 16,
+      "shared_identity_retained": true,
+      "previous_paid_projection_retained": true,
+      "adaptive_maximum_factorized": false,
+      "layout": "6",
+      "cpu_seconds": 18.372540263999998,
+      "reference_adequate": true,
+      "likelihood_tower_precision_passed": false,
+      "projected_tower_precision_passed": false,
+      "cached_terminal_prior_reproduction_error": 0.0,
+      "control_variate_net_diagnostic": 0.04581406919355613,
+      "adaptation_value_from_cached_joint_KG": 0.05518112841581463,
+      "raw_joint_KG_baseline_drift": -0.012721584881400905
+    },
+    {
+      "candidate": 4,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "seed": 202610077,
+      "fantasy_power": 5,
+      "likelihood_prior_reward": 0.37375205299018005,
+      "likelihood_expected_reward": 0.3744217970907774,
+      "likelihood_tower_drift": 0.0006697441005973359,
+      "projected_prior_reward": 0.37413549963194936,
+      "projected_expected_reward": 0.371460023314391,
+      "projected_baseline_drift": -0.0026754763175583784,
+      "projection_minus_likelihood_tower_drift": -0.0033452204181557144,
+      "predictive_log_evidence_max_error": 0.0031510708887285688,
+      "effective_sample_size_min": 3496.6308343842798,
+      "maximum_inverse_cdf_error": 1.1414247513397399e-12,
+      "maximum_raw_integration_relative_error": 1.849308905639566e-12,
+      "head_raw_updates": 512,
+      "terminal_draw_count": 512,
+      "reference_draw_count": 4096,
+      "fantasies_per_head_identity": 32,
+      "shared_identity_retained": true,
+      "previous_paid_projection_retained": true,
+      "adaptive_maximum_factorized": false,
+      "layout": "6",
+      "cpu_seconds": 37.205061052,
+      "reference_adequate": true,
+      "likelihood_tower_precision_passed": true,
+      "projected_tower_precision_passed": true,
+      "cached_terminal_prior_reproduction_error": 0.0,
+      "control_variate_net_diagnostic": 0.052439764884676,
+      "adaptation_value_from_cached_joint_KG": 0.05518112841581463,
+      "raw_joint_KG_baseline_drift": -0.012721584881400905
+    }
+  ],
+  "passed_layouts": [
+    "5",
+    "6"
+  ],
+  "all_queries_precision_passed": true,
+  "stopped_at_cpu_budget": false,
+  "cpu_seconds": 76.77920055599999,
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scientific_model_ranking_authorized": false,
+  "independent_confirmation": false,
+  "no_model_adopted": true,
+  "limitations": [
+    "Fixed action only;adaptive maximum still uses the opened two-dimensional jointKG nodes.",
+    "Likelihood reference keeps previous two paid projections;this is not exact longitudinal inference.",
+    "Control-variate net value is a development numerical diagnostic,not an independent decision advantage."
+  ]
+}

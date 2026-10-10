@@ -1,0 +1,15 @@
+{
+  "status": "registered after Hermite128 actual CDF failure;uniform numerical refinement only",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "queries": {"5": 7, "6": 4},
+  "seed": 202610077,
+  "fantasy_power": 3,
+  "order": 256,
+  "refinement_order": 512,
+  "maximum_single_thread_cpu_seconds": 90,
+  "precision": {"maximum_inverse_cdf_error": 1e-8, "maximum_adaptive_cdf_error_bound": 1e-9},
+  "method": "Same historical raw conditional CDF,32 retained query heads,source weights and law. Uniform Hermite256 inverse CDF versus Hermite512 and independent adaptive quad_vec. Previous Hermite128 actual failure is preserved;no model selection,seed search,source resampling or new outcomes. KG checks inverseCDF against adaptive CDF at every used node before interpreting fantasies.",
+  "previous_precision_results": "paper_artifacts/historical_predictive_cdf_v1/results.json",
+  "cost": {"new_source_labels": 0, "new_prior_fits": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_predictive_cdf_v2"
+}

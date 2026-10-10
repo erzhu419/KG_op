@@ -1,0 +1,224 @@
+{
+  "execution": {
+    "status": "registered after task-spectrum posterior had small predictive effect;before calculations",
+    "entrypoint": "performance/diagnose_legacy_f_source_predictive_information.py",
+    "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+    "source_probe_results": "paper_artifacts/legacy_joint_population_f_source_spectral_uncertainty_v1/results.json",
+    "information_results": "paper_artifacts/legacy_joint_population_f_joint_spectral_information_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "query_task": 0,
+    "question": "Which remaining source parameters have uncertainty that matters for public predictive mean/shape,conditional on the original source templates/support?",
+    "calculation": "Hold task exponent at its original boundary4. Use the saved expected Fisher3x3 for the interior common root amplitude/common exponent/task root amplitude and the exact derivatives of coherently source-conditioned beta and H+R. Report J I^-1 J^T as a local predictive-information diagnostic,with correlations;also report each fixed-other-parameter tangent. It is not a hyperparameter posterior or calibrated variance correction. All templates,tails,center,white and original source label noise remain fixed.",
+    "verification": "Reproduce source point states from Stage185. Verify NEW derivatives of predictive beta and H+R against central differences for the first canonical source case,all three interior parameters. PSD of local sensitivity covariance and its covariance identity. Stop on mismatch without changing tolerances;do not rerun old likelihood gradient checks.",
+    "derivative_step": 1e-05,
+    "derivative_tolerances": {
+      "absolute": 1e-08,
+      "relative": 1e-05
+    },
+    "freeze": "Only the same four source identities and48 source mean labels;outcome-free public73 reference. No query paid/future values or score arrays indexed.",
+    "decision": "Use predictive relevance to select the next source-only uncertainty calculation,if warranted. If common exponent dominates,properly integrate it jointly with the task exponent on their original[0,4] domains before any raw pilot. If amplitudes dominate,design proper amplitude priors rather than applying this local tangent as a deployed covariance. No task1-driven scale choice.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_optimizations": 0,
+      "maximum_source_conditionings": 8,
+      "new_raw_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached source JSON;no server jobs or pulls",
+    "scope": "Conditional source information only. Retained native intercept mixture remains reference;point-spectral candidate stopped;complete-model HOLD. No source6/7,target,independent confirmation,KG or manuscript change.",
+    "output": "paper_artifacts/legacy_joint_population_f_source_predictive_information_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "query_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "task_exponent_fixed_at_4": true,
+      "interior_parameter_inverse_fisher": [
+        [
+          0.033075181728416066,
+          0.008690140326582392,
+          -0.000591966857701729
+        ],
+        [
+          0.00869014032658239,
+          0.06577286777561053,
+          -0.00019742223992530778
+        ],
+        [
+          -0.0005919668577017288,
+          -0.00019742223992530775,
+          0.10919090721248413
+        ]
+      ],
+      "point_prior_variance_parts": {
+        "bank_average_variance": 0.0006548722113017528,
+        "bank_average_level_variance": 0.00045982927555378766,
+        "centered_shape_variance": 0.00019504293574796515
+      },
+      "joint_local_mean_uncertainty_parts": {
+        "bank_average_variance": 1.1910707341966269e-06,
+        "bank_average_level_variance": 2.77658126827137e-08,
+        "centered_shape_variance": 1.1633049215139132e-06
+      },
+      "fixed_other_parameter_tangents": [
+        {
+          "parameter": "common_root_amplitude",
+          "fixed_other_parameters_local_sd": 0.17867310211583173,
+          "predictive_mean_variance_parts": {
+            "bank_average_variance": 5.830341379434631e-07,
+            "bank_average_level_variance": 2.1120235997935723e-08,
+            "centered_shape_variance": 5.619139019455274e-07
+          },
+          "predictive_covariance_relative_frobenius_tangent": 0.0027269547749273226,
+          "centered_shape_covariance_tangent": 2.3028482098219765e-06
+        },
+        {
+          "parameter": "common_spectral_exponent",
+          "fixed_other_parameters_local_sd": 0.2519714525178292,
+          "predictive_mean_variance_parts": {
+            "bank_average_variance": 3.6364958393521816e-07,
+            "bank_average_level_variance": 5.984888089446024e-11,
+            "centered_shape_variance": 3.635897350543237e-07
+          },
+          "predictive_covariance_relative_frobenius_tangent": 0.001842008724760377,
+          "centered_shape_covariance_tangent": -8.982750550325625e-07
+        },
+        {
+          "parameter": "task_root_amplitude",
+          "fixed_other_parameters_local_sd": 0.3304244010053799,
+          "predictive_mean_variance_parts": {
+            "bank_average_variance": 2.5680336374434645e-07,
+            "bank_average_level_variance": 6.031980452302044e-09,
+            "centered_shape_variance": 2.507713832920444e-07
+          },
+          "predictive_covariance_relative_frobenius_tangent": 0.10335334079237121,
+          "centered_shape_covariance_tangent": 6.910321961545922e-05
+        }
+      ],
+      "verification": {
+        "new_predictive_derivatives_verified": true,
+        "checks": [
+          {
+            "parameter": 0,
+            "beta_max_absolute_error": 5.041282946649517e-10,
+            "covariance_max_absolute_error": 7.756438720474268e-13
+          },
+          {
+            "parameter": 1,
+            "beta_max_absolute_error": 2.52191892477667e-10,
+            "covariance_max_absolute_error": 1.2299121139673998e-12
+          },
+          {
+            "parameter": 2,
+            "beta_max_absolute_error": 2.351887018741273e-10,
+            "covariance_max_absolute_error": 6.501514391962853e-13
+          }
+        ]
+      },
+      "source_point_law_reproduced": true
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "task_exponent_fixed_at_4": true,
+      "interior_parameter_inverse_fisher": [
+        [
+          0.03382268629997585,
+          0.009676118783111864,
+          -0.0006610650945865873
+        ],
+        [
+          0.009676118783111864,
+          0.0732842272769116,
+          -0.0003807916898905779
+        ],
+        [
+          -0.0006610650945865874,
+          -0.0003807916898905779,
+          0.10035335188609873
+        ]
+      ],
+      "point_prior_variance_parts": {
+        "bank_average_variance": 0.000837870960074393,
+        "bank_average_level_variance": 0.0006473881996888155,
+        "centered_shape_variance": 0.00019048276038557748
+      },
+      "joint_local_mean_uncertainty_parts": {
+        "bank_average_variance": 1.3843655678939587e-06,
+        "bank_average_level_variance": 3.160917127763799e-08,
+        "centered_shape_variance": 1.3527563966163207e-06
+      },
+      "fixed_other_parameter_tangents": [
+        {
+          "parameter": "common_root_amplitude",
+          "fixed_other_parameters_local_sd": 0.18039228830226933,
+          "predictive_mean_variance_parts": {
+            "bank_average_variance": 4.935610391951525e-07,
+            "bank_average_level_variance": 5.892844749099572e-11,
+            "centered_shape_variance": 4.935021107476615e-07
+          },
+          "predictive_covariance_relative_frobenius_tangent": 0.0015195805875007917,
+          "centered_shape_covariance_tangent": 1.9383171487536057e-06
+        },
+        {
+          "parameter": "common_spectral_exponent",
+          "fixed_other_parameters_local_sd": 0.2655478891095264,
+          "predictive_mean_variance_parts": {
+            "bank_average_variance": 4.411249808497521e-07,
+            "bank_average_level_variance": 2.8896079814607293e-08,
+            "centered_shape_variance": 4.1222890103514484e-07
+          },
+          "predictive_covariance_relative_frobenius_tangent": 0.0010505305689377628,
+          "centered_shape_covariance_tangent": -5.723434809174471e-07
+        },
+        {
+          "parameter": "task_root_amplitude",
+          "fixed_other_parameters_local_sd": 0.3167647555626703,
+          "predictive_mean_variance_parts": {
+            "bank_average_variance": 2.810259866779554e-07,
+            "bank_average_level_variance": 1.0455380400890837e-09,
+            "centered_shape_variance": 2.799804486378663e-07
+          },
+          "predictive_covariance_relative_frobenius_tangent": 0.07924247396121911,
+          "centered_shape_covariance_tangent": 7.307647454280906e-05
+        }
+      ],
+      "verification": null,
+      "source_point_law_reproduced": true
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.049511556999999984,
+  "cost": {
+    "new_source_optimizations": 0,
+    "maximum_source_conditionings": 8,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_source_conditionings": 8
+  },
+  "query_outcomes_indexed": false,
+  "no_model_adopted": true,
+  "point_candidate_remains_stopped": true,
+  "independent_confirmation": false,
+  "interpretation": "Expected Fisher local sensitivity at interior parameters,task exponent fixed at4. J I^-1 J^T is NOT a posterior variance to add to a deployed prior. Template,center,support,tail,white and estimation uncertainty excluded.",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

@@ -1,0 +1,21 @@
+{
+  "status": "frozen before all inner source fits and validation scores",
+  "parent_results": "paper_artifacts/legacy_joint_population_f_level_information_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": ["5", "6"],
+  "outer_deleted_task": 1,
+  "entrypoint": "performance/check_legacy_f_inner_task_learning.py",
+  "question": "Does weak level transfer persist in honest source-task deletion when every empirical center and covariance fit excludes the inner held task?",
+  "law": "Original f orthogonal sparse low-order low-frequency dictionary,regularizer,fixed common and joint common/task marginal likelihood. Same known source batch-label noise. Matched original sourceGP anchor/fixed/joint population control. No outer task1 data,source6/7,risk,K G or target.",
+  "information": "Each outer task1 branch contains five sources;delete one for each inner prediction. Four training tasks,48 batch labels,144 historical physical calls per model;one twelve-site source validation roster. Public mean reference and normalization are outcome-free metadata and stay fixed. Refit every response-based mean,covariance,signal and GP anchor using only four training tasks.",
+  "freeze": "Save each complete source fit and both inner prior predictions. Freeze all ten folds before validation scores. No raw paid update or outer-query forecast;source batch density matches source Gaussian training likelihood.",
+  "optimizer": {"method": "L-BFGS-B", "max_iterations": 4096, "ftol": 1e-9, "gtol": 1e-5},
+  "regularizer_max_iterations": 4096,
+  "fixed_population_max_iterations": 4096,
+  "gp_anchor_max_iterations": 4096,
+  "verification": "Require convergence for all sixty source fits before any validation score. Every fold explicitly records four training identities excluding both outer task1 and its inner query. Incomplete fit is retained and stops scoring;no completion,extra start or relaxed optimizer.",
+  "cost": {"maximum_new_f_source_fits": 60, "maximum_source_validation_forecasts": 20, "new_outer_query_forecasts": 0, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;existing small source JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1",
+  "decision": "If inner level errors reveal deficient task-level dispersion,register a one-parameter source predictive intercept learning rule that reconditions the common function coherently. If they do not,do not introduce that repair. This is training evidence,not outer success or independent benefit. Original stopped candidates and complete-model HOLD remain."
+}

@@ -1,0 +1,57 @@
+{
+  "execution_plan": "performance/manifests/historical_source_learning_round7_completion_v1.json",
+  "evidence_rows": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "evidence_ratio_precision_passed": true,
+      "log_source_evidence_ratio_new_vs_previous": 0.07684968490103117,
+      "split_log_ratio_difference": 0.0007959924328817536,
+      "reverse_importance_ESS": 929.4855311520196,
+      "reverse_ratio_rhat": 0.9969521861191539,
+      "reverse_ratio_autocorrelation_ESS": 903.3686503941076
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "evidence_ratio_precision_passed": true,
+      "log_source_evidence_ratio_new_vs_previous": 0.07839765022661283,
+      "split_log_ratio_difference": 0.008213086427096172,
+      "reverse_importance_ESS": 932.692063683155,
+      "reverse_ratio_rhat": 0.9987241525989059,
+      "reverse_ratio_autocorrelation_ESS": 1024.0
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "evidence_ratio_precision_passed": true,
+      "log_source_evidence_ratio_new_vs_previous": 0.048976117944675934,
+      "split_log_ratio_difference": 0.014915863445489563,
+      "reverse_importance_ESS": 979.025895160335,
+      "reverse_ratio_rhat": 1.0003745395703063,
+      "reverse_ratio_autocorrelation_ESS": 989.4415716328667
+    }
+  ],
+  "functional_repairs": [],
+  "all_registered_cases_complete": true,
+  "adjacent_evidence_cases_passed": 3,
+  "functional_repairs_passed": 0,
+  "cpu_seconds": 0.2655264059999993,
+  "new_MCMC_sweeps": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "original_source_cases_unchanged": true,
+  "no_model_adopted": true,
+  "independent_confirmation": false
+}

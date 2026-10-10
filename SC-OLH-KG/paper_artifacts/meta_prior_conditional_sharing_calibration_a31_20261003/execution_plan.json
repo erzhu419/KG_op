@@ -1,0 +1,84 @@
+{
+  "stage": "meta_prior_conditional_sharing_calibration_a31_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a30_before_a31_results": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_conditional_sharing_a30_20261003/raw_source_component_evidence.json.gz",
+    "paper_artifacts/meta_prior_conditional_sharing_a30_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_conditional_sharing_a30_20261003/validation.json",
+    "paper_artifacts/meta_prior_conditional_sharing_a30_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_conditional_sharing_a30_20261003/decision.json"
+  ],
+  "question": "Does a source-calibrated uncertain sharing prior retain A27 precision while allowing independent risk archives, with proper nested exclusion?",
+  "cohort": {
+    "seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ],
+      [
+        56,
+        57
+      ],
+      [
+        58,
+        59
+      ],
+      [
+        60,
+        61
+      ],
+      [
+        62,
+        63
+      ]
+    ],
+    "groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "conditions": [
+      "matched",
+      "transfer"
+    ],
+    "source_paths": 256,
+    "source_profiles": 512,
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "calibration": "For each outer held pair, train on both groups of the other7 pairs. For every inner scored pair, remove both outer-held and inner-scored pairs from population components:24 population archives, plus the explicit inner local archive. The scored pair local prior uses its original7 tasks only. Sum half the matched and half the co-shift conditional risk predictive log scores, so the same paid labels are not treated as independent duplicate observations. Uniform Beta(1,1) reference over q, with empirical predictive-score posterior. Issue the expected q and retain its moments; no argmax or q floors.",
+  "held_prediction": "Evaluate the outer held pair with28 population archives plus the original local archive, exactly as A30. Use the calibrated mean q to integrate its shared/separate state; retain source q uncertainty and target-prefix sharing-state probability. C-I is primary in all4 source strata; C-J, C-A and C-U references are retained. A full-risk model CG uses identical archive evidence structure and the same issued sharing prior, omitting only risk anisotropy.",
+  "numerics": "64-point Gauss-Legendre primary q reference; confirm128/256 without changing primary parameters. Maximum held forecast log-score change1e-4. No Gaussian prediction is recomputed.",
+  "controls": "Require complete A30 cache and original cohort. Every training profile population excludes both held pairs. Mutating outer-held observations and their per-archive evidence columns must not alter training branch arrays or issued prior. q=1/0 reproduce J/A; q=1/2 reproduces U. Proper sharing evidence uses f/g and eta past only; future labels affect scores only.",
+  "analysis": "Eight-pair-block bootstrap20000, all four source strata and early9-12/late21-24 contrasts. Retain calibrated q mean/sd, posterior shared-state probabilities and local/population risk mass. No inference of deployment risk-only-shift frequency from these natural panels.",
+  "decision": "A source-calibrated uncertainty model with no coherent compatible loss may proceed to a separately frozen target test. Otherwise no target/recommendation promotion. In either case, a separately frozen cross-head-record diagnostic may test whether the genuine source panels teach risk-only decoupling; recombination is not physical co-observed data and cannot establish deployment frequency.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "new_gaussian_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0
+  },
+  "resource_admission": "Retain the first complete outer-pair calibration including64/128/256 confirmations; project8 fits with1.25 safety factor plus5 CPU seconds summary reserve. Stop within30 CPU seconds.",
+  "paired_bootstrap_seed": 20261109,
+  "information_cost": "Calibration uses28 original source archives172032 paid calls outside each held pair; each training prediction has24 external population archives plus its local source7-task prior. Held prediction has28 external archives plus local. All calls are historical and reused.",
+  "limitations": "An empirical predictive-score posterior, not an exact joint-label likelihood posterior. Overlapping source priors and forecast prefixes limit posterior-coverage interpretation. The source distribution has no naturally co-observed risk-only support changes. Added q uncertainty may have irreducible compatible cost; no independent target evidence."
+}

@@ -1,0 +1,85 @@
+{
+  "execution_plan": "performance/manifests/historical_conditional_guarded_kg_pilot_v1.json",
+  "rows": [
+    {
+      "layout": "5",
+      "joint_fantasy_power": 2,
+      "terminal_power": 14,
+      "fixed_reference_fantasy_power": 5,
+      "stop_expected_reward": 0.015599107486330503,
+      "stop_action": {
+        "kind": "guarded",
+        "primary": 5,
+        "shortlist": [
+          5,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          131,
+          82
+        ]
+      },
+      "provisional_choice": "sample",
+      "candidate": 5,
+      "expected_future_reward": 0.017184885807425925,
+      "net_reward_of_paid_episode": 0.0015857783210954223,
+      "adaptation_value": 0.0024264040574278473,
+      "nested_prefix_adaptation_value": 0.0022046091873819174,
+      "nested_adaptation_difference": 0.00022179487004592982,
+      "raw_joint_expected_future_reward": 0.008049976542485068,
+      "raw_joint_baseline_drift": -0.009944337444282907,
+      "fixed_action_expected_reward": 0.014758481749998078,
+      "projection_tower_drift": -0.0008094281793420491,
+      "filter_and_quadrature_baseline_drift": -0.0008094281793420491,
+      "verification_budget_opportunity_cost": 3.1197556990375866e-05,
+      "expected_eta_variance_reduction_fraction": 0.01674632222237798,
+      "expected_model_weights": [
+        5.473961263436775e-30,
+        1.1765364833359693e-29,
+        5.751456434874482e-08,
+        2.2163525130301077e-08,
+        0.5059062797849797,
+        0.4940936405369308,
+        1.929308682606554e-18,
+        9.473648155569593e-19
+      ],
+      "model_weight_martingale_residual": [
+        -5.0844919084266e-29,
+        -1.1026737082278306e-28,
+        -4.804658127516115e-07,
+        -1.8316303865696978e-07,
+        0.000808238573199338,
+        -0.0008075749443479108,
+        -4.75015573358954e-18,
+        -2.3354121355543106e-18
+      ],
+      "maximum_raw_integration_relative_error": 1.4233048865030522e-13,
+      "fantasies_per_component": 4,
+      "reused_fantasies": 0,
+      "new_terminal_fantasies": 32,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "old_coarse_net_reward": 0.00189041272270251,
+      "old_coarse_adaptation_value": 0.0024610643359675097,
+      "completed_prefix_artifact": null,
+      "adaptive_maximum_evaluated": true,
+      "terminal_action_count": 40,
+      "all_eight_complete_identities_retained": true
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "cpu_seconds": 154.533496708,
+  "cpu_budget_stopped": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scope": "Preserve actual final source laws,all complete eight identities and positive source mixtures,two paid observations,40 actions and360/359 budgets. Jointly evaluate every paid-filter fantasy's adaptive maximum at16384 nodes,four fantasies per identity. Replace the obsolete coarse fixed baseline with the32-head-fantasy corrected guarded reference under the same terminal rule. Preserve all signs and numerical drift. This pilot is not a decision ranking or independent confirmation.",
+  "decision_ranking_certified": false,
+  "independent_confirmation": false
+}

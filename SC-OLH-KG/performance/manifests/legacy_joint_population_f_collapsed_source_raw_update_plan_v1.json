@@ -1,0 +1,44 @@
+{
+  "status": "completed;all four precision gates pass;collapsed Gaussian likelihood and singleton checks pass",
+  "joint_source_results": "paper_artifacts/legacy_joint_population_f_correlated_source_raw_update_v1/results.json",
+  "joint_source_inputs": "paper_artifacts/legacy_joint_population_f_correlated_source_raw_update_v1/frozen_inputs.json",
+  "singleton_results": "paper_artifacts/legacy_joint_population_f_single_batch_raw_posterior_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "arms": [
+    "joint_spectral_geometry",
+    "source_gp"
+  ],
+  "question": "Can exact Gaussian marginalization of f and Rao-Blackwell posterior moment estimates resolve the matched source GP precision gap without extra data or a changed likelihood?",
+  "law": "Reuse exactly Stage197 full48-site Gaussian f/eta priors,observations,and their independence assumption. Integrate f analytically in the likelihood: N(batch_means;f_mean,C_f+diag(exp(eta)/3)) times the joint chi-square sample-variance likelihood. Elliptical-slice sample only eta under its same correlated Gaussian prior. Compute conditional f mean and covariance analytically at each retained eta sample. Posterior f covariance is E[C_f_given_eta]+Cov(m_f_given_eta),including the between-eta mean term. No sample variance posterior fed into another variance likelihood.",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610071
+  },
+  "verification": "At an interior eta point verify marginal Gaussian f likelihood by the existing dense normal density,and f conditional covariance by both Schur and precision solves. In the one-site specialization,compare collapsed quadrature moments to Stage198 deterministic posterior moments before any joint sampling. Retain all original prior matrices and measure constants;do not refit or rescale them from failed precision diagnostics.",
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "decision": "Stop on any failed precision gate without extending draws or relaxing bounds. If all gates pass,close the conditional prototype's control comparison and design the original48-source training repair. That later repair must use an unconditioned empirical risk population prior when replaying original S^2;the already32-risk-label-conditioned law used here cannot be reused on those same labels. Keep four original prior principles and matched GP information. No task0/task1 predictions before source training is coherent.",
+  "maximum_single_thread_cpu_seconds": 40,
+  "cost": {
+    "new_source_labels": 0,
+    "new_source_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;frozen small JSON,in-memory eta draws and posterior sums only,no NPZ or server work",
+  "scope": "New collapsed estimator for the same conditional source posterior;Stage197 GP precision failure stays recorded. No original48-label double use,no source6/7,target,KG,independent confirmation or manuscript edits. Native intercept mixture reference;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_collapsed_source_raw_update_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_collapsed_source_raw_update_v1/results.json",
+  "entrypoint": "performance/check_legacy_f_collapsed_source_raw_update.py"
+}

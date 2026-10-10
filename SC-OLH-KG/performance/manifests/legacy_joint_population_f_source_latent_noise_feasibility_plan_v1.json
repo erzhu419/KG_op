@@ -1,0 +1,36 @@
+{
+  "status": "completed;all checks pass;canonical new-source integration small;rank/tangent directions unchanged",
+  "source_noise_results": "paper_artifacts/legacy_joint_population_f_source_noise_contract_v1/results.json",
+  "source_point_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+  "source_gp_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "risk_control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "source_validation_task": 0,
+  "question": "Does integrating unknown variance in held-source batch means materially alter the source predictive inference that currently freezes S_f^2/3 as known?",
+  "contract": "Use the two canonical four-source f priors(sparse joint point law and same-source GP)and their identical source4 eta_f priors,all excluding source-validation task0 and outer task1. Reuse fixed outcome-free coordinates and existing twelve-site source-validation roster. Freeze these zero-shot marginals before reading that roster's cached mean/log-variance labels. No paid updates,posterior re-estimation or new observations.",
+  "calculation": "At each of twelve sites per layout/arm,integrate the same proper Gaussian batch-mean and chi-square sample-variance likelihood over latent eta_f and Gaussian f. Split joint log density into variance-label log density and conditional mean log density. Compare conditional mean log density/variance and source likelihood covariance tangent with the current Gaussian plug-in predictive mean density using S_f^2/3. Include both arms;no baseline is allowed oracle noise. The held-source variance label may be conditioned on ONLY for this registered source diagnostic,not for target deployment.",
+  "verification": "Original mean/log-S^2 bias correction and Jacobian must match the existing raw batch measure;n=3. Explicitly verify S_f^2/3 reconstructed from eta_f response agrees with the source input noise. Require unchanged existing adaptive integral bounds and matched source identities/rosters. Stop on mismatch without relaxed tolerances. The first site in each arm is compared with the existing independent local_calibration calculation at1e-8;these two extra joint/variance integrations are included in the verification budget.",
+  "decision": "If source conditional mean inference materially differs,design an uncertainty-aware source training likelihood using batch sufficient statistics. Avoid feeding an eta posterior that already consumed S^2 back into a joint S^2 likelihood;factor p(S^2)p(mean|S^2)or infer latent f/eta jointly. Include estimated variance uncertainty for structured and same-source GP controls under equal information. If differences are negligible at these priors,do not call this the cause of the failed candidates;assess source-coverage/model bias next. No additional outer task1 forecasts until a candidate passes complete inner development and numerical checks.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "maximum_joint_batch_integrations": 48,
+    "maximum_variance_only_integrations": 24,
+    "additional_cross_implementation_joint_checks": 2,
+    "additional_cross_implementation_variance_checks": 2
+  },
+  "execution": "local serial single-thread;reuse small cached source labels/coefficient and risk summaries;no server work,pulls or NPZ",
+  "scope": "Opened source-only diagnostic of likelihood approximation,not an exact full source posterior or independent confirmation. Original four prior principles remain;native intercept mixture retained;point/amplitude candidates stopped;complete-model HOLD. No task1 outcomes,source6/7,target,KG or manuscript edits.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1",
+  "entrypoint": "performance/diagnose_legacy_f_source_latent_noise_feasibility.py",
+  "results": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1/results.json"
+}

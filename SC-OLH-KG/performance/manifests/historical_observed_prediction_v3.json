@@ -1,0 +1,39 @@
+{
+  "parent_plan": "performance/manifests/historical_achievable_precision_v4.json",
+  "output": "paper_artifacts/historical_observed_prediction_v1",
+  "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+  "origins": [
+    4,
+    5
+  ],
+  "replicates": [
+    4
+  ],
+  "predictive_power": 11,
+  "prefixes": [
+    8,
+    64,
+    512,
+    1024,
+    2048
+  ],
+  "cdf_order": 256,
+  "batch_cdf_orders": [
+    64,
+    128,
+    256
+  ],
+  "maximum_inverse_cdf_error": 1e-08,
+  "maximum_adaptive_cdf_error_bound": 1e-09,
+  "inner_orders": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "maximum_inner_error": 0.0001,
+  "maximum_tower_drift": 0.0001,
+  "maximum_job_cpu_seconds": 420,
+  "scope": "Numerical extension after the512-to1024 fixed-action change remained1.1187e-4, above the original1e-4 gate. Retain all1024 observations and values, evaluate only new1024 per head. Same law, seed and source snapshot; no adaptive KG or physical calls."
+}

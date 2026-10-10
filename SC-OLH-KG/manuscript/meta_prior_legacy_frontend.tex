@@ -1,0 +1,62 @@
+\subsection{Retained structural-initialization evidence}\label{sec:mp_legacy_frontend}
+
+The frozen combined legacy frontend has a completed component study on
+FactorShock, InventorySupplyChain, and QueueResourceControl.  At nominal
+dimension 1,000, each family contributes 20 algorithmic seeds.  The frontend
+uses 384 reusable source calls per held-out-family archive to freeze ten
+target proposals.  Proposal-only selection uses ten target search calls;
+Stacked GP and canonical SAASBO add three adaptive calls.  All three frontend
+arms achieved 60/60 true-feasible and independently certified recommendations
+with zero false certificates.  Replacing the frontend by common Sobol gave
+0/60, 1/60, and 0/60 certifications, respectively
+(Table~\ref{tab:mp_legacy_frontend}).
+This frontend combines universal policy shapes with source templates through
+the historical \texttt{LearnedMetaPrior} implementation; it is distinct from
+the later public 64-profile \texttt{SourceScoredProfileAtlas}.  Component
+ablations certified 40/60 with source templates alone (0/20 FactorShock,
+20/20 Inventory, 20/20 Queue), and 23/60 with universal shapes alone
+(20/20, 2/20, 1/20).  The combined result therefore reflects complementary
+components rather than a contribution attributable wholly to source learning.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Historical frontend component study. Source calls are per reusable
+archive and search calls are per target run; terminal verification calls are
+additional and separately recorded. These results use the common historical
+v69 Gaussian terminal protocol, not the current physical-Inventory verifier.}
+\label{tab:mp_legacy_frontend}
+\resizebox{\textwidth}{!}{\input{meta_prior_legacy_frontend_table.tex}}
+\end{table}
+
+The native transfer matrix retains each comparator's own initialization and
+adaptation with the 384-call source archive and 13-call target search budget.
+Its best certification totals were RGPE's 30/60 and MetaBO's 28/60.  In the
+separate common-frontend backend comparison, the eight transfer methods reached
+56--60/60.  These comparisons retain both the native and supplied-frontend
+pipelines; the common-Sobol factorial above supplies the direct frontend
+intervention for the two fitted backends.  The supplement preserves the
+individual method totals and evidence locations.
+
+This study supports the value of structural initialization on these three
+fixed task families.  Its seeds measure algorithmic repeatability, not
+generalization across 60 independent task laws.  The current physical
+Inventory model has four state-bin actions and replicated mean/risk labels;
+it uses a common eight-policy initialization rather than the combined frontend.
+Consequently, the frontend remains a demonstrated component of the project,
+while independent decision superiority of the combined frontend--function-prior--KG
+pipeline remains unestablished.  A development integration check reuses the
+historical frozen proposals and source archives at seed 80 in each family,
+with ten common single-episode observations and three subsequent raw-observation
+KG calls.  The source-orthogonal and same-source full priors do not improve
+the deployed objective over proposal-only selection.  Both can recommend
+infeasible unobserved Inventory candidates after ten calls; a common independent
+verifier retaining initial-policy support preserves the deployed result.
+Under the declared primary-certificate utility and common finite candidate
+bank, the retained initial deployment leaves no utility headroom in FactorShock
+and only 0.0021 and 0.0014 in Inventory and Queue, respectively.  These
+post-decision bounds apply to this candidate bank and proxy utility.
+This check uses a declared primary-certificate utility for acquisition and a
+guarded shortlist for deployment; it diagnoses the remaining mismatch between
+these objectives, rather than establishing a unified deployment KG advantage.
+Its replay entry point is given in the supplement.

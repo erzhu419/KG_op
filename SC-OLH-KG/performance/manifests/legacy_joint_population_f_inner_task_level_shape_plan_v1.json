@@ -1,0 +1,22 @@
+{
+  "status": "completed Stage153;two-layout predictive direction failed;joint q fit not permitted",
+  "completed_execution": "performance/manifests/legacy_joint_population_f_inner_task_level_shape_execution_v1.json",
+  "completed_results": "paper_artifacts/legacy_joint_population_f_inner_task_level_shape_v1/results.json",
+  "followup_attribution": "paper_artifacts/legacy_joint_population_f_inner_joint_attribution_v1/results.json",
+  "level_information_results": "paper_artifacts/legacy_joint_population_f_level_information_v1/results.json",
+  "inner_source_results": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "stopped_shape_direction": "paper_artifacts/legacy_joint_population_f_inner_shape_geometry_v1/results.json",
+  "design_pilot_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+  "design_error_results": "paper_artifacts/legacy_joint_population_f_source_design_error_v1/results.json",
+  "question": "Does honest inner source predictive learning support joint task-level/shape covariance including its variance allocation,which fixed-native-marginal correlation alone did not repair?",
+  "basis": "Initial-design effects are real but source-prior superiority failed:remaining common-design GP MSE gaps are83.3%/84.1% level error. Inner source level z-squared1.168/.724 argues against universal variance inflation;GP proper batch density improves all ten inner folds. Previous sparse task template lost in-sample training likelihood;the newly refitted four-source inner laws permit an honest predictive-objective test without source task1 outcomes.",
+  "calculation": "Reuse the ten Stage148 source4 fits,public27-column basis and sourceGP task covariance. Project its task kernel to that basis. On native common/task source-selected support union,construct a PSD level/shape template using its coefficient correlation and group variance budgets,reimposing each native within-group low-frequency spectral weight. Keep independent1% tail. Interpolate original native task excess with this joint template for0<=q<=1,and coherently recondition common beta/H on the four training sources. Report original training NLL and held-source predictive NLL gradients plus the single frozen q=.01 probe. No outer task1 forecast or new source fit.",
+  "fixed_probe_q": 0.01,
+  "verification": "q=0 must reproduce each saved native source4 likelihood,beta/H and held-source prediction. Template PSD,support-union restriction,original spectral marginals and independent weak tail must hold. Check the proper predictive derivative on one fold per layout. Do not re-run settled raw filter or quadrature checks.",
+  "decision": "Only a negative mean held-source predictive gradient and positive q=.01 predictive density gain in BOTH layouts permit a separately frozen single-parameter predictive learning rule. Otherwise stop this family without a q sweep,new target run or gate relaxation. Do not infer that adding covariance parameters must work.",
+  "scope": "Original orthogonal,sparse,low-order,low-frequency meta-prior contract;source0-5 training-only inner folds. Task1 remains absent from both outer source branches and all outcomes at this step;source6/7,target,KG,confirmation and manuscript unchanged. Shape-only Stage149 candidate stays stopped.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_outer_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;small existing source JSON only;no server tasks or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_task_level_shape_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_inner_task_level_shape.py"
+}

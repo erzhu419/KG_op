@@ -1,0 +1,49 @@
+{
+  "status": "completed Stage171;matched source-package test completed Stage172;Gaussian exact-filter check completed Stages173-174",
+  "question": "Does the already-scored outer task1 require a different conditional-mean uncertainty direction than the source inner folds? Is the learned-budget failure predominantly mean bias,latent-f dispersion or variance-label density?",
+  "learned_pilot_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_scale_pilot_v1/results.json",
+  "q1_pilot_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_pilot_v1/results.json",
+  "control_pilot_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+  "inner_calibration_results": "paper_artifacts/legacy_joint_population_f_inner_conditional_calibration_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "retained_fixed_component_directory": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "designs": [
+    "fixed_public_prefix",
+    "intercept_mixture_greedy"
+  ],
+  "structural_arms": [
+    "source_variance_mixture",
+    "source_predictive_shape_mixture",
+    "source_predictive_shape_scale_mixture"
+  ],
+  "cases": "Twelve already-scored structural forecasts at both designs/layouts plus two GP forecasts at the common intercept_mixture_greedy design. GP fixed-prefix local f/eta states were not saved;omit that conditional comparison rather than replaying a settled forecast. Reuse12 saved structural numerical reference states. Preserve every site and design.",
+  "calculation": "Reuse Stage167 local_calibration at each of the twelve outer future batches:joint density split,conditional mean/variance,latent f versus episode noise,standardized errors,CDF/coverage and the local conditional-f variance log-scale score gradient. Compare unmodified q1 and GP summaries with Stage167 inner baselines descriptively. Decompose unconditional observed mean MSE into level and centered shape using the same twelve labels. The future-variance-conditioned moments and score tangents are diagnostics,not deployable forecasts or causal task-shift identification.",
+  "verification": "Reproduce each cached joint raw density within1e-8 and observed mean MSE within1e-12. Reuse structural saved reference states for the Stage167 moment/CDF/gradient tolerances. Stage166 factorization and Stage167 analytical derivative checks already passed and are not repeated. A discrepancy blocks interpretation and triggers correction of the affected input mapping or numerical integral;do not relax tolerances.",
+  "refinement_tolerances": {
+    "conditional_mean_max_absolute": 1e-07,
+    "variance_relative": 1e-05,
+    "cdf_max_absolute": 1e-06,
+    "gradient_max_absolute": 1e-06
+  },
+  "decision": "A source-inner versus outer direction reversal argues against another global scale fit;locate common-mean/transfer geometry before new model learning. Similar directions with density losses require inspecting mean bias and mixture components. Do not revive the stopped joint level/shape direction without new source-only support. This cached diagnostic cannot select a target-specific scale or unlock confirmation.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "maximum_single_thread_cpu_seconds": 60,
+  "execution": "local serial single-thread;existing small JSON and score-site NPZ only;no server jobs or pulls",
+  "scope": "Source-learned orthogonal,sparse,low-order,low-frequency mean/risk meta-prior remains the goal. Learned-budget candidate stopped;retained native intercept mixture remains the reference. Complete-model HOLD;no source6/7,target,KG,independent confirmation,manuscript or legacy60/60 changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_outer_conditional_calibration_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_outer_conditional_calibration.py",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_outer_conditional_calibration_execution_v1.json",
+  "completed_results": "paper_artifacts/legacy_joint_population_f_outer_conditional_calibration_v1/results.json",
+  "followup_report": "docs/orthogonal_meta_prior_stage171_174_20261007.md"
+}

@@ -1,0 +1,40 @@
+{
+  "status": "registered before the sole continuation stop prefix extension",
+  "cases": [
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "risk_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_joint_observed_task_g/results.json"
+    }
+  ],
+  "previous_conditional_risk_stationarity_cases_passed": 26,
+  "retained_sweeps_multiplier": 2,
+  "maximum_single_thread_cpu_seconds_per_case": 90,
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "optimizer": {
+    "maxiter": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "output": "paper_artifacts/historical_last_risk_precision_v1",
+  "scope": "Extend each exact final used bank once from16384 to32768 retained sweeps per chain,with the original anchor law,kernel,warmup and seed. Verify the saved-prefix current score. Evaluate the already rejected fixed proposal,not a seed-selected replacement. Additional states may confirm a second stationary-current-law check;keep that exact law with ratio1 and no accepted update. Otherwise accept the fixed proposal only if unchanged full/split Q,score precision and positive95percent source-evidence gates pass. Preserve all earlier and new failures. Full states remain in RAM. No source-registry replacement,joint convergence claim,new labels,target/verifier calls or server work.",
+  "stability_count_bookkeeping_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged."
+}

@@ -1,0 +1,84 @@
+{
+  "stage": "meta_prior_cross_head_risk_escape_a15_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a14_before_a15_results": true,
+  "question": "Can a source-calibrated mixture retain A14's compatible-source value while allowing eta-only evidence to learn a changed risk covariance through the existing A9 branch?",
+  "basis": "A14 improved source calibration and two target strata but coherently worsened high-frequency risk. Strong f/g source support implicitly raises eta source odds about 8.8-fold; a fixed full-dictionary eta alternative does not recover shifted risk covariance efficiently. A9 already contains independently updated risk-family covariance reallocation and its complete densities/evidence are saved.",
+  "components": {
+    "I": "Original factorized structural/full priors across three heads (A14 alpha=0).",
+    "C": "Coordinated all-structural/all-full prior (A14 alpha=1); each head keeps its own functions and coefficients.",
+    "R": "Original independent f/g priors and the existing A9 adapted-only eta mixture over source priors, six public function families and the frozen rho quadrature. It preserves the source eta variance budget; no f/g evidence selects eta's adapted family."
+  },
+  "prior": "Use uniform alpha,q on [0,1]^2 as a source-calibration reference. Macrocomponent masses are ((1-q)(1-alpha), (1-q)alpha, q) for I,C,R. Alpha controls structural-choice coordination; q controls independent risk adaptation. No minimum mass, target-fit weight, changed covariance or new basis is introduced.",
+  "source_calibration": "Fit the empirical CV density exp(sum held-source chronological eta log scores) on the same 32 source archives, separately for learned and generic priors. Use all eight whole-function holdouts and steps 9-24 per archive. Use 64x64 Gauss-Legendre nodes and compare 32x32/96x96. Retain parameter spread and correlation. For a target function, use the three expected macrocomponent masses; preserve E[(1-q)alpha] rather than multiplying separate posterior means.",
+  "source_gate_scope": "These CV scores calibrate the macrocomponent prior and are a calibration diagnostic, not an independent nested test. No target scores enter calibration. Source calibration must coherently support proceeding in both archive groups before complete target validation.",
+  "saved_evidence_reconstruction": "From A14 head evidence E[h,c], log L_I=sum_h logsumexp(E[h,:])-3 log 2 and log L_C=logsumexp(sum_h E[h,0], sum_h E[h,1])-log 2. From saved A9 null mass p0, log L_R=log L_I+log(1-p0)-log(p0). P_I and P_C are A14's alpha=0/1 eta densities; P_R is the saved adapted-only eta density. Mix numerators w_k L_k P_k and normalize by sum w_k L_k, using stable log arithmetic. Do not simply average the three predictive scores or double-count past observations.",
+  "source_inputs": [
+    "paper_artifacts/meta_prior_cross_head_structure_mixture_a14_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003/summary.json"
+  ],
+  "generic_source_control": "Duplicate each full component's saved evidence across its two indices. Its eta density must match A11's generic source density. I and C then coincide exactly, alpha is unidentifiable, and source calibration/prediction must reduce to A12's generic q calibration.",
+  "target_inputs": [
+    "paper_artifacts/meta_prior_cross_head_structure_mixture_a14_20261003/target_validation.json",
+    "paper_artifacts/meta_prior_risk_adaptation_calibration_a10_20261003/validation.json"
+  ],
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "source_archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "held_tasks_per_archive": 8,
+    "source_prior_profiles": 512,
+    "target_regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "target_paths": 160,
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "primary_contrast": "Calibrated three-component minus original factorized eta log score, average steps 9-24 within path and pair the 16 seeds separately in every regime/prior. Also report contrasts against A14 and A12 as secondary development comparisons. Preserve all previous failures and do not pool stages.",
+  "implementation_checks": "Pure I,C,R endpoints reproduce saved densities; absent escape reduces to A14; absent coordination reduces to A12; generic I=C preserves flat alpha uncertainty; parameter integration equals expected macrocomponent prior masses; model evidence matches the saved A9 null ratio; source/target forecast identity aligns exactly.",
+  "resource_admission": "No Gaussian component fitting is needed. Measure one complete archive's 64x64 calibration, retain it and conservatively forecast all 64 archive/prior profiles plus quadrature and target scoring before proceeding. Keep only compact score arrays. Stop with partial evidence if the 900-local-CPU-second cap would be exceeded.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "new_component_fits": 0,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "new_simulation_samples": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "promotion": "Inspect all compatible and mismatch strata. Coherent new losses prevent recommendation replay; do not tune alpha,q, covariance or prior reference after target scores. Prospective searches remain on hold.",
+  "paired_bootstrap_seed": 20261024,
+  "limitations": "The source archives lack high-frequency risk examples and within-archive support changes. This is a distinct retrospective development model proposed after A14, not a retuned or hidden replacement of A14. It does not recover new per-function support, HVD factors, high-dimensional structure or verified decision value."
+}

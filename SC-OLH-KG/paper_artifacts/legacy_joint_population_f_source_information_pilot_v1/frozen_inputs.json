@@ -1,0 +1,598 @@
+{
+  "execution": {
+    "status": "frozen before priors/prefix preparation and new paid values",
+    "design_results": "paper_artifacts/legacy_joint_population_f_source_information_design_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "deleted_task": 1,
+    "arms": [
+      "native_f",
+      "flat",
+      "source_gp",
+      "source_variance_mixture"
+    ],
+    "new_designs": [
+      "intercept_mixture_greedy",
+      "source_gp_greedy"
+    ],
+    "entrypoint": "performance/check_legacy_f_source_information_design.py",
+    "question": "Does source-prior-driven initial sampling improve actual prediction at four calls,and does its prior advantage survive common-design and each-method-own-design controls?",
+    "law": "No prior change. Retained original coherent intercept-variance mixture with raw likelihood/component updates;original native,flat,sourceGP controls;identical frozen eta_f. Use exact sixteen-site prior marginals of four paid plus original twelve scores;public73 basis stays intact.",
+    "freeze": "Use Stage150 already-frozen public-only prefixes. Freeze all sixteen new prior/prefix identities before cached task1 first f replicate values. Freeze every new forecast before scored twelve-site batch labels. Reuse eight existing fixed-prefix forecasts/scores without replay. Source5,60 labels/180 physical calls;query four raw calls;original twelve score sites unchanged. No source6/7,target,confirmation or new physical calls.",
+    "verification": "At each of four new mixture/layout/design combinations,compare selected source quadrature versus original32-nodes-per-frozen-interval refinement for mean,covariance,paid evidence and proper raw score density. Existing vector/scalar filter equivalence is retained. Numerical failure stops scoring or interpretation.",
+    "predictive_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "density_refinement_tolerance": 1e-05,
+    "comparisons": "Separate (1) mixture source-derived design versus mixture fixed-prefix prediction,(2) all four priors at the same mixture-derived prefix,(3) mixture-own versus GP-own prefixes. All score identical future twelve-site observations. Designs differing in paid sites compare future MSE/raw proper density only;transcript scores are descriptive because they include different paid observations. Same-design prior comparisons retain original MSE/raw/transcript gate.",
+    "gates": "Design-effect gate requires MSE nonincrease and raw future density strict increase in both layouts versus retained fixed mixture. Source-prior gate additionally requires both layouts pass all three original common-design controls and outperform GP-own future MSE/raw density. No selection of a better prefix/layout after scoring,no weaker reinterpretation of stopped earlier gates.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "maximum_new_query_forecasts": 16,
+      "maximum_numerical_reference_forecasts": 4,
+      "reused_fixed_forecasts": 8,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "maximum_single_thread_cpu_seconds": 180,
+    "execution": "local serial single-thread;small cached JSON/score-site NPZ only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1",
+    "decision": "A failed design-effect gate stops expanding this sampling initializer. A passed design gate without source-prior gate is an initialization effect,not established structural-prior superiority. Only both gates justify registering all-fold matched development;no independent-source or decision promotion. Complete-model HOLD remains."
+  },
+  "all_priors_and_prefixes_frozen_before_paid_values": true,
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "native_f",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "5",
+      "arm": "flat",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "5",
+      "arm": "source_variance_mixture",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        37,
+        15,
+        41,
+        5
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 176,
+      "refined_component_count": 352
+    },
+    {
+      "layout": "5",
+      "arm": "native_f",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        27,
+        40,
+        37,
+        19
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "5",
+      "arm": "flat",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        27,
+        40,
+        37,
+        19
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        27,
+        40,
+        37,
+        19
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "5",
+      "arm": "source_variance_mixture",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        27,
+        40,
+        37,
+        19
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_component_count": 176,
+      "refined_component_count": 352
+    },
+    {
+      "layout": "6",
+      "arm": "native_f",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "6",
+      "arm": "flat",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "6",
+      "arm": "source_variance_mixture",
+      "design": "intercept_mixture_greedy",
+      "paid_prefix": [
+        29,
+        15,
+        46,
+        18
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 96,
+      "refined_component_count": 384
+    },
+    {
+      "layout": "6",
+      "arm": "native_f",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        2,
+        40,
+        37,
+        60
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "6",
+      "arm": "flat",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        2,
+        40,
+        37,
+        60
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        2,
+        40,
+        37,
+        60
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 1,
+      "refined_component_count": null
+    },
+    {
+      "layout": "6",
+      "arm": "source_variance_mixture",
+      "design": "source_gp_greedy",
+      "paid_prefix": [
+        2,
+        40,
+        37,
+        60
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_component_count": 96,
+      "refined_component_count": 384
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "status": "registered before fifth and sixth source-only iterations",
+  "previous_learning": "paper_artifacts/historical_stationary_source_continuation_v2/results.json",
+  "previous_precision": "paper_artifacts/historical_stationary_source_continuation_v2/phase_results.json",
+  "iterations": [{"round":5,"seed":202610094},{"round":6,"seed":202610095}],
+  "maximum_single_thread_cpu_seconds": 240,
+  "scope": "Continue64 source covariance heads from certified actual parameters. Reuse historical MCEM,stationary mean retention,exact raw source sampling,adjacent evidence and local variance integration. Original thresholds:covariance change0.01,scaled raw score0.001,two consecutive stable iterations. Accept risk updates only with positive full/split Q;mean proposals failing Q can only remain at their old parameters after two registered stationary iterations. Stop dependent learning at any unresolved Q or posterior gate. Fixed per-round seeds,no search,new labels,target evaluation or server work. One local serial computing process,one numerical-library thread.",
+  "output": "paper_artifacts/historical_source_learning_rounds5_6_v1"
+}

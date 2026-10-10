@@ -1,0 +1,86 @@
+{
+  "stage": "meta_prior_scale_preserving_target_validation_a21_20261003",
+  "status": "chronological_target_validation_complete_not_promoted_shift_regressions",
+  "fixed_after_a20_before_a21_results": true,
+  "question": "Does the source-validated scale-preserving covariance mixture improve chronological target risk forecasts without introducing coherent losses in compatible or shifted regimes?",
+  "basis": "A20 improves shared-source forecasts in all16 seeds and removes A17's coherent separate-head loss. Separate-head gain against original I remains uncertain. A20 passes all reconstruction and quadrature controls; this permits a complete frozen target test, not a decision-value claim.",
+  "inputs": [
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/validation.json",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/inputs.json.gz",
+    "paper_artifacts/meta_prior_risk_adaptation_calibration_a10_20261003/validation.json",
+    "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003/summary.json",
+    "paper_artifacts/meta_prior_source_calibrated_adaptation_a12_20261003/validation.json"
+  ],
+  "model": "Keep A20's I/F/G/R construction, rho reference and primary expected macro masses unchanged. Use each target seed's A20 calibration trained on the other15 seeds and both source archive groups. Reconstruct eta priors using all eight original source tasks for the applicable source archive: source-info risk variances including the original tail, intercept, discrepancy and saved f/g selection indices. F/G preserve risk covariance scales as in A20; R retains saved A9 densities/evidence. No target f/g evidence chooses eta branches.",
+  "source_reconstruction": "Regenerate only the exact old paid source observations and original normalization bank. Reuse logged eta ARD variance and f/g indices; refit only the cheap original full eta prior, at most once per seed/regime. Do not reuse A19 seven-task contexts as an all-eight-task prior or run new ARD/selection fits. Stream contexts rather than retaining all priors.",
+  "target_observations": "Retain all160 existing query paths and their initial designs, including repeated candidate visits. Reconstruct only identical old observations with their original candidate and visit seeds. At each forecast, pass strictly earlier eta observations to the predictor. Current response/noise reach scoring only. Simulator truth and verification outcomes do not condition any model, weight or choice. No candidate recommendation is computed in this stage.",
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "difficulty": "binding",
+    "allocation": "n24_v928",
+    "target_paths": 160,
+    "target_forecasts": 2560,
+    "forecast_steps": [
+      9,
+      24
+    ],
+    "source_archive_mapping": "separate_head_structure uses separate_heads; all other target regimes use shared"
+  },
+  "primary_contrast": "A20-calibrated target mixture minus the unchanged original I eta forecast, averaged over steps9-24 within path. Pair the16 seeds separately in every regime and prior arm; retain all ten strata and unadjusted nominal bootstrap intervals.",
+  "secondary_contrasts": "New minus same-source-pool I/R, whose q is calibrated from both source groups of the other15 seeds using the same A11 observations; also retain A12's older per-archive contrast as a distinct development comparison. Do not equate the latter's source information cost. Report pure F/G gains and posterior macro mass at steps9/24 descriptively, without selecting a winning branch.",
+  "controls": "Reproduce every saved original I forecast and candidate/visit chronology, and confirm retained R/I evidence reconstructs A9. Check source priors use the logged risk variance and source-only f/g selections, zero nonintercept means, unchanged intercept/discrepancy, conserved coefficient variance budget and within-set ratios. The generic arm has F=G=I and must reduce to the same-pool I/R predictor at A20's generic q. Confirm source calibration excludes the target seed. Any mismatch stops the stage before a scientific conclusion.",
+  "numerics": "Primary rho order32 with A20's frozen macro order16 calibration. Confirm target predictions with rho16/48 and source-calibration macro24/32, using only saved A20 source forecasts for the latter; require maximum target log-score changes <=1e-4. Do not retune the model or replace primary parameters after target scores.",
+  "resource_admission": "Retain the first complete learned target path, including all rho checks and reconstruction controls. Forecast the remaining79 learned paths with a1.25 safety factor and40 CPU seconds for cached-source macro checks, generic controls and summaries. Stop with partial evidence if the whole-stage120-local-CPU-second cap would be exceeded.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 120,
+    "new_eta_ard_refits": 0,
+    "new_fg_selection_fits": 0,
+    "full_eta_prior_refits_max": 80,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "new_searches": 0,
+    "kg_calls": 0,
+    "new_random_verifications": 0,
+    "candidate_recommendations": 0
+  },
+  "information_cost": "A20 calibration uses30 historical archives,184320 source calls, with the held archive representing6144 additional historical calls. Supply the same pool to I/R. There are no new source/target calls; previously paid observations are reconstructed.",
+  "decision": "A complete target test with coherent new losses stops this construction before recommendation replay. If forecasts improve without coherent loss across all strata, freeze a separate candidate-calibration/recommendation validation plan on the old paths. Neither outcome authorizes new searches, KG, independent-verifier calls or source/target tuning.",
+  "paired_bootstrap_seed": 20261030,
+  "limitations": "Retrospective development evidence under historical query policies. Proper risk forecast gains do not establish selected-candidate calibration, acquisition gains or independently verified decision value. The model preserves source point-estimated risk scales and may not recover directions missed by source eta ARD; source validation lacks the target risk shifts. A17 remains a separate failed model, and stages must not be pooled.",
+  "result_artifacts": "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003",
+  "next_plan": "performance/meta_prior_scale_preserving_target_attribution_plan.json",
+  "execution_cpu_seconds": 58.143035671999996
+}

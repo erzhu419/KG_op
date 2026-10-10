@@ -1,0 +1,23 @@
+{
+  "paid_paths": "paper_artifacts/legacy_joint_bridge_v1/results.json",
+  "domains": ["FactorShockStatePolicyRZDT1", "InventorySupplyChain", "QueueResourceControl"],
+  "arms": ["legacy_source_orthogonal", "observable_source_full", "observable_source_orthogonal"],
+  "prefixes": [2,4,6,10,13],
+  "source_validation": "every fourth policy (index modulo 4 equals 3) held out within each of the two source tasks; encoder, basis and prior fitted on remaining sites only; no source-family generalization claim",
+  "encoder": "reuse source-aligned two-axis f/g mean and three-axis eta_g/eta_f maps, all from the same declared observable descriptors; default alignment/ridge parameters, no target selection",
+  "source_labels": "archived observed f,g,eta_g,eta_f; bias-corrected log sample variance; no stored sigma labels",
+  "dynamics_grid_dimension": 50,
+  "source_max_iterations": 1024,
+  "source_solver_rule": "same objective and tolerances; raised numerical cap for new coordinate fits, no target-based parameter selection; retain nonconvergence if it occurs",
+  "terminal_draw_power": 12,
+  "integration_seed": 80519,
+  "total_target_call_cap": 362,
+  "terminal_actions": "three 80/128/128 allocation permutations rescaled to remaining cap after reserving 16 comparison calls; or a single policy with 128/all remaining calls; each frozen before independent verification",
+  "familywise_delta": 0.05,
+  "comparison_budget": 8,
+  "comparison_delta": 0.05,
+  "lookahead_probe": {"domain":"InventorySupplyChain", "prefix":10, "arm":"observable_source_orthogonal", "search_points":"initial safe, initial incumbent and current posterior primary, distinct; new and repeat use the same one-episode likelihood", "draw_power":9, "fantasy_power":3},
+  "execution": "saved development paths and raw-fantasy lookahead only, local serial one thread; zero new simulator calls and zero scheduler tasks",
+  "truth_use": "after all recommendations, terminal allocations and lookahead probes are frozen; conditional expected deployment scoring only, no new independent certificate",
+  "scope": "three opened seed80 laws, same frozen frontend and 72/73/73 candidate banks; source-site validation and method attribution, not final OR evidence"
+}

@@ -1,0 +1,27 @@
+{
+  "status": "registered before constrained fits, whole-source-task predictions or selection",
+  "basis_of_next_step": "Stage49 supports the selected three-main-effect span but rejects hard one/two-mode truncation. Stage50 nested-flat initialization recovers essentially the same g spectrum and fails the all-case source gate. Test whether common spectral shrinkage chosen by in-sample marginal likelihood transfers to excluded entire source tasks.",
+  "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+  "deleted_mean_execution": "performance/manifests/legacy_joint_population_covered_complete_mean_uncertainty_v1.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "3",
+    "4"
+  ],
+  "mean_arms": [
+    "joint_structural"
+  ],
+  "mean_head": 1,
+  "candidates": [
+    "native_learned_common_spectrum",
+    "common_exponent_zero"
+  ],
+  "fit_rule": "Reuse full48 and six40-record native g means; fit exactly one common-exponent-zero ablation for each using the identical regularizer, groups, residual spectrum, weak tail, source labels/noise and original optimizer stopping. All remaining covariance parameters optimize the native likelihood. f and risk heads remain unchanged.14 extra g fits; no other grid.",
+  "source_validation": "For each source task0..5, use its whole-task-deleted40-record mean basis/prior, and predict only its eight registered selected-source sample means before any own-task adaptation. Score their joint multivariate Gaussian predictive density with the original sample-variance/3 noise. This is the same conditional/moment source likelihood approximation as training, not exact raw risk density. Reconstruct public mean coordinates via full normalization inverse then branch normalization; task response/noise does not enter query coordinates.",
+  "selection": "For each assignment select the common-spectrum ablation only if total six-task-out g predictive log density exceeds native. Both assignments remain included. Save all14 fitted candidate priors and24 task/candidate latent forecasts before validation scoring. Each own-task response/noise is excluded from its fold fit and enters only scoring; full-source fits legitimately use all48 records. After source0..5 validation selects a full prior, all four source holdout forecasts freeze before scores6/7 are evaluated.",
+  "source_gate": "Selected model must satisfy g MSE nonincrease, joint raw three-repeat density nondecrease and g density improvement on both opened source holdouts6/7 in both assignments3/4 against original structure. A failed overall gate blocks target predictions and decisions. Do not interpret selection on source0..5 as independent confirmation.",
+  "controls": "Same144 source calls, f means, all risk maps/deletion priors, two paid raw holdout records,73-bank, existing flat/GP controls; all cached, no pooling assignments.",
+  "execution": "local serial single-thread; source JSON only; no target archive read, simulator/verifier calls, terminal integration, server jobs or pulls",
+  "interpretation": "bounded source-task predictive spectral calibration, preserving orthogonal group/low-order priors and the native weak tail; no physical-factor recovery or independent decision/KG claim",
+  "output": "paper_artifacts/legacy_joint_population_taskout_spectral_selection_v1"
+}

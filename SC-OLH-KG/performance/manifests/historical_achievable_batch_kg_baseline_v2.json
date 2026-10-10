@@ -1,0 +1,48 @@
+{
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "seed": 202610077,
+  "maximum_action_resolution_difference": 0.0001,
+  "maximum_identity_integration_error_bound": 2e-06,
+  "status": "Bounded achievable-KG development pilot; no independent confirmation.",
+  "output": "paper_artifacts/historical_achievable_batch_kg_baseline_v2",
+  "states": [
+    "learned_prior_independent_02_source_common_task_rbf_layout6"
+  ],
+  "query": 63,
+  "query_basis": "Already frozen source STOP primary; identical query for both learners; no outcome selection.",
+  "replicates": [
+    1,
+    4
+  ],
+  "powers": [
+    8,
+    10
+  ],
+  "baseline_powers": [
+    16,
+    18
+  ],
+  "predictive_power": 3,
+  "predictive_prefixes": [
+    4,
+    8
+  ],
+  "predictive_seed": 202610092,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_case_cpu_seconds": 240,
+  "origins": {
+    "source_structural_mixture": [
+      4,
+      5
+    ],
+    "source_common_task_rbf": [
+      0
+    ]
+  },
+  "stop_inputs": {
+    "learned_prior_independent_02_source_structural_mixture_layout6": "paper_artifacts/historical_full_bank_batch_kg_precision_v2/precision/learned_prior_independent_02_source_structural_mixture_layout6/terminal_rules.json",
+    "learned_prior_independent_02_source_common_task_rbf_layout6": "paper_artifacts/historical_batch_native_precision_v6/gp_stop/terminal_rules.json"
+  },
+  "scope": "Only missing GP debited-budget18 power; reuse existing16-power rules. Original14/16 HOLD retained.",
+  "baseline_inputs": "paper_artifacts/historical_achievable_batch_kg_v1"
+}

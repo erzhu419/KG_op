@@ -1,0 +1,2129 @@
+{
+  "protocol": {
+    "status": "frozen_before_posterior_group_comparison",
+    "source_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+    "reference": "public source trajectory geometry only",
+    "candidate_supports": "greedy at most four augmented-dictionary functions versus the four public billing quantities jointly",
+    "selection": "jointly select support and policy residual by inner source-law posterior predictive conditional log density; preserve the normalized-regression-CV comparison separately",
+    "residual_candidates": [
+      0.0,
+      0.02
+    ],
+    "outer_holdout": "held task law excluded from support, coefficient moments and residual selection",
+    "held_task_adaptation_positions": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14
+    ],
+    "held_task_test_positions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15
+    ],
+    "coefficient_prior": "existing source second moments; zero non-intercept target means",
+    "new_episode_calls": 0,
+    "target_records_used": false,
+    "scientific_status": "source-only repair of selection/posterior mismatch; outer scores are working Gaussian conditional densities; not final confirmation",
+    "local_cpu_limit_seconds": 45,
+    "dispatch": "local single thread only"
+  },
+  "rows": [
+    {
+      "left_out_task": 0,
+      "head": 0,
+      "label_rmse": 0.04504751116977097,
+      "mean_working_conditional_log_density": 1.610214609974671,
+      "standardized_residual_rms": 1.0706554002855844,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.0088983021646953,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.022142528317461628,
+          0.049438096582419114,
+          0.45840092334724053,
+          0.06196936536111752
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          61
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.9508002420130133,
+            "source_task_standard_error": 0.15184098750886696,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.11423292720421384,
+            "source_task_standard_error": 0.06244928605181924,
+            "accepted": true
+          },
+          {
+            "index": 61,
+            "name": "sin(4*pi*psi1)",
+            "added_cv_improvement": 0.10018582149474932,
+            "source_task_standard_error": 0.027485273813908317,
+            "accepted": true
+          },
+          {
+            "index": 66,
+            "name": "sin(4*pi*psi6)",
+            "added_cv_improvement": 0.00040706445991881696,
+            "source_task_standard_error": 0.004632446581633629,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -1.1196990907614686,
+            -0.1496685497601746,
+            1.2900114392856643,
+            0.19265270785169175,
+            -1.5317860937198626,
+            0.31079623190754474,
+            -4.475604334374895
+          ],
+          "greedy:0.02": [
+            0.5530294279496935,
+            0.645164173123879,
+            0.7342063534424456,
+            0.6898291156923421,
+            0.5236548555022023,
+            0.6697898404794791,
+            0.38956287868549516
+          ],
+          "billing_block:0.0": [
+            0.8959721423062335,
+            1.7023716417636523,
+            1.9565754268683737,
+            1.951082643779828,
+            1.8613808927086977,
+            1.6990985400556715,
+            1.6276606183655984
+          ],
+          "billing_block:0.02": [
+            0.70420145673521,
+            0.7313144684757071,
+            0.7561295191522015,
+            0.7337021854787065,
+            0.7490873406696374,
+            0.7035970234545578,
+            0.7252197668255281
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 0,
+      "head": 1,
+      "label_rmse": 0.07538424458184524,
+      "mean_working_conditional_log_density": 1.2149740488306904,
+      "standardized_residual_rms": 0.8944537905150848,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.017899034221372043,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.029709102246251624,
+          0.022175670810863773,
+          0.10073913900245833,
+          0.011918542107315295
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          35
+        ],
+        "greedy_cv": [
+          {
+            "index": 35,
+            "name": "psi0*psi4",
+            "added_cv_improvement": 0.6772749004423745,
+            "source_task_standard_error": 0.10825396432180581,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.02588041359680136,
+            "source_task_standard_error": 0.11375642723963279,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -6.075896703850932,
+            -7.74421009081512,
+            -7.056064977796864,
+            -0.7922652207819121,
+            -5.746600087631435,
+            -0.8322260643727257,
+            -2.0164248108750606
+          ],
+          "greedy:0.02": [
+            -0.15024175791121863,
+            0.26966372782865,
+            0.08250003702617992,
+            0.5317487592387748,
+            -0.18461313251290218,
+            0.4340485857920175,
+            0.20175811810897332
+          ],
+          "billing_block:0.0": [
+            0.9429112267256756,
+            1.4764724293679872,
+            1.2495104235193546,
+            1.5584856983989122,
+            -0.9866900282777062,
+            1.156799620137039,
+            1.0058824790074494
+          ],
+          "billing_block:0.02": [
+            0.5947534346830395,
+            0.6645723321990755,
+            0.6579837735638672,
+            0.7016859838886275,
+            0.14822332659713222,
+            0.6413650374797285,
+            0.6695569339674742
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 1,
+      "head": 0,
+      "label_rmse": 0.08311126982787892,
+      "mean_working_conditional_log_density": 0.8959739555295301,
+      "standardized_residual_rms": 1.6046043882541456,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.0646614629511197,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.021660055015990273,
+          0.05180959395258745,
+          0.44610202108303043,
+          0.0566293677406554
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          60
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 0.9566545732877257,
+            "source_task_standard_error": 0.1486447282824458,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.13776573754202298,
+            "source_task_standard_error": 0.052023236894409484,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.0734429041923362,
+            "source_task_standard_error": 0.0378084910847432,
+            "accepted": true
+          },
+          {
+            "index": 60,
+            "name": "sin(4*pi*psi0)",
+            "added_cv_improvement": 0.009968414691330158,
+            "source_task_standard_error": 0.006497953152568386,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -0.15348448694479339,
+            -0.38901033482341374,
+            0.434139583285133,
+            0.5628452737371429,
+            -0.14511859742710242,
+            -0.10191181707649644,
+            -0.11878124592049172
+          ],
+          "greedy:0.02": [
+            0.6208814603341299,
+            0.6135239278826704,
+            0.6772317769154593,
+            0.662052441421724,
+            0.6116112229353733,
+            0.6224699562074283,
+            0.5898087638315497
+          ],
+          "billing_block:0.0": [
+            1.6145164294807515,
+            1.701881680719418,
+            1.9589805013578072,
+            1.9540889999531892,
+            1.8601890517232644,
+            1.7001498404083375,
+            1.6261301180914858
+          ],
+          "billing_block:0.02": [
+            0.7363409856465808,
+            0.7304457736145755,
+            0.757842120507623,
+            0.7369211451496811,
+            0.7474322860273865,
+            0.7051021734291074,
+            0.7231582267429133
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 1,
+      "head": 1,
+      "label_rmse": 0.11105930087926791,
+      "mean_working_conditional_log_density": 0.9533965893345364,
+      "standardized_residual_rms": 1.2557136087265544,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          0.004372323120347771,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.0297990043767887,
+          0.021997387298913377,
+          0.11225317283497438,
+          0.012547438019783322
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          35
+        ],
+        "greedy_cv": [
+          {
+            "index": 35,
+            "name": "psi0*psi4",
+            "added_cv_improvement": 0.6161803483420875,
+            "source_task_standard_error": 0.123112572043057,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.024941967353251857,
+            "source_task_standard_error": 0.11365350907089414,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -12.586240656455477,
+            -7.738330803230793,
+            -7.0471336188093225,
+            -0.7882674072457669,
+            -5.73884870368548,
+            -0.829143659741146,
+            -2.011514084283231
+          ],
+          "greedy:0.02": [
+            -0.7956032391548475,
+            0.27285710190147655,
+            0.08788555813906448,
+            0.5343709363070297,
+            -0.18157211060274783,
+            0.4345650856667026,
+            0.20655773265065475
+          ],
+          "billing_block:0.0": [
+            1.2151231681060426,
+            1.4778672504537629,
+            1.2486263019374646,
+            1.5593272877360174,
+            -0.9797914974650206,
+            1.1575385663898352,
+            0.984451333993432
+          ],
+          "billing_block:0.02": [
+            0.6392794757322393,
+            0.6664185936931015,
+            0.6562071852819547,
+            0.7020094183057597,
+            0.15223654017969002,
+            0.6405193660939906,
+            0.6622716020965024
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 2,
+      "head": 0,
+      "label_rmse": 0.04514701754074307,
+      "mean_working_conditional_log_density": 1.701310485555903,
+      "standardized_residual_rms": 0.981888810638141,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.9453243592681417,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.02173149925524325,
+          0.054227366998081096,
+          0.5294884768198399,
+          0.062104421140318875
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          60
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 0.9661943946037909,
+            "source_task_standard_error": 0.1495049474996167,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.12799277629908842,
+            "source_task_standard_error": 0.05275881697549557,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.07303940554258892,
+            "source_task_standard_error": 0.03792754357735002,
+            "accepted": true
+          },
+          {
+            "index": 60,
+            "name": "sin(4*pi*psi0)",
+            "added_cv_improvement": 0.00964138459969943,
+            "source_task_standard_error": 0.00662421535450885,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -0.1543975421763425,
+            -5.1979170043625995,
+            0.4280633007285972,
+            0.5632864630477302,
+            -0.14276344799427365,
+            -0.10223534197354933,
+            -0.12065225985562439
+          ],
+          "greedy:0.02": [
+            0.6207626538546706,
+            0.3653754475315702,
+            0.6744216573445196,
+            0.6601188927524201,
+            0.6188152972915177,
+            0.6204712584980396,
+            0.5884583571334251
+          ],
+          "billing_block:0.0": [
+            1.6097033181723925,
+            0.8946265180518884,
+            1.9564628195744094,
+            1.9520891874005604,
+            1.8618951944707276,
+            1.6985138254491745,
+            1.628794588387
+          ],
+          "billing_block:0.02": [
+            0.7331439997010275,
+            0.7036945302280219,
+            0.7556882273537247,
+            0.734497095194832,
+            0.7506009015103683,
+            0.7027812413199592,
+            0.7237759181993055
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 2,
+      "head": 1,
+      "label_rmse": 0.06928020948653128,
+      "mean_working_conditional_log_density": 1.478037127505456,
+      "standardized_residual_rms": 0.8599849130449745,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.009678845375622165,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.030767284616352357,
+          0.022185625173129896,
+          0.11823909212701088,
+          0.012663102254596766
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          45
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5879004332506541,
+            "source_task_standard_error": 0.09511009347570766,
+            "accepted": true
+          },
+          {
+            "index": 63,
+            "name": "sin(4*pi*psi3)",
+            "added_cv_improvement": -0.019290936535212504,
+            "source_task_standard_error": 0.09472683266942042,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -10.229223975156573,
+            -5.7817685736683355,
+            -6.488733818149143,
+            -0.5183053386727212,
+            -5.580522531187583,
+            -0.5478622961179632,
+            -1.33996749663115
+          ],
+          "greedy:0.02": [
+            -0.6708254008019989,
+            -0.11836784861474403,
+            0.09613931689100122,
+            0.5194482943089103,
+            -0.2096087624522387,
+            0.4188015857538128,
+            0.23201080822443063
+          ],
+          "billing_block:0.0": [
+            1.2153306406456377,
+            0.9548931528666136,
+            1.248937576028533,
+            1.5595046707926632,
+            -0.9769288777528027,
+            1.1579805220239199,
+            0.9805217817850678
+          ],
+          "billing_block:0.02": [
+            0.6400384889193074,
+            0.6027238481008029,
+            0.6565031306938216,
+            0.7021248139599918,
+            0.1538419743780789,
+            0.6407679627670178,
+            0.6604578393640218
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 3,
+      "head": 0,
+      "label_rmse": 0.028453582463515592,
+      "mean_working_conditional_log_density": 1.956917723388973,
+      "standardized_residual_rms": 0.6729510124744893,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.9557072423297077,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.022010067782261306,
+          0.05401159440581138,
+          0.515797456248281,
+          0.06208818640507209
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          61
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.9405352085248803,
+            "source_task_standard_error": 0.13213342110536166,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.1181862064985768,
+            "source_task_standard_error": 0.06011529492955201,
+            "accepted": true
+          },
+          {
+            "index": 61,
+            "name": "sin(4*pi*psi1)",
+            "added_cv_improvement": 0.09176213999495829,
+            "source_task_standard_error": 0.029008050689364722,
+            "accepted": true
+          },
+          {
+            "index": 37,
+            "name": "psi0*psi6",
+            "added_cv_improvement": 0.005674409671746844,
+            "source_task_standard_error": 0.005778179959631736,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            0.6119594819497525,
+            -1.1168839255940723,
+            -0.14941165196300452,
+            0.1844727061663295,
+            -1.5211153727460016,
+            0.30915285778864476,
+            -4.473597482988055
+          ],
+          "greedy:0.02": [
+            0.6808655461593893,
+            0.5570518166776113,
+            0.6444098575219648,
+            0.6857456260910714,
+            0.5331446510284268,
+            0.6682700110499795,
+            0.39009139380811564
+          ],
+          "billing_block:0.0": [
+            1.6101377744524143,
+            0.8958786332834776,
+            1.7015022862454903,
+            1.952311999986553,
+            1.8613931276014228,
+            1.6991375881623394,
+            1.6283814547488709
+          ],
+          "billing_block:0.02": [
+            0.7332503762175648,
+            0.7040410347365629,
+            0.730196521010805,
+            0.7346503534546405,
+            0.7499416541848756,
+            0.7032270783682942,
+            0.7247288065356399
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 3,
+      "head": 1,
+      "label_rmse": 0.07100465011440324,
+      "mean_working_conditional_log_density": 1.2489017534644509,
+      "standardized_residual_rms": 0.9552084794773753,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.020814474997920853,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.029349878642145097,
+          0.02027639091602602,
+          0.11019883017262862,
+          0.012074956614444039
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          35
+        ],
+        "greedy_cv": [
+          {
+            "index": 35,
+            "name": "psi0*psi4",
+            "added_cv_improvement": 0.5734028301803594,
+            "source_task_standard_error": 0.11042485750483379,
+            "accepted": true
+          },
+          {
+            "index": 19,
+            "name": "cos(pi*psi1)",
+            "added_cv_improvement": -0.005965982610625468,
+            "source_task_standard_error": 0.07269482134003664,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -12.588927011695354,
+            -6.06613815020596,
+            -7.738255597814601,
+            -0.7882275764878521,
+            -5.739122766137687,
+            -0.8287500829123179,
+            -2.0125081838543295
+          ],
+          "greedy:0.02": [
+            -0.7973617415590069,
+            -0.1451267539810855,
+            0.2729436611420676,
+            0.53423089401893,
+            -0.1819770804664987,
+            0.4353976553379551,
+            0.20563780036313448
+          ],
+          "billing_block:0.0": [
+            1.2127498412755464,
+            0.9512441165124887,
+            1.47748064673246,
+            1.5589118394840917,
+            -0.987169686331171,
+            1.15642455089433,
+            0.9907540219751312
+          ],
+          "billing_block:0.02": [
+            0.6382879861552835,
+            0.5985414758545803,
+            0.665458239795489,
+            0.7022588870980621,
+            0.1460769812314928,
+            0.6397868525886059,
+            0.6644884425600323
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 4,
+      "head": 0,
+      "label_rmse": 0.029779930756107808,
+      "mean_working_conditional_log_density": 1.9515274958621984,
+      "standardized_residual_rms": 0.6809552307248624,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.9583757901824614,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.019290373554089087,
+          0.04898637277916395,
+          0.5169441199147876,
+          0.06643459402072613
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          14
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.9600138714319658,
+            "source_task_standard_error": 0.12897884633533008,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.08770264324837791,
+            "source_task_standard_error": 0.060448573667584486,
+            "accepted": true
+          },
+          {
+            "index": 14,
+            "name": "psi6^2",
+            "added_cv_improvement": 0.10474547768124269,
+            "source_task_standard_error": 0.02207911642282976,
+            "accepted": true
+          },
+          {
+            "index": 34,
+            "name": "psi0*psi3",
+            "added_cv_improvement": 0.007621006893764852,
+            "source_task_standard_error": 0.011155019673225998,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            0.11185619499009414,
+            -0.17384689838975287,
+            0.6416924205352091,
+            1.33356783158346,
+            -0.36390023143386885,
+            0.416290474407647,
+            -2.53221305136198
+          ],
+          "greedy:0.02": [
+            0.6589323647649827,
+            0.6439443781054071,
+            0.690824731744472,
+            0.7380840101037708,
+            0.6313659948747778,
+            0.663346326518397,
+            0.5213172662239665
+          ],
+          "billing_block:0.0": [
+            1.6074161620455987,
+            0.8959214861773398,
+            1.701807900357978,
+            1.9558851505694934,
+            1.8618762140241616,
+            1.6943633524246526,
+            1.6308320683377273
+          ],
+          "billing_block:0.02": [
+            0.731015556879505,
+            0.7051160862789763,
+            0.7308270963757879,
+            0.7555245667702126,
+            0.7517503284889637,
+            0.6975003528759387,
+            0.7262503784613045
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 4,
+      "head": 1,
+      "label_rmse": 0.030384145100874633,
+      "mean_working_conditional_log_density": 1.5593855492695865,
+      "standardized_residual_rms": 0.3949499666210589,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          0.023182932571604965,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.032308639812423615,
+          0.022679518435918478,
+          0.11711487026210267,
+          0.012798729134176073
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          45
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5430488085003866,
+            "source_task_standard_error": 0.07788131396692653,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": -0.05179615620489348,
+            "source_task_standard_error": 0.10526731293502457,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -10.232638070692081,
+            -5.782645057826683,
+            -7.784891501131204,
+            -6.491677444070104,
+            -5.581840236468423,
+            -0.5494081783685885,
+            -1.3401892086942868
+          ],
+          "greedy:0.02": [
+            -0.6733277822028887,
+            -0.1193880692050828,
+            0.278156995019609,
+            0.09391583309318552,
+            -0.20962357326384046,
+            0.41730471932912777,
+            0.2318754952519829
+          ],
+          "billing_block:0.0": [
+            1.2152020470270992,
+            0.9567345816100077,
+            1.4784246316610132,
+            1.249215478425156,
+            -0.9718570323597185,
+            1.1597251848257042,
+            0.9812953510882043
+          ],
+          "billing_block:0.02": [
+            0.6394095387268046,
+            0.6035768624531002,
+            0.6675858649324625,
+            0.6567538790583305,
+            0.15751105619232164,
+            0.6415300413334878,
+            0.6596893428754536
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 5,
+      "head": 0,
+      "label_rmse": 0.03824329836675504,
+      "mean_working_conditional_log_density": 1.8615681263840949,
+      "standardized_residual_rms": 0.8022409302577347,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.081974749418797,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.02162276833100349,
+          0.04855371775595836,
+          0.4312104536939202,
+          0.055060568998904096
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          61
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.937384460232496,
+            "source_task_standard_error": 0.1334744916314057,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.12022786058011826,
+            "source_task_standard_error": 0.06185189864506955,
+            "accepted": true
+          },
+          {
+            "index": 61,
+            "name": "sin(4*pi*psi1)",
+            "added_cv_improvement": 0.09541811306066786,
+            "source_task_standard_error": 0.026785440252839143,
+            "accepted": true
+          },
+          {
+            "index": 0,
+            "name": "psi0",
+            "added_cv_improvement": -0.002118962482424842,
+            "source_task_standard_error": 0.005358296386913487,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            0.6052283907054996,
+            -1.1274556836335161,
+            -0.1548543957860412,
+            1.2875048544148033,
+            0.1883748262587538,
+            0.3084824424797572,
+            -4.479314689676858
+          ],
+          "greedy:0.02": [
+            0.6736320130816766,
+            0.544384993876375,
+            0.6402649014197471,
+            0.7316041080656185,
+            0.6874080071678317,
+            0.6683243086926615,
+            0.3825734622908783
+          ],
+          "billing_block:0.0": [
+            1.6119474488142032,
+            0.8933515419327164,
+            1.701201866236283,
+            1.9583515466015537,
+            1.9528933029235978,
+            1.6992287368274388,
+            1.626667076977556
+          ],
+          "billing_block:0.02": [
+            0.7342252075957012,
+            0.7003288741036823,
+            0.7299763592586065,
+            0.7574745736371005,
+            0.7359390932157097,
+            0.704445002941755,
+            0.7231181427485758
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 5,
+      "head": 1,
+      "label_rmse": 0.2114106865952942,
+      "mean_working_conditional_log_density": -0.9783403601258721,
+      "standardized_residual_rms": 2.230691940249314,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          0.005287620040145412,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.029518980224332712,
+          0.022515239121450703,
+          0.11852086261559154,
+          0.012595137206069095
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          45
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.6117422666082977,
+            "source_task_standard_error": 0.0686280387228158,
+            "accepted": true
+          },
+          {
+            "index": 63,
+            "name": "sin(4*pi*psi3)",
+            "added_cv_improvement": -0.07896102641842216,
+            "source_task_standard_error": 0.10271142034131396,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -10.235493228105748,
+            -5.784008104617312,
+            -7.784978766650071,
+            -6.491598654703166,
+            -0.5195616542224191,
+            -0.549279048104927,
+            -1.3406948092563666
+          ],
+          "greedy:0.02": [
+            -0.6749828726185421,
+            -0.11981119323657491,
+            0.2781876195089734,
+            0.0941572337999248,
+            0.5187901689342481,
+            0.41789676883972116,
+            0.2312957233987205
+          ],
+          "billing_block:0.0": [
+            1.215917238934051,
+            0.953327189049127,
+            1.4784944275313932,
+            1.2493778472749502,
+            1.5598094445907624,
+            1.156869223925642,
+            0.9785283711298045
+          ],
+          "billing_block:0.02": [
+            0.6404015036196219,
+            0.6029759617420125,
+            0.6674984472515115,
+            0.6563787658233277,
+            0.7026104771878754,
+            0.6403124948820573,
+            0.6607192452464422
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 6,
+      "head": 0,
+      "label_rmse": 0.04875055638077358,
+      "mean_working_conditional_log_density": 1.6980569105974488,
+      "standardized_residual_rms": 0.9853572650704527,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.906105620917882,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.021604493661553932,
+          0.05035982724282818,
+          0.5478672028230206,
+          0.06613848483130413
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          71
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 1.1303870295830936,
+            "source_task_standard_error": 0.17922157962673022,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.09052773692200797,
+            "source_task_standard_error": 0.04763290810593082,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.03131847469500349,
+            "source_task_standard_error": 0.021050182484035618,
+            "accepted": true
+          },
+          {
+            "index": 71,
+            "name": "order_frequency",
+            "added_cv_improvement": 0.045210322017998114,
+            "source_task_standard_error": 0.017847402620282168,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            1.34485285767362,
+            -0.015644868380344734,
+            0.9638347795777346,
+            1.8827566347707498,
+            0.47660703033681795,
+            1.5288253006486279,
+            0.6375166371005438
+          ],
+          "greedy:0.02": [
+            0.7167130054051198,
+            0.6330200615317834,
+            0.688951054374671,
+            0.7506453184129944,
+            0.6394473953932726,
+            0.7313999514426426,
+            0.6480366871126513
+          ],
+          "billing_block:0.0": [
+            1.6075269243421337,
+            0.8996120068492748,
+            1.701379706068839,
+            1.9554924561252156,
+            1.945417639138932,
+            1.8625106092828951,
+            1.6339173621482357
+          ],
+          "billing_block:0.02": [
+            0.7322729194459048,
+            0.7074341793657686,
+            0.7313927014546623,
+            0.755906225813777,
+            0.7287078154225378,
+            0.7523659425810852,
+            0.7271030701888923
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 6,
+      "head": 1,
+      "label_rmse": 0.08712949582296924,
+      "mean_working_conditional_log_density": 1.1579314218530363,
+      "standardized_residual_rms": 0.987009193772978,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          0.012104213417834483,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.031977370350370626,
+          0.02107796348982111,
+          0.12194895673925442,
+          0.012209998731575272
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          45,
+          64
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5986675060677147,
+            "source_task_standard_error": 0.0799487652532719,
+            "accepted": true
+          },
+          {
+            "index": 64,
+            "name": "sin(4*pi*psi4)",
+            "added_cv_improvement": 0.12121273662927733,
+            "source_task_standard_error": 0.041446209577514076,
+            "accepted": true
+          },
+          {
+            "index": 11,
+            "name": "psi3^2",
+            "added_cv_improvement": 0.061989750343640085,
+            "source_task_standard_error": 0.06541495733880952,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -8.854518731930675,
+            -6.094263144923493,
+            -7.78380294272392,
+            -6.746542966654998,
+            0.32113640811684235,
+            -5.765010432172737,
+            0.3473418471276599
+          ],
+          "greedy:0.02": [
+            -0.24957116214795577,
+            0.17041538669961942,
+            0.38808147593916,
+            0.12991942460485528,
+            0.6304771813489389,
+            -0.12857130567250305,
+            0.6457257341758632
+          ],
+          "billing_block:0.0": [
+            1.213936052043973,
+            0.9569800004035491,
+            1.4787889110981216,
+            1.2457898312326021,
+            1.5598550656386938,
+            -0.9776529359789341,
+            0.9814601185602025
+          ],
+          "billing_block:0.02": [
+            0.6399094073737854,
+            0.6029932323952183,
+            0.6677208205705669,
+            0.6557378635012288,
+            0.7029600289640656,
+            0.15268744506408385,
+            0.6611700243236102
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 7,
+      "head": 0,
+      "label_rmse": 0.045353897343999625,
+      "mean_working_conditional_log_density": 1.628782776290156,
+      "standardized_residual_rms": 1.0532786910486507,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.0026114163737634,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.018510226387194045,
+          0.052126470854445,
+          0.5353393720264193,
+          0.05919200664080901
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          6
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 1.1387045426582956,
+            "source_task_standard_error": 0.17548761242169322,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.0645551465679443,
+            "source_task_standard_error": 0.027541744271884522,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.05579446596832049,
+            "source_task_standard_error": 0.027855532982203286,
+            "accepted": true
+          },
+          {
+            "index": 6,
+            "name": "psi6",
+            "added_cv_improvement": 0.04001244620566857,
+            "source_task_standard_error": 0.018918474948916776,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            1.325080382969825,
+            0.05960559785083086,
+            0.9891412852619255,
+            1.8813093117262292,
+            0.49795541375351826,
+            1.4963673814355078,
+            0.1838789525401957
+          ],
+          "greedy:0.02": [
+            0.7160774389058139,
+            0.6324067621090541,
+            0.686237152365091,
+            0.7495331191945107,
+            0.6413203065402406,
+            0.7246943010934531,
+            0.6236479780810964
+          ],
+          "billing_block:0.0": [
+            1.6105123998592508,
+            0.8949138195939863,
+            1.6977033824794243,
+            1.9573379046079629,
+            1.9509498556246772,
+            1.8631815378981136,
+            1.6927399970727954
+          ],
+          "billing_block:0.02": [
+            0.7352827890055051,
+            0.7048818226803119,
+            0.72807206936741,
+            0.7576113648260381,
+            0.7343941062402002,
+            0.7527257791687212,
+            0.6995387850610512
+          ]
+        }
+      }
+    },
+    {
+      "left_out_task": 7,
+      "head": 1,
+      "label_rmse": 0.08517775207828346,
+      "mean_working_conditional_log_density": 0.9853763210110345,
+      "standardized_residual_rms": 1.1878026663626657,
+      "selection": {
+        "mode": "posterior_group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          0.013176433063799493,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.03224022605333269,
+          0.02301814938155569,
+          0.11410533724260229,
+          0.012795542884606131
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          45,
+          64,
+          11,
+          65
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5879256771444414,
+            "source_task_standard_error": 0.08228504856888519,
+            "accepted": true
+          },
+          {
+            "index": 64,
+            "name": "sin(4*pi*psi4)",
+            "added_cv_improvement": 0.09262305845229124,
+            "source_task_standard_error": 0.03303844806465615,
+            "accepted": true
+          },
+          {
+            "index": 11,
+            "name": "psi3^2",
+            "added_cv_improvement": 0.0953506143606628,
+            "source_task_standard_error": 0.07116641672904231,
+            "accepted": true
+          },
+          {
+            "index": 65,
+            "name": "sin(4*pi*psi5)",
+            "added_cv_improvement": 0.15820006238406353,
+            "source_task_standard_error": 0.1332816369791411,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -0.23187141849210893,
+            0.3867770470026093,
+            1.03170589443649,
+            1.1194167105086463,
+            -0.9339493305937623,
+            -0.7652821094214723,
+            0.9434639543122514
+          ],
+          "greedy:0.02": [
+            0.34514689538236465,
+            0.49991062963487876,
+            0.5808950599249241,
+            0.5707252546387674,
+            0.4723595759809635,
+            0.1169100866580069,
+            0.541231402241071
+          ],
+          "billing_block:0.0": [
+            1.2162430427411435,
+            0.9544789525329063,
+            1.478163215921513,
+            1.2502276544186248,
+            1.5595789530750392,
+            -0.9716072780336567,
+            1.1596661268613702
+          ],
+          "billing_block:0.02": [
+            0.6397608175985767,
+            0.6025570802772373,
+            0.6672971688775791,
+            0.6575523767671894,
+            0.7015441111159315,
+            0.15757622816336886,
+            0.6418950222254471
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "0": {
+      "label_rmse": 0.045485882981193076,
+      "mean_working_conditional_log_density": 1.6630440104478719,
+      "standardized_residual_rms": 0.9814914660942575
+    },
+    "1": {
+      "label_rmse": 0.09260381058243364,
+      "mean_working_conditional_log_density": 0.9524578063928649,
+      "standardized_residual_rms": 1.0957268198462509
+    }
+  },
+  "all_source_priors": [
+    {
+      "mean": [
+        -2.990457367950821,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "covariance": [
+        [
+          0.25,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.021071501538099627,
+          0.019811396638895588,
+          0.06209582623647405,
+          0.02090622903069786
+        ],
+        [
+          0.0,
+          0.019811396638895588,
+          0.05118913007141182,
+          0.13585156577420032,
+          0.043126008255811886
+        ],
+        [
+          0.0,
+          0.06209582623647405,
+          0.13585156577420032,
+          0.4976437532445675,
+          0.15358835502539128
+        ],
+        [
+          0.0,
+          0.02090622903069786,
+          0.043126008255811886,
+          0.15358835502539128,
+          0.06120212439236341
+        ]
+      ],
+      "discrepancy_variance": 0.0,
+      "diagnostics": {
+        "mode": "posterior_group_source",
+        "source_label_count": 128,
+        "source_task_count": 8,
+        "coefficient_mean": [
+          -2.990457367950821,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.021071501538099627,
+          0.05118913007141182,
+          0.4976437532445675,
+          0.06120212439236341
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          6
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 1.0728481126278826,
+            "source_task_standard_error": 0.165632110297039,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.0928384911736028,
+            "source_task_standard_error": 0.03699808562933824,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.05762194973457542,
+            "source_task_standard_error": 0.024192720707020252,
+            "accepted": true
+          },
+          {
+            "index": 6,
+            "name": "psi6",
+            "added_cv_improvement": 0.03782284653764565,
+            "source_task_standard_error": 0.01652954529020081,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            1.324481256930023,
+            0.05533298346338622,
+            0.9915537888148189,
+            1.881506316507672,
+            0.5024931281830329,
+            1.5017215350240116,
+            0.18613019743028547,
+            0.6519298092081787
+          ],
+          "greedy:0.02": [
+            0.7141549313517987,
+            0.6307642333611068,
+            0.6879296483978471,
+            0.7494376201991655,
+            0.6445760897637439,
+            0.725641609794823,
+            0.6249599877780057,
+            0.6450325413033652
+          ],
+          "billing_block:0.0": [
+            1.610214609974671,
+            0.8959739555295301,
+            1.701310485555903,
+            1.956917723388973,
+            1.9515274958621984,
+            1.8615681263840949,
+            1.6980569105974488,
+            1.628782776290156
+          ],
+          "billing_block:0.02": [
+            0.733650305348987,
+            0.7045219676580412,
+            0.7304314967858627,
+            0.7564787766678556,
+            0.7343558601377075,
+            0.7505261017695175,
+            0.7026851184501757,
+            0.7248483672238049
+          ]
+        }
+      }
+    },
+    {
+      "mean": [
+        0.0012163959523521367,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "covariance": [
+        [
+          0.25,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.03070881079024968,
+          0.015285147902502476,
+          0.04543467908253643,
+          0.006399477693788043
+        ],
+        [
+          0.0,
+          0.015285147902502476,
+          0.021990743078459885,
+          0.03371067642020807,
+          0.004980105382717825
+        ],
+        [
+          0.0,
+          0.04543467908253643,
+          0.03371067642020807,
+          0.11414003262457789,
+          0.013906587204084346
+        ],
+        [
+          0.0,
+          0.006399477693788043,
+          0.004980105382717825,
+          0.013906587204084346,
+          0.01245043086907075
+        ]
+      ],
+      "discrepancy_variance": 0.0,
+      "diagnostics": {
+        "mode": "posterior_group_source",
+        "source_label_count": 128,
+        "source_task_count": 8,
+        "coefficient_mean": [
+          0.0012163959523521367,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.03070881079024968,
+          0.021990743078459885,
+          0.11414003262457789,
+          0.01245043086907075
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          45,
+          64
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.6140289192303583,
+            "source_task_standard_error": 0.0758913773816487,
+            "accepted": true
+          },
+          {
+            "index": 64,
+            "name": "sin(4*pi*psi4)",
+            "added_cv_improvement": 0.11863050041236334,
+            "source_task_standard_error": 0.038665764252077774,
+            "accepted": true
+          },
+          {
+            "index": 11,
+            "name": "psi3^2",
+            "added_cv_improvement": 0.0673015318995836,
+            "source_task_standard_error": 0.06771443848580008,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "chosen_discrepancy_variance": 0.0,
+        "source_posterior_scores": {
+          "greedy:0.0": [
+            -8.857156568930705,
+            -6.096510099119429,
+            -7.785489677198223,
+            -6.748495158774809,
+            0.3207408636636496,
+            -5.767618768204686,
+            -1.378823982378085,
+            0.348875043998391
+          ],
+          "greedy:0.02": [
+            -0.2520932784675287,
+            0.16873108605866696,
+            0.38701294185172497,
+            0.1287666813620094,
+            0.6300106797324789,
+            -0.1299282762159248,
+            0.3645111223345081,
+            0.6450303466073464
+          ],
+          "billing_block:0.0": [
+            1.2149740488306904,
+            0.9533965893345364,
+            1.478037127505456,
+            1.2489017534644509,
+            1.5593855492695865,
+            -0.9783403601258721,
+            1.1579314218530363,
+            0.9853763210110345
+          ],
+          "billing_block:0.02": [
+            0.6396592271298567,
+            0.6014749915167981,
+            0.6667667655831526,
+            0.6567795172151121,
+            0.7021935851558483,
+            0.15286406069615638,
+            0.6409086198466396,
+            0.6624075929409691
+          ]
+        }
+      }
+    }
+  ],
+  "new_episode_calls": 0,
+  "target_records_used": false,
+  "local_cpu_seconds": 2.201979517
+}

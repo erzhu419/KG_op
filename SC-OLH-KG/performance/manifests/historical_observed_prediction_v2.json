@@ -1,0 +1,38 @@
+{
+  "parent_plan": "performance/manifests/historical_achievable_precision_v4.json",
+  "output": "paper_artifacts/historical_observed_prediction_v1",
+  "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+  "origins": [
+    4,
+    5
+  ],
+  "replicates": [
+    4
+  ],
+  "predictive_power": 10,
+  "prefixes": [
+    8,
+    64,
+    512,
+    1024
+  ],
+  "cdf_order": 256,
+  "batch_cdf_orders": [
+    64,
+    128,
+    256
+  ],
+  "maximum_inverse_cdf_error": 1e-08,
+  "maximum_adaptive_cdf_error_bound": 1e-09,
+  "inner_orders": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "maximum_inner_error": 0.0001,
+  "maximum_tower_drift": 0.0001,
+  "maximum_job_cpu_seconds": 420,
+  "scope": "Numerical extension after512-point fixed-action HOLD. Retain all original512 observed coordinates and conditioned values; evaluate only new512 per head. Same snapshot, seed, law and1e-4 gates; no adaptive KG or physical calls."
+}

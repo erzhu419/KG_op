@@ -1,0 +1,19 @@
+{
+  "status": "registered before source-task covariance direction preflight",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "heads": [
+    "f",
+    "g"
+  ],
+  "basis_of_next_step": "Source counterbalance improves g density in all four cases. The remaining assignment5 task07 g MSE increases are about one conditional measurement standard error; both approximate95% scoring-noise intervals cross zero. In contrast assignment6 task07 f MSE increase is clearly outside scoring-noise uncertainty, even with frozen source hyperparameters. Diagnose the learned within-task coefficient covariance before replacing low-frequency priors or increasing source budget again.",
+  "method": "Use only the six216-call training-source batches and cached native regularizer/common/task covariance. Calculate Gaussian posterior moments of each source task residual coefficient vector conditional on all selected source labels and integrated common function. Whiten the average posterior residual second moment by the fitted diagonal task covariance on its positive support; compare eigenvalues with1. The leading covariance-inflation direction has source NLL derivative(.5*source_task_count/source_label_count)*(1-leading_eigenvalue). No component is interpreted as a recovered physical risk factor.",
+  "verification": "An independent dense marginal72-label covariance must reproduce native source NLL. Its finite positive rank-one covariance perturbation must agree with the derived leading-direction derivative. These detect mistaken shared-function/task covariance or prior origins; fix reconstruction before proposing a source factor.",
+  "selection": "No source holdout6/7 response, target input/truth, source geometry parameters or new labels enter the estimated direction. Retain all f/g heads and both assignments; do not select an easier layout. If no eigenvalue exceeds1 materially, do not register the inflation fit.",
+  "execution": "local serial single-thread, cached source inputs/fit JSON and small Gaussian matrices; zero new source fits, physical simulator/verifier calls, terminal integrals or server jobs/pulls",
+  "interpretation": "source-estimated conditional task-function covariance diagnostic under empirical Gaussian hyperparameters, not physical-factor recovery or independent deployment/KG evidence",
+  "output": "paper_artifacts/legacy_joint_population_task_covariance_direction_v1"
+}

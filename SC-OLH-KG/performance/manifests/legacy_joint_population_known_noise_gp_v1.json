@@ -1,0 +1,19 @@
+{
+  "status": "registered source-measurement-noise attribution on opened cached targets",
+  "plan": "performance/manifests/legacy_joint_population_matched_baseline_preflight_plan_v1.json",
+  "output": "paper_artifacts/legacy_joint_population_known_noise_gp_v1",
+  "inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+  "arms": ["known_label_noise_rbf_prior_shared_raw"],
+  "source_model": "same source-only10-coordinate encoder and standardized four labels; generic ARD RBF task functions, unknown common scalar mean integrated under a flat prior; restricted marginal likelihood includes the saved per-site label variances, plus fitted nonnegative discrepancy",
+  "new_task_prior": "GLS common intercept posterior mean; ARD RBF covariance plus posterior intercept variance and fitted discrepancy; no orthogonal function groups, sparsity or spectral-power shrinkage",
+  "optimizer": "L-BFGS-B512 iterations,ftol1e-9,gtol1e-5; identical head-wise initialization: all standardized lengthscales1,signal variance1,discrepancy.01; lengthscales bounds[.05,20],signal/discrepancy nonnegative; no target-based tuning",
+  "justification": "official source eta fits assign latent variances1.726/1.679 versus label noises.070/.065, while the replicated log-variance labels have known measurement variance trigamma(1)=1.644934. This extra control consumes the same recorded uncertainties; it does not replace or erase the official result",
+  "target_update": "same four cached raw episodes and joint Normal filtering; same73-policy terminal class,retention,362 cap and verifier definition as stage20",
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "new_simulator_call_cap": 0,
+  "interpretation": "generic measurement-aware GP attribution, not another official algorithm or independent confirmation; scalar mean differs from the source-learned functional population mean of the joint priors",
+  "execution": "reuse prepared source/target features, fit four source heads once locally on one thread, no new observations, scheduler/server jobs or pulls"
+}

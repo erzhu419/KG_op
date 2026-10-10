@@ -1,0 +1,187 @@
+{
+  "execution": {
+    "status": "registered before cached-result attribution",
+    "entrypoint": "performance/diagnose_legacy_f_raw_source_predictive_attribution.py",
+    "predictions": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1/results.json",
+    "functional_records": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1/functional_records.json",
+    "question": "In the numerically eligible layout6,is the structure-versus-GP mean loss due to a common level offset or policy-dependent shape? Does remaining density Monte Carlo error warrant more sampling?",
+    "calculation": "Use only already-scored12 task0 batch means and frozen full-state forecasts. Decompose MSE=mean(error)^2+mean((error-mean(error))^2) and report matched level/shape differences. Use retained per-chain conditional future-batch density logs to estimate the Monte Carlo standard error of the average log predictive density:influence_i=mean_j(d_ij/mean_i(d_ij)-1),with autocorrelation ESS of that influence and MCSE=sqrt(sample_variance/ESS). Combine the two separate source sampler streams' MCSEs for a nominal conditional Monte Carlo interval on structure-minus-GP mean density. This interval conditions on the frozen source law and observed development batches;it is NOT a task/bootstrap confidence interval or independent evidence.",
+    "interpretation": "Keep original per-site split bounds and all failures unchanged. Interpret matched predictive success only for a layout whose BOTH arms meet Stage209 functional gates. Layout6 failure already rules out the declared both-layout pilot success,so do not spend more draws solely to rescue layout5 precision. A shape-dominated loss points to source common-function/selected-support shrinkage;level-dominated loss points to center/intercept learning. These are follow-up hypotheses,not causal attribution or authorization to substitute unrestricted GP for the four-prior core.",
+    "maximum_single_thread_cpu_seconds": 5,
+    "cost": {
+      "new_source_draws": 0,
+      "new_density_integrations": 0,
+      "new_coordinate_fits": 0,
+      "new_covariance_fits": 0,
+      "new_source_labels": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;existing small functional JSON and scored batch means only;no server work or NPZ",
+    "scope": "Post-hoc source-development attribution. Original four priors preserved;complete-model HOLD. No outer task1,source6/7,target,KG,confirmation or manuscript edits.",
+    "output": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_attribution_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "mean_error": -0.005475409260866861,
+      "level_MSE": 2.9980106573986582e-05,
+      "centered_shape_MSE": 0.0002608278994640523,
+      "policy_errors": [
+        0.00033730267099474354,
+        -0.026495836754021895,
+        -0.04351143487271025,
+        0.008608681435764765,
+        -0.003143764839527663,
+        -0.0030633243544013755,
+        0.007697485829530892,
+        0.008119562694584082,
+        -0.00022122260440704533,
+        -0.018191346178666357,
+        0.015043484909789961,
+        -0.010884499067332187
+      ],
+      "predictive_functional_gates_passed": false,
+      "density_MC_error": {
+        "average_density_influence_ESS": 1108.1113528386109,
+        "average_density_influence_Rhat": 1.0019989767098214,
+        "average_log_predictive_density_MCSE": 0.004219927671948476,
+        "conditional_on_frozen_law_and_scored_batches": true
+      }
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "mean_error": -0.0075777094155668285,
+      "level_MSE": 5.742167998677016e-05,
+      "centered_shape_MSE": 0.00033956775755306567,
+      "policy_errors": [
+        0.00161738218107349,
+        -0.025795173756218426,
+        -0.04227129409365882,
+        0.0080857154180618,
+        -0.010867310469341751,
+        -0.007310180139031952,
+        0.008781238098593436,
+        0.011323719393297849,
+        -0.017006443799591153,
+        -0.029435885369975878,
+        0.023857360300860497,
+        -0.011911640750871033
+      ],
+      "predictive_functional_gates_passed": false,
+      "density_MC_error": {
+        "average_density_influence_ESS": 1019.3140017830151,
+        "average_density_influence_Rhat": 1.0026436781179422,
+        "average_log_predictive_density_MCSE": 0.00437101025071196,
+        "conditional_on_frozen_law_and_scored_batches": true
+      }
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "mean_error": -0.007130899958848626,
+      "level_MSE": 5.0849734223107335e-05,
+      "centered_shape_MSE": 0.00022060770415616623,
+      "policy_errors": [
+        9.199939676529656e-05,
+        -0.026182003807808996,
+        -0.04245215624611409,
+        0.008909851475439656,
+        0.0016358920053559656,
+        0.0072539536406118765,
+        0.006599492980558841,
+        -0.011472356219108637,
+        -0.006771872599589945,
+        -0.007523692270095361,
+        -0.018666642496176,
+        0.003006734633977881
+      ],
+      "predictive_functional_gates_passed": true,
+      "density_MC_error": {
+        "average_density_influence_ESS": 468.9222202759327,
+        "average_density_influence_Rhat": 1.0127999729711572,
+        "average_log_predictive_density_MCSE": 0.004722835064606339,
+        "conditional_on_frozen_law_and_scored_batches": true
+      }
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "mean_error": -0.005493061586672801,
+      "level_MSE": 3.017372559498031e-05,
+      "centered_shape_MSE": 0.00020861345813999368,
+      "policy_errors": [
+        -0.00013075496821757238,
+        -0.02535078049880768,
+        -0.04171560363392657,
+        0.008514093353510277,
+        -0.007608898694701771,
+        0.007949522446847712,
+        0.004090654065188826,
+        -0.009885232758206297,
+        0.009563174938930774,
+        -0.008791249541529322,
+        -0.0024046061393332985,
+        -0.00014705760982869354
+      ],
+      "predictive_functional_gates_passed": true,
+      "density_MC_error": {
+        "average_density_influence_ESS": 627.7544072089493,
+        "average_density_influence_Rhat": 1.002444422747493,
+        "average_log_predictive_density_MCSE": 0.004230769399207578,
+        "conditional_on_frozen_law_and_scored_batches": true
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "layout": "5",
+      "both_arms_numerically_eligible": false,
+      "structure_minus_GP_MSE": -0.00010618143150179697,
+      "structure_minus_GP_level_MSE": -2.744157341278358e-05,
+      "structure_minus_GP_centered_shape_MSE": -7.87398580890134e-05,
+      "structure_minus_GP_average_raw_density": 0.07112756256960298,
+      "conditional_MCSE_of_density_difference": 0.006075649773341574,
+      "nominal_conditional_MC_interval": [
+        0.059219289013853496,
+        0.08303583612535247
+      ],
+      "matched_predictive_gate_passed": null
+    },
+    {
+      "layout": "6",
+      "both_arms_numerically_eligible": true,
+      "structure_minus_GP_MSE": 3.267025464429954e-05,
+      "structure_minus_GP_level_MSE": 2.0676008628127025e-05,
+      "structure_minus_GP_centered_shape_MSE": 1.1994246016172556e-05,
+      "structure_minus_GP_average_raw_density": -0.02966946132236359,
+      "conditional_MCSE_of_density_difference": 0.006340708222016403,
+      "nominal_conditional_MC_interval": [
+        -0.042097249437515735,
+        -0.017241673207211438
+      ],
+      "matched_predictive_gate_passed": false
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "at_least_one_numerically_eligible_layout_fails_predictive_gate": true,
+  "CPU_seconds": 0.07969589399999999,
+  "cost": {
+    "new_source_draws": 0,
+    "new_density_integrations": 0,
+    "new_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_source_labels": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Level/shape arithmetic and conditional Monte Carlo uncertainty of fixed development density scores. Not independent task confidence intervals,causal attribution,risk factor recovery or a relaxed precision gate. Do not add source draws to rescue a candidate that already loses on eligible layout6."
+}

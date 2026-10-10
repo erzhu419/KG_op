@@ -1,0 +1,17 @@
+{
+  "status": "frozen_before_joint_group_comparison",
+  "source_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+  "reference": "public source trajectory geometry only",
+  "candidate_supports": "greedy at most four functions in augmented dictionary versus the four public billing quantities jointly",
+  "group_selection": "two-fold source-task normalized squared error; select billing block if its paired gain exceeds one source-task standard error",
+  "residual_candidates": [0.0, 0.02],
+  "residual_selection": "inner source-law leave-one-out mean conditional log density with chosen support; outer held law never enters selection",
+  "held_task_adaptation_positions": [0, 2, 4, 6, 8, 10, 12, 14],
+  "held_task_test_positions": [1, 3, 5, 7, 9, 11, 13, 15],
+  "coefficient_prior": "existing source coefficient second moments; zero non-intercept target means",
+  "new_episode_calls": 0,
+  "target_records_used": false,
+  "scientific_status": "source-only follow-up to the failed greedy interface; known physical group is public, its acceptance is learned; not independent final confirmation",
+  "local_cpu_limit_seconds": 45,
+  "dispatch": "local single thread only"
+}

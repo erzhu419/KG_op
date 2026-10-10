@@ -1,0 +1,65 @@
+{
+  "status": "complete12 action integration passed;source amplitude candidates remain HOLD",
+  "action_comparison": "paper_artifacts/historical_control_variate_action_comparison_v1/results.json",
+  "action_refinement": "paper_artifacts/historical_control_variate_action_precision_v2/results.json",
+  "registered_actions_complete": true,
+  "action_precision_cases_passed": 12,
+  "provisional_comparison": [
+    {
+      "layout": "5",
+      "completed_action_count": 6,
+      "all_actions_precision_passed": true,
+      "provisional_best_candidate": 5,
+      "provisional_best_net": 0.058755957290969996
+    },
+    {
+      "layout": "6",
+      "completed_action_count": 6,
+      "all_actions_precision_passed": true,
+      "provisional_best_candidate": 4,
+      "provisional_best_net": 0.052439764884676
+    }
+  ],
+  "source_amplitude_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v1/results.json",
+  "source_Mstep_Q_cases_passed": 64,
+  "source_evidence_ratio_cases_passed": 24,
+  "learned_source_posterior_precision": "paper_artifacts/historical_raw_source_amplitude_learning_v1/posterior_precision.json",
+  "learned_source_posterior_cases_passed": 5,
+  "complete_learned_source_identities": 1,
+  "paired_retained_precision": "paper_artifacts/historical_raw_source_amplitude_learning_v1/retained_baseline_precision.json",
+  "old_retained_precision_cases_passed": 18,
+  "new_retained_precision_cases_passed": 7,
+  "old_pass_new_fail_cases": 12,
+  "old_fail_new_fail_cases": 13,
+  "original_source32_PASS_preserved": true,
+  "original_source_cases_resampled": 0,
+  "test_record": "paper_artifacts/historical_control_variate_action_comparison_v1/unit_tests.json",
+  "tests_passed": true,
+  "tests_run": 35,
+  "batch_equivalence": "paper_artifacts/historical_control_variate_action_comparison_v1/batch_equivalence.json",
+  "cpu_seconds_first_execution": 946.9262746229999,
+  "cost": {
+    "new_source_labels": 0,
+    "new_source_MCMC_sweeps": 0,
+    "new_covariance_Mstep_optimizations": 64,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scientific_model_ranking_authorized": false,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "next_work": {
+    "source_learning": "Use the paired retained-state diagnostic to repair changed-law normalizers and posterior functionals with historical conditional integration. Original passed source chains remain unchanged. Then iterate the source-only M-step and compute comparable identity evidence before any new prior enters target evaluation.",
+    "decision_validation": "Run the historical completeGP controls under this same raw-source,paid-update and terminal contract after numerical source learning closes. Acquisition diagnostics on two opened states do not establish independent deployment gains."
+  },
+  "limitations": [
+    "Complete only within the existing balanced4 plus two paid-repeat action sets on two opened eight-policy states.",
+    "Nested contrast differences assess numerical stability,not a statistical confidence interval for close rankings.",
+    "No strong baseline comparison or held-out source-prior advantage follows from these acquisition values.",
+    "One raw-source MCEM M step;no iterative convergence or changed spectral exponent/support.",
+    "Importance ESS and split normalizer checks do not certify all posterior functional precision.",
+    "Within-model source evidence ratios do not supply absolute evidence for model-identity ranking.",
+    "All candidate laws require conditioned-posterior precision checks before target deployment."
+  ]
+}

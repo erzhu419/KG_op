@@ -1,0 +1,28 @@
+{
+  "stage": "meta_prior_heterogeneous_covariance_attribution_a35_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a34_before_attribution": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_covariance_a34_20261003/validation.json",
+    "paper_artifacts/meta_prior_heterogeneous_covariance_a34_20261003/forecasts.json.gz",
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz"
+  ],
+  "question": "Do A34's losses arise despite withdrawing heterogeneous covariance mass, and does a learned covariance direction add value over its scale-matched full control?",
+  "design": "Reconstruct the same four saved leave-pair-out covariance fits and original local components, with no optimizer call. Recover strictly-past mixture weights on the same80 training-validation paths. Cache component evidence/density and verify all Q/G/I/M/B forecasts match A34. Use the identity Q-I = log((1-wM)+wM*exp(M-I)); this is exact predictive accounting, not a causal isolation of covariance and weights.",
+  "analysis": "For each regime, report step9/24 heterogeneous posterior mass for Q and G, fraction of scored steps with worse M density than I, mass on those steps, and M-B paired differences. Report covariance effective dimension and learned high-frequency variance mass by fold. Retain all four blocks. No optimizing masses, selecting models, target outcomes or claiming a unique cause.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 10,
+    "new_covariance_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "paired_bootstrap_seed": 20261112,
+  "next": "Use this accounting to freeze a task-level covariance mixture that retains heterogeneous source classes rather than one pooled diagonal. Learn latent covariance classes from source labels only; exclude the entire held seed pair from every fit and calibrator. Keep the original local risk atom and the same full-dictionary control. No regime-label classifier, oracle support, post-hoc mass tuning or new campaign. Validate the source model before conditional sharing or target decision tests."
+}

@@ -1,0 +1,356 @@
+{
+  "execution": {
+    "status": "implementation and verification budget frozen;before zero-shot marginals or label integrals",
+    "source_noise_results": "paper_artifacts/legacy_joint_population_f_source_noise_contract_v1/results.json",
+    "source_point_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+    "source_gp_registry": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+    "risk_control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "source_validation_task": 0,
+    "question": "Does integrating unknown variance in held-source batch means materially alter the source predictive inference that currently freezes S_f^2/3 as known?",
+    "contract": "Use the two canonical four-source f priors(sparse joint point law and same-source GP)and their identical source4 eta_f priors,all excluding source-validation task0 and outer task1. Reuse fixed outcome-free coordinates and existing twelve-site source-validation roster. Freeze these zero-shot marginals before reading that roster's cached mean/log-variance labels. No paid updates,posterior re-estimation or new observations.",
+    "calculation": "At each of twelve sites per layout/arm,integrate the same proper Gaussian batch-mean and chi-square sample-variance likelihood over latent eta_f and Gaussian f. Split joint log density into variance-label log density and conditional mean log density. Compare conditional mean log density/variance and source likelihood covariance tangent with the current Gaussian plug-in predictive mean density using S_f^2/3. Include both arms;no baseline is allowed oracle noise. The held-source variance label may be conditioned on ONLY for this registered source diagnostic,not for target deployment.",
+    "verification": "Original mean/log-S^2 bias correction and Jacobian must match the existing raw batch measure;n=3. Explicitly verify S_f^2/3 reconstructed from eta_f response agrees with the source input noise. Require unchanged existing adaptive integral bounds and matched source identities/rosters. Stop on mismatch without relaxed tolerances. The first site in each arm is compared with the existing independent local_calibration calculation at1e-8;these two extra joint/variance integrations are included in the verification budget.",
+    "decision": "If source conditional mean inference materially differs,design an uncertainty-aware source training likelihood using batch sufficient statistics. Avoid feeding an eta posterior that already consumed S^2 back into a joint S^2 likelihood;factor p(S^2)p(mean|S^2)or infer latent f/eta jointly. Include estimated variance uncertainty for structured and same-source GP controls under equal information. If differences are negligible at these priors,do not call this the cause of the failed candidates;assess source-coverage/model bias next. No additional outer task1 forecasts until a candidate passes complete inner development and numerical checks.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_optimizations": 0,
+      "new_source_conditionings": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0,
+      "maximum_joint_batch_integrations": 48,
+      "maximum_variance_only_integrations": 24,
+      "additional_cross_implementation_joint_checks": 2,
+      "additional_cross_implementation_variance_checks": 2
+    },
+    "execution": "local serial single-thread;reuse small cached source labels/coefficient and risk summaries;no server work,pulls or NPZ",
+    "scope": "Opened source-only diagnostic of likelihood approximation,not an exact full source posterior or independent confirmation. Original four prior principles remain;native intercept mixture retained;point/amplitude candidates stopped;complete-model HOLD. No task1 outcomes,source6/7,target,KG or manuscript edits.",
+    "output": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1",
+    "entrypoint": "performance/diagnose_legacy_f_source_latent_noise_feasibility.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "source_validation_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "sites": [
+        45,
+        10,
+        51,
+        31,
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "arms": [
+        "joint_spectral_geometry",
+        "source_gp"
+      ],
+      "f_means": [
+        [
+          0.3180838912801373,
+          0.3198591624380033
+        ],
+        [
+          0.5962687805749306,
+          0.5969025019243785
+        ],
+        [
+          0.5389907105871818,
+          0.5403797134897865
+        ],
+        [
+          0.6509640857400959,
+          0.6504013837351315
+        ],
+        [
+          0.312596921617821,
+          0.3051724309327878
+        ],
+        [
+          0.29892779656583723,
+          0.29522097145804194
+        ],
+        [
+          0.6587963129239727,
+          0.660297274003025
+        ],
+        [
+          0.5074691909728041,
+          0.5105428369761011
+        ],
+        [
+          0.4194559422119347,
+          0.4020683037589325
+        ],
+        [
+          0.4747728681563429,
+          0.46461508123641404
+        ],
+        [
+          0.3370547343553402,
+          0.34598936592262597
+        ],
+        [
+          0.342064840410748,
+          0.34072223991943046
+        ]
+      ],
+      "f_variances": [
+        [
+          0.0005769760010651753,
+          0.0005758431450829193
+        ],
+        [
+          0.0006977820195712101,
+          0.0005822318729162365
+        ],
+        [
+          0.0006781935600882482,
+          0.0005910272499286337
+        ],
+        [
+          0.0006465194652807987,
+          0.0005819975053620452
+        ],
+        [
+          0.0007326043221920444,
+          0.0006711143775443948
+        ],
+        [
+          0.0006459881186262248,
+          0.0005884866467552818
+        ],
+        [
+          0.0006865587345876688,
+          0.0006164295499705226
+        ],
+        [
+          0.0006582615775999101,
+          0.0005840572866998972
+        ],
+        [
+          0.0007646190121154949,
+          0.0009337235668836014
+        ],
+        [
+          0.0008414633289739472,
+          0.001300148691649189
+        ],
+        [
+          0.0007237281552276059,
+          0.0007118631483865787
+        ],
+        [
+          0.0006687998250249458,
+          0.0006012779700143035
+        ]
+      ],
+      "eta_mean": [
+        -10.418578067739954,
+        -9.515180997738929,
+        -8.278403433830547,
+        -9.748677024943245,
+        -8.803093650049025,
+        -9.223817541727591,
+        -8.68391465874047,
+        -8.99444971168913,
+        -7.569491108397001,
+        -11.296051772784349,
+        -7.968637027538697,
+        -9.262931201163486
+      ],
+      "eta_variance": [
+        0.12849828280647815,
+        0.052862547975378385,
+        0.3204996665368848,
+        0.20752697333615547,
+        0.9368739086511834,
+        0.05642950082629056,
+        1.5293742031878823,
+        0.435559948133035,
+        3.13822563128212,
+        2.116202436874313,
+        0.2763951202167994,
+        0.09817365067022171
+      ],
+      "source_risk_package": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1",
+      "f_eta_prior_cross_covariance": 0.0
+    },
+    {
+      "layout": "6",
+      "source_validation_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "sites": [
+        45,
+        10,
+        51,
+        31,
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "arms": [
+        "joint_spectral_geometry",
+        "source_gp"
+      ],
+      "f_means": [
+        [
+          0.3178089686277771,
+          0.31791757946726873
+        ],
+        [
+          0.5964324369454412,
+          0.5972592646589087
+        ],
+        [
+          0.5402933060264108,
+          0.5409812646205867
+        ],
+        [
+          0.6510688880886927,
+          0.6507419361395685
+        ],
+        [
+          0.2990306800379689,
+          0.2895076030503043
+        ],
+        [
+          0.31450566793259144,
+          0.3150976707034817
+        ],
+        [
+          0.3592745761013353,
+          0.35602145255245204
+        ],
+        [
+          0.3948421215727996,
+          0.3966103242217897
+        ],
+        [
+          0.3740930593807702,
+          0.388844044483068
+        ],
+        [
+          0.4354827975212626,
+          0.4333088055737241
+        ],
+        [
+          0.4431487510031397,
+          0.4572118188987199
+        ],
+        [
+          0.38923331531260724,
+          0.3860501505373075
+        ]
+      ],
+      "f_variances": [
+        [
+          0.0007786140920504783,
+          0.0007599438602587412
+        ],
+        [
+          0.0008948058332141012,
+          0.0007641880105746675
+        ],
+        [
+          0.0008667634503061488,
+          0.0007734183192764702
+        ],
+        [
+          0.0008386762864719992,
+          0.000764005707298297
+        ],
+        [
+          0.0007970443545165654,
+          0.0007636407729232925
+        ],
+        [
+          0.0008592078795246819,
+          0.000789367037578642
+        ],
+        [
+          0.0008190020077018964,
+          0.0007709916093694172
+        ],
+        [
+          0.0008545279090780869,
+          0.0007664015195338891
+        ],
+        [
+          0.0008839230349487429,
+          0.0007896545851502075
+        ],
+        [
+          0.0008857089761203149,
+          0.0008003357504091802
+        ],
+        [
+          0.0009063642516818019,
+          0.0008207039265263458
+        ],
+        [
+          0.0008313952244528791,
+          0.0007697939399205059
+        ]
+      ],
+      "eta_mean": [
+        -10.245572314393849,
+        -9.640940293972621,
+        -8.339343459440725,
+        -9.550176276116977,
+        -9.403600293429639,
+        -8.50365833827232,
+        -9.800729668273245,
+        -10.272739804091538,
+        -9.340651564718197,
+        -9.766029736284917,
+        -8.666165056709215,
+        -10.286206088297309
+      ],
+      "eta_variance": [
+        0.13460540708267876,
+        0.06334332077128427,
+        0.23208895700308652,
+        0.0690809873018699,
+        0.06497137262855318,
+        0.40512825440658745,
+        0.06609405801295735,
+        0.1445730156321144,
+        0.1778361774253746,
+        0.06456075393302951,
+        0.43999370053578646,
+        0.1482458805334925
+      ],
+      "source_risk_package": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1",
+      "f_eta_prior_cross_covariance": 0.0
+    }
+  ],
+  "all_zero_shot_marginals_frozen_before_validation_labels": true
+}

@@ -771,10 +771,10 @@ def evaluate_or_replicate_action_set(
                     ),
                 ))
             for index in ordered_new:
-                if index not in selected_new_indices:
-                    selected_new_indices.append(index)
                 if len(selected_new_indices) >= baseline_requested:
                     break
+                if index not in selected_new_indices:
+                    selected_new_indices.append(index)
             baseline_new_indices = list(selected_new_indices)
             for label, values in supplements:
                 if len(selected_new_indices) >= requested_new:

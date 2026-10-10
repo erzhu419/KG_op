@@ -1,0 +1,13 @@
+{
+  "modules": [
+    "tests.test_source_variance_tilt",
+    "tests.test_positive_source_mixture",
+    "tests.test_joint_response_mixture",
+    "tests.test_terminal_constant_risk",
+    "tests.test_raw_likelihood_lookahead"
+  ],
+  "tests_run": 18,
+  "passed": false,
+  "output": "..............E..E\n======================================================================\nERROR: test_joint_response_mixture (unittest.loader._FailedTest)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_joint_response_mixture\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/unittest/loader.py\", line 154, in loadTestsFromName\n    module = __import__(module_name)\n  File \"/home/erzhu419/mine_code/KG_op/SC-OLH-KG/tests/test_joint_response_mixture.py\", line 16, in <module>\n    from test_guarded_deployment_kg import PROTOCOL\nModuleNotFoundError: No module named 'test_guarded_deployment_kg'\n\n\n======================================================================\nERROR: test_raw_likelihood_lookahead (unittest.loader._FailedTest)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_raw_likelihood_lookahead\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/unittest/loader.py\", line 154, in loadTestsFromName\n    module = __import__(module_name)\n  File \"/home/erzhu419/mine_code/KG_op/SC-OLH-KG/tests/test_raw_likelihood_lookahead.py\", line 18, in <module>\n    from test_guarded_deployment_kg import PROTOCOL\nModuleNotFoundError: No module named 'test_guarded_deployment_kg'\n\n\n----------------------------------------------------------------------\nRan 18 tests in 0.740s\n\nFAILED (errors=2)\n",
+  "cpu_seconds": 0.7433781399999999
+}

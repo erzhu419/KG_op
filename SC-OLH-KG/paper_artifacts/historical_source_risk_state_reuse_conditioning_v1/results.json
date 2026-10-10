@@ -1,0 +1,72 @@
+{
+  "execution_plan": "performance/manifests/historical_source_risk_state_reuse_conditioning_v1.json",
+  "layout": "5",
+  "selector": "spectral",
+  "support": "head_specific",
+  "treatment": "observed_task",
+  "head": "f",
+  "final_risk_scales": [
+    0.13648896491231532,
+    0.02468364218090036
+  ],
+  "fixed_response_scales": [
+    0.1896847957320934,
+    1.31652536960412
+  ],
+  "verification": {
+    "layout": "5",
+    "arm": "5/spectral/head_specific/observed_task/f",
+    "dense_marginal_density_error": 0.0,
+    "precision_posterior_mean_error": 5.551115123125783e-16,
+    "precision_posterior_covariance_error": 5.869511499276224e-18,
+    "passed": true,
+    "compensated_density_identity_error": 0.0,
+    "common_conditional_mean_identity_error": 1.249000902703301e-16,
+    "common_conditional_covariance_identity_error": 8.300922883092143e-19
+  },
+  "candidate_component_file": "paper_artifacts/historical_source_risk_state_reuse_conditioning_v1/candidate_5_spectral_head_specific_observed_task_f.json",
+  "posterior_functional_precision_passed": true,
+  "point_mixture_retention_passed": true,
+  "final_posterior_and_retention_certified": true,
+  "maximum_split_rhat": 1.0016518633202078,
+  "minimum_autocorrelation_ess": 2636.4750403650846,
+  "maximum_first_second_half_f_variance_relative_difference": 0.026345819086926004,
+  "mixture_variance_error": 0.020802813666198405,
+  "mixture_mean_error_in_posterior_sd": 0.001976020350722465,
+  "mixture_components": 1024,
+  "response_stationarity_at_final_risk": {
+    "current_scales": [
+      0.1896847957320934,
+      1.31652536960412
+    ],
+    "proposed_scales": [
+      0.18978725313450612,
+      1.3368541989277607
+    ],
+    "scaled_projected_raw_score": [
+      1.3589610677380186e-05,
+      -0.000634962172617708
+    ],
+    "relative_covariance_change": 0.0015191633250437992,
+    "optimizer_converged": true,
+    "full_and_split_Q_improvements": [
+      4.864284421479681e-06,
+      4.9164457562866914e-06,
+      4.812123089337206e-06
+    ],
+    "single_iteration_stationarity_passed": true,
+    "response_parameters_changed": false
+  },
+  "new_candidate_MCMC_sweeps": 18432,
+  "source_registry_replaced": false,
+  "joint_source_learning_converged": false,
+  "final_vs_parent_evidence_precision_passed": false,
+  "cpu_seconds": 3.541574951,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "scope": "One fixed final conditional-risk candidate. Original response posterior and retained-mixture gates;no optimizer adoption. The failed direct parent evidence estimate remains unresolved. Original32 source laws and current registry are unchanged."
+}

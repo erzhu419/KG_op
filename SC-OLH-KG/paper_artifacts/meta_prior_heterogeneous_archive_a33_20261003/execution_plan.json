@@ -1,0 +1,85 @@
+{
+  "stage": "meta_prior_heterogeneous_archive_a33_20261003",
+  "status": "planned_not_run",
+  "fixed_before_archive_extraction": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/inputs.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_joint_archive_target_a28_20261003/target_forecasts.json.gz"
+  ],
+  "cohort": {
+    "meta_training_seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "meta_training_seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ]
+    ],
+    "held_development_evaluation_seeds": [
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "path_policies": [
+      "risk_ard_mixture",
+      "fixed_source"
+    ],
+    "difficulty": "binding",
+    "allocation": "n24_v928",
+    "queries_per_path": 24,
+    "replicates_per_batch": 12
+  },
+  "question": "Can physically co-observed, already-paid heterogeneous historical tasks fill the meta-training gap without new simulations?",
+  "extraction": "Reconstruct only original paid training observations using their original simulator task seed, candidate and visit. Keep f, g and eta from the same original replicate batch. Within each seed/regime task, merge policy records by (candidate, prior_visit); shared random-number records enter once. Distinct visits remain distinct observations. Save no truth, supports, recommendations, verification outcomes or evaluation responses.",
+  "evaluation_manifest": "Only seed/regime/policy, candidate sequence, initial design and visit indices for seeds56-63. These paths are reused development evaluation, not fresh independent confirmation; their outcomes were inspected in previous stages.",
+  "source_population": "Any subsequent population fit uses seeds48-55 only. Evaluation tasks may retain their original task-related local source prior, but evaluation source archives cannot enter population meta-training. Record source cost separately from reused heterogeneous training cost.",
+  "controls": "Both original risk I and generic F forecasts reconstructed from the extracted training eta records must reproduce A28. Shared policy records must have identical psi, response and noise. All five regimes and both policies are retained without outcome filtering. Each latent task enters as one task, not two independent policy tasks.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "gaussian_covariance_learning_fits": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_response_records_saved": 0
+  },
+  "next": "Freeze source-only covariance learning and leave-pair-out training validation before fitting. Repeated candidates across distinct visits are precision-collapsed for the source covariance fit. Learn function covariance with zero nonintercept means; no transfer of historical good actions. Learn conditional sharing only after the heterogeneous covariance is validated, with all upstream fits excluded from each calibration fold.",
+  "limitations": "Historical policies adaptively selected their observations, and this cohort has already been studied. This split supports development of a heterogeneous meta-prior; it is not an untouched submission confirmation cohort. Synthetic public-coordinate tasks do not establish learned trajectory representations or deployment gains."
+}

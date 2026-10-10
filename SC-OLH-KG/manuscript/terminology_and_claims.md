@@ -29,7 +29,7 @@ and independent terminal verification.
 | nominal grid dimension | Number of implementation nodes, not intrinsic profile rank |
 | registered task law | Frozen randomized distribution over eight profile regimes |
 | native transfer pipeline | A comparator retaining its own prior, initialization, and acquisition logic |
-| Energy V3 | Region-held-out negative external control; not a source-learning success |
+| Energy V5 | Region-held-out external comparison; supports structural-transfer evidence and a limitation, not source-learning superiority over the natural low-frequency control |
 
 ## Final Method Identity
 
@@ -50,7 +50,7 @@ comparators. Cumulative factor-HVD is a secondary calibration diagnostic.
 1. On the registered randomized ordered-profile task law, source scoring
    improves aggregate feasible coverage, certified deployment, and penalized
    loss over generic DCT maximin and the other source-free controls.
-2. The advantage is not universal: registered adverse regimes and Energy V3
+2. The advantage is not universal: registered adverse regimes and Energy V5
    contain reversals.
 3. Cross-grid consistency supports policy discretization refinement; it does
    not establish generic optimization in 10,000 unrelated variables.
@@ -82,7 +82,7 @@ comparators. Cumulative factor-HVD is a secondary calibration diagnostic.
 
 1. Randomized profile primary and adverse-regime matrices.
 2. Schema, source-budget, and equal-preverification-cost controls.
-3. Energy V3 negative external control.
+3. Energy V5 external comparison and its natural low-frequency limitation.
 4. Verifier power and temporal-scope audits.
 5. Native transfer pipelines and functional SCBO.
 6. HVD calibration-only appendix.

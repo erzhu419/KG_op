@@ -1,0 +1,47 @@
+{
+  "status": "completed Stage62–64; four-field interface validated, both opened-source advancement gates fail, training-task validation selects independent",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "paired_source_execution": "performance/manifests/legacy_joint_population_paired_task_direction_fit_v1.json",
+  "paired_source_results": "paper_artifacts/legacy_joint_population_paired_task_direction_fit_v1/results.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "failed_mixture_results": "paper_artifacts/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1/results.json",
+  "source_dependence_results": "paper_artifacts/legacy_joint_population_counterbalanced_source_dependence_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "basis_of_next_step": "Full-rank complete deletion mixtures lose joint/g density in all eight source cases. Source-only paired f/g task moments reveal joint covariance directions beyond independent-head directions, and both paired scalar fits converge. Current JointResponseMixture assumes independent f/eta_f and g/eta_g fields within each identity, so it cannot propagate the fitted off-diagonal blocks unchanged.",
+  "initialization": "Project the full54-coefficient common posterior plus task covariance from the frozen paired fits to all73 public policies, retaining f/g cross-candidate blocks and head discrepancies. Combine this same mean law with each of the old full48/six-deleted40-record risk priors and their own public maps. Latent candidate/head order is(f,eta_f,g,eta_g). Uniform1/7 complete-identity weights; no deleted mean mixture or additional risk learning.",
+  "paid_update": "A physical episode supplies paired(f,centered g) with independent conditional Normal episode errors exp(eta_f)/exp(eta_g), while the latent four-field prior is correlated. Integrate the two eta variables after analytically conditioning both mean variables. Extend local posterior moments to the full field using Gaussian conditional moments and project after each paid batch, preserving all cross blocks. Update each identity weight using its paired predictive evidence, not the product of marginal predictive densities.",
+  "batch_density": "Three-repeat mean/variance labels use the same conditional Normal plus two log-chi-square variance densities as the current contract. Head marginal scores may use the existing two-dimensional local filter; joint density must integrate the complete four-dimensional latent law. Score fresh data without updating the paid posterior.",
+  "numerics": "Use analytic Gaussian conditioning to keep numerical integration two-dimensional. Prefer vectorized quadrature with an independent correlated-case integral comparison and a fixed accuracy comparison before source scoring; a numerical discrepancy blocks interpretation of prediction scores. Avoid adding a dense high-dimensional integral or a server matrix.",
+  "checks": "Zero coupling must reproduce the old same216-call conditional fields, shared identity weights, raw paid evidence and moments after identical two records. A correlated toy tests nonzero head cross blocks and joint evidence against an independent low-dimensional integral. Preserve source-fit covariance when initializing; test that a paid f observation can update correlated g, and that source scoring leaves posterior state unchanged.",
+  "freeze_rule": "Freeze both source-only fitted priors and all four coupled holdout forecasts after the same two raw records0/1 before scoring policies2..72. Holdout outcomes choose no prior parameter, representation, quadrature resolution or identity weight hyperparameter. No target observations/truth or known physical geometry enters this phase.",
+  "controls": "Same216-call structural and flat risk-only mixtures and strong complete GP from Stage53, with unchanged initial observations and proper batch density. Keep both assignments and all four source cases; retain original144-call structural repair reference and failed variants.",
+  "source_gate": "Require g MSE nonincrease, joint batch density nondecrease and g batch density improvement versus the same216-call structural control at both holdouts under both assignments, and also satisfy the original144-call repair gate. Report every case. No partial head/layout selection, after-the-fact gate waiver or promotion of training NLL improvement.",
+  "next_action": "Only a candidate passing both source gates may enter a separately registered target diagnostic. Risk-factor recovery, independent confirmation, terminal recommendation and KG remain separate required evidence; do not launch them automatically.",
+  "execution": "local serial single-thread, cached labels and frozen source fits, no new source/risk fits, simulator/verifier calls, terminal integrations, target archive reads, server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_paired_function_risk_filter_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_paired_function_risk_filter_execution_v2.json",
+  "completed_results": "paper_artifacts/legacy_joint_population_paired_function_risk_filter_v1/results.json",
+  "training_taskout_results": "paper_artifacts/legacy_joint_population_paired_taskout_validation_v1/results.json",
+  "followup_report": "docs/orthogonal_meta_prior_stage62_64_20261006.md",
+  "next_registered_plan": "performance/manifests/legacy_joint_population_fixed_marginal_correlation_plan_v1.json"
+}

@@ -1,0 +1,132 @@
+{
+  "protocol": {
+    "replay": "paper_artifacts/legacy_observable_budget_v1/replay.json",
+    "cases": [
+      {
+        "domain": "InventorySupplyChain",
+        "prefix": 10,
+        "arm": "observable_source_orthogonal"
+      }
+    ],
+    "draw_power": 10,
+    "seeds": [
+      80519
+    ],
+    "integration": "terminal_marginal",
+    "output": "lookahead_marginal.json",
+    "lookahead_probe": {
+      "domain": "InventorySupplyChain",
+      "prefix": 10,
+      "arm": "observable_source_orthogonal",
+      "draw_power": 10,
+      "fantasy_power": 4
+    },
+    "role": "one saved-state followup: 16 raw predictive fantasies, copied actual posterior updates and identical marginal terminal integration at the debited budget; projection drift reported separately; no action executed",
+    "new_simulator_calls": 0
+  },
+  "rows": [
+    {
+      "domain": "InventorySupplyChain",
+      "arm": "observable_source_orthogonal",
+      "prefix": 10,
+      "integrations": [
+        {
+          "seed": 80519,
+          "action": {
+            "kind": "guarded",
+            "primary": 50,
+            "shortlist": [
+              50,
+              3,
+              4
+            ],
+            "incumbent_position": 1,
+            "budgets": [
+              80,
+              128,
+              128
+            ]
+          },
+          "predicted_reward": 0.5109114986871319,
+          "predicted_calls": 263.8973992977895,
+          "truth": {
+            "reward": 0.807812057933566,
+            "calls": 333.44405679149486,
+            "primary_feasible": false
+          }
+        }
+      ],
+      "original_4096_action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          4
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          80,
+          128,
+          128
+        ]
+      },
+      "max_reward_difference": null,
+      "lookahead": {
+        "stop_action": {
+          "kind": "guarded",
+          "primary": 50,
+          "shortlist": [
+            50,
+            3,
+            4
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            80,
+            128,
+            128
+          ]
+        },
+        "stop_expected_reward": 0.5109114986871319,
+        "stop_expected_verification_calls": 263.8973992977895,
+        "lookahead": [
+          {
+            "candidate": 4,
+            "expected_future_reward": 0.515907739824488,
+            "net_reward_of_paid_episode": 0.004996241137356083,
+            "adaptation_value": 0.0006336696867830713,
+            "projection_tower_drift": 0.0045475945859083655,
+            "verification_budget_opportunity_cost": 0.00018502313533541592,
+            "expected_eta_variance_reduction_fraction": 0.08080167671485301
+          },
+          {
+            "candidate": 3,
+            "expected_future_reward": 0.5049341092280221,
+            "net_reward_of_paid_episode": -0.005977389459109861,
+            "adaptation_value": 0.0005526071567755822,
+            "projection_tower_drift": -0.006344973480549965,
+            "verification_budget_opportunity_cost": 0.00018502313533541592,
+            "expected_eta_variance_reduction_fraction": 0.07139167359463824
+          },
+          {
+            "candidate": 50,
+            "expected_future_reward": 0.5590667260975831,
+            "net_reward_of_paid_episode": 0.048155227410451196,
+            "adaptation_value": 0.06314941460014264,
+            "projection_tower_drift": -0.014809164054356061,
+            "verification_budget_opportunity_cost": 0.00018502313533541592,
+            "expected_eta_variance_reduction_fraction": 0.006134385102485464
+          }
+        ],
+        "choice": "sample",
+        "sampling_candidate": 50,
+        "remaining_calls": 352,
+        "draw_count": 1024,
+        "fantasy_count": 16
+      }
+    }
+  ],
+  "new_calls": 0,
+  "cpu_seconds": 26.341505123999998
+}

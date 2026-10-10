@@ -1,0 +1,2175 @@
+{
+  "status": "registered before retrospective joint stationarity audit and eight nearest-bank replays",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "source_learning": "paper_artifacts/historical_final_source_closure_v1/source_candidates.json",
+  "cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.15587242919743335,
+        0.009323900111130991
+      ],
+      "fixed_response_scales": [
+        0.23079715946275128,
+        0.9806970774383255
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_head_specific_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_additive_head_specific_observed_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_additive_head_specific_observed_task_f/candidate_5_additive_head_specific_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.23079715946275128,
+          0.9806970774383255
+        ],
+        "proposed_scales": [
+          0.23081055391007893,
+          0.9852453730520337
+        ],
+        "scaled_projected_raw_score": [
+          1.944879710325885e-05,
+          -0.00035339998000531004
+        ],
+        "relative_covariance_change": 0.0014696406108170863,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          8.167955520832493e-07,
+          9.09885532474064e-07,
+          7.237055719144792e-07
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_head_specific_observed_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.6796600099041319,
+        "conditional_MC_interval_95": [
+          0.48451460437497995,
+          0.8748054154332838
+        ],
+        "importance_ESS": 296.77300844158185,
+        "split_Rhat": 1.0001106988329245,
+        "chain_functional_ESS": 22176.16862584461,
+        "split_log_ratio_difference": 0.0041684794453660245,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.1390880693915479,
+        0.18073013644575156
+      ],
+      "fixed_response_scales": [
+        0.27209660942467706,
+        0.4796691116581407
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_head_specific_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_additive_head_specific_deconvolved_task_g/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_additive_head_specific_deconvolved_task_g/candidate_5_additive_head_specific_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.27209660942467706,
+          0.4796691116581407
+        ],
+        "proposed_scales": [
+          0.2723550770762766,
+          0.4792856349408003
+        ],
+        "scaled_projected_raw_score": [
+          -4.610513161430801e-05,
+          3.935299682911249e-05
+        ],
+        "relative_covariance_change": 0.0008834009771518579,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          3.7640607242206414e-08,
+          2.477719407423251e-08,
+          5.0504020354669166e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_head_specific_deconvolved_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.10067178673878452,
+        "conditional_MC_interval_95": [
+          0.07614200905096312,
+          0.1252015644266059
+        ],
+        "importance_ESS": 23278.99511625979,
+        "split_Rhat": 1.0002358976701513,
+        "chain_functional_ESS": 11589.535431152402,
+        "split_log_ratio_difference": 0.017932205080003705,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.14154828941890266,
+        0.12135079169833295
+      ],
+      "fixed_response_scales": [
+        0.16833302328159808,
+        0.5419052998864907
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_joint_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_additive_joint_observed_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_additive_joint_observed_task_f/candidate_5_additive_joint_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.16833302328159808,
+          0.5419052998864907
+        ],
+        "proposed_scales": [
+          0.16826660086587764,
+          0.5411187204062575
+        ],
+        "scaled_projected_raw_score": [
+          3.161654921779636e-05,
+          8.551352305262056e-05
+        ],
+        "relative_covariance_change": 0.0004862136744505339,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          6.83481502505856e-08,
+          4.869476155633379e-08,
+          8.8001538056659e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_joint_observed_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0908222745217433,
+        "conditional_MC_interval_95": [
+          0.07251215744278484,
+          0.10913239160070175
+        ],
+        "importance_ESS": 29819.03099796145,
+        "split_Rhat": 1.0002906383051045,
+        "chain_functional_ESS": 13725.165735727123,
+        "split_log_ratio_difference": 0.0099440300350917,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.1427376967312443,
+        0.257093873071126
+      ],
+      "fixed_response_scales": [
+        0.18769962349731437,
+        0.9396772285713036
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_joint_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_observed_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_observed_task_g/candidate_5_additive_joint_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.18769962349731437,
+          0.9396772285713036
+        ],
+        "proposed_scales": [
+          0.18788881434899313,
+          0.9403453827938225
+        ],
+        "scaled_projected_raw_score": [
+          -7.157882632641633e-05,
+          -4.465845821534191e-05
+        ],
+        "relative_covariance_change": 0.0009530890289757231,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          5.1921408839028516e-08,
+          5.4873738442040576e-08,
+          4.903450445681301e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_joint_observed_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0029532506944303094,
+        "conditional_MC_interval_95": [
+          0.0012608425922984938,
+          0.004645658796562125
+        ],
+        "importance_ESS": 64946.44537245578,
+        "split_Rhat": 1.0001333297069814,
+        "chain_functional_ESS": 12175.23196425631,
+        "split_log_ratio_difference": 0.0012853709658084966,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.13648896491231532,
+        0.02468364218090036
+      ],
+      "fixed_response_scales": [
+        0.1896847957320934,
+        1.31652536960412
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_head_specific_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_source_risk_state_reuse_conditioning_v1/results.json",
+      "posterior_method": "completed final-law conditioning",
+      "candidate_component_file": "paper_artifacts/historical_source_risk_state_reuse_conditioning_v1/candidate_5_spectral_head_specific_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.1896847957320934,
+          1.31652536960412
+        ],
+        "proposed_scales": [
+          0.18978725313450612,
+          1.3368541989277607
+        ],
+        "scaled_projected_raw_score": [
+          1.3589610677380186e-05,
+          -0.000634962172617708
+        ],
+        "relative_covariance_change": 0.0015191633250437992,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          4.864284421479681e-06,
+          4.9164457562866914e-06,
+          4.812123089337206e-06
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_v3/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.35264701058248615,
+        "conditional_MC_interval_95": [
+          0.27930394649214935,
+          0.42599007467282296
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.497705474412374,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "source_evidence_method": "chronological source anchors",
+      "selected_evidence_results": "paper_artifacts/historical_final_risk_evidence_bridge_v1/cases/5_spectral_head_specific_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.005147973175193267,
+        0.354515808537078
+      ],
+      "fixed_response_scales": [
+        0.21624197820494861,
+        0.660294813864246
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_joint_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_joint_observed_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_joint_observed_task_f/candidate_5_spectral_joint_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.21624197820494861,
+          0.660294813864246
+        ],
+        "proposed_scales": [
+          0.2163289715859302,
+          0.6601801997987983
+        ],
+        "scaled_projected_raw_score": [
+          -2.436500140049039e-05,
+          8.845507588461586e-06
+        ],
+        "relative_covariance_change": 0.0003948948912979915,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          5.667533997666396e-09,
+          6.799301788262824e-09,
+          4.535767983426808e-09
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_joint_observed_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.1684927432472616,
+        "conditional_MC_interval_95": [
+          0.1523788588415395,
+          0.1846066276529837
+        ],
+        "importance_ESS": 31731.593910427826,
+        "split_Rhat": 1.0000926804226575,
+        "chain_functional_ESS": 15761.578319138196,
+        "split_log_ratio_difference": 0.020760892915280493,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.1825990591112181,
+        0.2961695405419736
+      ],
+      "fixed_response_scales": [
+        0.23090864896785634,
+        0.9884131220830504
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_head_specific_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_head_specific_deconvolved_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_head_specific_deconvolved_task_f/candidate_5_additive_head_specific_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.23090864896785634,
+          0.9884131220830504
+        ],
+        "proposed_scales": [
+          0.2308626459456547,
+          0.9885842381299378
+        ],
+        "scaled_projected_raw_score": [
+          1.256280210814841e-05,
+          -1.4117202938110324e-05
+        ],
+        "relative_covariance_change": 0.00018103647999502298,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          2.4735353765237278e-09,
+          9.683990720432689e-09,
+          -5.4986142306034935e-09
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_additive_head_specific_deconvolved_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.020683588562963706,
+        "conditional_MC_interval_95": [
+          0.014013153178165311,
+          0.027354023947762103
+        ],
+        "importance_ESS": 58861.524161747264,
+        "split_Rhat": 1.0002310818373812,
+        "chain_functional_ESS": 9790.301536689276,
+        "split_log_ratio_difference": 0.0046789643575113615,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.248963196891758,
+        0.4583068077874955
+      ],
+      "fixed_response_scales": [
+        0.21273856630488303,
+        0.44730396556848095
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_head_specific_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_observed_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_observed_task_f/candidate_6_spectral_head_specific_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.21273856630488303,
+          0.44730396556848095
+        ],
+        "proposed_scales": [
+          0.2127741916649205,
+          0.44720209170046166
+        ],
+        "scaled_projected_raw_score": [
+          -1.1022592845281093e-05,
+          7.401578050032463e-06
+        ],
+        "relative_covariance_change": 0.00016455070093843326,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.7658337014836434e-09,
+          2.799825038479753e-09,
+          7.319205241884674e-10
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_stationary_retention_v1/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.011140488275200866,
+        "conditional_MC_interval_95": [
+          0.006283206382148379,
+          0.015997770168253354
+        ],
+        "importance_ESS": 62499.16434330931,
+        "split_Rhat": 1.000233498068234,
+        "chain_functional_ESS": 7911.871624268334,
+        "split_log_ratio_difference": 0.0023663810018739184,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.22287850086369035,
+        0.009793598264634764
+      ],
+      "fixed_response_scales": [
+        0.27581838307620604,
+        0.40737873026279925
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_head_specific_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_additive_head_specific_observed_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_additive_head_specific_observed_task_f/candidate_6_additive_head_specific_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.27581838307620604,
+          0.40737873026279925
+        ],
+        "proposed_scales": [
+          0.27612319751582637,
+          0.40751553247362593
+        ],
+        "scaled_projected_raw_score": [
+          -5.57671756229743e-05,
+          -1.434629599169291e-05
+        ],
+        "relative_covariance_change": 0.001047584988753899,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          3.3202981031266177e-08,
+          3.2070246902549115e-08,
+          3.433571471589403e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.3487920970191958,
+        "conditional_MC_interval_95": [
+          0.20108693038327963,
+          0.49649726365511193
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.638257273476751,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "source_evidence_method": "chronological source anchors",
+      "selected_evidence_results": "paper_artifacts/historical_final_risk_evidence_bridge_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.21590295788713498,
+        0.08600902508608724
+      ],
+      "fixed_response_scales": [
+        0.27589165801154325,
+        0.4089348874699269
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_head_specific_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_additive_head_specific_deconvolved_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_additive_head_specific_deconvolved_task_f/candidate_6_additive_head_specific_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.27589165801154325,
+          0.4089348874699269
+        ],
+        "proposed_scales": [
+          0.2759788107516862,
+          0.40894074788283014
+        ],
+        "scaled_projected_raw_score": [
+          -1.59048906988256e-05,
+          -7.846241656830998e-07
+        ],
+        "relative_covariance_change": 0.00029726059746941816,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          2.5186484009509513e-09,
+          1.9246639837433577e-09,
+          3.11263304020315e-09
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_head_specific_deconvolved_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.11583609931077099,
+        "conditional_MC_interval_95": [
+          0.09176065996202795,
+          0.13991153865951403
+        ],
+        "importance_ESS": 22307.278368479278,
+        "split_Rhat": 1.0003245202794036,
+        "chain_functional_ESS": 12843.876855347422,
+        "split_log_ratio_difference": 0.0066984815504635975,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.15052252471314392,
+        0.023247589290787806
+      ],
+      "fixed_response_scales": [
+        0.21508062787717314,
+        0.7323947252432956
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_head_specific_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_head_specific_observed_task_g/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_head_specific_observed_task_g/candidate_5_spectral_head_specific_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.21508062787717314,
+          0.7323947252432956
+        ],
+        "proposed_scales": [
+          0.2166316439652412,
+          0.7432658638733454
+        ],
+        "scaled_projected_raw_score": [
+          -0.0003941263694391171,
+          -0.0008943662739305267
+        ],
+        "relative_covariance_change": 0.0076104103065532565,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          8.000333937996373e-06,
+          7.517854512695266e-06,
+          8.482813363075437e-06
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_stationary_retention_v1/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.36843236140900526,
+        "conditional_MC_interval_95": [
+          0.2209097427481051,
+          0.5159549800699055
+        ],
+        "importance_ESS": 390.1007613682875,
+        "split_Rhat": 1.0000865913770802,
+        "chain_functional_ESS": 29478.93768523582,
+        "split_log_ratio_difference": 0.07663657538055313,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.1734374664843743,
+        0.39851215544492424
+      ],
+      "fixed_response_scales": [
+        0.24717261237599147,
+        0.16550979356493842
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_joint_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_spectral_joint_observed_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_spectral_joint_observed_task_g/candidate_5_spectral_joint_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.24717261237599147,
+          0.16550979356493842
+        ],
+        "proposed_scales": [
+          0.24727424227414616,
+          0.16539108719423995
+        ],
+        "scaled_projected_raw_score": [
+          -2.105641561349901e-05,
+          4.334041952616016e-06
+        ],
+        "relative_covariance_change": 0.0004020896321100408,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          5.8818130366233845e-09,
+          4.747550130801415e-10,
+          1.1792053999926111e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_stationary_retention_v1/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0034311146086398736,
+        "conditional_MC_interval_95": [
+          0.0019144197401633957,
+          0.004947809477116352
+        ],
+        "importance_ESS": 65065.643478625905,
+        "split_Rhat": 1.0005062272884369,
+        "chain_functional_ESS": 12072.515603486774,
+        "split_log_ratio_difference": 0.0015613973587100816,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.17506368109722562,
+        0.6737779680838393
+      ],
+      "fixed_response_scales": [
+        0.24726829820595253,
+        0.16963871259373028
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_joint_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_source_acceleration_selection_v1/phase_results.json",
+      "posterior_method": "unchanged-law parent certificate",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_spectral_joint_deconvolved_task_g/candidate_5_spectral_joint_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.24726829820595253,
+          0.16963871259373028
+        ],
+        "proposed_scales": [
+          0.24728382240202604,
+          0.16961122504204737
+        ],
+        "scaled_projected_raw_score": [
+          -3.1914360180434647e-06,
+          1.0153498464103807e-06
+        ],
+        "relative_covariance_change": 6.13069964895998e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.8238921484226012e-10,
+          -1.0804246386442173e-10,
+          4.723772484283018e-10
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/5_spectral_joint_deconvolved_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0,
+        "conditional_MC_interval_95": [
+          0.0,
+          0.0
+        ],
+        "importance_ESS": 65536.0,
+        "split_Rhat": 1.0,
+        "chain_functional_ESS": 65536.0,
+        "split_log_ratio_difference": 0.0,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": false
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.14984647466919782,
+        0.29663648063362613
+      ],
+      "fixed_response_scales": [
+        0.27201022085128557,
+        0.4755773624260396
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_head_specific_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_head_specific_observed_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_head_specific_observed_task_g/candidate_5_additive_head_specific_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.27201022085128557,
+          0.4755773624260396
+        ],
+        "proposed_scales": [
+          0.2721017467678673,
+          0.4761826584759347
+        ],
+        "scaled_projected_raw_score": [
+          -1.3374108533982365e-05,
+          -5.932445894259779e-05
+        ],
+        "relative_covariance_change": 0.00037225667754218323,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          3.997915820619369e-08,
+          5.9062688906319494e-08,
+          2.081965577716005e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/5_additive_head_specific_observed_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.021188238241769852,
+        "conditional_MC_interval_95": [
+          0.013824088763442155,
+          0.02855238772009755
+        ],
+        "importance_ESS": 58415.42122019869,
+        "split_Rhat": 1.000393227345606,
+        "chain_functional_ESS": 8634.98051816142,
+        "split_log_ratio_difference": 0.010244315365738998,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_head_specific_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.17340126523784147,
+        0.073954714170203
+      ],
+      "fixed_response_scales": [
+        0.241455598850828,
+        0.3890538313246821
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_head_specific_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_additive_head_specific_observed_task_g/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_additive_head_specific_observed_task_g/candidate_6_additive_head_specific_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.241455598850828,
+          0.3890538313246821
+        ],
+        "proposed_scales": [
+          0.2414526144345987,
+          0.3890744748644675
+        ],
+        "scaled_projected_raw_score": [
+          7.543964915090919e-07,
+          -2.6190309325318374e-06
+        ],
+        "relative_covariance_change": 1.3848268034917993e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          7.418035630202269e-11,
+          8.701336873251364e-11,
+          6.13474548938342e-11
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_head_specific_observed_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.14121053740722012,
+        "conditional_MC_interval_95": [
+          0.09387834760512218,
+          0.18854272720931806
+        ],
+        "importance_ESS": 5474.893859390952,
+        "split_Rhat": 1.0002464521934131,
+        "chain_functional_ESS": 18811.490046914874,
+        "split_log_ratio_difference": 0.08024883184957687,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.16937600980471623,
+        0.2632024261323637
+      ],
+      "fixed_response_scales": [
+        0.22186488559658996,
+        0.17707744124265787
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_joint_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_deconvolved_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_deconvolved_task_g/candidate_6_additive_joint_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.22186488559658996,
+          0.17707744124265787
+        ],
+        "proposed_scales": [
+          0.2218715183824406,
+          0.17723546101775298
+        ],
+        "scaled_projected_raw_score": [
+          -2.280017740961922e-06,
+          -1.907252089793792e-05
+        ],
+        "relative_covariance_change": 6.983233038732215e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          8.540560036962574e-09,
+          -2.3020990669309072e-10,
+          1.7829785536882525e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_joint_deconvolved_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.037203079323568033,
+        "conditional_MC_interval_95": [
+          0.02467007519408697,
+          0.0497360834530491
+        ],
+        "importance_ESS": 47721.35419052456,
+        "split_Rhat": 1.000244960079355,
+        "chain_functional_ESS": 9130.043295775306,
+        "split_log_ratio_difference": 0.0031160762639430573,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.003912362092431652,
+        0.6175184646531218
+      ],
+      "fixed_response_scales": [
+        0.216363663991531,
+        0.6669502592233397
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_joint_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_joint_deconvolved_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_joint_deconvolved_task_f/candidate_5_spectral_joint_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.216363663991531,
+          0.6669502592233397
+        ],
+        "proposed_scales": [
+          0.21638981732423923,
+          0.6665054201880176
+        ],
+        "scaled_projected_raw_score": [
+          -7.588457473420667e-06,
+          3.2994595875004154e-05
+        ],
+        "relative_covariance_change": 0.00012196017064464517,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.146526185102914e-08,
+          1.0745252687627271e-08,
+          1.2185270792386405e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_joint_deconvolved_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.22334082579177839,
+        "conditional_MC_interval_95": [
+          0.20107727585358973,
+          0.24560437572996704
+        ],
+        "importance_ESS": 17885.22715817978,
+        "split_Rhat": 1.000012363989257,
+        "chain_functional_ESS": 20649.30455919451,
+        "split_log_ratio_difference": 0.00708471240120101,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_joint_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.09926211041743023,
+        0.6787651135612859
+      ],
+      "fixed_response_scales": [
+        0.16826430672869275,
+        0.5503211300600782
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_joint_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_deconvolved_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_deconvolved_task_f/candidate_5_additive_joint_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.16826430672869275,
+          0.5503211300600782
+        ],
+        "proposed_scales": [
+          0.1683286943327096,
+          0.5500850274866774
+        ],
+        "scaled_projected_raw_score": [
+          -2.9824601785186574e-05,
+          2.4942570703463785e-05
+        ],
+        "relative_covariance_change": 0.0003671787883067365,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.1056418447452643e-08,
+          -2.0391865529489905e-08,
+          4.1267027572899906e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_risk_precision_stationary_retention_v1/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.007292908223979211,
+        "conditional_MC_interval_95": [
+          0.003774267545636226,
+          0.010811548902322197
+        ],
+        "importance_ESS": 63661.06814097116,
+        "split_Rhat": 1.0005276793288786,
+        "chain_functional_ESS": 9138.61746990634,
+        "split_log_ratio_difference": 0.00547682071348099,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.19016840256924422,
+        0.04800923664572209
+      ],
+      "fixed_response_scales": [
+        0.17667154356143405,
+        0.4690404776153128
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_joint_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_joint_observed_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_joint_observed_task_f/candidate_6_spectral_joint_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.17667154356143405,
+          0.4690404776153128
+        ],
+        "proposed_scales": [
+          0.17665383913127125,
+          0.4648373098829201
+        ],
+        "scaled_projected_raw_score": [
+          -3.3557969516737045e-05,
+          0.0004632527066788202
+        ],
+        "relative_covariance_change": 0.00042181164181973805,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          2.0832011746740875e-06,
+          2.0332452654869826e-06,
+          2.1331570856375492e-06
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_joint_observed_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.23852598167432948,
+        "conditional_MC_interval_95": [
+          0.1862196264989454,
+          0.29083233684971355
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.241402727604947,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "source_evidence_method": "chronological source anchors",
+      "selected_evidence_results": "paper_artifacts/historical_final_risk_evidence_bridge_v1/cases/6_spectral_joint_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.20547952294890903,
+        0.31393272871874517
+      ],
+      "fixed_response_scales": [
+        0.1757236939017179,
+        0.42932278845863014
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_joint_observed_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_observed_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_observed_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_observed_task_f/candidate_6_additive_joint_observed_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.1757236939017179,
+          0.42932278845863014
+        ],
+        "proposed_scales": [
+          0.17578314585297394,
+          0.4291233621824349
+        ],
+        "scaled_projected_raw_score": [
+          -2.7007753146563992e-05,
+          2.6665214704955156e-05
+        ],
+        "relative_covariance_change": 0.00032945065612070303,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.0762136071207351e-08,
+          -7.507273913631707e-09,
+          2.9118728761545754e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_stationary_retention_v1/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.027564834587504805,
+        "conditional_MC_interval_95": [
+          0.018379450874148242,
+          0.036750218300861365
+        ],
+        "importance_ESS": 57324.828836593435,
+        "split_Rhat": 1.0007282370735782,
+        "chain_functional_ESS": 6522.08570275765,
+        "split_log_ratio_difference": 0.008426589672803075,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_observed_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.20991759164869433,
+        0.736366838431112
+      ],
+      "fixed_response_scales": [
+        0.17609284771352263,
+        0.43152147080602565
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_joint_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_deconvolved_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_deconvolved_task_f/candidate_6_additive_joint_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.17609284771352263,
+          0.43152147080602565
+        ],
+        "proposed_scales": [
+          0.17610883802441982,
+          0.4313874220242583
+        ],
+        "scaled_projected_raw_score": [
+          -7.3546606448159215e-06,
+          1.7698477667468092e-05
+        ],
+        "relative_covariance_change": 9.180872509925496e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          3.0826456942634195e-09,
+          5.763207244768864e-09,
+          3.948363858086168e-10
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.004227402681483028,
+        "conditional_MC_interval_95": [
+          0.0007397943813787157,
+          0.0077150109815873405
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.3939797998185104,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "source_evidence_method": "chronological source anchors",
+      "selected_evidence_results": "paper_artifacts/historical_final_risk_evidence_bridge_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.14804945271959377,
+        0.014025213907092077
+      ],
+      "fixed_response_scales": [
+        0.21472354409655525,
+        0.7470086012281991
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_head_specific_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_head_specific_deconvolved_task_g/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_head_specific_deconvolved_task_g/candidate_5_spectral_head_specific_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.21472354409655525,
+          0.7470086012281991
+        ],
+        "proposed_scales": [
+          0.2163237634016983,
+          0.7584124623700235
+        ],
+        "scaled_projected_raw_score": [
+          -0.00040815235548934955,
+          -0.0009133451191774365
+        ],
+        "relative_covariance_change": 0.007864273523499308,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          8.42909085929655e-06,
+          8.344252496517157e-06,
+          8.513929222520034e-06
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_head_specific_deconvolved_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.31141910549292096,
+        "conditional_MC_interval_95": [
+          0.20929422366771627,
+          0.41354398731812564
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.3939797998185104,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "source_evidence_method": "chronological source anchors",
+      "selected_evidence_results": "paper_artifacts/historical_final_risk_evidence_bridge_v1/cases/5_spectral_head_specific_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.1343733216131764,
+        0.4079169289332097
+      ],
+      "fixed_response_scales": [
+        0.18838733453290174,
+        0.9517787002369017
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_additive_joint_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_deconvolved_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/5_additive_joint_deconvolved_task_g/candidate_5_additive_joint_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.18838733453290174,
+          0.9517787002369017
+        ],
+        "proposed_scales": [
+          0.18870154244178838,
+          0.9519994063028769
+        ],
+        "scaled_projected_raw_score": [
+          -0.00012392193394764362,
+          -6.676972899926329e-06
+        ],
+        "relative_covariance_change": 0.001474898272729023,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.040113750683247e-07,
+          1.930901851743272e-07,
+          1.561790097248661e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/5_additive_joint_deconvolved_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.002260520833768709,
+        "conditional_MC_interval_95": [
+          0.0013764373539449774,
+          0.0031446043135924403
+        ],
+        "importance_ESS": 65333.62431869852,
+        "split_Rhat": 1.0003807966532938,
+        "chain_functional_ESS": 15224.876969296027,
+        "split_log_ratio_difference": 0.0017585117506104808,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_additive_joint_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.2053605418517499,
+        0.33034937057591446
+      ],
+      "fixed_response_scales": [
+        0.2054711926084349,
+        0.5073186891086667
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_joint_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_joint_observed_task_g/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_joint_observed_task_g/candidate_6_spectral_joint_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.2054711926084349,
+          0.5073186891086667
+        ],
+        "proposed_scales": [
+          0.20553305705349784,
+          0.5072523543612294
+        ],
+        "scaled_projected_raw_score": [
+          -1.4659909818096152e-05,
+          6.061461156320639e-06
+        ],
+        "relative_covariance_change": 0.00028612322727091503,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          2.604023885410811e-09,
+          2.5103246148461267e-09,
+          2.697723266997798e-09
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_stationary_retention_v1/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.005661013608406762,
+        "conditional_MC_interval_95": [
+          0.0025398991651026524,
+          0.008782128051710872
+        ],
+        "importance_ESS": 64131.20478640653,
+        "split_Rhat": 1.000017129107147,
+        "chain_functional_ESS": 8638.59279545194,
+        "split_log_ratio_difference": 0.0008247340044800211,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.20325731244866893,
+        0.549876118267511
+      ],
+      "fixed_response_scales": [
+        0.20544293844236575,
+        0.5101114664927133
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_joint_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_joint_deconvolved_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_joint_deconvolved_task_g/candidate_6_spectral_joint_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.20544293844236575,
+          0.5101114664927133
+        ],
+        "proposed_scales": [
+          0.20545339978473892,
+          0.5101087674586278
+        ],
+        "scaled_projected_raw_score": [
+          -2.4510652728168955e-06,
+          3.083732436095937e-07
+        ],
+        "relative_covariance_change": 4.870561011823331e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          6.322786738621744e-11,
+          2.8713309507821805e-10,
+          -1.6096346477922907e-10
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/6_spectral_joint_deconvolved_task_g/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0006599756823710834,
+        "conditional_MC_interval_95": [
+          0.000170002550334049,
+          0.0011499488144081178
+        ],
+        "importance_ESS": 65500.761051676,
+        "split_Rhat": 1.0002599927290146,
+        "chain_functional_ESS": 8608.962786159904,
+        "split_log_ratio_difference": 0.00029877429741631545,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.17264615915341333,
+        0.6513367819946471
+      ],
+      "fixed_response_scales": [
+        0.2415169079486005,
+        0.38982739555448037
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_head_specific_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_head_specific_deconvolved_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_head_specific_deconvolved_task_g/candidate_6_additive_head_specific_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.2415169079486005,
+          0.38982739555448037
+        ],
+        "proposed_scales": [
+          0.24150490412384715,
+          0.3898921298641381
+        ],
+        "scaled_projected_raw_score": [
+          2.858409403822654e-06,
+          -8.230165723582639e-06
+        ],
+        "relative_covariance_change": 4.926180690756728e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          7.547130975726901e-10,
+          1.0360593216685032e-09,
+          4.6061909841910165e-10
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_head_specific_deconvolved_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.006177513761992159,
+        "conditional_MC_interval_95": [
+          0.003451650297547799,
+          0.00890337722643652
+        ],
+        "importance_ESS": 64196.69765450827,
+        "split_Rhat": 1.0001746127003142,
+        "chain_functional_ESS": 10786.399800859894,
+        "split_log_ratio_difference": 0.0008045929693096809,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_head_specific_deconvolved_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.17471366798406468,
+        0.15911620425063325
+      ],
+      "fixed_response_scales": [
+        0.2217829497815476,
+        0.17578691418630193
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_additive_joint_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_observed_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_additive_joint_observed_task_g/candidate_6_additive_joint_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.2217829497815476,
+          0.17578691418630193
+        ],
+        "proposed_scales": [
+          0.22181709576259226,
+          0.17597308840765127
+        ],
+        "scaled_projected_raw_score": [
+          -1.000731227035228e-05,
+          -2.2700654625845545e-05
+        ],
+        "relative_covariance_change": 0.00017280479649847043,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.2783821334849677e-08,
+          1.2637636437329292e-08,
+          1.2968726093021132e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_final_source_closure_v1/last_risk_retention.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.04901763436006412,
+        "conditional_MC_interval_95": [
+          0.03183367702165966,
+          0.06620159169846859
+        ],
+        "importance_ESS": 37283.48850451274,
+        "split_Rhat": 1.0002691787338567,
+        "chain_functional_ESS": 9858.547130670626,
+        "split_log_ratio_difference": 0.031154046599807472,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_additive_joint_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.1350918649015507,
+        0.035380020333173084
+      ],
+      "fixed_response_scales": [
+        0.1897298804403307,
+        1.3736783159334187
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_head_specific_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_head_specific_deconvolved_task_f/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/5_spectral_head_specific_deconvolved_task_f/candidate_5_spectral_head_specific_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.1897298804403307,
+          1.3736783159334187
+        ],
+        "proposed_scales": [
+          0.18974307224507722,
+          1.3838917296403446
+        ],
+        "scaled_projected_raw_score": [
+          1.8807933339736743e-05,
+          -0.00029682670045412947
+        ],
+        "relative_covariance_change": 0.0006847276069909885,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.0990430876489654e-06,
+          1.1297351094619046e-06,
+          1.0683510671682939e-06
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_risk_precision_continuation_v1/cases/5_spectral_head_specific_deconvolved_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.24084958627748865,
+        "conditional_MC_interval_95": [
+          0.18605455076253763,
+          0.29564462179243967
+        ],
+        "importance_ESS": 3048.1732257079407,
+        "split_Rhat": 1.000019347768838,
+        "chain_functional_ESS": 26229.62737267693,
+        "split_log_ratio_difference": 0.09032723349663385,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": true
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.22446464756187245,
+        0.8934103539956525
+      ],
+      "fixed_response_scales": [
+        0.21268232992623218,
+        0.44820544496513387
+      ],
+      "conditional_risk_stationarity_passed": false,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_head_specific_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_deconvolved_task_f/candidate_6_spectral_head_specific_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.21268232992623218,
+          0.44820544496513387
+        ],
+        "proposed_scales": [
+          0.21270180315379522,
+          0.4480947664766948
+        ],
+        "scaled_projected_raw_score": [
+          -6.325849075735036e-06,
+          7.757094638266218e-06
+        ],
+        "relative_covariance_change": 8.977267537522654e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.2474188348932103e-09,
+          -3.7110337025580975e-10,
+          2.9114752830849966e-09
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "previously_counted_same_law_confirmation_as_consecutive_stability": true,
+      "same_law_precision_confirmation_passed": true,
+      "stability_classification_correction": "Same-law overlapping-prefix precision confirmation is not a second optimization iteration;scientific parameters and samples unchanged.",
+      "risk_stationarity_certificate": "paper_artifacts/historical_stopped_risk_precision_v1/cases/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.0007446064351608328,
+        "conditional_MC_interval_95": [
+          0.00020026331493241793,
+          0.0012889495553892478
+        ],
+        "importance_ESS": 65496.33287289958,
+        "split_Rhat": 1.000441332096667,
+        "chain_functional_ESS": 7852.122311638402,
+        "split_log_ratio_difference": 0.0001813163779242899,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_deconvolved_task_f/results.json",
+      "mixture_components": 512,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "final_risk_scales": [
+        0.20834695295544925,
+        0.45625528497521206
+      ],
+      "fixed_response_scales": [
+        0.17667140035505166,
+        0.47310493526157926
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_joint_deconvolved_task_f.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_deconvolved_task_f/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_joint_deconvolved_task_f/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_joint_deconvolved_task_f/candidate_6_spectral_joint_deconvolved_task_f.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.17667140035505166,
+          0.47310493526157926
+        ],
+        "proposed_scales": [
+          0.17665250524478865,
+          0.4716457338220183
+        ],
+        "scaled_projected_raw_score": [
+          -6.602095349712311e-06,
+          0.00015875194816776606
+        ],
+        "relative_covariance_change": 0.00018239696928840578,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          2.448367806273666e-07,
+          2.179300651050653e-07,
+          2.7170503358320275e-07
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_spectral_joint_deconvolved_task_f/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.01232693374924132,
+        "conditional_MC_interval_95": [
+          0.006327025598771201,
+          0.01832684189971144
+        ],
+        "importance_ESS": 59229.692630515274,
+        "split_Rhat": 1.0006028309201878,
+        "chain_functional_ESS": 11362.273032065788,
+        "split_log_ratio_difference": 0.013577393008146643,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_joint_deconvolved_task_f/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.2502227870614931,
+        0.08430393798069764
+      ],
+      "fixed_response_scales": [
+        0.1764607266818398,
+        0.6435851414232227
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_head_specific_observed_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_observed_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_head_specific_observed_task_g/results.json",
+      "posterior_method": "fresh fixed-candidate conditioning",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_head_specific_observed_task_g/candidate_6_spectral_head_specific_observed_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.1764607266818398,
+          0.6435851414232227
+        ],
+        "proposed_scales": [
+          0.17641975575391033,
+          0.6419080010625856
+        ],
+        "scaled_projected_raw_score": [
+          1.1837631235225472e-05,
+          0.0001267297466980027
+        ],
+        "relative_covariance_change": 0.00028205704707920566,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.667426581253295e-07,
+          1.5412931553271392e-07,
+          1.7935599760932064e-07
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_head_specific_observed_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.1129513624360694,
+        "conditional_MC_interval_95": [
+          0.08888440511939877,
+          0.13701831975274004
+        ],
+        "importance_ESS": 21985.806310244516,
+        "split_Rhat": 1.0002019491569856,
+        "chain_functional_ESS": 13137.843596055152,
+        "split_log_ratio_difference": 0.03657240778462523,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_observed_task_g/results.json",
+      "mixture_components": 1024,
+      "replay_nearest_risk_bank": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "final_risk_scales": [
+        0.24996028940078893,
+        0.4343552523902976
+      ],
+      "fixed_response_scales": [
+        0.17610489599949108,
+        0.670591763855994
+      ],
+      "conditional_risk_stationarity_passed": true,
+      "candidate_results": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_head_specific_deconvolved_task_g.json",
+      "evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_deconvolved_task_g/results.json",
+      "source_evidence_precision_passed": true,
+      "final_vs_parent_evidence_certified": true,
+      "posterior_functional_and_retention_certified": true,
+      "posterior_results": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_deconvolved_task_g/results.json",
+      "posterior_method": "all retained components directly certified;no further reduction",
+      "candidate_component_file": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_head_specific_deconvolved_task_g/candidate_6_spectral_head_specific_deconvolved_task_g.json",
+      "response_stationarity_at_final_risk": {
+        "current_scales": [
+          0.17610489599949108,
+          0.670591763855994
+        ],
+        "proposed_scales": [
+          0.17611179776497762,
+          0.670042295265475
+        ],
+        "scaled_projected_raw_score": [
+          -3.6834127296637342e-06,
+          3.8533623381046895e-05
+        ],
+        "relative_covariance_change": 4.974047109502126e-05,
+        "optimizer_converged": true,
+        "full_and_split_Q_improvements": [
+          1.5866078451054477e-08,
+          -5.653754131529354e-09,
+          3.5616370963609256e-08
+        ],
+        "single_iteration_stationarity_passed": true,
+        "response_parameters_changed": false
+      },
+      "final_candidate_numerically_certified": true,
+      "risk_stationarity_certificate": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_head_specific_deconvolved_task_g/results.json",
+      "same_law_precision_confirmation_passed": false,
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.019463284066851827,
+        "conditional_MC_interval_95": [
+          0.013945722596840607,
+          0.02498084553686305
+        ],
+        "importance_ESS": 60782.72137313433,
+        "split_Rhat": 1.0002580332268347,
+        "chain_functional_ESS": 9868.190871005312,
+        "split_log_ratio_difference": 0.003020012508946124,
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true
+      },
+      "source_evidence_method": "full parent bank",
+      "selected_evidence_results": "paper_artifacts/historical_final_source_certification_v1/evidence/6_spectral_head_specific_deconvolved_task_g/results.json",
+      "mixture_components": 512,
+      "replay_nearest_risk_bank": false
+    }
+  ],
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "optimizer": {
+    "maxiter": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "maximum_case_single_thread_cpu_seconds": 45,
+  "maximum_batch_single_thread_cpu_seconds": 240,
+  "output": "paper_artifacts/historical_joint_source_stationarity_v1",
+  "scope": "Use existing exact final-law risk diagnostics when precise;otherwise replay only the registered nearest actual bank with its original seed,kernel,count,reference and prefix check. Reweight the certified final response mixture to the immediately preceding accepted actual risk law,using the normalized Gaussian prior ratio. Confirm joint stationarity only if both heads and numerical precision pass at both distinct actual laws. Save compact full/split risk second moments when replaying,not raw risk states. No changes to parameters,registration seeds,posterior/score thresholds or historical laws;no new labels,target/verifier calls or server work."
+}

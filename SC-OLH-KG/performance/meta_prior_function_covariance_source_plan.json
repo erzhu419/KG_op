@@ -1,0 +1,78 @@
+{
+  "stage": "meta_prior_function_covariance_source_a17_20261003",
+  "status": "outer_source_validation_complete_not_promoted_head_covariance_version_stopped",
+  "fixed_after_a16_before_a17_results": true,
+  "question": "Can source-selected individual f/g functions improve held-source risk prediction when their roles are learned separately, without linking target f/g evidence to eta model-choice odds?",
+  "basis": "A16 finds coherent function-level risk-variance alignment beyond family composition in all shared archives, but f alignment is negative in 14/16 separate-head archives and g alignment is heterogeneous. This supports testing head-specific source covariance directions, not a common structural-appropriateness index.",
+  "inputs": [
+    "paper_artifacts/meta_prior_source_head_association_a16_20261003/audit.json",
+    "paper_artifacts/meta_prior_cross_head_structure_mixture_a14_20261003/source_summary.json",
+    "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003/summary.json",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json"
+  ],
+  "model": {
+    "I": "Original independent eta structural/full source prior; f/g models remain unchanged.",
+    "F": "For each original eta prior, reallocate its function covariance toward the saved f-selected individual functions: C_function(rho)=(1-rho)C_function+rho*trace(C_function)*diag(1_selected/|selected|). Integrate uniform rho on [0,1] and original eta source-component weights. Preserve intercept, zero nonintercept prior means and discrepancy variance.",
+    "G": "The same covariance reallocation, using g-selected functions separately. Do not merge f/g selections or force equal posterior weights.",
+    "R": "Retain A9's existing adapted-only public-family risk mixture and its saved source evidence; it supplies directions absent from source f/g selections.",
+    "generic_control": "For the generic fixed_source arm, F and G duplicate I because that arm does not perform source function selection. The within-I/F/G parameter remains unidentifiable; its marginal q calibration must reduce to the A12 formula on the identical training source forecasts.",
+    "target_updating": "Every eta branch uses only earlier eta labels to update its likelihood and rho/source-component weights. f/g target evidence never determines eta model odds. Source-selected functions enter eta covariance, not an inherited coefficient mean or policy initialization."
+  },
+  "macro_prior": "Let theta=(theta_I,theta_F,theta_G) have uniform Dirichlet(1,1,1) reference and q have an independent uniform [0,1] reference. Prior masses are ((1-q)theta_I,(1-q)theta_F,(1-q)theta_G,q). Source CV calibrates their empirical density from correctly evidence-normalized predictive scores. Use expected four prior masses, retaining parameter spread; this is not an exact Bayesian hyperposterior.",
+  "source_validation": "Outer leave-one-paired-seed-out validation: train macro calibration on both archive groups of the other 15 seeds, and score both groups of the held seed. Within every archive, all eight whole-function holdouts use eta priors fitted to the other seven source tasks and saved f/g selections fitted to those same seven tasks. Score eta steps 9-24 after eight initial labels. No held-seed source scores enter macro calibration, and no held-function future label enters a component fit or forecast.",
+  "source_cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "whole_source_function_folds": 256,
+    "prior_profiles": 512,
+    "forecast_steps": [
+      9,
+      24
+    ],
+    "forecasts": 8192
+  },
+  "implementation": "Regenerate only the exact already-paid source observations from frozen seeds, designs and random streams. Refit the 256 held-task eta ARD priors and corresponding full priors; reuse saved f/g selections, without rerunning greedy selection. Compute continuous covariance-branch evidence/predictions by the existing signed-kernel whitening method, not one Gaussian fit per integration node. Keep one archive's prediction arrays at a time; stream source macro-node log scores by seed, then subtract the held seed before calibration.",
+  "checks": "Original I and R scores/evidence must reproduce all saved A11 source controls before interpretation. Verify function covariance trace preservation and correct use of f versus g selectors. Generic duplicated branches reduce to the same-training-data A12 q calibration. Outer held-seed score changes cannot change its issued macro prior. Compare rho orders 16/32/48 and macro tensor orders 8/16/24, requiring predictive log-score changes <=1e-4.",
+  "primary": "New minus original eta forecast log score, averaged over 16 steps and eight held tasks within each archive, paired across 16 seeds separately for shared and separate-head sources. Also compare with a source-pool-calibrated I/R model using exactly the same outer training archives. Do not score learned covariance estimates as true support labels.",
+  "resource_admission": "Retain the first complete learned-prior held-function profile, then conservatively project all 256 source folds, rho/numerical evaluation and macro calibration before continuing. Use a 300-local-CPU-second whole-stage cap and preserve partial results if admission fails or the cap is reached.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 300,
+    "eta_ard_source_refits": 256,
+    "new_fg_source_selection_fits": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "source_information_cost": "Cross-archive calibration has access to more historical source information than the original per-path eight-task prior. Report all 30 training archives' historical source calls, held-archive adaptation calls and new computation separately; supply the identical training source pool to the I/R control. No same-source-cost improvement over the old per-archive methods is implied.",
+  "decision": "Judge complete outer-held-source results in both groups. If source prediction improves without a coherent separate-head loss, freeze the model and a separate full-cohort target validation plan. If not, retain the failure and stop this head-derived covariance branch. No recommendation replay or closed-loop search is authorized by source results alone.",
+  "paired_bootstrap_seed": 20261026,
+  "limitations": "The procedure is designed from previously inspected source archives and is not independent confirmation. The 16 paired seeds share source support inside each archive and lack shifted high-frequency risk examples. Finite dictionaries are not orthogonal, and covariance allocation does not establish exact support, factor identifiability, HVD, high-dimensional generalization or decision value.",
+  "result_artifacts": "paper_artifacts/meta_prior_function_covariance_source_a17_20261003",
+  "next_plan": "performance/meta_prior_function_covariance_attribution_plan.json",
+  "numerical_execution_update": "Initial macro order8 comparison was insufficient (max score change 0.00283). Keep the frozen order16 primary parameters, and confirm with orders24/32 using saved arrays. Maximum accepted macro score change 1.36e-8; no source refits or parameter changes for this confirmation."
+}

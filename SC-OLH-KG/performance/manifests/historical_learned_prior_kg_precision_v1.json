@@ -1,0 +1,27 @@
+{
+  "status": "Registered before KG values at the actual final learned source laws.",
+  "entrypoint": "performance/check_historical_learned_prior_kg_precision.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "connected_states": "paper_artifacts/historical_learned_prior_kg_connection_v1/connected_states.json",
+  "historical_precision_plan": "performance/manifests/historical_control_variate_action_comparison_v1.json",
+  "seed": 202610077,
+  "terminal_power": 9,
+  "reference_draw_power": 12,
+  "reference_fantasy_powers": [4, 5, 6],
+  "joint_fantasy_powers": [4, 5, 6],
+  "maximum_single_thread_cpu_seconds_per_action": 180,
+  "maximum_single_thread_cpu_seconds": 1200,
+  "maximum_nested_prefix_reproduction_error": 1e-8,
+  "precision": {
+    "maximum_log_evidence_error": 0.02,
+    "minimum_reference_ESS": 128,
+    "maximum_absolute_tower_drift": 0.005,
+    "maximum_identity_martingale_residual": 0.01,
+    "maximum_raw_integration_relative_error": 1e-8,
+    "maximum_nested_adaptation_difference": 0.005
+  },
+  "actions": {"5": [5, 4, 6, 7, 0, 1], "6": [6, 4, 2, 7, 0, 1]},
+  "scope": "All12 frozen learned-prior balanced4 actions,including two paid repeats in each opened development state. All eight positive-weight identities and actual retained source components remain. Restore full fields with build_connection and compare to the saved paid moments. Check batched versus actual sequential updates at each query before using batched fantasies. Reuse the historical independent factored fixed-action reference and joint adaptive maximum;old numerical results are not reused. Assess all initial16-per-identity rules first,then only failed rules at32 and64,under the same frozen total cap. Nested prefixes use the same nodes and terminal evaluations. Stop each reference/action at its first PASS. Preserve failures and interrupted actions. No close-rank statistical CI,GP superiority or independent advantage follows from these numerical checks.",
+  "cost": {"new_source_labels": 0, "new_source_MCMC_sweeps": 0, "new_prior_fits": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_learned_prior_kg_precision_v1"
+}

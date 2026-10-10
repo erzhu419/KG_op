@@ -1,0 +1,316 @@
+{
+  "protocol": {
+    "input": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+    "states": "baseline four-point state and all four saved observe_primary states",
+    "retained_policy": "original four-point posterior recommendation, point 63, frozen before all saved new observations",
+    "terminal_class": "retain all original actions and add three-policy alternatives placing the pre-update recommendation in the final non-primary, non-objective-incumbent support slot; unchanged three-policy family delta, allocations and 362-call cap",
+    "comparison": "same augmented terminal class at baseline and after paid observations, as well as original-class saved decisions; no claim of observation benefit from differing terminal classes",
+    "draw_power": 13,
+    "seed": 80591,
+    "execution": "local serial single-thread, reconstruct already observed posteriors; simulator disabled; freeze all recommendations before scoring truth",
+    "scope": "post-hoc development repair on one opened law, not an independent certificate, a new paid trajectory, or generalization evidence",
+    "output": "paper_artifacts/legacy_one_step_closed_loop_v1/retention.json"
+  },
+  "retained_policy": 63,
+  "rows": [
+    {
+      "arm": "stop_now",
+      "group": 0,
+      "search_calls": 4,
+      "action": {
+        "kind": "guarded",
+        "primary": 34,
+        "shortlist": [
+          34,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.5334712136578659,
+      "predicted_verification_calls": 300.75004375250217,
+      "original_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "original_truth": {
+        "primary_feasible": true,
+        "deployed_feasible": true,
+        "false_certificate": false,
+        "certified_reward": 0.8061229823788613,
+        "safe_reward": 0.8061229823788613,
+        "expected_terminal_reward": 0.806121717232469,
+        "expected_total_calls": 264.3201068295798,
+        "primary_g_eta": [
+          -0.06780462943237285,
+          -7.353462294727414
+        ],
+        "query_g_eta": null
+      },
+      "truth_conditional": {
+        "reward": 0.8009134924220797,
+        "total_calls": 297.6365621556962,
+        "primary_feasible": true,
+        "maximum_total_calls": 362
+      }
+    },
+    {
+      "arm": "observe_primary",
+      "group": 0,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5363889853198666,
+      "predicted_verification_calls": 265.51695047522946,
+      "original_action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "original_truth": {
+        "primary_feasible": false,
+        "deployed_feasible": false,
+        "false_certificate": false,
+        "certified_reward": 0.0,
+        "safe_reward": 0.0,
+        "expected_terminal_reward": 0.0158722173496619,
+        "expected_total_calls": 344.34136853903203,
+        "primary_g_eta": [
+          0.16533372674692007,
+          -7.375550267163282
+        ],
+        "query_g_eta": [
+          -0.06780462943237285,
+          -7.353462294727414
+        ]
+      },
+      "truth_conditional": {
+        "reward": 0.805884932036955,
+        "total_calls": 343.38215998329156,
+        "primary_feasible": false,
+        "maximum_total_calls": 362
+      }
+    },
+    {
+      "arm": "observe_primary",
+      "group": 1,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 60,
+        "shortlist": [
+          60,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.6160575869844865,
+      "predicted_verification_calls": 264.8011113459096,
+      "original_action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "original_truth": {
+        "primary_feasible": true,
+        "deployed_feasible": true,
+        "false_certificate": false,
+        "certified_reward": 0.8061229823788613,
+        "safe_reward": 0.8061229823788613,
+        "expected_terminal_reward": 0.8061215277138173,
+        "expected_total_calls": 263.3198853269391,
+        "primary_g_eta": [
+          -0.06780462943237285,
+          -7.353462294727414
+        ],
+        "query_g_eta": [
+          -0.06780462943237285,
+          -7.353462294727414
+        ]
+      },
+      "truth_conditional": {
+        "reward": 0.8058849322115614,
+        "total_calls": 343.38215441838395,
+        "primary_feasible": false,
+        "maximum_total_calls": 362
+      }
+    },
+    {
+      "arm": "observe_primary",
+      "group": 2,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5815540877473486,
+      "predicted_verification_calls": 263.7274119521075,
+      "original_action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "original_truth": {
+        "primary_feasible": false,
+        "deployed_feasible": false,
+        "false_certificate": false,
+        "certified_reward": 0.0,
+        "safe_reward": 0.0,
+        "expected_terminal_reward": 0.0158722173496619,
+        "expected_total_calls": 344.34136853903203,
+        "primary_g_eta": [
+          0.16533372674692007,
+          -7.375550267163282
+        ],
+        "query_g_eta": [
+          -0.06780462943237285,
+          -7.353462294727414
+        ]
+      },
+      "truth_conditional": {
+        "reward": 0.805884932036955,
+        "total_calls": 343.38215998329156,
+        "primary_feasible": false,
+        "maximum_total_calls": 362
+      }
+    },
+    {
+      "arm": "observe_primary",
+      "group": 3,
+      "search_calls": 5,
+      "action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          81,
+          129,
+          131
+        ]
+      },
+      "predicted_reward": 0.5395746638758392,
+      "predicted_verification_calls": 265.3695960440977,
+      "original_action": {
+        "kind": "guarded",
+        "primary": 50,
+        "shortlist": [
+          50,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "original_truth": {
+        "primary_feasible": false,
+        "deployed_feasible": false,
+        "false_certificate": false,
+        "certified_reward": 0.0,
+        "safe_reward": 0.0,
+        "expected_terminal_reward": 0.0158722173496619,
+        "expected_total_calls": 344.34136853903203,
+        "primary_g_eta": [
+          0.16533372674692007,
+          -7.375550267163282
+        ],
+        "query_g_eta": [
+          -0.06780462943237285,
+          -7.353462294727414
+        ]
+      },
+      "truth_conditional": {
+        "reward": 0.805884932036955,
+        "total_calls": 343.38215998329156,
+        "primary_feasible": false,
+        "maximum_total_calls": 362
+      }
+    }
+  ],
+  "new_simulator_calls": 0,
+  "cpu_seconds": 127.28627460999999
+}

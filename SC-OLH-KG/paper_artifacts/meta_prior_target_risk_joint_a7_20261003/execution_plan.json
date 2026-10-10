@@ -1,0 +1,74 @@
+{
+  "stage": "meta_prior_target_risk_joint_a7_20261003",
+  "status": "implementation_checked_ready_for_frozen_local_validation",
+  "fixed_before_validation_results": true,
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "control_scores": "paper_artifacts/meta_prior_target_risk_residual_a3_20261003/validation.json",
+  "hypothesis": "Averaging single-direction alternatives may miss a target risk response that needs concurrent residual functions; test a joint two-direction branch while retaining source-learned covariance.",
+  "model": "Keep every original eta source component. Prior mass 0.5 on no correction, 0.25 on A6's one-direction residual, and 0.25 on a simultaneous two-direction residual. For a pair (j,k), add delta/2 to each of the two coefficient variances, retaining the same total residual variance delta.",
+  "prior": "Uniform public direction and unordered-pair probabilities, without target support. Exponential delta with the unchanged generic same-source total function variance as its mean; equal initial original source-component weights. Null probability and scale are not tuned on validation scores.",
+  "inference": "Use rank-one/rank-two determinant and solve updates, then average all branches and scales. Start from A6's 48-node integration and check numerical convergence at strong-correction folds; no hard winning-pair selection or held-out fitting.",
+  "validation": "Same 160 old paths, seeds 48-63, all five regimes, both source controls, both 8/24 prefixes and exact A3 candidate-group holdouts. Reuse old scores; infer joint risk structure using paid training labels only. No truth/support, verifier outcomes or future observations enter fitting.",
+  "preserved": "Source covariance and means, intercept, candidate discrepancy, standardized dictionary, original queries, all f/g updates, recommendation utility and verifier.",
+  "resource_admission": "Time the first complete path, retaining its result. If estimated full-cohort CPU cost exceeds the 0.25-hour local cap, stop with partial evidence; do not alter the cohort or dispatch server work.",
+  "recommendation_replay_gate": "Broad learned-prior held-out improvement without material compatible-regime regression is needed before retrospective recommendation replay. No predictive result alone authorizes new closed-loop searches.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "limitations": "At most two extra directions is a bounded joint-structure diagnostic, not full target support learning. It uses the same development cohort as A3-A6 and cannot serve as independent confirmation or establish prospective decision gains. Preserve negative and incomplete results.",
+  "paths": 160,
+  "seeds": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "priors": [
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "prefix_batches": [
+    8,
+    24
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "quadrature_nodes": 48,
+  "rank_prior_probabilities": [
+    0.5,
+    0.25,
+    0.25
+  ],
+  "paired_bootstrap_seed": 20261012,
+  "admission_first_path": {
+    "seed": 48,
+    "regime": "shared_structure",
+    "arm": "risk_ard_mixture"
+  },
+  "artifacts": "paper_artifacts/meta_prior_target_risk_joint_a7_20261003",
+  "scoring": "All five strata, both source controls, both prefixes, paired seed gains and nominal bootstrap intervals. Primary endpoint remains 24-batch learned-source held-out log score.",
+  "quadrature_check": "Minimum null-posterior fold in each of 20 strata, plus the worst-regression fold of four retained failure paths. Compare 48/96/144 nodes; changes above 1e-4 joint log-score units require higher integration order before interpretation."
+}

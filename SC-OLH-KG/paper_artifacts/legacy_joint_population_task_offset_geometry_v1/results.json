@@ -1,0 +1,331 @@
+{
+  "execution": {
+    "status": "frozen before source likelihood support and bank geometry",
+    "moments_execution": "performance/manifests/legacy_joint_population_task_spectral_moments_execution_v1.json",
+    "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "basis_of_next_step": "Native paid Gaussian residual energy averages below dimension12 and shape energy below11, while task1 signed offset z is2.801/2.324 versus GP.026/.101. Stage83 already found the assignment5 deleted-task1 intercept variance is0. Investigate this boundary and the existing public-bank offset/shape geometry before any repair fit.",
+    "source_likelihood": "Keep every native source parameter except task intercept amplitude fixed. Reproduce native source NLL, then find lower/upper nonnegative intercept amplitudes where total source log likelihood is0.5 below the actual native point, using scalar root solves and an expanding upper bracket. Return lower0 if included. This is a conditional likelihood support range, not a confidence interval, new optimized fit or chosen prior. Record conditional loss at0 and native source derivative.",
+    "public_geometry": "For each deleted training-task public73-policy bank compute original orthogonal design using that fold's unchanged public centering/scaling. Decompose task bank-average variance into explicit intercept r0 and sum_j R_j mean(phi_j)^2; record common-H and white-discrepancy contributions separately. Compute mean centered task shape variance and RMS offset/shape covariance divided by mean task marginal variance. No outcomes are called, no basis is centered or changed and no predictions are repaired.",
+    "likelihood_drop": 0.5,
+    "root_absolute_tolerance_on_signal_scaled_amplitude": 1e-10,
+    "decision_rule": "If zero remains in broad conditional source support and the bank offset depends on task shape groups, register a fixed public-bank intercept/shape separation contrast in the original basis before any source-only fit. Otherwise inspect the source mean population instead. Do not infer causality from task1, choose amplitudes on residuals, integrate an improper uniform prior on unbounded variance, start a spectral/calibration grid, evaluate source6/7/targets or relax source gates.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_task_offset_geometry_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_task_offset_geometry_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_task_offset_geometry.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "native_task_intercept_variance": 0.0009271652341334666,
+      "source_task_intercept_likelihood_support_variances": [
+        0.0004222605632145762,
+        0.0022500183665092985
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.020548979614924343,
+        0.04743435850213744
+      ],
+      "conditional_total_nll_increase_at_zero": 8.557065271412938,
+      "conditional_source_derivative_at_native_amplitude": -0.0009931965965832505,
+      "task_bank_average_variance_from_intercept": 0.0009271652341334666,
+      "task_bank_average_variance_from_function": 7.03090055036088e-05,
+      "task_mean_marginal_variance": 0.0035034025011991816,
+      "task_centered_shape_variance_mean": 0.0025059282615621063,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.03556019219979548,
+      "common_bank_average_variance": 0.00022453725866400338,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 21
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "native_task_intercept_variance": 0.0,
+      "source_task_intercept_likelihood_support_variances": [
+        0.0,
+        0.000261337255153075
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.0,
+        0.01616592883669463
+      ],
+      "conditional_total_nll_increase_at_zero": 0.0,
+      "conditional_source_derivative_at_native_amplitude": 183.57620554561095,
+      "task_bank_average_variance_from_intercept": 0.0,
+      "task_bank_average_variance_from_function": 0.00016974875492847298,
+      "task_mean_marginal_variance": 0.0036521876575619145,
+      "task_centered_shape_variance_mean": 0.0034824389026334424,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.09243974845398124,
+      "common_bank_average_variance": 5.122003337071978e-05,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 11
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "native_task_intercept_variance": 0.0008569574523291842,
+      "source_task_intercept_likelihood_support_variances": [
+        0.0003704399812350452,
+        0.002133142460747558
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.019246817431332518,
+        0.04618595523259812
+      ],
+      "conditional_total_nll_increase_at_zero": 6.261740097590862,
+      "conditional_source_derivative_at_native_amplitude": 0.01345069971751298,
+      "task_bank_average_variance_from_intercept": 0.0008569574523291842,
+      "task_bank_average_variance_from_function": 9.854750613975744e-05,
+      "task_mean_marginal_variance": 0.00358384736226815,
+      "task_centered_shape_variance_mean": 0.0026283424037992094,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.0508904284107082,
+      "common_bank_average_variance": 0.00021954365361984084,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 21
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "native_task_intercept_variance": 0.0006231999359453567,
+      "source_task_intercept_likelihood_support_variances": [
+        0.000270406663874027,
+        0.0015482340029147972
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.016444046456819166,
+        0.03934760479260202
+      ],
+      "conditional_total_nll_increase_at_zero": 6.188953667119632,
+      "conditional_source_derivative_at_native_amplitude": -0.04925692594002233,
+      "task_bank_average_variance_from_intercept": 0.0006231999359453567,
+      "task_bank_average_variance_from_function": 5.959046749313348e-05,
+      "task_mean_marginal_variance": 0.0024811776121005046,
+      "task_centered_shape_variance_mean": 0.0017983872086620141,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.039845558849045476,
+      "common_bank_average_variance": 0.00017096244422200804,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 21
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "native_task_intercept_variance": 0.000786548379079517,
+      "source_task_intercept_likelihood_support_variances": [
+        0.00032212007405998586,
+        0.0020131255354356144
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.017947703865954158,
+        0.04486786751602548
+      ],
+      "conditional_total_nll_increase_at_zero": 5.076135711733665,
+      "conditional_source_derivative_at_native_amplitude": -0.04631193202549658,
+      "task_bank_average_variance_from_intercept": 0.000786548379079517,
+      "task_bank_average_variance_from_function": 8.551998141959082e-05,
+      "task_mean_marginal_variance": 0.003413186972233858,
+      "task_centered_shape_variance_mean": 0.0025411186117347494,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.045027100897165086,
+      "common_bank_average_variance": 0.0002001265318575505,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 21
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "native_task_intercept_variance": 0.0006391832897595153,
+      "source_task_intercept_likelihood_support_variances": [
+        0.00026913169294657884,
+        0.0016109160652630168
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.0164052337059421,
+        0.04013621887102741
+      ],
+      "conditional_total_nll_increase_at_zero": 5.4906679457229135,
+      "conditional_source_derivative_at_native_amplitude": 0.024168494782283164,
+      "task_bank_average_variance_from_intercept": 0.0006391832897595153,
+      "task_bank_average_variance_from_function": 0.0001101609249623172,
+      "task_mean_marginal_variance": 0.0028768618730235624,
+      "task_centered_shape_variance_mean": 0.0021275176583017297,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.0740779673950837,
+      "common_bank_average_variance": 0.00016635902562472178,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 21
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "native_task_intercept_variance": 0.001343921440501597,
+      "source_task_intercept_likelihood_support_variances": [
+        0.000641247919575541,
+        0.0031843782148221565
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.02532287344626476,
+        0.05643029518638155
+      ],
+      "conditional_total_nll_increase_at_zero": 13.107877740778255,
+      "conditional_source_derivative_at_native_amplitude": -0.0006230717356831859,
+      "task_bank_average_variance_from_intercept": 0.001343921440501597,
+      "task_bank_average_variance_from_function": 5.132910616350327e-05,
+      "task_mean_marginal_variance": 0.004141689646095174,
+      "task_centered_shape_variance_mean": 0.002746439099430074,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.02018004133138279,
+      "common_bank_average_variance": 0.00030401001564606914,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 20
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "native_task_intercept_variance": 0.00018647169748226382,
+      "source_task_intercept_likelihood_support_variances": [
+        0.0,
+        0.0007036899841582116
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.0,
+        0.026527155598710758
+      ],
+      "conditional_total_nll_increase_at_zero": 0.49942220190416275,
+      "conditional_source_derivative_at_native_amplitude": -0.005919095795469524,
+      "task_bank_average_variance_from_intercept": 0.00018647169748226382,
+      "task_bank_average_variance_from_function": 9.077746449715347e-05,
+      "task_mean_marginal_variance": 0.0030109850900443794,
+      "task_centered_shape_variance_mean": 0.002733735928064962,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.055012376010853285,
+      "common_bank_average_variance": 8.76603769031915e-05,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 11
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "native_task_intercept_variance": 0.001245726445411984,
+      "source_task_intercept_likelihood_support_variances": [
+        0.0005743557844511516,
+        0.003004702300701131
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.023965721029235727,
+        0.054815164878901264
+      ],
+      "conditional_total_nll_increase_at_zero": 9.568446036191041,
+      "conditional_source_derivative_at_native_amplitude": -0.00028986722596724434,
+      "task_bank_average_variance_from_intercept": 0.001245726445411984,
+      "task_bank_average_variance_from_function": 7.555698845670474e-05,
+      "task_mean_marginal_variance": 0.003881239698973535,
+      "task_centered_shape_variance_mean": 0.0025599562651048464,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.03340095552084501,
+      "common_bank_average_variance": 0.0002995669780545308,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 20
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "native_task_intercept_variance": 0.0009285116999999416,
+      "source_task_intercept_likelihood_support_variances": [
+        0.00042696252064296914,
+        0.002243163007026144
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.020663071423265445,
+        0.04736204183759547
+      ],
+      "conditional_total_nll_increase_at_zero": 9.206816196893776,
+      "conditional_source_derivative_at_native_amplitude": -0.047279429515974546,
+      "task_bank_average_variance_from_intercept": 0.0009285116999999416,
+      "task_bank_average_variance_from_function": 5.9520402929806e-05,
+      "task_mean_marginal_variance": 0.003295001243598083,
+      "task_centered_shape_variance_mean": 0.002306969140668335,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.029671794487883978,
+      "common_bank_average_variance": 0.0002293859381510863,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 20
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "native_task_intercept_variance": 0.0012507428106823305,
+      "source_task_intercept_likelihood_support_variances": [
+        0.0005972176188854449,
+        0.0029613847553701346
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.024438036314021732,
+        0.054418606701845416
+      ],
+      "conditional_total_nll_increase_at_zero": 13.068224523983165,
+      "conditional_source_derivative_at_native_amplitude": 0.033466742938561694,
+      "task_bank_average_variance_from_intercept": 0.0012507428106823305,
+      "task_bank_average_variance_from_function": 5.461410938319031e-05,
+      "task_mean_marginal_variance": 0.003940095960290213,
+      "task_centered_shape_variance_mean": 0.002634739040224692,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.023139010751389077,
+      "common_bank_average_variance": 0.00028803074164060726,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 20
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "native_task_intercept_variance": 0.0013288022569056571,
+      "source_task_intercept_likelihood_support_variances": [
+        0.000641122945597664,
+        0.003129653064674004
+      ],
+      "source_task_intercept_likelihood_support_standard_deviations": [
+        0.025320405715502745,
+        0.05594330223247466
+      ],
+      "conditional_total_nll_increase_at_zero": 15.183387673954352,
+      "conditional_source_derivative_at_native_amplitude": 0.017168871714887114,
+      "task_bank_average_variance_from_intercept": 0.0013288022569056571,
+      "task_bank_average_variance_from_function": 5.786921445863687e-05,
+      "task_mean_marginal_variance": 0.003573436682982954,
+      "task_centered_shape_variance_mean": 0.0021867652116186595,
+      "task_bank_average_shape_covariance_rms_over_mean_marginal": 0.028825385504316507,
+      "common_bank_average_variance": 0.00029979026533941307,
+      "white_bank_average_variance": 0.0,
+      "source_likelihood_evaluations": 19
+    }
+  ],
+  "native_source_objectives_reproduced": true,
+  "zero_in_conditional_source_support_count": 2,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "conditional_source_likelihood_evaluations": 226
+  },
+  "cpu_seconds": 0.45877297200000006,
+  "source_holdouts_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

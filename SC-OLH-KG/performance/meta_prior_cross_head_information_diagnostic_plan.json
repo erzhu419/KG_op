@@ -1,0 +1,68 @@
+{
+  "stage": "meta_prior_cross_head_information_diagnostic_a13_20261003",
+  "status": "information_diagnosis_complete_coherent_bounded_signal",
+  "artifacts": "paper_artifacts/meta_prior_cross_head_information_a13_20261003",
+  "next_plan": "performance/meta_prior_cross_head_structure_mixture_plan.json",
+  "fixed_before_a13_results": true,
+  "question": "Do the already-paid f/g labels contain risk-direction information beyond the eta-only posterior, when the source archive exhibits cross-head coactivity?",
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "source_feasibility": "paper_artifacts/meta_prior_source_calibrated_adaptation_a12_20261003/source_coactivity_feasibility.json",
+  "source_evidence": "Saved source-selected f/g functions and eta ARD coefficient variances give mean coefficient-variance overlap mass 0.724 in shared archives and 0.250 in separate-head archives, with wide within-group ranges. This is not cumulative-risk attribution and motivates a diagnosis, not a validated conditional risk prior.",
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "paths": 160,
+    "prefix_batches": [
+      8,
+      24
+    ],
+    "posterior_snapshots": 320
+  },
+  "reconstruction": "Restore original V6 priors from logged source selections and risk variances, replay exact old observations on all 160 fixed queries with the original sample-variance g noise. Use the common normalized 68-function basis; coefficient means start at zero. No source model selection or new KG/queries/verification.",
+  "posterior_information": "For each head, use normalized nonintercept coefficient second moments E[beta_j^2]=a_j^2+C_jj from its original posterior. Retain component weights and between-component covariance in learned mixtures. Exclude intercepts and appended candidate-discrepancy coefficients. The f/g signal is the mean of their separately normalized function-energy vectors; eta is the risk-only comparison.",
+  "primary_diagnostic": "After each signal is fixed, score its total mass on the simulator risk support. Compare f/g-minus-eta mass per path at prefixes 8 and 24, with paired seed summaries in every regime/prior. True risk support is scored only after posterior reconstruction; it never changes a model, signal, fit or query.",
+  "negative_cases": "Retain high-frequency risk, separate risk support and separate-head structure. Source coactivity does not establish that a target preserves it; these cases can show failure or lack of useful mean-head information.",
+  "scope": "This measures availability of directional information in already-paid data. It fits no cross-head prior, selects no functions for deployment and does not prove predictive or decision improvement.",
+  "analysis": "All five regimes, both priors, both prefixes and 16 paired seeds; nominal intervals, no pooling with independent cohorts. Report source overlap ranges without thresholding by target outcomes.",
+  "resource_admission": "Measure the first complete learned-prior path, retain it and forecast all 160 paths. Stop with partial evidence if the 900-local-CPU-second cap would be exceeded; no server jobs or cohort shrinking.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "paired_bootstrap_seed": 20261022,
+  "implementation_checks": "Coefficient moments match component-mixture moments; augmented candidate discrepancies do not enter function energy; truth changes cannot change any fitted signal; old observation and prior weights reproduce the frozen trace.",
+  "decision": "Only a coherent directional-information signal permits designing a separate source-learned joint-support model with an independent-risk alternative. Otherwise end this diagnosis without automatic model expansion. Recommendation replay and prospective searches remain on hold.",
+  "limitations": "Retrospective development diagnosis on public eight-dimensional coordinates. Posterior energy includes uncertainty and is not a support probability. Directional overlap is not conditional prediction, HVD factor recovery, high-dimensional generalization or verified reward."
+}

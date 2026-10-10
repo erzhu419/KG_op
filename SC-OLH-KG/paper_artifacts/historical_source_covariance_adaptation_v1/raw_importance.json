@@ -1,0 +1,376 @@
+{
+  "execution": {
+    "status": "registered before coefficient-noise subtraction and source law scoring",
+    "entrypoint": "performance/adapt_historical_source_covariance.py",
+    "selection_plan": "performance/manifests/historical_source_structure_adaptation_v1.json",
+    "maps": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+    "coefficient_priors": "paper_artifacts/historical_prior_posterior_connection_v1/source_priors.json",
+    "source_fields": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/frozen_inputs.json",
+    "source_components": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/mixtures.json",
+    "proposal_arm": "joint_spectral_geometry",
+    "source_roster": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "family": "InventorySupplyChain",
+    "hierarchy": "Four task draws in one family. Reuse V47 centered fit-noise subtraction,not the old multiple-family/episode hierarchy or channel-role blocks. Estimate each task's coefficients on its12 cached batches using the old weighted ridge solver;push declared label noise through the actual estimator. Preserve shared-mean fit uncertainty separately. Corrected covariance has rank at most3. Do not rename task IDs as different business families or fabricate repeated source episodes.",
+    "ridge": 0.001,
+    "treatments": [
+      "observed_task",
+      "deconvolved_task"
+    ],
+    "common_prior": "Use the previous normalized finite coefficient covariance as a frozen common-function regularizer,with its prior mean and point-discrepancy unchanged. This is a newly declared source-only reference hierarchy;the common regularizer is not re-estimated or advertised as the old96-coefficient law. Source task residual covariance alone changes between paired treatments.",
+    "source_conditioning": "Reuse common_replay to condition64 Gaussian-label source laws. Save unconditioned common/task populations separately from conditioned beta/H. The Gaussian posterior must not serve as a prior in subsequent raw-source reweighting.",
+    "raw_contract": "For each of16 matched f/eta_f source references,score the existing512 correlated eta48 states by the new unconditioned eta prior and collapsed Gaussian-f/chi-square batch likelihood relative to the current source posterior proposal. The chi-square likelihood cancels in the ratio but remains in both absolute batch evaluations. New maps live in the common48 source function-value space;no old96-coefficient posterior is attached to a new coefficient map. No Gaussian eta-label likelihood is added to the raw update.",
+    "precision_gates": {
+      "minimum_weight_ESS": 200,
+      "minimum_chain_functional_ESS": 100,
+      "maximum_Rhat": 1.05,
+      "maximum_half_NLL_difference": 0.02
+    },
+    "verification": "Exact product quadrature with no latent task differences checks that centered fit-noise subtraction has zero expectation while common-mean fit covariance survives. Existing exchangeable-mean tests exercise preserved behavior. Check actual estimator covariance and common/task off-block covariance against independent dense source constructions before interpreting results. Raw unchanged-law identity and density normalization must match. A proposal-overlap failure leaves all reference laws HOLD;do not sample additional chains or tune tails to rescue it.",
+    "maximum_single_thread_cpu_seconds": 15,
+    "execution": "Local serial single-thread,existing small JSON;CPU interrupt inside calculation. No scheduler/server work,pulls,new source6/7,task0 scoring,independent targets,simulator/verifier calls,source chains or manuscript edits.",
+    "output": "paper_artifacts/historical_source_covariance_adaptation_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "weight_ESS": 1.0006168715457486,
+      "maximum_weight": 0.9996916860828396,
+      "weights_by_chain": [
+        9.1339451029765e-10,
+        0.0001940107812841969,
+        0.9996937237285038,
+        0.00011226457681727235
+      ],
+      "raw_source_log_evidence_ratio_estimate": -112.01032377399576,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.0001966965202589,
+      "maximum_weight": 0.9999016631762172,
+      "weights_by_chain": [
+        8.28125605500318e-10,
+        9.143832313567267e-06,
+        0.999903065346078,
+        8.77899934827937e-05
+      ],
+      "raw_source_log_evidence_ratio_estimate": -104.25376165427487,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "weight_ESS": 1.0000084564484857,
+      "maximum_weight": 0.9999957717985964,
+      "weights_by_chain": [
+        2.9658631648063457e-09,
+        2.0067806896596508e-07,
+        0.9999957815380646,
+        4.014818003135491e-06
+      ],
+      "raw_source_log_evidence_ratio_estimate": -136.2958904028079,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.000005556695825,
+      "maximum_weight": 0.9999972216620323,
+      "weights_by_chain": [
+        2.1865351124336763e-10,
+        1.4950364387913601e-07,
+        0.9999972322524118,
+        2.618025291062627e-06
+      ],
+      "raw_source_log_evidence_ratio_estimate": -129.02491246567106,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "weight_ESS": 1.0010036264613675,
+      "maximum_weight": 0.9994984911048005,
+      "weights_by_chain": [
+        5.956673082794612e-06,
+        0.00035876504636978625,
+        0.9994985913963819,
+        0.00013668688416559747
+      ],
+      "raw_source_log_evidence_ratio_estimate": -157.29584105777994,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.0045304678221032,
+      "maximum_weight": 0.997741013640763,
+      "weights_by_chain": [
+        2.5689590060904144e-05,
+        0.0015576800969901836,
+        0.9977418048842861,
+        0.0006748254286627452
+      ],
+      "raw_source_log_evidence_ratio_estimate": -147.1259406306981,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "weight_ESS": 1.052566816532464,
+      "maximum_weight": 0.9743827939322726,
+      "weights_by_chain": [
+        0.00013166330639710478,
+        0.025242931831116193,
+        0.974383407987565,
+        0.00024199687492154121
+      ],
+      "raw_source_log_evidence_ratio_estimate": -126.54956022660525,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.0011133438848527,
+      "maximum_weight": 0.9994436711349971,
+      "weights_by_chain": [
+        4.440119258231603e-06,
+        0.0004911313995953487,
+        0.9994442360361825,
+        6.0192444963904483e-05
+      ],
+      "raw_source_log_evidence_ratio_estimate": -113.69746137313584,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "weight_ESS": 1.0012699213385892,
+      "maximum_weight": 0.9993655731411253,
+      "weights_by_chain": [
+        0.00031898694561185303,
+        0.9993659318795531,
+        0.0002982384716991479,
+        1.6842703135752963e-05
+      ],
+      "raw_source_log_evidence_ratio_estimate": -132.05239455682062,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.022089607596453,
+      "maximum_weight": 0.9890908524441215,
+      "weights_by_chain": [
+        0.010169483372507816,
+        0.9890921547088326,
+        0.00023558330226590494,
+        0.000502778616393545
+      ],
+      "raw_source_log_evidence_ratio_estimate": -127.65545549557778,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "weight_ESS": 1.0256552107726127,
+      "maximum_weight": 0.9873748897659375,
+      "weights_by_chain": [
+        0.012275300422892894,
+        0.9873748913523466,
+        2.4943096800732827e-08,
+        0.00034978328166384735
+      ],
+      "raw_source_log_evidence_ratio_estimate": -116.9869878339049,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.0573577469223996,
+      "maximum_weight": 0.9723110703207338,
+      "weights_by_chain": [
+        0.026526664560450604,
+        0.9723110717179192,
+        7.14997248786362e-08,
+        0.0011621922219052477
+      ],
+      "raw_source_log_evidence_ratio_estimate": -108.47600215155241,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "weight_ESS": 1.3168970946550562,
+      "maximum_weight": 0.8604362112408286,
+      "weights_by_chain": [
+        0.13800525050023443,
+        0.8618455217135299,
+        3.025395569253161e-05,
+        0.00011897383054306469
+      ],
+      "raw_source_log_evidence_ratio_estimate": -153.29449013002338,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.9760578606766306,
+      "maximum_weight": 0.5672002666512607,
+      "weights_by_chain": [
+        0.5675828352205688,
+        0.43190280458658137,
+        5.90593425632516e-05,
+        0.00045530085028703084
+      ],
+      "raw_source_log_evidence_ratio_estimate": -142.38612633732333,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "weight_ESS": 1.0000001031386776,
+      "maximum_weight": 0.9999999484306645,
+      "weights_by_chain": [
+        0.9999999487769601,
+        4.448557454703329e-09,
+        2.9938879231555367e-14,
+        4.677445232790189e-08
+      ],
+      "raw_source_log_evidence_ratio_estimate": -150.45454054736086,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "weight_ESS": 1.0000007342605919,
+      "maximum_weight": 0.999999632869846,
+      "weights_by_chain": [
+        0.9999996328942229,
+        2.272681493634589e-09,
+        3.5271585090601493e-16,
+        3.64833095253661e-07
+      ],
+      "raw_source_log_evidence_ratio_estimate": -145.6535662970949,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    }
+  ]
+}

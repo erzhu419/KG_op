@@ -1,0 +1,113 @@
+{
+  "stage": "meta_prior_joint_archive_target_a28_20261003",
+  "status": "target_validation_complete_whole_support_transfer_repaired_risk_only_gap_not_promoted",
+  "fixed_after_a27_before_a28_results": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/target_forecasts.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/inputs.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_joint_archive_a27_20261003/decision.json"
+  ],
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ],
+      [
+        56,
+        57
+      ],
+      [
+        58,
+        59
+      ],
+      [
+        60,
+        61
+      ],
+      [
+        62,
+        63
+      ]
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "path_policies": [
+      "risk_ard_mixture",
+      "fixed_source"
+    ],
+    "difficulty": "binding",
+    "allocation": "n24_v928",
+    "target_paths": 160,
+    "forecasts": 2560,
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "model": "Freeze A27 J/A/G archive inference, local archive mass1/2 and external28-archive mass1/2; risk structural/full atoms each1/2 within archive. Use all-eight-task source eta priors from the original A21 compact contexts, not seven-task A19 priors. Reuse all-eight-task f/g supports and cheaply refit their4-function moments exactly as A27. No macro/source/target calibration is fitted.",
+  "source_pool": "Use the32 distinct source seed/group archives represented by shared_structure and separate_head_structure. For each target pair, exclude both seeds in both groups from the population. The local archive is shared except in separate_head_structure. All covariance components retain their native normalization. Full target contexts of the other three regimes must reproduce the same shared source parameters; stop on disagreement instead of mixing archive variants.",
+  "controls_models": "J/A/G as frozen in A27. I: original learned local eta ARD/full mixture evaluated on each old path, regardless of that path's historical policy. F: original local generic full eta prior. The learned-policy I and generic-policy F must reproduce their saved A21 original densities. This separates path policy from prior/model identity; the new model is never renamed generic on a generic-policy path.",
+  "primary": "J minus I, separately for all five regimes and both historical path policies. G is an equal-archive-information risk covariance control; J minus G tests learned risk structure. J minus A localizes joint f/g inference. F and A21 calibrated mixture are secondary development references, not equal-source-cost one-archive controls.",
+  "observations": "Regenerate only the exact old24 paid response/noise batches using original candidate and visit seeds. At forecast t all branch/archive weights use head observations strictly before t. Current labels/noises reach density scoring only; truth and verification outcomes cannot construct priors, choose covariances or alter weights. Preserve repeated-candidate discrepancy sharing.",
+  "analysis": "Report all ten strata and nominal bootstrap intervals based on eight original seed-pair blocks, averaging both target seeds within pair. No pooling with A27 or previous versions. Report early9-12/late21-24 risk scores and population/learned-risk posterior masses. Retain coherent risk-only-shift losses if observed.",
+  "controls": "Complete cohort identities,24-query histories and repeated visit chronology must match A21. Source-only source support indices, compact eta priors and held-pair population exclusion are unchanged. Reproduce old original I/F forecasts to1e-8. No target observation enters source construction or supports.",
+  "decision": "Only complete target evidence without coherent regression may proceed to a separately frozen selected-candidate calibration/decision study on old observations. Risk-only-shift regression stops deployment of J and requires a separately designed head-decoupling uncertainty model; do not tune mixture weights or choose a target-performing secondary model. No new search/KG/verifier campaign.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 90,
+    "new_eta_ard_refits": 0,
+    "new_fg_selection_fits": 0,
+    "cheap_fg_moment_fits": 64,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "candidate_recommendations": 0,
+    "new_verifier_calls": 0
+  },
+  "resource_admission": "Retain64 small source f/g moment fits; first full target path projects the remaining159 paths with1.25 safety factor and15 CPU seconds summary reserve. Stop within90 CPU seconds.",
+  "information_cost": "Joint J, eta-only A and full-risk G each reuse the same28 external source archives172032 paid calls plus local archive6144. Original I/F uses one local archive. Existing source and target calls are reported as information use, with no new simulator calls.",
+  "paired_bootstrap_seed": 20261106,
+  "limitations": "Retrospective target development on old model-dependent query paths. Source-training sets overlap across pair folds. More source information and a joint conditional-head assumption are explicit. Predictive improvements do not prove better candidate choice, KG, independent verification, cost amortization or Operations Research readiness.",
+  "artifacts": "paper_artifacts/meta_prior_joint_archive_target_a28_20261003",
+  "next_plan": "performance/meta_prior_joint_archive_attribution_plan.json"
+}

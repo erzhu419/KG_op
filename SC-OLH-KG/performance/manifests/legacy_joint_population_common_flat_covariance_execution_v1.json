@@ -1,0 +1,47 @@
+{
+  "status": "registered before common-flat source fits and forecasts",
+  "source_execution": "performance/manifests/legacy_joint_population_diverse_source_execution_v1.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_diverse_source_v1/inputs.json",
+  "source_fit": "paper_artifacts/legacy_joint_population_diverse_source_v1/source_fit.json",
+  "basis_of_next_step": "source heldout calibration improves but structural primary60 remains unsafe on6/6 targets. Mean g bias-.090516 decomposes into original source-input prior bias-.052721, prior input shift-.024383 and paid-update shift-.013411. Existing pooled-residual control preserves the structured common mean/covariance, so it cannot test the dominant common-function error.",
+  "information": "reuse the frozen diversified layouts,288 selected historical response calls, new encoder/normalizers and public73-source reference; do not use newly opened unselected source labels in fitting",
+  "candidate": "jointly source-fit isotropic common-function and task-residual variances in the same95-function basis, preserving common intercept variance/mean, task intercept freedom, the original relative1% tails and observed label noises; remove group sparsity and spectral weighting from BOTH covariance laws, not only the residual law",
+  "parameters": "nonnegative common function scale, task function scale, task intercept scale and discrepancy; normalized by the same source signal scale. Initialize function total scales by the corresponding learned structured total excess variance; keep original source-only L-BFGS-B tolerances and4096 iteration cap.",
+  "controls": "retain current structured joint, pooled-residual full and both GP controls; each comparison shares all source/target information. This ablates learned group/spectral geometry, not the retained orthogonal basis or interaction-order restriction.",
+  "implementation_check": "likelihood gradients and new-task posterior against a complete Gaussian calculation on genuinely different per-task inputs; a discrepancy changes the fitted law, so repair it before source forecasts",
+  "source_first": "freeze two opened-source task predictions and full-bank calibration before scoring. Compare joint and constraint batch densities, g MSE and the whole calibration profile, with27/60/63 as retained diagnostic points. Average coverage alone does not establish safe recommendations.",
+  "cheap_target_diagnosis": "if source fitting is valid, use cached two-record target posteriors only to measure prior/input/update bias and chances at previously selected points. Do not run terminal ranking or interpret cheaper diagnostics as decision gains.",
+  "terminal_progress": "freeze a separate five/six-arm action comparison only if common-flat source predictive density and the reached selected-point bias improve; report all failures. No new target truth-selected sites, covariance floor or risk boundary.",
+  "source_replication_diagnostic": "60 is observed in only one selected source task: noisy g mean-.060488 versus-.026393 across six cached source tasks. This shows limited cross-task replication as well as mean-model error; the latter cached labels are diagnostics, not training labels or exact common truth.",
+  "execution": "local serial single-thread, cache four new heads once; no new simulator/verifier calls, server jobs or pulls; do not expand the environment/experiment matrix",
+  "interpretation": "development attribution of common-function regularization; stable universal source superiority, incremental KG and independent deployment remain unproved",
+  "plan": "performance/manifests/legacy_joint_population_common_flat_covariance_plan_v1.json",
+  "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "output": "paper_artifacts/legacy_joint_population_common_flat_covariance_v1",
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "diagnostic_candidates": [
+    27,
+    60,
+    63
+  ],
+  "head_order": [
+    "f",
+    "g",
+    "eta_g",
+    "eta_f"
+  ],
+  "reference_source_results": "paper_artifacts/legacy_joint_population_diverse_source_v1/results.json",
+  "reference_target_results": "paper_artifacts/legacy_joint_population_diverse_source_decision_v1/results.json",
+  "target_inputs": "paper_artifacts/legacy_joint_population_source_budget_v1/inputs.json",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 4096,
+    "ftol": 1e-09,
+    "gtol": 1e-05
+  },
+  "progress_rule": "source g MSE and joint/constraint batch density improve on both opened source tasks; absolute g bias at the previously selected60 improves on each of the six opened target tasks. Only then register a separate terminal comparison; cheap diagnosis alone is not decision evidence.",
+  "freeze_rule": "save all new source local distributions before reading unobserved labels for scoring; save all six target local distributions before reading cached target scoring truth. No response label enters a new encoding or site selection."
+}

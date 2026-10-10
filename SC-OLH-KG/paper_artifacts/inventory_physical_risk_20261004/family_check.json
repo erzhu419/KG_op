@@ -1,0 +1,181 @@
+{
+  "protocol": {
+    "status": "frozen_single_causal_repair_on_paid_records",
+    "primary": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+    "change": "source distribution has seven factor-family weights; conditional coefficient distribution remains pooled reference",
+    "unchanged": "physical model, particle count and seed, source scale, prior pseudo-count, likelihood, all observations",
+    "new_episode_calls": 0,
+    "development_evaluation_only": true,
+    "report": "source leave-one-task-out density; saved-target held-out risk error, uncertainty and KG; no automatic promotion"
+  },
+  "source_info": {
+    "mode": "source_learned_factor_families",
+    "source_tasks": 8,
+    "source_labels": 128,
+    "source_variance_scale": 0.04757256504708117,
+    "source_distribution_free_weights": 7,
+    "within_family_distribution": "pooled_scale_reference_unchanged",
+    "source_optimizer_converged": true,
+    "source_optimizer_iterations": 26,
+    "objective_history": [
+      -124.44210223648595,
+      -123.8361397139865,
+      -123.54049796128257,
+      -123.3870294780411,
+      -123.30472128858256,
+      -123.25823315369422,
+      -123.23065829808591,
+      -123.2137489827279,
+      -123.2031594219727,
+      -123.19642491181366,
+      -123.19208559819332,
+      -123.18925703216604,
+      -123.18739501979258,
+      -123.18615966739159,
+      -123.18533532256133,
+      -123.18478304760082,
+      -123.18441210967859,
+      -123.1841626063311,
+      -123.1839946678966,
+      -123.1838816095462,
+      -123.18380550743824,
+      -123.18375429762835,
+      -123.18371985213037,
+      -123.1836966930865,
+      -123.1836811291469,
+      -123.18367067375526
+    ],
+    "likelihood": "exact Gaussian log-sample-variance density"
+  },
+  "source_task_holdout": [
+    {
+      "task": 0,
+      "per_label_log_density_gain": -0.0370808990532111,
+      "optimizer_converged": true
+    },
+    {
+      "task": 1,
+      "per_label_log_density_gain": 0.04187258653568815,
+      "optimizer_converged": true
+    },
+    {
+      "task": 2,
+      "per_label_log_density_gain": 0.02257520241125277,
+      "optimizer_converged": true
+    },
+    {
+      "task": 3,
+      "per_label_log_density_gain": 0.005985429443413182,
+      "optimizer_converged": true
+    },
+    {
+      "task": 4,
+      "per_label_log_density_gain": 0.04317390259654963,
+      "optimizer_converged": true
+    },
+    {
+      "task": 5,
+      "per_label_log_density_gain": 0.0636594790887709,
+      "optimizer_converged": true
+    },
+    {
+      "task": 6,
+      "per_label_log_density_gain": 0.03901070313769195,
+      "optimizer_converged": true
+    },
+    {
+      "task": 7,
+      "per_label_log_density_gain": 0.001076929779284308,
+      "optimizer_converged": true
+    }
+  ],
+  "source_holdout_mean_per_label_gain": 0.022534166742429973,
+  "before_target": {
+    "family_probabilities": {
+      "floor_only": 0.016087593078708575,
+      "volume": 0.03476283657371282,
+      "shared": 0.03267447105809667,
+      "shared+volume": 0.05542317007057563,
+      "local": 0.02339329564249539,
+      "local+volume": 0.044306983232939794,
+      "local+shared": 0.713604951949914,
+      "local+shared+volume": 0.07974669839355701
+    },
+    "effective_particles": 977.6430362258434,
+    "max_particle_weight": 0.0013937596717771756,
+    "coefficient_mean": [
+      0.08280420276250743,
+      1.659475056492512,
+      10.975814888349095,
+      1.6990611913368672,
+      0.3509523983530157,
+      0.010395762470024258,
+      0.33145441975074813,
+      0.028325849615210754,
+      0.04185048033652859
+    ],
+    "coefficient_sd": [
+      0.34350399741535764,
+      6.341030789145273,
+      190.6017592566268,
+      8.941521267513751,
+      1.7073653324659441,
+      0.23267285570762114,
+      1.4502372913841717,
+      0.24278078977957265,
+      0.46476898847866555
+    ],
+    "paid_batches": 0,
+    "paid_episodes": 0
+  },
+  "after_target": {
+    "family_probabilities": {
+      "floor_only": 0.02139009537363888,
+      "volume": 0.05834170653367245,
+      "shared": 0.04718335248691095,
+      "shared+volume": 0.07785950325785426,
+      "local": 0.01916975689543756,
+      "local+volume": 0.0417131631269597,
+      "local+shared": 0.6655103909922184,
+      "local+shared+volume": 0.0688320313333083
+    },
+    "effective_particles": 106.39765456846162,
+    "max_particle_weight": 0.02427360562665521,
+    "coefficient_mean": [
+      0.01676866654229912,
+      0.38437677963358063,
+      0.3434495450156459,
+      0.4541477048929144,
+      0.06471133146209503,
+      0.005101987505322346,
+      0.10891656699300763,
+      0.007740366738896736,
+      0.008404038525171223
+    ],
+    "coefficient_sd": [
+      0.01353704209948988,
+      0.4853804920760272,
+      0.4738690136001887,
+      0.7109777909169503,
+      0.07442011511007232,
+      0.051256654419865655,
+      0.2046455308700158,
+      0.02086652499137898,
+      0.025690545007597893
+    ],
+    "paid_batches": 8,
+    "paid_episodes": 96
+  },
+  "held_out_eta_rmse": 0.2839350770187456,
+  "held_out_average_log_risk_variance": 0.17705795693942877,
+  "component_rmse": {
+    "floor": 0.01426866654229912,
+    "local": 0.00802726185721332,
+    "shared": 0.020888135494645285,
+    "volume": 0.010710409380390303
+  },
+  "finite_moments_and_kg": true,
+  "new_episode_calls": 0,
+  "decision_performance_established": false,
+  "local_cpu_seconds": 0.228975514
+}

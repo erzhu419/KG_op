@@ -1,0 +1,342 @@
+{
+  "execution": {
+    "status": "registered after all original-source corrected-reference precision gates pass",
+    "entrypoint": "performance/diagnose_legacy_f_raw_source_covariance_score.py",
+    "source_results": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+    "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "question": "Are the old fixed-noise covariance parameters still locally stationary under the original48-source raw likelihood,or must source covariance learning change after posterior conditioning is repaired?",
+    "identity": "For Gaussian source f prior N(m,K(theta)),the raw marginal NLL gradient equals .5/48 trace((K^-1-K^-1 E[(f-m)(f-m)^T|all raw batches] K^-1) dK/dtheta). Use the verified Rao-Blackwell posterior mean/covariance and its two split summaries;no new chains or labels. Compute via prior-Cholesky whitening for stable traces. Structural four parameter directions are its existing common/task root amplitudes and spectral exponents;GP four directions are its existing common/task RBF amplitudes,task intercept and white discrepancy. Means,lengthscales,templates,positive tails and empirical source risk law stay fixed.",
+    "verification": "Under the analytic fixed-noise f posterior,the prior-score identity must reproduce the structural source Gaussian objective gradient and the GP dense Gaussian gradient at1e-8. Apply the ORIGINAL parameter bounds when computing projected scores,p in[0,4] and all nonnegative amplitudes. Do not infer significance from the gradient magnitude or select parameters from held-source errors.",
+    "decision": "If raw gradient directions are appreciable and agree across the two split posterior summaries,register a source-only covariance-learning pilot under this raw law with equal-information GP control. If they are small or split-unstable,do not claim covariance correction will solve the transfer problem;assess mean/function bias. No parameter optimization or held-task forecast in this diagnostic.",
+    "maximum_single_thread_cpu_seconds": 15,
+    "cost": {
+      "new_source_labels": 0,
+      "new_MCMC_sweeps": 0,
+      "new_source_coordinate_fits": 0,
+      "new_covariance_fits": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;existing posterior sufficient moments and fixed covariance derivatives;small JSON,no NPZ or server work",
+    "scope": "Local raw source-learning diagnostic,not an optimized candidate or decision evidence. Original four prior principles and matched source information retained;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_raw_source_covariance_score_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "parameter_names": [
+        "common_root_amplitude",
+        "common_spectral_exponent",
+        "task_root_amplitude",
+        "task_spectral_exponent"
+      ],
+      "frozen_parameters": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "plug_in_source_NLL_gradient_per_batch": [
+        1.0323451941837702e-06,
+        1.0522523445112564e-07,
+        -2.71923504069696e-07,
+        -0.008733236061131194
+      ],
+      "raw_source_NLL_gradient_per_batch": [
+        -0.00017271864611011212,
+        0.0011102792662349426,
+        -0.002771208671590469,
+        -0.009809096035616012
+      ],
+      "first_half_raw_gradient": [
+        -0.000147554934927005,
+        0.001160613362116314,
+        -0.002975881484595968,
+        -0.00981891170773646
+      ],
+      "second_half_raw_gradient": [
+        -0.0001978981067733282,
+        0.0010599502253551898,
+        -0.002566692395602749,
+        -0.009799264832140744
+      ],
+      "plug_in_projected_gradient": [
+        1.0323451941837702e-06,
+        1.0522523445112564e-07,
+        -2.71923504069696e-07,
+        0.0
+      ],
+      "raw_projected_gradient": [
+        -0.00017271864611011212,
+        0.0011102792662349426,
+        -0.002771208671590469,
+        0.0
+      ],
+      "first_half_raw_projected_gradient": [
+        -0.000147554934927005,
+        0.001160613362116314,
+        -0.002975881484595968,
+        0.0
+      ],
+      "second_half_raw_projected_gradient": [
+        -0.0001978981067733282,
+        0.0010599502253551898,
+        -0.002566692395602749,
+        0.0
+      ],
+      "projected_split_direction_agreement": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "plugin_score_identity_max_absolute_error": 7.636426213597503e-14,
+      "raw_projected_gradient_max_absolute": 0.002771208671590469,
+      "old_projected_gradient_max_absolute": 1.0323451941837702e-06
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "parameter_names": [
+        "common_RBF_amplitude",
+        "task_RBF_amplitude",
+        "task_intercept_variance",
+        "white_discrepancy"
+      ],
+      "frozen_parameters": [
+        5.313344446215945,
+        0.02993354495437173,
+        0.0,
+        0.00205085491625314
+      ],
+      "plug_in_source_NLL_gradient_per_batch": [
+        -5.93968173950854e-09,
+        8.85083678869858e-06,
+        1.0294110649868702,
+        -4.804104491107353e-06
+      ],
+      "raw_source_NLL_gradient_per_batch": [
+        0.0011080916896232648,
+        -0.02255522942910776,
+        1.0070002362286425,
+        5.160652212466342
+      ],
+      "first_half_raw_gradient": [
+        0.0010975038135959281,
+        -0.03418910540208986,
+        1.0055147762674421,
+        4.992452790438569
+      ],
+      "second_half_raw_gradient": [
+        0.0011186757451973873,
+        -0.010926445523695982,
+        1.008485355245461,
+        5.32865409336273
+      ],
+      "plug_in_projected_gradient": [
+        -5.93968173950854e-09,
+        8.85083678869858e-06,
+        0.0,
+        -4.804104491107353e-06
+      ],
+      "raw_projected_gradient": [
+        0.0011080916896232648,
+        -0.02255522942910776,
+        0.0,
+        5.160652212466342
+      ],
+      "first_half_raw_projected_gradient": [
+        0.0010975038135959281,
+        -0.03418910540208986,
+        0.0,
+        4.992452790438569
+      ],
+      "second_half_raw_projected_gradient": [
+        0.0011186757451973873,
+        -0.010926445523695982,
+        0.0,
+        5.32865409336273
+      ],
+      "projected_split_direction_agreement": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "plugin_score_identity_max_absolute_error": 2.6270245238699415e-11,
+      "raw_projected_gradient_max_absolute": 5.160652212466342,
+      "old_projected_gradient_max_absolute": 8.85083678869858e-06
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "parameter_names": [
+        "common_root_amplitude",
+        "common_spectral_exponent",
+        "task_root_amplitude",
+        "task_spectral_exponent"
+      ],
+      "frozen_parameters": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "plug_in_source_NLL_gradient_per_batch": [
+        1.0645184038496347e-06,
+        -7.171753399204395e-07,
+        1.768753363651926e-07,
+        -0.01116759171111575
+      ],
+      "raw_source_NLL_gradient_per_batch": [
+        0.0021327125628151852,
+        -0.0011157425565939084,
+        -0.0012338916267403558,
+        -0.01136676192594675
+      ],
+      "first_half_raw_gradient": [
+        0.00213203807591017,
+        -0.0011118904520144215,
+        -0.001208867431380552,
+        -0.011362595303894083
+      ],
+      "second_half_raw_gradient": [
+        0.0021333435227835484,
+        -0.0011195730153496994,
+        -0.001259014709031656,
+        -0.011370911638063929
+      ],
+      "plug_in_projected_gradient": [
+        1.0645184038496347e-06,
+        -7.171753399204395e-07,
+        1.768753363651926e-07,
+        0.0
+      ],
+      "raw_projected_gradient": [
+        0.0021327125628151852,
+        -0.0011157425565939084,
+        -0.0012338916267403558,
+        0.0
+      ],
+      "first_half_raw_projected_gradient": [
+        0.00213203807591017,
+        -0.0011118904520144215,
+        -0.001208867431380552,
+        0.0
+      ],
+      "second_half_raw_projected_gradient": [
+        0.0021333435227835484,
+        -0.0011195730153496994,
+        -0.001259014709031656,
+        0.0
+      ],
+      "projected_split_direction_agreement": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "plugin_score_identity_max_absolute_error": 1.3683498778505054e-14,
+      "raw_projected_gradient_max_absolute": 0.0021327125628151852,
+      "old_projected_gradient_max_absolute": 1.0645184038496347e-06
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "parameter_names": [
+        "common_RBF_amplitude",
+        "task_RBF_amplitude",
+        "task_intercept_variance",
+        "white_discrepancy"
+      ],
+      "frozen_parameters": [
+        6.0853913983273875,
+        0.03841143442898013,
+        0.0,
+        0.001184244757360003
+      ],
+      "plug_in_source_NLL_gradient_per_batch": [
+        -2.3649637462350853e-08,
+        -1.2019102483162847e-05,
+        1.0217419529287217,
+        -0.00022263861895677195
+      ],
+      "raw_source_NLL_gradient_per_batch": [
+        0.0006209618473638238,
+        -0.13040162041791806,
+        0.9939925304974548,
+        21.99891670779475
+      ],
+      "first_half_raw_gradient": [
+        0.0006228051693703963,
+        -0.1287606850165559,
+        0.9942832094562057,
+        22.019013147558915
+      ],
+      "second_half_raw_gradient": [
+        0.0006191093221758672,
+        -0.13204548622117768,
+        0.9937013674646697,
+        21.978583344471758
+      ],
+      "plug_in_projected_gradient": [
+        -2.3649637462350853e-08,
+        -1.2019102483162847e-05,
+        0.0,
+        -0.00022263861895677195
+      ],
+      "raw_projected_gradient": [
+        0.0006209618473638238,
+        -0.13040162041791806,
+        0.0,
+        21.99891670779475
+      ],
+      "first_half_raw_projected_gradient": [
+        0.0006228051693703963,
+        -0.1287606850165559,
+        0.0,
+        22.019013147558915
+      ],
+      "second_half_raw_projected_gradient": [
+        0.0006191093221758672,
+        -0.13204548622117768,
+        0.0,
+        21.978583344471758
+      ],
+      "projected_split_direction_agreement": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "plugin_score_identity_max_absolute_error": 1.3261984094454018e-11,
+      "raw_projected_gradient_max_absolute": 21.99891670779475,
+      "old_projected_gradient_max_absolute": 0.00022263861895677195
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "all_analytic_plugin_score_identities_passed": true,
+  "cpu_seconds": 0.07777631800000001,
+  "cost": {
+    "new_source_labels": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "new_covariance_optimizations": 0,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Raw marginal source covariance NLL gradients from verified posterior moment scores,at the original empirical parameters. Split summaries assess direction stability,not statistical significance. Covariance templates/means/risk priors unchanged;no held-source or decision scores."
+}

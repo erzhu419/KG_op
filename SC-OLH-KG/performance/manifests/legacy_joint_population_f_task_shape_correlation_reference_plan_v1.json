@@ -1,0 +1,54 @@
+{
+  "status": "completed;all12 scalar source fits and conditional v integrals verified;both task1 q zero",
+  "template_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "source_templates": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/source_templates.json",
+  "attribution_execution": "performance/manifests/legacy_joint_population_f_task_template_attribution_execution_v1.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_task_template_attribution_v1/results.json",
+  "question": "Does source-estimated correlation among existing task shape coefficients have enough support to motivate matched prediction,after retaining native marginal group budgets and a fresh conditional v posterior?",
+  "law": "R(v,q)=v*e0e0prime+independent native1% nonintercept tail+(1-q)*native task shape excess diagonal+q*B Csource B. Csource is the Stage127 source task template shape correlation; B rescales to native task shape excess marginal variances,zero outside native task positive groups. Preserve native task exponent,common A,empirical center,noise,discrepancy and eta. No level-shape correlation,new support,variance floor or GP runtime prediction.",
+  "fit": "One scalar q in[0,1] per source0-5 deletion fold,at original native v. Start q=0 once;reuse the exact original L-BFGS-B maxiter/ftol/gtol from each fold. Analytic Gaussian marginal likelihood gradient. q=0 must reproduce native beta/H/NLL;save all12 coherent fitted source laws before integration. Optimizer failure stops,no new starts or relaxed tolerances.",
+  "integration": "Rebuild C0(qfit),task intercept low-rank eigenvalues/rhs and common beta(v),H(v) under each fitted full task-shape covariance. Integrate original conditional Jeffreys measure sqrt(I(v))dv on all v>=0,without floor/cutoff;reuse verified TaskLevelReferencePosterior numerical method. The signal*.1 splitting point is only a quadrature interval boundary. Save complete source component law,not only averaged moments;future paid mixture must retain v weights. q and all existing nuisance parameters are empirically fixed;this is not q uncertainty or population coverage.",
+  "verification": "q0 native recovery;PSD,unchanged original task marginal budgets/support/spectrum/tail and independent v;analytic q derivative at .5 versus central finite difference on interior/boundary native-v folds;conditional v formula versus dense source NLL,Fisher,beta/H on both task1 folds;declared full-tail quadrature errors and integrated common PSD.",
+  "derivative_verification_folds": [
+    [
+      "5",
+      0
+    ],
+    [
+      "6",
+      1
+    ]
+  ],
+  "derivative_point": 0.5,
+  "derivative_step": 1e-06,
+  "dense_verification_deleted_task": 1,
+  "dense_verification_variance_over_source_signal": 0.1,
+  "quadrature_split_variance_over_signal": 0.1,
+  "posterior_quantile_probabilities": [
+    0.025,
+    0.5,
+    0.975
+  ],
+  "quadrature": {
+    "relative_tolerance": 1e-08,
+    "absolute_tolerance_for_scaled_integrals": 1e-09,
+    "maximum_subintervals": 128
+  },
+  "decision": "Judge actual source likelihood gains and conditional-v changes. Negligible or heterogeneous source signal does not imply practical advantage. A separately registered unchanged-prefix f prediction test is permitted after all source checks;no automatic adoption or complete-gate promotion. Retain failed Stage127 expanded-support/level-shape family.",
+  "scope": "twelve five-source folds on0-5 only;no paid query scores,source6/7,target,KG,confirmation,server jobs/pulls or manuscript changes",
+  "cost": {
+    "new_source_fits": 12,
+    "new_source_intercept_variance_integrations": 12,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON only",
+  "output": "paper_artifacts/legacy_joint_population_f_task_shape_correlation_reference_v1",
+  "planned_entrypoint": "performance/fit_legacy_f_task_shape_correlation_reference.py",
+  "entrypoint_status": "implemented and executed",
+  "results": "paper_artifacts/legacy_joint_population_f_task_shape_correlation_reference_v1/results.json",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_task_shape_correlation_reference_execution_v1.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_plan_v1.json"
+}

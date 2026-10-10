@@ -1,0 +1,500 @@
+{
+  "execution": {
+    "status": "registered before all sixteen component forecasts and source scoring",
+    "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+    "native_results": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1/results.json",
+    "restricted_execution": "performance/manifests/legacy_joint_population_intercept_task_holdout_execution_v1.json",
+    "restricted_results": "paper_artifacts/legacy_joint_population_intercept_task_holdout_v1/results.json",
+    "mean_shift_attribution": "paper_artifacts/legacy_joint_population_intercept_task_holdout_v1/mean_shift_attribution.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "basis_of_next_step": "Restricted task variation improves all4 source holdout g/joint raw densities versus the native model and lowers average g MSE9.1%/11.2%; task6 MSE regresses under both assignments. Against GP it improves task7 g MSE/density but worsens both under task6. The post-hoc task6 MSE increment is99.7%/95.7% centered-shape contribution, with regressions remaining under fixed native predictive-variance weights. Shared curve learning and task covariance changed together, so neither an intercept-only error nor noise weighting alone explains the discrepancy. Isolate those two components before another fitted repair.",
+    "components": "For each full-source g law, separate the cached population coefficient mean beta, its covariance H, task residual coefficient diagonal R and white discrepancy delta. Common block is(beta,H); task block is(R,delta). Use exactly the native public orthogonal design D so g prior mean=D*beta and covariance=D*(H+diag(R))*D^T+delta*I. Retain unchanged f and full/six-deletion eta identities, uniform initial weights and paired raw update.",
+    "cases": [
+      "native_common_native_task",
+      "native_common_restricted_task",
+      "restricted_common_native_task",
+      "restricted_common_restricted_task"
+    ],
+    "freeze_rule": "Reconstruct both original endpoints at all73 policies before and after paired0/1 raw observations, including four-head means/variances, episode variance, identity weights and predictive scores, against Stage72/74. Freeze all16 prior/raw-paid source forecasts (8 new mixed branches) before scoring the same71 policies; reuse endpoint scores afterward. No source/target fitting or label-based parameter changes.",
+    "scoring": "Report per-case prior/paid observed g MSE, proper joint/g raw batch density and all four source cases separately. Attribute common-curve versus task-law substitutions and their interaction; keep all negative cases. This is component attribution on reused development holdouts, not model selection or independent confirmation.",
+    "next_action": "If preserving native common learning while using restricted task covariance removes task6 regressions, prioritize a source-trained regularization rule that retains common-function estimation and validates new-task residual structure using training tasks only. A mixed arm still cannot be promoted or treated as a coherent source fit. If regressions persist, identify their paid-update component before adding any covariance family. No automatic spectrum grid, target KG or gate waiver.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread using cached small JSON only; full73 field covariance in memory, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_common_task_attribution_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_common_task_attribution_plan_v1.json",
+    "entrypoint": "performance/check_legacy_common_task_attribution.py"
+  },
+  "summary": {
+    "5": {
+      "native_common_native_task": {
+        "prior": {
+          "g_mse": 0.0016718076012131025,
+          "g_raw_batch_density": -0.14706557172046636,
+          "joint_raw_batch_density": 0.6482074329067432
+        },
+        "raw_paid": {
+          "g_mse": 0.0013673164485834988,
+          "g_raw_batch_density": 0.00934164468816151,
+          "joint_raw_batch_density": 1.0998359610061297
+        }
+      },
+      "native_common_restricted_task": {
+        "prior": {
+          "g_mse": 0.0016718076012131025,
+          "g_raw_batch_density": -0.1082926277053953,
+          "joint_raw_batch_density": 0.6869567060011533
+        },
+        "raw_paid": {
+          "g_mse": 0.001191182042466707,
+          "g_raw_batch_density": 0.0936442507948386,
+          "joint_raw_batch_density": 1.1841435507032236
+        }
+      },
+      "restricted_common_native_task": {
+        "prior": {
+          "g_mse": 0.0017566329768763191,
+          "g_raw_batch_density": -0.1384443742851394,
+          "joint_raw_batch_density": 0.6568224858520065
+        },
+        "raw_paid": {
+          "g_mse": 0.0013782246011244308,
+          "g_raw_batch_density": 0.030956316524063075,
+          "joint_raw_batch_density": 1.1215074727581826
+        }
+      },
+      "restricted_common_restricted_task": {
+        "prior": {
+          "g_mse": 0.0017566329768763191,
+          "g_raw_batch_density": -0.10714250962722627,
+          "joint_raw_batch_density": 0.6880811959737452
+        },
+        "raw_paid": {
+          "g_mse": 0.0012430098346215422,
+          "g_raw_batch_density": 0.10527666947099418,
+          "joint_raw_batch_density": 1.195712763712953
+        }
+      }
+    },
+    "6": {
+      "native_common_native_task": {
+        "prior": {
+          "g_mse": 0.001493550193208129,
+          "g_raw_batch_density": -0.10745754189447235,
+          "joint_raw_batch_density": 0.6487017021854625
+        },
+        "raw_paid": {
+          "g_mse": 0.001241567331510946,
+          "g_raw_batch_density": 0.0744770251357193,
+          "joint_raw_batch_density": 1.123456138163191
+        }
+      },
+      "native_common_restricted_task": {
+        "prior": {
+          "g_mse": 0.001493550193208129,
+          "g_raw_batch_density": -0.04862800927213942,
+          "joint_raw_batch_density": 0.7074939313887348
+        },
+        "raw_paid": {
+          "g_mse": 0.0010395730514646685,
+          "g_raw_batch_density": 0.1764454180880163,
+          "joint_raw_batch_density": 1.2251919244453524
+        }
+      },
+      "restricted_common_native_task": {
+        "prior": {
+          "g_mse": 0.0015762059030696696,
+          "g_raw_batch_density": -0.10413333667320669,
+          "joint_raw_batch_density": 0.6520100327513539
+        },
+        "raw_paid": {
+          "g_mse": 0.0012289345009848956,
+          "g_raw_batch_density": 0.08622352625618813,
+          "joint_raw_batch_density": 1.1351885003471809
+        }
+      },
+      "restricted_common_restricted_task": {
+        "prior": {
+          "g_mse": 0.0015762059030696696,
+          "g_raw_batch_density": -0.04522103260015964,
+          "joint_raw_batch_density": 0.7108811980316428
+        },
+        "raw_paid": {
+          "g_mse": 0.0011027532626047038,
+          "g_raw_batch_density": 0.18883424386705622,
+          "joint_raw_batch_density": 1.2375954434336918
+        }
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "task_index": 6,
+      "case": "native_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        },
+        "raw_paid": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 6,
+      "case": "native_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.044292129905897565,
+          "joint_raw_batch_density": 0.04421611625931754
+        },
+        "raw_paid": {
+          "g_mse": 9.13263659592183e-05,
+          "g_raw_batch_density": 0.05420618809622435,
+          "joint_raw_batch_density": 0.05406705569761927
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 6,
+      "case": "restricted_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0003092579069382741,
+          "g_raw_batch_density": -0.022481937550955067,
+          "joint_raw_batch_density": -0.022500426890410985
+        },
+        "raw_paid": {
+          "g_mse": 0.00021216563314682083,
+          "g_raw_batch_density": -0.00874552948849322,
+          "joint_raw_batch_density": -0.008769653996079985
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 6,
+      "case": "restricted_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0003092579069382741,
+          "g_raw_batch_density": 0.013238070806204896,
+          "joint_raw_batch_density": 0.013121693297012849
+        },
+        "raw_paid": {
+          "g_mse": 0.00046689533417222195,
+          "g_raw_batch_density": 0.011641533274047738,
+          "joint_raw_batch_density": 0.011212083690677055
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "case": "native_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        },
+        "raw_paid": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "case": "native_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.03325375812424455,
+          "joint_raw_batch_density": 0.03328242992950273
+        },
+        "raw_paid": {
+          "g_mse": -0.00044359517819280206,
+          "g_raw_batch_density": 0.11439902411712982,
+          "joint_raw_batch_density": 0.11454812369656853
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "case": "restricted_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": -0.0001396071556118406,
+          "g_raw_batch_density": 0.03972433242160903,
+          "joint_raw_batch_density": 0.039730532780937716
+        },
+        "raw_paid": {
+          "g_mse": -0.00019034932806495717,
+          "g_raw_batch_density": 0.05197487316029635,
+          "joint_raw_batch_density": 0.05211267750018589
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "case": "restricted_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": -0.0001396071556118406,
+          "g_raw_batch_density": 0.06660805338027528,
+          "joint_raw_batch_density": 0.06662583283699106
+        },
+        "raw_paid": {
+          "g_mse": -0.0007155085620961354,
+          "g_raw_batch_density": 0.1802285162916176,
+          "joint_raw_batch_density": 0.18054152172296967
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "case": "native_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        },
+        "raw_paid": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "case": "native_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.06315544437053731,
+          "joint_raw_batch_density": 0.06313528395063561
+        },
+        "raw_paid": {
+          "g_mse": 0.0001259136397033355,
+          "g_raw_batch_density": 0.06207084128417209,
+          "joint_raw_batch_density": 0.061659502446031134
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "case": "restricted_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.00015447332080030128,
+          "g_raw_batch_density": 0.0012583909711653303,
+          "joint_raw_batch_density": 0.0012777449003367192
+        },
+        "raw_paid": {
+          "g_mse": 7.965744347658327e-05,
+          "g_raw_batch_density": 0.0054710754391482375,
+          "joint_raw_batch_density": 0.005584303228692633
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "case": "restricted_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.00015447332080030128,
+          "g_raw_batch_density": 0.0625746760047181,
+          "joint_raw_batch_density": 0.06258118960191239
+        },
+        "raw_paid": {
+          "g_mse": 0.00029967242323653324,
+          "g_raw_batch_density": 0.05697102904451509,
+          "joint_raw_batch_density": 0.05669537214906173
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "case": "native_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        },
+        "raw_paid": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0,
+          "joint_raw_batch_density": 0.0
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "case": "native_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.05450362087412852,
+          "joint_raw_batch_density": 0.054449174455909105
+        },
+        "raw_paid": {
+          "g_mse": -0.0005299021997958904,
+          "g_raw_batch_density": 0.1418659446204219,
+          "joint_raw_batch_density": 0.14181207011829156
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "case": "restricted_common_native_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 1.0838098922780117e-05,
+          "g_raw_batch_density": 0.00539001947136597,
+          "joint_raw_batch_density": 0.005338916231446195
+        },
+        "raw_paid": {
+          "g_mse": -0.00010492310452868414,
+          "g_raw_batch_density": 0.018021926801789413,
+          "joint_raw_batch_density": 0.017880421139287006
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "case": "restricted_common_restricted_task",
+      "minus_native": {
+        "prior": {
+          "g_mse": 1.0838098922780117e-05,
+          "g_raw_batch_density": 0.061898342583907306,
+          "joint_raw_batch_density": 0.06177780209044825
+        },
+        "raw_paid": {
+          "g_mse": -0.0005773005610490178,
+          "g_raw_batch_density": 0.17174340841815872,
+          "joint_raw_batch_density": 0.17158323839194
+        }
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "layout": "5",
+      "task_index": 6,
+      "factorial_interaction": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": -0.008572121548737599,
+          "joint_raw_batch_density": -0.008593996071893706
+        },
+        "raw_paid": {
+          "g_mse": 0.00016340333506618281,
+          "g_raw_batch_density": -0.03381912533368339,
+          "joint_raw_batch_density": -0.03408531801086223
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "factorial_interaction": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": -0.006370037165578324,
+          "joint_raw_batch_density": -0.0063871298734493875
+        },
+        "raw_paid": {
+          "g_mse": -8.156405583837614e-05,
+          "g_raw_batch_density": 0.01385461901419141,
+          "joint_raw_batch_density": 0.013880720526215251
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "factorial_interaction": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": -0.0018391593369845444,
+          "joint_raw_batch_density": -0.0018318392490599411
+        },
+        "raw_paid": {
+          "g_mse": 9.410134005661446e-05,
+          "g_raw_batch_density": -0.010570887678805235,
+          "joint_raw_batch_density": -0.010548433525662038
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "factorial_interaction": {
+        "prior": {
+          "g_mse": 0.0,
+          "g_raw_batch_density": 0.0020047022384128144,
+          "joint_raw_batch_density": 0.001989711403092953
+        },
+        "raw_paid": {
+          "g_mse": 5.752474327555676e-05,
+          "g_raw_batch_density": 0.011855536995947408,
+          "joint_raw_batch_density": 0.011890747134361446
+        }
+      }
+    }
+  ],
+  "both_endpoints_reproduction_passed": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 63.404939754,
+  "no_model_selected": true,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

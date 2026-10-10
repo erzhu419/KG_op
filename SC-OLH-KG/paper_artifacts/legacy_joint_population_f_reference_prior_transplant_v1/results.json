@@ -1,0 +1,1221 @@
+{
+  "execution": {
+    "status": "frozen before prior interventions or paid values",
+    "mixture_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "mixture_profiles": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/calibration_profiles.json",
+    "attribution_results": "paper_artifacts/legacy_joint_population_f_reference_budget_attribution_v1/results.json",
+    "controls_profiles": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "episode_count": 8,
+    "probes": [
+      "gp_source_mean",
+      "gp_source_covariance"
+    ],
+    "prior_intervention": "Construct the same Stage123 source f variance components from cached deleted-task source rules. In gp_source_mean replace each component's initial f mean function with the same five-source GP mean,keeping its f covariance and variance weights. In gp_source_covariance retain component f means and weights but replace each initial f covariance by the same five-source GP covariance. Both preserve the original eta_f mean/covariance,zero initial f/eta cross covariance,source-var weights and original raw update. These are valid function-prior moment probes,not coherently refitted source population A/R laws or candidate algorithms.",
+    "contract": "Use cached selected-source GP fits trained on the same five tasks/60 labels/180 calls. Copy frozen Stage121 eight-policy prefixes and original12 scoring sites. No source6/7 or target outcomes. No new fits,source laws,source policies or hyperparameters. Freeze source identities,prefixes and GP prior moments before paid values;freeze all24 selected/refined forecasts before score labels.",
+    "verification": "Source task/label counts5/60 and query-task exclusion must match. Initial eta_f moments remain identical to Stage123. Selected quadrature versus32 nodes per original source-adaptive interval must satisfy Stage113 mean/covariance/evidence tolerances for every probe/fold at eight episodes. Refine proper raw densities for both task1 probes in both layouts. A numerical failure blocks scientific interpretation without changing source posterior or gates.",
+    "comparison": "Reuse original eight-episode mixture and sourceGP controls without replay. Report every task,task1 and other5 for MSE,proper raw density,Gaussian moment transcript score and actual mixture transcript score. A probe improves original mixture only if mean MSE nonincrease,raw density strict improvement and moment transcript score nondecrease hold in both layouts. GP comparisons are descriptive;no probe is adopted even if it wins.",
+    "decision": "Determine whether source-derived mean functions,covariance functions,or their interaction merit the next coherent source-fitting intervention within the original orthogonal/sparse/low-order/low-frequency model. Prior swaps can alter variance-weight learning and eta adaptation;they do not identify causal physical factors. Preserve the positive Stage113 result and failed complete model gate. No target/KG/confirmation or manuscript changes.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small JSON inputs only;no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_reference_prior_transplant_v1",
+    "planned_entrypoint": "performance/check_legacy_f_reference_prior_transplant.py"
+  },
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "numerical_checks": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 3.1009639300805247e-12,
+        "covariance_relative_frobenius": 3.304519780395984e-11,
+        "paid_log_evidence_absolute": 6.714273581565067e-11
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 9.952594304252216e-13,
+        "covariance_relative_frobenius": 1.5901373115116632e-10,
+        "paid_log_evidence_absolute": 3.03415959024278e-10
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 4.440892098500626e-16,
+        "covariance_relative_frobenius": 5.822880165508562e-16,
+        "paid_log_evidence_absolute": 0.0
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 3.3306690738754696e-16,
+        "covariance_relative_frobenius": 4.718534311902833e-16,
+        "paid_log_evidence_absolute": 3.552713678800501e-15
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 2.220446049250313e-16,
+        "covariance_relative_frobenius": 1.7075333470282704e-15,
+        "paid_log_evidence_absolute": 3.552713678800501e-15
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 3.3306690738754696e-16,
+        "covariance_relative_frobenius": 5.939197927751934e-15,
+        "paid_log_evidence_absolute": 1.0658141036401503e-14
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 6.661338147750939e-16,
+        "covariance_relative_frobenius": 2.0575897041531705e-15,
+        "paid_log_evidence_absolute": 1.4210854715202004e-14
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 1.2212453270876722e-15,
+        "covariance_relative_frobenius": 1.1642127685264723e-15,
+        "paid_log_evidence_absolute": 0.0
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 2.2198443083709662e-10,
+        "covariance_relative_frobenius": 5.5749947945082274e-09,
+        "paid_log_evidence_absolute": 3.926004410459427e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 8.975586940351832e-11,
+        "covariance_relative_frobenius": 9.264443111795003e-09,
+        "paid_log_evidence_absolute": 8.142762908391887e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 7.348566199993911e-13,
+        "covariance_relative_frobenius": 6.533585059990423e-11,
+        "paid_log_evidence_absolute": 3.291162897767208e-10
+      },
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 2.762956530233396e-12,
+        "covariance_relative_frobenius": 3.384602090506492e-11,
+        "paid_log_evidence_absolute": 6.799893981224159e-11
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 3.0945579432284376e-10,
+        "covariance_relative_frobenius": 2.2252451154161374e-09,
+        "paid_log_evidence_absolute": 3.9320902089912124e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 3.5362712758058024e-11,
+        "covariance_relative_frobenius": 8.231444151559288e-09,
+        "paid_log_evidence_absolute": 1.3812574195526395e-08
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 7.955991421226827e-11,
+        "covariance_relative_frobenius": 1.1351418080697245e-08,
+        "paid_log_evidence_absolute": 1.0047426002302018e-08
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 3.613309651484542e-11,
+        "covariance_relative_frobenius": 8.750660716848981e-10,
+        "paid_log_evidence_absolute": 9.75363789734729e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 1.0994205545955538e-11,
+        "covariance_relative_frobenius": 8.964888687614923e-10,
+        "paid_log_evidence_absolute": 3.278607607626327e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 4.692263244621131e-11,
+        "covariance_relative_frobenius": 4.5182668541435e-09,
+        "paid_log_evidence_absolute": 3.7114666895377013e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 4.440892098500626e-16,
+        "covariance_relative_frobenius": 5.952711224526299e-16,
+        "paid_log_evidence_absolute": 0.0
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 5.551115123125783e-16,
+        "covariance_relative_frobenius": 1.0717854098984835e-15,
+        "paid_log_evidence_absolute": 3.552713678800501e-15
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 4.220390703579824e-11,
+        "covariance_relative_frobenius": 7.73502750913315e-09,
+        "paid_log_evidence_absolute": 1.221171785914521e-08
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 1.6698575855400577e-10,
+        "covariance_relative_frobenius": 1.1138030696103561e-08,
+        "paid_log_evidence_absolute": 6.831548660102271e-09
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "arm": "gp_source_mean",
+      "errors": {
+        "mean_max_absolute": 1.3907763829479336e-12,
+        "covariance_relative_frobenius": 5.377821275819722e-11,
+        "paid_log_evidence_absolute": 2.552127398303128e-10
+      },
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "arm": "gp_source_covariance",
+      "errors": {
+        "mean_max_absolute": 5.536682223805656e-13,
+        "covariance_relative_frobenius": 2.58084979669959e-11,
+        "paid_log_evidence_absolute": 1.4694023775518872e-10
+      },
+      "passed": true
+    }
+  ],
+  "no_model_adopted": true,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "original_complete_gate_unchanged": true,
+  "summary": {
+    "5": {
+      "gp_source_mean": {
+        "f_mse": 0.00022484032702557252,
+        "f_gaussian_mean_density": 2.882656057163766,
+        "f_raw_batch_density": 1.0545598394148128,
+        "raw_paid_log_evidence": 20.672796594816834,
+        "sequential_transcript_density": 2.7632334640391014,
+        "actual_mixture_mean_density": 2.8888795427618184,
+        "actual_mixture_transcript_density": 2.7669675553979327
+      },
+      "gp_source_covariance": {
+        "f_mse": 0.00021265282288327172,
+        "f_gaussian_mean_density": 3.023531224980962,
+        "f_raw_batch_density": 1.1445933265000343,
+        "raw_paid_log_evidence": 21.0251278356309,
+        "sequential_transcript_density": 2.865375126770122,
+        "actual_mixture_mean_density": 3.0235946316511284,
+        "actual_mixture_transcript_density": 2.865413170772222
+      }
+    },
+    "6": {
+      "gp_source_mean": {
+        "f_mse": 0.00025694765436428313,
+        "f_gaussian_mean_density": 2.8966231087148397,
+        "f_raw_batch_density": 1.1292358068239725,
+        "raw_paid_log_evidence": 20.831637864339505,
+        "sequential_transcript_density": 2.7795557584458788,
+        "actual_mixture_mean_density": 2.9044829213872543,
+        "actual_mixture_transcript_density": 2.7842716460493278
+      },
+      "gp_source_covariance": {
+        "f_mse": 0.00018325867745358664,
+        "f_gaussian_mean_density": 3.2349783275040367,
+        "f_raw_batch_density": 1.3790439097330403,
+        "raw_paid_log_evidence": 20.77855355069271,
+        "sequential_transcript_density": 2.9799146740370577,
+        "actual_mixture_mean_density": 3.234883873517935,
+        "actual_mixture_transcript_density": 2.9798580016453964
+      }
+    }
+  },
+  "descriptive_groups": {
+    "5": {
+      "gp_source_mean": {
+        "all6": {
+          "f_mse": 0.00022484032702557252,
+          "f_gaussian_mean_density": 2.882656057163766,
+          "f_raw_batch_density": 1.0545598394148128,
+          "raw_paid_log_evidence": 20.672796594816834,
+          "sequential_transcript_density": 2.7632334640391014,
+          "actual_mixture_mean_density": 2.8888795427618184,
+          "actual_mixture_transcript_density": 2.7669675553979327
+        },
+        "task1": {
+          "f_mse": 0.00047332016638021766,
+          "f_gaussian_mean_density": 2.5404203231446316,
+          "f_raw_batch_density": 0.5791085255427115,
+          "raw_paid_log_evidence": 19.79570774158351,
+          "sequential_transcript_density": 2.5140375809659545,
+          "actual_mixture_mean_density": 2.579060326298774,
+          "actual_mixture_transcript_density": 2.53722158285844
+        },
+        "other5": {
+          "f_mse": 0.0001751443591546435,
+          "f_gaussian_mean_density": 2.9511032039675937,
+          "f_raw_batch_density": 1.1496501021892331,
+          "raw_paid_log_evidence": 20.8482143654635,
+          "sequential_transcript_density": 2.813072640653731,
+          "actual_mixture_mean_density": 2.950843386054427,
+          "actual_mixture_transcript_density": 2.812916749905831
+        }
+      },
+      "gp_source_covariance": {
+        "all6": {
+          "f_mse": 0.00021265282288327172,
+          "f_gaussian_mean_density": 3.023531224980962,
+          "f_raw_batch_density": 1.1445933265000343,
+          "raw_paid_log_evidence": 21.0251278356309,
+          "sequential_transcript_density": 2.865375126770122,
+          "actual_mixture_mean_density": 3.0235946316511284,
+          "actual_mixture_transcript_density": 2.865413170772222
+        },
+        "task1": {
+          "f_mse": 0.0004231478423970619,
+          "f_gaussian_mean_density": 2.802056072019072,
+          "f_raw_batch_density": 0.43233223355150113,
+          "raw_paid_log_evidence": 19.107560120160198,
+          "sequential_transcript_density": 2.6366116492194527,
+          "actual_mixture_mean_density": 2.802071043688518,
+          "actual_mixture_transcript_density": 2.6366206322211205
+        },
+        "other5": {
+          "f_mse": 0.00017055381898051371,
+          "f_gaussian_mean_density": 3.06782625557334,
+          "f_raw_batch_density": 1.287045545089741,
+          "raw_paid_log_evidence": 21.408641378725044,
+          "sequential_transcript_density": 2.9111278222802563,
+          "actual_mixture_mean_density": 3.0678993492436506,
+          "actual_mixture_transcript_density": 2.911171678482442
+        }
+      }
+    },
+    "6": {
+      "gp_source_mean": {
+        "all6": {
+          "f_mse": 0.00025694765436428313,
+          "f_gaussian_mean_density": 2.8966231087148397,
+          "f_raw_batch_density": 1.1292358068239725,
+          "raw_paid_log_evidence": 20.831637864339505,
+          "sequential_transcript_density": 2.7795557584458788,
+          "actual_mixture_mean_density": 2.9044829213872543,
+          "actual_mixture_transcript_density": 2.7842716460493278
+        },
+        "task1": {
+          "f_mse": 0.0006919681754865068,
+          "f_gaussian_mean_density": 2.539107521784846,
+          "f_raw_batch_density": 0.293133304741868,
+          "raw_paid_log_evidence": 20.275467358110216,
+          "sequential_transcript_density": 2.5372378809764187,
+          "actual_mixture_mean_density": 2.5869086583680594,
+          "actual_mixture_transcript_density": 2.5659185629263463
+        },
+        "other5": {
+          "f_mse": 0.00016994355013983837,
+          "f_gaussian_mean_density": 2.9681262261008383,
+          "f_raw_batch_density": 1.2964563072403934,
+          "raw_paid_log_evidence": 20.942871965585365,
+          "sequential_transcript_density": 2.8280193339397712,
+          "actual_mixture_mean_density": 2.967997773991093,
+          "actual_mixture_transcript_density": 2.827942262673924
+        }
+      },
+      "gp_source_covariance": {
+        "all6": {
+          "f_mse": 0.00018325867745358664,
+          "f_gaussian_mean_density": 3.2349783275040367,
+          "f_raw_batch_density": 1.3790439097330403,
+          "raw_paid_log_evidence": 20.77855355069271,
+          "sequential_transcript_density": 2.9799146740370577,
+          "actual_mixture_mean_density": 3.234883873517935,
+          "actual_mixture_transcript_density": 2.9798580016453964
+        },
+        "task1": {
+          "f_mse": 0.0002735139457676723,
+          "f_gaussian_mean_density": 3.1426070056368354,
+          "f_raw_batch_density": 0.8924546765634135,
+          "raw_paid_log_evidence": 18.693883418829927,
+          "sequential_transcript_density": 2.820258374323598,
+          "actual_mixture_mean_density": 3.1425307624932626,
+          "actual_mixture_transcript_density": 2.820212628437454
+        },
+        "other5": {
+          "f_mse": 0.0001652076237907695,
+          "f_gaussian_mean_density": 3.253452591877477,
+          "f_raw_batch_density": 1.4763617563669658,
+          "raw_paid_log_evidence": 21.195487577065265,
+          "sequential_transcript_density": 3.0118459339797488,
+          "actual_mixture_mean_density": 3.2533544957228693,
+          "actual_mixture_transcript_density": 3.0117870762869847
+        }
+      }
+    }
+  },
+  "matched_contrasts": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -2.8743693432027394e-05,
+        "f_gaussian_mean_density": 0.041958613817961066,
+        "f_raw_batch_density": 0.010934767001077983,
+        "raw_paid_log_evidence": -0.021107955235372344,
+        "sequential_transcript_density": 0.024119770529007933,
+        "actual_mixture_mean_density": 0.042113459906278905,
+        "actual_mixture_transcript_density": 0.024212678181998903
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 1.9392978098105946e-05,
+        "f_gaussian_mean_density": -0.17528947715369814,
+        "f_raw_batch_density": -0.1427688268031439,
+        "raw_paid_log_evidence": -1.8269216732558,
+        "sequential_transcript_density": -0.19651976995500942
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -1.3346774858711066e-05,
+        "f_gaussian_mean_density": 0.13811792464318007,
+        "f_raw_batch_density": 0.07381393665312447,
+        "raw_paid_log_evidence": 1.3077420038184258,
+        "sequential_transcript_density": 0.14825785497682942,
+        "actual_mixture_mean_density": 0.1376696795539183,
+        "actual_mixture_transcript_density": 0.14798890792327235
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 3.4789896671422275e-05,
+        "f_gaussian_mean_density": -0.07913016632847913,
+        "f_raw_batch_density": -0.07988965715109742,
+        "raw_paid_log_evidence": -0.4980717142020019,
+        "sequential_transcript_density": -0.07238168550718793
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -5.926751007009418e-05,
+        "f_gaussian_mean_density": 0.03301662527824467,
+        "f_raw_batch_density": 0.06758676417795084,
+        "raw_paid_log_evidence": 0.37120658132162987,
+        "sequential_transcript_density": 0.03837030423302812,
+        "actual_mixture_mean_density": 0.03271288470926281,
+        "actual_mixture_transcript_density": 0.038188059891639536
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 0.00017216388461853996,
+        "f_gaussian_mean_density": -0.3371713521087898,
+        "f_raw_batch_density": -0.16987057162594588,
+        "raw_paid_log_evidence": -0.47842241841538424,
+        "sequential_transcript_density": -0.22622393218604264
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -0.00010943983405324993,
+        "f_gaussian_mean_density": 0.29465237415268497,
+        "f_raw_batch_density": -0.07918952781325955,
+        "raw_paid_log_evidence": -0.3169410401016819,
+        "sequential_transcript_density": 0.16094437248652627,
+        "actual_mixture_mean_density": 0.2557236020990068,
+        "actual_mixture_transcript_density": 0.13758710925432016
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 0.0001219915606353842,
+        "f_gaussian_mean_density": -0.07553560323434949,
+        "f_raw_batch_density": -0.31664686361715627,
+        "raw_paid_log_evidence": -1.166570039838696,
+        "sequential_transcript_density": -0.1036498639325445
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -4.1376381540541e-06,
+        "f_gaussian_mean_density": 0.03775531677159183,
+        "f_raw_batch_density": 0.00801420161183608,
+        "raw_paid_log_evidence": -0.0424193727115707,
+        "sequential_transcript_density": 0.02053222142737665,
+        "actual_mixture_mean_density": 0.0371073587532611,
+        "actual_mixture_transcript_density": 0.020143446616378125
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -5.448710458539385e-05,
+        "f_gaussian_mean_density": -0.1544834805938895,
+        "f_raw_batch_density": 0.01580179189474329,
+        "raw_paid_log_evidence": -1.3848134625173856,
+        "sequential_transcript_density": -0.16193076148220253
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": 2.1777017499740025e-05,
+        "f_gaussian_mean_density": 0.12662102228819938,
+        "f_raw_batch_density": -0.026908811223819606,
+        "raw_paid_log_evidence": 1.7648652997424357,
+        "sequential_transcript_density": 0.16421587836004115,
+        "actual_mixture_mean_density": 0.12718967093908118,
+        "actual_mixture_transcript_density": 0.16455706755057076
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -2.8572448931599723e-05,
+        "f_gaussian_mean_density": -0.06561777507728195,
+        "f_raw_batch_density": -0.019121220940912398,
+        "raw_paid_log_evidence": 0.4224712099366208,
+        "sequential_transcript_density": -0.01824710454953804
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -5.028363763055288e-05,
+        "f_gaussian_mean_density": 0.07617246190564098,
+        "f_raw_batch_density": 0.05396224545886885,
+        "raw_paid_log_evidence": -0.1650007592764986,
+        "sequential_transcript_density": 0.03745343917956001,
+        "actual_mixture_mean_density": 0.07647470543247259,
+        "actual_mixture_transcript_density": 0.03763478529565889
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 1.3569840114375126e-05,
+        "f_gaussian_mean_density": -0.19932661062203172,
+        "f_raw_batch_density": -0.4003717110900318,
+        "raw_paid_log_evidence": -1.4402069597518654,
+        "sequential_transcript_density": -0.19160631436081177
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -1.5340154288775697e-05,
+        "f_gaussian_mean_density": -0.2005310757760408,
+        "f_raw_batch_density": 0.19767063112275451,
+        "raw_paid_log_evidence": 0.9381084482647601,
+        "sequential_transcript_density": -0.07341322305238629,
+        "actual_mixture_mean_density": -0.2004795740601124,
+        "actual_mixture_transcript_density": -0.0733823220228289
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 4.851332345615231e-05,
+        "f_gaussian_mean_density": -0.4760301483037135,
+        "f_raw_batch_density": -0.2566633254261461,
+        "raw_paid_log_evidence": -0.33709775221060667,
+        "sequential_transcript_density": -0.30247297659275807
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -2.8244766226981192e-05,
+        "f_gaussian_mean_density": -0.0048579407869810964,
+        "f_raw_batch_density": 0.010183550280521203,
+        "raw_paid_log_evidence": 0.8528081707961235,
+        "sequential_transcript_density": 0.039725644067617694,
+        "actual_mixture_mean_density": -0.00456481936980202,
+        "actual_mixture_transcript_density": 0.03990151691792487
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 3.215601222348978e-05,
+        "f_gaussian_mean_density": -0.044845076630527725,
+        "f_raw_batch_density": -0.03602523408731084,
+        "raw_paid_log_evidence": -0.9259313318079201,
+        "sequential_transcript_density": -0.07320361256871255
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -8.128938569855094e-05,
+        "f_gaussian_mean_density": 0.19961305007100716,
+        "f_raw_batch_density": 0.1360566196522306,
+        "raw_paid_log_evidence": -1.6029442999103658,
+        "sequential_transcript_density": 0.03962061504708636,
+        "actual_mixture_mean_density": 0.20120668173517586,
+        "actual_mixture_transcript_density": 0.040576794045586784
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -2.0888607248079966e-05,
+        "f_gaussian_mean_density": 0.15962591422746053,
+        "f_raw_batch_density": 0.08984783528439855,
+        "raw_paid_log_evidence": -3.3816838025144094,
+        "sequential_transcript_density": -0.07330864158924388
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -3.870692911265897e-06,
+        "f_gaussian_mean_density": 0.001132128800444221,
+        "f_raw_batch_density": -0.018795725178580858,
+        "raw_paid_log_evidence": 0.034343680948889954,
+        "sequential_transcript_density": 0.002396461327710764,
+        "actual_mixture_mean_density": 0.001115390163590746,
+        "actual_mixture_transcript_density": 0.002386418145599034
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 1.4091905949483656e-06,
+        "f_gaussian_mean_density": -0.31942382922894597,
+        "f_raw_batch_density": -0.16505671302791924,
+        "raw_paid_log_evidence": -0.7164024919165186,
+        "sequential_transcript_density": -0.2274744221331937
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -5.003383187923266e-05,
+        "f_gaussian_mean_density": 0.471954917311046,
+        "f_raw_batch_density": 0.3706438774719707,
+        "raw_paid_log_evidence": 1.0529873789140325,
+        "sequential_transcript_density": 0.3358223193323293,
+        "actual_mixture_mean_density": 0.4719394526638552,
+        "actual_mixture_transcript_density": 0.33581304054401473
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -4.47539483730184e-05,
+        "f_gaussian_mean_density": 0.1513989592816558,
+        "f_raw_batch_density": 0.2243828896226323,
+        "raw_paid_log_evidence": 0.3022412060486239,
+        "sequential_transcript_density": 0.10595143587142486
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -1.3153761523686545e-05,
+        "f_gaussian_mean_density": -0.01422353494306483,
+        "f_raw_batch_density": -0.004410116597780567,
+        "raw_paid_log_evidence": 0.08230115869323029,
+        "sequential_transcript_density": -0.004419063031177561,
+        "actual_mixture_mean_density": -0.013590649845487413,
+        "actual_mixture_transcript_density": -0.004039331972630844
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 6.341937773159242e-06,
+        "f_gaussian_mean_density": -0.05260039708611819,
+        "f_raw_batch_density": -0.2196835405396056,
+        "raw_paid_log_evidence": -2.0916869234575373,
+        "sequential_transcript_density": -0.13614458442454813
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -1.829645694406107e-05,
+        "f_gaussian_mean_density": 0.10101865127951015,
+        "f_raw_batch_density": 0.186019249245563,
+        "raw_paid_log_evidence": 1.5865264885405352,
+        "sequential_transcript_density": 0.13993751519473285,
+        "actual_mixture_mean_density": 0.10103239564599997,
+        "actual_mixture_transcript_density": 0.13994576181462692
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 1.1992423527847182e-06,
+        "f_gaussian_mean_density": 0.0626417891364568,
+        "f_raw_batch_density": -0.029254174696262014,
+        "raw_paid_log_evidence": -0.5874615936102323,
+        "sequential_transcript_density": 0.008211993801362283
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": 7.944643314712792e-05,
+        "f_gaussian_mean_density": -0.1102666334506357,
+        "f_raw_batch_density": -0.15124752594927604,
+        "raw_paid_log_evidence": 1.4621053608406775,
+        "sequential_transcript_density": 0.006945287971652725,
+        "actual_mixture_mean_density": -0.08673559585201396,
+        "actual_mixture_transcript_density": 0.02106391053082568
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 0.0003470701653478093,
+        "f_gaussian_mean_density": -0.48621191929435037,
+        "f_raw_batch_density": -0.33690756440602637,
+        "raw_paid_log_evidence": -1.074706521381632,
+        "sequential_transcript_density": -0.3454624776456918
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -0.00033900779657170655,
+        "f_gaussian_mean_density": 0.4932328504013537,
+        "f_raw_batch_density": 0.44807384587226945,
+        "raw_paid_log_evidence": -0.11947857843961174,
+        "sequential_transcript_density": 0.2899657813188319,
+        "actual_mixture_mean_density": 0.46888650827318923,
+        "actual_mixture_transcript_density": 0.27535797604193313
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -7.138406437102519e-05,
+        "f_gaussian_mean_density": 0.117287564557639,
+        "f_raw_batch_density": 0.2624138074155191,
+        "raw_paid_log_evidence": -2.6562904606619213,
+        "sequential_transcript_density": -0.062441984298512665
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -3.697126201023096e-05,
+        "f_gaussian_mean_density": 0.06542261800355798,
+        "f_raw_batch_density": 0.04741683541703323,
+        "raw_paid_log_evidence": 0.3854372570869984,
+        "sequential_transcript_density": 0.05852543365648488,
+        "actual_mixture_mean_density": 0.06629947563763139,
+        "actual_mixture_transcript_density": 0.059051548236928486
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -2.6485027220219596e-05,
+        "f_gaussian_mean_density": -0.33187378109161925,
+        "f_raw_batch_density": 0.020604897974745073,
+        "raw_paid_log_evidence": -1.1275562386674274,
+        "sequential_transcript_density": -0.255502080588343
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": 1.7004214784730517e-05,
+        "f_gaussian_mean_density": 0.3741144452449334,
+        "f_raw_batch_density": -0.05370070098966284,
+        "raw_paid_log_evidence": 1.0331615625829365,
+        "sequential_transcript_density": 0.27612674527610714,
+        "actual_mixture_mean_density": 0.37522733931121843,
+        "actual_mixture_transcript_density": 0.27679448171587806
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 2.7490449574741878e-05,
+        "f_gaussian_mean_density": -0.023181953850243797,
+        "f_raw_batch_density": -0.080512638431951,
+        "raw_paid_log_evidence": -0.4798319331714893,
+        "sequential_transcript_density": -0.037900768968720744
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -1.8904513329545558e-05,
+        "f_gaussian_mean_density": -0.012563075642018084,
+        "f_raw_batch_density": -0.006825818348081603,
+        "raw_paid_log_evidence": -0.12552261286495536,
+        "sequential_transcript_density": -0.013813976028458796,
+        "actual_mixture_mean_density": -0.012578122724473229,
+        "actual_mixture_transcript_density": -0.013823004277931705
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 1.8753662303403718e-05,
+        "f_gaussian_mean_density": -0.3606656428627186,
+        "f_raw_batch_density": -0.40968018642573734,
+        "raw_paid_log_evidence": -1.1778805417206506,
+        "sequential_transcript_density": -0.2752934128036637
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -1.6742794049971334e-05,
+        "f_gaussian_mean_density": 0.23298919697831888,
+        "f_raw_batch_density": 0.3013383846203128,
+        "raw_paid_log_evidence": 1.123628817454172,
+        "sequential_transcript_density": 0.1959749590597002,
+        "actual_mixture_mean_density": 0.23285048725325508,
+        "actual_mixture_transcript_density": 0.19589173322466147
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 2.0915381582977942e-05,
+        "f_gaussian_mean_density": -0.11511337024238166,
+        "f_raw_batch_density": -0.10151598345734292,
+        "raw_paid_log_evidence": 0.07127088859847674,
+        "sequential_transcript_density": -0.06550447771550472
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": 1.8211461203768067e-07,
+        "f_gaussian_mean_density": -0.05035807873265341,
+        "f_raw_batch_density": 0.0007978258063887633,
+        "raw_paid_log_evidence": 0.9029183537741474,
+        "sequential_transcript_density": 0.01493107044911568,
+        "actual_mixture_mean_density": -0.05147380172947846,
+        "actual_mixture_transcript_density": 0.014261636651020648
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 5.9099348419227725e-06,
+        "f_gaussian_mean_density": -0.2718760336370174,
+        "f_raw_batch_density": -0.2041478693630412,
+        "raw_paid_log_evidence": 0.44586422979389795,
+        "sequential_transcript_density": -0.14083240869251545
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": 3.391249002012068e-05,
+        "f_gaussian_mean_density": 0.1136299600519659,
+        "f_raw_batch_density": 0.039429670260222816,
+        "raw_paid_log_evidence": -2.5008081770658848,
+        "sequential_transcript_density": -0.05686243282211478,
+        "actual_mixture_mean_density": 0.1134051277208048,
+        "actual_mixture_transcript_density": -0.05699733222081127
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 3.9640310250005774e-05,
+        "f_gaussian_mean_density": -0.10788799485239808,
+        "f_raw_batch_density": -0.16551602490920714,
+        "raw_paid_log_evidence": -2.9578623010461342,
+        "sequential_transcript_density": -0.21262591196374592
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "arm": "gp_source_mean",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": 1.3896512828681624e-05,
+        "f_gaussian_mean_density": -0.053123666239966116,
+        "f_raw_batch_density": -0.02340434933283997,
+        "raw_paid_log_evidence": -0.0534485080556486,
+        "sequential_transcript_density": -0.034546625146761656,
+        "actual_mixture_mean_density": -0.05317384446854412,
+        "actual_mixture_transcript_density": -0.03457673208390899
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "arm": "gp_source_mean",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": 8.859314587173529e-05,
+        "f_gaussian_mean_density": -0.5450772134988697,
+        "f_raw_batch_density": -0.35559533710918667,
+        "raw_paid_log_evidence": -0.8816990874228736,
+        "sequential_transcript_density": -0.37113128247046534
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "arm": "gp_source_covariance",
+      "reference": "original_mixture",
+      "probe_minus_control": {
+        "f_mse": -9.450799497890699e-05,
+        "f_gaussian_mean_density": 0.5400338377743181,
+        "f_raw_batch_density": 0.4400150194411463,
+        "raw_paid_log_evidence": 1.21225501452151,
+        "sequential_transcript_density": 0.38463305339066656,
+        "actual_mixture_mean_density": 0.5397513155972513,
+        "actual_mixture_transcript_density": 0.38446354008442585
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "arm": "gp_source_covariance",
+      "reference": "source_gp",
+      "probe_minus_control": {
+        "f_mse": -1.981136193585333e-05,
+        "f_gaussian_mean_density": 0.048080290515414514,
+        "f_raw_batch_density": 0.10782403166479959,
+        "raw_paid_log_evidence": 0.38400443515428506,
+        "sequential_transcript_density": 0.04804839606696287
+      }
+    }
+  ],
+  "gates_by_layout": {
+    "5": {
+      "gp_source_mean": {
+        "mse_nonincrease": true,
+        "raw_density_strict_improvement": true,
+        "transcript_density_nondecrease": true
+      },
+      "gp_source_covariance": {
+        "mse_nonincrease": true,
+        "raw_density_strict_improvement": true,
+        "transcript_density_nondecrease": true
+      }
+    },
+    "6": {
+      "gp_source_mean": {
+        "mse_nonincrease": false,
+        "raw_density_strict_improvement": false,
+        "transcript_density_nondecrease": true
+      },
+      "gp_source_covariance": {
+        "mse_nonincrease": true,
+        "raw_density_strict_improvement": true,
+        "transcript_density_nondecrease": true
+      }
+    }
+  },
+  "probe_improvement_both_layouts": {
+    "gp_source_mean": false,
+    "gp_source_covariance": true
+  },
+  "numerical_forecasts_verified": true,
+  "numerical_density_verified": true,
+  "density_checks": [
+    {
+      "layout": "5",
+      "arm": "gp_source_mean",
+      "raw_density_refinement_error": 1.4432899320127035e-15,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "arm": "gp_source_covariance",
+      "raw_density_refinement_error": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "arm": "gp_source_mean",
+      "raw_density_refinement_error": 6.3766492086614335e-09,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "arm": "gp_source_covariance",
+      "raw_density_refinement_error": 4.5714687590958647e-10,
+      "passed": true
+    }
+  ],
+  "forecasts_scored": true,
+  "scientific_gate_interpreted": true,
+  "cpu_seconds": 189.518166577,
+  "compact_component_artifact_bytes": 4958792
+}

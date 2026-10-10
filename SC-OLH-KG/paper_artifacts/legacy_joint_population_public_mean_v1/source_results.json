@@ -1,0 +1,199 @@
+{
+  "summary": {
+    "public_mean_fixed_structural": {
+      "observed_head_mse": [
+        0.003819043204100381,
+        0.005837718109654551,
+        2.1915826570861894,
+        2.588954862752539
+      ],
+      "joint_batch_log_score": -0.10232450111872524,
+      "response_batch_log_scores": [
+        0.18800941458190132,
+        -0.2903339157006264
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        0.9929577464788732,
+        0.9295774647887325,
+        0.9366197183098591
+      ],
+      "predictive_standardized_residual_rms": [
+        0.8538506602618079,
+        0.7885636361680632,
+        1.097205016008974,
+        1.1522491222682532
+      ]
+    },
+    "public_mean_joint_structural": {
+      "observed_head_mse": [
+        0.0002209730250936451,
+        0.0014802907911815387,
+        2.192493615627881,
+        2.585842082707402
+      ],
+      "joint_batch_log_score": 1.0371597910851926,
+      "response_batch_log_scores": [
+        0.9922557747464296,
+        0.04490401633876301
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9859154929577465,
+        1.0,
+        0.9295774647887325,
+        0.9436619718309859
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6860520762849582,
+        0.6611073275085723,
+        1.0973885199166127,
+        1.151687551766089
+      ]
+    },
+    "public_mean_common_flat": {
+      "observed_head_mse": [
+        0.00021348587295740828,
+        0.0013587679189496463,
+        2.194453561780885,
+        2.5789533957648665
+      ],
+      "joint_batch_log_score": 1.0986953406323507,
+      "response_batch_log_scores": [
+        1.0006018215725188,
+        0.098093519059832
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9929577464788732,
+        1.0,
+        0.9225352112676056,
+        0.9366197183098591
+      ],
+      "predictive_standardized_residual_rms": [
+        0.7439390785471325,
+        0.6959140600578124,
+        1.097753817073116,
+        1.150120087214851
+      ]
+    },
+    "public_mean_fixed_rbf": {
+      "observed_head_mse": [
+        0.00015182018808835765,
+        0.0013770567133448478,
+        2.192365655533127,
+        2.5877072921878987
+      ],
+      "joint_batch_log_score": 1.3881002437854935,
+      "response_batch_log_scores": [
+        1.2785988499131822,
+        0.10950139387231156
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9788732394366197,
+        1.0,
+        0.9295774647887325,
+        0.9436619718309859
+      ],
+      "predictive_standardized_residual_rms": [
+        0.7921420793466962,
+        0.6957504057248691,
+        1.0973934750454115,
+        1.152322903895835
+      ]
+    },
+    "public_mean_joint_rbf": {
+      "observed_head_mse": [
+        0.0001518715410589903,
+        0.0013770565336431108,
+        2.192365655491343,
+        2.5876469401093036
+      ],
+      "joint_batch_log_score": 1.388370577368827,
+      "response_batch_log_scores": [
+        1.2788692275546272,
+        0.10950134981419987
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.971830985915493,
+        1.0,
+        0.9295774647887325,
+        0.9436619718309859
+      ],
+      "predictive_standardized_residual_rms": [
+        0.7918530999088653,
+        0.6957502810339301,
+        1.09739347503653,
+        1.1523110744539444
+      ]
+    },
+    "legacy_mean_joint_structural": {
+      "observed_head_mse": [
+        0.00043130108375749533,
+        0.0024162513381187694,
+        2.1921262061096307,
+        2.5878897898955504
+      ],
+      "joint_batch_log_score": 0.4693844442320442,
+      "response_batch_log_scores": [
+        0.6381857594855432,
+        -0.16880131525349912
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.943661971830986,
+        0.9577464788732395,
+        0.9295774647887325,
+        0.9436619718309859
+      ],
+      "predictive_standardized_residual_rms": [
+        1.0176055155556718,
+        0.8898584631720481,
+        1.0973340001294303,
+        1.1522305311806673
+      ]
+    },
+    "legacy_full_joint_rbf": {
+      "observed_head_mse": [
+        0.0004056383575509493,
+        0.001614408746588807,
+        2.0624425684068637,
+        2.511311934334471
+      ],
+      "joint_batch_log_score": 0.5672575473307766,
+      "response_batch_log_scores": [
+        0.6654842591583884,
+        -0.09822671182761218
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9366197183098592,
+        1.0,
+        0.9507042253521127,
+        0.9366197183098591
+      ],
+      "predictive_standardized_residual_rms": [
+        1.0353803537764736,
+        0.5670748775370934,
+        1.0647470149304539,
+        1.185198303480219
+      ]
+    }
+  },
+  "paired_tasks": [
+    {
+      "task_index": 6,
+      "checks": {
+        "g_mse_improved": true,
+        "joint_density_improved": true,
+        "constraint_density_improved": true
+      }
+    },
+    {
+      "task_index": 7,
+      "checks": {
+        "g_mse_improved": true,
+        "joint_density_improved": true,
+        "constraint_density_improved": true
+      }
+    }
+  ],
+  "source_gate_passed": true,
+  "cpu_seconds": 5.9632517190000005
+}

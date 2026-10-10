@@ -1,0 +1,577 @@
+{
+  "execution": {
+    "status": "frozen after source-predictive shape pilot failed;before same-task adaptation diagnosis",
+    "fitted_results": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1/results.json",
+    "failed_pilot_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_pilot_v1/results.json",
+    "outer_deleted_task": 1,
+    "source_anchor_policy_indices": [
+      45,
+      10,
+      51,
+      31
+    ],
+    "entrypoint": "performance/diagnose_legacy_f_inner_batch_adaptation.py",
+    "question": "Does the source-selected shape rule lose its predictive gain after adaptation on the SAME inner tasks,or does the failure still depend on task shift/raw-risk contract?",
+    "calculation": "Reuse ten source4 point fits and their already-selected q. For each inner held twelve-site source task,observe its four pre-existing common-anchor Gaussian batch labels and score only the other eight. Compare q=0/selected q prior versus exact Gaussian conditional posterior on the same future eight labels. No q fitting,source task1 labels,new source data,risk/map fits or raw filtering.",
+    "information": "Each batch uses the original mean/estimated label variance from3 source replicates. Four observed batches therefore represent12 physical calls,not the outer four-single-episode budget. All records already belong to the same source180-call archive. Known Gaussian noise and point priors are an explicit diagnostic contract;no leakage from a source5 eta learner is introduced.",
+    "verification": "Public source anchors must match each task's first four frozen source sites;inner task remains absent from all source4 fits. Conditional Gaussian future density must match joint-minus-observed density. Failure stops attribution.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_integrations": 0,
+      "new_outer_query_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;existing source training JSON only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_batch_adaptation_v1",
+    "decision": "If source gains disappear after same-task Gaussian adaptation,prior-score learning is misaligned even before unknown-risk raw updates. If they persist,do not blame adaptation alone;register matched source4 risk/variance-mixture raw validation to distinguish task representativeness from filter/objective mismatch. Candidate remains stopped,no q or prefix reselection,source6/7,target,KG,confirmation or manuscript changes. Complete-model HOLD remains."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_00",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 9.07753197059179e-05,
+            "level_mse": 1.885068047310126e-05,
+            "centered_shape_mse": 7.192463923281665e-05,
+            "batch_log_density_per_label": 2.7216989511654535
+          },
+          "after_four_source_batches": {
+            "mse": 5.7879285667204965e-05,
+            "level_mse": 9.671657681589245e-06,
+            "centered_shape_mse": 4.820762798561572e-05,
+            "batch_log_density_per_label": 2.8342601945193655
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 8.599514695661256e-05,
+            "level_mse": 1.3828287684781635e-05,
+            "centered_shape_mse": 7.216685927183093e-05,
+            "batch_log_density_per_label": 2.7197799092798522
+          },
+          "after_four_source_batches": {
+            "mse": 6.113432593091462e-05,
+            "level_mse": 1.946718478445083e-06,
+            "centered_shape_mse": 5.918760745246954e-05,
+            "batch_log_density_per_label": 2.8328860690575977
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": -4.780172749305344e-06,
+          "level_mse": -5.022392788319626e-06,
+          "centered_shape_mse": 2.4222003901428727e-07,
+          "batch_log_density_per_label": -0.0019190418856012137
+        },
+        "after_four_source_batches": {
+          "mse": 3.255040263709659e-06,
+          "level_mse": -7.724939203144162e-06,
+          "centered_shape_mse": 1.0979979466853819e-05,
+          "batch_log_density_per_label": -0.00137412546176785
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_02",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0007357028261998208,
+            "level_mse": 2.3562877355724173e-05,
+            "centered_shape_mse": 0.0007121399488440967,
+            "batch_log_density_per_label": 2.035728289592158
+          },
+          "after_four_source_batches": {
+            "mse": 0.0007136814613105756,
+            "level_mse": 1.105868689432339e-06,
+            "centered_shape_mse": 0.0007125755926211434,
+            "batch_log_density_per_label": 2.046226172721372
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.0007415005472104965,
+            "level_mse": 3.1574340625907966e-05,
+            "centered_shape_mse": 0.0007099262065845885,
+            "batch_log_density_per_label": 2.04728023288359
+          },
+          "after_four_source_batches": {
+            "mse": 0.000646383535684961,
+            "level_mse": 1.4462627194135585e-06,
+            "centered_shape_mse": 0.0006449372729655474,
+            "batch_log_density_per_label": 2.070719375112702
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": 5.797721010675737e-06,
+          "level_mse": 8.011463270183793e-06,
+          "centered_shape_mse": -2.213742259508239e-06,
+          "batch_log_density_per_label": 0.011551943291431943
+        },
+        "after_four_source_batches": {
+          "mse": -6.729792562561469e-05,
+          "level_mse": 3.403940299812195e-07,
+          "centered_shape_mse": -6.763831965559601e-05,
+          "batch_log_density_per_label": 0.024493202391330016
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_03",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0002378033242150948,
+            "level_mse": 0.0001139254599317191,
+            "centered_shape_mse": 0.0001238778642833757,
+            "batch_log_density_per_label": 2.7129196314972677
+          },
+          "after_four_source_batches": {
+            "mse": 0.00014619756761898126,
+            "level_mse": 2.367687592909457e-05,
+            "centered_shape_mse": 0.00012252069168988667,
+            "batch_log_density_per_label": 2.8265226300496846
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.00023622533287923542,
+            "level_mse": 0.00012325365936593157,
+            "centered_shape_mse": 0.00011297167351330383,
+            "batch_log_density_per_label": 2.692700836919447
+          },
+          "after_four_source_batches": {
+            "mse": 0.00013383374886366756,
+            "level_mse": 2.7320261568711544e-05,
+            "centered_shape_mse": 0.00010651348729495602,
+            "batch_log_density_per_label": 2.810788430194203
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": -1.577991335859378e-06,
+          "level_mse": 9.328199434212474e-06,
+          "centered_shape_mse": -1.090619077007188e-05,
+          "batch_log_density_per_label": -0.02021879457782072
+        },
+        "after_four_source_batches": {
+          "mse": -1.23638187553137e-05,
+          "level_mse": 3.643385639616976e-06,
+          "centered_shape_mse": -1.6007204394930652e-05,
+          "batch_log_density_per_label": -0.015734199855481634
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_04",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0003370593517219347,
+            "level_mse": 0.0002196171341395013,
+            "centered_shape_mse": 0.00011744221758243336,
+            "batch_log_density_per_label": 2.7974740628728543
+          },
+          "after_four_source_batches": {
+            "mse": 0.00029709805241866834,
+            "level_mse": 0.00018998460047586315,
+            "centered_shape_mse": 0.00010711345194280519,
+            "batch_log_density_per_label": 2.872509610830435
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.0003599230491103016,
+            "level_mse": 0.00023032903258542482,
+            "centered_shape_mse": 0.0001295940165248768,
+            "batch_log_density_per_label": 2.773535320223177
+          },
+          "after_four_source_batches": {
+            "mse": 0.0002818296585085506,
+            "level_mse": 0.00018558774636218256,
+            "centered_shape_mse": 9.624191214636803e-05,
+            "batch_log_density_per_label": 2.8740009650669656
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": 2.2863697388366918e-05,
+          "level_mse": 1.0711898445923507e-05,
+          "centered_shape_mse": 1.2151798942443452e-05,
+          "batch_log_density_per_label": -0.023938742649677103
+        },
+        "after_four_source_batches": {
+          "mse": -1.526839391011777e-05,
+          "level_mse": -4.396854113680596e-06,
+          "centered_shape_mse": -1.0871539796437161e-05,
+          "batch_log_density_per_label": 0.0014913542365304622
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_05",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0004289178759784177,
+            "level_mse": 7.9154458960466e-05,
+            "centered_shape_mse": 0.00034976341701795164,
+            "batch_log_density_per_label": 2.596248689269861
+          },
+          "after_four_source_batches": {
+            "mse": 0.00019476300547439874,
+            "level_mse": 2.024461715262325e-06,
+            "centered_shape_mse": 0.0001927385437591364,
+            "batch_log_density_per_label": 2.796377254460245
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.00044519476556695997,
+            "level_mse": 7.244662868529682e-05,
+            "centered_shape_mse": 0.0003727481368816631,
+            "batch_log_density_per_label": 2.7003807512404556
+          },
+          "after_four_source_batches": {
+            "mse": 0.00011777203179354909,
+            "level_mse": 4.866509184837014e-08,
+            "centered_shape_mse": 0.00011772336670170071,
+            "batch_log_density_per_label": 2.93355492167095
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": 1.627688958854228e-05,
+          "level_mse": -6.7078302751691756e-06,
+          "centered_shape_mse": 2.2984719863711482e-05,
+          "batch_log_density_per_label": 0.10413206197059477
+        },
+        "after_four_source_batches": {
+          "mse": -7.699097368084966e-05,
+          "level_mse": -1.9757966234139547e-06,
+          "centered_shape_mse": -7.501517705743569e-05,
+          "batch_log_density_per_label": 0.13717766721070523
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_00",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 9.731703619500818e-05,
+            "level_mse": 7.256762608590451e-07,
+            "centered_shape_mse": 9.659135993414913e-05,
+            "batch_log_density_per_label": 3.0018217975045536
+          },
+          "after_four_source_batches": {
+            "mse": 4.57387407796661e-05,
+            "level_mse": 4.21242582422163e-07,
+            "centered_shape_mse": 4.531749819724394e-05,
+            "batch_log_density_per_label": 3.089873573404607
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 9.260888059544451e-05,
+            "level_mse": 2.0842907224894835e-08,
+            "centered_shape_mse": 9.258803768821963e-05,
+            "batch_log_density_per_label": 2.9946505350573713
+          },
+          "after_four_source_batches": {
+            "mse": 2.1965265336321535e-05,
+            "level_mse": 1.0082228674954037e-06,
+            "centered_shape_mse": 2.0957042468826134e-05,
+            "batch_log_density_per_label": 3.0869090391313714
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": -4.708155599563666e-06,
+          "level_mse": -7.048333536341503e-07,
+          "centered_shape_mse": -4.003322245929507e-06,
+          "batch_log_density_per_label": -0.007171262447182247
+        },
+        "after_four_source_batches": {
+          "mse": -2.3773475443344563e-05,
+          "level_mse": 5.869802850732407e-07,
+          "centered_shape_mse": -2.436045572841781e-05,
+          "batch_log_density_per_label": -0.0029645342732358415
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_02",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0001685522735433745,
+            "level_mse": 4.49623308964691e-05,
+            "centered_shape_mse": 0.0001235899426469054,
+            "batch_log_density_per_label": 2.7846510800034974
+          },
+          "after_four_source_batches": {
+            "mse": 0.00010200783665119658,
+            "level_mse": 2.221483421366777e-05,
+            "centered_shape_mse": 7.97930024375288e-05,
+            "batch_log_density_per_label": 2.8775821295516786
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.00016673735052307598,
+            "level_mse": 4.238473018881348e-05,
+            "centered_shape_mse": 0.00012435262033426252,
+            "batch_log_density_per_label": 2.7943605006585077
+          },
+          "after_four_source_batches": {
+            "mse": 7.777429871698934e-05,
+            "level_mse": 1.4764802029407693e-05,
+            "centered_shape_mse": 6.300949668758165e-05,
+            "batch_log_density_per_label": 2.893759917447354
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": -1.8149230202985328e-06,
+          "level_mse": -2.577600707655621e-06,
+          "centered_shape_mse": 7.626776873571222e-07,
+          "batch_log_density_per_label": 0.009709420655010348
+        },
+        "after_four_source_batches": {
+          "mse": -2.423353793420724e-05,
+          "level_mse": -7.450032184260077e-06,
+          "centered_shape_mse": -1.678350574994715e-05,
+          "batch_log_density_per_label": 0.016177787895675255
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_03",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.00013729942636977826,
+            "level_mse": 1.7666839436197267e-05,
+            "centered_shape_mse": 0.00011963258693358102,
+            "batch_log_density_per_label": 2.882305916617207
+          },
+          "after_four_source_batches": {
+            "mse": 7.637468234555716e-05,
+            "level_mse": 1.0343719427731925e-05,
+            "centered_shape_mse": 6.603096291782523e-05,
+            "batch_log_density_per_label": 2.9998363980571745
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.00013010886884955348,
+            "level_mse": 1.799357068753177e-05,
+            "centered_shape_mse": 0.0001121152981620217,
+            "batch_log_density_per_label": 2.8874223461943354
+          },
+          "after_four_source_batches": {
+            "mse": 5.580947870308264e-05,
+            "level_mse": 1.0840886855109059e-05,
+            "centered_shape_mse": 4.496859184797358e-05,
+            "batch_log_density_per_label": 3.0015401073550545
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": -7.190557520224774e-06,
+          "level_mse": 3.2673125133450236e-07,
+          "centered_shape_mse": -7.5172887715593205e-06,
+          "batch_log_density_per_label": 0.005116429577128212
+        },
+        "after_four_source_batches": {
+          "mse": -2.0565203642474517e-05,
+          "level_mse": 4.971674273771336e-07,
+          "centered_shape_mse": -2.1062371069851654e-05,
+          "batch_log_density_per_label": 0.0017037092978799961
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_04",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0001999231782869346,
+            "level_mse": 9.0241861419364e-06,
+            "centered_shape_mse": 0.0001908989921449982,
+            "batch_log_density_per_label": 2.642505808163023
+          },
+          "after_four_source_batches": {
+            "mse": 0.00011262622288365549,
+            "level_mse": 1.955946298997602e-05,
+            "centered_shape_mse": 9.306675989367947e-05,
+            "batch_log_density_per_label": 2.801494140830658
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.00019026171073551357,
+            "level_mse": 9.917478558886063e-06,
+            "centered_shape_mse": 0.0001803442321766275,
+            "batch_log_density_per_label": 2.6593589737474583
+          },
+          "after_four_source_batches": {
+            "mse": 8.560458829255253e-05,
+            "level_mse": 1.2302665096538899e-05,
+            "centered_shape_mse": 7.330192319601362e-05,
+            "batch_log_density_per_label": 2.8392816225731026
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": -9.661467551421029e-06,
+          "level_mse": 8.932924169496629e-07,
+          "centered_shape_mse": -1.0554759968370699e-05,
+          "batch_log_density_per_label": 0.01685316558443528
+        },
+        "after_four_source_batches": {
+          "mse": -2.7021634591102957e-05,
+          "level_mse": -7.25679789343712e-06,
+          "centered_shape_mse": -1.9764836697665845e-05,
+          "batch_log_density_per_label": 0.037787481742444395
+        }
+      },
+      "conditional_density_identity_verified": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_05",
+      "source_q": 1.0,
+      "scores": {
+        "native": {
+          "prior": {
+            "mse": 0.0004456692048221461,
+            "level_mse": 9.153961763241385e-05,
+            "centered_shape_mse": 0.0003541295871897323,
+            "batch_log_density_per_label": 2.4951640958779024
+          },
+          "after_four_source_batches": {
+            "mse": 0.00024536845213832807,
+            "level_mse": 2.325859940894641e-05,
+            "centered_shape_mse": 0.00022210985272938164,
+            "batch_log_density_per_label": 2.7084129082715336
+          }
+        },
+        "source_predictive_shape": {
+          "prior": {
+            "mse": 0.00045668928372656755,
+            "level_mse": 8.962202753659832e-05,
+            "centered_shape_mse": 0.0003670672561899693,
+            "batch_log_density_per_label": 2.6994069976917685
+          },
+          "after_four_source_batches": {
+            "mse": 0.00012780857119977672,
+            "level_mse": 2.261794371194769e-05,
+            "centered_shape_mse": 0.00010519062748782905,
+            "batch_log_density_per_label": 2.954695508225104
+          }
+        }
+      },
+      "candidate_minus_native": {
+        "prior": {
+          "mse": 1.1020078904421448e-05,
+          "level_mse": -1.9175900958155295e-06,
+          "centered_shape_mse": 1.2937669000237018e-05,
+          "batch_log_density_per_label": 0.20424290181386606
+        },
+        "after_four_source_batches": {
+          "mse": -0.00011755988093855134,
+          "level_mse": -6.40655696998722e-07,
+          "centered_shape_mse": -0.00011691922524155259,
+          "batch_log_density_per_label": 0.24628259995357027
+        }
+      },
+      "conditional_density_identity_verified": true
+    }
+  ],
+  "summary": {
+    "5": {
+      "prior": {
+        "mse": 7.716028780484042e-06,
+        "level_mse": 3.2642676173661948e-06,
+        "centered_shape_mse": 4.451761163117821e-06,
+        "batch_log_density_per_label": 0.013921485229785535
+      },
+      "after_four_source_batches": {
+        "mse": -3.373321434163724e-05,
+        "level_mse": -2.0227620541281037e-06,
+        "centered_shape_mse": -3.171045228750914e-05,
+        "batch_log_density_per_label": 0.029210779704263244
+      }
+    },
+    "6": {
+      "prior": {
+        "mse": -2.471004957417311e-06,
+        "level_mse": -7.960000977642271e-07,
+        "centered_shape_mse": -1.6750048596530772e-06,
+        "batch_log_density_per_label": 0.04575013103665153
+      },
+      "after_four_source_batches": {
+        "mse": -4.2630746509936126e-05,
+        "level_mse": -2.8526676124491088e-06,
+        "centered_shape_mse": -3.977807889748701e-05,
+        "batch_log_density_per_label": 0.059797408923266814
+      }
+    }
+  },
+  "cpu_seconds": 0.06917225299999996,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_outer_query_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "outer_query_paid_or_score_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "diagnostic_contract": "Point source4 priors,known Gaussian source-label errors,four three-replicate batch observations (12 physical calls),eight unobserved source batches. Isolates Gaussian adaptation on the same tasks;not the four-single-episode unknown-eta raw mixture protocol."
+}

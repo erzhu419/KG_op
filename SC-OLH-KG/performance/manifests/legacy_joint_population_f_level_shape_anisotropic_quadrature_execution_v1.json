@@ -1,0 +1,42 @@
+{
+  "status": "frozen before anisotropic source-only cubature",
+  "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+  "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+  "scaled_results": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1/results.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_level_shape_quadrature_error_v1/results.json",
+  "question": "Can reference-resolution intercept coordinates resolve its second-moment tail while median-scale shape coordinates use fewer nodes,passing every original source moment criterion within4096 components?",
+  "reason": "Stage140 finds both median-coordinate64x64 pilot failures exclusively in E[v^2];all other source moment blocks differ less than1e-8. Do not drop E[v^2] or loosen accuracy.",
+  "source_law": "Exactly Stage136/137 joint source likelihood and joint Jeffreys measure;native common/other task parameters,spectrum/support/tail remain frozen. No query outcomes,no scientific prior change.",
+  "coordinates": "v=source_signal*(t/(1-t))^2,a=source_conditional_median_a*(s/(1-s))^2,with exact physical Jacobians,complete t,s in(0,1). Units are source-only numerical coordinates.",
+  "level_nodes_per_axis": 128,
+  "shape_nodes_per_axis_resolutions": [
+    8,
+    16,
+    32
+  ],
+  "acceptance": {
+    "normalizer_relative_difference_vs_stage137": 1e-08,
+    "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+    "maximum_positive_nodes_per_fold": 4096
+  },
+  "reference": "Use saved small Stage139 reference moment vectors on task1 folds. Reconstruct once on saved Stage137 source nodes for the ten unattempted folds only after both pilots pass;save vectors for future use. Full scaled source moment vector is unchanged,including both variance second moments and common beta/H.",
+  "scope": "Source0-5 only;two task1 pilots first;other ten conditional on both passing. No paid labels,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls.",
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_new_source_rules": 12,
+    "maximum_positive_nodes_per_fold": 4096,
+    "maximum_new_density_evaluations_per_fold": 7168,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small source JSON and compact local NPZ only",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1",
+  "planned_entrypoint": "performance/prepare_legacy_f_level_shape_anisotropic_quadrature.py",
+  "entrypoint_status": "implemented before execution",
+  "decision": "If all twelve source rules pass,freeze a separate bounded four-paid-observation task1 predictive comparison with raw likelihood and numerical refinement checks. No automatic model adoption or complete-model promotion. If these targeted rules fail,retain numerical limitation without another covariance fit or heavy online replay.",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_anisotropic_quadrature_plan_v1.json",
+  "entrypoint": "performance/prepare_legacy_f_level_shape_anisotropic_quadrature.py",
+  "frozen_before_source_evaluation": true
+}

@@ -1,0 +1,632 @@
+{
+  "execution": {
+    "status": "registered after canonical variance integration made small predictive changes;before source geometry calculations",
+    "entrypoint": "performance/diagnose_legacy_f_joint_source_information_ceiling.py",
+    "latent_noise_results": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1/results.json",
+    "inner_source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+    "outer_source_laws": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/source_laws.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "inner_query_task": 0,
+    "question": "Under the CURRENT learned correlated common/task law,how much can more source-policy coverage reduce common uncertainty,and do existing source rosters observe the selected coefficient span?",
+    "calculation": "For the two canonical source4 and two source5 laws,hold A,R,center,white,support and fitted spectra fixed. Perfect revelation of all m task coefficient vectors gives H_floor=(A^-1+mR^-1)^-1;doubling m is a hypothetical information ceiling,not new task data. Compare the saved current H and full H+R+white to these bounds on the outcome-free public73 bank. Record per-task selected/full coefficient design ranks for the current12 policies,source-only union policies and full73 public bank. Existing Stage101 ceilings were for older diagonal six-source laws;do not transfer those results to the current correlated sparse source4/5 laws.",
+    "verification": "Check source rosters and public-policy coordinate alignment without responses. Require PSD information order H_current>=H_floor(m)>=H_floor(2m)and full-column public-bank rank. Verify the independent covariance-space conditional formula for H_floor. A mismatch stops interpretation rather than altering noise or ranks.",
+    "freeze": "Use saved coefficient covariances and outcome-free source psi/reference/roster metadata only. Do not index source response/noise arrays or query labels. All rosters exclude outer task1;no source6/7 evaluations.",
+    "decision": "If per-task coverage misses selected directions and the fixed-law ceiling offers material common uncertainty reduction,register a crossed source-policy coverage pilot before any new query forecast. Otherwise do not justify a large source-label expansion by covariance reduction alone. A bound is not expected MSE gain and excludes refitting A/R or improving a misspecified mean/task population.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_optimizations": 0,
+      "new_source_conditionings": 0,
+      "new_raw_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached source coefficient matrices and public metadata;no server work,pulls or NPZ",
+    "scope": "Conditional source information diagnostic only. Point/amplitude candidates stopped;native intercept mixture reference;complete-model HOLD. No target,KG,source6/7,independent confirmation or manuscript changes.",
+    "output": "paper_artifacts/legacy_joint_population_f_joint_source_information_ceiling_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "source_task_count": 4,
+      "law_query_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "strong_column_count": 16,
+      "dictionary_column_count": 27,
+      "union_policies": [
+        10,
+        11,
+        13,
+        19,
+        20,
+        22,
+        23,
+        24,
+        31,
+        33,
+        34,
+        36,
+        42,
+        45,
+        49,
+        50,
+        51,
+        52,
+        53,
+        57,
+        59,
+        62,
+        65,
+        67
+      ],
+      "source_policy_geometry": [
+        {
+          "source_task": 2,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 3,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 4,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 5,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        }
+      ],
+      "current_common_variance_parts": {
+        "bank_average_variance": 0.00016239243141165924,
+        "bank_average_level_variance": 9.41178957466589e-05,
+        "centered_shape_variance": 6.827453566500034e-05
+      },
+      "common_information_bounds": {
+        "current": {
+          "bank_average_variance": 0.00016239243141165924,
+          "bank_average_level_variance": 9.41178957466589e-05,
+          "centered_shape_variance": 6.827453566500034e-05
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.00011491587077720955,
+          "bank_average_level_variance": 9.111316891914422e-05,
+          "centered_shape_variance": 2.3802701858065332e-05
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 5.765146659255345e-05,
+          "bank_average_level_variance": 4.560973842967799e-05,
+          "centered_shape_variance": 1.2041728162875457e-05
+        }
+      },
+      "full_predictive_variance_bounds": {
+        "current": {
+          "bank_average_variance": 0.0006548722113017528,
+          "bank_average_level_variance": 0.0004598292755537878,
+          "centered_shape_variance": 0.00019504293574796504
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.000607395650667303,
+          "bank_average_level_variance": 0.00045682454872627296,
+          "centered_shape_variance": 0.00015057110194103
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 0.0005501312464826469,
+          "bank_average_level_variance": 0.0004113211182368068,
+          "centered_shape_variance": 0.00013881012824584012
+        }
+      },
+      "uncertainty_reduction_bounds": {
+        "bank_average_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.07249744273020244,
+          "additional_perfect_double_sources_reduction_fraction": 0.08744363128621084,
+          "current_common_fraction": 0.24797575558879817
+        },
+        "bank_average_level_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.006534440035154615,
+          "additional_perfect_double_sources_reduction_fraction": 0.09895722805962025,
+          "current_common_fraction": 0.20468008617613476
+        },
+        "centered_shape_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.22801048208380975,
+          "additional_perfect_double_sources_reduction_fraction": 0.060299408692183795,
+          "current_common_fraction": 0.3500487490263419
+        }
+      },
+      "information_order_min_eigenvalues": [
+        4.8117108128377546e-08,
+        3.564945566099561e-09
+      ],
+      "independent_floor_covariance_error": 1.9773137120704387e-17,
+      "geometry_and_information_order_verified": true
+    },
+    {
+      "layout": "6",
+      "source_task_count": 4,
+      "law_query_task": 0,
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "strong_column_count": 16,
+      "dictionary_column_count": 27,
+      "union_policies": [
+        10,
+        11,
+        14,
+        20,
+        22,
+        24,
+        31,
+        33,
+        34,
+        36,
+        42,
+        45,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        57,
+        59,
+        62,
+        64,
+        67,
+        72
+      ],
+      "source_policy_geometry": [
+        {
+          "source_task": 2,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 3,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 11,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 4,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 5,
+          "current_policy_count": 12,
+          "union_policy_count": 24,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 24,
+          "union_selected_design_rank": 16
+        }
+      ],
+      "current_common_variance_parts": {
+        "bank_average_variance": 0.0001904404317952587,
+        "bank_average_level_variance": 0.00013087300604177612,
+        "centered_shape_variance": 5.956742575348258e-05
+      },
+      "common_information_bounds": {
+        "current": {
+          "bank_average_variance": 0.0001904404317952587,
+          "bank_average_level_variance": 0.00013087300604177612,
+          "centered_shape_variance": 5.956742575348258e-05
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.00015600406195067206,
+          "bank_average_level_variance": 0.00012870930902193536,
+          "centered_shape_variance": 2.7294752928736692e-05
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 7.832202281674182e-05,
+          "bank_average_level_variance": 6.444366884470107e-05,
+          "centered_shape_variance": 1.3878353972040757e-05
+        }
+      },
+      "full_predictive_variance_bounds": {
+        "current": {
+          "bank_average_variance": 0.000837870960074393,
+          "bank_average_level_variance": 0.0006473881996888155,
+          "centered_shape_variance": 0.00019048276038557748
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.0008034345902298063,
+          "bank_average_level_variance": 0.0006452245026689749,
+          "centered_shape_variance": 0.0001582100875608314
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 0.0007257525510958762,
+          "bank_average_level_variance": 0.0005809588624917406,
+          "centered_shape_variance": 0.00014479368860413557
+        }
+      },
+      "uncertainty_reduction_bounds": {
+        "bank_average_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.04109984888547654,
+          "additional_perfect_double_sources_reduction_fraction": 0.09271360726839481,
+          "current_common_fraction": 0.22729088471851303
+        },
+        "bank_average_level_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.0033421940975764774,
+          "additional_perfect_double_sources_reduction_fraction": 0.09926909419746195,
+          "current_common_fraction": 0.20215537772341807
+        },
+        "centered_shape_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.16942568849495537,
+          "additional_perfect_double_sources_reduction_fraction": 0.07043366512296548,
+          "current_common_fraction": 0.312718198922073
+        }
+      },
+      "information_order_min_eigenvalues": [
+        3.592030796500212e-08,
+        3.727571360981266e-09
+      ],
+      "independent_floor_covariance_error": 1.645276796746753e-17,
+      "geometry_and_information_order_verified": true
+    },
+    {
+      "layout": "5",
+      "source_task_count": 5,
+      "law_query_task": 1,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "strong_column_count": 16,
+      "dictionary_column_count": 27,
+      "union_policies": [
+        10,
+        11,
+        13,
+        14,
+        19,
+        20,
+        22,
+        23,
+        24,
+        31,
+        33,
+        34,
+        36,
+        42,
+        45,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        57,
+        59,
+        62,
+        64,
+        65,
+        67,
+        72
+      ],
+      "source_policy_geometry": [
+        {
+          "source_task": 0,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 2,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 3,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 4,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 5,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        }
+      ],
+      "current_common_variance_parts": {
+        "bank_average_variance": 0.0001506258210047595,
+        "bank_average_level_variance": 0.00010246482852815166,
+        "centered_shape_variance": 4.816099247660784e-05
+      },
+      "common_information_bounds": {
+        "current": {
+          "bank_average_variance": 0.0001506258210047595,
+          "bank_average_level_variance": 0.00010246482852815166,
+          "centered_shape_variance": 4.816099247660784e-05
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.00012092211501579365,
+          "bank_average_level_variance": 0.00010072735879708712,
+          "centered_shape_variance": 2.0194756218706528e-05
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 6.062450366199727e-05,
+          "bank_average_level_variance": 5.041859807595071e-05,
+          "centered_shape_variance": 1.0205905586046562e-05
+        }
+      },
+      "full_predictive_variance_bounds": {
+        "current": {
+          "bank_average_variance": 0.0007796437941852144,
+          "bank_average_level_variance": 0.0006074909127380663,
+          "centered_shape_variance": 0.0001721528814471482
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.0007499400881962484,
+          "bank_average_level_variance": 0.0006057534430070016,
+          "centered_shape_variance": 0.0001441866451892468
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 0.0006896424768424521,
+          "bank_average_level_variance": 0.0005554446822858653,
+          "centered_shape_variance": 0.00013419779455658683
+        }
+      },
+      "uncertainty_reduction_bounds": {
+        "bank_average_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.03809907320561514,
+          "additional_perfect_double_sources_reduction_fraction": 0.07733994909407545,
+          "current_common_fraction": 0.19319825557282175
+        },
+        "bank_average_level_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.002860075261428264,
+          "additional_perfect_double_sources_reduction_fraction": 0.08281401361937432,
+          "current_common_fraction": 0.16866890743488658
+        },
+        "centered_shape_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.1624500038733722,
+          "additional_perfect_double_sources_reduction_fraction": 0.0580231393671246,
+          "current_common_fraction": 0.27975710933071724
+        }
+      },
+      "information_order_min_eigenvalues": [
+        3.255353340100914e-08,
+        3.519074017817274e-09
+      ],
+      "independent_floor_covariance_error": 8.605854744103691e-18,
+      "geometry_and_information_order_verified": true
+    },
+    {
+      "layout": "6",
+      "source_task_count": 5,
+      "law_query_task": 1,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "strong_column_count": 16,
+      "dictionary_column_count": 27,
+      "union_policies": [
+        10,
+        11,
+        13,
+        14,
+        19,
+        20,
+        22,
+        23,
+        24,
+        31,
+        33,
+        34,
+        36,
+        42,
+        45,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        57,
+        59,
+        62,
+        64,
+        65,
+        67,
+        72
+      ],
+      "source_policy_geometry": [
+        {
+          "source_task": 0,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 2,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 3,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 11,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 4,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        },
+        {
+          "source_task": 5,
+          "current_policy_count": 12,
+          "union_policy_count": 28,
+          "current_full_design_rank": 12,
+          "current_selected_design_rank": 12,
+          "union_full_design_rank": 27,
+          "union_selected_design_rank": 16
+        }
+      ],
+      "current_common_variance_parts": {
+        "bank_average_variance": 0.0001649172494500226,
+        "bank_average_level_variance": 0.00011710027002172209,
+        "centered_shape_variance": 4.78169794283005e-05
+      },
+      "common_information_bounds": {
+        "current": {
+          "bank_average_variance": 0.0001649172494500226,
+          "bank_average_level_variance": 0.00011710027002172209,
+          "centered_shape_variance": 4.78169794283005e-05
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.00013885422489602495,
+          "bank_average_level_variance": 0.00011550235248814721,
+          "centered_shape_variance": 2.3351872407877737e-05
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 6.964365127653045e-05,
+          "bank_average_level_variance": 5.7814588185324576e-05,
+          "centered_shape_variance": 1.1829063091205876e-05
+        }
+      },
+      "full_predictive_variance_bounds": {
+        "current": {
+          "bank_average_variance": 0.0008778283616593961,
+          "bank_average_level_variance": 0.0006960784394620266,
+          "centered_shape_variance": 0.0001817499221973695
+        },
+        "perfect_same_sources": {
+          "bank_average_variance": 0.0008517653371053985,
+          "bank_average_level_variance": 0.0006944805219284518,
+          "centered_shape_variance": 0.00015728481517694672
+        },
+        "perfect_double_sources": {
+          "bank_average_variance": 0.0007825547634859039,
+          "bank_average_level_variance": 0.0006367927576256292,
+          "centered_shape_variance": 0.00014576200586027474
+        }
+      },
+      "uncertainty_reduction_bounds": {
+        "bank_average_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.02969034231786448,
+          "additional_perfect_double_sources_reduction_fraction": 0.07884294543487168,
+          "current_common_fraction": 0.18786958436643872
+        },
+        "bank_average_level_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.002295599810288331,
+          "additional_perfect_double_sources_reduction_fraction": 0.08287537873951008,
+          "current_common_fraction": 0.16822855497754619
+        },
+        "centered_shape_variance": {
+          "maximum_same_source_uncertainty_reduction_fraction": 0.13460862444747101,
+          "additional_perfect_double_sources_reduction_fraction": 0.06339925309106266,
+          "current_common_fraction": 0.2630921589962175
+        }
+      },
+      "information_order_min_eigenvalues": [
+        2.692666604222604e-08,
+        3.312338395819413e-09
+      ],
+      "independent_floor_covariance_error": 1.4934884925987824e-17,
+      "geometry_and_information_order_verified": true
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.02536413799999998,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "source_or_query_responses_indexed": false,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Ideal exact coefficient observations,strictly more informative than finite noisy source-policy samples. Conditional on fixed A/R,white,templates,support and center. No promised MSE gain,no task distribution fit,no observations from hypothetical doubled sources."
+}

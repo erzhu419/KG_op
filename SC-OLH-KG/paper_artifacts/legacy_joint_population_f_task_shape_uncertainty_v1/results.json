@@ -1,0 +1,810 @@
+{
+  "execution": {
+    "status": "frozen before twelve source-only shape integrals",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "retained_reference_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "failed_joint_results": "paper_artifacts/legacy_joint_population_f_joint_geometry_development_v1/results.json",
+    "task_score_results": "paper_artifacts/legacy_joint_population_f_joint_geometry_task_score_v1/results.json",
+    "question": "Does the retained native f law omit material source-supported uncertainty in task shape variance while integrating only task intercept variance? Repeated point estimation of GP-shaped task templates was not supported;the native low-frequency task spectrum has low source information and task1 adaptation remains weak.",
+    "source_law": "Use only twelve original native five-source f laws on tasks0-5,excluding the outer query task. Do not adopt stopped Stage130 common correlation or substitute GP moments. Keep original common A,empirical center,independent task intercept at its native point,all other task groups,original exponent0-4,1% independent weak tail,known label noise and discrepancy fixed. For each fold select the originally positive task group with largest source-only variance budget;no query-based selection.",
+    "parameter": "Vary only its physical task group variance a>=0. Let Ugroup=blockdiag(D_task,group*sqrt(original within-group spectral weights));C(a)=C0+a*Ugroup*Ugroupprime. Native a must reproduce original NLL,beta/H. Keep the source design identifiable directions and verify low-rank versus dense covariance,without an eigenvalue or variance floor.",
+    "reference_measure": "Conditional Jeffreys pi(a)da proportional sqrt(.5*sum((lambda_i/(1+a*lambda_i))^2))da,lambda the identifiable eigenvalues of Ugroupprime*C0^-1*Ugroup. Integrate coherent Gaussian source likelihood on all a>=0,without upper cutoff or chosen extra prior family. Reuse verified physical scalar-variance posterior numerical formulas;design rank determines tail integrability.",
+    "diagnostic": "Report source posterior mean/SD/quantiles,source likelihood slice width,integrated new-task shape budget and common beta/H uncertainty relative to the point law. Compare source uncertainty with the already positive intercept-variance mixture,without merging their separately conditional weights. This is a conditional source information diagnostic,not a new prior or forecast.",
+    "verification": "Native full source NLL and common moments reproduced. Dense interior likelihood/Fisher/beta/H checks for both task1 folds. Original supported group/frequency/tail contract and full-tail quadrature adequacy. Failed construction/integrability is reported;no ridge,tolerance relaxation or posterior cutoff.",
+    "decision": "If shape uncertainty is material,register coherent joint intercept/shape variance source integration with an explicitly defined joint reference measure and unchanged paid comparison;do not multiply separately conditional posterior weights or use averaged covariance as a raw mixture. If source shape variance is tightly identified,retain that evidence and examine representation/source-population support rather than adding another covariance parameter. No automatic prior adoption or complete-gate promotion.",
+    "scope": "source0-5 training folds only;no paid query labels,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls",
+    "cost": {
+      "new_source_fits": 0,
+      "maximum_new_source_shape_variance_integrations": 12,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached source JSON only",
+    "output": "paper_artifacts/legacy_joint_population_f_task_shape_uncertainty_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_task_shape_uncertainty.py",
+    "entrypoint_status": "implemented;not yet executed",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_task_shape_uncertainty_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_task_shape_uncertainty.py",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "quadrature": {
+      "relative_tolerance": 1e-08,
+      "absolute_tolerance_for_scaled_integrals": 1e-09,
+      "maximum_subintervals": 128
+    },
+    "posterior_quantile_probabilities": [
+      0.025,
+      0.5,
+      0.975
+    ],
+    "source_likelihood_slice_drop": 0.5,
+    "slice_root_tolerance_in_signal_units": 1e-12,
+    "dense_verification_deleted_task": 1,
+    "dense_verification_variance_over_source_signal": 0.1,
+    "intercept_uncertainty_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+    "frozen_before_source_integration": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 5.651805681784371e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00011609143098306614,
+        "standard_deviation": 0.00015775781474435574,
+        "quantiles": {
+          "0.025": 5.439490636074845e-06,
+          "0.5": 7.14189247793217e-05,
+          "0.975": 0.0005002906966409557
+        },
+        "normalization_integral": 0.007415854702371462,
+        "normalization_absolute_error": 1.5367816933090492e-11,
+        "normalization_relative_error": 2.0722920755413574e-09,
+        "normalized_vector_integral_error": 2.828600097006605e-13,
+        "normalized_mass_error": 0.0,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.054059136484928,
+      "posterior_sd_over_mean": 1.3589100712124682,
+      "conditional_source_likelihood_support_variances": [
+        1.614870615362249e-05,
+        0.00015470675469708456
+      ],
+      "posterior_mass_above_slice_upper": 0.21568903631405112,
+      "new_task_centered_shape_variance": {
+        "native": 0.0002894318180298138,
+        "integrated": 0.0003490051921950363,
+        "relative_change": 0.20582869765578418,
+        "selected_group_unit_budget": 1.0000000000000009
+      },
+      "common_mean_bank_rms_change": 0.0002948951959191601,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00014716871386268924,
+        "integrated": 0.00015915154960503044
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011198113016098274,
+        "integrated": 0.00012394060107276283
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 7.424659711979238e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00015037040134829394,
+        "posterior_mean": 0.00031868303921924384,
+        "posterior_sd_over_mean": 3.0166470481985055
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3255,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 3.9678964586477406e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 9.246264027259029e-05,
+        "standard_deviation": 0.0001323528210938939,
+        "quantiles": {
+          "0.025": 3.0864778885164646e-06,
+          "0.5": 5.462600012649882e-05,
+          "0.975": 0.0004140660221502522
+        },
+        "normalization_integral": 0.0058012486537302056,
+        "normalization_absolute_error": 6.587008454389444e-15,
+        "normalization_relative_error": 1.1354466680468858e-12,
+        "normalized_vector_integral_error": 1.1613826485375632e-12,
+        "normalized_mass_error": 0.0,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.3302684743971764,
+      "posterior_sd_over_mean": 1.4314194436120673,
+      "conditional_source_likelihood_support_variances": [
+        7.1745124158405035e-06,
+        0.00011962736369469178
+      ],
+      "posterior_mass_above_slice_upper": 0.22469513124729934,
+      "new_task_centered_shape_variance": {
+        "native": 0.00027089623957035874,
+        "integrated": 0.00032367991525647163,
+        "relative_change": 0.1948483145053167,
+        "selected_group_unit_budget": 1.0
+      },
+      "common_mean_bank_rms_change": 0.00022509510822022523,
+      "common_posterior_average_bank_variance": {
+        "native": 0.0001212374901014881,
+        "integrated": 0.00013193108313731147
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00010862323184639775,
+        "integrated": 0.00011928343867552595
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 4.438506614947086e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 3.780945079229659e-05,
+        "posterior_mean": 9.660336249237974e-05,
+        "posterior_sd_over_mean": 3.5707009046747977
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true,
+        "interior_total_nll_error": 7.389644451905042e-13,
+        "interior_fisher_relative_error": 1.3322676295501878e-14
+      },
+      "scalar_quadrature_evaluations": 3633,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 6.185883471905168e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00011799328570629198,
+        "standard_deviation": 0.00015234209047533398,
+        "quantiles": {
+          "0.025": 7.668543525597324e-06,
+          "0.5": 7.507050302291238e-05,
+          "0.975": 0.000490879741567367
+        },
+        "normalization_integral": 0.007486860121848435,
+        "normalization_absolute_error": 1.7384913409260825e-11,
+        "normalization_relative_error": 2.3220566601114292e-09,
+        "normalized_vector_integral_error": 1.2631009383778389e-11,
+        "normalized_mass_error": 0.0,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 1.907460530774461,
+      "posterior_sd_over_mean": 1.2911081301231224,
+      "conditional_source_likelihood_support_variances": [
+        2.1413055022918455e-05,
+        0.0001591078113785191
+      ],
+      "posterior_mass_above_slice_upper": 0.21103127802897603,
+      "new_task_centered_shape_variance": {
+        "native": 0.0002752731075788248,
+        "integrated": 0.00033140755856606507,
+        "relative_change": 0.20392275686126052,
+        "selected_group_unit_budget": 1.0
+      },
+      "common_mean_bank_rms_change": 0.0002990408847873491,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013882776033034158,
+        "integrated": 0.0001501378287103607
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00010802648420622856,
+        "integrated": 0.00011929358896577132
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 7.537614554075165e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.0001281354356714859,
+        "posterior_mean": 0.0002747391231524315,
+        "posterior_sd_over_mean": 3.084615714142712
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3192,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 5.003736931276348e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00010389214578778615,
+        "standard_deviation": 0.0001380888727406474,
+        "quantiles": {
+          "0.025": 4.19941575673918e-06,
+          "0.5": 6.442378620228804e-05,
+          "0.975": 0.0004446849083897039
+        },
+        "normalization_integral": 0.00679794300895083,
+        "normalization_absolute_error": 4.2614437715086903e-11,
+        "normalization_relative_error": 6.268725356917027e-09,
+        "normalized_vector_integral_error": 1.2767408065220164e-13,
+        "normalized_mass_error": 2.220446049250313e-16,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.0762911243074775,
+      "posterior_sd_over_mean": 1.3291560367105395,
+      "conditional_source_likelihood_support_variances": [
+        1.2027711185548554e-05,
+        0.00014022050994869355
+      ],
+      "posterior_mass_above_slice_upper": 0.21576219211122205,
+      "new_task_centered_shape_variance": {
+        "native": 0.0002843751340325403,
+        "integrated": 0.00033822991050756296,
+        "relative_change": 0.18937934449943936,
+        "selected_group_unit_budget": 1.0000000000000002
+      },
+      "common_mean_bank_rms_change": 0.00020682043001097784,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00015101586567797524,
+        "integrated": 0.00016199457684177825
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011446365375787652,
+        "integrated": 0.00012537705142428755
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 5.224239683872686e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00015096993331069006,
+        "posterior_mean": 0.00032249564071209824,
+        "posterior_sd_over_mean": 3.021739983435915
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3255,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 3.9073029652395465e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 9.364383462056077e-05,
+        "standard_deviation": 0.00013319623107561424,
+        "quantiles": {
+          "0.025": 2.837081887992095e-06,
+          "0.5": 5.5269276655036244e-05,
+          "0.975": 0.00041950050567703514
+        },
+        "normalization_integral": 0.005912448865515918,
+        "normalization_absolute_error": 3.5224781468715014e-15,
+        "normalization_relative_error": 5.957731266677316e-13,
+        "normalized_vector_integral_error": 6.217614889696677e-13,
+        "normalized_mass_error": 3.3306690738754696e-16,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.396636131204628,
+      "posterior_sd_over_mean": 1.4223705342195503,
+      "conditional_source_likelihood_support_variances": [
+        5.018936576583017e-06,
+        0.00012165650536021945
+      ],
+      "posterior_mass_above_slice_upper": 0.225612076980642,
+      "new_task_centered_shape_variance": {
+        "native": 0.00027746265214690486,
+        "integrated": 0.00033203345711507016,
+        "relative_change": 0.19667801971154059,
+        "selected_group_unit_budget": 0.9999999999999996
+      },
+      "common_mean_bank_rms_change": 0.0002747381492126182,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013515215540388253,
+        "integrated": 0.00014633788051034638
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011010485816924692,
+        "integrated": 0.0001212367380864889
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 5.598107662635927e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00010108773715136559,
+        "posterior_mean": 0.00022281188839490246,
+        "posterior_sd_over_mean": 3.1458967487408867
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3570,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 1.1168994932526632e-05,
+      "source_signal_scale": 0.02,
+      "reference_posterior": {
+        "mean": 5.142184341023397e-05,
+        "standard_deviation": 8.501528671736392e-05,
+        "quantiles": {
+          "0.025": 1.0578056638214974e-06,
+          "0.5": 2.7275509912855496e-05,
+          "0.975": 0.00024989698368721756
+        },
+        "normalization_integral": 0.0025377659545622704,
+        "normalization_absolute_error": 2.1700704940885305e-15,
+        "normalization_relative_error": 8.551105708496423e-13,
+        "normalized_vector_integral_error": 8.880241859048503e-13,
+        "normalized_mass_error": 3.3306690738754696e-16,
+        "normalized_vector_evaluations": 357
+      },
+      "posterior_mean_over_native_variance": 4.603981264283858,
+      "posterior_sd_over_mean": 1.6532913073366053,
+      "conditional_source_likelihood_support_variances": [
+        0.0,
+        5.2656100305517356e-05
+      ],
+      "posterior_mass_above_slice_upper": 0.28525200413390717,
+      "new_task_centered_shape_variance": {
+        "native": 0.00022439729160548394,
+        "integrated": 0.0002646501400831913,
+        "relative_change": 0.1793820602276985,
+        "selected_group_unit_budget": 1.0000000000000002
+      },
+      "common_mean_bank_rms_change": 0.0003337438584619314,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013092986053836356,
+        "integrated": 0.00013973243067415855
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 9.792559744844946e-05,
+        "integrated": 0.00010669471431730677
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 2.754188921595575e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00014258519526246945,
+        "posterior_mean": 0.00030145307356416266,
+        "posterior_sd_over_mean": 3.024433583413413
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 4305,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 5.0762007754680456e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00010593825903523719,
+        "standard_deviation": 0.0001397938182166829,
+        "quantiles": {
+          "0.025": 3.914813555322539e-06,
+          "0.5": 6.564472827797342e-05,
+          "0.975": 0.0004537582829740625
+        },
+        "normalization_integral": 0.007050402381247182,
+        "normalization_absolute_error": 2.2544837170889544e-11,
+        "normalization_relative_error": 3.1976667361361965e-09,
+        "normalized_vector_integral_error": 6.865825921504126e-14,
+        "normalized_mass_error": 0.0,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.0869595928358304,
+      "posterior_sd_over_mean": 1.3195782098909579,
+      "conditional_source_likelihood_support_variances": [
+        1.0700047140567028e-05,
+        0.00014524682604574168
+      ],
+      "posterior_mass_above_slice_upper": 0.21314653881532908,
+      "new_task_centered_shape_variance": {
+        "native": 0.000302844034925625,
+        "integrated": 0.0003580202862061817,
+        "relative_change": 0.18219362086529925,
+        "selected_group_unit_budget": 1.0000000000000004
+      },
+      "common_mean_bank_rms_change": 0.00020125078759181903,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00014851714441049664,
+        "integrated": 0.0001599623564285567
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011858275422841419,
+        "integrated": 0.00012989733525588208
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 7.27459389698647e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.0001252372914134237,
+        "posterior_mean": 0.00027121281851258145,
+        "posterior_sd_over_mean": 3.110372963217575
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3255,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:1",
+      "selected_group_index": 1,
+      "native_group_variance": 3.901409459943471e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 8.772210338372828e-05,
+        "standard_deviation": 0.00011580190561124666,
+        "quantiles": {
+          "0.025": 3.136684924799543e-06,
+          "0.5": 5.448786946312396e-05,
+          "0.975": 0.00037427774603293607
+        },
+        "normalization_integral": 0.005654510347595249,
+        "normalization_absolute_error": 1.0239256450673632e-14,
+        "normalization_relative_error": 1.810812222676042e-12,
+        "normalized_vector_integral_error": 1.8370949548876235e-12,
+        "normalized_mass_error": 2.220446049250313e-16,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.2484721043609537,
+      "posterior_sd_over_mean": 1.3200995090677106,
+      "conditional_source_likelihood_support_variances": [
+        6.638701721374657e-06,
+        0.00011454901371529248
+      ],
+      "posterior_mass_above_slice_upper": 0.2290150101567736,
+      "new_task_centered_shape_variance": {
+        "native": 0.0002772603188538734,
+        "integrated": 0.00032596832763816697,
+        "relative_change": 0.175676090201586,
+        "selected_group_unit_budget": 0.9999999999999998
+      },
+      "common_mean_bank_rms_change": 0.00022010218479591692,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00011117099989330308,
+        "integrated": 0.00012153089904931126
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00010539110098509542,
+        "integrated": 0.00011565173388949282
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 4.978788636796426e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.0,
+        "posterior_mean": 3.288436968269356e-05,
+        "posterior_sd_over_mean": 4.518608889639414
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true,
+        "interior_total_nll_error": 5.968558980384842e-13,
+        "interior_fisher_relative_error": 2.7755575615628914e-14
+      },
+      "scalar_quadrature_evaluations": 3633,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 5.799250962072724e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.0001128428512056466,
+        "standard_deviation": 0.00014749685780366938,
+        "quantiles": {
+          "0.025": 4.816374857758599e-06,
+          "0.5": 7.087461491009788e-05,
+          "0.975": 0.0004767286925677867
+        },
+        "normalization_integral": 0.0076147886242697365,
+        "normalization_absolute_error": 1.1243988700985066e-11,
+        "normalization_relative_error": 1.476598925562871e-09,
+        "normalized_vector_integral_error": 6.873154454070027e-14,
+        "normalized_mass_error": 4.440892098500626e-16,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 1.9458176916922936,
+      "posterior_sd_over_mean": 1.3070997074938204,
+      "conditional_source_likelihood_support_variances": [
+        1.547132471511437e-05,
+        0.00015759106703672023
+      ],
+      "posterior_mass_above_slice_upper": 0.20606822770771216,
+      "new_task_centered_shape_variance": {
+        "native": 0.00028674485964171915,
+        "integrated": 0.0003415952012266385,
+        "relative_change": 0.19128622446258858,
+        "selected_group_unit_budget": 0.9999999999999998
+      },
+      "common_mean_bank_rms_change": 0.00017686650600210187,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00013904129564102906,
+        "integrated": 0.00015044043169401482
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011098172490526112,
+        "integrated": 0.00012223962334819886
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 7.686461480568186e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00011034024093508753,
+        "posterior_mean": 0.00024066842070007556,
+        "posterior_sd_over_mean": 3.189477055584523
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3255,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 6.235847160331597e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00012126080364357409,
+        "standard_deviation": 0.00015699799504672744,
+        "quantiles": {
+          "0.025": 5.5019509574530626e-06,
+          "0.5": 7.653030564554548e-05,
+          "0.975": 0.0005098673341168043
+        },
+        "normalization_integral": 0.008100666974662357,
+        "normalization_absolute_error": 5.053887721252923e-12,
+        "normalization_relative_error": 6.238853833962941e-10,
+        "normalized_vector_integral_error": 6.239583916732584e-10,
+        "normalized_mass_error": 0.0,
+        "normalized_vector_evaluations": 273
+      },
+      "posterior_mean_over_native_variance": 1.9445762624676954,
+      "posterior_sd_over_mean": 1.2947134632902224,
+      "conditional_source_likelihood_support_variances": [
+        1.7314885876964586e-05,
+        0.00016825874435854335
+      ],
+      "posterior_mass_above_slice_upper": 0.2076991187196977,
+      "new_task_centered_shape_variance": {
+        "native": 0.0003101720967413001,
+        "integrated": 0.00036907442878155816,
+        "relative_change": 0.1899020984127588,
+        "selected_group_unit_budget": 0.9999999999999998
+      },
+      "common_mean_bank_rms_change": 0.00020240588513273394,
+      "common_posterior_average_bank_variance": {
+        "native": 0.0001505136740462146,
+        "integrated": 0.00016253351708620247
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011950252847097647,
+        "integrated": 0.0001314302704417764
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 7.20086487631463e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00012768978328252972,
+        "posterior_mean": 0.0002758249772127363,
+        "posterior_sd_over_mean": 3.0887142233546334
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3192,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "main:0",
+      "selected_group_index": 0,
+      "native_group_variance": 4.845815788466995e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00010064349816863856,
+        "standard_deviation": 0.0001332403421631166,
+        "quantiles": {
+          "0.025": 3.7494262653203148e-06,
+          "0.5": 6.230501398112417e-05,
+          "0.975": 0.00043156338034123386
+        },
+        "normalization_integral": 0.0066987411373259425,
+        "normalization_absolute_error": 4.4633888536671835e-11,
+        "normalization_relative_error": 6.663026324150383e-09,
+        "normalized_vector_integral_error": 1.3239777602396516e-13,
+        "normalized_mass_error": 4.440892098500626e-16,
+        "normalized_vector_evaluations": 315
+      },
+      "posterior_mean_over_native_variance": 2.0769154784663777,
+      "posterior_sd_over_mean": 1.3238842507228699,
+      "conditional_source_likelihood_support_variances": [
+        1.04855090898789e-05,
+        0.00013800233724558253
+      ],
+      "posterior_mass_above_slice_upper": 0.21264229716116723,
+      "new_task_centered_shape_variance": {
+        "native": 0.0002851190060075554,
+        "integrated": 0.000337304346291524,
+        "relative_change": 0.18303003021336903,
+        "selected_group_unit_budget": 1.0
+      },
+      "common_mean_bank_rms_change": 0.00018741631506465162,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00014219873704318442,
+        "integrated": 0.00015288502227261592
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 0.00011433139774240394,
+        "integrated": 0.000124940295943795
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 5.220014075977786e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.00011374219751657884,
+        "posterior_mean": 0.0002472374324672494,
+        "posterior_sd_over_mean": 3.115217430927938
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 25,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3255,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "selected_group": "pair:1,3",
+      "selected_group_index": 8,
+      "native_group_variance": 1.5481280374444096e-05,
+      "source_signal_scale": 0.02,
+      "reference_posterior": {
+        "mean": 5.564239540805576e-05,
+        "standard_deviation": 0.00011765781424209033,
+        "quantiles": {
+          "0.025": 1.2010527102573553e-06,
+          "0.5": 2.8843347587342794e-05,
+          "0.975": 0.0002692189554789898
+        },
+        "normalization_integral": 0.002907322808313942,
+        "normalization_absolute_error": 1.8032385462875448e-11,
+        "normalization_relative_error": 6.202402227681438e-09,
+        "normalized_vector_integral_error": 1.130760112316142e-09,
+        "normalized_mass_error": 3.1086244689504383e-15,
+        "normalized_vector_evaluations": 1239
+      },
+      "posterior_mean_over_native_variance": 3.594172708086089,
+      "posterior_sd_over_mean": 2.1145353894138093,
+      "conditional_source_likelihood_support_variances": [
+        0.0,
+        5.9982112357766126e-05
+      ],
+      "posterior_mass_above_slice_upper": 0.26176088099553785,
+      "new_task_centered_shape_variance": {
+        "native": 0.00023198098740869627,
+        "integrated": 0.0002809072035861606,
+        "relative_change": 0.2109061467665357,
+        "selected_group_unit_budget": 1.218248450933621
+      },
+      "common_mean_bank_rms_change": 0.000541164748717676,
+      "common_posterior_average_bank_variance": {
+        "native": 0.0001301728596524368,
+        "integrated": 0.00013401150257548523
+      },
+      "common_posterior_centered_shape_variance": {
+        "native": 9.621100781726104e-05,
+        "integrated": 9.981577804967516e-05
+      },
+      "common_posterior_bank_variance_from_conditional_mean_uncertainty": 9.684304945468904e-07,
+      "existing_conditional_intercept_diagnostic": {
+        "native_variance": 0.0001462819783882909,
+        "posterior_mean": 0.00030879728305695497,
+        "posterior_sd_over_mean": 3.026218033941026
+      },
+      "verification": {
+        "native_nll_beta_h_and_unchanged_group_spectrum_tail_reproduced": true,
+        "identifiable_source_rank": 5,
+        "full_tail_first_and_second_moments_integrable": true
+      },
+      "scalar_quadrature_evaluations": 3801,
+      "conditional_weights_not_combined_with_intercept_weights": true
+    }
+  ],
+  "summary": {
+    "5": {
+      "mean_posterior_variance_over_native": 2.561449443575422,
+      "mean_new_task_shape_variance_relative_change": 0.19500653224350664
+    },
+    "6": {
+      "mean_posterior_variance_over_native": 2.3161523063182066,
+      "mean_new_task_shape_variance_relative_change": 0.1888323684870229
+    }
+  },
+  "all12_source_integrations_verified": true,
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_new_source_shape_variance_integrations": 12,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.7043519869999999,
+  "no_prior_or_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

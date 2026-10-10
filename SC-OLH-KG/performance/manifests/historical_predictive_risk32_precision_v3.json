@@ -1,0 +1,28 @@
+{
+  "parent_plan": "performance/manifests/historical_predictive_risk32_v3.json",
+  "output": "paper_artifacts/historical_predictive_risk32_precision_v3",
+  "cases": [
+    {
+      "name": "source_n1",
+      "state": "learned_prior_independent_02_source_structural_mixture_layout6",
+      "n": 1,
+      "objective_prefixes": [
+        16,
+        32
+      ]
+    }
+  ],
+  "head_inputs": {
+    "source_n1": [
+      "paper_artifacts/historical_predictive_risk32_precision_v3/inputs/source_n1/head/0_{origin}",
+      "paper_artifacts/historical_predictive_risk32_precision_v3/inputs/source_n1/head/1_{origin}"
+    ]
+  },
+  "refinement_powers": [
+    12,
+    14,
+    16
+  ],
+  "maximum_case_cpu_seconds": 420,
+  "status": "Refine only unadmitted32-point records after reusing closed16-point caches."
+}

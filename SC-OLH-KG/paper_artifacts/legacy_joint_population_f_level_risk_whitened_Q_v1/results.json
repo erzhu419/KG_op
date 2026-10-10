@@ -1,0 +1,83 @@
+{
+  "execution": {
+    "status": "registered before numerical verification or optimizer replay",
+    "entrypoint": "performance/check_legacy_f_level_risk_whitened_Q.py",
+    "failed_learning_results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/results.json",
+    "accepted_source_moments": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v1/round1_source_moments.json",
+    "bounded_learning_plan": "performance/manifests/legacy_joint_population_f_bounded_level_risk_learning_plan_v1.json",
+    "question": "Does Cholesky-whitened evaluation of exactly the same Q remove the observed GP6 line-search failure without changing parameters,data or convergence thresholds?",
+    "repair": "Replace explicit K^-1 products in Q and its covariance score by Swhite=L^-1 Cpost L^-T+(L^-1 delta)(L^-1 delta)^T,trace(Swhite),and trace[(I-Swhite)L^-1(dK)L^-T]. Mean derivative uses whitened ones/delta. Same mathematical objective and derivatives;reuse the existing whiten helper. Original failure and round1 source moments remain unchanged.",
+    "verification": "Reproduce failed round2's cached component Q improvements with its inverse implementation;compare inverse and whitened Q/gradients at both starting and failed-candidate points. Check the whitened analytic gradient against finite differences once on the actual failed GP6 state. Replay only its original optimizer from the same source moments,initial parameters,scales,bounds and settings. No new posterior samples or target losses.",
+    "decision": "Only mathematical equivalence,finite derivatives and optimizer convergence authorize a source-learning continuation from the accepted round1 state. If failure persists,stop and retain it;do not waive the optimizer success gate.",
+    "maximum_single_thread_cpu_seconds": 5,
+    "cost": {
+      "new_fixed_source_Q_optimizations": 1,
+      "new_source_chains": 0,
+      "new_source_labels": 0,
+      "new_future_predictions": 0,
+      "new_density_integrations": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached failing source moments only",
+    "scope": "Numerical implementation repair of a reachable failure;scientific laws,gates,original four priors and complete-model HOLD unchanged",
+    "output": "paper_artifacts/legacy_joint_population_f_level_risk_whitened_Q_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "inverse_cached_Q_improvements_reproduced": true,
+      "maximum_inverse_whitened_Q_difference": 6.616929226765933e-14,
+      "maximum_inverse_whitened_gradient_difference": 2.737347388622152e-13
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "inverse_cached_Q_improvements_reproduced": true,
+      "maximum_inverse_whitened_Q_difference": 4.218847493575595e-14,
+      "maximum_inverse_whitened_gradient_difference": 6.470202151831472e-11
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "inverse_cached_Q_improvements_reproduced": true,
+      "maximum_inverse_whitened_Q_difference": 4.707345624410664e-14,
+      "maximum_inverse_whitened_gradient_difference": 4.460351359092396e-13
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "inverse_cached_Q_improvements_reproduced": true,
+      "maximum_inverse_whitened_Q_difference": 2.2248869413488137e-13,
+      "maximum_inverse_whitened_gradient_difference": 2.2370727492670994e-10
+    }
+  ],
+  "same_objective_and_cached_moments_verified": true,
+  "failed_GP6_finite_gradient_max_error": 6.505741515638874e-05,
+  "whitened_optimizer_converged": true,
+  "whitened_optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+  "whitened_optimizer_iterations": 8,
+  "whitened_candidate_parameters": [
+    1.1838472326041527,
+    0.0,
+    -0.31074588888482657,
+    0.6546402023643482
+  ],
+  "maximum_scaled_projected_gradient": 7.858740027548265e-09,
+  "old_inverse_failure_preserved": true,
+  "cpu_seconds": 0.148939155,
+  "cost": {
+    "new_fixed_source_Q_optimizations": 1,
+    "new_source_chains": 0,
+    "new_source_labels": 0,
+    "new_future_predictions": 0,
+    "new_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "scientific_model_changed": false,
+  "independent_confirmation": false
+}

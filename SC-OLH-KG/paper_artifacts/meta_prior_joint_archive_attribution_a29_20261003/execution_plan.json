@@ -1,0 +1,26 @@
+{
+  "stage": "meta_prior_joint_archive_attribution_a29_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a28_before_a29_results": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_joint_archive_target_a28_20261003/target_forecasts.json.gz",
+    "paper_artifacts/meta_prior_joint_archive_target_a28_20261003/validation.json"
+  ],
+  "question": "Which remaining target losses reflect the old local risk model, and which are caused by the added joint head information?",
+  "contrasts": "Exact forecast-level identity J-G=(J-I)+(I-G). J-I measures incremental J versus the unchanged original local learned risk model on the same path; I-G is an accounting remainder against the equally informed full-risk control, not a causal attribution exclusively to risk support. Also compare A-I and J-A: J/A have identical archive/risk components and masses, so their contrast isolates use of past f/g evidence in archive inference.",
+  "analysis": "Retain all ten target strata and all eight pair blocks, with nominal block-bootstrap intervals. Summarize the inherited versus incremental decomposition in the high-frequency generic-policy stratum and the A-I/J-A cancellation in separate-risk generic-policy stratum. Keep covariance-model and cross-head-sharing gaps distinct; do not select A or G based on target scores.",
+  "controls": "Require full completed160-path evidence and numerical equality of both accounting identities for every forecast. No predictions, parameters or candidate decisions change.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 10,
+    "new_forecasts": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0
+  },
+  "paired_bootstrap_seed": 20261107,
+  "limitations": "Exact numerical accounting is not a causal decomposition of the inherited I-G remainder. All comparisons are retrospective development; no target-selected model is promoted."
+}

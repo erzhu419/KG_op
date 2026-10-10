@@ -1,0 +1,17 @@
+{
+  "status": "registered after Stage82 failed training acceptance, before source influence or covariance-information calculations",
+  "reconditioning_results": "paper_artifacts/legacy_joint_population_task_recondition_common_v1/results.json",
+  "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "layouts": ["5", "6"],
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "basis_of_next_step": "Fixed-hyperparameter common reconditioning reproduces native and calibrated endpoints but fails the registered development gate: assignment5 loses paid MSE/raw density; assignment6 improves those two but loses sequential transcript density. Do not open source6/7 for this candidate. Assess existing source-cohort leverage and local covariance information before proposing further fitting or data expansion.",
+  "source_influence": "Evaluate each cached six-source native common curve and six cached five-source common curves on the SAME public73-policy controls for training tasks0–5, using each branch's own saved normalization/basis. Use beta and H only, not new-task residual covariance or paid observations. Report deleted-task curve RMS, constant/centered shape shifts, RMS change relative to full-fit conditional common SD, task-intercept variance and active common/task groups. The deleted-task curve reproduces its Stage71 prior mean on its registered12 sites. These are influence diagnostics, not a deletion-mixture candidate or a population variance estimator.",
+  "covariance_information": "Reconstruct the native full-source Gaussian marginal covariance from saved common/task coefficients, discrepancy and S2/3 noise. Reproduce its dense NLL versus the existing source objective. At the actual positive common/task group variances and intercept, form derivatives with respect to log variance; include fitted spectral exponent derivatives. Compute expected covariance Fisher information .5*tr(K^-1 Kp K^-1 Kq), standardized derivative correlations and eigenvalues. Record zero/boundary parameters separately. This local fixed-mean, fixed-support information is descriptive; no Wald confidence claims, parameter changes or source-design scoring threshold.",
+  "next_action": "Use actual influence and covariance-information results to choose a small source-population/data diagnostic. Do not repeat the rejected reconditioning, reopen source6/7, add a covariance/spectrum grid or manufacture an information deficit if the current directions are well resolved. Keep all old gates and negative families.",
+  "cost": {"new_scalar_fits": 0, "new_native_source_fits": 0, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread, cached source fits and public coordinates only, no server jobs or pulls",
+  "entrypoint": "performance/diagnose_legacy_source_information.py",
+  "output": "paper_artifacts/legacy_joint_population_source_information_v1"
+}

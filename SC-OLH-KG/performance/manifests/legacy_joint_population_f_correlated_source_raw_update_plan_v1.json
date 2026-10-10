@@ -1,0 +1,46 @@
+{
+  "status": "completed with registered precision failure;three arms pass;layout5 GP half-variance difference15.47percent exceeds15percent;no extra draws",
+  "entrypoint": "performance/check_legacy_f_correlated_source_raw_update.py",
+  "known_source_results": "paper_artifacts/legacy_joint_population_f_known_source_latent_noise_v1/results.json",
+  "known_source_plan": "performance/manifests/legacy_joint_population_f_known_source_latent_noise_plan_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "source_tasks": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "question": "Does a coherent joint update of all48 added source batches materially change the posterior compared with the fixed sample-variance/3 Gaussian update,when source/task correlations are retained?",
+  "contract": "Freeze old48-mean-conditioned f Gaussian priors for structure and matched GP,and the shared original32-risk-label-conditioned eta Gaussian law at all48 extra source policies. Retain their complete within-head covariances. Heads are independent under the existing Gaussian approximation;do not invent a learned f/eta cross-covariance. For each arm update both f and eta jointly with the SAME observed48 batch means and sample variances: N(mean;f,exp(eta)/3) times the chi-square sample-variance density. Factor each new variance likelihood once. Original old-data and risk-map training approximations are unchanged;this is an exact conditional likelihood specification,not a fully exact original source posterior or a covariance refit.",
+  "sampler": {
+    "method": "Gaussian f conditional draw by Matheron identity,then elliptical-slice eta conditional draw under its full Gaussian source law",
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610070
+  },
+  "verification": "Before sampling,require all full-covariance marginal means/variances to reproduce Stage196 at1e-8,positive covariance Cholesky factors,and the Matheron conditional covariance identity against the Gaussian analytic update. Compare the integrated-source draws with the exact fixed-noise Gaussian update. Verify the eta conditional likelihood formula against the existing Gaussian mean and chi-square log-sample-variance functions at one interior point;constants may differ but likelihood differences must match. No extra scores from task0/task1 or new risk labels in the encoder.",
+  "monte_carlo_gate": {
+    "maximum_split_rhat_all_f_and_eta_coordinates": 1.05,
+    "minimum_autocorrelation_ess_all_f_and_eta_coordinates": 100,
+    "maximum_first_second_half_variance_relative_difference": 0.15
+  },
+  "decision": "If Monte Carlo verification or convergence fails,preserve incomplete or failing results and stop without more samples or outer forecasts. If it passes,report posterior mean shifts and variance changes and design the next source-learning step from these measurements. No in-sample accuracy superiority or deployment claim. The fixed-law coverage candidate remains stopped;do not revive it from a training posterior change alone.",
+  "maximum_single_thread_cpu_seconds": 40,
+  "cost": {
+    "maximum_original_source_coordinate_restorations": 2,
+    "new_source_labels": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source records and Gaussian laws;in-memory draws,JSON summaries only,no NPZ or server work",
+  "scope": "Conditional source-likelihood repair prototype under the original orthogonal,sparse,low-order,low-frequency laws. No task1,source6/7,target,KG,confirmation or manuscript edits. Native intercept mixture reference;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_correlated_source_raw_update_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_correlated_source_raw_update_v1/results.json"
+}

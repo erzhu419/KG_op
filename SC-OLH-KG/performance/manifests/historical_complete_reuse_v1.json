@@ -1,0 +1,87 @@
+{
+  "status": "complete cached historical integration replay;29/32 source precision cases pass;scientific ranking HOLD",
+  "coverage": "paper_artifacts/historical_complete_reuse_v1/coverage.json",
+  "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+  "selection_plan": "performance/manifests/historical_source_structure_adaptation_v1.json",
+  "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+  "existing_source_results": "paper_artifacts/historical_source_reconditioning_v1/results.json",
+  "existing_source_plan": "performance/manifests/historical_source_reconditioning_v1.json",
+  "maps": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+  "development_states": "paper_artifacts/historical_prior_posterior_connection_v1/states.json",
+  "legacy_connection_plan": "performance/manifests/historical_prior_posterior_connection_v1.json",
+  "source_entrypoint": "performance/complete_historical_source_heads.py",
+  "integration_entrypoint": "performance/connect_complete_historical_reuse.py",
+  "pipeline": "Reuse restored observable/spectral/additive maps,V47 noise subtraction and task blocks,Stage203 compensated collapsed sampling,Stage206 retained positive mixtures,Stage207 shared f/eta reconstruction,Stage208 conditional new-task projection,batched raw paid filtering,shared identity evidence,V51 balanced4,V53 factorized RQMC and existing guarded terminal protocol. Existing successful cases and legacy60/60 records remain in place. Obsolete or privileged branches retain their original contracts.",
+  "source_scope": "32 frozen single-response/risk laws:16 existing f/eta_f cases,16 new g/eta_g cases. Reuse10 completed usable f cases. Extend only six unresolved f cases using the same seed and exact1024-draw prefix followed by3072 additional draws per chain;this is computational precision work on the same posterior,not new independent source chains. g raw means/variances are the exact existing replicated_source_labels summaries from the same48 ordinary batches.",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610077
+  },
+  "unresolved_f_retained_sweeps_per_chain": 4096,
+  "unresolved_f_maximum_single_thread_cpu_seconds": 45,
+  "new_g_maximum_single_thread_cpu_seconds": 35,
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "retained_mixture": {
+    "stride_per_chain": 8,
+    "components_per_arm": 512,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "retention": "For extended f cases retain exactly128 equally spaced states per chain with stride32;for new g use existing stride8. No thinning search. Save sufficient full posterior/split summaries and fixed eta states;no per-component dense source covariance files.",
+  "integration_scope": "All32 source cases feed exact Gaussian conditional source/new-task construction and retained positive mixtures. Failed numerical source cases may be replayed only as explicitly HOLD interface diagnostics;they cannot enter scientific model ranking or deployment claims. Use the same cached eight-policy development bank and two already-paid values. No new target data,simulator or verifier calls.",
+  "integration_maximum_single_thread_cpu_seconds": 30,
+  "numerical_validation": "Compare new shared projections with direct dense blocks;compare batched raw updates with the old scalar filter on actual restored components;check shared identity evidence and equal paid counts. Terminal calls reuse the already-frozen protocol and incumbent. Report full-source/mixture precision separately from operational integration.",
+  "cost": {
+    "new_source_labels": 0,
+    "new_selector_fits": 0,
+    "new_covariance_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "execution": "Local serial single-thread throughout. CPU interrupt in each source/integration phase. Continue the entire authorized adaptation batch without per-four-case permission questions;preserve all failures and do not use them to tune source laws.",
+  "output": "paper_artifacts/historical_complete_reuse_v1",
+  "unresolved_block_sampling": {
+    "status": "registered before blocked transitions",
+    "entrypoint": "performance/complete_historical_source_blocks.py",
+    "source_results": "paper_artifacts/historical_complete_reuse_v1/source_results.json",
+    "maximum_single_thread_cpu_seconds": 60,
+    "sampler": {
+      "chains": 4,
+      "warmup_sweeps_per_chain": 256,
+      "retained_sweeps_per_chain": 1024,
+      "seed": 202610079
+    },
+    "rule": "Reuse existing elliptical_step globally and conditionally within the four real12-site source blocks. Gaussian q block conditional is computed from its precision;full compensated likelihood remains unchanged. One fixed sweep consists of global+four task-block updates. Reuse all20 already usable cases. Only twelve unresolved cases are sampled;no block/seed/refit search. Original failures retained."
+  },
+  "completed_source_registry": "paper_artifacts/historical_complete_reuse_v1/blocked_source_results.json",
+  "mixture_lookahead": {
+    "status": "registered before mixed-source KG execution",
+    "maximum_single_thread_cpu_seconds_per_layout": 60,
+    "draw_power": 7,
+    "fantasy_power": 0,
+    "seed": 202610077,
+    "scope": "All six balanced4 actions on both cached states. One stratified predictive fantasy per complete identity tests full mixture interfaces;no numerical decision ranking. Fantasy updates use the actual paid filter and terminal evaluations retain positive components. No variance labels are invented. Source HOLD identities remain present with their flags,not dropped from comparisons."
+  },
+  "raw_learning_diagnostic": {
+    "entrypoint": "performance/connect_historical_raw_learning_scores.py",
+    "maximum_single_thread_cpu_seconds": 15,
+    "scope": "Reuse old Fisher covariance score for frozen common/task amplitude directions,all32 response/risk pairs(64 head scores),using existing fixed512 states. Gaussian plug-in identity checks first. No optimization,source law adoption,new chain or claim of convergence. Saved-mixture moments are explicitly separate from full-chain precision gates."
+  },
+  "batch_entrypoint": "performance/replay_historical_complete_reuse.py",
+  "legacy_kg_reuse_verification_maximum_cpu_seconds": 10,
+  "replay_rule": "Completed source cases are never resampled merely because their scientific gate is HOLD. Restore frozen source components,redo the inexpensive cached field reconstruction,and resume only missing KG actions. The two-layout legacy-loop equivalence check runs once;existing results remain.",
+  "remaining_variance_integral": {
+    "entrypoint": "performance/reuse_historical_conditional_variance_integral.py",
+    "maximum_single_thread_cpu_seconds": 30,
+    "scope": "All three remaining source precision failures. Reuse the historical one-dimensional adaptive conditional integrator at each saved worst half-variance site,with all512 saved states and the exact compensated conditional law. No chains or labels;integrating a single coordinate diagnoses and reduces variance-estimation noise,not all48-dimensional precision or a source-model adoption."
+  },
+  "reuse_routes": "paper_artifacts/historical_complete_reuse_v1/reuse_routes.json",
+  "coverage_note": "319 reachable commits plus one local reflog-only manuscript snapshot;three other worktrees are clean and covered by branch history"
+}

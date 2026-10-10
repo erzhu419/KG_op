@@ -1,0 +1,20 @@
+{
+  "status": "Registered before actual raw-likelihood guarded calculations; retain all resolutions regardless of sign.",
+  "entrypoint": "performance/check_historical_conditional_raw_guarded.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "projected_reference": "paper_artifacts/historical_conditional_guarded_reference_v2/results.json",
+  "projected_heads": "paper_artifacts/historical_conditional_guarded_reference_v2/heads.json",
+  "historical_precision_plan": "performance/manifests/historical_factorized_tower_v1.json",
+  "layout": "5",
+  "candidate": 5,
+  "identity_indices": [4, 5],
+  "fantasy_powers": [4, 5],
+  "draw_powers": [12, 14, 16],
+  "seed": 202610077,
+  "maximum_retained_identity_expectation_error": 0.000001,
+  "maximum_projection_difference_resolution_change": 0.0001,
+  "maximum_single_thread_cpu_seconds": 360,
+  "scope": "Freeze layout5/query5,guarded debited action[5,0,1] with[130,130,83],all learned laws/weights and both previous paid updates. Reuse the saved first32 predictive labels and projected head statistics exactly. For both heads of the two dominant identities,condition the next raw label with the historical posterior-component/eta Gaussian proposal and exact likelihood ratio;condition the remaining field analytically given query eta and label,and reuse current guarded mean integration and16-node verifier SD rule. Retain4096/16384/65536 draw and16/32 fantasy prefixes irrespective of sign. The other six identities retain their cached projected expectations;error in full fixed utility is bounded by their unchanged total mass<=1e-6,without changing any prior/filter/model weight. This bound does not apply to adaptive maxima. Check original importance ESS/evidence gates and paired-resolution changes<=1e-4 before attributing projection bias. Only the next episode avoids projection;no claim about the two earlier projected updates. No new raw labels,source fits,simulator/verifier calls,independent outcomes or server jobs.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_conditional_raw_guarded_v1"
+}

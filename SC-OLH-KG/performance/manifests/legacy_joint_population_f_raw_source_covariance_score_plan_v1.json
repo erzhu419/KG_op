@@ -1,0 +1,30 @@
+{
+  "status": "completed;analytic Gaussian score identities pass;raw projected score directions stable across split summaries;Mstep registered",
+  "entrypoint": "performance/diagnose_legacy_f_raw_source_covariance_score.py",
+  "source_results": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+  "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "question": "Are the old fixed-noise covariance parameters still locally stationary under the original48-source raw likelihood,or must source covariance learning change after posterior conditioning is repaired?",
+  "identity": "For Gaussian source f prior N(m,K(theta)),the raw marginal NLL gradient equals .5/48 trace((K^-1-K^-1 E[(f-m)(f-m)^T|all raw batches] K^-1) dK/dtheta). Use the verified Rao-Blackwell posterior mean/covariance and its two split summaries;no new chains or labels. Compute via prior-Cholesky whitening for stable traces. Structural four parameter directions are its existing common/task root amplitudes and spectral exponents;GP four directions are its existing common/task RBF amplitudes,task intercept and white discrepancy. Means,lengthscales,templates,positive tails and empirical source risk law stay fixed.",
+  "verification": "Under the analytic fixed-noise f posterior,the prior-score identity must reproduce the structural source Gaussian objective gradient and the GP dense Gaussian gradient at1e-8. Apply the ORIGINAL parameter bounds when computing projected scores,p in[0,4] and all nonnegative amplitudes. Do not infer significance from the gradient magnitude or select parameters from held-source errors.",
+  "decision": "If raw gradient directions are appreciable and agree across the two split posterior summaries,register a source-only covariance-learning pilot under this raw law with equal-information GP control. If they are small or split-unstable,do not claim covariance correction will solve the transfer problem;assess mean/function bias. No parameter optimization or held-task forecast in this diagnostic.",
+  "maximum_single_thread_cpu_seconds": 15,
+  "cost": {
+    "new_source_labels": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;existing posterior sufficient moments and fixed covariance derivatives;small JSON,no NPZ or server work",
+  "scope": "Local raw source-learning diagnostic,not an optimized candidate or decision evidence. Original four prior principles and matched source information retained;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_source_covariance_score_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_source_covariance_score_v1/results.json"
+}

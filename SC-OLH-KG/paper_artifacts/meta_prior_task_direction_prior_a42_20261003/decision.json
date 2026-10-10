@@ -1,0 +1,13 @@
+{
+  "stage": "meta_prior_task_direction_prior_a42_20261003",
+  "complete": true,
+  "source_gate_passed": false,
+  "promote": false,
+  "optimizer_status": "32/40 converge;8 hit the prespecified120 iteration limit. No extension or rerun.",
+  "finding": "Overall D-I,D-DG,D-P intervals cross zero; compatible shared and separate-head D-I intervals are negative. Task heterogeneity has positive D-P contrasts in support mismatch and separate-head tasks, but it does not yield superiority over I. Limited per-task optimization prevents a definitive statement about the converged empirical-direction model.",
+  "information_scope": "Original I uses a local8-task x64-point x12-replicate archive (6144 calls), matched to target risk support in shared and separate-head mechanisms. Each new empirical direction uses only one deduplicated short historical task. Both D and its controls retain I local atoms; D does not replace the original source archive. Source specificity and parameter uncertainty therefore remain relevant, and these tests do not refute conditional meta-prior learning.",
+  "next_hypothesis": "Compute source coefficient posterior second moments under frozen fold priors rather than68 independent task-level point variance estimates. Retain coefficient uncertainty and source task directions; new target means remain zero.",
+  "next_plan": "performance/meta_prior_task_direction_moment_plan.json",
+  "new_observations": 0,
+  "server_jobs": 0
+}

@@ -1,0 +1,863 @@
+{
+  "execution": {
+    "status": "registered after the source-budget result and public-only geometry diagnostic, before refitting or new actions",
+    "inputs": "paper_artifacts/legacy_joint_population_source_budget_v1/inputs.json",
+    "public_geometry": "paper_artifacts/legacy_joint_population_source_budget_v1/public_geometry_diagnostic.json",
+    "previous_results": "paper_artifacts/legacy_joint_population_source_budget_v1/results.json",
+    "output": "paper_artifacts/legacy_joint_population_public_reference_v1",
+    "reached_problem": "observed16-reference basis has target absolute features up to366.35 versus6.27 at observed source sites; public73-source-catalog reference lowers the target maximum to18.90 and maximal row energy179164 to787 without additional labels",
+    "change": "define orthogonalization and derivative energy on the complete unlabeled public source-policy catalog, using the same16-label-trained encoder; keep the selected16 labels, response noise, signal/tail/discrepancy rules, function library and joint-population likelihood unchanged",
+    "reference_rule": "all73 public source policies atd50, transformed by the16-site-trained encoder; no heldout response, target observation or scoring truth defines the basis reference",
+    "source_max_iterations": 1024,
+    "arms": [
+      "joint_population_structural",
+      "joint_population_full"
+    ],
+    "target_prefix": 2,
+    "total_target_call_cap": 362,
+    "terminal_contract": "same73 primaries, two cached raw observations, support roster, fixed public retained candidate2, guarded/direct allocations and verifier as the completed source-budget experiment",
+    "freeze_rule": "save all12 structural/full actions before cached target scoring; compare with the16/73-site old controls, including the unchanged generic GP",
+    "terminal_draw_power": 13,
+    "integration_seed": 80771,
+    "bootstrap_seed": 80811,
+    "bootstrap_draws": 10000,
+    "new_simulator_call_cap": 0,
+    "execution": "eight source head fits once locally, cached small JSON, serial single-thread, no target-specific source fit or server dispatch/pulls",
+    "interpretation": "opened-task public-reference geometry attribution; cannot erase the registered16-site negative result or establish independent performance, universal source efficiency or KG benefit"
+  },
+  "rows": [
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_structural",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6792197461394756,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.8104520613955185,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.006828583535565566,
+          0.14553073973932293,
+          0.0319215239801947,
+          0.31946303421367384
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.7323943661971831,
+          0.9577464788732394,
+          0.7746478873239436,
+          0.9577464788732394
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_full",
+      "action_index": 217,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "predicted_reward": 0.6564265720434761,
+      "predicted_verification_calls": 239.8646696882031,
+      "scores": {
+        "conditional_safe_reward": 0.8104520613955192,
+        "conditional_total_calls": 213.99999999999994,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.0068359018934033835,
+          0.1455746931734945,
+          0.03259992293885468,
+          0.3146187876778
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.9577464788732394,
+          1.0,
+          0.7887323943661971,
+          1.0
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_structural",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6166555831268585,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.8073731950138368,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.006023482559259162,
+          0.14554234788033862,
+          0.03941206016186257,
+          0.2807520056355134
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.7746478873239436,
+          0.9577464788732394,
+          0.7464788732394366,
+          0.9577464788732394
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_full",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5994853745267968,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.8073731950138368,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.0060295122857568955,
+          0.14557522035330134,
+          0.03977674822104017,
+          0.28163050813092605
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.9577464788732394,
+          1.0,
+          0.7323943661971831,
+          1.0
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_structural",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6814777329272421,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.8093317520875238,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.005831762413494875,
+          0.14552942140133082,
+          0.034022474132140886,
+          0.27793637740130983
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.7746478873239436,
+          0.9577464788732394,
+          0.7464788732394366,
+          0.971830985915493
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_full",
+      "action_index": 217,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          1,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          131,
+          81,
+          132
+        ]
+      },
+      "predicted_reward": 0.655582325657583,
+      "predicted_verification_calls": 240.38322023953435,
+      "scores": {
+        "conditional_safe_reward": 0.8093316913492581,
+        "conditional_total_calls": 214.00000990626043,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.005833683361218705,
+          0.1455746462528594,
+          0.03500773327135355,
+          0.27687991132593265
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.971830985915493,
+          1.0,
+          0.7464788732394366,
+          1.0
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_structural",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5480314791197533,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.733927665132354,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.006952926975515134,
+          0.14553116213352713,
+          0.04139856399747056,
+          0.3082274156929713
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.7605633802816901,
+          0.9577464788732394,
+          0.7605633802816901,
+          0.9577464788732394
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_full",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5503250130069604,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.733927665132354,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.006959325055880011,
+          0.14557466816195985,
+          0.042290787233244365,
+          0.3117988372462559
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.9577464788732394,
+          1.0,
+          0.7746478873239436,
+          1.0
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_structural",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6038190912464676,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.8071714342855252,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.005329890432142942,
+          0.14559314671780238,
+          0.035561638044668976,
+          0.2980361942611222
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.8028169014084507,
+          0.9577464788732394,
+          0.7605633802816901,
+          0.9577464788732394
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_full",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5913902398420988,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.8071714342855252,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.005349257107985106,
+          0.14557723777529286,
+          0.036200740408365566,
+          0.2974117589876613
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.9577464788732394,
+          1.0,
+          0.7605633802816901,
+          1.0
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_structural",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.6054920153698231,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.0757730012655785,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.00889798186314069,
+          0.14557097345006256,
+          0.04141372690575975,
+          0.3344440840202307
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.676056338028169,
+          0.9577464788732394,
+          0.8028169014084507,
+          0.9577464788732394
+        ]
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_full",
+      "action_index": 506,
+      "action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "predicted_reward": 0.5912137284438184,
+      "predicted_verification_calls": 360.0,
+      "scores": {
+        "conditional_safe_reward": 0.0757730012655785,
+        "conditional_total_calls": 362.0,
+        "primary_feasible": true
+      },
+      "forecast": {
+        "head_order": [
+          "f",
+          "eta_f",
+          "g",
+          "eta_g"
+        ],
+        "truth_mse": [
+          0.008897278940462222,
+          0.1455764288627789,
+          0.04169962788437372,
+          0.33823340853795936
+        ],
+        "moment_interval_95_truth_coverage": [
+          0.9014084507042254,
+          1.0,
+          0.8169014084507042,
+          1.0
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "joint_population_structural": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.6740048515300562,
+      "conditional_total_calls": 362.0,
+      "truth_mse": [
+        0.006644104629853061,
+        0.14554963188706407,
+        0.037288331203682905,
+        0.3031431852041369
+      ]
+    },
+    "joint_population_full": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.674004841407012,
+      "conditional_total_calls": 312.66666831771005,
+      "truth_mse": [
+        0.006650826440784387,
+        0.1455754824299478,
+        0.037929259992872014,
+        0.30342886865108915
+      ]
+    }
+  },
+  "paired_comparisons": [
+    {
+      "arm": "joint_population_structural",
+      "reference": [
+        16,
+        "joint_population_structural"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.0004598280360414986,
+            -0.00020285182413437575,
+            -9.404155180137153e-07,
+            0.733927665132354,
+            -0.0005310045615420922,
+            -0.2828293238427873
+          ],
+          "mean_difference": 0.07498395274205512,
+          "task_bootstrap_95_interval": [
+            -0.14153712805492605,
+            0.3667985370639934
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": [
+        16,
+        "joint_population_rbf_shared_raw"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": [
+        73,
+        "joint_population_structural"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.005564902236711133,
+            0.0022756873575280334,
+            0.006618124101145373,
+            -0.07190565798811166,
+            -0.0015874451148639723,
+            -0.7306681024954687
+          ],
+          "mean_difference": -0.13161708198384328,
+          "task_bootstrap_95_interval": [
+            -0.3760115626467131,
+            0.004000178842323805
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_full",
+      "reference": [
+        16,
+        "joint_population_full"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.00045982803604083244,
+            -0.00020285182413437575,
+            -1.001153783763975e-06,
+            -0.05726285146990062,
+            -0.0005310045615420922,
+            -0.2828293238427873
+          ],
+          "mean_difference": -0.05688114348136483,
+          "task_bootstrap_95_interval": [
+            -0.1510471381189314,
+            -0.00024495251315341066
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            -148.00000000000006,
+            0.0,
+            -147.99999009373957,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": -49.33333168228993,
+          "task_bootstrap_95_interval": [
+            -98.66666501562331,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_full",
+      "reference": [
+        16,
+        "joint_population_rbf_shared_raw"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            6.661338147750939e-16,
+            0.0,
+            -6.073826575025976e-08,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": -1.0123044180687657e-08,
+          "task_bootstrap_95_interval": [
+            -3.036913287512988e-08,
+            3.3306690738754696e-16
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            -148.00000000000006,
+            0.0,
+            -147.99999009373957,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": -49.33333168228993,
+          "task_bootstrap_95_interval": [
+            -98.66666501562331,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_full",
+      "reference": [
+        73,
+        "joint_population_full"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.1275693016987255,
+            0.002275693400723977,
+            0.006851993136413048,
+            -0.07190564135264588,
+            -0.0015874451146604684,
+            -0.7306680675600659
+          ],
+          "mean_difference": -0.11124402763191828,
+          "task_bootstrap_95_interval": [
+            -0.3661277563373632,
+            0.04632837936790235
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            -20.008496649463552,
+            147.99999900918596,
+            -0.03845802181493241,
+            147.99999727501773,
+            147.99999999996675,
+            147.9999942816987
+          ],
+          "mean_difference": 95.32550598243176,
+          "task_bootstrap_95_interval": [
+            39.32267393108514,
+            147.99999826250362
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": [
+        "public_reference16",
+        "joint_population_full"
+      ],
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -6.661338147750939e-16,
+            0.0,
+            6.073826575025976e-08,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 1.0123044180687657e-08,
+          "task_bootstrap_95_interval": [
+            -3.3306690738754696e-16,
+            3.036913287512988e-08
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            148.00000000000006,
+            0.0,
+            147.99999009373957,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 49.33333168228993,
+          "task_bootstrap_95_interval": [
+            0.0,
+            98.66666501562331
+          ]
+        }
+      }
+    }
+  ],
+  "cost": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "source_response_archive_calls": 288,
+    "new_native_source_head_fits": 8,
+    "cached_logical_initialization_calls": 24
+  },
+  "source_fit_cpu_seconds": 0.594461658,
+  "cpu_seconds": 94.914511796
+}

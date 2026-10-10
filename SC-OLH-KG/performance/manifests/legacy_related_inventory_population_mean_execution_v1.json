@@ -1,0 +1,17 @@
+{
+  "plan": "performance/manifests/legacy_related_inventory_population_mean_plan_v1.json",
+  "output": "paper_artifacts/legacy_related_inventory_population_mean_v1/",
+  "arms": ["zero_mean_full", "zero_mean_structural", "common_mean_full", "common_mean_structural"],
+  "source_head_fits_per_fold": 4,
+  "source_fit": "reuse observable-coordinate fit and four original orthogonal head fits only; unused legacy-coordinate fits omitted; max1024 iterations and original objective/tolerances",
+  "source_preflight": "six leave-one-task-out folds of tasks0-5; source label Gaussian approximation and observed batch-label noise retained, no heldout adaptation; score all73 sites only after that fold's priors and common mean freeze",
+  "mean_attribution": "estimate each common mean using its structural prior, then copy that same mean into its full-dictionary control; both new-task covariances and discrepancy remain unchanged; plug-in common mean without adding parameter-estimation covariance",
+  "terminal_class": "all four arms reuse the exact stage17 full-bank guarded/direct actions, including the stage17 pre-scoring retained candidate4/34; no new retained candidate chosen after truth",
+  "adaptation_calls": 4,
+  "total_target_call_cap": 362,
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "freeze": "save all eight development decisions before loading stage17 fold scoring truth for this replay",
+  "endpoints": "same stage17 four-head predictions, complete-identity batch log score, certified and genuinely safe conditional rewards, costs and same-class regret; keep old results",
+  "execution": "local serial single-thread,28 native head fits,0 new simulator calls or server tasks; all adaptation records and scoring truths cached"
+}

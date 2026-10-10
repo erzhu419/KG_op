@@ -1,0 +1,895 @@
+{
+  "execution_plan": "performance/manifests/historical_raw_source_amplitude_learning_v1.json",
+  "rows": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0177312990533158,
+        "minimum_autocorrelation_ess": 222.68650684158212,
+        "maximum_first_second_half_f_variance_relative_difference": 0.15153915377875776
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0133314844083448,
+        "minimum_autocorrelation_ess": 263.04979176461785,
+        "maximum_first_second_half_f_variance_relative_difference": 0.309295724071656
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0251963313902328,
+        "minimum_autocorrelation_ess": 248.97852337552933,
+        "maximum_first_second_half_f_variance_relative_difference": 0.09168747509088321
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0194238667356694,
+        "minimum_autocorrelation_ess": 320.73139540706245,
+        "maximum_first_second_half_f_variance_relative_difference": 0.10994908344351663
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": true
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_spectral_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.035677145569459,
+        "minimum_autocorrelation_ess": 188.21576747262708,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1591171179835794
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0281990169189197,
+        "minimum_autocorrelation_ess": 179.26845315375567,
+        "maximum_first_second_half_f_variance_relative_difference": 0.16640044590649616
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/f_layout5_spectral_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.023531155158041,
+        "minimum_autocorrelation_ess": 351.10367832482996,
+        "maximum_first_second_half_f_variance_relative_difference": 0.10737864750710159
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.014704972905737,
+        "minimum_autocorrelation_ess": 295.4965938383187,
+        "maximum_first_second_half_f_variance_relative_difference": 0.15618017778978935
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_variance_resolution_v4/source_cases/f_layout5_additive_head_specific_observed_task.json",
+      "retained_component_count": 1024,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0074351037248037,
+        "minimum_autocorrelation_ess": 419.5740835764254,
+        "maximum_first_second_half_f_variance_relative_difference": 0.19385249938004837
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0060892650666733,
+        "minimum_autocorrelation_ess": 747.0761436254193,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1964047246188361
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/f_layout5_additive_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.007405013323211,
+        "minimum_autocorrelation_ess": 330.18044387900477,
+        "maximum_first_second_half_f_variance_relative_difference": 0.12010497382647703
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0158272404724842,
+        "minimum_autocorrelation_ess": 385.3112537735212,
+        "maximum_first_second_half_f_variance_relative_difference": 0.22629965359663126
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/f_layout5_additive_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0233320697023427,
+        "minimum_autocorrelation_ess": 245.8868774916036,
+        "maximum_first_second_half_f_variance_relative_difference": 0.12038465810598177
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0162632440251307,
+        "minimum_autocorrelation_ess": 372.54449619847463,
+        "maximum_first_second_half_f_variance_relative_difference": 0.2669491163257547
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout5_additive_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.016357403288284,
+        "minimum_autocorrelation_ess": 283.14380996542536,
+        "maximum_first_second_half_f_variance_relative_difference": 0.23301146043870638
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0151148381809432,
+        "minimum_autocorrelation_ess": 281.7317532146437,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1552173236468457
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/f_layout6_spectral_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0166095803803168,
+        "minimum_autocorrelation_ess": 369.8324146197679,
+        "maximum_first_second_half_f_variance_relative_difference": 0.14830410915330772
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0085652840133579,
+        "minimum_autocorrelation_ess": 358.371642939175,
+        "maximum_first_second_half_f_variance_relative_difference": 0.21671966982245244
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0148074692138291,
+        "minimum_autocorrelation_ess": 252.41146642808658,
+        "maximum_first_second_half_f_variance_relative_difference": 0.11772312329781484
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0104430761102885,
+        "minimum_autocorrelation_ess": 341.3546661013895,
+        "maximum_first_second_half_f_variance_relative_difference": 0.09708893272891908
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": true
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.029977912407902,
+        "minimum_autocorrelation_ess": 199.7861091550811,
+        "maximum_first_second_half_f_variance_relative_difference": 0.12410056403253465
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0151858314958984,
+        "minimum_autocorrelation_ess": 330.09690868170827,
+        "maximum_first_second_half_f_variance_relative_difference": 0.18589454238767583
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_spectral_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0191551803342558,
+        "minimum_autocorrelation_ess": 242.218749131747,
+        "maximum_first_second_half_f_variance_relative_difference": 0.10521209148822916
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0163943701599434,
+        "minimum_autocorrelation_ess": 242.47273441350407,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1402405446060838
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": true
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "ESS",
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0434224891957065,
+        "minimum_autocorrelation_ess": 115.74136413693772,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1753134137874789
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0370481725193343,
+        "minimum_autocorrelation_ess": 93.3468517822844,
+        "maximum_first_second_half_f_variance_relative_difference": 0.27418928091202643
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0325825441868999,
+        "minimum_autocorrelation_ess": 280.9528866891361,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1326551302289935
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0215070972551894,
+        "minimum_autocorrelation_ess": 330.962358705094,
+        "maximum_first_second_half_f_variance_relative_difference": 0.09368366208409083
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_variance_resolution_v1/source_cases/f_layout6_additive_joint_observed_task.json",
+      "retained_component_count": 1024,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0081622815716962,
+        "minimum_autocorrelation_ess": 706.7190740399744,
+        "maximum_first_second_half_f_variance_relative_difference": 0.11543438734624989
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0069136486083285,
+        "minimum_autocorrelation_ess": 796.2186985689273,
+        "maximum_first_second_half_f_variance_relative_difference": 0.18427845703381845
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "source_case": "paper_artifacts/historical_source_reconditioning_v1/cases/layout6_additive_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0172317153772839,
+        "minimum_autocorrelation_ess": 252.03041571251887,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1749751155056575
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0109727135148805,
+        "minimum_autocorrelation_ess": 249.2533398334277,
+        "maximum_first_second_half_f_variance_relative_difference": 0.172008890124186
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout5_spectral_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.019674046409714,
+        "minimum_autocorrelation_ess": 336.37221019711916,
+        "maximum_first_second_half_f_variance_relative_difference": 0.12460066900213977
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0113492690217738,
+        "minimum_autocorrelation_ess": 348.20287755932236,
+        "maximum_first_second_half_f_variance_relative_difference": 0.17038818371141803
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout5_spectral_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0184420610432925,
+        "minimum_autocorrelation_ess": 259.7028146466317,
+        "maximum_first_second_half_f_variance_relative_difference": 0.13565436671189476
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0212581707119808,
+        "minimum_autocorrelation_ess": 285.4154018116784,
+        "maximum_first_second_half_f_variance_relative_difference": 0.2141315737119156
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout5_spectral_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0182310986659213,
+        "minimum_autocorrelation_ess": 320.4864923407425,
+        "maximum_first_second_half_f_variance_relative_difference": 0.16491995246020205
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.017581074733177,
+        "minimum_autocorrelation_ess": 283.8709925023744,
+        "maximum_first_second_half_f_variance_relative_difference": 0.40986754378508283
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout5_spectral_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.019626895836077,
+        "minimum_autocorrelation_ess": 310.2865175985714,
+        "maximum_first_second_half_f_variance_relative_difference": 0.08672059207475125
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.025302483090905,
+        "minimum_autocorrelation_ess": 300.15785204107,
+        "maximum_first_second_half_f_variance_relative_difference": 0.2120858460221331
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout5_additive_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.012615478957501,
+        "minimum_autocorrelation_ess": 396.46864610014006,
+        "maximum_first_second_half_f_variance_relative_difference": 0.4330983912935861
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0123565188504609,
+        "minimum_autocorrelation_ess": 310.7052848267941,
+        "maximum_first_second_half_f_variance_relative_difference": 0.3934013903749546
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout5_additive_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0224847187313195,
+        "minimum_autocorrelation_ess": 212.11190082754604,
+        "maximum_first_second_half_f_variance_relative_difference": 0.229131567257145
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.016577393801066,
+        "minimum_autocorrelation_ess": 334.9680916581985,
+        "maximum_first_second_half_f_variance_relative_difference": 0.4114200667643618
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout5_additive_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.031872813957038,
+        "minimum_autocorrelation_ess": 272.01737077029725,
+        "maximum_first_second_half_f_variance_relative_difference": 0.17053598014023394
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0316372855587814,
+        "minimum_autocorrelation_ess": 119.41932574493627,
+        "maximum_first_second_half_f_variance_relative_difference": 0.21362285161652808
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout5_additive_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0198822115777546,
+        "minimum_autocorrelation_ess": 305.31549433932713,
+        "maximum_first_second_half_f_variance_relative_difference": 0.15171451157543614
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0170840096174327,
+        "minimum_autocorrelation_ess": 311.0413849991297,
+        "maximum_first_second_half_f_variance_relative_difference": 0.28007171493268956
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout6_spectral_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0089841594431983,
+        "minimum_autocorrelation_ess": 332.051233810035,
+        "maximum_first_second_half_f_variance_relative_difference": 0.07250623451858848
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0080344499593916,
+        "minimum_autocorrelation_ess": 396.0180530636876,
+        "maximum_first_second_half_f_variance_relative_difference": 0.10938163894716733
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": true
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout6_spectral_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.019712601891397,
+        "minimum_autocorrelation_ess": 221.16024887435523,
+        "maximum_first_second_half_f_variance_relative_difference": 0.09363352864863256
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0174800283720375,
+        "minimum_autocorrelation_ess": 273.6126957567163,
+        "maximum_first_second_half_f_variance_relative_difference": 0.10318459517100467
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": true
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout6_spectral_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0235483080702072,
+        "minimum_autocorrelation_ess": 222.09625758161798,
+        "maximum_first_second_half_f_variance_relative_difference": 0.10266948344807458
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0096520174030303,
+        "minimum_autocorrelation_ess": 319.02746256232166,
+        "maximum_first_second_half_f_variance_relative_difference": 0.24287398473485103
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_source_variance_resolution_v1/source_cases/g_layout6_spectral_joint_deconvolved_task.json",
+      "retained_component_count": 1024,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0050206637076948,
+        "minimum_autocorrelation_ess": 695.0460626790239,
+        "maximum_first_second_half_f_variance_relative_difference": 0.11398694399478053
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0043238087887105,
+        "minimum_autocorrelation_ess": 820.8889128289965,
+        "maximum_first_second_half_f_variance_relative_difference": 0.16003518021536844
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout6_additive_head_specific_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0115856194575445,
+        "minimum_autocorrelation_ess": 308.45075578765096,
+        "maximum_first_second_half_f_variance_relative_difference": 0.1992672106786244
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0102758247676127,
+        "minimum_autocorrelation_ess": 348.2784210329637,
+        "maximum_first_second_half_f_variance_relative_difference": 0.21051529782811546
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout6_additive_head_specific_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": true,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0325280252162874,
+        "minimum_autocorrelation_ess": 244.9330277023595,
+        "maximum_first_second_half_f_variance_relative_difference": 0.17066363354268166
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0220653081833209,
+        "minimum_autocorrelation_ess": 332.35928233295596,
+        "maximum_first_second_half_f_variance_relative_difference": 0.12641850815985212
+      },
+      "evidence_ratio_precision_passed": false,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/blocked_cases/g_layout6_additive_joint_observed_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": true,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0076171460572065,
+        "minimum_autocorrelation_ess": 345.1738122488114,
+        "maximum_first_second_half_f_variance_relative_difference": 0.11617270792567354
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0082317957984934,
+        "minimum_autocorrelation_ess": 338.3985271693152,
+        "maximum_first_second_half_f_variance_relative_difference": 0.232975636696685
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "source_case": "paper_artifacts/historical_complete_reuse_v1/source_cases/g_layout6_additive_joint_deconvolved_task.json",
+      "retained_component_count": 512,
+      "old_retained_precision_passed": false,
+      "new_retained_precision_passed": false,
+      "old_retained_failed_checks": [
+        "variance_split"
+      ],
+      "new_retained_failed_checks": [
+        "variance_split"
+      ],
+      "old_retained_diagnostics": {
+        "maximum_split_rhat": 1.0264980636074859,
+        "minimum_autocorrelation_ess": 196.8953045545974,
+        "maximum_first_second_half_f_variance_relative_difference": 0.18709050484019255
+      },
+      "new_retained_diagnostics": {
+        "maximum_split_rhat": 1.0156330677105498,
+        "minimum_autocorrelation_ess": 224.4714176089407,
+        "maximum_first_second_half_f_variance_relative_difference": 0.15905494901799086
+      },
+      "evidence_ratio_precision_passed": true,
+      "learned_combined_precision_passed": false
+    }
+  ],
+  "case_count": 32,
+  "old_retained_precision_cases_passed": 18,
+  "new_retained_precision_cases_passed": 7,
+  "old_pass_new_fail_cases": 12,
+  "old_fail_new_fail_cases": 13,
+  "old_fail_new_pass_cases": 1,
+  "original_full_chain32_PASS_preserved": true,
+  "new_source_MCMC_sweeps": 0,
+  "cpu_seconds": 1.8470092980000001,
+  "no_model_adopted": true,
+  "scope": "Paired old/new numerical diagnostic on identical retained eta states and original precision gates. Does not replace the original full-chain certificate or certify changed-law posterior tails."
+}

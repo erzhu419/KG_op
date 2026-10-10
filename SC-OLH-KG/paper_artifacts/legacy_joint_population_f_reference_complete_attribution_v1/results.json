@@ -1,0 +1,318 @@
+{
+  "execution": {
+    "status": "frozen before saved cached failure decomposition",
+    "complete_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_complete_v1/results.json",
+    "complete_profiles": "paper_artifacts/legacy_joint_population_f_task_level_reference_complete_v1/calibration_profiles.json",
+    "question": "Is the remaining original144 failure consistent with f mean level/shape error, rather than source-variance quadrature or changed g law?",
+    "diagnostic": "Allfour already opened cases; compare old144,Stage104,newmixture cached prior/paid means. On original71 scoring sites split f MSE exactly into squared mean residual and centered residual energy. Compare total difference using approximate95percent fixed-prediction measurement intervals from the existing independent three-repeat noise estimates. This is not task-population inference or a proper mixture-density decomposition. Record f/g proper raw-density differences from stored scores; no posterior replay or counterfactual law.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small JSON;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_reference_complete_attribution_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_reference_complete_attribution.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_reference_complete_attribution_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_reference_complete_attribution.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "task_index": 6,
+      "cases": {
+        "original144": {
+          "prior": {
+            "level_bias": 0.006590289400579624,
+            "level_mse": 4.343191438339214e-05,
+            "shape_mse": 8.365285401643147e-05,
+            "total_f_mse": 0.00012708476839982363
+          },
+          "raw_paid": {
+            "level_bias": 0.005951346541774478,
+            "level_mse": 3.5418525660291044e-05,
+            "shape_mse": 8.509618782150688e-05,
+            "total_f_mse": 0.00012051471348179791,
+            "f_raw_density": 1.1727153538122657,
+            "g_raw_density": 0.08739087973318113,
+            "eta_f_mse": 1.862141324153091
+          }
+        },
+        "stage104": {
+          "prior": {
+            "level_bias": 0.005433953272281713,
+            "level_mse": 2.9527848165341136e-05,
+            "shape_mse": 7.045305750607848e-05,
+            "total_f_mse": 9.998090567141962e-05
+          },
+          "raw_paid": {
+            "level_bias": 0.004232544951671787,
+            "level_mse": 1.7914436767922327e-05,
+            "shape_mse": 7.329501192277572e-05,
+            "total_f_mse": 9.120944869069807e-05,
+            "f_raw_density": 1.254066823359667,
+            "g_raw_density": 0.19278315503070217,
+            "eta_f_mse": 1.8616807572973069
+          }
+        },
+        "mixture216": {
+          "prior": {
+            "level_bias": 0.00543444131694399,
+            "level_mse": 2.9533152427307928e-05,
+            "shape_mse": 7.049161787130146e-05,
+            "total_f_mse": 0.00010002477029860937
+          },
+          "raw_paid": {
+            "level_bias": 0.004232694307326357,
+            "level_mse": 1.7915701099272947e-05,
+            "shape_mse": 7.297478443763433e-05,
+            "total_f_mse": 9.089048553690732e-05,
+            "f_raw_density": 1.254777701343928,
+            "g_raw_density": 0.19278065717509088,
+            "eta_f_mse": 1.8617696989556238
+          }
+        }
+      },
+      "mixture216_minus_original144": {
+        "level_mse": -1.7502824561018097e-05,
+        "shape_mse": -1.2121403383872557e-05,
+        "total_f_mse": -2.9624227944890596e-05,
+        "f_raw_density": 0.08206234753166242,
+        "g_raw_density": 0.10538977744190975,
+        "eta_f_mse": -0.0003716251974672513
+      },
+      "fixed_prediction_f_mse_difference_measurement_se": 4.85760481383399e-06,
+      "approximate95percent_measurement_interval": [
+        -3.914513338000522e-05,
+        -2.0103322509775976e-05
+      ],
+      "f_mse_increase_fraction": -0.24581420051556546
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "cases": {
+        "original144": {
+          "prior": {
+            "level_bias": -0.01925311722689134,
+            "level_mse": 0.00037068252295242003,
+            "shape_mse": 0.00021354383125840284,
+            "total_f_mse": 0.0005842263542108229
+          },
+          "raw_paid": {
+            "level_bias": -0.007379300840141622,
+            "level_mse": 5.445408088931485e-05,
+            "shape_mse": 0.00030115289892829536,
+            "total_f_mse": 0.00035560697981761025,
+            "f_raw_density": 0.8820575159700442,
+            "g_raw_density": -0.14164493000675077,
+            "eta_f_mse": 3.204531655504034
+          }
+        },
+        "stage104": {
+          "prior": {
+            "level_bias": -0.02040945335518925,
+            "level_mse": 0.00041654578625764573,
+            "shape_mse": 0.00015255809483654233,
+            "total_f_mse": 0.0005691038810941879
+          },
+          "raw_paid": {
+            "level_bias": -0.009210705457729423,
+            "level_mse": 8.483709502904659e-05,
+            "shape_mse": 0.00021776378723223,
+            "total_f_mse": 0.0003026008822612765,
+            "f_raw_density": 0.9356691356669163,
+            "g_raw_density": -0.07063639418553569,
+            "eta_f_mse": 3.2041047233959206
+          }
+        },
+        "mixture216": {
+          "prior": {
+            "level_bias": -0.020408965310526973,
+            "level_mse": 0.00041652586504629333,
+            "shape_mse": 0.00015247613941502824,
+            "total_f_mse": 0.0005690020044613216
+          },
+          "raw_paid": {
+            "level_bias": -0.008557582465834384,
+            "level_mse": 7.32322176595561e-05,
+            "shape_mse": 0.00021096067500730802,
+            "total_f_mse": 0.00028419289266686415,
+            "f_raw_density": 0.946708102973588,
+            "g_raw_density": -0.07063633264437699,
+            "eta_f_mse": 3.204153718212827
+          }
+        }
+      },
+      "mixture216_minus_original144": {
+        "level_mse": 1.8778136770241253e-05,
+        "shape_mse": -9.019222392098734e-05,
+        "total_f_mse": -7.14140871507461e-05,
+        "f_raw_density": 0.06465058700354376,
+        "g_raw_density": 0.07100859736237378,
+        "eta_f_mse": -0.00037793729120716435
+      },
+      "fixed_prediction_f_mse_difference_measurement_se": 4.742511356892456e-06,
+      "approximate95percent_measurement_interval": [
+        -8.070940941025531e-05,
+        -6.211876489123689e-05
+      ],
+      "f_mse_increase_fraction": -0.20082307492213503
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "cases": {
+        "original144": {
+          "prior": {
+            "level_bias": 0.006286859891131746,
+            "level_mse": 3.952460729072107e-05,
+            "shape_mse": 0.000103321815703196,
+            "total_f_mse": 0.00014284642299391707
+          },
+          "raw_paid": {
+            "level_bias": 0.006212384470859619,
+            "level_mse": 3.859372081377775e-05,
+            "shape_mse": 0.00010017306304110363,
+            "total_f_mse": 0.0001387667838548814,
+            "f_raw_density": 1.187443129218693,
+            "g_raw_density": 0.0383592987684577,
+            "eta_f_mse": 1.8040233600283013
+          }
+        },
+        "stage104": {
+          "prior": {
+            "level_bias": 0.0039038977904523064,
+            "level_mse": 1.52404179582984e-05,
+            "shape_mse": 7.327516785574652e-05,
+            "total_f_mse": 8.851558581404494e-05
+          },
+          "raw_paid": {
+            "level_bias": 0.004081539053609053,
+            "level_mse": 1.6658961046135887e-05,
+            "shape_mse": 7.264999527024224e-05,
+            "total_f_mse": 8.930895631637812e-05,
+            "f_raw_density": 1.2479108200313767,
+            "g_raw_density": 0.26030906354863464,
+            "eta_f_mse": 1.8040322108920912
+          }
+        },
+        "mixture216": {
+          "prior": {
+            "level_bias": 0.003904226931329459,
+            "level_mse": 1.5242987931318245e-05,
+            "shape_mse": 7.326966641116144e-05,
+            "total_f_mse": 8.851265434247968e-05
+          },
+          "raw_paid": {
+            "level_bias": 0.004102946758275542,
+            "level_mse": 1.6834172101243777e-05,
+            "shape_mse": 7.262159038249861e-05,
+            "total_f_mse": 8.94557624837424e-05,
+            "f_raw_density": 1.2481106462898552,
+            "g_raw_density": 0.26030979322474324,
+            "eta_f_mse": 1.8041455027193714
+          }
+        }
+      },
+      "mixture216_minus_original144": {
+        "level_mse": -2.175954871253397e-05,
+        "shape_mse": -2.7551472658605026e-05,
+        "total_f_mse": -4.931102137113902e-05,
+        "f_raw_density": 0.060667517071162136,
+        "g_raw_density": 0.22195049445628554,
+        "eta_f_mse": 0.0001221426910700263
+      },
+      "fixed_prediction_f_mse_difference_measurement_se": 5.164179470134091e-06,
+      "approximate95percent_measurement_interval": [
+        -5.9432813132601836e-05,
+        -3.91892296096762e-05
+      ],
+      "f_mse_increase_fraction": -0.35535176359428466
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "cases": {
+        "original144": {
+          "prior": {
+            "level_bias": -0.019556546736339213,
+            "level_mse": 0.00038245852025061994,
+            "shape_mse": 0.00010717708579373568,
+            "total_f_mse": 0.0004896356060443556
+          },
+          "raw_paid": {
+            "level_bias": -0.006492076949131569,
+            "level_mse": 4.2147063113445454e-05,
+            "shape_mse": 0.00013678342371792367,
+            "total_f_mse": 0.0001789304868313692,
+            "f_raw_density": 1.0018154915049127,
+            "g_raw_density": -0.15648669369551418,
+            "eta_f_mse": 3.2592090961442333
+          }
+        },
+        "stage104": {
+          "prior": {
+            "level_bias": -0.021939508837018656,
+            "level_mse": 0.00048134204800961966,
+            "shape_mse": 0.00013432881231083984,
+            "total_f_mse": 0.0006156708603204594
+          },
+          "raw_paid": {
+            "level_bias": -0.01048670490009688,
+            "level_mse": 0.00010997097966171592,
+            "shape_mse": 0.00022015735158561846,
+            "total_f_mse": 0.00033012833124733437,
+            "f_raw_density": 0.8550292844728172,
+            "g_raw_density": -0.04184487236137823,
+            "eta_f_mse": 3.260738052008161
+          }
+        },
+        "mixture216": {
+          "prior": {
+            "level_bias": -0.0219391796961415,
+            "level_mse": 0.00048132760573958754,
+            "shape_mse": 0.000134460367420947,
+            "total_f_mse": 0.0006157879731605347
+          },
+          "raw_paid": {
+            "level_bias": -0.009500190038885558,
+            "level_mse": 9.025361077494038e-05,
+            "shape_mse": 0.00021055339584033532,
+            "total_f_mse": 0.00030080700661527565,
+            "f_raw_density": 0.8761233946994149,
+            "g_raw_density": -0.041823074628287916,
+            "eta_f_mse": 3.26084726951052
+          }
+        }
+      },
+      "mixture216_minus_original144": {
+        "level_mse": 4.8106547661494927e-05,
+        "shape_mse": 7.376997212241165e-05,
+        "total_f_mse": 0.00012187651978390644,
+        "f_raw_density": -0.12569209680549775,
+        "g_raw_density": 0.11466361906722627,
+        "eta_f_mse": 0.0016381733662869102
+      },
+      "fixed_prediction_f_mse_difference_measurement_se": 7.6105756454661494e-06,
+      "approximate95percent_measurement_interval": [
+        0.00010695979151879279,
+        0.0001367932480490201
+      ],
+      "f_mse_increase_fraction": 0.6811389268658696
+    }
+  ],
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.025658630000000016,
+  "new_candidate_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

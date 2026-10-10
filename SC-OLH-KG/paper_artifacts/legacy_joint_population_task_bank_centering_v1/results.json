@@ -1,0 +1,536 @@
+{
+  "execution": {
+    "status": "frozen before centered task likelihood verification, fits and forecasts",
+    "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "native_profiles": "paper_artifacts/legacy_joint_population_task_spectral_moments_v1/calibration_profiles.json",
+    "residual_results": "paper_artifacts/legacy_joint_population_predictive_residual_geometry_v1/results.json",
+    "offset_results": "paper_artifacts/legacy_joint_population_task_offset_geometry_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "basis_of_next_step": "Stage85 conditional gamma uncertainty fails whole-transcript acceptance. Native standardized shape energy averages.757/.733 per dimension, while task1 offset z2.801/2.324 persists. Only the two task1 deletions include zero in the half-log-likelihood conditional intercept support (upper SD.0162/.0265). Public-bank average task uncertainty includes function-group contributions.00016975/.00009078, with offset/shape covariance. This supports one fixed task-population geometry contrast, not a proven repair, arbitrary intercept floor or universal sample scarcity claim.",
+    "model": "Keep the original27-column orthogonal design D_i=[1,Phi_i], common beta prior, group labels, spectral bounds[0,4], nonzero original coefficient tail, observation noise and white discrepancy family. For each task compute c_i=mean(Phi_i) over its complete public73-policy bank in that fold's original coordinates, without outcomes. Use Z_i=[1,Phi_i-c_i] only for residual task effects: y_i=D_i beta+Z_i u_i+epsilon_i, u_i~N(0,diag R). Equivalently in the unchanged original basis, residual covariance is T_i diag(R) T_i^T with T_i=[[1,-c_i^T],[0,I]]. This makes task bank level and centered shape independent conditional on source parameters; it adds no dictionary term, task descriptor kernel or fitted encoder. Common beta/H are reconditioned coherently using D_i and centered residual covariance.",
+    "estimation": "Rebuild the Gaussian joint source likelihood with D_i for common coefficients and Z_i for task variance gradients. Fit only g, once per five-task branch from the cached Stage71 selected native parameter vector. Use exactly the original branch optimizer L-BFGS-B,4096 iterations,ftol1e-9,gtol1e-5 and unchanged amplitude/spectral/discrepancy bounds. No extra starts, scalar calibration, gamma integration, support grid or automatic completion. Preserve any incomplete fit and stop without scoring if all12 fits are not complete on the original convergence rule.",
+    "verification": "Before fits, compare centered likelihood/posterior and analytic gradients with dense Gaussian marginal calculations on actual source data including the deleted-task1 boundary case under both assignments. Verify algebraic equivalence of Z diag(R) Z^T and D T diag(R) T^T D^T and recover native likelihood when public centers are set to zero. Verify tail on original nonintercept coefficients, PSD/symmetry and unchanged f/eta; these detect incorrect use of common versus residual design. Do not repeat already settled filtering tests.",
+    "forecast": "Freeze all12 fitted source laws, native and candidate prior/two-raw-paid forecasts before scoring the original12 deleted-task policies. At the new task use its own public-bank center to transform R, and retain H plus unchanged white discrepancy. Keep exact raw paid likelihood/moment updates and log evidence. The common source mean is not independently centered at each task.",
+    "development_acceptance": "Both assignments must have average paid g MSE no larger than Stage71 native, proper raw three-repeat g density strictly greater, and sequential transcript density no smaller. Report every fold and prior density, retaining Stage80 scalar calibration, Stage85 integration and GP as descriptive controls. These repeatedly used training folds remain development selection, not independent validation.",
+    "next_action": "Only a complete development pass permits separately registered full-six-source fitting and the unchanged same216/old144 source6/7 gates. A failure retains all results and revisits task-population adequacy; no automatic centered-basis alternatives, source gate waiver, target or confirmation scoring, terminal/KG or manuscript claims.",
+    "cost": {
+      "planned_new_g_source_fits": 12,
+      "maximum_completion_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON and public coordinates only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_task_bank_centering_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_task_bank_centering_plan_v1.json",
+    "entrypoint": "performance/check_legacy_task_bank_centering.py",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 4096,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "verification_branches": [
+      {
+        "layout": "5",
+        "deleted_task": 1
+      },
+      {
+        "layout": "6",
+        "deleted_task": 1
+      }
+    ]
+  },
+  "summary": {
+    "5": {
+      "native_source_nll_selection": {
+        "prior": {
+          "g_mse": 0.005411769997557592,
+          "g_gaussian_mean_density": 1.434510752940775,
+          "g_raw_batch_density": -0.4668777352784299
+        },
+        "raw_paid": {
+          "g_mse": 0.004725069876083391,
+          "g_gaussian_mean_density": 1.552164678442935,
+          "g_raw_batch_density": -0.27117367420507765,
+          "raw_paid_log_evidence": 3.1661060465798134,
+          "sequential_transcript_density": 1.5565772991353597
+        }
+      },
+      "public_bank_centered_task_population": {
+        "prior": {
+          "g_mse": 0.005558195338296933,
+          "g_gaussian_mean_density": 1.4740268375711905,
+          "g_raw_batch_density": -0.5004151835126992
+        },
+        "raw_paid": {
+          "g_mse": 0.004203281726055321,
+          "g_gaussian_mean_density": 1.5982295737210477,
+          "g_raw_batch_density": -0.23950256491091534,
+          "raw_paid_log_evidence": 3.1275298155882774,
+          "sequential_transcript_density": 1.5933060500172038
+        }
+      }
+    },
+    "6": {
+      "native_source_nll_selection": {
+        "prior": {
+          "g_mse": 0.006869314009216321,
+          "g_gaussian_mean_density": 1.4322121003944293,
+          "g_raw_batch_density": -0.564221383034273
+        },
+        "raw_paid": {
+          "g_mse": 0.005777479417100849,
+          "g_gaussian_mean_density": 1.561131295012057,
+          "g_raw_batch_density": -0.3489412528185219,
+          "raw_paid_log_evidence": 3.1394021700476924,
+          "sequential_transcript_density": 1.5623555507280271
+        }
+      },
+      "public_bank_centered_task_population": {
+        "prior": {
+          "g_mse": 0.006758856614684519,
+          "g_gaussian_mean_density": 1.4577339175712218,
+          "g_raw_batch_density": -0.5700824504798289
+        },
+        "raw_paid": {
+          "g_mse": 0.005293814100967413,
+          "g_gaussian_mean_density": 1.5905576349118131,
+          "g_raw_batch_density": -0.30949769995082027,
+          "raw_paid_log_evidence": 3.1145678322176065,
+          "sequential_transcript_density": 1.585804246511383
+        }
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": 0.00016033175684451338,
+          "g_gaussian_mean_density": -0.024116839627930098,
+          "g_raw_batch_density": -0.031040326338279182
+        },
+        "raw_paid": {
+          "g_mse": 0.0005210638242058902,
+          "g_gaussian_mean_density": -0.020569038260844774,
+          "g_raw_batch_density": -0.03101073175594128,
+          "raw_paid_log_evidence": -0.079646718459772,
+          "sequential_transcript_density": -0.02331965554213644
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": 0.0006571358338643453,
+          "g_gaussian_mean_density": 0.3388426313906645,
+          "g_raw_batch_density": -0.020370488235953887
+        },
+        "raw_paid": {
+          "g_mse": -0.002955110442103244,
+          "g_gaussian_mean_density": 0.3347066661942508,
+          "g_raw_batch_density": 0.20186962810450887,
+          "raw_paid_log_evidence": 0.30697818916200825,
+          "sequential_transcript_density": 0.3088184416780726
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": 9.435125476613343e-05,
+          "g_gaussian_mean_density": -0.012708893922501963,
+          "g_raw_batch_density": -0.04233314049167186
+        },
+        "raw_paid": {
+          "g_mse": -0.00013507554703704773,
+          "g_gaussian_mean_density": -0.005907171349324392,
+          "g_raw_batch_density": 0.008265180461165818,
+          "raw_paid_log_evidence": -0.05745963971858137,
+          "sequential_transcript_density": -0.00916754970789091
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": 0.00025758617367377043,
+          "g_gaussian_mean_density": -0.024782167876265415,
+          "g_raw_batch_density": -0.02954335155587884
+        },
+        "raw_paid": {
+          "g_mse": 0.00014739519060788867,
+          "g_gaussian_mean_density": -0.01701571244884459,
+          "g_raw_batch_density": -0.013005353123941021,
+          "raw_paid_log_evidence": -0.05870415723921418,
+          "sequential_transcript_density": -0.018778050473239327
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": -0.00011345161434238435,
+          "g_gaussian_mean_density": -0.05690042985982391,
+          "g_raw_batch_density": -0.02342766903282889
+        },
+        "raw_paid": {
+          "g_mse": -0.0001674100925665432,
+          "g_gaussian_mean_density": -0.04969839051472991,
+          "g_raw_batch_density": 0.018693208594675076,
+          "raw_paid_log_evidence": -0.10368501232978256,
+          "sequential_transcript_density": -0.05000469275046693
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": -0.00017740136037034011,
+          "g_gaussian_mean_density": 0.016762207678349572,
+          "g_raw_batch_density": -0.05450971375100355
+        },
+        "raw_paid": {
+          "g_mse": -0.0005415918332753672,
+          "g_gaussian_mean_density": 0.03487301804817089,
+          "g_raw_batch_density": 0.005214723484506328,
+          "raw_paid_log_evidence": -0.2389400473638783,
+          "sequential_transcript_density": 0.0128240120867269
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": -3.226281036640497e-05,
+          "g_gaussian_mean_density": -0.004737176382817232,
+          "g_raw_batch_density": -0.01387871955948361
+        },
+        "raw_paid": {
+          "g_mse": 3.300821725334656e-05,
+          "g_gaussian_mean_density": -0.0023541074441779664,
+          "g_raw_batch_density": -0.005208166878930026,
+          "raw_paid_log_evidence": -0.02577377937929981,
+          "sequential_transcript_density": -0.0038587906221023704
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": -0.0006881953565219794,
+          "g_gaussian_mean_density": 0.19150213662528248,
+          "g_raw_batch_density": 0.07274878338106827
+        },
+        "raw_paid": {
+          "g_mse": -0.0027579665689511142,
+          "g_gaussian_mean_density": 0.18605133495080617,
+          "g_raw_batch_density": 0.26663674471056886,
+          "raw_paid_log_evidence": 0.09389919024847115,
+          "sequential_transcript_density": 0.1661796578327246
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": -0.00014510979529789442,
+          "g_gaussian_mean_density": 0.021684950555115545,
+          "g_raw_batch_density": -0.0058163285777690366
+        },
+        "raw_paid": {
+          "g_mse": -0.0002787623219545673,
+          "g_gaussian_mean_density": 0.0234395456626868,
+          "g_raw_batch_density": 0.017870424727809975,
+          "raw_paid_log_evidence": -0.018265175990906712,
+          "sequential_transcript_density": 0.018786383711523857
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": -8.362363756486864e-05,
+          "g_gaussian_mean_density": -0.04697999668743713,
+          "g_raw_batch_density": -0.024820672323715987
+        },
+        "raw_paid": {
+          "g_mse": 0.0001091689255708593,
+          "g_gaussian_mean_density": -0.035639953615183684,
+          "g_raw_batch_density": -0.02069990731905913,
+          "raw_paid_log_evidence": -0.01743224138997501,
+          "sequential_transcript_density": -0.03179369176944169
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": 5.9033315562551786e-05,
+          "g_gaussian_mean_density": -0.0018183966319746947,
+          "g_raw_batch_density": -0.01482893488003545
+        },
+        "raw_paid": {
+          "g_mse": -4.450586762261635e-06,
+          "g_gaussian_mean_density": 0.004024845455238957,
+          "g_raw_batch_density": 0.0003534987141404766,
+          "raw_paid_log_evidence": -0.04294938500257528,
+          "sequential_transcript_density": 0.00038205431859239525
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "centered_minus_native": {
+        "prior": {
+          "g_mse": 0.0002274139169977903,
+          "g_gaussian_mean_density": -0.006520614417413473,
+          "g_raw_batch_density": -0.048570532713398895
+        },
+        "raw_paid": {
+          "g_mse": -2.9895619568752474e-06,
+          "g_gaussian_mean_density": 0.001036374389164818,
+          "g_raw_batch_density": -0.022291276748320432,
+          "raw_paid_log_evidence": -0.13848463546623457,
+          "sequential_transcript_density": -0.009003438771161276
+        }
+      }
+    }
+  ],
+  "benchmarks": {
+    "5": {
+      "stage80_calibrated": {
+        "g_mse": 0.004679180448812505,
+        "g_gaussian_mean_density": 1.5527971082433794,
+        "g_raw_batch_density": -0.266627900258441,
+        "raw_paid_log_evidence": 3.1711358020808866,
+        "sequential_transcript_density": 1.5574786500715314
+      },
+      "stage82_reconditioned": {
+        "g_mse": 0.004699874078446897,
+        "g_gaussian_mean_density": 1.5489387180470315,
+        "g_raw_batch_density": -0.2676789912668347,
+        "raw_paid_log_evidence": 3.1741655252584917,
+        "sequential_transcript_density": 1.5543878672730624
+      },
+      "stage85_integrated": {
+        "g_mse": 0.004658884306726393,
+        "g_gaussian_mean_density": 1.5457559314452023,
+        "g_raw_batch_density": -0.2711848741146174,
+        "raw_paid_log_evidence": 3.1409079636598007,
+        "sequential_transcript_density": 1.549284224357302
+      },
+      "same_source_gp": {
+        "prior_scores": {
+          "observed_head_mse": [
+            0.00040015487193777714,
+            0.005662982889371747,
+            2.064104876621944,
+            2.2152917397884644
+          ],
+          "joint_batch_log_score": -0.39108813751834964,
+          "response_batch_log_scores": [
+            0.6180695425311133,
+            -1.009157680049463
+          ],
+          "predictive_moment_band_95_observed_coverage": [
+            0.9722222222222222,
+            1.0,
+            0.9305555555555557,
+            0.9583333333333334
+          ],
+          "predictive_standardized_residual_rms": [
+            0.6728995288583725,
+            0.44981919690693845,
+            1.041250277387139,
+            1.0108601622965645
+          ]
+        },
+        "scores": {
+          "observed_head_mse": [
+            0.0003150280868357198,
+            0.0036597363627103793,
+            2.066286474053255,
+            2.2149847589146923
+          ],
+          "joint_batch_log_score": 0.7109400783251759,
+          "response_batch_log_scores": [
+            0.9311946283630371,
+            -0.220254550037861
+          ],
+          "predictive_moment_band_95_observed_coverage": [
+            0.9166666666666665,
+            0.9444444444444443,
+            0.9305555555555557,
+            0.9583333333333334
+          ],
+          "predictive_standardized_residual_rms": [
+            1.0577250481385745,
+            0.8570049031957305,
+            1.0419622816586367,
+            1.0107742999520772
+          ]
+        }
+      }
+    },
+    "6": {
+      "stage80_calibrated": {
+        "g_mse": 0.0050265758380475195,
+        "g_gaussian_mean_density": 1.5997357713290457,
+        "g_raw_batch_density": -0.283593894088091,
+        "raw_paid_log_evidence": 2.908452348662674,
+        "sequential_transcript_density": 1.5789486860436586
+      },
+      "stage82_reconditioned": {
+        "g_mse": 0.004932666823128005,
+        "g_gaussian_mean_density": 1.599435833989442,
+        "g_raw_batch_density": -0.27038387693007027,
+        "raw_paid_log_evidence": 2.8823440036446875,
+        "sequential_transcript_density": 1.5768267151084279
+      },
+      "stage85_integrated": {
+        "g_mse": 0.005733945922347677,
+        "g_gaussian_mean_density": 1.5564055606364253,
+        "g_raw_batch_density": -0.3475738877217826,
+        "raw_paid_log_evidence": 3.109852725154441,
+        "sequential_transcript_density": 1.5561942466279675
+      },
+      "same_source_gp": {
+        "prior_scores": {
+          "observed_head_mse": [
+            0.0004964094317754544,
+            0.006667617815068923,
+            1.78820115042404,
+            1.6022940475271852
+          ],
+          "joint_batch_log_score": -0.33733733714564734,
+          "response_batch_log_scores": [
+            0.6589364039208209,
+            -0.9962737410664683
+          ],
+          "predictive_moment_band_95_observed_coverage": [
+            1.0,
+            1.0,
+            0.9722222222222222,
+            0.9722222222222222
+          ],
+          "predictive_standardized_residual_rms": [
+            0.672709908038296,
+            0.47072330154856123,
+            0.9138329300456304,
+            0.808167613999816
+          ]
+        },
+        "scores": {
+          "observed_head_mse": [
+            0.0003962582226681907,
+            0.00428714226138057,
+            1.789947302563685,
+            1.5939014389549193
+          ],
+          "joint_batch_log_score": 0.7583979010025041,
+          "response_batch_log_scores": [
+            0.9294090927744326,
+            -0.1710111917719285
+          ],
+          "predictive_moment_band_95_observed_coverage": [
+            0.8749999999999999,
+            0.9583333333333334,
+            0.9722222222222222,
+            0.9722222222222222
+          ],
+          "predictive_standardized_residual_rms": [
+            1.1220823802721636,
+            0.9217084142675369,
+            0.9141563926940465,
+            0.8071660073779002
+          ]
+        }
+      }
+    }
+  },
+  "preferred_by_layout": {
+    "5": true,
+    "6": true
+  },
+  "centering_preferred": true,
+  "all_fits_complete": true,
+  "forecasts_scored": true,
+  "verification": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "nll_absolute_error": 7.549516567451064e-15,
+      "gradient_max_absolute_error": 7.545963853772264e-12,
+      "common_covariance_max_absolute_error": 3.165870343657673e-17,
+      "zero_center_native_law_reproduced": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "nll_absolute_error": 8.881784197001252e-16,
+      "gradient_max_absolute_error": 1.3873346915715956e-12,
+      "common_covariance_max_absolute_error": 2.8433201973432354e-17,
+      "zero_center_native_law_reproduced": true
+    }
+  ],
+  "cost": {
+    "planned_new_g_source_fits": 12,
+    "maximum_completion_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_new_g_source_fits": 13,
+    "completed_distinct_g_source_laws": 12,
+    "duplicate_identical_unsaved_solve": 1
+  },
+  "cpu_seconds": 1.668962554,
+  "source_holdouts_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "execution_incidents": "paper_artifacts/legacy_joint_population_task_bank_centering_v1/execution_incidents.json"
+}

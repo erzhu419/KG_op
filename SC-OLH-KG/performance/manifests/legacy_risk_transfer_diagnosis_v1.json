@@ -1,0 +1,22 @@
+{
+  "pilot": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+  "retention": "paper_artifacts/legacy_one_step_closed_loop_v1/retention.json",
+  "domain": "InventorySupplyChain",
+  "source_validation": "two leave-one-source-task-out folds within the existing Inventory archive; fit encoder, dictionary and four priors on the other task only; heldout task supplies first raw replicate at its first four sites, then score all three replicates at the remaining 60 sites",
+  "source_metrics": "exact shared-identity joint f/g batch log score; f/g and bias-corrected eta errors; log-variance predictive PIT integrating the actual chi-square sample-variance law, componentwise before identity mixing",
+  "single_source_intercept": "no between-task variance estimate from a single task; retain the existing .25 intercept variance floor",
+  "source_fit": "same maps, ARD, spectrum, discrepancy and 1024 optimizer cap; no source heldout labels tune parameters or correct the target prior",
+  "target_state": "four original records plus already observed point63 from pilot group2; five paid episodes reused, no new observations",
+  "target_terminal": "same augmented terminal class for stopping and both queries; restricted primary roster is union of saved model-selected primaries and original shortlist supports, independent of scoring truth; retain original pre-update recommendation63",
+  "queries": [63,50],
+  "query_roles": "repeat the retained good recommendation63 versus first observation of uncertain primary50",
+  "draw_power": 10,
+  "fantasy_power": 4,
+  "seeds": [80621,80622],
+  "reference_draw_power": 13,
+  "total_target_call_cap": 362,
+  "target_reference": "next-update raw-likelihood reference with analytic conditioning of query means and unprojected eta; same starting paid Gaussian moments and shared identity; debit one future simulation from terminal budget",
+  "execution": "local serial single-thread; two source folds and four bounded lookahead probes, simulator disabled; zero new simulations, independent certificates, server jobs or pulls; no target scoring truth",
+  "scope": "cross-source-law development diagnosis with only two source laws and one opened target state; restricted finite-bank predictive value is not actual deployment improvement or full KG optimization",
+  "output": "paper_artifacts/legacy_risk_transfer_diagnosis_v1/results.json"
+}

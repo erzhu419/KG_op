@@ -1,0 +1,16 @@
+{
+  "status": "registered before per-head future terminal factorization",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "queries": {"5": 7, "6": 4},
+  "seed": 202610077,
+  "terminal_power": 9,
+  "draw_power": 12,
+  "fantasy_powers": [4,5,6],
+  "maximum_single_thread_cpu_seconds": 150,
+  "projected_KG": "paper_artifacts/historical_mixture_lookahead_precision_v4/results.json",
+  "previous_joint_reference": "paper_artifacts/historical_positive_likelihood_reference_v3/results.json",
+  "precision": {"maximum_log_evidence_error": 0.02, "minimum_weight_ESS": 128, "maximum_absolute_tower_drift": 0.005},
+  "method": "Reuse historical terminal objective/comparison and joint safety-branch products. For a fixed action,p(y)w(h|y)=w(h)p_f(y_f|h)p_g(y_g|h);integrate each head branch statistic under its predictive law,then multiply within that same identity and average identities. No pooling across identities and no factorization of the adaptive maximum. Exact same positive source cases,weights,two paid values,budget and fixed debited action. Conditional raw-likelihood transport uses4096 particles;projected baseline uses the exact same512-draw terminal estimator as currentKG. Original likelihood reference gates unchanged;stop at first passing head resolution. Also record adaptation plus independently integrated projected baseline as a control-variate diagnostic;no adoption or scientific model ranking.",
+  "cost": {"new_source_labels": 0, "new_prior_fits": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_factorized_tower_v1"
+}

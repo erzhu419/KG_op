@@ -1,0 +1,23 @@
+{
+  "contract_id": "inventory_feasible_target_only_rbf_kg_v1",
+  "status": "frozen_before_target_only_execution",
+  "purpose": "Same-contract generic target-only RBF constrained-KG baseline.",
+  "base_contract": "performance/meta_prior_feasible_deployment_contract.json",
+  "source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+  "representation": "observable_inventory_exposure",
+  "mean_risk_model": "target_only_exact_isotropic_rbf",
+  "kernel": "rbf",
+  "lengthscale": 0.25,
+  "outputscale": 1.0,
+  "target_law_seeds": [95425, 95426, 95427, 95428, 95430, 95431, 95432, 95434],
+  "target_noise_seed_start": 96425,
+  "initial_policy_points": 8,
+  "target_search_points": 24,
+  "replicates": 12,
+  "verification_replicates": 928,
+  "original_confirmation_block_read": false,
+  "oracle_preflight": "inherited fixed development preflight; no seed is removed",
+  "paired_stream": "SeedSequence([noise_seed, 0, policy_index, visit]) for paid observations and SeedSequence([noise_seed, 1, final_choice]) for verification.",
+  "decision_gate": "baseline only; report all eight tasks and do not promote a deployment claim",
+  "server_jobs": 0
+}

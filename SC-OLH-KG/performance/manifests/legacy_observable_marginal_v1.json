@@ -1,0 +1,17 @@
+{
+  "replay": "paper_artifacts/legacy_observable_budget_v1/replay.json",
+  "cases": [
+    {"domain":"InventorySupplyChain","prefix":4,"arm":"observable_source_orthogonal"},
+    {"domain":"InventorySupplyChain","prefix":10,"arm":"observable_source_orthogonal"},
+    {"domain":"QueueResourceControl","prefix":4,"arm":"observable_source_full"},
+    {"domain":"QueueResourceControl","prefix":6,"arm":"observable_source_full"},
+    {"domain":"QueueResourceControl","prefix":13,"arm":"observable_source_orthogonal"},
+    {"domain":"FactorShockStatePolicyRZDT1","prefix":13,"arm":"observable_source_orthogonal"}
+  ],
+  "draw_power":13,
+  "seeds":[80519,80520],
+  "integration":"terminal_marginal",
+  "output":"precision_marginal.json",
+  "role":"replace unnecessarily high-dimensional whole-field integration by the exact up-to-three-policy joint marginal; retain covariance, same model and reward; resolve the actual Queue four-point numerical rank reversal",
+  "new_simulator_calls":0
+}

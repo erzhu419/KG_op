@@ -1,0 +1,34 @@
+{
+  "stage": "meta_prior_scale_preserving_target_attribution_a22_20261003",
+  "status": "frozen_target_attribution_complete_source_calibration_shift_gap_identified",
+  "fixed_after_a21_before_a22_results": true,
+  "question": "Are A21's remaining shifted-target losses mainly due to F/G covariance sharing or to source calibration of risk adaptation under a compatible-source-only pool?",
+  "basis": "A21 completes all160 paths and numerical controls. Shared-source target gain versus same-pool I/R has a positive nominal interval, but four other learned-prior strata have negative mean gains versus I/R. High-frequency and support-mismatch scores are coherently lower than old per-archive A12. The latter contrast also changes source calibration, so it cannot be assigned to F/G alone.",
+  "inputs": [
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/validation.json",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/validation.json",
+    "paper_artifacts/meta_prior_source_calibrated_adaptation_a12_20261003/validation.json"
+  ],
+  "accounting": "Keep A20's issued q fixed and move all F/G prior mass back to I. F/G effect is actual A21 minus this same-q I/R score. Joint-q effect is same-q I/R minus the same-source-pool I/R control. Source-pool calibration effect is same-source-pool I/R minus old per-archive A12. These three effects sum exactly to A21-minus-A12. Also retain the two removal-order-averaged F/G effects from the existing A18 accounting function; do not fit or select any weights.",
+  "summaries": "Retain all160 paths and steps9-24. Average within each path and pair16 seeds separately in each of five regimes and both prior arms. Report the same issued q values, same-pool I/R q and old A12 q, as well as pure F/G/R gains and posterior macro mass at steps9/24. Nominal paired intervals remain descriptive development evidence, not new independent confirmation.",
+  "controls": "Align saved seed/regime/arm/step/candidate identities. Reconstruct every saved A21 score from its branch densities and prior, verify total and F/G accounting identities, and confirm generic duplicate F/G contribute zero. Any discrepancy prevents attributing the loss.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 10,
+    "new_model_fits": 0,
+    "new_predictive_forecasts": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "candidate_recommendations": 0,
+    "new_random_verifications": 0
+  },
+  "paired_bootstrap_seed": 20261031,
+  "decision": "Identify the causal modeling assumption requiring a new source-only test. Retain A20/A21's mixed and negative results; no target-selected q, floor, winning branch or recommendation replay. Freeze any changed calibration as a new version and test it on source archives before another target test.",
+  "limitations": "This is exact frozen-predictor score accounting, not a causal intervention on new query paths. Same-pool I/R and old A12 use different amounts and structures of historical source information. Accounting cannot establish which alternative calibration would generalize or create source examples of target shifts.",
+  "result_artifacts": "paper_artifacts/meta_prior_scale_preserving_target_attribution_a22_20261003",
+  "next_plan": "performance/meta_prior_source_cross_archive_transfer_plan.json",
+  "execution_cpu_seconds": 0.18640928
+}

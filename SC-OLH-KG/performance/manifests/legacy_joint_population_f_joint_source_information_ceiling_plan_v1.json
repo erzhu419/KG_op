@@ -1,0 +1,31 @@
+{
+  "status": "completed;current12 policies rank12 versus16 selected columns;union24 restores selected rank;information bounds verified",
+  "entrypoint": "performance/diagnose_legacy_f_joint_source_information_ceiling.py",
+  "latent_noise_results": "paper_artifacts/legacy_joint_population_f_source_latent_noise_feasibility_v1/results.json",
+  "inner_source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+  "outer_source_laws": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/source_laws.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "inner_query_task": 0,
+  "question": "Under the CURRENT learned correlated common/task law,how much can more source-policy coverage reduce common uncertainty,and do existing source rosters observe the selected coefficient span?",
+  "calculation": "For the two canonical source4 and two source5 laws,hold A,R,center,white,support and fitted spectra fixed. Perfect revelation of all m task coefficient vectors gives H_floor=(A^-1+mR^-1)^-1;doubling m is a hypothetical information ceiling,not new task data. Compare the saved current H and full H+R+white to these bounds on the outcome-free public73 bank. Record per-task selected/full coefficient design ranks for the current12 policies,source-only union policies and full73 public bank. Existing Stage101 ceilings were for older diagonal six-source laws;do not transfer those results to the current correlated sparse source4/5 laws.",
+  "verification": "Check source rosters and public-policy coordinate alignment without responses. Require PSD information order H_current>=H_floor(m)>=H_floor(2m)and full-column public-bank rank. Verify the independent covariance-space conditional formula for H_floor. A mismatch stops interpretation rather than altering noise or ranks.",
+  "freeze": "Use saved coefficient covariances and outcome-free source psi/reference/roster metadata only. Do not index source response/noise arrays or query labels. All rosters exclude outer task1;no source6/7 evaluations.",
+  "decision": "If per-task coverage misses selected directions and the fixed-law ceiling offers material common uncertainty reduction,register a crossed source-policy coverage pilot before any new query forecast. Otherwise do not justify a large source-label expansion by covariance reduction alone. A bound is not expected MSE gain and excludes refitting A/R or improving a misspecified mean/task population.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached source coefficient matrices and public metadata;no server work,pulls or NPZ",
+  "scope": "Conditional source information diagnostic only. Point/amplitude candidates stopped;native intercept mixture reference;complete-model HOLD. No target,KG,source6/7,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_joint_source_information_ceiling_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_joint_source_information_ceiling_v1/results.json"
+}

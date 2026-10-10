@@ -1,0 +1,34 @@
+{
+  "status": "IMPLEMENTED_PREPARATION_COMPLETE_LOW_GROUPS_DISPATCHED",
+  "scope": "source_n1 only; same frozen query63 and source posterior.",
+  "historical_implementation": "performance/check_historical_gauss_risk_tail.py and performance/refine_historical_remaining_query_failures.py",
+  "cdf_tail_interval": [
+    0.9,
+    1.0
+  ],
+  "positive_legendre_orders": [
+    16,
+    32
+  ],
+  "reused_complement_prefixes": [
+    64,
+    128
+  ],
+  "objective_prefixes": [
+    16,
+    32
+  ],
+  "expected_new_risk_states": 96,
+  "uniform256_alternative_new_risk_states": 256,
+  "original_prior_weights": true,
+  "all_identity_likelihoods": true,
+  "price_native_recommendation_under_raw_law": true,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_action_resolution_difference": 0.0001,
+  "next_prerequisite": "96 new head states, followed by existing grouped terminal refinement and weighted collection.",
+  "physical_calls": 0,
+  "source_fits": 0,
+  "verifier_calls": 0,
+  "implementation": "performance/extend_historical_upper_risk.py",
+  "plan_reference": "paper_artifacts/historical_predictive_upper_risk_v6/plan.json"
+}

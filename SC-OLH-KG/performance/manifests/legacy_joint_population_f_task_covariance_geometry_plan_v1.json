@@ -1,0 +1,36 @@
+{
+  "status": "completed;original dictionary projection and task/common/white accounting verified",
+  "transplant_execution": "performance/manifests/legacy_joint_population_f_reference_prior_transplant_execution_v1.json",
+  "frozen_gp_priors": "paper_artifacts/legacy_joint_population_f_reference_prior_transplant_v1/frozen_priors.json",
+  "common_compression_laws": "paper_artifacts/legacy_joint_population_f_coherent_common_compression_v1/source_laws.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "question": "Is the useful sourceGP covariance dominated by source common-function uncertainty,new-task residual functions or white discrepancy,and how much task covariance lies in the original dictionary/sparse supports? Is task bank-level variation coupled to centered shape despite zero extra GP intercept variance?",
+  "law": "Use only cached source laws,frozen public GP prior moments and Stage107 full-dictionary common-prior projection. All twelve current selected GP laws were verified identical to Stage107's original GP laws. Derive projected task covariance from the cached common RBF projection and task/common amplitudes,keeping physical scaling and constant variance separate. Use original source variance-mixture common H and expected task intercept variance as the native reference. No query response/noise labels,paid forecasts,fits or numerical source integrations.",
+  "diagnostic": "Separate total public covariance into common posterior H,task RBF/intercept and white discrepancy. Report bank level/centered-shape variance contributions. Compare GP task covariance outside full27-column,original task-active groups and common/task-union supports. Report task coefficient offdiagonal geometry and the model-conditional linear association between level and shape using a relative1e-10 symmetric pseudoinverse. These are covariance descriptions,not recovered causal factors or empirical correlation tests.",
+  "verification": "Public query coordinates must equal the source public reference before reusing Stage107 projection. Cached common coefficient H must match projected GP common covariance. Task/common/white components reconstruct frozen total GP prior covariance,with PSD components. Full-bank task projection must reproduce cached-coefficient derivation. A disagreement blocks source geometry interpretation and detects a wrong kernel law,coordinate basis or constant/normalization accounting.",
+  "decision": "Choose a coherent source-only covariance-learning question that preserves original orthogonal coordinates,sparse groups,low-order dictionary,low-frequency marginal budgets and independent1% weak tail. Do not adopt GP moments,add factors/variance floors or automatically fit a new covariance template. Positive covariance probes remain development attribution;the full original gate is unchanged.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON inputs only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_task_covariance_geometry_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_task_covariance_geometry.py",
+  "entrypoint_status": "implemented and completed",
+  "results": "paper_artifacts/legacy_joint_population_f_task_covariance_geometry_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_sparse_task_template_plan_v1.json"
+}

@@ -1,0 +1,55 @@
+{
+  "manifest_id": "meta_prior_or_submission_v1_20261004",
+  "entrypoint": "manuscript/meta_prior_main.tex",
+  "supplement": "manuscript/meta_prior_supplement.tex",
+  "compiled_outputs": [
+    "manuscript/meta_prior_main.pdf",
+    "manuscript/meta_prior_supplement.pdf"
+  ],
+  "legacy_entrypoint": "manuscript/main.tex",
+  "legacy_boundary": "The atlas entrypoint and its supplement are separate evidence identities and are not inputs to the meta-prior result tables.",
+  "table_generator": "performance/render_meta_prior_tables.py",
+  "baseline_table_generator": "performance/render_meta_prior_baseline.py",
+  "uncertainty_generator": "performance/summarize_meta_prior_uncertainty.py",
+  "rbf_baseline_runner": "performance/run_meta_prior_feasible_rbf_baseline_v1.py",
+  "claim_audit": "performance/audit_meta_prior_claims.py",
+  "claim_audit_report": "docs/meta_prior_final_claim_audit_20261004.md",
+  "replay_entrypoint": "performance/replay_meta_prior_submission.py",
+  "reproducibility_note": "docs/meta_prior_submission_reproducibility_20261004.md",
+  "source_of_truth": {
+    "feasible_development_contract": "performance/meta_prior_feasible_deployment_contract.json",
+    "source_structure_control_contract": "performance/meta_prior_feasible_source_arm_v1.json",
+    "risk_identifiability_contract": "performance/meta_prior_risk_identifiability_contract_v1.json",
+    "independent_confirmation_v2_contract": "performance/meta_prior_feasible_confirmation_v2.json",
+    "development_source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+    "development_representation": "paper_artifacts/meta_prior_feasible_deployment_v1/representation_initial.json",
+    "development_closed_loop": "paper_artifacts/meta_prior_feasible_deployment_v1/closed_loop.json",
+    "development_structure_control": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_arm.json",
+    "risk_geometry": "paper_artifacts/meta_prior_risk_identifiability_v1/geometry_preflight.json",
+    "risk_initial_calibration": "paper_artifacts/meta_prior_risk_identifiability_v1/initial_calibration.json",
+    "risk_closed_loop": "paper_artifacts/meta_prior_risk_identifiability_v1/closed_loop.json",
+    "a45_diagnostic": "paper_artifacts/meta_prior_risk_fantasy_consistency_a45_20261004/diagnostic.json",
+    "confirmation_v2_preflight": "paper_artifacts/meta_prior_feasible_deployment_v1/confirmation_v2_preflight.json",
+    "confirmation_v2_result": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_confirmation_v2.json"
+    ,"target_only_development_contract": "performance/meta_prior_feasible_baseline_development_v1.json"
+    ,"target_only_development_result": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_development.json"
+    ,"target_only_confirmation_contract": "performance/meta_prior_feasible_baseline_v1.json"
+    ,"target_only_confirmation_result": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_confirmation_v2.json"
+    ,"target_only_baseline_comparison": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_baseline_comparison.json"
+    ,"paired_uncertainty": "paper_artifacts/meta_prior_feasible_deployment_v1/paired_uncertainty.json"
+    ,"rbf_development_contract": "performance/meta_prior_feasible_rbf_baseline_v1.json"
+    ,"rbf_development_result": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_rbf_development.json"
+    ,"rbf_confirmation_contract": "performance/meta_prior_feasible_rbf_confirmation_v2.json"
+    ,"rbf_confirmation_result": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_rbf_confirmation_v2.json"
+  },
+  "confirmation_boundary": {
+    "original_block": [95433, 95434, 95435, 95436, 95437, 95438, 95439, 95440],
+    "original_block_may_be_read": false,
+    "original_block_run_as_block": false,
+    "development_overlap": [95434],
+    "overlap_is_eligible_as_clean_confirmation": false,
+    "independent_v2_block": [95800, 95801, 95802, 95803, 95804, 95805, 95806, 95807],
+    "v2_all_seeds_retained": true
+  },
+  "result_identity": "The manuscript is bounded by declared observable coordinates, a finite 68-function dictionary, a development attribution block, and a separate fixed-seed independent block with fresh verification. The independent block does not confirm the development mean ordering. The original confirmation interval was not run as a block, but seed 95434 overlaps the development artifact and is excluded from any clean-confirmation claim. It does not claim a learned trajectory encoder, factor-level risk recovery, or arbitrary free-variable optimization."
+}

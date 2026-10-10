@@ -1,0 +1,95 @@
+{
+  "affected_files": [
+    {
+      "candidate_file": "paper_artifacts/historical_changed_candidate_tail_resolution_v1/candidate_5_additive_head_specific_observed_task_f.json",
+      "original_f_scales": [
+        0.23105568745362917,
+        0.9734214996078311
+      ],
+      "parameters_from_registered_learning": {
+        "layout": "5",
+        "selector": "additive",
+        "support": "head_specific",
+        "treatment": "observed_task",
+        "head": "f",
+        "f_common_task_scales": [
+          0.23105568745362917,
+          0.9734214996078311
+        ],
+        "eta_common_task_scales": [
+          0.31877902832082156,
+          0.6026786011898914
+        ]
+      }
+    },
+    {
+      "candidate_file": "paper_artifacts/historical_changed_candidate_tail_resolution_v1/candidate_5_additive_joint_observed_task_f.json",
+      "original_f_scales": [
+        0.16942356617501964,
+        0.5581431571212597
+      ],
+      "parameters_from_registered_learning": {
+        "layout": "5",
+        "selector": "additive",
+        "support": "joint",
+        "treatment": "observed_task",
+        "head": "f",
+        "f_common_task_scales": [
+          0.16942356617501964,
+          0.5581431571212597
+        ],
+        "eta_common_task_scales": [
+          0.44270116694447376,
+          0.6201775928679674
+        ]
+      }
+    },
+    {
+      "candidate_file": "paper_artifacts/historical_changed_candidate_tail_resolution_v1/candidate_5_additive_head_specific_deconvolved_task_g.json",
+      "original_f_scales": [
+        0.27236414701732586,
+        0.4830895634124014
+      ],
+      "parameters_from_registered_learning": {
+        "layout": "5",
+        "selector": "additive",
+        "support": "head_specific",
+        "treatment": "deconvolved_task",
+        "head": "g",
+        "f_common_task_scales": [
+          0.27236414701732586,
+          0.4830895634124014
+        ],
+        "eta_common_task_scales": [
+          0.41146271221428615,
+          0.745204051880056
+        ]
+      }
+    },
+    {
+      "candidate_file": "paper_artifacts/historical_changed_candidate_tail_resolution_v1/candidate_5_additive_joint_observed_task_g.json",
+      "original_f_scales": [
+        0.18827492262065326,
+        0.9377611417502242
+      ],
+      "parameters_from_registered_learning": {
+        "layout": "5",
+        "selector": "additive",
+        "support": "joint",
+        "treatment": "observed_task",
+        "head": "g",
+        "f_common_task_scales": [
+          0.18827492262065326,
+          0.9377611417502242
+        ],
+        "eta_common_task_scales": [
+          0.3527302728456726,
+          0.6198281176018731
+        ]
+      }
+    }
+  ],
+  "source_record": "paper_artifacts/historical_raw_source_amplitude_learning_v1/results.json",
+  "repair": "The four first tilted-candidate files recorded only f amplitudes. Restore the complete identity and risk amplitudes from their registered learning inputs; all posterior and mixture numerical fields unchanged.",
+  "original32_source_files_changed": 0
+}

@@ -1,0 +1,101 @@
+{
+  "execution": {
+    "status": "frozen before source-only failed-moment attribution",
+    "scaled_execution": "performance/manifests/legacy_joint_population_f_level_shape_scaled_quadrature_execution_v1.json",
+    "scaled_results": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1/results.json",
+    "question": "Which source moment prevents the median-coordinate rule from passing despite1e-12 normalization agreement? Does the error belong to variance first/second/cross moments or common beta/H moments?",
+    "calculation": "Reconstruct only the failed64x64 moment vector once using the saved Stage139 small reference vector/coordinate units/normalizer and cached native five-source law;no16k reference reconstruction,no new fit/no likelihood optimization. Compare each declared moment block and report offending component.",
+    "source_law": "Unchanged Stage136/137 joint source likelihood and measure. No query outcomes,no prior/support/spectral/tail changes,no accuracy waiver.",
+    "folds": [
+      {
+        "layout": "5",
+        "deleted_task": 1
+      },
+      {
+        "layout": "6",
+        "deleted_task": 1
+      }
+    ],
+    "nodes_per_axis": 64,
+    "cost": {
+      "new_source_fits": 0,
+      "moment_attribution_source_nodes": 8192,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached source JSON and saved small reference NPZ only",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_quadrature_error_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_level_shape_quadrature_error.py",
+    "decision": "Retain both stopped compact candidates. Use actual failing moment structure to select a source-only numerical repair or separately registered forecast precision protocol;do not relax the existing full-moment compact gate or adopt a source prior without predictive evidence.",
+    "scope": "Source0-5 only;no query labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_quadrature_error_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_level_shape_quadrature_error.py",
+    "frozen_before_source_evaluation": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "errors": {
+        "normalizer_relative_difference_vs_stage137": 1.354916179252541e-12,
+        "scaled_moment_max_absolute_difference_vs_stage137": 7.018627792287901e-07
+      },
+      "scaled_moment_errors_by_block": {
+        "normalization": 8.43769498715119e-15,
+        "level_first_moment": 6.031685151342003e-10,
+        "shape_first_moment": 1.4104273304837989e-12,
+        "level_second_moment": 7.018627792287901e-07,
+        "shape_second_moment": 7.326361739501408e-13,
+        "level_shape_cross_moment": 5.641893618957283e-10,
+        "common_beta": 1.956587384040827e-11,
+        "average_conditional_h": 1.618353021037855e-12,
+        "conditional_beta_outer_product": 1.4779836307322576e-13
+      },
+      "largest_error_block": "level_second_moment",
+      "largest_error_index": 3,
+      "reference_value": 0.9805870440605271,
+      "candidate_value": 0.9805863421977479,
+      "source_density_evaluations": 4096
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "errors": {
+        "normalizer_relative_difference_vs_stage137": 6.272760089132134e-13,
+        "scaled_moment_max_absolute_difference_vs_stage137": 1.3641418072363187e-05
+      },
+      "scaled_moment_errors_by_block": {
+        "normalization": 9.325873406851315e-15,
+        "level_first_moment": 4.559566835204976e-09,
+        "shape_first_moment": 3.049782648645305e-13,
+        "level_second_moment": 1.3641418072363187e-05,
+        "shape_second_moment": 1.4732659536775827e-13,
+        "level_shape_cross_moment": 4.434681954990083e-09,
+        "common_beta": 1.6225996241070462e-13,
+        "average_conditional_h": 7.440894688598432e-13,
+        "conditional_beta_outer_product": 6.366419910241831e-14
+      },
+      "largest_error_block": "level_second_moment",
+      "largest_error_index": 3,
+      "reference_value": 0.9895089407011606,
+      "candidate_value": 0.9895225821192329,
+      "source_density_evaluations": 4096
+    }
+  ],
+  "cpu_seconds": 0.7996592560000001,
+  "cost": {
+    "new_source_fits": 0,
+    "moment_attribution_source_nodes": 8192,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_prior_or_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

@@ -1,0 +1,12 @@
+{
+  "input": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+  "group": 2,
+  "arm": "observe_primary",
+  "draw_power": 13,
+  "seed": 80591,
+  "contrasts": "reconstruct the saved paid posterior, compare the frozen 50/63 guarded actions, and attribute their reward under selected truth substitutions; retain all original pilot decisions",
+  "retention_reference": "[50,3,63] preserves the pre-update recommended point as last fallback, retaining empirical objective incumbent 3 and the same three-policy budget; this is a post-hoc analytic reference, not an executed certificate",
+  "oracle_substitutions": "only after the actions and posterior draws are frozen: true eta_g at observed 63, true g mean at unobserved 50, true objective mean at 50, and the two g substitutions together; these are diagnosis, never acquisition inputs",
+  "execution": "one opened posterior, three fixed shortlists, same 8192-node rule; simulator disabled; zero new observations, verification episodes, server jobs or pulls",
+  "output": "paper_artifacts/legacy_one_step_closed_loop_v1/attribution.json"
+}

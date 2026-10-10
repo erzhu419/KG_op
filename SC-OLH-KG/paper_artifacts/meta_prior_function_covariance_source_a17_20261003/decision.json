@@ -1,0 +1,36 @@
+{
+  "stage": "meta_prior_function_covariance_source_a17_20261003",
+  "status": "outer_source_validation_complete_not_promoted_head_covariance_version_stopped",
+  "complete": true,
+  "source_function_folds": 256,
+  "source_prior_profiles": 512,
+  "source_forecasts": 8192,
+  "basis": "Shared source prediction improves in 15/16 seeds, but separate-head sources regress in 15/16, with a wholly negative nominal interval. The same-source-information-pool I/R comparison also regresses. Stop this covariance-reallocation version before target evaluation.",
+  "next_plan": "performance/meta_prior_function_covariance_attribution_plan.json",
+  "cpu_seconds": 92.00590022899999,
+  "stage_peak_current_process_vm_hwm_mb": 140.234375,
+  "initial_macro_order8_insufficient": true,
+  "primary_macro_order16_parameters_changed": false,
+  "accepted_macro_orders": [
+    16,
+    24,
+    32
+  ],
+  "numerical_check_passed": true,
+  "source_information": {
+    "calls_per_archive": 6144,
+    "outer_training_archives": 30,
+    "outer_training_calls": 184320,
+    "held_archive_calls": 6144,
+    "all_32_source_archive_calls": 196608
+  },
+  "server_jobs": 0,
+  "server_pulls": 0,
+  "new_simulation_samples": 0,
+  "target_paths_scored": 0,
+  "kg_calls": 0,
+  "new_searches": 0,
+  "new_random_verifications": 0,
+  "recommendation_replay": "hold",
+  "prospective_searches": "hold"
+}

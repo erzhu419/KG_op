@@ -1,0 +1,87 @@
+{
+  "execution_plan": "performance/manifests/historical_source_learning_rounds5_6_v1.json",
+  "status": "registered source iterations complete",
+  "iterations": [
+    {
+      "round": 5,
+      "phase_results": "paper_artifacts/historical_source_learning_round5/phase_results.json",
+      "cases_passed": 32,
+      "complete_identities": 16,
+      "new_conditioned_cases": 1,
+      "local_functional_cases": 0,
+      "cpu_seconds": 14.958130446999998,
+      "covariance_changes": {
+        "f": {
+          "single_step_stationarity_heads": 16,
+          "two_consecutive_stationarity_heads": 16,
+          "median_relative_covariance_change": 0.0,
+          "maximum_relative_covariance_change": 0.00020501528147729968
+        },
+        "g": {
+          "single_step_stationarity_heads": 16,
+          "two_consecutive_stationarity_heads": 16,
+          "median_relative_covariance_change": 0.00011806411076658885,
+          "maximum_relative_covariance_change": 0.0011441095049955874
+        },
+        "eta_f": {
+          "single_step_stationarity_heads": 0,
+          "two_consecutive_stationarity_heads": 0,
+          "median_relative_covariance_change": 0.06652370606874797,
+          "maximum_relative_covariance_change": 0.13197795510233828
+        },
+        "eta_g": {
+          "single_step_stationarity_heads": 0,
+          "two_consecutive_stationarity_heads": 0,
+          "median_relative_covariance_change": 0.06058029273675282,
+          "maximum_relative_covariance_change": 0.09317445471657425
+        }
+      }
+    },
+    {
+      "round": 6,
+      "phase_results": "paper_artifacts/historical_source_learning_round6/phase_results.json",
+      "cases_passed": 32,
+      "complete_identities": 16,
+      "new_conditioned_cases": 6,
+      "local_functional_cases": 1,
+      "cpu_seconds": 65.337262048,
+      "covariance_changes": {
+        "f": {
+          "single_step_stationarity_heads": 16,
+          "two_consecutive_stationarity_heads": 16,
+          "median_relative_covariance_change": 1.8106634032300592e-05,
+          "maximum_relative_covariance_change": 0.00027758789773436334
+        },
+        "g": {
+          "single_step_stationarity_heads": 16,
+          "two_consecutive_stationarity_heads": 16,
+          "median_relative_covariance_change": 1.8415508914248246e-05,
+          "maximum_relative_covariance_change": 0.0012061821638482907
+        },
+        "eta_f": {
+          "single_step_stationarity_heads": 0,
+          "two_consecutive_stationarity_heads": 0,
+          "median_relative_covariance_change": 0.0493367445555974,
+          "maximum_relative_covariance_change": 0.09327163208556892
+        },
+        "eta_g": {
+          "single_step_stationarity_heads": 1,
+          "two_consecutive_stationarity_heads": 0,
+          "median_relative_covariance_change": 0.03967207429295999,
+          "maximum_relative_covariance_change": 0.07227491023728552
+        }
+      }
+    }
+  ],
+  "all_registered_iterations_conditioned": true,
+  "cpu_seconds_this_execution": 0.42039746,
+  "latest_learning": "paper_artifacts/historical_source_learning_round6/results.json",
+  "latest_certified_precision": "paper_artifacts/historical_source_learning_round6/phase_results.json",
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "original_source_cases_unchanged": true,
+  "no_model_adopted": true,
+  "independent_confirmation": false
+}

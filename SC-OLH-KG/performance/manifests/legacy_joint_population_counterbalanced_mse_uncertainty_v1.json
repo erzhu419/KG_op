@@ -1,0 +1,15 @@
+{
+  "status": "registered before paired MSE measurement-uncertainty diagnostics",
+  "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "variants": {
+    "refit216": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "frozen144_covariance216": "paper_artifacts/legacy_joint_population_counterbalanced_frozen_covariance_v1/calibration_profiles.json"
+  },
+  "basis_of_next_step": "Mean-information repair raises source g density in all four cases; fixed-hyperparameter conditioning raises joint density in all four but source task07/assignment5 g observed MSE rises5.550e-5. These MSEs score noisy three-repeat sample means. Quantify conditional scoring noise before treating this observed difference as an established degradation. Preserve both failed improvement gates.",
+  "sampling_contract": "Cached source generation uses a distinct normal draw for every output/site/repeat from one sequential task RNG, no reseeding or common-random-number reuse. Site noise is Gaussian under the existing controlled problem and the evaluation bank remains fixed. Forecasts use only heldout sites0/1; scoring uses sites2..72.",
+  "diagnostic": "For every available arm/source case and f/g head compute paired MSE difference on71 scoring policies. The squared-label noise cancels in the difference: variance estimator4*sum((new_mean-old_mean)^2*S2/3)/71^2. Report its standard error and Welch-Satterthwaite approximate95% interval, degrees of freedom and largest policy contributions. Use frozen forecasts and cached three-repeat variances only; do not reconstruct proper densities or read any hidden truth.",
+  "interpretation": "Conditional measurement-noise intervals for this fixed bank and frozen forecasts, not task-population confidence, selection-adjusted confirmation or proof of unchanged true performance. No after-the-fact source gate change and no promotion to target/risk extension.",
+  "execution": "local serial single-thread; cached JSON arithmetic only; zero source fits, physical simulator/verifier calls, terminal integrals or server jobs/pulls",
+  "output": "paper_artifacts/legacy_joint_population_counterbalanced_mse_uncertainty_v1"
+}

@@ -16,6 +16,7 @@ from problems.rzdt import make_problem  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 from representation.exchangeable_mean import (  # noqa: E402
     ExchangeableBoundaryMeanCoordinate,
+    centered_fit_covariance_parts,
 )
 from representation.meta_prior import (  # noqa: E402
     LearnedMetaPrior,
@@ -56,6 +57,17 @@ def _source_rows(seed=801, n=40):
             targets.append(float(coefficient @ means - 0.15))
             domains.append(domain)
     return exposures, np.asarray(targets), domains
+
+
+def test_centered_fit_noise_is_removed_in_expectation_without_removing_shared_uncertainty():
+    # Exact product quadrature for four independent zero-mean unit-variance
+    # fits of the SAME scalar coefficient. No latent task variation exists.
+    import itertools
+    parts = [centered_fit_covariance_parts(np.asarray(signs)[:, None], np.ones((4, 1, 1)))
+        for signs in itertools.product((-1., 1.), repeat=4)]
+    np.testing.assert_allclose(np.mean([p['observed'] - p['noise'] for p in parts], axis=0), [[0.]])
+    np.testing.assert_allclose(np.mean([p['shared_fit_covariance'] for p in parts], axis=0), [[.25]])
+    assert all(np.trace(p['deconvolved']) <= np.trace(p['observed']) + 1e-12 for p in parts)
 
 
 class _ExposureProblem:

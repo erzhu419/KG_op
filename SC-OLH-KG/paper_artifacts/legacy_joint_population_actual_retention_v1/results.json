@@ -1,0 +1,703 @@
+{
+  "execution": {
+    "status": "registered after the fixed-prefix negative result, before new actions",
+    "inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+    "kernel_population_fit": "paper_artifacts/legacy_joint_population_kernel_mean_v1/source_fit.json",
+    "previous_decisions": "paper_artifacts/legacy_joint_population_paid_prefix_v1/results.json",
+    "output": "paper_artifacts/legacy_joint_population_actual_retention_v1",
+    "arms": [
+      "joint_population_structural",
+      "joint_population_full",
+      "joint_population_rbf_shared_raw"
+    ],
+    "scientific_question": "does the existing retention operation limit the observed regression when it retains the actual preceding recommendation rather than only the weaker common reference recommendation?",
+    "retention": "reconstruct the same two-point roster and common reference retention; additionally retain the actual two-point structural recommendation, already63 in every task and identical to both comparator recommendations; keep all original actions, original primary/incumbent and at most three policies per action",
+    "prior_and_data": "same frozen source priors and all four cached raw observations; no prior refitting, source subset changes, new querying or scoring-based candidate choice",
+    "cost_contract": "four logical observations plus at most358 terminal calls; original family delta, comparison reserve, guarded/direct allocations and verifier; no new simulator calls",
+    "recommendation_barrier": "save all18 repaired-class choices before loading cached target truth; compare at identical four-point posteriors against the old four-point class",
+    "terminal_draw_power": 13,
+    "integration_seed": 80771,
+    "bootstrap_seed": 80811,
+    "bootstrap_draws": 10000,
+    "new_simulator_call_cap": 0,
+    "execution": "reuse small local cache, local serial single-thread; no scheduler/server dispatch or pulls",
+    "interpretation": "opened-task terminal retention attribution, not evidence of paid-query or KG gain; preserve the original36 decisions and negative scores; independently verify any eventual adopted loop"
+  },
+  "rows": [
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_structural",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 445,
+      "action": {
+        "kind": "guarded",
+        "primary": 12,
+        "shortlist": [
+          12,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7693622178129138,
+      "predicted_verification_calls": 260.3630790233492,
+      "scores": {
+        "conditional_safe_reward": 0.7913399122679352,
+        "conditional_total_calls": 285.03268452834914,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_full",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 724,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.6405337315377528,
+      "predicted_verification_calls": 296.28576861047793,
+      "scores": {
+        "conditional_safe_reward": 0.704391649528198,
+        "conditional_total_calls": 332.8702543038621,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_rbf_shared_raw",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 479,
+      "action": {
+        "kind": "guarded",
+        "primary": 46,
+        "shortlist": [
+          46,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7474628391363469,
+      "predicted_verification_calls": 249.86123581280737,
+      "scores": {
+        "conditional_safe_reward": 0.7887515121727108,
+        "conditional_total_calls": 315.7118295564331,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_structural",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 445,
+      "action": {
+        "kind": "guarded",
+        "primary": 12,
+        "shortlist": [
+          12,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7071996208710167,
+      "predicted_verification_calls": 253.50002143294495,
+      "scores": {
+        "conditional_safe_reward": 0.8006328420352931,
+        "conditional_total_calls": 215.0108734813334,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_full",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 436,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.6339443040122068,
+      "predicted_verification_calls": 269.47341528585105,
+      "scores": {
+        "conditional_safe_reward": 0.7996344674556757,
+        "conditional_total_calls": 215.2505904198055,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_rbf_shared_raw",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 436,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.6264001712225004,
+      "predicted_verification_calls": 282.88877298331573,
+      "scores": {
+        "conditional_safe_reward": 0.7996344674556757,
+        "conditional_total_calls": 215.2505904198055,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_structural",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 445,
+      "action": {
+        "kind": "guarded",
+        "primary": 12,
+        "shortlist": [
+          12,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7807579360207595,
+      "predicted_verification_calls": 248.8305314794787,
+      "scores": {
+        "conditional_safe_reward": 0.80473912871953,
+        "conditional_total_calls": 215.0000000000027,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_full",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 436,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.690757073609477,
+      "predicted_verification_calls": 252.95536739894652,
+      "scores": {
+        "conditional_safe_reward": 0.8038433297719197,
+        "conditional_total_calls": 215.0000000011816,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_rbf_shared_raw",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 436,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7660092284049531,
+      "predicted_verification_calls": 244.97408616444966,
+      "scores": {
+        "conditional_safe_reward": 0.8038433297719197,
+        "conditional_total_calls": 215.0000000011816,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_structural",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 445,
+      "action": {
+        "kind": "guarded",
+        "primary": 12,
+        "shortlist": [
+          12,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7597837515211112,
+      "predicted_verification_calls": 229.2182172081985,
+      "scores": {
+        "conditional_safe_reward": 0.8058207881751733,
+        "conditional_total_calls": 345.9979649654909,
+        "primary_feasible": false
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_full",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 436,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.7459146006873795,
+      "predicted_verification_calls": 227.8045371601492,
+      "scores": {
+        "conditional_safe_reward": 0.8058332251175002,
+        "conditional_total_calls": 345.9999867725219,
+        "primary_feasible": false
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_rbf_shared_raw",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 436,
+      "action": {
+        "kind": "guarded",
+        "primary": 3,
+        "shortlist": [
+          3,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.697588950295235,
+      "predicted_verification_calls": 254.49488764202442,
+      "scores": {
+        "conditional_safe_reward": 0.8058332251175002,
+        "conditional_total_calls": 345.9999867725219,
+        "primary_feasible": false
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_structural",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 445,
+      "action": {
+        "kind": "guarded",
+        "primary": 12,
+        "shortlist": [
+          12,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.6730209810865222,
+      "predicted_verification_calls": 281.92334317792694,
+      "scores": {
+        "conditional_safe_reward": 0.8002494057908862,
+        "conditional_total_calls": 254.70267482917242,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_full",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 423,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.5973422784473149,
+      "predicted_verification_calls": 273.20253429539935,
+      "scores": {
+        "conditional_safe_reward": 0.8087588794001447,
+        "conditional_total_calls": 215.00000000004408,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_rbf_shared_raw",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 467,
+      "action": {
+        "kind": "guarded",
+        "primary": 34,
+        "shortlist": [
+          34,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.6064358143992701,
+      "predicted_verification_calls": 276.52443073190216,
+      "scores": {
+        "conditional_safe_reward": 0.7993596855092419,
+        "conditional_total_calls": 223.70383415479864,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_structural",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 423,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.550023461044149,
+      "predicted_verification_calls": 264.35509105656035,
+      "scores": {
+        "conditional_safe_reward": 0.8064410621913991,
+        "conditional_total_calls": 215.00000675266168,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_full",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 423,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          1,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.5739239801960381,
+      "predicted_verification_calls": 274.0036433929273,
+      "scores": {
+        "conditional_safe_reward": 0.8064410621913991,
+        "conditional_total_calls": 215.00000675266168,
+        "primary_feasible": true
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_rbf_shared_raw",
+      "paid_prefix": 4,
+      "reference_retained_candidate": 22,
+      "actual_previous_recommendation": 63,
+      "action_index": 503,
+      "action": {
+        "kind": "guarded",
+        "primary": 71,
+        "shortlist": [
+          71,
+          1,
+          63
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.4972412397359278,
+      "predicted_verification_calls": 282.81123644624125,
+      "scores": {
+        "conditional_safe_reward": 0.8061884812143869,
+        "conditional_total_calls": 332.49237301208996,
+        "primary_feasible": true
+      }
+    }
+  ],
+  "summary": {
+    "joint_population_structural": {
+      "feasible_primary_count": 5,
+      "conditional_safe_reward": 0.8015371898633695,
+      "conditional_total_calls": 255.12403409283502
+    },
+    "joint_population_full": {
+      "feasible_primary_count": 5,
+      "conditional_safe_reward": 0.788150435577473,
+      "conditional_total_calls": 256.5201397083461
+    },
+    "joint_population_rbf_shared_raw": {
+      "feasible_primary_count": 5,
+      "conditional_safe_reward": 0.8006017835402391,
+      "conditional_total_calls": 274.6931023194718
+    }
+  },
+  "paired_comparisons": [
+    {
+      "arm": "joint_population_structural",
+      "comparison": "actual previous recommendation retention minus reference-only retention",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.0055666715326885274,
+            1.1701841995392925e-07,
+            0.0020241274496441974,
+            0.5525067607020853,
+            -0.008509473609258467,
+            0.0
+          ],
+          "mean_difference": 0.0900758100047004,
+          "task_bootstrap_95_interval": [
+            -0.004845141315399963,
+            0.2756629758402719
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            66.92356607214049,
+            0.0,
+            -0.04161731402413693,
+            0.0,
+            39.70267482912834,
+            0.0
+          ],
+          "mean_difference": 17.764103931207448,
+          "task_bootstrap_95_interval": [
+            -0.013872438008045643,
+            40.07889550759163
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_full",
+      "comparison": "actual previous recommendation retention minus reference-only retention",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.04952613682932028,
+            2.696808323987554e-06,
+            -4.107825191113079e-14,
+            0.5525152880258015,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.08383197466746069,
+          "task_bootstrap_95_interval": [
+            -0.024762618946612986,
+            0.27625809348094105
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            98.01333717447031,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 16.335556195745053,
+          "task_bootstrap_95_interval": [
+            0.0,
+            49.00666858723516
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_rbf_shared_raw",
+      "comparison": "actual previous recommendation retention minus reference-only retention",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            -0.008155071627912958,
+            -0.005463040187823842,
+            -4.107825191113079e-14,
+            0.5525152880258015,
+            -0.009399193890902824,
+            -0.0002525809770121956
+          ],
+          "mean_difference": 0.08820756689035143,
+          "task_bootstrap_95_interval": [
+            -0.0069692822480810586,
+            0.2746490148682414
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            97.60271110022444,
+            0.2505892295401111,
+            0.0,
+            0.0,
+            8.70383415475456,
+            117.49236625942828
+          ],
+          "mean_difference": 37.34158345732457,
+          "task_bootstrap_95_interval": [
+            1.4924038973824452,
+            77.91457969800307
+          ]
+        }
+      }
+    }
+  ],
+  "cost": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "source_optimizations": 0,
+    "cached_logical_initialization_calls": 72
+  },
+  "cpu_seconds": 311.381888362
+}

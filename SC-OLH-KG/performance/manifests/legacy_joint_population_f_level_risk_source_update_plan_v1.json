@@ -1,0 +1,47 @@
+{
+  "status": "completed;all four new function/risk source posteriors and512-component retention gates pass",
+  "entrypoint": "performance/check_legacy_f_level_risk_source_update.py",
+  "Mstep_results": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/results.json",
+  "source_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/source_laws.json",
+  "risk_laws": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/risk_reconstruction.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+  "old_posterior_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+  "question": "Does fresh source conditioning under the learned function-level AND arm-specific risk population laws meet the original precision and retained-mixture gates?",
+  "law": "Apply Stage213 learned centers/task intercept covariances and risk center/strong-shape amplitudes. Keep source2/3/4/5's original48 three-replicate batches and exact Gaussian mean/chi-square sample-variance likelihood,with each batch conditioned once. Risk empirical hyperparameters differ across arms because their raw posteriors differ;both receive the same data and learning algorithm. Build a NEW variance-informed Gaussian computational reference separately under each learned scientific eta prior and cancel its approximate likelihood exactly.",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610075
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "retained_mixture": {
+    "stride_per_chain": 8,
+    "components_per_arm": 512,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1,
+    "maximum_source_eta_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_eta_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "verification": "New covariance/center source fields and coefficient maps must reproduce each learned law. Verify exact computational-reference cancellation and conditional common-f projection under the new prior before sampling. A stale Stage202 reference or old Stage207 risk gain cannot be used. Retain eta half-moments for learning diagnostics and512 positive components for future transfer.",
+  "decision": "All four raw-source and mixture gates must pass before an outcome-frozen source-development prediction. If any fails,stop transfer with its failure retained;no extra draws,thinning search,relaxed gates or return to the old prior. Source conditioning is not independent confirmation.",
+  "maximum_single_thread_cpu_seconds": 40,
+  "cost": {
+    "new_source_conditioning_chains": 16,
+    "new_covariance_optimizations": 0,
+    "new_source_labels": 0,
+    "new_coordinate_fits": 0,
+    "new_future_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;fixed16 source chains,small JSON and512 retained eta components per arm;no server work or NPZ",
+  "scope": "Four original structural priors and positive tails retained. No task0/task1 outcomes,source6/7,target,KG,independent confirmation or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/results.json"
+}

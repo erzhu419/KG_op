@@ -1,0 +1,47 @@
+{
+  "status": "completed; see immutable execution and retained results",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "native_profiles": "paper_artifacts/legacy_joint_population_task_spectral_moments_v1/calibration_profiles.json",
+  "residual_results": "paper_artifacts/legacy_joint_population_predictive_residual_geometry_v1/results.json",
+  "offset_results": "paper_artifacts/legacy_joint_population_task_offset_geometry_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Stage85 conditional gamma uncertainty fails whole-transcript acceptance. Native standardized shape energy averages.757/.733 per dimension, while task1 offset z2.801/2.324 persists. Only the two task1 deletions include zero in the half-log-likelihood conditional intercept support (upper SD.0162/.0265). Public-bank average task uncertainty includes function-group contributions.00016975/.00009078, with offset/shape covariance. This supports one fixed task-population geometry contrast, not a proven repair, arbitrary intercept floor or universal sample scarcity claim.",
+  "model": "Keep the original27-column orthogonal design D_i=[1,Phi_i], common beta prior, group labels, spectral bounds[0,4], nonzero original coefficient tail, observation noise and white discrepancy family. For each task compute c_i=mean(Phi_i) over its complete public73-policy bank in that fold's original coordinates, without outcomes. Use Z_i=[1,Phi_i-c_i] only for residual task effects: y_i=D_i beta+Z_i u_i+epsilon_i, u_i~N(0,diag R). Equivalently in the unchanged original basis, residual covariance is T_i diag(R) T_i^T with T_i=[[1,-c_i^T],[0,I]]. This makes task bank level and centered shape independent conditional on source parameters; it adds no dictionary term, task descriptor kernel or fitted encoder. Common beta/H are reconditioned coherently using D_i and centered residual covariance.",
+  "estimation": "Rebuild the Gaussian joint source likelihood with D_i for common coefficients and Z_i for task variance gradients. Fit only g, once per five-task branch from the cached Stage71 selected native parameter vector. Use exactly the original branch optimizer L-BFGS-B,4096 iterations,ftol1e-9,gtol1e-5 and unchanged amplitude/spectral/discrepancy bounds. No extra starts, scalar calibration, gamma integration, support grid or automatic completion. Preserve any incomplete fit and stop without scoring if all12 fits are not complete on the original convergence rule.",
+  "verification": "Before fits, compare centered likelihood/posterior and analytic gradients with dense Gaussian marginal calculations on actual source data including the deleted-task1 boundary case under both assignments. Verify algebraic equivalence of Z diag(R) Z^T and D T diag(R) T^T D^T and recover native likelihood when public centers are set to zero. Verify tail on original nonintercept coefficients, PSD/symmetry and unchanged f/eta; these detect incorrect use of common versus residual design. Do not repeat already settled filtering tests.",
+  "forecast": "Freeze all12 fitted source laws, native and candidate prior/two-raw-paid forecasts before scoring the original12 deleted-task policies. At the new task use its own public-bank center to transform R, and retain H plus unchanged white discrepancy. Keep exact raw paid likelihood/moment updates and log evidence. The common source mean is not independently centered at each task.",
+  "development_acceptance": "Both assignments must have average paid g MSE no larger than Stage71 native, proper raw three-repeat g density strictly greater, and sequential transcript density no smaller. Report every fold and prior density, retaining Stage80 scalar calibration, Stage85 integration and GP as descriptive controls. These repeatedly used training folds remain development selection, not independent validation.",
+  "next_action": "Only a complete development pass permits separately registered full-six-source fitting and the unchanged same216/old144 source6/7 gates. A failure retains all results and revisits task-population adequacy; no automatic centered-basis alternatives, source gate waiver, target or confirmation scoring, terminal/KG or manuscript claims.",
+  "cost": {
+    "planned_new_g_source_fits": 12,
+    "maximum_completion_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON and public coordinates only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_task_bank_centering_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_task_bank_centering_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage88_90_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_coefficient_correlation_score_plan_v1.json",
+  "centering_preferred": true
+}

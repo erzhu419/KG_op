@@ -1,5 +1,12 @@
 # Structural Meta-Prior, Cumulative HVD, and Backend Plan
 
+Status (2026-10-02): this document records the historical architecture and
+experiment plan. The user has reaffirmed meta-prior learning as the research
+objective; the active revision is [meta_prior_reorientation_20261002.md](meta_prior_reorientation_20261002.md).
+The completed atlas manuscript follows a separate initialization method.
+Historical implementations and ablations below are retained with their
+original evidence limits; the revised learning method is not yet validated.
+
 ## Objective
 
 The paper mainline is an acquisition-agnostic transfer method:

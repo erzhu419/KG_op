@@ -1,0 +1,714 @@
+{
+  "execution": {
+    "status": "registered after Stage82 failed training acceptance, before source influence or covariance-information calculations",
+    "reconditioning_results": "paper_artifacts/legacy_joint_population_task_recondition_common_v1/results.json",
+    "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+    "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "basis_of_next_step": "Fixed-hyperparameter common reconditioning reproduces native and calibrated endpoints but fails the registered development gate: assignment5 loses paid MSE/raw density; assignment6 improves those two but loses sequential transcript density. Do not open source6/7 for this candidate. Assess existing source-cohort leverage and local covariance information before proposing further fitting or data expansion.",
+    "source_influence": "Evaluate each cached six-source native common curve and six cached five-source common curves on the SAME public73-policy controls for training tasks0\u20135, using each branch's own saved normalization/basis. Use beta and H only, not new-task residual covariance or paid observations. Report deleted-task curve RMS, constant/centered shape shifts, RMS change relative to full-fit conditional common SD, task-intercept variance and active common/task groups. The deleted-task curve reproduces its Stage71 prior mean on its registered12 sites. These are influence diagnostics, not a deletion-mixture candidate or a population variance estimator.",
+    "covariance_information": "Reconstruct the native full-source Gaussian marginal covariance from saved common/task coefficients, discrepancy and S2/3 noise. Reproduce its dense NLL versus the existing source objective. At the actual positive common/task group variances and intercept, form derivatives with respect to log variance; include fitted spectral exponent derivatives. Compute expected covariance Fisher information .5*tr(K^-1 Kp K^-1 Kq), standardized derivative correlations and eigenvalues. Record zero/boundary parameters separately. This local fixed-mean, fixed-support information is descriptive; no Wald confidence claims, parameter changes or source-design scoring threshold.",
+    "next_action": "Use actual influence and covariance-information results to choose a small source-population/data diagnostic. Do not repeat the rejected reconditioning, reopen source6/7, add a covariance/spectrum grid or manufacture an information deficit if the current directions are well resolved. Keep all old gates and negative families.",
+    "cost": {
+      "new_scalar_fits": 0,
+      "new_native_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached source fits and public coordinates only, no server jobs or pulls",
+    "entrypoint": "performance/diagnose_legacy_source_information.py",
+    "output": "paper_artifacts/legacy_joint_population_source_information_v1"
+  },
+  "influence_rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "common_curve_change_rms": 0.007785737984794571,
+      "constant_curve_change_rms": 0.0012949297993710394,
+      "centered_shape_change_rms": 0.007677295929073851,
+      "change_over_full_conditional_common_sd_rms": 0.23284694542389986,
+      "native_full_task_intercept_variance": 0.0006753509342922925,
+      "deleted_fit_task_intercept_variance": 0.0009271652341334666,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:1",
+        "main:2",
+        "pair:0,2",
+        "pair:2,3"
+      ]
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "common_curve_change_rms": 0.02112084242343117,
+      "constant_curve_change_rms": 0.012495723595806498,
+      "centered_shape_change_rms": 0.01702782653460548,
+      "change_over_full_conditional_common_sd_rms": 0.6931887157777393,
+      "native_full_task_intercept_variance": 0.0006753509342922925,
+      "deleted_fit_task_intercept_variance": 0.0,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:2",
+        "pair:0,2",
+        "pair:0,3",
+        "pair:2,3"
+      ]
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "common_curve_change_rms": 0.00851428312526083,
+      "constant_curve_change_rms": 0.005573671351271384,
+      "centered_shape_change_rms": 0.006436396880640438,
+      "change_over_full_conditional_common_sd_rms": 0.28601901968514365,
+      "native_full_task_intercept_variance": 0.0006753509342922925,
+      "deleted_fit_task_intercept_variance": 0.0008569574523291842,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:1",
+        "main:2",
+        "pair:0,2"
+      ]
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "common_curve_change_rms": 0.022192223113974677,
+      "constant_curve_change_rms": 0.007308495834138662,
+      "centered_shape_change_rms": 0.020954251487056503,
+      "change_over_full_conditional_common_sd_rms": 0.7305611829454329,
+      "native_full_task_intercept_variance": 0.0006753509342922925,
+      "deleted_fit_task_intercept_variance": 0.0006231999359453567,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "pair:0,2"
+      ]
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "common_curve_change_rms": 0.007975833520268046,
+      "constant_curve_change_rms": 0.0019992651316407296,
+      "centered_shape_change_rms": 0.007721195456432698,
+      "change_over_full_conditional_common_sd_rms": 0.2585577092722826,
+      "native_full_task_intercept_variance": 0.0006753509342922925,
+      "deleted_fit_task_intercept_variance": 0.000786548379079517,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "pair:0,2"
+      ]
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "common_curve_change_rms": 0.012638247055374049,
+      "constant_curve_change_rms": 0.00569792331929367,
+      "centered_shape_change_rms": 0.01128091124334024,
+      "change_over_full_conditional_common_sd_rms": 0.41027512469633515,
+      "native_full_task_intercept_variance": 0.0006753509342922925,
+      "deleted_fit_task_intercept_variance": 0.0006391832897595153,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:1",
+        "main:2",
+        "pair:0,2",
+        "pair:0,3"
+      ]
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "common_curve_change_rms": 0.008484957744591032,
+      "constant_curve_change_rms": 0.0013456375044278287,
+      "centered_shape_change_rms": 0.008377575283706652,
+      "change_over_full_conditional_common_sd_rms": 0.26919040591573123,
+      "native_full_task_intercept_variance": 0.001119224123879651,
+      "deleted_fit_task_intercept_variance": 0.001343921440501597,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ]
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "common_curve_change_rms": 0.017412990571199813,
+      "constant_curve_change_rms": 0.012783265200398415,
+      "centered_shape_change_rms": 0.011823720710883544,
+      "change_over_full_conditional_common_sd_rms": 0.526421019308909,
+      "native_full_task_intercept_variance": 0.001119224123879651,
+      "deleted_fit_task_intercept_variance": 0.00018647169748226382,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "pair:2,3"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "main:3",
+        "pair:0,2"
+      ]
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "common_curve_change_rms": 0.008885320858368915,
+      "constant_curve_change_rms": 0.006083194873402263,
+      "centered_shape_change_rms": 0.006476393046162204,
+      "change_over_full_conditional_common_sd_rms": 0.2793092535665367,
+      "native_full_task_intercept_variance": 0.001119224123879651,
+      "deleted_fit_task_intercept_variance": 0.001245726445411984,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "pair:0,2",
+        "pair:1,3"
+      ]
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "common_curve_change_rms": 0.014489408224298816,
+      "constant_curve_change_rms": 0.006419139135280681,
+      "centered_shape_change_rms": 0.012989903904659424,
+      "change_over_full_conditional_common_sd_rms": 0.45980134668147055,
+      "native_full_task_intercept_variance": 0.001119224123879651,
+      "deleted_fit_task_intercept_variance": 0.0009285116999999416,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "pair:1,3"
+      ]
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "common_curve_change_rms": 0.00849910613775105,
+      "constant_curve_change_rms": 0.0033491171782892596,
+      "centered_shape_change_rms": 0.007811415957868673,
+      "change_over_full_conditional_common_sd_rms": 0.25478663367181026,
+      "native_full_task_intercept_variance": 0.001119224123879651,
+      "deleted_fit_task_intercept_variance": 0.0012507428106823305,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "pair:1,2"
+      ],
+      "active_task_groups": [
+        "main:0",
+        "main:1",
+        "main:2",
+        "pair:0,2"
+      ]
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "common_curve_change_rms": 0.013338780276191137,
+      "constant_curve_change_rms": 0.006265993582091943,
+      "centered_shape_change_rms": 0.01177541437426676,
+      "change_over_full_conditional_common_sd_rms": 0.381495958680765,
+      "native_full_task_intercept_variance": 0.001119224123879651,
+      "deleted_fit_task_intercept_variance": 0.0013288022569056571,
+      "active_common_groups": [
+        "main:0",
+        "main:1",
+        "main:2"
+      ],
+      "active_task_groups": [
+        "main:2",
+        "main:3",
+        "pair:0,2",
+        "pair:1,3"
+      ]
+    }
+  ],
+  "covariance_information": {
+    "5": {
+      "dense_source_nll_reproduced": -1.27424525907512,
+      "parameter_names": [
+        "common:log_variance:main:0",
+        "common:log_variance:main:1",
+        "common:log_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_variance:main:1",
+        "task:log_variance:main:2",
+        "task:log_variance:pair:0,2",
+        "task:spectral_exponent",
+        "task:log_intercept_variance"
+      ],
+      "expected_covariance_information": [
+        [
+          1.614173247752494,
+          0.008798386912677647,
+          0.014845657649098482,
+          -0.9686714112591801,
+          0.003583877953041322,
+          0.0036098290624689174,
+          0.0021312789803878147,
+          -0.0010110103531391988,
+          0.0031688800077991366
+        ],
+        [
+          0.008798386912677647,
+          2.010386189589642,
+          0.046311628382364446,
+          -2.101425880591245,
+          0.002588122948264739,
+          0.0022425094440537427,
+          0.0016754416088060038,
+          -0.0005962124612518074,
+          0.0017604101120680543
+        ],
+        [
+          0.014845657649098482,
+          0.046311628382364446,
+          1.6139962931297074,
+          -1.0679905307942548,
+          0.0016149339871687548,
+          0.008934223439247066,
+          0.0008823182887967722,
+          -0.0013988282294037416,
+          0.0017067838645876707
+        ],
+        [
+          -0.9686714112591801,
+          -2.101425880591245,
+          -1.0679905307942548,
+          8.441243044863457,
+          -0.011609816207300635,
+          -0.013357952960791765,
+          -0.007866487507691935,
+          0.005255443411427859,
+          -0.011478768570588268
+        ],
+        [
+          0.003583877953041322,
+          0.002588122948264739,
+          0.0016149339871687548,
+          -0.011609816207300635,
+          0.5785661901230204,
+          0.04068882015603954,
+          0.015908247443345073,
+          0.015695132803608444,
+          0.012940835150899522
+        ],
+        [
+          0.0036098290624689174,
+          0.0022425094440537427,
+          0.008934223439247066,
+          -0.013357952960791765,
+          0.04068882015603954,
+          1.3609214244727332,
+          0.02133126724267264,
+          0.02385504809720914,
+          0.005572043644226918
+        ],
+        [
+          0.0021312789803878147,
+          0.0016754416088060038,
+          0.0008823182887967722,
+          -0.007866487507691935,
+          0.015908247443345073,
+          0.02133126724267264,
+          0.6038258940549288,
+          -0.006875301732053925,
+          0.031151313792679623
+        ],
+        [
+          -0.0010110103531391988,
+          -0.0005962124612518074,
+          -0.0013988282294037416,
+          0.005255443411427859,
+          0.015695132803608444,
+          0.02385504809720914,
+          -0.006875301732053925,
+          0.015619477864854358,
+          -0.006994873518836018
+        ],
+        [
+          0.0031688800077991366,
+          0.0017604101120680543,
+          0.0017067838645876707,
+          -0.011478768570588268,
+          0.012940835150899522,
+          0.005572043644226918,
+          0.031151313792679623,
+          -0.006994873518836018,
+          1.662625326487012
+        ]
+      ],
+      "standardized_information_eigenvalues": [
+        0.36964689274066165,
+        0.7603846904221376,
+        0.9526243743855143,
+        0.97180216794466,
+        0.9785611775663281,
+        0.9970629400878669,
+        1.0536995423972135,
+        1.2604249902860927,
+        1.655793224169524
+      ],
+      "active_direction_count": 9,
+      "standardized_information_numerical_rank": 9,
+      "zero_sensitivity_directions": [],
+      "largest_derivative_correlations": [
+        {
+          "parameters": [
+            "common:spectral_exponent",
+            "common:log_variance:main:1"
+          ],
+          "correlation": -0.5101185635299029
+        },
+        {
+          "parameters": [
+            "common:spectral_exponent",
+            "common:log_variance:main:2"
+          ],
+          "correlation": -0.28934296876749177
+        },
+        {
+          "parameters": [
+            "common:spectral_exponent",
+            "common:log_variance:main:0"
+          ],
+          "correlation": -0.26242077112403056
+        },
+        {
+          "parameters": [
+            "task:spectral_exponent",
+            "task:log_variance:main:1"
+          ],
+          "correlation": 0.16510309452077823
+        }
+      ],
+      "zero_common_groups": [
+        "main:3",
+        "pair:0,1",
+        "pair:0,2",
+        "pair:0,3",
+        "pair:1,2",
+        "pair:1,3",
+        "pair:2,3"
+      ],
+      "zero_task_groups": [
+        "main:0",
+        "main:3",
+        "pair:0,1",
+        "pair:0,3",
+        "pair:1,2",
+        "pair:1,3",
+        "pair:2,3"
+      ],
+      "task_spectral_exponent": 4.0,
+      "discrepancy_variance": 0.0,
+      "interpretation": "Local fixed-mean covariance information at fitted support; boundary/support uncertainty and task-population uncertainty are not quantified."
+    },
+    "6": {
+      "dense_source_nll_reproduced": -1.2465648923707384,
+      "parameter_names": [
+        "common:log_variance:main:0",
+        "common:log_variance:main:1",
+        "common:log_variance:main:2",
+        "common:spectral_exponent",
+        "task:log_variance:main:0",
+        "task:log_variance:main:1",
+        "task:log_variance:main:2",
+        "task:log_variance:pair:0,2",
+        "task:log_variance:pair:1,3",
+        "task:spectral_exponent",
+        "task:log_intercept_variance"
+      ],
+      "expected_covariance_information": [
+        [
+          1.6660278578602472,
+          0.011522895701717602,
+          0.015428828546173515,
+          -1.0747752508842519,
+          0.0071309644302660425,
+          0.0024532036337062387,
+          0.0039212947569241124,
+          0.0005506016332758193,
+          0.004674211839549538,
+          -0.001420543728804391,
+          0.0027706016608742136
+        ],
+        [
+          0.011522895701717602,
+          1.8954941036277293,
+          0.04972338704408997,
+          -1.9234885891791151,
+          0.0015953322383813729,
+          0.0033829964674002367,
+          0.0031000242053568546,
+          0.0005133607148024244,
+          0.0018494683357923305,
+          -0.0007507361715809267,
+          0.0015663227012113663
+        ],
+        [
+          0.015428828546173515,
+          0.04972338704408997,
+          1.6156446629488421,
+          -1.084895597808579,
+          0.002054131869833761,
+          0.0017448314273246657,
+          0.007707520737071821,
+          0.00018739583344494563,
+          0.0014458783559776396,
+          -0.0013526922425610701,
+          0.001532713750423726
+        ],
+        [
+          -1.0747752508842519,
+          -1.9234885891791151,
+          -1.084895597808579,
+          8.216476416854372,
+          -0.011532588599969869,
+          -0.01112882707164489,
+          -0.01703003892053713,
+          -0.0021797849677540095,
+          -0.012926247706616656,
+          0.0059374393955804496,
+          -0.010532682062840568
+        ],
+        [
+          0.0071309644302660425,
+          0.0015953322383813729,
+          0.002054131869833761,
+          -0.011532588599969869,
+          0.5902224889170613,
+          0.03983892716621967,
+          0.04395456480246751,
+          0.00588865843763792,
+          0.019505012926158884,
+          0.013009494364130549,
+          0.006514822753069433
+        ],
+        [
+          0.0024532036337062387,
+          0.0033829964674002367,
+          0.0017448314273246657,
+          -0.01112882707164489,
+          0.03983892716621967,
+          0.6179853637039286,
+          0.03410438644329492,
+          0.0055153842437080025,
+          0.027105245227955058,
+          0.012567734752609167,
+          0.010133030371920903
+        ],
+        [
+          0.0039212947569241124,
+          0.0031000242053568546,
+          0.007707520737071821,
+          -0.01703003892053713,
+          0.04395456480246751,
+          0.03410438644329492,
+          1.0424170934827806,
+          0.006137586653220142,
+          0.013847238204953224,
+          0.018269727441926273,
+          0.00425935884375887
+        ],
+        [
+          0.0005506016332758193,
+          0.0005133607148024244,
+          0.00018739583344494563,
+          -0.0021797849677540095,
+          0.00588865843763792,
+          0.0055153842437080025,
+          0.006137586653220142,
+          0.017443802673880716,
+          0.0024309111845208678,
+          -0.002363494278875712,
+          0.00696707317087478
+        ],
+        [
+          0.004674211839549538,
+          0.0018494683357923305,
+          0.0014458783559776396,
+          -0.012926247706616656,
+          0.019505012926158884,
+          0.027105245227955058,
+          0.013847238204953224,
+          0.0024309111845208678,
+          0.06809647268584526,
+          -4.576537237630071e-05,
+          0.0010826645100662198
+        ],
+        [
+          -0.001420543728804391,
+          -0.0007507361715809267,
+          -0.0013526922425610701,
+          0.0059374393955804496,
+          0.013009494364130549,
+          0.012567734752609167,
+          0.018269727441926273,
+          -0.002363494278875712,
+          -4.576537237630071e-05,
+          0.02143589389296611,
+          -0.004444384473807798
+        ],
+        [
+          0.0027706016608742136,
+          0.0015663227012113663,
+          0.001532713750423726,
+          -0.010532682062840568,
+          0.006514822753069433,
+          0.010133030371920903,
+          0.00425935884375887,
+          0.00696707317087478,
+          0.0010826645100662198,
+          -0.004444384473807798,
+          1.9532616335126198
+        ]
+      ],
+      "standardized_information_eigenvalues": [
+        0.3731072673808581,
+        0.7410535744673821,
+        0.8755366749846648,
+        0.9324326321620808,
+        0.9689143508803275,
+        0.9756821287861078,
+        0.9944576993557258,
+        0.9994925252735395,
+        1.1565511645630862,
+        1.325575453972202,
+        1.6571965281740249
+      ],
+      "active_direction_count": 11,
+      "standardized_information_numerical_rank": 11,
+      "zero_sensitivity_directions": [],
+      "largest_derivative_correlations": [
+        {
+          "parameters": [
+            "common:spectral_exponent",
+            "common:log_variance:main:1"
+          ],
+          "correlation": -0.48740007180829376
+        },
+        {
+          "parameters": [
+            "common:spectral_exponent",
+            "common:log_variance:main:2"
+          ],
+          "correlation": -0.29776401739275404
+        },
+        {
+          "parameters": [
+            "common:spectral_exponent",
+            "common:log_variance:main:0"
+          ],
+          "correlation": -0.290491695378376
+        },
+        {
+          "parameters": [
+            "task:log_variance:pair:1,3",
+            "task:log_variance:main:1"
+          ],
+          "correlation": 0.13213015297705294
+        }
+      ],
+      "zero_common_groups": [
+        "main:3",
+        "pair:0,1",
+        "pair:0,2",
+        "pair:0,3",
+        "pair:1,2",
+        "pair:1,3",
+        "pair:2,3"
+      ],
+      "zero_task_groups": [
+        "main:3",
+        "pair:0,1",
+        "pair:0,3",
+        "pair:1,2",
+        "pair:2,3"
+      ],
+      "task_spectral_exponent": 4.0,
+      "discrepancy_variance": 0.0,
+      "interpretation": "Local fixed-mean covariance information at fitted support; boundary/support uncertainty and task-population uncertainty are not quantified."
+    }
+  },
+  "all_deleted_curves_and_dense_objectives_reproduced": true,
+  "cost": {
+    "new_scalar_fits": 0,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.242331964,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

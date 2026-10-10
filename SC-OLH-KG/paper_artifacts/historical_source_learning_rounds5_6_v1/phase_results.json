@@ -1,0 +1,101 @@
+{
+  "status": "Both source iterations conditioned;source-risk convergence remains open",
+  "source_cases_passed_by_round": [
+    32,
+    32
+  ],
+  "complete_identities_by_round": [
+    16,
+    16
+  ],
+  "risk_covariance_changes_by_round": [
+    {
+      "f": {
+        "single_step_stationarity_heads": 16,
+        "two_consecutive_stationarity_heads": 16,
+        "median_relative_covariance_change": 0.0,
+        "maximum_relative_covariance_change": 0.00020501528147729968
+      },
+      "g": {
+        "single_step_stationarity_heads": 16,
+        "two_consecutive_stationarity_heads": 16,
+        "median_relative_covariance_change": 0.00011806411076658885,
+        "maximum_relative_covariance_change": 0.0011441095049955874
+      },
+      "eta_f": {
+        "single_step_stationarity_heads": 0,
+        "two_consecutive_stationarity_heads": 0,
+        "median_relative_covariance_change": 0.06652370606874797,
+        "maximum_relative_covariance_change": 0.13197795510233828
+      },
+      "eta_g": {
+        "single_step_stationarity_heads": 0,
+        "two_consecutive_stationarity_heads": 0,
+        "median_relative_covariance_change": 0.06058029273675282,
+        "maximum_relative_covariance_change": 0.09317445471657425
+      }
+    },
+    {
+      "f": {
+        "single_step_stationarity_heads": 16,
+        "two_consecutive_stationarity_heads": 16,
+        "median_relative_covariance_change": 1.8106634032300592e-05,
+        "maximum_relative_covariance_change": 0.00027758789773436334
+      },
+      "g": {
+        "single_step_stationarity_heads": 16,
+        "two_consecutive_stationarity_heads": 16,
+        "median_relative_covariance_change": 1.8415508914248246e-05,
+        "maximum_relative_covariance_change": 0.0012061821638482907
+      },
+      "eta_f": {
+        "single_step_stationarity_heads": 0,
+        "two_consecutive_stationarity_heads": 0,
+        "median_relative_covariance_change": 0.0493367445555974,
+        "maximum_relative_covariance_change": 0.09327163208556892
+      },
+      "eta_g": {
+        "single_step_stationarity_heads": 1,
+        "two_consecutive_stationarity_heads": 0,
+        "median_relative_covariance_change": 0.03967207429295999,
+        "maximum_relative_covariance_change": 0.07227491023728552
+      }
+    }
+  ],
+  "all_registered_iterations_conditioned": true,
+  "latest_learning": "paper_artifacts/historical_source_learning_round6/results.json",
+  "latest_certified_precision": "paper_artifacts/historical_source_learning_round6/phase_results.json",
+  "source_learning_converged": false,
+  "current_moment_scaled_MCSE_median": 0.001123309424032752,
+  "current_Stein_scaled_MCSE_median": 0.006279258189405265,
+  "Stein_over_moment_MCSE_ratio_median": 5.1262838743339465,
+  "current_score_diagnostics_passed": 64,
+  "paired_score_estimators_compatible_coordinates": 60,
+  "Stein_estimator_adopted": false,
+  "risk_only_bank_source_cases": 1,
+  "risk_only_bank_prefix_matched": true,
+  "risk_only_bank_score_precision_passed": true,
+  "risk_only_bank_scaled_95_MC_halfwidth": [
+    0.00044437835447934274,
+    0.0006738552483964727
+  ],
+  "risk_only_bank_scaled_scores": [
+    0.0006444905251245044,
+    0.0010065919075691351
+  ],
+  "reused_current_law_tail_variance_error": 0.12070384079084723,
+  "KG_components_changed_for_score_bank": 0,
+  "recorded_main_stage_single_thread_CPU_seconds": 93.95205159400001,
+  "candidate_MCMC_sweeps_executed": 196608,
+  "score_bank_sweeps_beyond_its_existing_prefix": 49152,
+  "original_source_cases_resampled": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "server_jobs": 0,
+  "tests_run": 11,
+  "tests_passed": true,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "next_work": "Use longer source risk statistics at score-precision failures while keeping the KG mixture at1024 components;continue risk hyperparameter updates with unchanged Q,posterior and stationarity requirements. Comparable source evidence and independent matched-control decision tests follow."
+}

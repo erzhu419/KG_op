@@ -1,0 +1,83 @@
+{
+  "complete": true,
+  "rows": [
+    {
+      "origin": 4,
+      "source_mass": 0.6964353220376637,
+      "objective_factor": 0.8005194905295474,
+      "positive64_body_integral": 0.8718038576171993,
+      "filtered_sobol": [
+        {
+          "n": 64,
+          "body_count": 57,
+          "body_integral": 0.8734970936676099,
+          "delta_to_positive64": 0.001693236050410607,
+          "mean_cdf_probability": 0.4451770349324011,
+          "exact_body_mean_cdf_probability": 0.45,
+          "reward_contribution_difference": 0.0009439961137451689
+        },
+        {
+          "n": 128,
+          "body_count": 115,
+          "body_integral": 0.8721122686242574,
+          "delta_to_positive64": 0.0003084110070581403,
+          "mean_cdf_probability": 0.4491895495225554,
+          "exact_body_mean_cdf_probability": 0.45,
+          "reward_contribution_difference": 0.0001719422357139854
+        },
+        {
+          "n": 512,
+          "body_count": 460,
+          "body_integral": 0.8720564914936221,
+          "delta_to_positive64": 0.0002526338764228253,
+          "mean_cdf_probability": 0.4492134286455162,
+          "exact_body_mean_cdf_probability": 0.45,
+          "reward_contribution_difference": 0.00014084592487012784
+        }
+      ]
+    },
+    {
+      "origin": 5,
+      "source_mass": 0.30356467795643505,
+      "objective_factor": 0.8004037752231958,
+      "positive64_body_integral": 0.8841500630076654,
+      "filtered_sobol": [
+        {
+          "n": 64,
+          "body_count": 57,
+          "body_integral": 0.8855200299071743,
+          "delta_to_positive64": 0.0013699668995088565,
+          "mean_cdf_probability": 0.4451770349324011,
+          "exact_body_mean_cdf_probability": 0.45,
+          "reward_contribution_difference": 0.0003328667679680824
+        },
+        {
+          "n": 128,
+          "body_count": 115,
+          "body_integral": 0.8843745560390343,
+          "delta_to_positive64": 0.00022449303136884424,
+          "mean_cdf_probability": 0.4491895495225554,
+          "exact_body_mean_cdf_probability": 0.45,
+          "reward_contribution_difference": 5.454604035316068e-05
+        },
+        {
+          "n": 512,
+          "body_count": 460,
+          "body_integral": 0.8843605242692367,
+          "delta_to_positive64": 0.00021046126157131528,
+          "mean_cdf_probability": 0.4492134286455162,
+          "exact_body_mean_cdf_probability": 0.45,
+          "reward_contribution_difference": 5.1136680708741456e-05
+        }
+      ]
+    }
+  ],
+  "weighted_body128_difference": 0.0002264882760671461,
+  "observed_fixed_tower_difference": 0.00022648827606697175,
+  "attribution_roundoff": 1.7433970933566911e-16,
+  "query": 63,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "scope": "Existing frozen fixed-action cached values only; body distribution attribution, not adaptive KG admission."
+}

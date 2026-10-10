@@ -1,0 +1,20 @@
+{
+  "status": "registered after the fixed-prefix negative result, before new actions",
+  "inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+  "kernel_population_fit": "paper_artifacts/legacy_joint_population_kernel_mean_v1/source_fit.json",
+  "previous_decisions": "paper_artifacts/legacy_joint_population_paid_prefix_v1/results.json",
+  "output": "paper_artifacts/legacy_joint_population_actual_retention_v1",
+  "arms": ["joint_population_structural", "joint_population_full", "joint_population_rbf_shared_raw"],
+  "scientific_question": "does the existing retention operation limit the observed regression when it retains the actual preceding recommendation rather than only the weaker common reference recommendation?",
+  "retention": "reconstruct the same two-point roster and common reference retention; additionally retain the actual two-point structural recommendation, already63 in every task and identical to both comparator recommendations; keep all original actions, original primary/incumbent and at most three policies per action",
+  "prior_and_data": "same frozen source priors and all four cached raw observations; no prior refitting, source subset changes, new querying or scoring-based candidate choice",
+  "cost_contract": "four logical observations plus at most358 terminal calls; original family delta, comparison reserve, guarded/direct allocations and verifier; no new simulator calls",
+  "recommendation_barrier": "save all18 repaired-class choices before loading cached target truth; compare at identical four-point posteriors against the old four-point class",
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "new_simulator_call_cap": 0,
+  "execution": "reuse small local cache, local serial single-thread; no scheduler/server dispatch or pulls",
+  "interpretation": "opened-task terminal retention attribution, not evidence of paid-query or KG gain; preserve the original36 decisions and negative scores; independently verify any eventual adopted loop"
+}

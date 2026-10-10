@@ -34,6 +34,28 @@ def _base_source_domain(label):
     return value.split("#episode", 1)[0]
 
 
+def centered_fit_covariance_parts(means, estimation_covariances):
+    """V47 centered random effects, with fit noise kept in the shared mean.
+
+    The observed task covariance uses divisor m. Independent coefficient-fit
+    noise contributes (m-1)/m^2 times the sum of fit covariances to it, and
+    1/m^2 times that sum to the fitted common mean's sampling covariance.
+    Group identity and any finite-source predictive correction stay with the
+    caller; this calculation does not create additional source families.
+    """
+    means = np.asarray(means, dtype=float)
+    count = len(means)
+    mean = np.mean(means, axis=0)
+    errors = means - mean
+    observed = errors.T @ errors / count
+    estimation_sum = np.sum(estimation_covariances, axis=0)
+    shared = estimation_sum / float(count ** 2)
+    noise = float(count - 1) * shared
+    return {"mean": mean, "observed": observed, "noise": noise,
+            "deconvolved": _nearest_psd(observed - noise, 0.0),
+            "shared_fit_covariance": shared}
+
+
 class ExchangeableBoundaryMeanCoordinate:
     """Low-dimensional target-linear mean head with an exchangeable prior.
 
@@ -579,13 +601,13 @@ class ExchangeableBoundaryMeanCoordinate:
                 for index in indices
             ])
             episode_count = len(indices)
-            group_mean = np.mean(episode_means, axis=0)
             episode_estimations = [
                 np.asarray(estimation_parts[index], dtype=float)
                 for index in indices
             ]
-            estimation_sum = np.sum(episode_estimations, axis=0)
-            group_estimation = estimation_sum / float(episode_count ** 2)
+            centered = centered_fit_covariance_parts(episode_means, episode_estimations)
+            group_mean = centered["mean"]
+            group_estimation = centered["shared_fit_covariance"]
             role_observed = np.mean([
                 np.asarray(role_parts[index], dtype=float)
                 for index in indices
@@ -605,18 +627,9 @@ class ExchangeableBoundaryMeanCoordinate:
                 role_observed - role_noise if deconvolve else role_observed,
                 0.0,
             )
-            within_observed = np.mean([
-                np.outer(value - group_mean, value - group_mean)
-                for value in episode_means
-            ], axis=0)
-            within_noise = (
-                float(episode_count - 1) / float(episode_count ** 2)
-            ) * estimation_sum
-            group_within = _nearest_psd(
-                within_observed - within_noise
-                if deconvolve else within_observed,
-                0.0,
-            )
+            within_observed = centered["observed"]
+            within_noise = centered["noise"]
+            group_within = centered["deconvolved"] if deconvolve else _nearest_psd(within_observed, 0.0)
             group_deviation = float(np.mean([
                 float(components[index]["deviation_variance"])
                 for index in indices
@@ -637,10 +650,9 @@ class ExchangeableBoundaryMeanCoordinate:
 
         base_count = len(group_rows)
         base_means = np.vstack([row["mean"] for row in group_rows])
-        mean = np.mean(base_means, axis=0)
-        shared_mean_covariance = np.sum([
-            row["estimation"] for row in group_rows
-        ], axis=0) / float(base_count ** 2)
+        centered = centered_fit_covariance_parts(base_means, [row["estimation"] for row in group_rows])
+        mean = centered["mean"]
+        shared_mean_covariance = centered["shared_fit_covariance"]
         channel_role_covariance = np.mean([
             row["role"] for row in group_rows
         ], axis=0)
@@ -650,20 +662,10 @@ class ExchangeableBoundaryMeanCoordinate:
         role_noise_covariance = np.mean([
             row["role_noise"] for row in group_rows
         ], axis=0)
-        between_observed_covariance = np.mean([
-            np.outer(value - mean, value - mean)
-            for value in base_means
-        ], axis=0)
-        between_noise_covariance = (
-            float(base_count - 1) / float(base_count ** 2)
-        ) * np.sum([
-            row["estimation"] for row in group_rows
-        ], axis=0)
-        between_covariance = _nearest_psd(
-            between_observed_covariance - between_noise_covariance
-            if deconvolve else between_observed_covariance,
-            0.0,
-        )
+        between_observed_covariance = centered["observed"]
+        between_noise_covariance = centered["noise"]
+        between_covariance = (centered["deconvolved"] if deconvolve
+            else _nearest_psd(between_observed_covariance, 0.0))
         within_covariance = _nearest_psd(np.mean([
             row["within"] for row in group_rows
         ], axis=0), 0.0)

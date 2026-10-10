@@ -1,0 +1,103 @@
+{
+  "stage": "meta_prior_risk_adaptation_calibration_a10_20261003",
+  "status": "chronological_validation_complete_not_promoted_no_recommendation_replay",
+  "gate_passed": false,
+  "reason": "The learned-source shared-structure score still regresses with a negative nominal interval; separate-risk support newly regresses relative to both source and A9. High-frequency improvement is less stable. Broad improvement without compatible-regime regression is not established.",
+  "partial_success": "Separate-head adaptation loss is reduced relative to A9; source weight increases in shared and separate-head tasks.",
+  "weight_diagnosis": {
+    "endpoint_forecasts": 2441,
+    "total_forecasts": 2560,
+    "endpoint_fraction": 0.953515625,
+    "interpretation": "Small-history predictive maximum likelihood often chooses all-source or all-adapted predictions. Observed chronological regressions persist; endpoints alone are not a proof of overfitting."
+  },
+  "source_coverage": "Each source archive has eight tasks with a common risk support; only linear, squared and pair-interaction risk components occur. Source-task holdout can diagnose compatible-task calibration but does not validate unseen high-frequency or support-shift routing.",
+  "learned_source_groups": [
+    {
+      "regime": "shared_structure",
+      "mean_gain": -0.0035793456698836514,
+      "paired_seed_bootstrap95": [
+        -0.006927721561648121,
+        -0.0008615943343674463
+      ],
+      "better": 2,
+      "worse": 6,
+      "mean_gain_vs_a9": 0.0010800527437156403,
+      "mean_pi": 0.24475564479725864,
+      "mean_a9_adaptation_mass": 0.4653460889577138,
+      "pi_zero_forecasts": 188,
+      "pi_one_forecasts": 58
+    },
+    {
+      "regime": "support_mismatch",
+      "mean_gain": 0.020826591752402077,
+      "paired_seed_bootstrap95": [
+        0.0012350085267210406,
+        0.04616627030536211
+      ],
+      "better": 9,
+      "worse": 7,
+      "mean_gain_vs_a9": 0.002062945970947112,
+      "mean_pi": 0.6665321639123345,
+      "mean_a9_adaptation_mass": 0.5656689594050376,
+      "pi_zero_forecasts": 82,
+      "pi_one_forecasts": 166
+    },
+    {
+      "regime": "high_frequency_risk",
+      "mean_gain": 0.033054767226445896,
+      "paired_seed_bootstrap95": [
+        -2.899625252976167e-05,
+        0.08854259253410635
+      ],
+      "better": 8,
+      "worse": 8,
+      "mean_gain_vs_a9": -0.006478079281193689,
+      "mean_pi": 0.676234174805883,
+      "mean_a9_adaptation_mass": 0.576168973295212,
+      "pi_zero_forecasts": 69,
+      "pi_one_forecasts": 159
+    },
+    {
+      "regime": "separate_risk_support",
+      "mean_gain": -0.004852513086065693,
+      "paired_seed_bootstrap95": [
+        -0.010189761873524033,
+        -0.00021477629635124947
+      ],
+      "better": 5,
+      "worse": 10,
+      "mean_gain_vs_a9": -0.004716034756047743,
+      "mean_pi": 0.6037361312017369,
+      "mean_a9_adaptation_mass": 0.5214124669858407,
+      "pi_zero_forecasts": 94,
+      "pi_one_forecasts": 145
+    },
+    {
+      "regime": "separate_head_structure",
+      "mean_gain": -0.0025045038008238043,
+      "paired_seed_bootstrap95": [
+        -0.007063655042934663,
+        0.0016566176782335095
+      ],
+      "better": 1,
+      "worse": 5,
+      "mean_gain_vs_a9": 0.006279119218510964,
+      "mean_pi": 0.15087388475099112,
+      "mean_a9_adaptation_mass": 0.41188803529955365,
+      "pi_zero_forecasts": 213,
+      "pi_one_forecasts": 35
+    }
+  ],
+  "max_a9_control_log_score_error": 0.0,
+  "targeted_tests_passed": 4,
+  "numerical_check_passed": true,
+  "local_analysis_cpu_seconds": 98.266418158,
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "kg_calls": 0,
+  "new_searches": 0,
+  "recommendation_replays": 0,
+  "new_random_verifications": 0,
+  "next_plan": "performance/meta_prior_source_holdout_calibration_diagnostic_plan.json",
+  "evidence_scope": "Retrospective development prediction, not independent confirmation or new-policy deployment gains."
+}

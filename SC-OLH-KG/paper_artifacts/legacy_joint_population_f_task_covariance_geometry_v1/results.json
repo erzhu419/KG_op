@@ -1,0 +1,801 @@
+{
+  "execution": {
+    "status": "frozen before source-only covariance geometry calculations",
+    "transplant_execution": "performance/manifests/legacy_joint_population_f_reference_prior_transplant_execution_v1.json",
+    "frozen_gp_priors": "paper_artifacts/legacy_joint_population_f_reference_prior_transplant_v1/frozen_priors.json",
+    "common_compression_laws": "paper_artifacts/legacy_joint_population_f_coherent_common_compression_v1/source_laws.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "question": "Is the useful sourceGP covariance dominated by source common-function uncertainty,new-task residual functions or white discrepancy,and how much task covariance lies in the original dictionary/sparse supports? Is task bank-level variation coupled to centered shape despite zero extra GP intercept variance?",
+    "law": "Use only cached source laws,frozen public GP prior moments and Stage107 full-dictionary common-prior projection. All twelve current selected GP laws were verified identical to Stage107's original GP laws. Derive projected task covariance from the cached common RBF projection and task/common amplitudes,keeping physical scaling and constant variance separate. Use original source variance-mixture common H and expected task intercept variance as the native reference. No query response/noise labels,paid forecasts,fits or numerical source integrations.",
+    "diagnostic": "Separate total public covariance into common posterior H,task RBF/intercept and white discrepancy. Report bank level/centered-shape variance contributions. Compare GP task covariance outside full27-column,original task-active groups and common/task-union supports. Report task coefficient offdiagonal geometry and the model-conditional linear association between level and shape using a relative1e-10 symmetric pseudoinverse. These are covariance descriptions,not recovered causal factors or empirical correlation tests.",
+    "verification": "Public query coordinates must equal the source public reference before reusing Stage107 projection. Cached common coefficient H must match projected GP common covariance. Task/common/white components reconstruct frozen total GP prior covariance,with PSD components. Full-bank task projection must reproduce cached-coefficient derivation. A disagreement blocks source geometry interpretation and detects a wrong kernel law,coordinate basis or constant/normalization accounting.",
+    "decision": "Choose a coherent source-only covariance-learning question that preserves original orthogonal coordinates,sparse groups,low-order dictionary,low-frequency marginal budgets and independent1% weak tail. Do not adopt GP moments,add factors/variance floors or automatically fit a new covariance template. Positive covariance probes remain development attribution;the full original gate is unchanged.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small JSON inputs only;no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_task_covariance_geometry_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_task_covariance_geometry.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0008680795162299666,
+          "bank_average_level_variance": 0.0006905095539955592,
+          "centered_shape_variance": 0.0001775699622344073
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00016231861922547791,
+          "bank_average_level_variance": 0.00011633194349234525,
+          "centered_shape_variance": 4.598667573313266e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0006773861132427765,
+          "bank_average_level_variance": 0.0005737889148352452,
+          "centered_shape_variance": 0.00010359719840753127
+        },
+        "gp_white": {
+          "bank_average_variance": 2.8374783761712435e-05,
+          "bank_average_level_variance": 3.8869566796866353e-07,
+          "centered_shape_variance": 2.7986088093743772e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00018109976383916403,
+          "bank_average_level_variance": 6.874300223365409e-05,
+          "centered_shape_variance": 0.00011235676160550995
+        },
+        "native_task": {
+          "bank_average_variance": 0.0006160152247034057,
+          "bank_average_level_variance": 0.00032658340667359186,
+          "centered_shape_variance": 0.0002894318180298138
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2589777863016402,
+        "gp_task": 0.5834162327002933,
+        "gp_white": 0.1576059809980687
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0007510410877040312
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.1562742694387636
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.037128960230419075
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0005721488287988665,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6828809052715343,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.2648033319373121,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0007491360784001649,
+          "bank_average_level_variance": 0.0006070915169314011,
+          "centered_shape_variance": 0.00014204456146876376
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00013944989732646767,
+          "bank_average_level_variance": 0.00010210211659985967,
+          "centered_shape_variance": 3.7347780726608003e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0005885805968031402,
+          "bank_average_level_variance": 0.000504700282738794,
+          "centered_shape_variance": 8.388031406434619e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 2.1105584270556997e-05,
+          "bank_average_level_variance": 2.8911759274735605e-07,
+          "centered_shape_variance": 2.0816466677809642e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00013401872849852454,
+          "bank_average_level_variance": 2.4376762903435312e-05,
+          "centered_shape_variance": 0.00010964196559508923
+        },
+        "native_task": {
+          "bank_average_variance": 0.00037551050670761956,
+          "bank_average_level_variance": 0.00010461426713726092,
+          "centered_shape_variance": 0.00027089623957035863
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2629300294247517,
+        "gp_task": 0.5905211237727807,
+        "gp_white": 0.14654884680246824
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0006148740146669942
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.15211312058371104
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.03588921859268301
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.000504087116491305,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6909970926923961,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.24886191863124546,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0008190067836214191,
+          "bank_average_level_variance": 0.0006728882008278095,
+          "centered_shape_variance": 0.00014611858279360958
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00015112109599772495,
+          "bank_average_level_variance": 0.00011319098703355515,
+          "centered_shape_variance": 3.79301089641698e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0006461111903882361,
+          "bank_average_level_variance": 0.000559398933010207,
+          "centered_shape_variance": 8.671225737802912e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 2.1774497235458085e-05,
+          "bank_average_level_variance": 2.9828078404737104e-07,
+          "centered_shape_variance": 2.1476216451410715e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00016850506563495586,
+          "bank_average_level_variance": 6.003138992269612e-05,
+          "centered_shape_variance": 0.00010847367571225974
+        },
+        "native_task": {
+          "bank_average_variance": 0.0005579835945878242,
+          "bank_average_level_variance": 0.00028271048700899946,
+          "centered_shape_variance": 0.0002752731075788248
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2595844295707791,
+        "gp_task": 0.5934375746068449,
+        "gp_white": 0.14697799582237644
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0005446099234391519
+        },
+        "task_active_groups": {
+          "column_count": 6,
+          "fraction_of_gp_task_centered_shape_variance": 0.4093361287449562
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.03355296156977724
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.000558570116346636,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6888697718947723,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.24223719176530106,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0010675159149021105,
+          "bank_average_level_variance": 0.000909497317133384,
+          "centered_shape_variance": 0.00015801859776872645
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00019134694102969406,
+          "bank_average_level_variance": 0.0001523939010087899,
+          "centered_shape_variance": 3.895304002090417e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0008622543777463052,
+          "bank_average_level_variance": 0.000756912805218757,
+          "centered_shape_variance": 0.00010534157252754816
+        },
+        "gp_white": {
+          "bank_average_variance": 1.3914596126111491e-05,
+          "bank_average_level_variance": 1.9061090583714377e-07,
+          "centered_shape_variance": 1.3723985220274347e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.0001856237260410431,
+          "bank_average_level_variance": 7.073648826516969e-05,
+          "centered_shape_variance": 0.0001148872377758734
+        },
+        "native_task": {
+          "bank_average_variance": 0.0006148966084673987,
+          "bank_average_level_variance": 0.0003305214744348585,
+          "centered_shape_variance": 0.00028437513403254023
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.24650921202272172,
+        "gp_task": 0.6666403449657518,
+        "gp_white": 0.08685044301152803
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0004424859562021053
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.12396035696608002
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.03138120853040409
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0007565467689529752,
+      "gp_task_level_linear_association_with_shape_fraction": 0.692863276517681,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.23124577945366598,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0006401815685645216,
+          "bank_average_level_variance": 0.0005112423467902062,
+          "centered_shape_variance": 0.0001289392217743154
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00012049610245997978,
+          "bank_average_level_variance": 8.633384022324683e-05,
+          "centered_shape_variance": 3.4162262236732955e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.000494529897572449,
+          "bank_average_level_variance": 0.0004245639097377526,
+          "centered_shape_variance": 6.996598783469643e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 2.5155568532092897e-05,
+          "bank_average_level_variance": 3.445968292067521e-07,
+          "centered_shape_variance": 2.4810971702886145e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00015997681202496974,
+          "bank_average_level_variance": 4.9329681449159066e-05,
+          "centered_shape_variance": 0.00011064713057581068
+        },
+        "native_task": {
+          "bank_average_variance": 0.0005082879163333652,
+          "bank_average_level_variance": 0.00023082526418646018,
+          "centered_shape_variance": 0.00027746265214690497
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.26494856853198456,
+        "gp_task": 0.5426276572163522,
+        "gp_white": 0.19242377425166432
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0006038685104250861
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.15544599869304845
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.03517424992717747
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.00042406304313354277,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6903967820912311,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.24537093572465585,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0006483450467483212,
+          "bank_average_level_variance": 0.0005073313514648189,
+          "centered_shape_variance": 0.00014101369528350227
+        },
+        "gp_common": {
+          "bank_average_variance": 0.0001234768837637195,
+          "bank_average_level_variance": 8.593971554526699e-05,
+          "centered_shape_variance": 3.753716821845252e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0004943523414900523,
+          "bank_average_level_variance": 0.00042097361096757183,
+          "centered_shape_variance": 7.337873052248043e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 3.0515821494549518e-05,
+          "bank_average_level_variance": 4.180249519801303e-07,
+          "centered_shape_variance": 3.0097796542569388e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00016288519335082072,
+          "bank_average_level_variance": 6.46675232459334e-05,
+          "centered_shape_variance": 9.821767010488732e-05
+        },
+        "native_task": {
+          "bank_average_variance": 0.0005338691345486256,
+          "bank_average_level_variance": 0.0003094718429431416,
+          "centered_shape_variance": 0.000224397291605484
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2661951957431197,
+        "gp_task": 0.520365985551655,
+        "gp_white": 0.21343881870522574
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0006880405043223943
+        },
+        "task_active_groups": {
+          "column_count": 6,
+          "fraction_of_gp_task_centered_shape_variance": 0.3871555962801709
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.036922296759256054
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0004203433662697639,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6899504368892342,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.24335336254426965,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0009084243109930438,
+          "bank_average_level_variance": 0.0007600006214085215,
+          "centered_shape_variance": 0.00014842368958452236
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00016409063398640375,
+          "bank_average_level_variance": 0.00012758911227106522,
+          "centered_shape_variance": 3.650152171533853e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0007238559556544129,
+          "bank_average_level_variance": 0.0006321309924066038,
+          "centered_shape_variance": 9.172496324780916e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 2.0477721352227114e-05,
+          "bank_average_level_variance": 2.8051673085242624e-07,
+          "centered_shape_variance": 2.0197204621374688e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00017832176372276342,
+          "bank_average_level_variance": 5.9047121822158046e-05,
+          "centered_shape_variance": 0.00011927464190060537
+        },
+        "native_task": {
+          "bank_average_variance": 0.000582084143632188,
+          "bank_average_level_variance": 0.00027924010870656305,
+          "centered_shape_variance": 0.000302844034925625
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2459278691798867,
+        "gp_task": 0.6179940918095479,
+        "gp_white": 0.13607803901056542
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.00048053780412751334
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.13022089246114396
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.03202702011208217
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0006314212349902893,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6921320162927461,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.23645956630212456,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0008251156953477571,
+          "bank_average_level_variance": 0.0006956267738001212,
+          "centered_shape_variance": 0.00012948892154763592
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00014955272045687464,
+          "bank_average_level_variance": 0.00011668313598075547,
+          "centered_shape_variance": 3.286958447611917e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.000661314265323061,
+          "bank_average_level_variance": 0.0005787484500170668,
+          "centered_shape_variance": 8.25658153059942e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 1.4248709567821307e-05,
+          "bank_average_level_variance": 1.9518780229892204e-07,
+          "centered_shape_variance": 1.4053521765522385e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00012155338046118074,
+          "bank_average_level_variance": 1.2566893523698478e-05,
+          "centered_shape_variance": 0.00010898648693748227
+        },
+        "native_task": {
+          "bank_average_variance": 0.0003181580643281248,
+          "bank_average_level_variance": 4.0897745474251324e-05,
+          "centered_shape_variance": 0.00027726031885387346
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2538409006984217,
+        "gp_task": 0.6376284111349262,
+        "gp_white": 0.1085306881666508
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.00046600828161181667
+        },
+        "task_active_groups": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.031845702603286966
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.031845702603286966
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0005783452462654955,
+      "gp_task_level_linear_association_with_shape_fraction": 0.693892733863381,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.23511511835797635,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0010413866624501226,
+          "bank_average_level_variance": 0.0008817785733640306,
+          "centered_shape_variance": 0.000159608089086092
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00018699903735389786,
+          "bank_average_level_variance": 0.00014790369465258698,
+          "centered_shape_variance": 3.909534270131088e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0008325559201783897,
+          "bank_average_level_variance": 0.0007335758142605144,
+          "centered_shape_variance": 9.89801059178753e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 2.1831704917835134e-05,
+          "bank_average_level_variance": 2.990644509292484e-07,
+          "centered_shape_variance": 2.1532640466905886e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.0001670389234549021,
+          "bank_average_level_variance": 5.417197797552696e-05,
+          "centered_shape_variance": 0.00011286694547937513
+        },
+        "native_task": {
+          "bank_average_variance": 0.000535444100870098,
+          "bank_average_level_variance": 0.0002486992412283789,
+          "centered_shape_variance": 0.0002867448596417191
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.24494587288882957,
+        "gp_task": 0.6201446711418604,
+        "gp_white": 0.1349094559693103
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.00041920294860201354
+        },
+        "task_active_groups": {
+          "column_count": 12,
+          "fraction_of_gp_task_centered_shape_variance": 0.07606139397863476
+        },
+        "common_task_union": {
+          "column_count": 17,
+          "fraction_of_gp_task_centered_shape_variance": 0.028601779634187873
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0007333473178630757,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6954950947365436,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.2266399732862921,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0010278148153968763,
+          "bank_average_level_variance": 0.0008669792232744414,
+          "centered_shape_variance": 0.00016083559212243487
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00018599317148695798,
+          "bank_average_level_variance": 0.00014530477013179657,
+          "centered_shape_variance": 4.0688401355161414e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0008250487329574967,
+          "bank_average_level_variance": 0.000721444687239187,
+          "centered_shape_variance": 0.00010360404571830965
+        },
+        "gp_white": {
+          "bank_average_variance": 1.6772910952421743e-05,
+          "bank_average_level_variance": 2.2976590345783207e-07,
+          "centered_shape_variance": 1.654314504896391e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00018044095916409735,
+          "bank_average_level_variance": 6.054295365006575e-05,
+          "centered_shape_variance": 0.0001198980055140316
+        },
+        "native_task": {
+          "bank_average_variance": 0.0005939684378106043,
+          "bank_average_level_variance": 0.0002837963410693042,
+          "centered_shape_variance": 0.00031017209674130014
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.252981325950463,
+        "gp_task": 0.6441611856624487,
+        "gp_white": 0.10285748838708889
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0004724596685973133
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.12424007077713202
+        },
+        "common_task_union": {
+          "column_count": 16,
+          "fraction_of_gp_task_centered_shape_variance": 0.03158315019326115
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0007205075079645689,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6924270376624923,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.23741588563504323,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0007782841043990257,
+          "bank_average_level_variance": 0.000642146131216075,
+          "centered_shape_variance": 0.00013613797318295072
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00014449485819268145,
+          "bank_average_level_variance": 0.00010801745838163936,
+          "centered_shape_variance": 3.6477399811042085e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0006144377170335826,
+          "bank_average_level_variance": 0.0005338635833937129,
+          "centered_shape_variance": 8.057413363986971e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 1.9351529172761703e-05,
+          "bank_average_level_variance": 2.650894407227631e-07,
+          "centered_shape_variance": 1.908643973203894e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.0001692269245510784,
+          "bank_average_level_variance": 5.449336286255702e-05,
+          "centered_shape_variance": 0.00011473356168852138
+        },
+        "native_task": {
+          "bank_average_variance": 0.000540367343119686,
+          "bank_average_level_variance": 0.0002552483371121306,
+          "centered_shape_variance": 0.0002851190060075554
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.26794434321437616,
+        "gp_task": 0.5918564215113528,
+        "gp_white": 0.14019923527427125
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0005146317399938978
+        },
+        "task_active_groups": {
+          "column_count": 11,
+          "fraction_of_gp_task_centered_shape_variance": 0.131213473436446
+        },
+        "common_task_union": {
+          "column_count": 17,
+          "fraction_of_gp_task_centered_shape_variance": 0.031174318437842446
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.000533398805499799,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6927261684645274,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.24265166678639855,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "components": {
+        "gp_total": {
+          "bank_average_variance": 0.0007663398976164955,
+          "bank_average_level_variance": 0.0006325198218723318,
+          "centered_shape_variance": 0.00013382007574416364
+        },
+        "gp_common": {
+          "bank_average_variance": 0.00014080844470244102,
+          "bank_average_level_variance": 0.00010646013263145787,
+          "centered_shape_variance": 3.4348312070983154e-05
+        },
+        "gp_task": {
+          "bank_average_variance": 0.0006046241943152872,
+          "bank_average_level_variance": 0.0005257732884381511,
+          "centered_shape_variance": 7.88509058771361e-05
+        },
+        "gp_white": {
+          "bank_average_variance": 2.090725859876712e-05,
+          "bank_average_level_variance": 2.8640080272283724e-07,
+          "centered_shape_variance": 2.062085779604428e-05
+        },
+        "native_common": {
+          "bank_average_variance": 0.00016287138763752267,
+          "bank_average_level_variance": 6.634878366230224e-05,
+          "centered_shape_variance": 9.652260397522043e-05
+        },
+        "native_task": {
+          "bank_average_variance": 0.000549054570917246,
+          "bank_average_level_variance": 0.00031707358350854966,
+          "centered_shape_variance": 0.00023198098740869632
+        }
+      },
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2566753297662903,
+        "gp_task": 0.5892307670478587,
+        "gp_white": 0.15409390318585012
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": {
+          "column_count": 27,
+          "fraction_of_gp_task_centered_shape_variance": 0.0005312128988028108
+        },
+        "task_active_groups": {
+          "column_count": 2,
+          "fraction_of_gp_task_centered_shape_variance": 0.8980803762549686
+        },
+        "common_task_union": {
+          "column_count": 17,
+          "fraction_of_gp_task_centered_shape_variance": 0.030524111267336246
+        }
+      },
+      "gp_extra_task_intercept_parameter": 0.0,
+      "gp_task_bank_level_variance": 0.0005246816637835588,
+      "gp_task_level_linear_association_with_shape_fraction": 0.6892564391933729,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.2520610418789856,
+      "coordinate_projection_and_covariance_decomposition_verified": true
+    }
+  ],
+  "summary": {
+    "5": {
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2598575369324995,
+        "gp_task": 0.5828348198022796,
+        "gp_white": 0.15730764326522192
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": 0.0006074866661266271,
+        "task_active_groups": 0.23071424511778835,
+        "common_task_union": 0.03500814926828615
+      },
+      "gp_task_level_linear_association_with_shape_fraction": 0.6893263775594748,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.24597875334274166
+    },
+    "6": {
+      "gp_shape_variance_fractions": {
+        "gp_common": 0.2537192736163779,
+        "gp_task": 0.6168359247179991,
+        "gp_white": 0.1294448016656228
+      },
+      "gp_task_outside_native_scope": {
+        "full_dictionary": 0.0004806755569558943,
+        "task_active_groups": 0.23194365158526872,
+        "common_task_union": 0.03095934704133281
+      },
+      "gp_task_level_linear_association_with_shape_fraction": 0.6926549150355105,
+      "gp_task_shape_offdiagonal_relative_frobenius": 0.23839054204113674
+    }
+  },
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.32965487,
+  "no_model_adopted": true,
+  "response_outcomes_indexed": false,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

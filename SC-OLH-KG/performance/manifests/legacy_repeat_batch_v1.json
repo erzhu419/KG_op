@@ -1,0 +1,19 @@
+{
+  "diagnosis": "paper_artifacts/legacy_risk_transfer_diagnosis_v1/results.json",
+  "pilot": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+  "query": 63,
+  "fresh_replicates": [1,2,3],
+  "retained_policy": 63,
+  "starting_state": "reuse four initial raw records and the saved group2 observation at63, with five paid episodes already conditioned; the prior observation at63 never enters a new batch's sample variance or call debit",
+  "batch_likelihood": "fresh f/g means and bias-corrected log sample variances; exact conditional Normal mean and chi-square variance law; one shared identity weight combines both heads; raw paired batch costs its row count once",
+  "future_filter": "compare unprojected next-update eta likelihood with the actual local Gaussian moment completion over every terminal action, not only the frozen baseline",
+  "terminal": "same six primary roster and retained fallback as stage13, with 362-call cap; debit every fresh replicate before terminal allocation",
+  "information": "query and other terminal policies' exact conditional moments; common identity mixing after conditioning; separate within-known-identity eta_g transfer to other policies",
+  "randomness": "shared Sobol coordinates across sizes2/3 give paired marginal sufficient-statistic draws, not nested physical raw paths; size1 preserves the previous four-dimensional rule",
+  "draw_power": 10,
+  "fantasy_power": 6,
+  "seeds": [80621,80622],
+  "execution": "six bounded probes, local serial single-thread; one source fit; no new simulations, scoring truth, independent certificates, server tasks or pulls",
+  "scope": "opened five-point Inventory posterior and restricted finite-bank action class; predictive information and algorithm diagnostics, not actual performance or physical factor recovery",
+  "output": "paper_artifacts/legacy_repeat_batch_v1/results.json"
+}

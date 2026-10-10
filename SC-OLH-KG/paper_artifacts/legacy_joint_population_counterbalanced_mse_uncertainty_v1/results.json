@@ -1,0 +1,1182 @@
+{
+  "execution": {
+    "status": "registered before paired MSE measurement-uncertainty diagnostics",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "variants": {
+      "refit216": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+      "frozen144_covariance216": "paper_artifacts/legacy_joint_population_counterbalanced_frozen_covariance_v1/calibration_profiles.json"
+    },
+    "basis_of_next_step": "Mean-information repair raises source g density in all four cases; fixed-hyperparameter conditioning raises joint density in all four but source task07/assignment5 g observed MSE rises5.550e-5. These MSEs score noisy three-repeat sample means. Quantify conditional scoring noise before treating this observed difference as an established degradation. Preserve both failed improvement gates.",
+    "sampling_contract": "Cached source generation uses a distinct normal draw for every output/site/repeat from one sequential task RNG, no reseeding or common-random-number reuse. Site noise is Gaussian under the existing controlled problem and the evaluation bank remains fixed. Forecasts use only heldout sites0/1; scoring uses sites2..72.",
+    "diagnostic": "For every available arm/source case and f/g head compute paired MSE difference on71 scoring policies. The squared-label noise cancels in the difference: variance estimator4*sum((new_mean-old_mean)^2*S2/3)/71^2. Report its standard error and Welch-Satterthwaite approximate95% interval, degrees of freedom and largest policy contributions. Use frozen forecasts and cached three-repeat variances only; do not reconstruct proper densities or read any hidden truth.",
+    "interpretation": "Conditional measurement-noise intervals for this fixed bank and frozen forecasts, not task-population confidence, selection-adjusted confirmation or proof of unchanged true performance. No after-the-fact source gate change and no promotion to target/risk extension.",
+    "execution": "local serial single-thread; cached JSON arithmetic only; zero source fits, physical simulator/verifier calls, terminal integrals or server jobs/pulls",
+    "output": "paper_artifacts/legacy_joint_population_counterbalanced_mse_uncertainty_v1"
+  },
+  "rows": [
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": -2.9305731396065323e-05,
+      "measurement_standard_error": 4.869864701632766e-06,
+      "welch_degrees_of_freedom": 17.337815479294644,
+      "approximate_95_interval": [
+        -3.956501908406608e-05,
+        -1.9046443708064563e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -5.8628564127797075e-06
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -4.901424994089493e-06
+        },
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -4.81131400885943e-06
+        },
+        {
+          "candidate": 50,
+          "mse_difference_contribution": -4.253396056252104e-06
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -3.0023762121223234e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": -0.00014770998122098274,
+      "measurement_standard_error": 6.28525347351217e-05,
+      "welch_degrees_of_freedom": 17.787445987089413,
+      "approximate_95_interval": [
+        -0.00027987145303531033,
+        -1.554850940665517e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -0.00011591999574911118
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -4.656540259896969e-05
+        },
+        {
+          "candidate": 69,
+          "mse_difference_contribution": -2.4625544595448035e-05
+        },
+        {
+          "candidate": 67,
+          "mse_difference_contribution": 2.387827234605294e-05
+        },
+        {
+          "candidate": 48,
+          "mse_difference_contribution": -2.2358027019119447e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "head": "f",
+      "paired_mse_difference": -7.690964030027337e-05,
+      "measurement_standard_error": 7.426442276199576e-06,
+      "welch_degrees_of_freedom": 24.96157442454662,
+      "approximate_95_interval": [
+        -9.220587843215639e-05,
+        -6.161340216839034e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -2.4314056272534475e-05
+        },
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -8.30578368676549e-06
+        },
+        {
+          "candidate": 26,
+          "mse_difference_contribution": -7.413618307872501e-06
+        },
+        {
+          "candidate": 17,
+          "mse_difference_contribution": -5.757150398562783e-06
+        },
+        {
+          "candidate": 12,
+          "mse_difference_contribution": -4.162170605237931e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "head": "g",
+      "paired_mse_difference": -0.0002363919270682058,
+      "measurement_standard_error": 7.970920522535684e-05,
+      "welch_degrees_of_freedom": 17.120341689928292,
+      "approximate_95_interval": [
+        -0.0004044736466102089,
+        -6.831020752620274e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -0.0001515362477732866
+        },
+        {
+          "candidate": 20,
+          "mse_difference_contribution": 0.00011669779341804192
+        },
+        {
+          "candidate": 70,
+          "mse_difference_contribution": -6.627094161613946e-05
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -5.333801297243134e-05
+        },
+        {
+          "candidate": 40,
+          "mse_difference_contribution": -3.993394636461798e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_gp",
+      "head": "f",
+      "paired_mse_difference": -0.00013677092493505016,
+      "measurement_standard_error": 7.4624770967071624e-06,
+      "welch_degrees_of_freedom": 21.393120158717036,
+      "approximate_95_interval": [
+        -0.0001522726494768402,
+        -0.0001212692003932601
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 47,
+          "mse_difference_contribution": -2.700656816092381e-05
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -1.7610805990633788e-05
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -1.1902930246644188e-05
+        },
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -1.1298035775162252e-05
+        },
+        {
+          "candidate": 26,
+          "mse_difference_contribution": -1.0330248826656019e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_gp",
+      "head": "g",
+      "paired_mse_difference": -0.0006645610647611755,
+      "measurement_standard_error": 8.537119118027336e-05,
+      "welch_degrees_of_freedom": 19.415094719275654,
+      "approximate_95_interval": [
+        -0.0008429868067308674,
+        -0.00048613532279148354
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -0.000170858292817399
+        },
+        {
+          "candidate": 20,
+          "mse_difference_contribution": -0.00015279773534395473
+        },
+        {
+          "candidate": 48,
+          "mse_difference_contribution": -7.522878068596201e-05
+        },
+        {
+          "candidate": 69,
+          "mse_difference_contribution": -7.387901327632839e-05
+        },
+        {
+          "candidate": 24,
+          "mse_difference_contribution": -5.755436842208807e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": -5.30012956592724e-05,
+      "measurement_standard_error": 4.854980873679966e-06,
+      "welch_degrees_of_freedom": 21.51545366816058,
+      "approximate_95_interval": [
+        -6.30830730141964e-05,
+        -4.2919518304348395e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -1.2908019728095497e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -1.0773800284856474e-05
+        },
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -9.649748679648208e-06
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -9.141083874354032e-06
+        },
+        {
+          "candidate": 52,
+          "mse_difference_contribution": -9.014606742289766e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": 6.688747765669333e-05,
+      "measurement_standard_error": 6.752762399182316e-05,
+      "welch_degrees_of_freedom": 13.922284692933653,
+      "approximate_95_interval": [
+        -7.802075540524029e-05,
+        0.00021179571071862694
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -9.455047895632903e-05
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -6.758244875498069e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -5.676887776483732e-05
+        },
+        {
+          "candidate": 23,
+          "mse_difference_contribution": -5.277277929103125e-05
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": 4.4709150768245926e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "head": "f",
+      "paired_mse_difference": -7.914138288804732e-05,
+      "measurement_standard_error": 7.001004701000078e-06,
+      "welch_degrees_of_freedom": 28.028416076944627,
+      "approximate_95_interval": [
+        -9.348163592865504e-05,
+        -6.480112984743961e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -2.6165588582813508e-05
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -1.9555775808755523e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -1.8066731825146903e-05
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": -1.2681115030345486e-05
+        },
+        {
+          "candidate": 68,
+          "mse_difference_contribution": 1.005298118043864e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "head": "g",
+      "paired_mse_difference": -0.0005805961871350806,
+      "measurement_standard_error": 8.85672753177961e-05,
+      "welch_degrees_of_freedom": 25.70534777362885,
+      "approximate_95_interval": [
+        -0.0007627504475564244,
+        -0.0003984419267137368
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -0.00023632356167922254
+        },
+        {
+          "candidate": 69,
+          "mse_difference_contribution": -7.0937016917943e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -6.733709183470746e-05
+        },
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -5.2299256510003724e-05
+        },
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -4.9220562558112066e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_gp",
+      "head": "f",
+      "paired_mse_difference": -7.090493967296698e-05,
+      "measurement_standard_error": 7.5732501566970505e-06,
+      "welch_degrees_of_freedom": 14.762763477920702,
+      "approximate_95_interval": [
+        -8.706956270546453e-05,
+        -5.474031664046944e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 65,
+          "mse_difference_contribution": -1.659454956656797e-05
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -1.465783695120122e-05
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -1.2727116543067342e-05
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -8.529212728822263e-06
+        },
+        {
+          "candidate": 57,
+          "mse_difference_contribution": -6.716984389493066e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_gp",
+      "head": "g",
+      "paired_mse_difference": -0.00012393265373970293,
+      "measurement_standard_error": 0.0001230628337948685,
+      "welch_degrees_of_freedom": 15.844766335359392,
+      "approximate_95_interval": [
+        -0.0003850220861619731,
+        0.00013715677868256725
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -9.846099442583874e-05
+        },
+        {
+          "candidate": 72,
+          "mse_difference_contribution": 8.87298255230001e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -8.393419729307433e-05
+        },
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -8.099417627765095e-05
+        },
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -6.350611875121001e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": -4.945787447789942e-05,
+      "measurement_standard_error": 5.243670136416507e-06,
+      "welch_degrees_of_freedom": 18.555225084519243,
+      "approximate_95_interval": [
+        -6.045083521039873e-05,
+        -3.846491374540011e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -8.190928777210278e-06
+        },
+        {
+          "candidate": 23,
+          "mse_difference_contribution": -7.2177444866608815e-06
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": -6.04594687980933e-06
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -5.000856877903292e-06
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": -4.202763678133152e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": -0.001492414089450939,
+      "measurement_standard_error": 0.00012226710789721803,
+      "welch_degrees_of_freedom": 13.67573995545476,
+      "approximate_95_interval": [
+        -0.001755235487466493,
+        -0.001229592691435385
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -0.00027843615581753765
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -0.000197243345982232
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -0.0001318818024099338
+        },
+        {
+          "candidate": 61,
+          "mse_difference_contribution": -0.00010696494604438136
+        },
+        {
+          "candidate": 48,
+          "mse_difference_contribution": -9.521510487418994e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "head": "f",
+      "paired_mse_difference": -0.00019034068874161604,
+      "measurement_standard_error": 1.1089545217743925e-05,
+      "welch_degrees_of_freedom": 16.89410413389077,
+      "approximate_95_interval": [
+        -0.0002137487607382632,
+        -0.00016693261674496888
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 64,
+          "mse_difference_contribution": -2.2219887540156548e-05
+        },
+        {
+          "candidate": 26,
+          "mse_difference_contribution": -2.025310170698647e-05
+        },
+        {
+          "candidate": 70,
+          "mse_difference_contribution": -1.639486907308426e-05
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -1.6301171032179303e-05
+        },
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -1.470464625692806e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "head": "g",
+      "paired_mse_difference": -0.0008451650518513427,
+      "measurement_standard_error": 0.00011167320593950072,
+      "welch_degrees_of_freedom": 17.585954359565203,
+      "approximate_95_interval": [
+        -0.0010801783249424091,
+        -0.0006101517787602762
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -0.0001620005151981624
+        },
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -0.0001178707814871326
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -0.0001157352587180668
+        },
+        {
+          "candidate": 48,
+          "mse_difference_contribution": -8.25026439450342e-05
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": -7.721299465907146e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_gp",
+      "head": "f",
+      "paired_mse_difference": -7.631216082003436e-05,
+      "measurement_standard_error": 5.054210031754927e-06,
+      "welch_degrees_of_freedom": 25.417327506694058,
+      "approximate_95_interval": [
+        -8.671284192696778e-05,
+        -6.591147971310093e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 47,
+          "mse_difference_contribution": -2.268730487646796e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -1.121259168438045e-05
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": -5.704076448734014e-06
+        },
+        {
+          "candidate": 48,
+          "mse_difference_contribution": -4.960346864267009e-06
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -4.508770595656452e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_gp",
+      "head": "g",
+      "paired_mse_difference": -0.00041511942083439634,
+      "measurement_standard_error": 8.269138780969298e-05,
+      "welch_degrees_of_freedom": 19.506114875998467,
+      "approximate_95_interval": [
+        -0.0005878910434524154,
+        -0.00024234779821637734
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -0.00013600344512378735
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -9.126237518718874e-05
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -7.479972891989105e-05
+        },
+        {
+          "candidate": 48,
+          "mse_difference_contribution": 5.70113491008382e-05
+        },
+        {
+          "candidate": 23,
+          "mse_difference_contribution": -4.608909100619347e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": 0.0001511892915392419,
+      "measurement_standard_error": 8.452883185115918e-06,
+      "welch_degrees_of_freedom": 26.044997458181513,
+      "approximate_95_interval": [
+        0.00013381560220022495,
+        0.00016856298087825883
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": 1.6744738836157112e-05
+        },
+        {
+          "candidate": 61,
+          "mse_difference_contribution": 1.1275410553549188e-05
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": 9.756742625538618e-06
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": 9.51561698735168e-06
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": 9.285453502257235e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": -0.0005320479131612865,
+      "measurement_standard_error": 0.00011615971953252972,
+      "welch_degrees_of_freedom": 21.34197202934848,
+      "approximate_95_interval": [
+        -0.0007733798022148573,
+        -0.00029071602410771577
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -0.0001571298802968969
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -0.0001450549950133505
+        },
+        {
+          "candidate": 10,
+          "mse_difference_contribution": 9.600062394913643e-05
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -8.765063465411811e-05
+        },
+        {
+          "candidate": 72,
+          "mse_difference_contribution": -7.176887780277375e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "head": "f",
+      "paired_mse_difference": -6.978618613775774e-05,
+      "measurement_standard_error": 9.213067637462246e-06,
+      "welch_degrees_of_freedom": 28.60054934595661,
+      "approximate_95_interval": [
+        -8.86404630217841e-05,
+        -5.093190925373138e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -1.700218634764893e-05
+        },
+        {
+          "candidate": 70,
+          "mse_difference_contribution": -1.5658895971936785e-05
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -1.557967386732783e-05
+        },
+        {
+          "candidate": 61,
+          "mse_difference_contribution": 1.329498635356278e-05
+        },
+        {
+          "candidate": 69,
+          "mse_difference_contribution": -1.2651572548225325e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "head": "g",
+      "paired_mse_difference": -0.000996032557012086,
+      "measurement_standard_error": 0.0001224065067121344,
+      "welch_degrees_of_freedom": 21.45509649895681,
+      "approximate_95_interval": [
+        -0.0012502624439320762,
+        -0.0007418026700920957
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -0.00015156194534687826
+        },
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -9.36585658644478e-05
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -9.187692319352728e-05
+        },
+        {
+          "candidate": 70,
+          "mse_difference_contribution": -7.641895509613834e-05
+        },
+        {
+          "candidate": 52,
+          "mse_difference_contribution": 6.675845486389994e-05
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_gp",
+      "head": "f",
+      "paired_mse_difference": -2.3443354100845057e-05,
+      "measurement_standard_error": 6.188475508944221e-06,
+      "welch_degrees_of_freedom": 12.740215014492877,
+      "approximate_95_interval": [
+        -3.6840507648076854e-05,
+        -1.004620055361326e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 60,
+          "mse_difference_contribution": -7.879673015048612e-06
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": 7.055596137061665e-06
+        },
+        {
+          "candidate": 57,
+          "mse_difference_contribution": -5.814211379683173e-06
+        },
+        {
+          "candidate": 55,
+          "mse_difference_contribution": -5.40042613930254e-06
+        },
+        {
+          "candidate": 50,
+          "mse_difference_contribution": 4.740163144068179e-06
+        }
+      ]
+    },
+    {
+      "variant": "refit216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_gp",
+      "head": "g",
+      "paired_mse_difference": 1.2170544692000748e-05,
+      "measurement_standard_error": 0.00011366222287199623,
+      "welch_degrees_of_freedom": 12.383893939597002,
+      "approximate_95_interval": [
+        -0.00023462939049536985,
+        0.00025897047987937134
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -7.751856924349173e-05
+        },
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -6.413360540792508e-05
+        },
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -5.296497661494474e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -4.98099799625653e-05
+        },
+        {
+          "candidate": 60,
+          "mse_difference_contribution": 3.2739122769365616e-05
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": -3.2497248940358965e-05,
+      "measurement_standard_error": 4.9093565170824465e-06,
+      "welch_degrees_of_freedom": 16.721198859273134,
+      "approximate_95_interval": [
+        -4.286825718270243e-05,
+        -2.21262406980155e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -6.042010877103947e-06
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -5.1552583100789945e-06
+        },
+        {
+          "candidate": 66,
+          "mse_difference_contribution": -5.117124210449012e-06
+        },
+        {
+          "candidate": 50,
+          "mse_difference_contribution": -4.168000094359547e-06
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -3.185386182067983e-06
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": -2.8926230844648786e-05,
+      "measurement_standard_error": 4.637874562341527e-05,
+      "welch_degrees_of_freedom": 12.9439711220536,
+      "approximate_95_interval": [
+        -0.00012916552418212928,
+        7.13130624928317e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 58,
+          "mse_difference_contribution": -9.1262429005251e-05
+        },
+        {
+          "candidate": 20,
+          "mse_difference_contribution": 7.006574282514612e-05
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -4.350345477104954e-05
+        },
+        {
+          "candidate": 71,
+          "mse_difference_contribution": 2.1201702766691262e-05
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": 1.9412108033327974e-05
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": -3.748285614194367e-05,
+      "measurement_standard_error": 4.366336556338003e-06,
+      "welch_degrees_of_freedom": 27.462956928807177,
+      "approximate_95_interval": [
+        -4.643477738212882e-05,
+        -2.8530934901758514e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -1.1938037282193901e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -8.91263974244816e-06
+        },
+        {
+          "candidate": 52,
+          "mse_difference_contribution": -8.682839475858242e-06
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": -8.579024055849505e-06
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -7.906169792733867e-06
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": 5.549564882115e-05,
+      "measurement_standard_error": 5.580744962048104e-05,
+      "welch_degrees_of_freedom": 12.24290256404049,
+      "approximate_95_interval": [
+        -6.583131256791891e-05,
+        0.00017682261021021892
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -6.115556318598796e-05
+        },
+        {
+          "candidate": 19,
+          "mse_difference_contribution": 4.9757915271876666e-05
+        },
+        {
+          "candidate": 62,
+          "mse_difference_contribution": -4.965302334478625e-05
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -2.7654072580206015e-05
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": -2.6782001881328174e-05
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": -4.734743152182036e-05,
+      "measurement_standard_error": 4.885506439649515e-06,
+      "welch_degrees_of_freedom": 20.62551578348393,
+      "approximate_95_interval": [
+        -5.7518642306982606e-05,
+        -3.717622073665811e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -7.503936820074742e-06
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": -6.118072430491095e-06
+        },
+        {
+          "candidate": 23,
+          "mse_difference_contribution": -5.597644277692447e-06
+        },
+        {
+          "candidate": 47,
+          "mse_difference_contribution": -5.165604391327146e-06
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": -4.0498933360412195e-06
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": -0.0009108169778909862,
+      "measurement_standard_error": 9.774091057008587e-05,
+      "welch_degrees_of_freedom": 13.564387525322033,
+      "approximate_95_interval": [
+        -0.0011210837408717376,
+        -0.0007005502149102349
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 19,
+          "mse_difference_contribution": -0.000232566610363831
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -0.0001595389116358868
+        },
+        {
+          "candidate": 54,
+          "mse_difference_contribution": -0.0001309934190248688
+        },
+        {
+          "candidate": 23,
+          "mse_difference_contribution": -8.818632383833024e-05
+        },
+        {
+          "candidate": 61,
+          "mse_difference_contribution": -8.815992699361302e-05
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "f",
+      "paired_mse_difference": 4.93265615502516e-05,
+      "measurement_standard_error": 5.0842121248173985e-06,
+      "welch_degrees_of_freedom": 36.21179247666432,
+      "approximate_95_interval": [
+        3.9017395058368054e-05,
+        5.9635728042135145e-05
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": 8.583031040580266e-06
+        },
+        {
+          "candidate": 61,
+          "mse_difference_contribution": 6.0527050022688235e-06
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -4.9277160677362455e-06
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": 4.076673233701825e-06
+        },
+        {
+          "candidate": 65,
+          "mse_difference_contribution": 3.876204319592923e-06
+        }
+      ]
+    },
+    {
+      "variant": "frozen144_covariance216",
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "head": "g",
+      "paired_mse_difference": -7.781448785897221e-05,
+      "measurement_standard_error": 0.00010852232362981776,
+      "welch_degrees_of_freedom": 25.92942335828337,
+      "approximate_95_interval": [
+        -0.00030091487345922715,
+        0.00014528589774128272
+      ],
+      "largest_absolute_policy_contributions": [
+        {
+          "candidate": 54,
+          "mse_difference_contribution": 0.0001598330457122195
+        },
+        {
+          "candidate": 59,
+          "mse_difference_contribution": -0.00010037381185497404
+        },
+        {
+          "candidate": 64,
+          "mse_difference_contribution": 8.672482797469169e-05
+        },
+        {
+          "candidate": 63,
+          "mse_difference_contribution": -8.536048692547815e-05
+        },
+        {
+          "candidate": 49,
+          "mse_difference_contribution": -6.346249607069058e-05
+        }
+      ]
+    }
+  ],
+  "source_improvement_gates_remain_failed": [
+    "refit216",
+    "frozen144_covariance216"
+  ],
+  "cost": {
+    "new_source_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.023033994000000002
+}

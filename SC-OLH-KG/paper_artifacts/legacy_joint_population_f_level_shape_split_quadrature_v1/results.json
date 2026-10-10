@@ -1,0 +1,65 @@
+{
+  "execution": {
+    "status": "frozen before single-fold split-shape quadrature repair",
+    "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+    "retained_rules": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/source_quadrature.json",
+    "retained_results": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/results.json",
+    "question": "Can splitting the shape quadrature at its source-only median repair the remaining source fold while preserving4096 nodes and every original1e-8 criterion?",
+    "fold": {
+      "layout": "5",
+      "deleted_task": 5
+    },
+    "source_law": "Exactly Stage136/137 joint source law,measure and all nuisance/support/spectrum/tail unchanged. Reuse eleven already-passing rules without recomputation.",
+    "coordinates": "Exactly Stage141:v coordinate source_signal,shape coordinate its conditional source median;complete unit square. Split the shape coordinate at0.5,which maps to its frozen source conditional median.",
+    "quadrature": "128 level nodes;16 shape nodes on[0,.5] and16 on[.5,1],total4096 positive components. No additional starts,node-count expansion,tail cutoff or tolerance change.",
+    "acceptance": {
+      "normalizer_relative_difference_vs_stage137": 1e-08,
+      "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+      "maximum_positive_nodes_per_fold": 4096
+    },
+    "reference_moments": "Use saved Stage141 small vector and true normalizer;no16k reference reconstruction. Record moment-block errors to explain remaining differences.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_rule_nodes": 4096,
+      "retained_source_rules_without_replay": 11,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;source0-5 only,no paid labels,source6/7,target,KG,confirmation,server work or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_split_quadrature_v1",
+    "planned_entrypoint": "performance/prepare_legacy_f_level_shape_split_quadrature.py",
+    "entrypoint_status": "implemented before execution",
+    "decision": "If passing,save a complete twelve-rule source package by referencing the unchanged eleven existing rules plus this repair. Then address vectorized raw filtering before bounded four-episode task1 prediction. If failing,retain partial source package and numerical limitation;no full development promotion.",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_split_quadrature_plan_v1.json",
+    "entrypoint": "performance/prepare_legacy_f_level_shape_split_quadrature.py",
+    "frozen_before_source_evaluation": true
+  },
+  "layout": "5",
+  "deleted_task": 5,
+  "passed": false,
+  "errors": {
+    "normalizer_relative_difference_vs_stage137": 1.7369172766734664e-10,
+    "scaled_moment_max_absolute_difference_vs_stage137": 2.5487231001264377e-06
+  },
+  "all12_compact_source_rules_verified": false,
+  "retained_rules_recomputed": 0,
+  "largest_error_component": 4,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_rule_nodes": 4096,
+    "retained_source_rules_without_replay": 11,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.4506286179999999,
+  "compact_source_rule_bytes": 529742,
+  "no_prior_or_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

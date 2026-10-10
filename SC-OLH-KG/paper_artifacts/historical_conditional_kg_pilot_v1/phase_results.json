@@ -1,0 +1,120 @@
+{
+  "terminal_resolution_cases_completed": 16,
+  "all_terminal_resolution_cases_complete": true,
+  "terminal_summary": [
+    {
+      "layout": "5",
+      "remaining_calls": 360,
+      "best_action_index": 21,
+      "best_reward": 0.015598428883799621,
+      "16384_to65536_best_reward_difference": 6.786025308815752e-07,
+      "16384_to65536_maximum_action_difference": 6.379629163109912e-05,
+      "maximum_analytic_direct_reference_error": 1.734723475976807e-18,
+      "same_best_action": true
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 359,
+      "best_action_index": 21,
+      "best_reward": 0.015568546739681567,
+      "16384_to65536_best_reward_difference": 6.368103414398224e-07,
+      "16384_to65536_maximum_action_difference": 6.351810564335803e-05,
+      "maximum_analytic_direct_reference_error": 6.776263578034403e-21,
+      "same_best_action": true
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 360,
+      "best_action_index": 36,
+      "best_reward": 0.29399285573629175,
+      "16384_to65536_best_reward_difference": 0.0,
+      "16384_to65536_maximum_action_difference": 0.0004925398356344091,
+      "maximum_analytic_direct_reference_error": 4.930380657631324e-32,
+      "same_best_action": true
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 359,
+      "best_action_index": 36,
+      "best_reward": 0.29396401548367873,
+      "16384_to65536_best_reward_difference": 0.0,
+      "16384_to65536_maximum_action_difference": 0.0004917941154123362,
+      "maximum_analytic_direct_reference_error": 2.710505431213761e-20,
+      "same_best_action": true
+    }
+  ],
+  "adaptive_kg_pilot_complete": true,
+  "adaptive_kg_pilot_rows": [
+    {
+      "layout": "6",
+      "joint_fantasy_power": 2,
+      "terminal_power": 12,
+      "fixed_reference_fantasy_power": 5,
+      "stop_expected_reward": 0.29399285573629175,
+      "stop_action": {
+        "kind": "direct",
+        "primary": 4,
+        "shortlist": [
+          4
+        ],
+        "incumbent_position": 0,
+        "budgets": [
+          360
+        ]
+      },
+      "provisional_choice": "stop",
+      "candidate": 1,
+      "expected_future_reward": 0.2939569429659116,
+      "net_reward_of_paid_episode": -3.591277038011986e-05,
+      "adaptation_value": 0.0,
+      "nested_prefix_adaptation_value": 0.0,
+      "nested_adaptation_difference": 0.0,
+      "raw_joint_expected_future_reward": 0.2909477022949646,
+      "raw_joint_baseline_drift": -0.003016313188714148,
+      "fixed_action_expected_reward": 0.2939569429659116,
+      "projection_tower_drift": -7.072517767103825e-06,
+      "filter_and_quadrature_baseline_drift": -7.072517767103825e-06,
+      "verification_budget_opportunity_cost": 2.8840252613016037e-05,
+      "expected_eta_variance_reduction_fraction": 0.054620208944957616,
+      "expected_model_weights": [
+        2.882182553093938e-35,
+        2.8337710916021604e-35,
+        2.717328684463583e-23,
+        2.4320226146712593e-23,
+        0.6945887766789585,
+        0.3054112232816829,
+        2.52302111548839e-11,
+        1.412828911528779e-11
+      ],
+      "model_weight_martingale_residual": [
+        -5.190576215947978e-36,
+        -5.250175256393599e-36,
+        -2.809792751499535e-24,
+        -2.549803144084258e-24,
+        -0.00174773001851658,
+        0.0017477300225523518,
+        -2.5935818704167003e-12,
+        -1.442221785123963e-12
+      ],
+      "maximum_raw_integration_relative_error": 1.4707978525569602e-13,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "old_coarse_net_reward": 0.0038985216166433356,
+      "old_coarse_adaptation_value": 0.0,
+      "adaptive_maximum_evaluated": true,
+      "terminal_action_count": 40,
+      "all_eight_complete_identities_retained": true
+    }
+  ],
+  "unit_tests_passed": 5,
+  "all_unit_tests_successful": true,
+  "cpu_seconds_recorded": 431.955315497,
+  "cached_replay_cpu_seconds": 0.0013665629999999873,
+  "server_jobs": 0,
+  "new_source_labels": 0,
+  "new_target_simulator_calls": 0,
+  "new_verifier_calls": 0,
+  "decision_ranking_certified": false,
+  "independent_confirmation": false,
+  "next": "Reduce the now-measured terminal cost and resolve remaining guarded-action/fantasy and paid-filter drift at margins relevant to sampling;then matched GP and independent decisions."
+}

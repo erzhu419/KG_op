@@ -1,0 +1,16 @@
+{
+  "status": "frozen after source-predictive shape pilot failed;before same-task adaptation diagnosis",
+  "fitted_results": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1/results.json",
+  "failed_pilot_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_pilot_v1/results.json",
+  "outer_deleted_task": 1,
+  "source_anchor_policy_indices": [45, 10, 51, 31],
+  "entrypoint": "performance/diagnose_legacy_f_inner_batch_adaptation.py",
+  "question": "Does the source-selected shape rule lose its predictive gain after adaptation on the SAME inner tasks,or does the failure still depend on task shift/raw-risk contract?",
+  "calculation": "Reuse ten source4 point fits and their already-selected q. For each inner held twelve-site source task,observe its four pre-existing common-anchor Gaussian batch labels and score only the other eight. Compare q=0/selected q prior versus exact Gaussian conditional posterior on the same future eight labels. No q fitting,source task1 labels,new source data,risk/map fits or raw filtering.",
+  "information": "Each batch uses the original mean/estimated label variance from3 source replicates. Four observed batches therefore represent12 physical calls,not the outer four-single-episode budget. All records already belong to the same source180-call archive. Known Gaussian noise and point priors are an explicit diagnostic contract;no leakage from a source5 eta learner is introduced.",
+  "verification": "Public source anchors must match each task's first four frozen source sites;inner task remains absent from all source4 fits. Conditional Gaussian future density must match joint-minus-observed density. Failure stops attribution.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_outer_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;existing source training JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_batch_adaptation_v1",
+  "decision": "If source gains disappear after same-task Gaussian adaptation,prior-score learning is misaligned even before unknown-risk raw updates. If they persist,do not blame adaptation alone;register matched source4 risk/variance-mixture raw validation to distinguish task representativeness from filter/objective mismatch. Candidate remains stopped,no q or prefix reselection,source6/7,target,KG,confirmation or manuscript changes. Complete-model HOLD remains."
+}

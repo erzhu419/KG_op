@@ -1,0 +1,13 @@
+{
+  "task_ids": [
+    "t138181",
+    "t138182",
+    "t138183",
+    "t138184"
+  ],
+  "failure": "New batch runner passed JSON lists to the historical shortlist helper, which expects tuple policy keys. Failure occurred before any new batch update or recommendation.",
+  "repair": "Convert the public bank to tuples at this caller, matching the existing full-bank runner. Added an integration test for the JSON bank boundary.",
+  "observation_batches_reused": true,
+  "new_physical_calls_on_retry": 0,
+  "scientific_threshold_changes": 0
+}

@@ -1,0 +1,42 @@
+{
+  "stage": "meta_prior_target_risk_residual_a3_20261003",
+  "status": "grouped_validation_running",
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "hypothesis": "A target-learned risk-function discrepancy can correct source variance shrinkage while retaining the learned source covariance.",
+  "single_change": "For eta only, C_target_prior = C_source_prior + delta * diag(0, 1/F, ..., 1/F), delta >= 0; F is the existing 68-function public dictionary size.",
+  "preserved": "Original source priors, zero nonintercept coefficient means, intercept variance, per-candidate discrepancy, f/g updates, paid observations, dictionary, recommendation utility and verifier.",
+  "delta_fit": "One scalar per seed/regime/prior/prefix, estimated from paid target eta labels by marginal likelihood. Learned eta uses a common delta for both original components and marginalizes their initial equal weights; generic eta has the same correction family.",
+  "model_covariance": "Include the source function covariance, repeated-candidate shared discrepancy and declared log-variance label noise in the training likelihood.",
+  "validation": "Nested leave-one-candidate-out predictive log score. Refit delta using training candidates only, excluding every replicate-batch row at the held-out candidate. Use the joint predictive density for its repeated observations.",
+  "priors": [
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "paths": 160,
+  "prefix_batches": [
+    8,
+    24
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "scoring": "Report all regime/prior groups and paired old-seed changes. Candidate features and paid eta labels are the only fit/validation inputs; truth/support enter post-fit scoring only.",
+  "recommendation_replay": "If grouped predictive validation supports the added freedom, re-estimate eta on all paid prefix data, retaining f/g posteriors and the original queries. Label fitted-hyperparameter uncertainty and retrospective recommendation evidence explicitly.",
+  "interpretation": "Tests target correction freedom, not target sparse-support identification, closed-loop superiority or source-free initialization.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "stop_rule": "No new closed-loop pilot if predictive gains rely on leaked repeated-candidate observations, fail across the retained strata, or turn into additional severe recommendation losses. Keep incomplete and negative results.",
+  "fixed_before_validation_results": true,
+  "numerical_fit": "Collapse repeated labels to precision-weighted candidate means; use shared candidate discrepancy. Whiten covariance for scalar likelihood evaluation; bound delta by the point where every component log-density decreases, search 65 log(1+delta) nodes, and refine grid maxima including the boundary intervals."
+}

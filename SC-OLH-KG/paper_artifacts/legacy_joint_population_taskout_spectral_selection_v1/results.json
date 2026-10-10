@@ -1,0 +1,142 @@
+{
+  "execution": {
+    "status": "registered before constrained fits, whole-source-task predictions or selection",
+    "basis_of_next_step": "Stage49 supports the selected three-main-effect span but rejects hard one/two-mode truncation. Stage50 nested-flat initialization recovers essentially the same g spectrum and fails the all-case source gate. Test whether common spectral shrinkage chosen by in-sample marginal likelihood transfers to excluded entire source tasks.",
+    "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+    "deleted_mean_execution": "performance/manifests/legacy_joint_population_covered_complete_mean_uncertainty_v1.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "layouts": [
+      "3",
+      "4"
+    ],
+    "mean_arms": [
+      "joint_structural"
+    ],
+    "mean_head": 1,
+    "candidates": [
+      "native_learned_common_spectrum",
+      "common_exponent_zero"
+    ],
+    "fit_rule": "Reuse full48 and six40-record native g means; fit exactly one common-exponent-zero ablation for each using the identical regularizer, groups, residual spectrum, weak tail, source labels/noise and original optimizer stopping. All remaining covariance parameters optimize the native likelihood. f and risk heads remain unchanged.14 extra g fits; no other grid.",
+    "source_validation": "For each source task0..5, use its whole-task-deleted40-record mean basis/prior, and predict only its eight registered selected-source sample means before any own-task adaptation. Score their joint multivariate Gaussian predictive density with the original sample-variance/3 noise. This is the same conditional/moment source likelihood approximation as training, not exact raw risk density. Reconstruct public mean coordinates via full normalization inverse then branch normalization; task response/noise does not enter query coordinates.",
+    "selection": "For each assignment select the common-spectrum ablation only if total six-task-out g predictive log density exceeds native. Both assignments remain included. Save all14 fitted candidate priors and24 task/candidate latent forecasts before validation scoring. Each own-task response/noise is excluded from its fold fit and enters only scoring; full-source fits legitimately use all48 records. After source0..5 validation selects a full prior, all four source holdout forecasts freeze before scores6/7 are evaluated.",
+    "source_gate": "Selected model must satisfy g MSE nonincrease, joint raw three-repeat density nondecrease and g density improvement on both opened source holdouts6/7 in both assignments3/4 against original structure. A failed overall gate blocks target predictions and decisions. Do not interpret selection on source0..5 as independent confirmation.",
+    "controls": "Same144 source calls, f means, all risk maps/deletion priors, two paid raw holdout records,73-bank, existing flat/GP controls; all cached, no pooling assignments.",
+    "execution": "local serial single-thread; source JSON only; no target archive read, simulator/verifier calls, terminal integration, server jobs or pulls",
+    "interpretation": "bounded source-task predictive spectral calibration, preserving orthogonal group/low-order priors and the native weak tail; no physical-factor recovery or independent decision/KG claim",
+    "output": "paper_artifacts/legacy_joint_population_taskout_spectral_selection_v1"
+  },
+  "selections": {
+    "3": {
+      "scores": {
+        "native": 56.09599614668355,
+        "zero": 45.45137210107275
+      },
+      "selected": "native"
+    },
+    "4": {
+      "scores": {
+        "native": 51.55511748799482,
+        "zero": 44.20140676755877
+      },
+      "selected": "native"
+    }
+  },
+  "summary": {
+    "3": {
+      "observed_head_mse": [
+        0.00023806084664970407,
+        0.001408359150386001,
+        2.306487614562811,
+        2.5333364898285624
+      ],
+      "joint_batch_log_score": 0.9959356341125531,
+      "response_batch_log_scores": [
+        1.027386434891155,
+        -0.02712702513678482
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        0.9929577464788732,
+        1.0,
+        0.9577464788732395,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6190935707027351,
+        0.5759086316241542,
+        1.0492720086374048,
+        1.1264785824962587
+      ]
+    },
+    "4": {
+      "observed_head_mse": [
+        0.0001588486353431253,
+        0.0022537983328170586,
+        2.049363624562945,
+        2.5316162280862673
+      ],
+      "joint_batch_log_score": 1.0330143239060154,
+      "response_batch_log_scores": [
+        1.0946293103618028,
+        -0.05906369746352824
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9366197183098591,
+        0.9577464788732395
+      ],
+      "predictive_standardized_residual_rms": [
+        0.5513777556980612,
+        0.7089731892258269,
+        0.9818635850542216,
+        1.0035928565039591
+      ]
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "3",
+      "task_id": "related_inventory_06",
+      "g_mse_difference": 0.0,
+      "joint_batch_score_difference": 0.0,
+      "g_batch_score_difference": 0.0,
+      "passed": false
+    },
+    {
+      "layout": "3",
+      "task_id": "related_inventory_07",
+      "g_mse_difference": 0.0,
+      "joint_batch_score_difference": 0.0,
+      "g_batch_score_difference": 0.0,
+      "passed": false
+    },
+    {
+      "layout": "4",
+      "task_id": "related_inventory_06",
+      "g_mse_difference": 0.0,
+      "joint_batch_score_difference": 0.0,
+      "g_batch_score_difference": 0.0,
+      "passed": false
+    },
+    {
+      "layout": "4",
+      "task_id": "related_inventory_07",
+      "g_mse_difference": 0.0,
+      "joint_batch_score_difference": 0.0,
+      "g_batch_score_difference": 0.0,
+      "passed": false
+    }
+  ],
+  "source_gate_passed": false,
+  "cost": {
+    "distinct_mean_fit_models": 14,
+    "mean_fits_this_run": 12,
+    "reused_completed_candidate_fits": 2,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 11.421663436000001
+}

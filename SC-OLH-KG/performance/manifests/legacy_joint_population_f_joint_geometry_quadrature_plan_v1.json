@@ -1,0 +1,42 @@
+{
+  "status": "completed;all12 positive source quadrature rules verified and frozen",
+  "reference_execution": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_execution_v1.json",
+  "reference_results": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1/results.json",
+  "reference_laws": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1/source_reference_laws.json",
+  "law": "Exact Stage130 conditional independent-v source posterior with the fitted full common covariance and task base. All12 fitted q equal0;do not describe this as learned task coupling. Use positive whole-tail u=sqrt(signal/(signal+v)) rules,without changing posterior or nuisance parameters.",
+  "construction": "Adaptive source-only vector partition for mass,v first/second moments,conditional common beta/H moments. First4/8/16 nodes per subinterval meeting unchanged original source quadrature tolerances. Save partitions for32-node predictive refinement before any query labels.",
+  "verification": "Source normalization/variance/common mean/covariance against the newly rebuilt Stage130 integrals. Failure stops before query prediction. No rerun of source fitting.",
+  "quadrature": {
+    "relative_tolerance": 1e-08,
+    "absolute_tolerance_for_scaled_integrals": 1e-09,
+    "maximum_subintervals": 128
+  },
+  "tolerances": {
+    "raw_mass_absolute": 1e-08,
+    "mean_variance_relative": 1e-06,
+    "coefficient_mean_max_absolute": 1e-08,
+    "common_covariance_relative_frobenius": 1e-06,
+    "second_moment_extra_relative": 1e-06
+  },
+  "nodes_per_subinterval_resolutions": [
+    4,
+    8,
+    16
+  ],
+  "decision": "If all12 rules verify,register a single unchanged eight-episode cached prediction comparison. It evaluates learned common geometry plus task scale and variance uncertainty,not a task1 coupling repair claim.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_v_integrations": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "scope": "source0-5 only;no paid query labels,source6/7,target,KG,confirmation,server tasks or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_joint_geometry_quadrature_v1",
+  "planned_entrypoint": "performance/prepare_legacy_f_joint_geometry_quadrature.py",
+  "entrypoint_status": "implemented and executed",
+  "results": "paper_artifacts/legacy_joint_population_f_joint_geometry_quadrature_v1/results.json",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_joint_geometry_quadrature_execution_v1.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_joint_geometry_development_plan_v1.json"
+}

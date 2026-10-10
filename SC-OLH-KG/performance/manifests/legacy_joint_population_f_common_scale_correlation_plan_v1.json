@@ -1,0 +1,54 @@
+{
+  "status": "completed:all12 source fits converge and verify; development gate required",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "geometry_results": "paper_artifacts/legacy_joint_population_common_prior_geometry_v1/results.json",
+  "compression_results": "paper_artifacts/legacy_joint_population_f_coherent_common_compression_v1/results.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_coherent_covariance_attribution_v1/results.json",
+  "failed_fixed_marginal_results": "paper_artifacts/legacy_joint_population_common_correlation_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "head": "f",
+  "question": "Does jointly source-estimating common group scales, the original one common spectrum and correlation strength repair the fixed-marginal estimator? Stage108 coherent common shape geometry halves the source mean gap with native task covariance, whereas diagonal-only GP scale substitution worsens source NLL. Stage103 held scales fixed; its failed f candidate remains rejected. This is a new coherent estimator question, not adoption of a GP hybrid or selection from paid results.",
+  "common_prior": "A00=native common intercept variance, A0shape=0; A_shape=tail*I+B*((1-p)*I+p*C_GP_active)*B on native active excess coordinates, and independent native weak tail elsewhere. B_j=sqrt(signal)*s[group(j)]*sqrt(w_j(gamma)). C_GP_active is the source GP COMMON PRIOR correlation already derived on these same native active coordinates in Stage102, excluding intercept. The prior center remains the native source-only empirical regularizer mean.",
+  "fitted_parameters": "One nonnegative standard-deviation amplitude s_g for each originally positive native common group, original shared gamma in[0,4], and p in[0,1]. Initialize amplitudes at sqrt(native_group_variance/source_signal), gamma at native common exponent and p=0. No multiple starts or tuning grid. Squared amplitudes give learned common group variances; do not introduce artificial variance floors.",
+  "preserved": "Original27-column orthogonal basis, native active excess support (may shrink), low interaction order, common frequency0\u20134 boundary, independent1% weak-tail budget, fixed common intercept and prior mean, original uncentered native task covariance/noise/discrepancy, g and both risk laws. Concrete learned common group scales may change; they must be reported rather than described as unchanged marginals.",
+  "objective": "Source marginal Gaussian likelihood integrating common and task coefficients; only five-source batches0\u20135 excluding each deleted task. Use the exact coherent coefficient prior before conditioning. No query, source6/7, target or confirmation outcomes in fitting.",
+  "verification": "Verify analytic gradients against finite differences at one declared interior amplitude/gamma/p point in task1 folds for both layouts. Verify p=0/native amplitude/gamma reproduces cached source NLL and beta/H. At each final fitted law verify PSD covariance and native support/tail/intercept/task contract. A mismatch stops interpretation; no broad re-verification of earlier results.",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 512,
+    "ftol": 1e-09,
+    "gtol": 1e-05
+  },
+  "fit_cap": 12,
+  "source_freeze": "Save all12 laws and convergence records before any development query is read; incomplete fits remain incomplete with no score-based continuation.",
+  "next_action": "After source-only fitting and law freeze, separately register the unchanged two-layout f development prediction gate using existing paid prefixes, native f controls and unchanged eta_f. Require nonworse paid f MSE, improved raw batch density and nonworse sequential transcript density in both layouts. Report task1 and other5 separately; no outcome-dependent parameter changes. Failure rejects the new candidate; success permits the separately registered full-source complete-model gate, not automatic target/confirmation.",
+  "cost": {
+    "maximum_new_f_source_fits": 12,
+    "new_g_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_v1",
+  "planned_module": "representation/source_common_geometry.py",
+  "planned_entrypoint": "performance/check_legacy_f_common_scale_correlation.py",
+  "results": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage109_110_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_f_common_scale_correlation_development_plan_v1.json",
+  "development_status": "Stage110 complete; assignment6 transcript gate fails; candidate stopped",
+  "development_results": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_development_v1/results.json"
+}

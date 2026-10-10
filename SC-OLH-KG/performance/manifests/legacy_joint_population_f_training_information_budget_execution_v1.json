@@ -1,0 +1,45 @@
+{
+  "status": "frozen before public prefixes or paid values",
+  "adaptation_execution": "performance/manifests/legacy_joint_population_training_paid_adaptation_execution_v1.json",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "native_f_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "information_results": "paper_artifacts/legacy_joint_population_f_information_ceiling_v1/results.json",
+  "pair_geometry_results": "paper_artifacts/legacy_joint_population_f_pair_geometry_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "raw_episode_budgets": [
+    2,
+    4,
+    8
+  ],
+  "model": "Only the original cached native f prior and the same deleted-source eta_f prior/map as Stage66/Stage118,each trained on the other five tasks. No fits or changed priors,variance floors,supports,noise rules or risk identities. This diagnoses additional paid information under the original prior;it is not a replacement candidate or a completed KG comparison.",
+  "query_design": "Use the public73 bank and original27-column orthogonal mean basis. Keep paid prefix0/1. Exclude the union of original twelve scoring-site indices across both layouts and all six training tasks. Starting with0/1,append the available policy whose mean-basis feature vector maximizes its minimum squared Euclidean distance to already selected vectors,breaking ties by smallest policy index,until eight policies. Freeze each fold's whole prefix using public coordinates before paid values. Do not use the full-source shape-optimal pair or scored labels to choose policies.",
+  "paid_rule": "Index only source tasks0\u20135 first f replicate at frozen policies. Update with exactly the original raw moment filter and count every observed episode;no sample variances accompany the updates. Simulator episodes provide f/g jointly,but this diagnostic deliberately scores the f marginal only. No target data or new simulator calls.",
+  "forecast_rule": "Reuse cached two-episode scores as the reference. The required prefix continuation to four/eight episodes must reproduce cached two-episode f moments/evidence;do not rescore settled two-episode densities. Save every new forecast before indexing the same twelve scoring-site means/noises. All scored controls remain unobserved for all budgets.",
+  "verification": "Every fold's query task is absent from source fit/map training. Prefixes are nested,public-only,and disjoint from fixed score sites. Two-episode moments/evidence must match cached native forecasts before interpreting new forecasts. Sequential transcript scores use the actual denominator12+episode_count,not the old hard-coded14. A disagreement blocks interpretation.",
+  "diagnostic": "Report each task and both layout means for MSE,proper raw three-repeat predictive density,paid log evidence and transcript density at2/4/8 episodes. At a budget an information signal requires mean MSE nonincrease and raw density strict improvement in both layouts versus two episodes;report all budgets and task1/other5 without selecting a final budget. Different-length transcript densities are descriptive,not a same-information method ranking.",
+  "decision": "Use the fixed information curve to determine whether additional within-task observations can plausibly close the shape-learning gap. Do not relax the failed two-episode complete-model gate or promote any candidate. If extra observations help,next compare source structural/native,flat and source GP under identical observation/verification budgets before a jointly aligned KG test. Deployment still requires accounting for the verification budget consumed by observations;prediction improvements alone do not establish decision value.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_training_information_budget_v1",
+  "planned_entrypoint": "performance/check_legacy_f_training_information_budget.py",
+  "entrypoint_status": "implemented"
+}

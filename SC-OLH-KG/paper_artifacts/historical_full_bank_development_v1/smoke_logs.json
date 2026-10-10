@@ -1,0 +1,26 @@
+[
+  {
+    "id": "t138133",
+    "status": "running",
+    "log": "",
+    "tail_error": ""
+  },
+  {
+    "id": "t138134",
+    "status": "running",
+    "log": "Traceback (most recent call last):\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)\n  File \"/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/historical_full_bank_development.py\", line 214, in <module>\n    if args.stage == 'case': run_case(args.plan)\n  File \"/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/historical_full_bank_development.py\", line 94, in run_case\n    check_replayed_snapshot(restricted_snapshot(model, state['candidate_bank_indices']),\n  File \"/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/prepare_historical_independent_kg.py\", line 39, in check_replayed_snapshot\n    np.testing.assert_allclose(current[key], reference[key], rtol=tolerance,\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/site-packages/numpy/testing/_private/utils.py\", line 1691, in assert_allclose\n    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/contextlib.py\", line 79, in inner\n    return func(*args, **kwds)\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/site-packages/numpy/testing/_private/utils.py\", line 889, in assert_array_compare\n    raise AssertionError(msg)\nAssertionError: \nNot equal to tolerance rtol=1.42109e-14, atol=1.42109e-14\n\nMismatched elements: 1 / 2 (50%)\nMax absolute difference among violations: 1.69309011e-14\nMax relative difference among violations: 5.10449614e-13\n ACTUAL: array([[2.130377, 0.033169]])\n DESIRED: array([[2.130377, 0.033169]])\n",
+    "tail_error": ""
+  },
+  {
+    "id": "t138135",
+    "status": "running",
+    "log": "",
+    "tail_error": ""
+  },
+  {
+    "id": "t138136",
+    "status": "running",
+    "log": "SCHEDULEURM_PROGRESS {\"step\": 1, \"total\": 2, \"unit\": \"terminal_rules\", \"metrics\": {\"state\": \"learned_prior_independent_00_source_common_task_rbf_layout6\", \"cpu_seconds\": 0.3303870339999999}}\nSCHEDULEURM_PROGRESS {\"step\": 2, \"total\": 2, \"unit\": \"terminal_rules\", \"metrics\": {\"state\": \"learned_prior_independent_00_source_common_task_rbf_layout6\", \"cpu_seconds\": 0.751105028}}\nSCHEDULEURM_DONE {\"state\": \"learned_prior_independent_00_source_common_task_rbf_layout6\", \"cpu_seconds\": 0.7512417679999999, \"numerical_diagnostics_passed\": false}\n",
+    "tail_error": ""
+  }
+]

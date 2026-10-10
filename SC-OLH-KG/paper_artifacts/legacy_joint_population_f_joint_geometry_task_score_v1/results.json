@@ -1,0 +1,241 @@
+{
+  "execution": {
+    "status": "frozen before all12 conditional source-task scores",
+    "source_execution": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_execution_v1.json",
+    "source_laws": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1/fitted_source_laws.json",
+    "question": "Does the fitted task template direction receive opposing scores from joint source likelihood and conditional whole-source-task density? This cheap fixed-law diagnostic precedes any new source learning objective.",
+    "diagnostic": "On each frozen five-source law compute joint Gaussian NLL and sum_t[-log p(y_t|y_other,theta)] via full-minus-training-block Gaussian log densities. Compare native and joint laws;compute analytic q derivatives and fixedq=.01 probe under the fitted joint law. Empirical center and nuisance are frozen from all five sources,so this is an in-sample objective diagnostic,not honest inner validation or candidate selection.",
+    "fixed_probe_q": 0.01,
+    "gradient_verification_deleted_task": 1,
+    "gradient_step": 1e-07,
+    "verification": "Reproduce fitted joint source NLL;one-sided conditional-task score gradient check in both task1 folds. A mismatch blocks interpretation.",
+    "decision": "If scores oppose,this motivates separately registered genuinely nested task-predictive source learning with outer deleted task and inner source task excluded from their corresponding conditioning/empirical centering. If they agree,do not claim that switching this fixed-law source score would solve the heldout failure. Judge population/representation and omitted uncertainty before new fits. No new prior adoption or paid forecasts.",
+    "scope": "source0-5 only;no outer-query paid labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_v_integrations": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "output": "paper_artifacts/legacy_joint_population_f_joint_geometry_task_score_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_joint_geometry_task_score.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_joint_geometry_task_score_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_joint_geometry_task_score.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "fitted": {
+        "joint_nll_per_label": -2.4071251644302403,
+        "sum_conditional_block_nll_per_label": -2.6881549075857265,
+        "joint_q_gradient_per_label": 0.01476960556092637,
+        "conditional_block_q_gradient_per_label": 0.02161721833067071
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.018046330531059862,
+      "q_probe_conditional_log_density_gain_per_label": -0.000242020458173009,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "fitted": {
+        "joint_nll_per_label": -2.436238311413672,
+        "sum_conditional_block_nll_per_label": -2.7459429713589545,
+        "joint_q_gradient_per_label": 0.020790270711626726,
+        "conditional_block_q_gradient_per_label": -0.06565712349156856
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.023433362559976967,
+      "q_probe_conditional_log_density_gain_per_label": 0.0002534550874728758,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true,
+        "conditional_q_gradient_error": 1.5283572525753852e-06
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "fitted": {
+        "joint_nll_per_label": -2.4176389798221334,
+        "sum_conditional_block_nll_per_label": -2.72805836736603,
+        "joint_q_gradient_per_label": 0.018391520270161978,
+        "conditional_block_q_gradient_per_label": 0.014382531060208785
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.02934060490980528,
+      "q_probe_conditional_log_density_gain_per_label": -0.0001787190536219896,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "fitted": {
+        "joint_nll_per_label": -2.389191498986713,
+        "sum_conditional_block_nll_per_label": -2.682074550199777,
+        "joint_q_gradient_per_label": 0.008603361957773774,
+        "conditional_block_q_gradient_per_label": -0.002998245201048529
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": -0.0006380690013294554,
+      "q_probe_conditional_log_density_gain_per_label": -3.0402582465782757e-05,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "fitted": {
+        "joint_nll_per_label": -2.389573303069933,
+        "sum_conditional_block_nll_per_label": -2.6929667579661496,
+        "joint_q_gradient_per_label": 0.006678677683585595,
+        "conditional_block_q_gradient_per_label": 0.005027393459857269
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.017523982787738035,
+      "q_probe_conditional_log_density_gain_per_label": -8.490351500922699e-05,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "fitted": {
+        "joint_nll_per_label": -2.394257214583497,
+        "sum_conditional_block_nll_per_label": -2.7062407303076763,
+        "joint_q_gradient_per_label": 0.015063850036188035,
+        "conditional_block_q_gradient_per_label": 0.019014226850046848
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.016724131962810862,
+      "q_probe_conditional_log_density_gain_per_label": -0.00020888954629949552,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "fitted": {
+        "joint_nll_per_label": -2.3674653164984827,
+        "sum_conditional_block_nll_per_label": -2.6840697646278975,
+        "joint_q_gradient_per_label": 0.010006874796251472,
+        "conditional_block_q_gradient_per_label": 0.020051468146764048
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.0075976871224217035,
+      "q_probe_conditional_log_density_gain_per_label": -0.00024131949362349303,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "fitted": {
+        "joint_nll_per_label": -2.4684908654483784,
+        "sum_conditional_block_nll_per_label": -2.791858510777805,
+        "joint_q_gradient_per_label": 0.2132789710231034,
+        "conditional_block_q_gradient_per_label": 0.2978409159853373
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.007863535705392444,
+      "q_probe_conditional_log_density_gain_per_label": -0.004214963392290105,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true,
+        "conditional_q_gradient_error": 2.4865103869786687e-06
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "fitted": {
+        "joint_nll_per_label": -2.3878379347453893,
+        "sum_conditional_block_nll_per_label": -2.6781755967830936,
+        "joint_q_gradient_per_label": 0.0020838395609249125,
+        "conditional_block_q_gradient_per_label": 0.012649186585402549
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.008618521937520107,
+      "q_probe_conditional_log_density_gain_per_label": -0.00018552011464390006,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "fitted": {
+        "joint_nll_per_label": -2.395667438610131,
+        "sum_conditional_block_nll_per_label": -2.700474559098575,
+        "joint_q_gradient_per_label": 0.01692294764369994,
+        "conditional_block_q_gradient_per_label": 0.014661349908802057
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.017857885246621574,
+      "q_probe_conditional_log_density_gain_per_label": -0.00020218596817667134,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "fitted": {
+        "joint_nll_per_label": -2.4244421318924827,
+        "sum_conditional_block_nll_per_label": -2.744056691306639,
+        "joint_q_gradient_per_label": 0.011241870657358858,
+        "conditional_block_q_gradient_per_label": 0.009047661419792503
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.003425331792393127,
+      "q_probe_conditional_log_density_gain_per_label": -0.0001331746939627898,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "fitted": {
+        "joint_nll_per_label": -2.406919909122657,
+        "sum_conditional_block_nll_per_label": -2.720506888158214,
+        "joint_q_gradient_per_label": 0.03728314586793733,
+        "conditional_block_q_gradient_per_label": 0.04496195890996866
+      },
+      "joint_vs_native_conditional_log_density_gain_per_label": 0.0068822438026416854,
+      "q_probe_conditional_log_density_gain_per_label": -0.00047269046485975963,
+      "verification": {
+        "fitted_joint_source_nll_reproduced": true
+      }
+    }
+  ],
+  "summary": {
+    "5": {
+      "mean_q_joint_gradient": 0.01404954770337708,
+      "mean_q_conditional_block_gradient": -0.0014356664986389135,
+      "mean_q_probe_conditional_density_gain": -8.191334468277134e-05,
+      "mean_joint_vs_native_conditional_density_gain": 0.017405057291676924
+    },
+    "6": {
+      "mean_q_joint_gradient": 0.048469608258212664,
+      "mean_q_conditional_block_gradient": 0.06653542349267787,
+      "mean_q_probe_conditional_density_gain": -0.0009083090212594532,
+      "mean_joint_vs_native_conditional_density_gain": 0.008707534267831774
+    }
+  },
+  "cpu_seconds": 0.11336094799999996,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_v_integrations": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "hyperparameters_and_empirical_center_use_all_five_source_tasks": true,
+  "honest_inner_task_validation": false,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "no_model_adopted": true
+}

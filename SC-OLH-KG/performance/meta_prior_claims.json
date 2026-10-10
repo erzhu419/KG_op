@@ -1,0 +1,56 @@
+{
+  "ledger_id": "meta_prior_claims_v1_20261004",
+  "manuscript": "manuscript/meta_prior_main.tex",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "source-learned finite structural prior improves early target prediction",
+      "status": "supported_bounded",
+      "evidence": [
+        "paper_artifacts/meta_prior_feasible_deployment_v1/representation_initial.json",
+        "paper_artifacts/meta_prior_risk_identifiability_v1/initial_calibration.json"
+      ],
+      "boundary": "declared observable representation and finite dictionary; development and matched mechanism evidence"
+    },
+    {
+      "id": "C2",
+      "text": "target observations can downweight mismatched source structure",
+      "status": "supported_bounded",
+      "evidence": [
+        "docs/meta_prior_method_contract_20261004.md",
+        "docs/meta_prior_mechanism_v3_20261002.md"
+      ],
+      "boundary": "posterior correction is implemented; it does not guarantee final decision improvement"
+    },
+    {
+      "id": "C3",
+      "text": "source-selected structure has an attributable mean-prior effect",
+      "status": "supported_development_bounded_not_confirmed",
+      "evidence": [
+        "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_arm.json",
+        "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_confirmation_v2.json",
+        "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_baseline_comparison.json"
+      ],
+      "boundary": "development attribution relative to same-source full dictionary only; independent v2 and generic target-only RBF-KG do not confirm generic deployment superiority"
+    },
+    {
+      "id": "C4",
+      "text": "learned risk improves total-risk prediction",
+      "status": "supported_prediction_only",
+      "evidence": [
+        "paper_artifacts/meta_prior_risk_identifiability_v1/initial_calibration.json",
+        "paper_artifacts/meta_prior_risk_identifiability_v1/closed_loop.json"
+      ],
+      "boundary": "factor coefficient recovery and independent risk deployment value are not established"
+    },
+    {
+      "id": "C5",
+      "text": "learned trajectory representation, separate factor recovery, stable universal deployment, and arbitrary high-dimensional free optimization",
+      "status": "unsupported_and_excluded",
+      "evidence": [
+        "docs/meta_prior_missing_claims_audit_20261004.md"
+      ],
+      "boundary": "must remain limitations or future work"
+    }
+  ]
+}

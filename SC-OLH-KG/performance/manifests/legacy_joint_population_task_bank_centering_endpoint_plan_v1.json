@@ -1,0 +1,40 @@
+{
+  "status": "completed; see immutable execution and retained results",
+  "training_profiles": "paper_artifacts/legacy_joint_population_task_bank_centering_v1/calibration_profiles.json",
+  "holdout_execution": "performance/manifests/legacy_joint_population_task_bank_centering_holdout_execution_v1.json",
+  "holdout_profiles": "paper_artifacts/legacy_joint_population_task_bank_centering_holdout_v1/calibration_profiles.json",
+  "training_gp_execution": "performance/manifests/legacy_joint_population_training_paid_adaptation_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "diagnostic": "Report all training fold paired differences and the average with task1 removed, without changing the registered full-fold gate. On each frozen source6/7 prior/paid mean vector score the original71 sites with the same cached sample-mean labels; split g MSE into squared mean residual and centered-shape residual MSE. Reproduce paid MSE exactly. Record candidate-minus-native g mean/variance, eta_g mean, expected episode variance and identity-weight changes. No covariance swaps, prefix replays, new predictive densities or parameter selection.",
+  "interpretation": "Arithmetic attribution of a changed source population model, not causal evidence, new validation or another gate. The original source gates remain failed and task6/7 may not choose a new family or parameter. GP remains a same-source prior control rather than a native online-method claim.",
+  "next_action": "If training gains concentrate on task1 and target endpoint shape remains unresolved, examine within-task coefficient-correlation directions using only source training data, keeping original coefficient marginals/groups/spectra/tail. Distinguish this from prior failed correlation between different source tasks; no automatic new covariance family or target trial.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_task_bank_centering_endpoint_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_task_bank_centering_endpoint_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_task_bank_centering_endpoint_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage88_90_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_coefficient_correlation_score_plan_v1.json"
+}

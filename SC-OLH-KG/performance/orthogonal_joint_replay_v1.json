@@ -1,0 +1,22 @@
+{
+  "contract_id": "orthogonal_joint_gaussian_batch_replay_v1",
+  "study_role": "complete-prefix development replay, not a new executed search or independent confirmation",
+  "source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+  "target_response_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_arm.json",
+  "recorded_path_arm": "source_selected_structure",
+  "initial_points": 8,
+  "stages": [8, 24],
+  "replicates": 12,
+  "verification_replicates": 928,
+  "chance_alpha": 0.05,
+  "arms": ["u1_plugin_independent", "u1_joint_batch", "full_joint_batch"],
+  "comparison": "same source priors and paid labels; plugin versus joint likelihood, then same-likelihood structural versus pooled priors",
+  "shared_decision_rule": "joint Gaussian moment verification utility and centered 27-node KG",
+  "posterior_approximation": "each joint component projects to Gaussian moments after each batch",
+  "prequential_score": "exact joint density of constraint batch mean and bias-corrected log sample variance, evaluated before update for every arm",
+  "target_truth_used": false,
+  "new_source_calls": 0,
+  "new_target_calls": 0,
+  "new_verification_calls": 0,
+  "output": "paper_artifacts/orthogonal_joint_replay_v1/replay.json"
+}

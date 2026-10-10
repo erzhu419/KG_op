@@ -1,0 +1,65 @@
+{
+  "stage": "meta_prior_source_covariance_geometry_a19_20261003",
+  "status": "source_covariance_metadata_and_geometry_complete_scale_distortion_identified",
+  "fixed_after_a18_before_a19_results": true,
+  "question": "How much of the original held-task risk covariance does equal-within-selection f/g reallocation move, even when selected functions overlap learned risk directions?",
+  "basis": "A18 attributes 99.8% of A17's separate-head loss relative to same-pool I/R to F/G branches, not q. Both pure F/G branches lose in every separate-head seed, while their posterior mass decreases correctly. A17 did not retain the seven-training-task covariance vectors, so full-archive A16 covariance cannot be used as a held-task conditioning feature.",
+  "inputs": [
+    "paper_artifacts/meta_prior_function_covariance_source_a17_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_function_covariance_source_a17_20261003/validation.json",
+    "paper_artifacts/meta_prior_cross_head_structure_mixture_a14_20261003/source_summary.json",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_function_covariance_attribution_a18_20261003/attribution.json",
+    "performance/meta_prior_risk_family_reweighting_plan.json"
+  ],
+  "recovery": "Regenerate only the exact original paid source observations and original public normalization bank. Refit the original eta ARD on the seven training source tasks for each of the 256 folds. Save learned tau, actual prior function variances including the existing small tail, the saved f/g selected indices, training task ids, optimizer flags and iterations. No full-prior or f/g selection refit, predictive replay, new sample or new model. Compare optimizer metadata with the saved original fold as a recovery consistency check; no optimizer retuning.",
+  "geometry": "Normalize the recovered prior's function covariance diagonal. For each head-selected set S, report its covariance mass, outside mass 1-mass(S), and total variation distance to uniform allocation on S. Separate the total distance into outside mass and extra redistribution within S, computed as sum_{j in S} max(p_j-1/|S|,0). Also retain learned-tau alignment relative to the public-family matched reference. These covariance-geometry quantities are not response-variance decomposition or support probabilities.",
+  "paired_analysis": "Average eight held-task quantities within each archive and use the 16 seeds as paired units. Report both archive groups and f/g separately. Describe how many archive-average positive source associations still have negative saved pure-branch forecast gains. The latter is descriptive source evidence, not a conditioning rule or validation of an additional predictor.",
+  "scope": "Recover source-only fold-aware information required for a future joint prior. Do not condition or refit A17's weights, alter the covariance construction, use target data, or treat full-archive eta estimates as held-task features.",
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "held_task_folds": 256,
+    "source_tasks_per_archive": 8,
+    "function_dimension": 68
+  },
+  "resource_admission": "Retain the first completed fold and time source generation separately from eta refitting. Project 32 archive generations and 256 eta fits with a 1.25 safety factor plus 5 CPU seconds of summary reserve. Stop with partial evidence if this exceeds the 90-second cap.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 90,
+    "eta_ard_refits_max": 256,
+    "new_fg_selection_fits": 0,
+    "new_full_prior_fits": 0,
+    "new_simulation_samples": 0,
+    "new_predictive_forecasts": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0
+  },
+  "paired_bootstrap_seed": 20261028,
+  "decision": "Use the recovered fold-aware geometry to identify what information a future hierarchical function prior must preserve, and whether positive source association alone can justify reallocation. A17 stays stopped; this diagnostic does not authorize a new candidate or target evaluation.",
+  "limitations": "Geometry of an empirical covariance point estimate, not posterior uncertainty or an independent outcome. The 68 functions are standardized but not orthogonal. Descriptive association/forecast comparisons reuse development evidence and cannot establish causal effects or independent decision gains.",
+  "result_artifacts": "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003",
+  "next_plan": "performance/meta_prior_scale_preserving_source_covariance_plan.json"
+}

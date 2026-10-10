@@ -1,0 +1,19 @@
+{
+  "status": "Registered before refinement of the three failed query0 cases;keep the passed GP layout6 case unchanged.",
+  "parent_plan": "performance/manifests/historical_remaining_query_grids_v1.json",
+  "case_names": ["source_structural_mixture_layout5_query0", "source_common_task_rbf_layout5_query0", "source_structural_mixture_layout6_query0"],
+  "objective_prefixes": [16, 32],
+  "risk_complement_prefixes": [32, 64],
+  "risk_tail_orders": [16, 32],
+  "low_constraint_probability": 0.125,
+  "raw_powers": [12, 14],
+  "seed": 202610077,
+  "anchor_conditional_power": 16,
+  "anchor_full_joint_power": 18,
+  "maximum_anchor_branch_error": 0.0002,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_fixed_action_tower_residual": 0.0001,
+  "maximum_single_thread_cpu_seconds": 360,
+  "scope": "Reuse the historical primary conditional-Gaussian mean integral and complete raw joint transport. For each failed query0 case refine only the three guarded allocations with the stopping primary5/layout5 or4/layout6. The queried policy is the incumbent,not the primary;retain full covariance and query-first eta conditioning. Validate the largest old branch drift against262144-node complete raw transport before interpreting new values. Keep all original likelihood scores and the other37 actions. Add16/32 Gauss-Legendre low-risk labels using the unchanged exact predictive CDF,then refine the same three actions. Preserve all original outcomes and the already-passed GP6/query0. No source fitting,physical observations,independent outcomes or server jobs.",
+  "output": "paper_artifacts/historical_query_verifier_refinement_v1"
+}

@@ -1,0 +1,94 @@
+{
+  "execution": {
+    "status": "registered after verifying replicated_source_labels uses sample variance/n;before source weight summaries",
+    "entrypoint": "performance/diagnose_legacy_f_source_noise_contract.py",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "source_tasks": [
+      0,
+      2,
+      3,
+      4,
+      5
+    ],
+    "question": "How variable are the estimated source mean-noise weights that the current Gaussian likelihood freezes as known,and which inference statement is actually justified?",
+    "calculation": "Read only the existing five-source input noise arrays and outcome-free source replicate metadata. Report source mean label noise minimum/median/maximum,ratio and concentration of its diagonal inverse weights. For Gaussian batches with n=3,derive sample variance relative SD=sqrt(2/(n-1))=1 and E[1/S^2]=infinite. These are sampling facts,not observed true variance errors. White discrepancy/common/task covariance cap effective model precision;diagonal weight concentration is NOT total posterior leverage. No true variances or query labels used.",
+    "verification": "Require original batch replicate metadata equals3 and exact declared source roster excluding task1. All observed noise values positive and finite. Stop on mismatch rather than invent noise values.",
+    "decision": "Correct 'known noise' to 'frozen plug-in sample-variance/n' in this turn's source inference summaries. Current Gaussian NLL and conditional hyperparameter posteriors are exact only for that Gaussian approximation,not the raw source likelihood. Register a source-only latent-variance likelihood feasibility test before more source coverage fits or raw/outer forecasts. This diagnostic cannot by itself identify why a candidate lost or show the generic GP baseline used more information.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "new_source_optimizations": 0,
+      "new_source_conditionings": 0,
+      "new_raw_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached noise arrays/source metadata;no server work,pulls or NPZ",
+    "scope": "Source inference contract audit;all candidates remain stopped and complete-model HOLD. No task1 outcomes,source6/7,target,KG,independent confirmation or manuscript changes.",
+    "output": "paper_artifacts/legacy_joint_population_f_source_noise_contract_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 60,
+      "replicates_per_label": 3,
+      "plug_in_mean_noise_minimum": 5.272512488572276e-08,
+      "plug_in_mean_noise_median": 1.5886896534464347e-05,
+      "plug_in_mean_noise_maximum": 0.00011287684932230599,
+      "maximum_to_minimum_noise_ratio": 2140.8550395462694,
+      "maximum_single_label_diagonal_precision_share": 0.6890739935553722,
+      "top_five_label_diagonal_precision_share": 0.8193216960284888
+    },
+    {
+      "layout": "6",
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_label_count": 60,
+      "replicates_per_label": 3,
+      "plug_in_mean_noise_minimum": 3.4243987162954093e-07,
+      "plug_in_mean_noise_median": 1.653641243185091e-05,
+      "plug_in_mean_noise_maximum": 9.753237624823683e-05,
+      "maximum_to_minimum_noise_ratio": 284.81606357378126,
+      "maximum_single_label_diagonal_precision_share": 0.2923393847021761,
+      "top_five_label_diagonal_precision_share": 0.5689098436556291
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.004254472999999981,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "query_outcomes_indexed": false,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "gaussian_sample_variance_sampling_law": {
+    "degrees_of_freedom": 2,
+    "relative_standard_deviation": 1.0,
+    "mean_inverse_sample_variance_finite": false,
+    "assumption": "Independent Gaussian replicates at fixed latent mean/variance,as in the current batch likelihood."
+  },
+  "source_noise_implementation": "representation/legacy_function_prior.py:replicated_source_labels;noise[:,0]=sample_variance_f/n",
+  "interpretation": "Actual source noises are estimated from three repeats. Gaussian conditioning is exact given these frozen plug-in values,not the raw source likelihood. Extreme diagonal estimated precision does not equal full-covariance leverage or prove the cause of target errors.",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

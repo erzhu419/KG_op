@@ -1,0 +1,259 @@
+{
+  "protocol": {
+    "paid_paths": "paper_artifacts/legacy_joint_bridge_v1/results.json",
+    "replay": "paper_artifacts/guarded_deployment_replay_v1/replay.json",
+    "cases": [
+      {
+        "domain": "FactorShockStatePolicyRZDT1",
+        "prefix": 10
+      },
+      {
+        "domain": "InventorySupplyChain",
+        "prefix": 10
+      },
+      {
+        "domain": "InventorySupplyChain",
+        "prefix": 13
+      },
+      {
+        "domain": "QueueResourceControl",
+        "prefix": 10
+      }
+    ],
+    "integrations": [
+      [
+        12,
+        80508
+      ],
+      [
+        13,
+        80508
+      ],
+      [
+        13,
+        80509
+      ]
+    ],
+    "incumbent_control_budgets": [
+      128,
+      80,
+      128
+    ],
+    "control_role": "same frozen shortlist, old incumbent as primary, same familywise delta and same three-budget multiset; skip challenger that only purchases a 128-call incumbent certificate",
+    "interpretation": "source-orthogonal opened development states only; independent scramble differences diagnose integration error, not statistical confidence intervals; truth fields scored only after decisions are frozen",
+    "new_simulator_calls": 0,
+    "execution": "local serial single-thread, no new experiments or scheduler dispatch"
+  },
+  "rows": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "prefix": 10,
+      "old_512_recommendation": 28,
+      "integrations": [
+        {
+          "draws": 4096,
+          "seed": 80508,
+          "recommended": 28,
+          "predicted_reward": 0.739401326920964,
+          "predicted_calls": 223.18145748477707,
+          "reward_of_original_512_recommendation": 0.739401326920964,
+          "incumbent_128_reward": 0.7112297387216666,
+          "incumbent_128_calls": 148.36110294878728,
+          "truth_reward": 0.7908327201235494,
+          "truth_calls": 208.00009925081434,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80508,
+          "recommended": 28,
+          "predicted_reward": 0.7383988945786373,
+          "predicted_calls": 223.33262517472278,
+          "reward_of_original_512_recommendation": 0.7383988945786373,
+          "incumbent_128_reward": 0.7102835231273769,
+          "incumbent_128_calls": 148.61182411107018,
+          "truth_reward": 0.7908327201235494,
+          "truth_calls": 208.00009925081434,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80509,
+          "recommended": 28,
+          "predicted_reward": 0.738033815174951,
+          "predicted_calls": 223.26143227715409,
+          "reward_of_original_512_recommendation": 0.738033815174951,
+          "incumbent_128_reward": 0.7110109436930034,
+          "incumbent_128_calls": 148.42175555885262,
+          "truth_reward": 0.7908327201235494,
+          "truth_calls": 208.00009925081434,
+          "primary_truly_feasible": false
+        }
+      ],
+      "max_cross_seed_reward_difference": 0.0013876318154486533,
+      "last_seed_loss_of_other_seed_recommendation": 0.0,
+      "truth_incumbent_128_reward": 0.7908327201235494,
+      "truth_incumbent_128_calls": 128.00016128257332,
+      "truth_old_proxy_reward": 0.790292429314588,
+      "truth_old_proxy_calls": 80.1750955896297
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "prefix": 10,
+      "old_512_recommendation": 51,
+      "integrations": [
+        {
+          "draws": 4096,
+          "seed": 80508,
+          "recommended": 10,
+          "predicted_reward": 0.5796216145011988,
+          "predicted_calls": 252.17541347311402,
+          "reward_of_original_512_recommendation": 0.5757253598263307,
+          "incumbent_128_reward": 0.400626799715762,
+          "incumbent_128_calls": 239.2419654063171,
+          "truth_reward": 0.807812057933566,
+          "truth_calls": 333.44405679149486,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80508,
+          "recommended": 10,
+          "predicted_reward": 0.5797368892815358,
+          "predicted_calls": 252.47071616577023,
+          "reward_of_original_512_recommendation": 0.5697363532005217,
+          "incumbent_128_reward": 0.40016113171090184,
+          "incumbent_128_calls": 239.1948738762068,
+          "truth_reward": 0.807812057933566,
+          "truth_calls": 333.44405679149486,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80509,
+          "recommended": 10,
+          "predicted_reward": 0.574318382703157,
+          "predicted_calls": 253.22684485066998,
+          "reward_of_original_512_recommendation": 0.5692505841439677,
+          "incumbent_128_reward": 0.39863956407696477,
+          "incumbent_128_calls": 239.7181609824754,
+          "truth_reward": 0.807812057933566,
+          "truth_calls": 333.44405679149486,
+          "primary_truly_feasible": false
+        }
+      ],
+      "max_cross_seed_reward_difference": 0.008529266471609676,
+      "last_seed_loss_of_other_seed_recommendation": 0.0,
+      "truth_incumbent_128_reward": 0.805345181719441,
+      "truth_incumbent_128_calls": 206.7949876096661,
+      "truth_old_proxy_reward": 0.807812057933566,
+      "truth_old_proxy_calls": 333.44405679149486
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "prefix": 13,
+      "old_512_recommendation": 19,
+      "integrations": [
+        {
+          "draws": 4096,
+          "seed": 80508,
+          "recommended": 19,
+          "predicted_reward": 0.5187116551060215,
+          "predicted_calls": 262.57165072161365,
+          "reward_of_original_512_recommendation": 0.5187116551060215,
+          "incumbent_128_reward": 0.3883013582768935,
+          "incumbent_128_calls": 241.96239016075774,
+          "truth_reward": 0.807812057933566,
+          "truth_calls": 333.44405679149486,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80508,
+          "recommended": 19,
+          "predicted_reward": 0.5235608877326645,
+          "predicted_calls": 262.2071158895611,
+          "reward_of_original_512_recommendation": 0.5235608877326645,
+          "incumbent_128_reward": 0.38980027344247165,
+          "incumbent_128_calls": 241.89578387474978,
+          "truth_reward": 0.807812057933566,
+          "truth_calls": 333.44405679149486,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80509,
+          "recommended": 19,
+          "predicted_reward": 0.527392844241911,
+          "predicted_calls": 261.4971841507436,
+          "reward_of_original_512_recommendation": 0.527392844241911,
+          "incumbent_128_reward": 0.3932949507642718,
+          "incumbent_128_calls": 241.16823397809054,
+          "truth_reward": 0.807812057933566,
+          "truth_calls": 333.44405679149486,
+          "primary_truly_feasible": false
+        }
+      ],
+      "max_cross_seed_reward_difference": 0.012276615045932027,
+      "last_seed_loss_of_other_seed_recommendation": 0.0,
+      "truth_incumbent_128_reward": 0.805345181719441,
+      "truth_incumbent_128_calls": 206.7949876096661,
+      "truth_old_proxy_reward": 0.8078231450445553,
+      "truth_old_proxy_calls": 205.54843632837895
+    },
+    {
+      "domain": "QueueResourceControl",
+      "prefix": 10,
+      "old_512_recommendation": 10,
+      "integrations": [
+        {
+          "draws": 4096,
+          "seed": 80508,
+          "recommended": 10,
+          "predicted_reward": 0.7166529206138792,
+          "predicted_calls": 233.67807950482847,
+          "reward_of_original_512_recommendation": 0.7166529206138792,
+          "incumbent_128_reward": 0.6293802687754831,
+          "incumbent_128_calls": 181.21044062887918,
+          "truth_reward": 0.8174195468544185,
+          "truth_calls": 208.0004008008329,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80508,
+          "recommended": 10,
+          "predicted_reward": 0.7171933661654323,
+          "predicted_calls": 233.45785193353458,
+          "reward_of_original_512_recommendation": 0.7171933661654323,
+          "incumbent_128_reward": 0.6295204255395095,
+          "incumbent_128_calls": 181.05278376826521,
+          "truth_reward": 0.8174195468544185,
+          "truth_calls": 208.0004008008329,
+          "primary_truly_feasible": false
+        },
+        {
+          "draws": 8192,
+          "seed": 80509,
+          "recommended": 10,
+          "predicted_reward": 0.7157647634477227,
+          "predicted_calls": 233.71491531425897,
+          "reward_of_original_512_recommendation": 0.7157647634477227,
+          "incumbent_128_reward": 0.6275309112872023,
+          "incumbent_128_calls": 181.2250359546454,
+          "truth_reward": 0.8174195468544185,
+          "truth_calls": 208.0004008008329,
+          "primary_truly_feasible": false
+        }
+      ],
+      "max_cross_seed_reward_difference": 0.003862874858552523,
+      "last_seed_loss_of_other_seed_recommendation": 0.0,
+      "truth_incumbent_128_reward": 0.8174195468544228,
+      "truth_incumbent_128_calls": 128.0006513013528,
+      "truth_old_proxy_reward": 0.8162476812702042,
+      "truth_old_proxy_calls": 80.36780609934884
+    }
+  ],
+  "new_calls": 0,
+  "cpu_seconds": 8.018166608
+}

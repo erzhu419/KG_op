@@ -1,0 +1,11 @@
+{
+  "replay":"paper_artifacts/legacy_observable_budget_v1/replay.json",
+  "cases":[{"domain":"InventorySupplyChain","prefix":10,"arm":"observable_source_orthogonal"}],
+  "draw_power":10,
+  "seeds":[80519],
+  "integration":"terminal_marginal",
+  "output":"lookahead_marginal.json",
+  "lookahead_probe":{"domain":"InventorySupplyChain","prefix":10,"arm":"observable_source_orthogonal","draw_power":10,"fantasy_power":4},
+  "role":"one saved-state followup: 16 raw predictive fantasies, copied actual posterior updates and identical marginal terminal integration at the debited budget; projection drift reported separately; no action executed",
+  "new_simulator_calls":0
+}

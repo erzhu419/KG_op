@@ -1,0 +1,34 @@
+{
+  "status": "completed;both task1 pilot folds fail frozen precision within4096 nodes;no remaining folds or forecasts run",
+  "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+  "reference_results": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/results.json",
+  "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+  "question": "Can positive adaptive full-tail cubature reduce the16384 source-reference components per fold enough for a bounded coherent paid update,without changing the frozen two-variance physical law?",
+  "source_law": "Exactly the Stage136/137 source-only joint Gaussian likelihood and joint Jeffreys measure;same v,a and all frozen native nuisance parameters. Do not optimize hyperparameters,truncate either tail,multiply conditional posteriors or replace the mixture by a Gaussian.",
+  "algorithm": "Use the same squared-rational coordinates on the complete unit square. Start with source conditional median splits,compare positive tensor Gauss-Legendre4 versus8 nodes per axis within each rectangle,and bisect the rectangle contributing the largest scaled source moment error along its longest side. Every rectangle remains in the full-domain rule;no posterior-mass or variance cutoff. Track exact positive node count and evaluator CPU.",
+  "acceptance": {
+    "normalizer_relative_difference_vs_stage137": 1e-08,
+    "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+    "sum_of_rectangle_high_low_scaled_errors": 1e-08,
+    "maximum_positive_nodes_per_fold": 4096
+  },
+  "moments": "Use the identical normalization,source variance first/second/cross moments,common beta change,average H and covariance of beta units and values from Stage137. Verify positivity and native/source-only scope. Refinement checks are numerical evidence,not an analytic error bound.",
+  "scope": "Source0-5 training folds only;no paid query outcomes,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls. First inspect two task1 folds,then proceed across the remaining ten only if both demonstrate compactness and frozen precision.",
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_new_compact_source_rules": 12,
+    "maximum_positive_rule_nodes_per_fold": 4096,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;reuse small source JSON and compact local NPZ",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_compact_quadrature_v1",
+  "planned_entrypoint": "performance/prepare_legacy_f_level_shape_compact_quadrature.py",
+  "entrypoint_status": "implemented and executed;candidate stopped",
+  "decision": "If compact positive rules pass,register bounded matched paid-prefix development comparisons versus retained intercept-only mixture/native/flat/source GP,with forecasts frozen before scoring and finer joint rule checks before outcome opening. Start with the two registered task1 folds and the original four paid observations;do not automatically run all folds or target/KG. If no compact rule passes the fixed node/precision budget,retain the source law and exact numerical limitation rather than spend large online CPU or change the prior.",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_level_shape_compact_quadrature_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_f_level_shape_compact_quadrature_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_level_shape_scaled_quadrature_plan_v1.json"
+}

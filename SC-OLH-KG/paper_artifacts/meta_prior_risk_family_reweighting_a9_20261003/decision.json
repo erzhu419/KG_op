@@ -1,0 +1,175 @@
+{
+  "stage": "meta_prior_risk_family_reweighting_a9_20261003",
+  "status": "grouped_and_prequential_validation_complete_not_promoted_no_recommendation_replay",
+  "gate_passed": false,
+  "reason": "Learned-source shared-structure and separate-head predictive scores regress in both grouped validation and strictly chronological forecasts. The predeclared broad-improvement gate is not met.",
+  "partial_success": "Without target support, paid risk labels shift posterior mass toward the public high-frequency family; high-frequency predictive gains persist in chronological forecasts.",
+  "learned_source_prefix24": [
+    {
+      "regime": "shared_structure",
+      "mean_log_score_gain": -0.006396888835852418,
+      "paired_seed_bootstrap95": [
+        -0.009635320219607715,
+        -0.0026837728701551177
+      ],
+      "better": 2,
+      "worse": 14,
+      "mean_null_posterior": 0.5566122105907966,
+      "mean_rho_posterior": 0.20389439712410115,
+      "mean_family_posterior": {
+        "linear": 0.07332371947433854,
+        "squared": 0.0761495058179543,
+        "sin_pi": 0.07280892871703197,
+        "cos_pi": 0.0780878876967864,
+        "pair_interactions": 0.07610324412089586,
+        "sin_4pi": 0.06691450358219636
+      }
+    },
+    {
+      "regime": "support_mismatch",
+      "mean_log_score_gain": 0.034641800160362494,
+      "paired_seed_bootstrap95": [
+        0.0048005635194394115,
+        0.07768487321257878
+      ],
+      "better": 10,
+      "worse": 6,
+      "mean_null_posterior": 0.3998234365045475,
+      "mean_rho_posterior": 0.34392853389765904,
+      "mean_family_posterior": {
+        "linear": 0.18373559569328718,
+        "squared": 0.07346004041638442,
+        "sin_pi": 0.14950167332118988,
+        "cos_pi": 0.07293903669740726,
+        "pair_interactions": 0.058660268186796226,
+        "sin_4pi": 0.061879949180387625
+      }
+    },
+    {
+      "regime": "high_frequency_risk",
+      "mean_log_score_gain": 0.06171003274462167,
+      "paired_seed_bootstrap95": [
+        0.014064326634999812,
+        0.14138291536413752
+      ],
+      "better": 13,
+      "worse": 3,
+      "mean_null_posterior": 0.37559658199944357,
+      "mean_rho_posterior": 0.3722294389507927,
+      "mean_family_posterior": {
+        "linear": 0.05025527465033122,
+        "squared": 0.060594443208527644,
+        "sin_pi": 0.05247781665317806,
+        "cos_pi": 0.05755750473277138,
+        "pair_interactions": 0.059794135678937196,
+        "sin_4pi": 0.3437242430768108
+      }
+    },
+    {
+      "regime": "separate_risk_support",
+      "mean_log_score_gain": 0.002267919006598,
+      "paired_seed_bootstrap95": [
+        -0.002229082077493078,
+        0.0069596806513803735
+      ],
+      "better": 9,
+      "worse": 7,
+      "mean_null_posterior": 0.47717699437316696,
+      "mean_rho_posterior": 0.26957031394605274,
+      "mean_family_posterior": {
+        "linear": 0.10767232920242113,
+        "squared": 0.07050944613925979,
+        "sin_pi": 0.10616592074402548,
+        "cos_pi": 0.07249649470364106,
+        "pair_interactions": 0.08571840617485495,
+        "sin_4pi": 0.08026040866263064
+      }
+    },
+    {
+      "regime": "separate_head_structure",
+      "mean_log_score_gain": -0.007213539743971278,
+      "paired_seed_bootstrap95": [
+        -0.012240602684702496,
+        -0.001125674202513268
+      ],
+      "better": 2,
+      "worse": 14,
+      "mean_null_posterior": 0.6196822796066562,
+      "mean_rho_posterior": 0.15512936119816098,
+      "mean_family_posterior": {
+        "linear": 0.0664902225429244,
+        "squared": 0.052568633966486464,
+        "sin_pi": 0.06882764307473903,
+        "cos_pi": 0.054120292608819134,
+        "pair_interactions": 0.058141266868838866,
+        "sin_4pi": 0.08016966133153589
+      }
+    }
+  ],
+  "learned_source_prequential_steps9_to24": [
+    {
+      "regime": "shared_structure",
+      "mean_gain": -0.0046593984135992915,
+      "paired_seed_bootstrap95": [
+        -0.007618118083870896,
+        -0.001216918747064869
+      ],
+      "better": 3,
+      "worse": 13
+    },
+    {
+      "regime": "support_mismatch",
+      "mean_gain": 0.018763645781454966,
+      "paired_seed_bootstrap95": [
+        0.0035448774215672734,
+        0.040112556698713456
+      ],
+      "better": 12,
+      "worse": 4
+    },
+    {
+      "regime": "high_frequency_risk",
+      "mean_gain": 0.03953284650763958,
+      "paired_seed_bootstrap95": [
+        0.008825631508394237,
+        0.09125793628900127
+      ],
+      "better": 14,
+      "worse": 2
+    },
+    {
+      "regime": "separate_risk_support",
+      "mean_gain": -0.00013647833001795067,
+      "paired_seed_bootstrap95": [
+        -0.00281345269029262,
+        0.002510506190309179
+      ],
+      "better": 7,
+      "worse": 9
+    },
+    {
+      "regime": "separate_head_structure",
+      "mean_gain": -0.008783623019334767,
+      "paired_seed_bootstrap95": [
+        -0.012998532574869883,
+        -0.0044654121540944215
+      ],
+      "better": 2,
+      "worse": 14
+    }
+  ],
+  "evidence_scope": "Historical-policy development prediction; not independent confirmation, sparse exact-support recovery or verified decision gains.",
+  "numerical_check_passed": true,
+  "targeted_tests": {
+    "initial_covariance_and_holdout_checks_passed": 3,
+    "additional_source_predictor_equivalence_check_passed": 1
+  },
+  "local_analysis_cpu_seconds": 33.259222338,
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "kg_calls": 0,
+  "new_searches": 0,
+  "recommendation_replays": 0,
+  "new_random_verifications": 0,
+  "next_plan": "performance/meta_prior_risk_adaptation_calibration_plan.json"
+}

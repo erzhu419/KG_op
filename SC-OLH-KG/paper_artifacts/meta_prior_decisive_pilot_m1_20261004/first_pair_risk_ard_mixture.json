@@ -1,0 +1,382 @@
+{
+  "initial": {
+    "rmse": [
+      0.02298196293966188,
+      0.0772782806465853,
+      0.30568146360744475
+    ],
+    "nominal90_coverage": [
+      0.9947916666666666,
+      1.0,
+      0.9505208333333334
+    ],
+    "risk_variance_relative_mae": 0.21590430255919504,
+    "margin_rank_correlation": 0.9899891068461564,
+    "posterior_safe_count": 0,
+    "false_safe_count": 0
+  },
+  "final": {
+    "rmse": [
+      0.01085800384534396,
+      0.07285189733574074,
+      0.2792360486843588
+    ],
+    "nominal90_coverage": [
+      0.9947916666666666,
+      1.0,
+      0.9765625
+    ],
+    "risk_variance_relative_mae": 0.24722106363695195,
+    "margin_rank_correlation": 0.9935518463259978,
+    "posterior_safe_count": 0,
+    "false_safe_count": 0
+  },
+  "queries": [
+    92,
+    38,
+    68,
+    32,
+    29,
+    21,
+    85,
+    90,
+    266,
+    281,
+    242,
+    281,
+    266,
+    242,
+    281,
+    266,
+    281,
+    21,
+    301,
+    301,
+    329,
+    34,
+    34,
+    329
+  ],
+  "recommendation": 111,
+  "true_feasible": true,
+  "posterior_safe": false,
+  "true_margin": -1.1277330804799643,
+  "true_objective": -2.0508360133119368,
+  "feasible_regret": 0.0,
+  "penalized_regret": 0.0,
+  "verification": {
+    "verified": true,
+    "margin_upper": -1.107593036392065,
+    "confidence": 0.95,
+    "replicates": 928
+  },
+  "target_search_calls": 288,
+  "target_verification_calls": 928,
+  "seed": 64,
+  "regime": "shared_structure",
+  "difficulty": "binding",
+  "arm": "risk_ard_mixture",
+  "allocation": "n24_v928",
+  "initial_design": [
+    92,
+    38,
+    68,
+    32,
+    29,
+    21,
+    85,
+    90
+  ],
+  "oracle_support": [
+    [
+      3,
+      10,
+      51
+    ],
+    [
+      3,
+      10,
+      51
+    ],
+    [
+      3,
+      10,
+      51
+    ]
+  ],
+  "source_calls": 6144,
+  "total_target_calls": 1216,
+  "initial_recommendation": 111,
+  "initial_expected_verified_reward": 0.7050836013311936,
+  "predicted_verified_reward": 0.6599892699414998,
+  "predicted_verifier_power": 0.938659234943523,
+  "true_verifier_power": 1.0,
+  "expected_verified_reward": 0.7050836013311936,
+  "realized_verified_reward": 0.7050836013311936,
+  "best_available_expected_verified_reward": 0.7050836013311936,
+  "expected_search_shortfall": 0.0,
+  "true_feasible_fraction": 0.1640625,
+  "false_verified": false,
+  "source_nonintercept_means_zero": true,
+  "final_model_state": [
+    {
+      "structural_weight": 0.999991510590601,
+      "full_dictionary_weight": 8.489409398857163e-06,
+      "paid_observations": 24
+    },
+    {
+      "structural_weight": 0.9999934148658265,
+      "full_dictionary_weight": 6.5851341734823235e-06,
+      "paid_observations": 24
+    },
+    {
+      "structural_weight": 0.34714145516592804,
+      "full_dictionary_weight": 0.6528585448340719,
+      "paid_observations": 24
+    }
+  ],
+  "source_info": [
+    {
+      "mode": "conditional_hard",
+      "source_label_count": 512,
+      "selected_names": [
+        "psi3",
+        "psi3*psi5",
+        "psi2^2"
+      ],
+      "selected_indices": [
+        3,
+        51,
+        10
+      ],
+      "selection_cv": [
+        {
+          "index": 3,
+          "name": "psi3",
+          "added_cv_improvement": 0.5728341691437795,
+          "source_task_standard_error": 0.061741793751231934,
+          "accepted": true
+        },
+        {
+          "index": 51,
+          "name": "psi3*psi5",
+          "added_cv_improvement": 0.29718514756239944,
+          "source_task_standard_error": 0.053433313080462154,
+          "accepted": true
+        },
+        {
+          "index": 10,
+          "name": "psi2^2",
+          "added_cv_improvement": 0.14788171879714307,
+          "source_task_standard_error": 0.02198037876166244,
+          "accepted": true
+        },
+        {
+          "index": 26,
+          "name": "sin(pi*psi5)",
+          "added_cv_improvement": -7.219266834696577e-06,
+          "source_task_standard_error": 2.8800899734013647e-05,
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "mode": "conditional_hard",
+      "source_label_count": 512,
+      "selected_names": [
+        "psi3",
+        "psi3*psi5",
+        "psi2^2",
+        "psi2*psi7"
+      ],
+      "selected_indices": [
+        3,
+        51,
+        10,
+        49
+      ],
+      "selection_cv": [
+        {
+          "index": 3,
+          "name": "psi3",
+          "added_cv_improvement": 0.6699738665858981,
+          "source_task_standard_error": 0.05539658083403785,
+          "accepted": true
+        },
+        {
+          "index": 51,
+          "name": "psi3*psi5",
+          "added_cv_improvement": 0.2588059093270607,
+          "source_task_standard_error": 0.04163243598825832,
+          "accepted": true
+        },
+        {
+          "index": 10,
+          "name": "psi2^2",
+          "added_cv_improvement": 0.1621014060122873,
+          "source_task_standard_error": 0.01634222732923222,
+          "accepted": true
+        },
+        {
+          "index": 49,
+          "name": "psi2*psi7",
+          "added_cv_improvement": 0.0008096132745738834,
+          "source_task_standard_error": 0.00032269929115705763,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "selected_names": [
+        "psi0",
+        "psi1",
+        "psi2",
+        "psi3",
+        "psi4",
+        "psi5",
+        "psi6",
+        "psi7",
+        "psi0^2",
+        "psi1^2",
+        "psi2^2",
+        "psi3^2",
+        "psi4^2",
+        "psi5^2",
+        "psi6^2",
+        "psi7^2",
+        "sin(pi*psi0)",
+        "cos(pi*psi0)",
+        "sin(pi*psi1)",
+        "cos(pi*psi1)",
+        "sin(pi*psi2)",
+        "cos(pi*psi2)",
+        "sin(pi*psi3)",
+        "cos(pi*psi3)",
+        "sin(pi*psi4)",
+        "cos(pi*psi4)",
+        "sin(pi*psi5)",
+        "cos(pi*psi5)",
+        "sin(pi*psi6)",
+        "cos(pi*psi6)",
+        "sin(pi*psi7)",
+        "cos(pi*psi7)",
+        "psi0*psi1",
+        "psi0*psi2",
+        "psi0*psi3",
+        "psi0*psi4",
+        "psi0*psi5",
+        "psi0*psi6",
+        "psi0*psi7",
+        "psi1*psi2",
+        "psi1*psi3",
+        "psi1*psi4",
+        "psi1*psi5",
+        "psi1*psi6",
+        "psi1*psi7",
+        "psi2*psi3",
+        "psi2*psi4",
+        "psi2*psi5",
+        "psi2*psi6",
+        "psi2*psi7",
+        "psi3*psi4",
+        "psi3*psi5",
+        "psi3*psi6",
+        "psi3*psi7",
+        "psi4*psi5",
+        "psi4*psi6",
+        "psi4*psi7",
+        "psi5*psi6",
+        "psi5*psi7",
+        "psi6*psi7",
+        "sin(4*pi*psi0)",
+        "sin(4*pi*psi1)",
+        "sin(4*pi*psi2)",
+        "sin(4*pi*psi3)",
+        "sin(4*pi*psi4)",
+        "sin(4*pi*psi5)",
+        "sin(4*pi*psi6)",
+        "sin(4*pi*psi7)"
+      ],
+      "mode": "source_risk_ard",
+      "source_selected_indices": [
+        3,
+        51,
+        21,
+        57
+      ],
+      "source_function_variance": [
+        0.0,
+        0.0,
+        0.0,
+        0.0762995834760301,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.002757496773027575,
+        0.0,
+        4.2032324107396276e-05,
+        8.736152527992077e-06,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.005166860325060266,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0007898632595968437,
+        0.0,
+        0.0,
+        0.00022351441665448965,
+        0.00029757406997163986,
+        0.0,
+        0.0009872234679239346,
+        0.0,
+        0.0002859589526346174,
+        0.0009395103238121734,
+        0.0008992804299673535,
+        0.0004932596241577134,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00151252362359218,
+        0.006329224508690499,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0015561114501198127,
+        0.004800990362233696,
+        0.0,
+        0.003158243148867773,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.004529759488617799,
+        5.000818889691369e-05,
+        0.0021471224949318264,
+        0.0
+      ],
+      "source_label_count": 512,
+      "optimizer_converged": true
+    }
+  ],
+  "local_cpu_seconds": 32.56124799
+}

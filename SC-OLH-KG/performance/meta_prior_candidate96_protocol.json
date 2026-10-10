@@ -1,0 +1,68 @@
+{
+  "stage": "meta_prior_candidate96_v5_20261002",
+  "frozen_before_results": true,
+  "seeds": [
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ],
+  "regimes": [
+    "shared_structure",
+    "support_mismatch",
+    "high_frequency_risk",
+    "separate_risk_support",
+    "separate_head_structure"
+  ],
+  "difficulty_offsets": {
+    "baseline": 0.0,
+    "binding": 1.0
+  },
+  "arms": [
+    "fixed_source",
+    "risk_ard_mixture"
+  ],
+  "decision_schemes": [
+    "penalty",
+    "verification_recommendation",
+    "verification_kg"
+  ],
+  "psi_dim": 8,
+  "source_tasks": 8,
+  "source_points": 64,
+  "candidates": 96,
+  "initial_points": 8,
+  "target_points": 24,
+  "replicates": 12,
+  "verification_replicates": 256,
+  "learned_active_dim_per_head": 4,
+  "chance_alpha": 0.05,
+  "risk_penalty": 4.0,
+  "penalty_temperature": 0.15,
+  "backend": "old locally linearized penalty KG versus joint 27-node Gaussian-fantasy verification-utility KG",
+  "verification_utility": "Failed verification earns zero; successful deployment earns clip((5-f)/10,0,1). The declared simulator bounds the true objective within [-5,5]. This operational utility is distinct from the mathematical chance-constrained objective.",
+  "verification_power": "Use the unchanged Gaussian t/chi-square independent verifier, integrating uncertain constraint mean analytically and log variance/sample variance with 9x12 Gaussian quadrature.",
+  "recommendation_only_control": "Reuses the exact paid observations and final posterior from penalty search, changes only the final recommendation, and pays its own unchanged validation budget.",
+  "risk_ard": "Source-only marginal covariance likelihood across independent signed task coefficients, known log-variance label noise and projected task intercepts; nonnegative function variances and 1 percent weak total tail. Mean heads retain conditional source selection.",
+  "adaptive_corrected": {
+    "max_effective_fraction": 1.0,
+    "multiplicity_correction": 0.0,
+    "explanation": "Do not force all 68 PIPs to their .05 floor at n0=8; source selection frequencies already encode dictionary selection. Original V2 arm remains a control."
+  },
+  "transfer_mixture": "Per-head equal prior weights on the source structural model and the fixed-source full dictionary; update weights with pre-observation predictive densities using only paid target observations; retain between-model covariance. Weights stay fixed in Gaussian acquisition fantasies.",
+  "primary_comparisons": [
+    "risk_ard_mixture versus fixed_source under verification_kg in each stratum",
+    "paired 384 versus 96 candidate banks on the same functions, initial points, source priors, evaluation and verification budgets"
+  ],
+  "analysis_units": "Eight paired seed blocks; candidate rows and the two difficulty layers are not independent samples. Report all strata and negatives without selecting a winning regime.",
+  "scoring": "Retain feasibility, mathematical feasible regret and old penalized regret; also report realized verified reward, analytically expected verified reward, verifier power and posterior calibration. Simulator truth enters only observation generation and post-decision scoring.",
+  "interpretation": "No new generator hardness or verifier budget. Separate finite-bank search shortfall from the 384-bank optimum increase. Report extra acquisition compute and retained negative transfer. Neither bank is a continuous optimum.",
+  "scope": "Public canonical inputs and finite dictionary source priors. Not a learned state/trajectory encoder, a factor-level HVD recovery claim or a high-dimensional guarantee.",
+  "initial_bank_size": 96,
+  "reference_bank_size": 96,
+  "candidate_expansion": "Nested public coordinates from the same seed; initial IDs are drawn by the original 96-bank RNG. Keep the 96-bank feature centering/scaling and source priors fixed. Additional candidate truth is withheld until post-decision scoring."
+}

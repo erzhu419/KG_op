@@ -1,0 +1,20 @@
+{
+  "status": "registered after both source holdouts improve g MSE and joint/constraint batch density, before target forecasts or recommendations",
+  "source_execution": "performance/manifests/legacy_joint_population_joint_common_covariance_execution_v1.json",
+  "new_source_fit": "paper_artifacts/legacy_joint_population_joint_common_covariance_v1/source_fit.json",
+  "old_source_fit": "paper_artifacts/legacy_joint_population_public_design_source_check_v1/source_fit.json",
+  "target_inputs": "paper_artifacts/legacy_joint_population_source_budget_v1/inputs.json",
+  "output": "paper_artifacts/legacy_joint_population_joint_common_decision_v1",
+  "arms": ["fixed_common_structural", "joint_common_structural", "joint_common_full", "fixed_common_rbf", "joint_common_rbf"],
+  "information_contract": "all arms share the response-free public maxmin16 source design, six training tasks, three repeats,16-site supervised encoder/normalization and public73-site orthogonal reference; common/source residual priors restored once, no source optimization per target",
+  "target_contract": "same six opened independent-pilot targets, original73-policy frontend bank, first two cached raw records, fixed response-free retained candidate2, same guarded/direct class and362 total-call cap",
+  "reference_contract": "retain both the stronger old fixed-common generic GP and the matched joint-common GP; pooled full residual control keeps the learned shared mean/posterior intact",
+  "freeze_rule": "save all30 new actions before reading cached target scoring truth; source-only preparation uses public descriptors and selected source labels, never target scores",
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "bootstrap_seed": 80811,
+  "bootstrap_draws": 10000,
+  "new_simulator_call_cap": 0,
+  "execution": "local serial single-thread cached conditional comparison; no source hyperparameter refitting, scheduler/server jobs or pulls",
+  "interpretation": "opened-task attribution of joint common/residual covariance learning at16 source sites; not independent deployment, original frontend construction cost recovery, universal source superiority or incremental KG"
+}

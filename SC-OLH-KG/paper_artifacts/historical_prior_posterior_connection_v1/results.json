@@ -1,0 +1,96 @@
+{
+  "execution": {
+    "status": "registered before coefficient fits and paid-state reconstruction",
+    "entrypoint": "performance/connect_historical_prior_posterior.py",
+    "selection_plan": "performance/manifests/historical_source_structure_adaptation_v1.json",
+    "maps": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+    "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+    "public_inputs": "paper_artifacts/legacy_related_inventory_source_v1/frozen_inputs.json",
+    "query_risk_inputs_by_layout": {
+      "5": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1/layout5/risk_inputs.json",
+      "6": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1/layout6/risk_inputs.json"
+    },
+    "source_information": "The same48 cached batches from tasks2-5. Restore all selectors without fitting. Legacy coefficient evidence and finite coefficient priors use source labels only. Task0 supplies only its existing two first raw episodes;no variance label or unobserved response enters its posterior or choices.",
+    "development_task": "related_inventory_00",
+    "development_task_index": 0,
+    "candidate_count": 8,
+    "paid_prefix": 2,
+    "hypotheses": "Four complete identities per layout:spectral/additive x head-specific/joint selection. One shared weight is conditioned by both raw response heads. Uniform identity mass is an interface reference,not source-validated model selection. Gaussian sparse means remain a separately recorded legacy reference.",
+    "source_units": "Normalize each source response and its observation variance,call the existing finite coefficient prior,then transform the full law back. Historical fixed floors remain in normalized units. Gaussian eta-label coefficient learning is a declared reference,not the exact raw-source law.",
+    "total_target_call_cap": 362,
+    "terminal_protocol": {
+      "familywise_delta": 0.05,
+      "comparison_budget": 8,
+      "comparison_delta": 0.05
+    },
+    "terminal_draw_power": 7,
+    "seed": 202610077,
+    "actions": "Call the existing canonical_plus_posterior action generator with1 and4 new points and identical eligible repeats. Priorities are negative posterior expected deployment reward under the SAME guarded/direct terminal class as lookahead. Canonical Sobol fallback within the eight-policy subset is recorded. Preserve the paid objective incumbent and safety support through the existing shortlist constructor.",
+    "lookahead_layout": "5",
+    "lookahead_draw_power": 7,
+    "fantasy_power": 2,
+    "lookahead_scope": "One development state,all six balanced4 actions,exact next likelihood importance conditioning and separately reported projected-filter values;no query executed. Coarse numerical rules expose precision limitations and do not authorize rankings or deployment claims. Save partial results if the serial CPU budget is reached;do not raise it after seeing outputs.",
+    "verification": "Existing source-shrinkage tests detect changes to the extracted historical coefficient statistic. Check model means against coefficient-to-function translation,shared identity update against the old exact mixture weighting,correct query risk map against the frozen reference,and balanced4 superset/repeat identity before any lookahead. Stop on mismatch;no refits or invented responses.",
+    "maximum_single_thread_cpu_seconds": 25,
+    "execution": "Local serial single-thread,small cached JSON only. No scheduler,server,data pull,new source6/7,independent target,simulator/verifier call or manuscript change.",
+    "output": "paper_artifacts/historical_prior_posterior_connection_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "raw_updates": 2,
+      "shared_identity_weight_update_passed": true,
+      "maximum_raw_integration_relative_error": 2.5002158449350584e-10,
+      "balanced4_new_count": 4,
+      "repeat_count": 2
+    },
+    {
+      "layout": "6",
+      "raw_updates": 2,
+      "shared_identity_weight_update_passed": true,
+      "maximum_raw_integration_relative_error": 2.3258622016662908e-10,
+      "balanced4_new_count": 4,
+      "repeat_count": 2
+    }
+  ],
+  "source_prior_heads": 32,
+  "complete_hypotheses": 8,
+  "cpu_seconds": 4.890251782,
+  "cost": {
+    "new_selector_fits": 0,
+    "coefficient_prior_fits": 32,
+    "new_source_chains": 0,
+    "new_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "independent_targets_opened": 0,
+    "unit_translation_check_fits": 2
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "limitations": "Historical Gaussian-label finite coefficient reference,source-standardized floors and old inclusion evidence;task coefficient second moments are not fit-noise-deconvolved. Raw paid filters use the exact single-episode density with subsequent Gaussian moment projection. The sparse Gaussian reference is separate from the raw filter. All priors use restored source maps;task0 is opened development. Eight cached policies and low-order numerical rules test interfaces,not full-bank decision advantage or current96-coefficient covariance learning.",
+  "sparse_reference_fits": 16,
+  "sparse_reference_converged": 15,
+  "sparse_reference_nonconvergence": [
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "head": "g"
+    }
+  ],
+  "verification": {
+    "source_response_affine_units_passed": true,
+    "mean_error": 5.551115123125783e-17,
+    "covariance_error": 8.326672684688674e-17,
+    "coefficient_PIP_error": 1.1102230246251565e-16,
+    "physical_discrepancy_scales_as_response_variance": true,
+    "inside_computation_CPU_interrupt_detected": true,
+    "interrupt_CPU_seconds": 0.09570272699999999,
+    "check_coefficient_fits": 2
+  },
+  "targeted_regression_tests": {
+    "historical_source_hyperprior": 2,
+    "legacy_action_sets": 4,
+    "all_passed": true
+  }
+}

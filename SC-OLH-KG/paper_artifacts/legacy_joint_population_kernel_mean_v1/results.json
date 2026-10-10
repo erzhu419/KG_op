@@ -1,0 +1,622 @@
+{
+  "execution": {
+    "status": "registered before fitting or target recommendations",
+    "plan": "performance/manifests/legacy_joint_population_matched_baseline_preflight_plan_v1.json",
+    "attribution_plan": "performance/manifests/legacy_joint_population_kernel_mean_attribution_plan_v1.json",
+    "inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+    "source_kernel_regularizer": "paper_artifacts/legacy_joint_population_known_noise_gp_v1/source_fit.json",
+    "output": "paper_artifacts/legacy_joint_population_kernel_mean_v1",
+    "arms": [
+      "joint_population_rbf_shared_raw"
+    ],
+    "source_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "head_order": [
+      "f",
+      "g",
+      "eta_g",
+      "eta_f"
+    ],
+    "shared_mean_prior": "frozen measurement-aware RBF signal kernel plus scalar-intercept uncertainty; frozen scalar-intercept mean; exclude its per-site discrepancy",
+    "residual_covariance": "a * unit RBF + b * ones + delta * identity; a,b,delta >= 0; frozen source-only lengthscales and response normalizers",
+    "initial_residual_parameters": "a = frozen signal variance, b = frozen scalar-intercept uncertainty, delta = frozen discrepancy variance",
+    "source_likelihood": "joint Gaussian marginal likelihood of all six source tasks, integrating the common function mean and independent task residuals; recorded label errors included; Cholesky-whitened common function, no statistical variance floor",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 512,
+      "ftol": 1e-09,
+      "gtol": 1e-05,
+      "bounds": "three nonnegative parameters per head"
+    },
+    "target_prior": "source-posterior common function mean; full common-function posterior covariance including interpolation, plus independent residual covariance",
+    "target_contract": "same cached four raw episodes, complete old73-policy bank, shared retained recommendation, guarded/direct action class and362 cap; recommendations saved before cached truth is read",
+    "terminal_draw_power": 13,
+    "integration_seed": 80771,
+    "bootstrap_seed": 80811,
+    "bootstrap_draws": 10000,
+    "new_simulator_call_cap": 0,
+    "execution": "four source head fits once, local serial single-thread; no scheduler, server dispatch or data pulls",
+    "interpretation": "opened-six-task common-function-mean attribution; not independent confirmation, native HyperBO, generic GP optimality or incremental KG evidence"
+  },
+  "rows": [
+    {
+      "task_id": "independent_inventory_00",
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 425,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.7699496448347902,
+      "predicted_verification_calls": 274.32508624563155,
+      "logical_initialization_calls": 4,
+      "retained_candidate": 22,
+      "scores": {
+        "conditional_safe_reward": 0.7947717215422766,
+        "conditional_total_calls": 268.13564605111446,
+        "primary_feasible": true,
+        "conditional_loss_to_best_same_class": 0.016140167889284296,
+        "conditional_reward_error": -0.024822076707486374,
+        "conditional_call_error": 10.18944019451709
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 425,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.6705751935582107,
+      "predicted_verification_calls": 282.5896550447486,
+      "logical_initialization_calls": 4,
+      "retained_candidate": 22,
+      "scores": {
+        "conditional_safe_reward": 0.8050975076062358,
+        "conditional_total_calls": 279.9693933928397,
+        "primary_feasible": true,
+        "conditional_loss_to_best_same_class": 0.00247835591668244,
+        "conditional_reward_error": -0.13452231404802506,
+        "conditional_call_error": 6.620261651908891
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 425,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.7865140530405151,
+      "predicted_verification_calls": 273.7963422824926,
+      "logical_initialization_calls": 4,
+      "retained_candidate": 22,
+      "scores": {
+        "conditional_safe_reward": 0.8038431215454365,
+        "conditional_total_calls": 279.99491696913515,
+        "primary_feasible": true,
+        "conditional_loss_to_best_same_class": 0.00548957095760505,
+        "conditional_reward_error": -0.01732906850492133,
+        "conditional_call_error": -2.19857468664253
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 425,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.7300699904882989,
+      "predicted_verification_calls": 276.9716678899747,
+      "logical_initialization_calls": 4,
+      "retained_candidate": 22,
+      "scores": {
+        "conditional_safe_reward": 0.8058333070661238,
+        "conditional_total_calls": 264.00000364451665,
+        "primary_feasible": true,
+        "conditional_loss_to_best_same_class": 1.6054341522853122e-08,
+        "conditional_reward_error": -0.07576331657782487,
+        "conditional_call_error": 16.971664245458044
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 425,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          82
+        ]
+      },
+      "predicted_reward": 0.6362629086474888,
+      "predicted_verification_calls": 284.70829209326905,
+      "logical_initialization_calls": 4,
+      "retained_candidate": 22,
+      "scores": {
+        "conditional_safe_reward": 0.80875887940023,
+        "conditional_total_calls": 270.0126008578324,
+        "primary_feasible": true,
+        "conditional_loss_to_best_same_class": 1.588729148238599e-13,
+        "conditional_reward_error": -0.17249597075274115,
+        "conditional_call_error": 18.69569123543664
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "arm": "joint_population_rbf_shared_raw",
+      "action_index": 280,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          22
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          81,
+          131
+        ]
+      },
+      "predicted_reward": 0.4838570017753997,
+      "predicted_verification_calls": 269.41329402789995,
+      "logical_initialization_calls": 4,
+      "retained_candidate": 22,
+      "scores": {
+        "conditional_safe_reward": 0.8064410621913991,
+        "conditional_total_calls": 215.00000675266168,
+        "primary_feasible": true,
+        "conditional_loss_to_best_same_class": 4.156964772406013e-08,
+        "conditional_reward_error": -0.3225840604159994,
+        "conditional_call_error": 58.413287275238275
+      }
+    }
+  ],
+  "folds": [
+    {
+      "task_id": "independent_inventory_00",
+      "predictions": {
+        "joint_population_rbf_shared_raw": {
+          "head_order": [
+            "f",
+            "eta_f",
+            "g",
+            "eta_g"
+          ],
+          "truth_mse": [
+            0.0002094240310380045,
+            0.07757538805847425,
+            0.002643337322868952,
+            0.09424483062965315
+          ],
+          "truth_bias": [
+            -0.0021339930960191135,
+            0.0019480912389990576,
+            -0.024048100748616536,
+            -0.038055584483270594
+          ],
+          "moment_interval_95_truth_coverage": [
+            0.9420289855072463,
+            0.7536231884057971,
+            0.9710144927536232,
+            1.0
+          ]
+        }
+      },
+      "best_safe_same_class_action": {
+        "action": {
+          "kind": "guarded",
+          "primary": 71,
+          "shortlist": [
+            71,
+            3,
+            1
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            81,
+            131
+          ]
+        },
+        "reward": 0.8109118894315609,
+        "total_calls": 216.6733251984018
+      }
+    },
+    {
+      "task_id": "independent_inventory_01",
+      "predictions": {
+        "joint_population_rbf_shared_raw": {
+          "head_order": [
+            "f",
+            "eta_f",
+            "g",
+            "eta_g"
+          ],
+          "truth_mse": [
+            0.00016381116685149628,
+            0.07758811498060192,
+            0.0009551945647380744,
+            0.08414442804446773
+          ],
+          "truth_bias": [
+            0.001175806894472981,
+            0.002858351339823384,
+            0.015342645264779508,
+            0.02601567871727336
+          ],
+          "moment_interval_95_truth_coverage": [
+            0.9565217391304348,
+            0.7536231884057971,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "best_safe_same_class_action": {
+        "action": {
+          "kind": "direct",
+          "primary": 71,
+          "shortlist": [
+            71
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        },
+        "reward": 0.8075758635229182,
+        "total_calls": 362.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_02",
+      "predictions": {
+        "joint_population_rbf_shared_raw": {
+          "head_order": [
+            "f",
+            "eta_f",
+            "g",
+            "eta_g"
+          ],
+          "truth_mse": [
+            0.00023220580138062186,
+            0.07761296714546215,
+            0.0007584024243484257,
+            0.08509506748599767
+          ],
+          "truth_bias": [
+            0.004882158632698542,
+            0.003501961074728595,
+            -0.0013732436417358165,
+            0.03760450192884678
+          ],
+          "moment_interval_95_truth_coverage": [
+            0.9565217391304348,
+            0.7536231884057971,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "best_safe_same_class_action": {
+        "action": {
+          "kind": "direct",
+          "primary": 71,
+          "shortlist": [
+            71
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        },
+        "reward": 0.8093326925030415,
+        "total_calls": 362.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_03",
+      "predictions": {
+        "joint_population_rbf_shared_raw": {
+          "head_order": [
+            "f",
+            "eta_f",
+            "g",
+            "eta_g"
+          ],
+          "truth_mse": [
+            0.00017094717445279275,
+            0.07769755197896794,
+            0.0013632356221258723,
+            0.08967283512430058
+          ],
+          "truth_bias": [
+            -0.0017747836184826937,
+            0.001979305860880904,
+            -0.013245641178631367,
+            -0.03565032696914291
+          ],
+          "moment_interval_95_truth_coverage": [
+            0.9420289855072463,
+            0.7536231884057971,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "best_safe_same_class_action": {
+        "action": {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        },
+        "reward": 0.8058333231204653,
+        "total_calls": 362.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_04",
+      "predictions": {
+        "joint_population_rbf_shared_raw": {
+          "head_order": [
+            "f",
+            "eta_f",
+            "g",
+            "eta_g"
+          ],
+          "truth_mse": [
+            0.000205019138056658,
+            0.0767832450820813,
+            0.0007033205355477869,
+            0.08315041234849252
+          ],
+          "truth_bias": [
+            0.00024315649189803238,
+            0.004025099405662784,
+            0.008234875760693192,
+            -0.012753178271393025
+          ],
+          "moment_interval_95_truth_coverage": [
+            0.9565217391304348,
+            0.7536231884057971,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "best_safe_same_class_action": {
+        "action": {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        },
+        "reward": 0.8087588794003888,
+        "total_calls": 362.0
+      }
+    },
+    {
+      "task_id": "independent_inventory_05",
+      "predictions": {
+        "joint_population_rbf_shared_raw": {
+          "head_order": [
+            "f",
+            "eta_f",
+            "g",
+            "eta_g"
+          ],
+          "truth_mse": [
+            0.0004457701736370632,
+            0.07769800968966534,
+            0.0029592556586399794,
+            0.09604016417420506
+          ],
+          "truth_bias": [
+            -0.013170552188196516,
+            0.0026896638782986366,
+            -0.028770251961644275,
+            -0.0823286658735029
+          ],
+          "moment_interval_95_truth_coverage": [
+            0.8695652173913043,
+            0.7536231884057971,
+            0.9855072463768116,
+            1.0
+          ]
+        }
+      },
+      "best_safe_same_class_action": {
+        "action": {
+          "kind": "direct",
+          "primary": 63,
+          "shortlist": [
+            63
+          ],
+          "incumbent_position": 0,
+          "budgets": [
+            358
+          ]
+        },
+        "reward": 0.8064411037610468,
+        "total_calls": 362.0
+      }
+    }
+  ],
+  "summary": {
+    "joint_population_rbf_shared_raw": {
+      "feasible_primary_count": 6,
+      "conditional_safe_reward": 0.8041242665586169,
+      "conditional_total_calls": 262.85209461135,
+      "conditional_loss_to_best_same_class": 0.004018025397953318,
+      "conditional_reward_error": -0.12458613450116636,
+      "conditional_call_error": 18.11529498598607,
+      "truth_mse": [
+        0.0002378629142361061,
+        0.07749254615587549,
+        0.0015637910213781817,
+        0.08872462296785277
+      ]
+    }
+  },
+  "paired_comparisons": [
+    {
+      "arm": "joint_population_structural",
+      "reference": "joint_population_rbf_shared_raw",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean_difference": 0.0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "arm": "joint_population_structural",
+      "reference": "joint_population_full",
+      "metrics": {
+        "conditional_safe_reward": {
+          "task_differences": [
+            0.0329165002429187,
+            3.5800701014832015e-07,
+            -3.3935535492801705e-09,
+            0.0,
+            1.2131596394127087e-07,
+            0.0
+          ],
+          "mean_difference": 0.0054861626953898734,
+          "task_bootstrap_95_interval": [
+            1.908814280711842e-08,
+            0.016458309223702117
+          ]
+        },
+        "conditional_total_calls": {
+          "task_differences": [
+            34.28462587172919,
+            49.00102958548811,
+            49.26067576653145,
+            0.0,
+            48.99997998031674,
+            0.0
+          ],
+          "mean_difference": 30.257718534010916,
+          "task_bootstrap_95_interval": [
+            13.880767642007655,
+            46.63466942601417
+          ]
+        }
+      }
+    }
+  ],
+  "cost": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "cached_logical_initialization_calls": 24,
+    "source_gp_head_fits": 4
+  },
+  "cpu_seconds": 50.040866725,
+  "source_fit_cpu_seconds": 0.17844994699999994
+}

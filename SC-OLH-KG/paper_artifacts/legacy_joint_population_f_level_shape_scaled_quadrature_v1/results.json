@@ -1,0 +1,173 @@
+{
+  "execution": {
+    "status": "frozen before source-only median-coordinate cubature pilot",
+    "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+    "reference_results": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/results.json",
+    "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+    "stopped_compact_results": "paper_artifacts/legacy_joint_population_f_level_shape_compact_quadrature_v1/results.json",
+    "question": "Does source-only median coordinate scaling concentrate positive cubature nodes more efficiently than the large source_signal coordinate scale,without changing the physical two-variance law?",
+    "source_law": "Exactly the retained Stage136/137 joint source Gaussian likelihood and joint Jeffreys measure,all nuisance/support/spectrum/tail frozen. No posterior product,no prior refit,no physical variance floor or cutoff.",
+    "coordinates": "v=median_v*(t/(1-t))^2,a=median_a*(s/(1-s))^2,t,s in(0,1),where medians are existing source-only conditional source posterior medians. Each true Jacobian is2median*t/(1-t)^3. These are numerical coordinate units,not chosen physical prior scales. Both complete variance tails are retained.",
+    "algorithm": "Positive global tensor Gauss-Legendre at8,16,32,64 nodes per axis. Compare normalization and the full scaled source moment vector directly against the verified Stage137 reference. Select the first resolution satisfying unchanged1e-8 limits;record all failures and do not increase the4096 component budget.",
+    "resolutions": [
+      8,
+      16,
+      32,
+      64
+    ],
+    "acceptance": {
+      "normalizer_relative_difference_vs_stage137": 1e-08,
+      "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+      "maximum_positive_nodes_per_fold": 4096
+    },
+    "source_reference_moments": "Same vector as Stage137/138,including v,a first/second/cross moments,common beta,average H and covariance of beta. Reconstruct once from saved Stage137 weighted source nodes where the full vector was not persisted;save this small vector to avoid future reconstruction.",
+    "scope": "Source0-5 only;pilot task1 layouts5/6 first;continue other ten folds only if both pilots pass. No paid query outcomes,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls.",
+    "cost": {
+      "new_source_fits": 0,
+      "maximum_new_compact_source_rules": 12,
+      "maximum_positive_rule_nodes_per_fold": 4096,
+      "maximum_new_density_evaluations_per_fold": 5440,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached source JSON and compact local NPZ",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1",
+    "planned_entrypoint": "performance/prepare_legacy_f_level_shape_scaled_quadrature.py",
+    "entrypoint_status": "implemented before execution",
+    "decision": "If all twelve compact rules pass,freeze a separate bounded paid-prefix prediction comparison beginning with task1 and the original four paid observations. Native and Stage137 full reference remain intact. If source coordinate rescaling fails,retain the numerical limitation;do not inflate variances,change the reference measure or launch heavy online work.",
+    "entrypoint": "performance/prepare_legacy_f_level_shape_scaled_quadrature.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_scaled_quadrature_plan_v1.json",
+    "frozen_before_source_evaluation": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "passed": false,
+      "trials": [
+        {
+          "nodes_per_axis": 8,
+          "node_count": 64,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.003122749069259134,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.09880526195615291
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_axis": 16,
+          "node_count": 256,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.057305532015107e-07,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.009339085908658284
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_axis": 32,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.818478700954529e-11,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0003376499852747461
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_axis": 64,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.354916179252541e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 7.018627792287901e-07
+          },
+          "passed": false
+        }
+      ],
+      "source_coordinate_units": [
+        5.0741598176095185e-05,
+        5.462600012649882e-05
+      ],
+      "source_signal": 0.020021252176237864,
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1/layout5_task1_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 5440,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.046231952
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "passed": false,
+      "trials": [
+        {
+          "nodes_per_axis": 8,
+          "node_count": 64,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0004676532804561706,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.20349973144262123
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_axis": 16,
+          "node_count": 256,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.9704206044579564e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.018766473310822707
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_axis": 32,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 6.7363892242156e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.003270090154407379
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_axis": 64,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 6.272760089132134e-13,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.3641418072363187e-05
+          },
+          "passed": false
+        }
+      ],
+      "source_coordinate_units": [
+        1.355451226436129e-05,
+        5.448786946312396e-05
+      ],
+      "source_signal": 0.020021252176237864,
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1/layout6_task1_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 5440,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.2100360840000004
+    }
+  ],
+  "all12_compact_source_rules_verified": false,
+  "pilot_both_task1_passed": false,
+  "cpu_seconds": 4.270218458,
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_new_compact_source_rules": 12,
+    "maximum_positive_rule_nodes_per_fold": 4096,
+    "maximum_new_density_evaluations_per_fold": 5440,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_reference_reconstruction_evaluations": 32768,
+    "actual_density_evaluations": 10880
+  },
+  "compact_source_rule_bytes": 0,
+  "no_prior_or_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

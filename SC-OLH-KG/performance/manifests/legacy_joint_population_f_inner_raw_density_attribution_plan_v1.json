@@ -1,0 +1,27 @@
+{
+  "status": "completed Stage166;conditional calibration and source-coherent scalar learning completed Stages167-169;cached outer pilot failed Stage170",
+  "source_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "outer_gap_results": "paper_artifacts/legacy_joint_population_f_inner_outer_shape_gap_v1/results.json",
+  "question": "Why does same-source GP have higher proper joint raw-batch density in both layouts,while shape priors have lower mean MSE in layout6? Is the gap mainly variance prediction or conditional mean prediction?",
+  "basis": "At the same fixed four-policy prefix,shape mixture versus native lowers mean MSE2.02%/17.69%,but layout5 raw density falls. Against GP,shape-mixture MSE is40.96% worse in layout5 and19.27% better in layout6,while joint raw density loses in both. Mean MSE alone cannot choose a repair or justify independent KG evaluation.",
+  "cases": "Both layouts and all five inner query tasks0/2/3/4/5,only already-scored fixed_public_prefix states. Primary arms shape_point,shape_mixture,source_gp:30 cached forecasts;use the saved mixture refinements without a new forecast. Preserve individual fold results.",
+  "calculation": "For each of the eight future three-repeat batches,integrate the sample-variance-only likelihood under each saved Gaussian eta_f marginal and its posterior component weights. Use exactly the existing observation variable/measure and replicate correction. Split joint proper density as log p(sample variance)+log p(batch mean|sample variance),where the conditional mean term uses the same f/eta cross-covariance and source mixture. Compare GP-minus-shape gains for each part within each task and average within each layout. Do not infer risk-factor recovery from this observed-label calculation.",
+  "verification": "Use the saved full-tail mixture reference states to check variance-only density adequacy at the unchanged1e-5 absolute tolerance. On one existing point/mixture/GP site per layout,independently evaluate the factorized conditional-mean integral and require its sum with variance density to match the frozen raw joint score;this detects wrong observational measure,replicate correction or discarded f/eta correlation. Numerical failure blocks attribution without relaxing tolerance. Existing raw filters and source fits are not rerun.",
+  "decision": "If the GP advantage is mostly variance density,diagnose few-shot residual attribution and the honest source risk law before any new risk learning model. If conditional mean density dominates,diagnose predictive mean/covariance calibration and source-design sensitivity. Mixed contributions require both to be stated. No post-score q tuning,target-dependent reweighting or independent promotion.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON/score-site NPZ only;no server jobs or pulls",
+  "scope": "Original source-learned orthogonal,sparse,low-order,low-frequency mean/risk meta-prior remains the goal. Training diagnosis only;no new unscored source outcomes,source6/7,target,KG,confirmation or manuscript changes. Stopped candidate remains stopped;complete-model HOLD remains.",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_raw_density_attribution_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_inner_raw_density_attribution.py",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_inner_raw_density_attribution_execution_v1.json",
+  "completed_results": "paper_artifacts/legacy_joint_population_f_inner_raw_density_attribution_v1/results.json",
+  "followup_report": "docs/orthogonal_meta_prior_stage166_170_20261007.md"
+}

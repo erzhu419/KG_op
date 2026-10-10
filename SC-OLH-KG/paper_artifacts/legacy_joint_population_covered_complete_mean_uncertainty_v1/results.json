@@ -1,0 +1,225 @@
+{
+  "execution": {
+    "status": "registered after frozen-span attribution and before all covered deletion-mean fits",
+    "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+    "attribution_results": "paper_artifacts/legacy_joint_population_covered_mean_attribution_v1/results.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "layouts": [
+      "3",
+      "4"
+    ],
+    "mean_arms": [
+      "joint_structural",
+      "flat"
+    ],
+    "method": "Each complete identity uses f/g means and eta_f/eta_g laws from the same full48 or deleted40 source records. Source means, normalizers and supervised risk maps remain paired by the same deleted task. The full48 mean/risk fits and every risk fit are reused; GP control remains its existing complete identity law. Fit only the original regularizer/fixed/joint structural and flat mean objectives for six deleted tasks per layout, no unused GP refitting.",
+    "information": "144 historical calls per treatment, 48 records, six source tasks; each deletion uses only40 of those records. No labels are pooled between assignments. Two raw holdout records update one shared complete identity weight, uniform1/7 initially.",
+    "source_gate": "Compare each candidate arm to its own frozen risk-only mean counterpart. Require g MSE not to increase, joint batch log density not to decrease, and g batch log density to increase at BOTH source holdouts under BOTH layouts. Report per-holdout/per-layout failures; never choose an assignment by target performance. Only an arm passing all four holdout cases may advance to a separately frozen target diagnostic.",
+    "freeze_rule": "Fit all12 source deletions and freeze all8 new source forecasts before scoring heldout three-repeat labels. No target observation, truth, posterior or terminal integration in this stage. Verify the complete full identity reproduces the previous risk-only full component after identical raw updates; keep the earlier layout0 Stage37 failure unchanged.",
+    "next_action": "Assess source gate and critical-policy density/moment changes. Failing arms remain unpromoted; a passing main arm may enter a separately frozen same-four-candidate target check. No automatic full-bank or KG experiment.",
+    "execution": "local serial single-thread, no simulator/verifier calls, server jobs or pulls",
+    "cost": {
+      "maximum_native_mean_fits_before_original_joint_continuations": 96,
+      "new_source_risk_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "output": "paper_artifacts/legacy_joint_population_covered_complete_mean_uncertainty_v1"
+  },
+  "summary": {
+    "3": {
+      "joint_structural": {
+        "observed_head_mse": [
+          0.0002906803638330022,
+          0.001590949114571043,
+          2.3250069552865837,
+          2.5596214456891575
+        ],
+        "joint_batch_log_score": 0.846089077590964,
+        "response_batch_log_scores": [
+          0.9334287250782431,
+          -0.0920040770025615
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          0.9929577464788732,
+          1.0,
+          0.9577464788732395,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.5925076507748676,
+          0.5608159714156753,
+          1.0532004790710245,
+          1.1327328591007462
+        ]
+      },
+      "flat": {
+        "observed_head_mse": [
+          0.0003454610260609893,
+          0.001955751199508655,
+          2.399164246916956,
+          2.5251823073221087
+        ],
+        "joint_batch_log_score": 0.5408079130984224,
+        "response_batch_log_scores": [
+          0.8051192783826896,
+          -0.28441617013041254
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.971830985915493,
+          0.9225352112676056
+        ],
+        "predictive_standardized_residual_rms": [
+          0.6462880397296846,
+          0.5576992464575835,
+          1.0685712697170557,
+          1.128167946895636
+        ]
+      }
+    },
+    "4": {
+      "joint_structural": {
+        "observed_head_mse": [
+          0.00016544162908090922,
+          0.001798491170443059,
+          2.0443603207005614,
+          2.5317172509654795
+        ],
+        "joint_batch_log_score": 0.9754870062843908,
+        "response_batch_log_scores": [
+          1.0472308633230987,
+          -0.074805375745616
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9366197183098591,
+          0.9436619718309859
+        ],
+        "predictive_standardized_residual_rms": [
+          0.4956289016498203,
+          0.575164362613577,
+          0.9835799942056145,
+          1.019800150859222
+        ]
+      },
+      "flat": {
+        "observed_head_mse": [
+          0.0003524756943534442,
+          0.0021919604083089693,
+          2.045915934971064,
+          2.540426880506841
+        ],
+        "joint_batch_log_score": 0.6264857461846027,
+        "response_batch_log_scores": [
+          0.804497845549885,
+          -0.19580498419880876
+        ],
+        "predictive_moment_band_95_observed_coverage": [
+          1.0,
+          1.0,
+          0.9295774647887324,
+          0.9577464788732394
+        ],
+        "predictive_standardized_residual_rms": [
+          0.646140884011452,
+          0.5878405718432536,
+          0.9776436217232112,
+          1.0222608058617046
+        ]
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "g_mse_difference": 0.00013872116863717244,
+      "joint_batch_score_difference": -0.13692809495866065,
+      "g_batch_score_difference": -0.06524975353583114,
+      "passed": false
+    },
+    {
+      "layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "g_mse_difference": 7.550483604734756e-05,
+      "joint_batch_score_difference": -0.1614247050674248,
+      "g_batch_score_difference": -0.09473189087413547,
+      "passed": false
+    },
+    {
+      "layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "g_mse_difference": 0.00022645875973291104,
+      "joint_batch_score_difference": -0.1627650180845177,
+      "g_batch_score_difference": -0.0645043501957222,
+      "passed": false
+    },
+    {
+      "layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "g_mse_difference": -5.3769344527017544e-05,
+      "joint_batch_score_difference": -0.14481246004182646,
+      "g_batch_score_difference": -0.10671366130204823,
+      "passed": false
+    },
+    {
+      "layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "g_mse_difference": -0.0005027384258737102,
+      "joint_batch_score_difference": 0.011447221703573263,
+      "g_batch_score_difference": -0.0004325801779773916,
+      "passed": false
+    },
+    {
+      "layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "flat",
+      "g_mse_difference": -3.587085281239787e-05,
+      "joint_batch_score_difference": -0.060372558344718,
+      "g_batch_score_difference": -0.06723222092898289,
+      "passed": false
+    },
+    {
+      "layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "g_mse_difference": -0.00040787589887428927,
+      "joint_batch_score_difference": -0.1265018569468226,
+      "g_batch_score_difference": -0.03105077638619813,
+      "passed": false
+    },
+    {
+      "layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "flat",
+      "g_mse_difference": 0.0001754318848366937,
+      "joint_batch_score_difference": -0.13261219135035546,
+      "g_batch_score_difference": -0.0603435930356514,
+      "passed": false
+    }
+  ],
+  "source_gates": {
+    "joint_structural": false,
+    "flat": false
+  },
+  "full_identity_reproduction_passed": true,
+  "native_mean_fits": 96,
+  "source_mean_fit_cpu_seconds": 4.297698233000001,
+  "cost": {
+    "maximum_native_mean_fits_before_original_joint_continuations": 96,
+    "new_source_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 26.367174603000002
+}

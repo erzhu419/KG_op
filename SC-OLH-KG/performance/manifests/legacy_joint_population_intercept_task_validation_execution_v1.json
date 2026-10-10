@@ -1,0 +1,20 @@
+{
+  "status": "registered after Stage72, before restricted task-family fitting, forecasts or scoring",
+  "holdout_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "holdout_results": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1/results.json",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "profile_results": "paper_artifacts/legacy_joint_population_gp_profile_start_v1/results.json",
+  "layouts": ["5", "6"],
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "paid_candidates": [0, 1],
+  "basis_of_next_step": "Stage72 full-six-task profile starts return essentially the original native fit (NLL gain1.01e-6 under5, no selected change under6); the repair gate fails. Stop initialization searches. GP projected task intercept variance remains about.022 versus native.000675/.001119, and Stage70 diagonal/native-spectral task compression retains low MSE. Test whether allocating flexible task group variation obstructs transfer of the common function in this small source population. This is a regularization contrast, not a claim that real task heterogeneity is only an intercept.",
+  "candidate": "Within the original Gaussian orthogonal population model, set only task residual excess group variances to zero. Retain the original nonzero weak coefficient tail and learned white discrepancy. Learn task intercept variance, all common-function group variances and common low-frequency exponent jointly. The task exponent is irrelevant with zero excess groups and recorded as0. Keep the original regularizer mean, fixed common intercept, basis, normalization, source noise and risk law. No new dictionary, spectrum grid, GP posterior transplant or data.",
+  "fit": "One restricted g source fit per five-task branch, starting common/intercept/discrepancy parameters from the Stage71 source-NLL-selected native fit. Optimize the exact restricted original objective with the registered optimizer and original bounds; allow one saved completion if needed. Preserve the complete expanded parameter vector and verify the task function diagonal equals the original weak tail. Compare training NLL as a diagnostic only; it cannot choose between covariance families of different flexibility.",
+  "freeze_rule": "Freeze all12 restricted prior/raw-paid forecasts before scoring each deleted training task's registered12 unobserved sites. Reproduce the selected native prior/paid g moments and full scoring-site covariance against Stage71. Reuse Stage71 native scores only after freezing. No source6/7 observations, target data, verifier outcomes or confirmation blocks are indexed.",
+  "scoring_and_selection": "Report all twelve branch changes and both assignments' observed g MSE, proper raw g three-repeat batch density, and separately Gaussian task-mean density. The restricted family is provisionally preferred only if average paid g MSE does not increase AND average raw g density strictly improves against the Stage71 native source-NLL selection under BOTH assignments. Report all regressions; these reused training folds are development selection evidence.",
+  "next_action": "If preferred, register the full-six-task restricted fit and four existing source6/7 forecasts with the original source repair gate before target work. Otherwise do not adopt the restricted task family or launch another automatic covariance grid; use the result to reassess the need for function-shaped task heterogeneity and source predictive calibration.",
+  "cost": {"planned_new_g_source_fits": 12, "maximum_completion_fits": 12, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+  "entrypoint": "performance/validate_legacy_intercept_task.py",
+  "output": "paper_artifacts/legacy_joint_population_intercept_task_validation_v1"
+}

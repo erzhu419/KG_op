@@ -1,0 +1,15 @@
+{
+  "status": "Registered before any extended GP predictive-state evaluation; preserve v1 failures and all labels.",
+  "parent_plan": "performance/manifests/historical_matched_gp_connection_v1.json",
+  "connection_states": "paper_artifacts/historical_matched_gp_connection_v1/connected_states.json",
+  "source_fit": "paper_artifacts/historical_matched_gp_connection_v1/source_fit.json",
+  "parent_results": "paper_artifacts/historical_matched_gp_connection_v1/phase_results.json",
+  "completed_futures": "paper_artifacts/historical_matched_gp_connection_v1/layout5_futures.json",
+  "layout": "5",
+  "predictive_power": 7,
+  "tail_counts": [4, 8, 16],
+  "complement_prefixes": [16, 32, 64],
+  "maximum_single_thread_cpu_seconds": 180,
+  "scope": "Reuse the24 frozen source fits and all22 layout5 GP future action arrays. Extend the same predictive Sobol prefix64 to128,keeping the original seed,paired f/g uniforms,raw likelihood,40 actions,terminal powers12/14 and primary-mean integration. The GP has action changes in the complementary risk region,so refine its7/8 mass as well as its1/8 low-risk region. Retain layout6 completed negative result without recomputation. No source fitting,physical labels,outcome scoring,simulator/verifier calls or server work. Adjacent rules remain numerical diagnostics,not error bounds or independent superiority.",
+  "output": "paper_artifacts/historical_matched_gp_extension_v2"
+}

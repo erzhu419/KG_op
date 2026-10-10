@@ -1,0 +1,52 @@
+{
+  "status": "completed Stage69 projection with Stage70 compression and Stage71 coherent native refit; no target promotion",
+  "gain_execution": "performance/manifests/legacy_joint_population_paid_covariance_gain_execution_v1.json",
+  "swap_execution": "performance/manifests/legacy_joint_population_source_mean_covariance_swap_execution_v1.json",
+  "swap_results": "paper_artifacts/legacy_joint_population_source_mean_covariance_swap_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Frozen-noise weighting does not close structural g error gaps. Source mean/covariance transplants both lower g MSE, while covariance alone worsens raw density under assignment5. Test whether the GP control's useful source mean and covariance can be represented in the original orthogonal low-order space before changing source estimation or weakening structural assumptions.",
+  "projection_scopes": [
+    "full_native_27_column_mean_dictionary",
+    "intercept_plus_native_positive_common_groups"
+  ],
+  "projection_rule": "Use each branch's original public mean normalization/reference and the complete73 public policies. Construct the declared orthogonal design D and its OLS projection P, with uniform public-policy weights and no outcome weights. For the second scope retain exactly the groups whose already-fitted native common_group_variances are positive; retain all their existing modes and the intercept, with no new threshold or support search.",
+  "prior_rule": "Project the already learned GP g common mean m to P*m. Its full new-task covariance K includes white discrepancy delta=anchor.normalization.scale^2*residual_parameters[2]; preserve that discrepancy unchanged and project only the smooth field: K_projected=P*(K-delta*I)*P^T+delta*I. Preserve the identical five-task eta_g law and original raw filter. This is a projected-control diagnostic, not a new source-trained structural algorithm.",
+  "diagnostics": "Report projection mean RMS, discarded smooth covariance trace fraction, basis/support dimensions, coefficient covariance off-diagonal mass and paid variance reduction. Compare native GG, full-basis and source-selected-group projections at the same12 unobserved sites; reproduce GG all73 prior/paid moments. Coefficient dependence under a basis does not establish independent physical shocks.",
+  "freeze_rule": "Freeze all24 projected prior and raw-paid forecasts before scoring any selected-site outcomes; reuse native GG forecasts/scores from Stage68. No source holdout6/7 or target outcomes enter projection, support or scoring.",
+  "scoring": "Retain same three-repeat observed g MSE, proper raw g batch density, and separately full-task Gaussian g mean density with original S2/3 noise. Report both assignments and all12 deleted-task branches. A projected control is not selected for deployment on these reused folds.",
+  "next_action": "If full-basis projection retains GP transfer behavior, prioritize consistent source mean/covariance learning inside the original function space. If selected-group projection loses it, separate source support-selection error from full-space covariance estimation; do not add a new spectrum grid. If even full projection loses it, identify the discarded GP function component before fitting another repair.",
+  "interpretation": "Source-estimation/representation attribution. Finite-basis and native-support projection do not validate all four original assumptions, physical factor recovery, target decision value or independent confirmation. Previous source gate failures remain.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread using small cached JSON; full73 covariance only in memory, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_gp_orthogonal_projection_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_gp_orthogonal_projection_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_gp_orthogonal_projection_v1/results.json",
+  "followup_results": [
+    "paper_artifacts/legacy_joint_population_projected_task_spectrum_v1/results.json",
+    "paper_artifacts/legacy_joint_population_gp_profile_start_v1/results.json"
+  ],
+  "report": "docs/orthogonal_meta_prior_stage69_71_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_plan_v1.json"
+}

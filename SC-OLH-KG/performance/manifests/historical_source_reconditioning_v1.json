@@ -1,0 +1,141 @@
+{
+  "status": "completed16 source cases;10 usable,6 precision HOLD;complete model HOLD",
+  "entrypoint": "performance/recondition_historical_source_laws.py",
+  "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+  "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+  "covariance_results": "paper_artifacts/historical_source_covariance_adaptation_v1/results.json",
+  "failed_transport": "paper_artifacts/historical_source_covariance_adaptation_v1/transport.json",
+  "history": {
+    "pre_September_9": "ebf89cb0 OrthogonalHVD: source shape mixture and replication-aware scalar/IRLS calibration; e594964c ReplicationVarianceTaskPosterior: exact chi-square finite-expert refit. Reuse original replication density semantics. These are not the current48-dimensional raw source sampler.",
+    "Stage203": "performance/check_legacy_f_corrected_reference_source_update.py and paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json: four precision gates passed in4.36191506 CPU seconds;reuse compensated-reference collapsed sampler.",
+    "Stage206": "performance/check_legacy_f_learned_covariance_source_update.py: reuse new-law density/common-latent checks and fixed512 positive-mixture retention. Existing code and results are already in the workspace history;no new sampler or reference family."
+  },
+  "cases": "layout5/6 x spectral/additive x head_specific/joint x observed_task/deconvolved_task;16 matched f/eta_f laws in existing source_laws order",
+  "law": "Exactly the newly frozen unconditioned common/task source Gaussian laws and the original48 raw means/S^2 labels. Integrate f analytically and sample eta with the existing elliptical slice kernel against a density-compensated Gaussian variance reference. Reference log-variance likelihood cancels exactly. No old Gaussian source posterior is used as a prior,no old96 coefficient states are attached to new maps,and each original batch enters once.",
+  "shared_projection": "Reuse common_moments with common coefficient prior A,source design D and cross=A D'. Integrate both within-eta conditional covariance and between-eta conditional mean covariance. New-task residual covariance remains separately saved in the source law.",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 1024,
+    "seed": 202610077
+  },
+  "paired_randomness": "Same base random seed within each observed/deconvolved pair;independent seeds across four chains. No seed search.",
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "precision_contract": "Reuse Stage203/206 fresh-chain gates. The earlier importance weight ESS>=200 criterion still fails and is retained;importance overlap and fresh-chain autocorrelation ESS are different diagnostics. Neither threshold is lowered for this experiment.",
+  "retained_mixture": {
+    "stride_per_chain": 8,
+    "components_per_arm": 512,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1,
+    "purpose": "Save only fixed positive eta states and small posterior summaries;reconstruct conditional covariance from source_laws later. Preserve failed retention cases;no thinning search."
+  },
+  "verification": "Before sampling,reuse verify_learned to compare each new-law collapsed raw density and conditional f moments with independent Gaussian/precision expressions,and shared-coefficient projection with a direct block solve. Verify the compensated reference density identity for that new eta law. A mismatch stops sampling;do not rerun settled scalar quadrature or all historical tests.",
+  "decision": "Complete the registered16 cases within the shared CPU cap. Keep all precision/retention failures and stop transfer if any fail. No additional chains,reference tuning,covariance fit,law ranking by failed evidence or target forecasts in this turn. Successful conditioning is source computation,not independent decision confirmation.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_labels": 0,
+    "new_covariance_fits": 0,
+    "new_selector_fits": 0,
+    "new_target_predictions": 0,
+    "new_simulator_calls": 0,
+    "new_verifier_calls": 0
+  },
+  "execution": "Local serial single-thread,existing small source JSON;process CPU interrupt covers preparation and elliptical iterations. No scheduler/server/pulls,task0/1,source6/7,KG fantasies or manuscript edits.",
+  "output": "paper_artifacts/historical_source_reconditioning_v1",
+  "saved_failure_diagnostic": {
+    "status": "completed all6 saved failure cases;full-chain gates preserved",
+    "entrypoint": "performance/diagnose_historical_source_precision.py",
+    "maximum_single_thread_cpu_seconds": 5,
+    "data": "Only existing512 retained source states per failed case;no new draws. Reuse aggregate and diagnostics for within/between variance and centered conditional variance functionals. Preserve full-chain failures even if retained halves pass.",
+    "registration_status": "registered before saved-state variance diagnostic",
+    "computation_correction": {
+      "initial_cpu_seconds": 0.359606026,
+      "change": "Compute the within-eta fraction using the same retained-state total variance;initial output divided by the full-run variance from a different sample pool. Full-chain precision gates and source chains are unchanged."
+    }
+  },
+  "registration_status": "registered before new-law source chains",
+  "completion": {
+    "complete_cases": 16,
+    "usable_cases": 10,
+    "failed_cases": [
+      {
+        "layout": "5",
+        "selector": "spectral",
+        "support": "joint",
+        "treatment": "deconvolved_task",
+        "reasons": [
+          "half_variance_stability"
+        ]
+      },
+      {
+        "layout": "5",
+        "selector": "additive",
+        "support": "head_specific",
+        "treatment": "observed_task",
+        "reasons": [
+          "half_variance_stability"
+        ]
+      },
+      {
+        "layout": "5",
+        "selector": "additive",
+        "support": "head_specific",
+        "treatment": "deconvolved_task",
+        "reasons": [
+          "half_variance_stability"
+        ]
+      },
+      {
+        "layout": "5",
+        "selector": "additive",
+        "support": "joint",
+        "treatment": "observed_task",
+        "reasons": [
+          "split_Rhat",
+          "autocorrelation_ESS",
+          "half_variance_stability"
+        ]
+      },
+      {
+        "layout": "6",
+        "selector": "spectral",
+        "support": "head_specific",
+        "treatment": "observed_task",
+        "reasons": [
+          "half_variance_stability"
+        ]
+      },
+      {
+        "layout": "6",
+        "selector": "additive",
+        "support": "joint",
+        "treatment": "observed_task",
+        "reasons": [
+          "half_variance_stability"
+        ]
+      }
+    ],
+    "fresh_chain_ESS_range": [
+      91.55908251650207,
+      424.7096468505793
+    ],
+    "usable_by_covariance_treatment": {
+      "observed_task": 4,
+      "deconvolved_task": 6
+    },
+    "all_fixed512_retention_checks_passed": true,
+    "new_law_pre_sampling_checks": 16,
+    "source_chain_cpu_seconds": 21.714257051,
+    "saved_failure_diagnostic_cpu_seconds": 0.407534724,
+    "retained_worst_site_conditional_variance_fraction_range": [
+      0.7626117915160219,
+      0.9995479947395922
+    ],
+    "model_ranking_not_established": true,
+    "full_four_head_source_posterior_not_completed": true
+  }
+}

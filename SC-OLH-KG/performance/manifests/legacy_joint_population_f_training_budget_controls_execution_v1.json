@@ -1,0 +1,45 @@
+{
+  "status": "frozen before matched cached control fields or paid values",
+  "information_execution": "performance/manifests/legacy_joint_population_f_training_information_budget_execution_v1.json",
+  "information_results": "paper_artifacts/legacy_joint_population_f_training_information_budget_v1/results.json",
+  "information_profiles": "paper_artifacts/legacy_joint_population_f_training_information_budget_v1/calibration_profiles.json",
+  "public_prefixes": "paper_artifacts/legacy_joint_population_f_training_information_budget_v1/public_prefixes.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "raw_episode_budgets": [
+    2,
+    4,
+    8
+  ],
+  "mean_arms": [
+    "native_f",
+    "flat",
+    "source_gp"
+  ],
+  "law": "Native f scores/prefixes are reused without replay. For each deleted fold use cached selected_source_fit flat and source joint RBF GP mean laws,both trained on the other five tasks' same60 records/180 calls. Share exactly the same deleted-source eta_f prior/map and raw moment update as native. No new fits or hyperparameters,no official-online-BO/KG claim.",
+  "query_rule": "Copy the complete frozen Stage121 public-only prefix for every fold and arm. Read only its first f replicate on source0\u20135. Preserve original12 scoring sites. Freeze all24 flat/GP prior fields before paid values and all72 budget forecasts before scoring-site labels.",
+  "verification": "Source task/label counts5/60 and convergence must match each cached law. Query task is absent from input source/map cohorts. Prefixes are disjoint from score sites and shared across arms. Initial eta_f mean and full covariance must equal native's shared eta moments. Existing native prediction/density controls are reused,not refitted or rescored. A mismatch stops interpretation.",
+  "comparison": "At each fixed episode count and layout compare native versus flat and source GP for MSE,proper raw three-repeat f predictive density and the Gaussian moment-based transcript density. Report all six tasks,task1 and other5. Native has a development prediction advantage at a budget only if MSE nonincrease,raw density strict improvement and transcript density nondecrease hold against both controls in both layouts. Report every budget without choosing a final budget after scores.",
+  "decision": "An eight-episode within-native improvement alone does not establish source-prior benefit. If matched controls defeat native,retain the information gain but stop a claimed structural-prior advantage and identify which predictive component loses. No source6/7,target,KG,confirmation,complete-gate waiver or manuscript claim. These repeated training folds are development evidence.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1",
+  "planned_entrypoint": "performance/check_legacy_f_training_budget_controls.py"
+}

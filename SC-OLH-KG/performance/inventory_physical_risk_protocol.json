@@ -1,0 +1,26 @@
+{
+  "status": "frozen_local_prior_and_posterior_check",
+  "source_design": "paper_artifacts/inventory_meta_prior_interface_20261004/public_source_design.json",
+  "existing_records": "paper_artifacts/inventory_meta_prior_interface_20261004/check.json",
+  "source_noise_seed_for_new_contexts": 98000,
+  "source_risk_distribution": {
+    "seed": 105042,
+    "bits": 9,
+    "log_sd": 2.0,
+    "concentration": 1.0,
+    "maxiter": 2000,
+    "tolerance": 1e-7
+  },
+  "factor_groups": ["local", "shared", "volume"],
+  "factor_group_masks": "all_eight; no oracle active groups",
+  "reuse": "four original-context source sites per task; all eight target sites",
+  "source_record_episode_calls": 1536,
+  "new_source_episode_calls": 1152,
+  "reused_source_episode_calls": 384,
+  "new_target_episode_calls": 0,
+  "reused_target_episode_calls": 96,
+  "source_validation": "leave_one_task_out; pooled scale and bank re-estimated without held-out labels",
+  "target_diagnostic": "same saved initial labels; held-out risk prediction and one moment-Gaussian KG; no new search or verifier",
+  "mean_heads": "same_source_full_dictionary_identical_across_risk_arms",
+  "report": "likelihood, convergence, particle concentration, risk prediction, component uncertainty, costs; no promotion or tuning"
+}

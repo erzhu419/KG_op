@@ -1,0 +1,35 @@
+{
+  "status": "frozen before source-only failed-moment attribution",
+  "scaled_execution": "performance/manifests/legacy_joint_population_f_level_shape_scaled_quadrature_execution_v1.json",
+  "scaled_results": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1/results.json",
+  "question": "Which source moment prevents the median-coordinate rule from passing despite1e-12 normalization agreement? Does the error belong to variance first/second/cross moments or common beta/H moments?",
+  "calculation": "Reconstruct only the failed64x64 moment vector once using the saved Stage139 small reference vector/coordinate units/normalizer and cached native five-source law;no16k reference reconstruction,no new fit/no likelihood optimization. Compare each declared moment block and report offending component.",
+  "source_law": "Unchanged Stage136/137 joint source likelihood and measure. No query outcomes,no prior/support/spectral/tail changes,no accuracy waiver.",
+  "folds": [
+    {
+      "layout": "5",
+      "deleted_task": 1
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1
+    }
+  ],
+  "nodes_per_axis": 64,
+  "cost": {
+    "new_source_fits": 0,
+    "moment_attribution_source_nodes": 8192,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached source JSON and saved small reference NPZ only",
+  "output": "paper_artifacts/legacy_joint_population_f_level_shape_quadrature_error_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_level_shape_quadrature_error.py",
+  "decision": "Retain both stopped compact candidates. Use actual failing moment structure to select a source-only numerical repair or separately registered forecast precision protocol;do not relax the existing full-moment compact gate or adopt a source prior without predictive evidence.",
+  "scope": "Source0-5 only;no query labels,source6/7,target,KG,confirmation,server work or manuscript changes",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_quadrature_error_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_level_shape_quadrature_error.py",
+  "frozen_before_source_evaluation": true
+}

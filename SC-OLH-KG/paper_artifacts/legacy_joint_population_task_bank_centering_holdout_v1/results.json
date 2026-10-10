@@ -1,0 +1,340 @@
+{
+  "execution": {
+    "status": "frozen before full-source centered fits or source6/7 forecasts",
+    "training_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+    "training_results": "paper_artifacts/legacy_joint_population_task_bank_centering_v1/results.json",
+    "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "model": "Exactly the Stage88 original-dictionary common D and public-bank-centered residual Z model, with the same source Gaussian likelihood, common regularizer, sparse groups, task/common exponents, original weak tail and discrepancy family. For each full source input view recompute centers from the full public73-policy bank and its unchanged mean-coordinate transform. Fit each full-six-source g head once from Stage72 selected native parameters, using the same L-BFGS-B4096/ftol1e-9/gtol1e-5 bounds. No scalar/gamma calibration, extra starts or completion. Save both laws before indexing either holdout paid outcome.",
+    "information_contract": "Same216-call mean information,144-call risk subset; f/eta priors and full/six-deletion risk-only identity mixture/equal prior weights unchanged. Each query task uses its own public center to transform only residual R, plus common H and learned white discrepancy; two paired raw observations0/1 and original moment updates.",
+    "freeze_and_replay": "Reproduce native full-source Gaussian source objective and cached Stage72 all73 four-head prior/paid moments, episode variance, identity names/weights and paid density. Verify new transformed covariance/eta/f invariants. Freeze all four candidate prior/paid forecasts before71-unobserved-site scoring. Source6/7 cannot change the fitting rule or candidate family.",
+    "source_gate": "Original repair gate unchanged: g MSE nonincrease, joint raw batch density nondecrease and g raw batch density strict improvement in every case against BOTH original same216 native and original144 structural controls. Retain Stage72 selected native and GP comparisons separately. Development averages are not gate substitutes.",
+    "next_action": "A complete source gate pass permits only a separately registered bounded target diagnostic, not confirmation or manuscript claims. Otherwise retain every failed case and use cached source-law/forecast diagnostics, with no centered-family grid, source-score tuning, target scoring, gate waiver or server work.",
+    "cost": {
+      "planned_new_g_source_fits": 2,
+      "maximum_completion_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON/public coordinates only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_task_bank_centering_holdout_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_task_bank_centering_holdout_plan_v1.json",
+    "entrypoint": "performance/check_legacy_task_bank_centering_holdout.py"
+  },
+  "summary": {
+    "5": {
+      "centered": {
+        "observed_head_mse": [
+          0.00019690710244857587,
+          0.0012833979192086679,
+          2.306775792315416,
+          2.5330901937811983
+        ],
+        "joint_batch_log_score": 1.1150332556618034,
+        "response_batch_log_scores": [
+          1.0948470590237396,
+          0.02445578049796017
+        ]
+      },
+      "native": {
+        "observed_head_mse": [
+          0.00019690732826480576,
+          0.0013673164485834988,
+          2.3066340605301514,
+          2.53359603504585
+        ],
+        "joint_batch_log_score": 1.0998359610061297,
+        "response_batch_log_scores": [
+          1.0947620855596472,
+          0.00934164468816151
+        ]
+      },
+      "gp": {
+        "observed_head_mse": [
+          0.00015302038718630165,
+          0.0012101979713561248,
+          2.330621582283259,
+          2.531468301370953
+        ],
+        "joint_batch_log_score": 1.3874744062879094,
+        "response_batch_log_scores": [
+          1.3069797026857457,
+          0.08186589007267484
+        ]
+      }
+    },
+    "6": {
+      "centered": {
+        "observed_head_mse": [
+          0.00020971251008133102,
+          0.0011901394727128027,
+          2.049701241516549,
+          2.532137429940152
+        ],
+        "joint_batch_log_score": 1.1255477472776558,
+        "response_batch_log_scores": [
+          1.0513870061145605,
+          0.07655624978276405
+        ]
+      },
+      "native": {
+        "observed_head_mse": [
+          0.00020971434387379652,
+          0.001241567331510946,
+          2.049542883950001,
+          2.5321703948930936
+        ],
+        "joint_batch_log_score": 1.123456138163191,
+        "response_batch_log_scores": [
+          1.051427648023326,
+          0.0744770251357193
+        ]
+      },
+      "gp": {
+        "observed_head_mse": [
+          0.0001398043989805426,
+          0.0011407142991697035,
+          2.0531568626903764,
+          2.5106615413337763
+        ],
+        "joint_batch_log_score": 1.5040418486384302,
+        "response_batch_log_scores": [
+          1.3318281013634024,
+          0.16846909653730502
+        ]
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": 5.676362064567899e-05,
+      "joint_batch_score_difference": -0.002319255817722965,
+      "g_batch_score_difference": -0.0024232361904379107,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": -0.00022586357943605575,
+      "joint_batch_score_difference": 0.033063740310840806,
+      "g_batch_score_difference": 0.0330017528323136,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": -1.0836538989287842e-05,
+      "joint_batch_score_difference": -0.004400070077207552,
+      "g_batch_score_difference": -0.004385483320194117,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_native_structural",
+      "g_mse_difference": -9.201917860699837e-05,
+      "joint_batch_score_difference": 0.008583288306137526,
+      "g_batch_score_difference": 0.008543932614283621,
+      "passed": true
+    }
+  ],
+  "parent_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -9.094636057530318e-05,
+      "joint_batch_score_difference": 0.14534436636133186,
+      "g_batch_score_difference": 0.06411848446142163,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.00015897610177936328,
+      "joint_batch_score_difference": 0.09285087673716852,
+      "g_batch_score_difference": 0.03904712680806835,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.001503250628440227,
+      "joint_batch_score_difference": 0.23576541823728703,
+      "g_batch_score_difference": 0.17567831668554895,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.0006240670917682847,
+      "joint_batch_score_difference": -0.05069857149400592,
+      "g_batch_score_difference": 0.09556157780703564,
+      "passed": false
+    }
+  ],
+  "selected_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_selected_native",
+      "g_mse_difference": 5.6975579995458144e-05,
+      "joint_batch_score_difference": -0.002443157606913715,
+      "g_batch_score_difference": -0.0025471363842285433,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_selected_native",
+      "g_mse_difference": -0.00022481263874512018,
+      "joint_batch_score_difference": 0.032837746918261246,
+      "g_batch_score_difference": 0.03277540800382586,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_selected_native",
+      "g_mse_difference": -1.0836538989287842e-05,
+      "joint_batch_score_difference": -0.004400070077207552,
+      "g_batch_score_difference": -0.004385483320194117,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_selected_native",
+      "g_mse_difference": -9.201917860699837e-05,
+      "joint_batch_score_difference": 0.008583288306137526,
+      "g_batch_score_difference": 0.008543932614283621,
+      "passed": true
+    }
+  ],
+  "gp_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": 3.369664795216409e-06,
+      "joint_batch_score_difference": -0.219575078733784,
+      "g_batch_score_difference": -0.06459745305741679,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": 0.00014303023090986994,
+      "joint_batch_score_difference": -0.32530722251842803,
+      "g_batch_score_difference": -0.050222766092012525,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": -6.445324152788636e-05,
+      "joint_batch_score_difference": -0.27443757541624625,
+      "g_batch_score_difference": -0.10881506844370062,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_gp",
+      "g_mse_difference": 0.00016330358861408527,
+      "joint_batch_score_difference": -0.4825506273053024,
+      "g_batch_score_difference": -0.07501062506538131,
+      "passed": false
+    }
+  ],
+  "same_information_source_gate_passed": false,
+  "original144_source_gate_passed": false,
+  "source_gate_passed": false,
+  "all_fits_complete": true,
+  "forecasts_scored": true,
+  "native_all73_four_head_prior_paid_reproduced": true,
+  "cost": {
+    "planned_new_g_source_fits": 2,
+    "maximum_completion_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_new_g_source_fits": 2
+  },
+  "cpu_seconds": 11.261386322,
+  "independent_confirmation": false,
+  "target_promoted": false
+}

@@ -1,0 +1,58 @@
+{
+  "status": "frozen before all12 joint common/task source fits and v integrations",
+  "template_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "source_templates": "paper_artifacts/legacy_joint_population_f_sparse_task_template_v1/source_templates.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_task_template_attribution_v1/results.json",
+  "shape_reference_results": "paper_artifacts/legacy_joint_population_f_task_shape_correlation_reference_v1/results.json",
+  "common_execution": "performance/manifests/legacy_joint_population_f_common_scale_correlation_execution_v1.json",
+  "question": "Does joint source estimation of common and task geometry permit useful task coupling that is penalized with the original common law fixed? Task1 remains unchanged under native-marginal shape correlation. Stage109 common-only fitting kept task law fixed;Stage127 kept common law fixed. Neither jointly tested this family.",
+  "common_law": "Reuse Stage109 source common correlation matrix on originally positive native common groups: A00 fixed at native value,A0shape=0,Ashape=independent native tail+Bcommon*((1-p)*I+p*Ccommon)*Bcommon. Re-estimate original supported common standard-deviation amplitudes,shared gamma_common in[0,4],p in[0,1]. No new common groups or intercept correlation.",
+  "task_law": "R(v,q)=v*e0e0prime+independent native1% shape tail+(1-q)*diag(task group variances times weights(gamma_task),zero intercept)+q*Tsource(gamma_task). Tsource uses frozen Stage127 correlation,GP-projected source level variance and frozen union group budgets;rebuild only its within-group frequency marginals at gamma_task. Re-estimate nonnegative task group variances on the existing native common/task union,original gamma_task in[0,4],q in[0,1],and independent v>=0. Groups outside union remain zero excess. This family includes original native endpoint p=q=0 without a variance floor. Any nonzero coupled level variance is learned through q and source template,not imposed on independent v.",
+  "objective": "Coherent Gaussian source marginal likelihood,integrating common and task coefficients,with fixed original empirical center,known label noise and original discrepancy. Only five source tasks0-5 per deletion fold;no query scores,source6/7 or target data. Unchanged eta/g laws.",
+  "initialization": "One native endpoint only:common amplitudes/spectrum from native,p=0;task group variance parameters from native,zeros for union additions,original task exponent,q=0,original independent v. Keep task amplitudes as variance parameters so native-zero union groups have a defined one-sided gradient. Common positive group amplitudes retain Stage109 parameterization. No additional starts,grid or source-score selection among fitted candidates.",
+  "optimizer": "Use each cached original fold L-BFGS-B maxiter4096,ftol1e-9,gtol1e-5 contract. Record every convergence,iteration,gradient and learned group/spectrum/correlation parameter. A construction or optimizer failure stops;do not change bounds/tolerances based on scores.",
+  "verification": "Native p=q=0 must reproduce source NLL,beta/H. Verify full analytic gradient against finite differences at one declared interior p/q/gamma/v point in task1 folds and one-sided derivatives for zero task groups. At final laws verify PSD,original common support/task union,original independent weak tails,group frequency marginals,fixed common intercept/center/noise/discrepancy and coherent dense source conditioning. These checks distinguish an algebraic failure from an unsupported estimator.",
+  "freeze_and_integration": "Freeze all12 fitted source laws and convergence records before other data. Rebuild and integrate conditional independent-v posterior under each fitted full common/task covariance using the existing Jeffreys source measure on v>=0;retain component beta(v),H(v),full task base covariance and source weights. No plug-in mixture replacement or recycled old posterior weights. All other fitted parameters/support are conditional nuisance,not posterior population guarantees.",
+  "decision": "Compare source likelihood and task1 source-law changes with native and retained Stage129 control. If all constructions/fits/integrations verify,register an unchanged-prefix f prediction comparison using native,flat,sourceGP and original variance-mixture controls with identical eta/paid labels/budgets;freeze forecasts before scores and keep all three original development metrics in both layouts. No source likelihood or numerical PASS is decision superiority. If joint law stays at stopped/native task coupling,retain that result and do not spend on a claimed task1 repair. Original complete-model gate,source6/7,target/KG/independent confirmation remain unopened.",
+  "cost": {
+    "maximum_new_f_source_fits": 12,
+    "maximum_new_source_v_integrations": 12,
+    "new_g_or_risk_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small source JSON only;no server jobs,pulls or scheduler",
+  "output": "paper_artifacts/legacy_joint_population_f_joint_common_task_geometry_v1",
+  "planned_entrypoint": "performance/fit_legacy_f_joint_common_task_geometry.py",
+  "entrypoint_status": "implemented",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_joint_common_task_geometry_plan_v1.json",
+  "entrypoint": "performance/fit_legacy_f_joint_common_task_geometry.py",
+  "planned_module": "representation/source_joint_geometry.py",
+  "gradient_verification_deleted_task": 1,
+  "gradient_common_amplitude_multiplier": 1.1,
+  "gradient_task_group_variance_offset": 0.001,
+  "gradient_step": 1e-06,
+  "gradient_tolerance": {
+    "atol": 1e-07,
+    "rtol": 1e-05
+  },
+  "boundary_gradient_tolerance": {
+    "atol": 1e-06,
+    "rtol": 0.0001
+  },
+  "dense_v_verification_deleted_task": 1,
+  "dense_v_verification_variance_over_source_signal": 0.1,
+  "quadrature_split_variance_over_signal": 0.1,
+  "posterior_quantile_probabilities": [
+    0.025,
+    0.5,
+    0.975
+  ],
+  "quadrature": {
+    "relative_tolerance": 1e-08,
+    "absolute_tolerance_for_scaled_integrals": 1e-09,
+    "maximum_subintervals": 128
+  }
+}

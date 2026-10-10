@@ -1,0 +1,47 @@
+{
+  "status": "completed; see frozen execution and retained results",
+  "moments_execution": "performance/manifests/legacy_joint_population_task_spectral_moments_execution_v1.json",
+  "moments_profiles": "paper_artifacts/legacy_joint_population_task_spectral_moments_v1/calibration_profiles.json",
+  "gp_profiles": "paper_artifacts/legacy_joint_population_paid_covariance_gain_v1/predictions.json",
+  "gp_scores": "paper_artifacts/legacy_joint_population_paid_covariance_gain_v1/results.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "cases": [
+    "native_source_nll_selection",
+    "conditional_task_spectral_moments",
+    "same_source_gp"
+  ],
+  "stages": [
+    "prior",
+    "raw_paid"
+  ],
+  "basis_of_next_step": "Conditional source task-exponent integration improves paid MSE1.40%/.75% but fails raw-density/whole-transcript acceptance. Do not check source6/7 or repeat spectral/covariance multiplier search. Identify the failed score components and calibration direction from frozen predictions.",
+  "diagnostic": "For each original12-site g sample-mean label vector use Sigma=predicted latent g covariance+unchanged diagonal S2/3. Cholesky-whiten e=y-m and the predetermined constant vector. Record total Mahalanobis energy Q, signed offset z=(1^T Sigma^-1 e)/sqrt(1^T Sigma^-1 1), and remaining shape energy Q-z^2. Record log determinant and reconstruct the Gaussian mean log score exactly. Decompose integrated-minus-native density into Mahalanobis and log-volume terms and sequential score into paid raw evidence and conditional score. Compare native/integrated with the saved same-source GP using its original latent-risk paid covariance, not the frozen-noise variant. No eigenmode selection or new hybrids.",
+  "interpretation": "Q has conditional Gaussian reference dimension12, offset1 and shape11; source empirical-Bayes fitting, source task overlap, adaptive moment projection and repeated development selection prevent interpreting this as independent or calibrated population testing. Report all folds and actual directions, without hypothesis-test gates or fitting a repair from the residuals.",
+  "decision_rule": "Use this attribution to select the next model question. A log-volume loss with nonexcessive Q does not justify broader spectral mixing; a persistent shape residual points to function/population geometry rather than global variance inflation. Keep original source gates and historical60/60 unchanged. No target, source6/7, new fit, simulation, verification, terminal integration, server work or manuscript claims.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_predictive_residual_geometry_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_predictive_residual_geometry_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_predictive_residual_geometry_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage85_87_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_task_bank_centering_plan_v1.json"
+}

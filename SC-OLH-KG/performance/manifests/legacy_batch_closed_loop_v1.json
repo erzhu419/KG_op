@@ -1,0 +1,30 @@
+{
+  "diagnosis": "paper_artifacts/legacy_risk_transfer_diagnosis_v1/results.json",
+  "pilot": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+  "saved_group": 2,
+  "saved_arm": "observe_primary",
+  "initial_prefix": 4,
+  "starting_paid_calls": 5,
+  "retained_policy": 63,
+  "arms": {
+    "stop_now": {"query": null, "replicates": 0},
+    "observe_new50": {"query": 50, "replicates": 1},
+    "repeat63_batch3": {"query": 63, "replicates": 3}
+  },
+  "observation_seeds": [80651, 80652, 80653, 80654],
+  "observation_stream_tag": 1398031183,
+  "verification_seeds": [81651, 81652, 81653, 81654],
+  "terminal_draw_power": 13,
+  "integration_seed": 80621,
+  "total_target_call_cap": 362,
+  "initial_state": "same four archived paid records plus the saved group2 observation at63; same source fits and six primary roster [2,3,34,50,60,63]; retain63 in every arm",
+  "filter": "fresh paired observations only; Normal batch-mean and exact chi-square variance likelihoods with the existing Gaussian moment completion and shared response/risk identity weights; past63 observation is not reused as new batch data",
+  "decision": "one registered intervention per arm, not a new full KG optimizer; actual paid filter selects among the same guarded/direct terminal actions at 8192 nodes; debit all new physical episodes before allocation",
+  "randomness": "new50 and the first repeat63 share fresh observation seed and stream tag; remaining repeats consume later draws; terminal streams use the existing search-count and shortlist-position rules and are not identical across arms",
+  "freeze_order": "all twelve paid-update recommendations and posterior summaries freeze before any independent verifier or scoring truth is read; verification data never update search posterior",
+  "endpoints": "certified true-feasible deployment reward and actual total calls; paired differences to stopping; post-freeze true conditional terminal reward/calls separate observation noise from the action's expected behavior; eta_g uncertainty at63 and50 is descriptive",
+  "interpretation": "four noise groups on one already opened fixed law and one saved starting posterior are development evidence, not four independent tasks or confirmation of transfer generalization; preserve stage12 negatives; no additional groups or result-dependent reruns",
+  "source_cost": "384 source simulator calls per reused archive already paid; one source fit and zero new source calls",
+  "execution": "local serial single-thread; twelve terminal branches and exactly16 fresh search episodes; each branch at most362 calls including the reused five; no server jobs or pulls",
+  "output": "paper_artifacts/legacy_batch_closed_loop_v1/results.json"
+}

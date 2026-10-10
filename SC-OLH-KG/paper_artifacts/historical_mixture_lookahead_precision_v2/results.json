@@ -1,0 +1,140 @@
+{
+  "execution_plan": "performance/manifests/historical_mixture_lookahead_precision_v2.json",
+  "rows": [
+    {
+      "layout": "5",
+      "draw_power": 9,
+      "fantasy_power": 3,
+      "stop_expected_reward": 0.18673576167111045,
+      "candidate": 7,
+      "expected_future_reward": 0.18564904505471141,
+      "net_reward_of_paid_episode": -0.0010867166163990305,
+      "adaptation_value": 0.0006030786983603209,
+      "projection_tower_drift": -0.0016122095876171805,
+      "filter_and_quadrature_baseline_drift": -0.0016122095876171805,
+      "verification_budget_opportunity_cost": 7.758572714217093e-05,
+      "expected_eta_variance_reduction_fraction": 0.011558793439107677,
+      "expected_model_weights": [
+        0.024535039864940277,
+        0.023420945111806524,
+        0.24709032284934737,
+        0.24575081046286568,
+        0.04889313917424109,
+        0.04862810322489512,
+        0.19190784284093526,
+        0.16977379647096907
+      ],
+      "model_weight_martingale_residual": [
+        -0.0037289863348850434,
+        -0.003445353106481617,
+        0.014139347968352367,
+        0.010790280342706932,
+        -0.009113150812143943,
+        -0.009525474414371723,
+        0.000982175255508394,
+        -9.883889868533835e-05
+      ],
+      "maximum_raw_integration_relative_error": 8.132649965546218e-12,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "precision_gate_passed": false,
+      "maximum_identity_martingale_residual": 0.014139347968352367,
+      "cpu_seconds": 28.474207893999996
+    },
+    {
+      "layout": "6",
+      "draw_power": 9,
+      "fantasy_power": 3,
+      "stop_expected_reward": 0.3742013868455296,
+      "candidate": 4,
+      "expected_future_reward": 0.4487476726551258,
+      "net_reward_of_paid_episode": 0.07454628580959616,
+      "adaptation_value": 0.05038025454657186,
+      "projection_tower_drift": 0.024231918476604553,
+      "filter_and_quadrature_baseline_drift": 0.024231918476604553,
+      "verification_budget_opportunity_cost": 6.588721358025129e-05,
+      "expected_eta_variance_reduction_fraction": -0.001539213045794808,
+      "expected_model_weights": [
+        0.030890679711593177,
+        0.027663268576221527,
+        0.40670296787918264,
+        0.414580644462221,
+        0.021937368321562983,
+        0.021957552021908584,
+        0.038213155320247515,
+        0.03805436370706271
+      ],
+      "model_weight_martingale_residual": [
+        -0.009936672129634644,
+        -0.01019173138265965,
+        0.020537062255263305,
+        0.023716181376636947,
+        0.0015752261663356908,
+        0.0015654840009837225,
+        -0.013590268995269154,
+        -0.013675281291656134
+      ],
+      "maximum_raw_integration_relative_error": 2.6745947576240156e-12,
+      "positive_source_mixtures_retained": true,
+      "actual_paid_filter_used_for_every_fantasy": true,
+      "precision_gate_passed": false,
+      "maximum_identity_martingale_residual": 0.023716181376636947,
+      "cpu_seconds": 28.235470252000006
+    }
+  ],
+  "coarse_reference": [
+    {
+      "layout": "5",
+      "query": 7,
+      "net_reward_of_paid_episode": 0.03823216695152351,
+      "adaptation_value": 0.0002752452204289324,
+      "filter_and_quadrature_baseline_drift": 0.03796756687039626,
+      "model_weight_martingale_residual": [
+        -0.01928883824457129,
+        -0.018691516737703445,
+        0.0479857890733498,
+        0.06570090828402234,
+        -0.03601173392363796,
+        -0.03665971112731862,
+        -0.004422044973057843,
+        0.0013871476489170365
+      ]
+    },
+    {
+      "layout": "6",
+      "query": 4,
+      "net_reward_of_paid_episode": 0.0902284054056745,
+      "adaptation_value": 0.01706749738196006,
+      "filter_and_quadrature_baseline_drift": 0.0732169779854217,
+      "model_weight_martingale_residual": [
+        0.14633218177660992,
+        0.14837658359473915,
+        -0.1380133065822718,
+        -0.13613144137858768,
+        0.006170525824397765,
+        0.006237172003539293,
+        -0.01635752817536469,
+        -0.01661418706306187
+      ]
+    }
+  ],
+  "all_registered_rules_complete": true,
+  "all_latest_precision_gates_passed": false,
+  "stopped_at_cpu_budget": false,
+  "cpu_seconds": 59.838183949999994,
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "scientific_model_ranking_authorized": false,
+  "limitations": [
+    "Two queries selected from opened development diagnostics;no held-out performance.",
+    "Martingale residual isolates predictive fantasy integration;terminal tower drift also includes Gaussian moment projection.",
+    "A PASS at two queries cannot certify a complete action ranking or a source-prior decision advantage."
+  ]
+}

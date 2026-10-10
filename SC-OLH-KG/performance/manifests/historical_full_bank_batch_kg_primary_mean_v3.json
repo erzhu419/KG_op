@@ -1,0 +1,29 @@
+{
+  "status": "Development numerical admission; the six opened tasks remain development only.",
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "observations": "paper_artifacts/historical_full_bank_replicates_v1/observations.json",
+  "terminal_powers": [
+    10,
+    12,
+    14
+  ],
+  "raw_powers": [
+    10,
+    12
+  ],
+  "projected_power": 10,
+  "seed": 202610077,
+  "maximum_action_resolution_difference": 0.0001,
+  "maximum_identity_integration_error_bound": 2e-06,
+  "maximum_case_cpu_seconds": 360,
+  "anchor_query": 63,
+  "anchor_replicates": 4,
+  "precision_states": [],
+  "batch_states": [
+    "learned_prior_independent_02_source_common_task_rbf_layout6"
+  ],
+  "cost": "One GP batch anchor, integrate guarded primary mean using the existing historical conditional estimator. No new physical calls or source fits. Only admit a source follow-up if this numerical smoke passes.",
+  "scope": "Same joint Gaussian conditional law, budgets and365 actions; change only the analytically integrated mean coordinate from last to primary. Keep the1e-4 action resolution and2e-6 omitted-utility thresholds.",
+  "output": "paper_artifacts/historical_full_bank_batch_kg_primary_mean_v3",
+  "guarded_mean_position": 0
+}

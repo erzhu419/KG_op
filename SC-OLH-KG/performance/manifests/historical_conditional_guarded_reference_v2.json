@@ -1,0 +1,20 @@
+{
+  "status": "Registered before the fixed-reference precision extension; all prefixes retained irrespective of sign.",
+  "entrypoint": "performance/check_historical_conditional_guarded_reference.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "terminal_results": "paper_artifacts/historical_conditional_terminal_completion_v1/results.json",
+  "completed_reference": "paper_artifacts/historical_conditional_guarded_reference_v1/results.json",
+  "completed_heads": "paper_artifacts/historical_conditional_guarded_reference_v1/heads.json",
+  "layout": "5",
+  "candidate": 5,
+  "terminal_power": 14,
+  "fantasy_powers": [4, 5, 6, 7, 8],
+  "retained_identity_indices": [0, 1, 2, 3, 6, 7],
+  "retained_fantasy_power": 5,
+  "maximum_retained_identity_expectation_error": 0.000001,
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 240,
+  "scope": "Reuse all sixteen saved 32-fantasy head banks and identical Sobol prefixes. Extend both heads of spectral/head_specific/deconvolved_task and observed_task to256 fantasies; retain the other six identities'32-fantasy expectations and every original model/weight without renormalizing. Each fixed-action utility is in[0,1],so the possible expectation error from retaining those six head banks is bounded by their unchanged total identity mass,which must be <=1e-6. This bound does not cover fantasy quadrature,terminal quadrature or moment-projection bias and does not apply to adaptive maxima or paid filtering. Keep16/32/64/128/256 results,all40 adaptive actions and all joint KG rows unchanged. No source fits,new labels,simulator/verifier calls or server jobs.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_conditional_guarded_reference_v2"
+}

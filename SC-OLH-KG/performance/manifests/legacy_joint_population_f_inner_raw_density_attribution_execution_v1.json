@@ -1,0 +1,10 @@
+{
+  "status": "frozen before cached variance/conditional-mean density decomposition",
+  "plan": "performance/manifests/legacy_joint_population_f_inner_raw_density_attribution_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_inner_raw_density_attribution.py",
+  "arms": ["shape_point", "shape_mixture", "source_gp"],
+  "cached_score_tolerance": 1e-8,
+  "refinement_tolerance": 1e-5,
+  "output": "paper_artifacts/legacy_joint_population_f_inner_raw_density_attribution_v1",
+  "decision": "All ten mixture refinements and six factorization checks must pass before interpretation. Preserve the existing observation measure,posterior f/eta correlation and component weights. No new fitting,filtering or unscored outcome."
+}

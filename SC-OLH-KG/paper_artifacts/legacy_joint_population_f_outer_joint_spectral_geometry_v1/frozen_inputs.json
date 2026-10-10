@@ -1,0 +1,108 @@
+{
+  "execution": {
+    "status": "frozen before two source5 fits and task1 forecasts",
+    "plan": "performance/manifests/legacy_joint_population_f_outer_joint_spectral_geometry_plan_v1.json",
+    "entrypoint": "performance/check_legacy_f_outer_joint_spectral_geometry.py",
+    "control_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+    "design_results": "paper_artifacts/legacy_joint_population_f_source_information_design_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "designs": [
+      "fixed_public_prefix"
+    ],
+    "arms": [
+      "source_gp"
+    ],
+    "note": "arms/source_gp identifies the two existing Gaussian prior/risk prototypes for reproduction only. The new forecast arm is joint_spectral_geometry. All retained-mixture/native-point/GP paid controls are reused without replay.",
+    "output": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "design": "fixed_public_prefix",
+      "arm": "joint_spectral_geometry",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "query_task": 1,
+      "episode_count": 4,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7478352271702585,
+        1.0149998413163717,
+        1.0698111166674817,
+        4.0
+      ],
+      "same_source5_eta": true
+    },
+    {
+      "layout": "6",
+      "design": "fixed_public_prefix",
+      "arm": "joint_spectral_geometry",
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "query_task": 1,
+      "episode_count": 4,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6798703604559071,
+        1.159651019695701,
+        1.1832806019869548,
+        4.0
+      ],
+      "same_source5_eta": true
+    }
+  ],
+  "both_sixteen_site_priors_frozen_before_paid_values": true
+}

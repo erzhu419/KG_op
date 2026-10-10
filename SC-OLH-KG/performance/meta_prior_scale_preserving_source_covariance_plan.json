@@ -1,0 +1,82 @@
+{
+  "stage": "meta_prior_scale_preserving_source_covariance_a20_20261003",
+  "status": "outer_source_validation_complete_passed_for_fixed_target_validation",
+  "fixed_after_a18_a19_before_a20_results": true,
+  "question": "Can source-selected f/g functions improve held-source eta prediction when their sharing preserves learned risk scales and existing risk directions?",
+  "basis": "A18 identifies F/G branch prediction as almost all of A17's separate-head loss. A19 shows equal allocation moves 52.3% of covariance budget even on shared sources at rho=1, including 23.1% from within-selection equalization; separate-head F/G endpoints move 96.2%/88.7%. Positive function association alone does not justify this geometry.",
+  "inputs": [
+    "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003/source_fold_contexts.json.gz",
+    "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003/geometry.json",
+    "paper_artifacts/meta_prior_function_covariance_source_a17_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_function_covariance_source_a17_20261003/validation.json",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_source_holdout_calibration_a11_20261003/summary.json"
+  ],
+  "covariance": "For an original diagonal eta function covariance C with T=trace(C), let D_S=diag(diag(C)*1_S) for saved f- or g-selected source functions. Define B_S=T*(C+D_S)/(T+trace(D_S)), and C_S(rho)=(1-rho)*C+rho*B_S. Integrate uniform rho on [0,1]. This adds one source-selected share of the existing risk covariance and normalizes the total budget; it preserves relative scales within S and its complement and does not erase existing directions.",
+  "parameter_scope": "No new cutoff, variance floor, winning-function choice or target-fit adjustment. The original source variance, intercept, discrepancy and zero nonintercept prior means remain. The rho reference is unchanged. This is a new covariance construction; A17's uniform-allocation construction and results are not modified or promoted.",
+  "branches": {
+    "I": "Original independent eta source mixture.",
+    "F": "Scale-preserving covariance sharing using f-selected source functions, retaining both original eta source components.",
+    "G": "The same sharing with g-selected functions, inferred separately from F.",
+    "R": "Retained A9 adapted-only public-family risk branch, using its saved source densities and relative evidence.",
+    "generic": "F and G duplicate I for the source-generic arm; no source-selected function direction is supplied to that arm. Its q calibration must reduce to the same-training-data A12 formula."
+  },
+  "macro_reference": "Use the A17 reference unchanged: theta_I/theta_F/theta_G uniform Dirichlet(1,1,1), q independently uniform on [0,1], masses ((1-q)theta_I,(1-q)theta_F,(1-q)theta_G,q). Fit empirical source-CV calibration density, retain spread, and integrate the expected four masses. Earlier eta observations alone update branch odds; target f/g evidence does not choose eta models.",
+  "validation": "Repeat the complete outer leave-one-paired-seed-out source test. Calibrate using both source groups of the other 15 seeds. Each held-source function's component priors and f/g selections use only the other seven source tasks. Score steps9-24 after eight initial observations. Use all 256 source folds, 512 prior profiles and 8192 forecasts. Pair the 16 seeds separately in both archive groups and both prior arms.",
+  "controls": "Primary new minus original I forecast log score; secondary new minus same-source-pool I/R. Reproduce every saved I source forecast and retained R/I evidence. Check covariance trace, unchanged intercept and nonintercept means, within-set scale ratios and nonzero remaining prior directions. The no-sharing endpoint is the original prior; generic duplicate branches preserve flat theta and A12 q calibration. Outer-held-seed scores cannot alter the issued prior.",
+  "numerics": "Primary rho order32 and macro tensor order16 per axis. Confirm rho with16/48 and macro with24/32, requiring log-score changes <=1e-4. Use signed-kernel whitening for the linear C_S(rho) path; never fit one Gaussian model per node. Retain primary results and stop if adequate numerical precision cannot be reached within the stage budget.",
+  "implementation": "Reuse all recovered structural eta covariance/intercept/discrepancy metadata. Regenerate only the identical already-paid source observations and public normalization bank; reconstruct original structural priors from the compact contexts. Refit only the cheap original full eta priors where required. Reuse saved f/g selections and risk-family R forecasts. Keep only compact per-archive prediction arrays and stream macro node sums by seed.",
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "whole_function_folds": 256,
+    "source_prior_profiles": 512,
+    "source_forecasts": 8192,
+    "forecast_steps": [
+      9,
+      24
+    ]
+  },
+  "resource_admission": "Retain the first complete learned-prior source fold, including all rho checks. Project all source folds with a 1.25 safety factor and 60 CPU seconds of macro-calibration reserve. Stop with partial evidence if the whole-stage 180-local-CPU-second cap would be exceeded.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 180,
+    "new_eta_ard_refits": 0,
+    "full_eta_prior_refits_max": 256,
+    "new_fg_selection_fits": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "information_cost": "As in A17, outer calibration uses30 historical source archives (184,320 calls), and each applied source archive represents6144 calls. Supply the same pool to the I/R control. No equal-source-cost claim against old per-archive calibration and no new simulation calls.",
+  "decision": "If the complete outer-source prediction improves without coherent loss in either group, freeze a separate whole-cohort target-validation plan. Otherwise stop this construction and retain the result. Source improvement alone never authorizes recommendation replay or prospective searches.",
+  "paired_bootstrap_seed": 20261029,
+  "limitations": "A limited source-assisted covariance model, not complete joint latent support recovery. It preserves point-estimated source risk scales and may consequently do little for directions missed by eta ARD. Source archives lack high-frequency or within-archive support changes; development-source validation does not establish target shift adaptation, HVD, learned representations or decision value.",
+  "result_artifacts": "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003",
+  "next_plan": "performance/meta_prior_scale_preserving_target_validation_plan.json",
+  "execution_cpu_seconds": 75.104818979
+}

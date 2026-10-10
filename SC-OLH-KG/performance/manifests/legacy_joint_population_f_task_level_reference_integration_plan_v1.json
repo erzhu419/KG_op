@@ -1,0 +1,47 @@
+{
+  "status": "completed:all14 conditional source integrations verified; source uncertainty tail supports registered mixture development",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "native_full_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "level_information_results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+  "failure_attribution": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_development_v1/failure_attribution.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "head": "f",
+  "question": "Do source-supported uncertainty tails for the native f task intercept variance materially differ from its plug-in value, particularly at the task1-deleted zero boundary? Stage105 measured a conditional half-log-likelihood slice, not posterior mass. Joint common geometry failed to repair task1 unseen prediction. Do not return to that rejected common candidate or invent a variance floor.",
+  "native_law": "Use all12 original native five-source f laws and two full-six-source native f laws, not Stage109 laws. Fix original common covariance/empirical center/support, task shape spectrum/tail/discrepancy and observation noise. Vary only nonnegative physical task intercept variance v; integrate the coherent source Gaussian likelihood, not a heldout-score surrogate.",
+  "reference_measure": "With C(v)=C0+v*U*U.T, B=U.T*C0^-1*U and eigenvalues lambda_i>0, use the one-dimensional conditional Jeffreys measure pi(v)dv proportional to sqrt(I(v))dv, I(v)=0.5*sum((lambda_i/(1+v*lambda_i))^2). The design/noise/fixed nuisance parameters determine this measure. It is finite at v=0 and proportional to1/v in the tail; no chosen variance floor, upper cutoff, extra prior family or outcome-dependent prior scale.",
+  "likelihood": "Source log likelihood difference from v=0 is -0.5*sum(log1p(v*lambda_i))+0.5*sum(v*z_i^2/(1+v*lambda_i)), z_i the eigenbasis projection of U.T*C0^-1*(y-D*m0). Source task count T is5/6; the posterior tail is proportional to v^(-T/2-1), so normalization and first/second moments are integrable. Transform v=source_signal*q/(1-q) with the actual Jacobian; this is a quadrature coordinate, not a prior scale.",
+  "diagnostic": "Normalize the conditional reference posterior; record posterior mean/SD/quantiles and mass above the existing Stage105 slice upper endpoint. Compare the implied new-task intercept scale and source common mean/covariance uncertainty with the cached plug-in law. No query or source6/7 outcomes and no predictive gate in this diagnostic.",
+  "verification": "Check low-rank likelihood and Fisher formulas against one dense source calculation at an interior physical variance on task1-deleted folds. Check the full native source likelihood at its existing variance. Require reported quadrature errors to meet declared tolerances; retain failure rather than adding a cutoff or variance correction. No rerun of settled fits, source paid forecasts or g checks.",
+  "interpretation": "A substantial source-supported tail can motivate a separately registered coherent mixture prediction test, not an adopted covariance addition. Concentration near zero is evidence against variance inflation within this conditional family. Fixed empirical nuisance/support selection is omitted; these are conditional posterior intervals, not coverage guarantees or recovered population heterogeneity.",
+  "next_action": "Judge whether native task-level uncertainty supports a coherent integration test. Keep the rejected fixed-marginal and joint common f candidates stopped; retain g and complete-model HOLD. No hidden task descriptors, additional starts, frequency/tail changes, target/KG/confirmation or server experiments.",
+  "quadrature": {
+    "relative_tolerance": 1e-08,
+    "absolute_tolerance_for_scaled_integrals": 1e-09,
+    "maximum_subintervals": 128
+  },
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_task_level_reference_integration.py",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_integration_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_plan_v1.json"
+}

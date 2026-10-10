@@ -1,0 +1,22 @@
+{
+  "status": "Resource-only per-query parallel continuation; original scientific registration unchanged.",
+  "parent_plan": "performance/manifests/historical_independent_queries_completion_v2.json",
+  "previous_axis_plan": "performance/manifests/historical_independent_query_axes_v1.json",
+  "entrypoint": "performance/refine_historical_independent_query_axes.py",
+  "risk_terminal_powers": [
+    14,
+    15,
+    16
+  ],
+  "risk_tail_orders": [
+    32,
+    64
+  ],
+  "maximum_single_thread_cpu_seconds": 900,
+  "scope": "Reuse every original head and partial power; independently complete this query under unchanged gates. All outputs are isolated by query. No new source fits, paid target episodes or deployment outcomes.",
+  "output": "paper_artifacts/historical_independent_query_parallel_v1/shards/learned_prior_independent_05_source_structural_mixture_layout5_query0",
+  "case_names": [
+    "learned_prior_independent_05_source_structural_mixture_layout5_query0"
+  ],
+  "workers": 2
+}

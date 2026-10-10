@@ -1,0 +1,69 @@
+{
+  "execution": {
+    "status": "registered after original-source GP eta ESS78 failure;no extra draws of that sampler",
+    "entrypoint": "performance/prepare_legacy_f_variance_reference.py",
+    "original_source_results": "paper_artifacts/legacy_joint_population_f_original_source_raw_update_v1/results.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "question": "Can an observed-variance Gaussian reference improve source posterior sampling while leaving its exact raw likelihood and original population prior unchanged?",
+    "reference": "Compute q(eta) as the analytic Gaussian posterior under original eta population prior and the48 bias-corrected log S^2 labels with noise trigamma(1). This is ONLY the elliptical-slice reference,NOT the scientific prior. Its residual log density is the original collapsed raw mean/chi-square likelihood minus the approximate Gaussian log-variance likelihood. q times exp(residual) equals the original prior times exact raw likelihood divided by the fixed Gaussian approximate evidence. All original S^2 factors count once after cancellation.",
+    "verification": "At both reference and original prior mean,and one reference-SD interior offset,verify this density identity with the proper Gaussian evidence at1e-8 for both f arms/layouts. Require reference covariance positive and parameters/encoder/source covariance matrices unchanged. Record the original GP ESS-failure coordinate;no sampling or new source data in this step.",
+    "decision": "Only if the identity passes,register the corrected-reference sampler on all four original-source arms with the same draw counts and original numerical gates. No gate relaxation,prior replacement,covariance refit or held-task forecast. If it fails,stop.",
+    "maximum_single_thread_cpu_seconds": 15,
+    "cost": {
+      "new_source_labels": 0,
+      "new_MCMC_sweeps": 0,
+      "new_source_coordinate_fits": 0,
+      "new_covariance_fits": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;frozen source Gaussian matrices and small summaries;JSON only,no NPZ or server work",
+    "scope": "New computational reference for the same source posterior. Stage201 GP ESS failure stays recorded. Original four priors and empirical parameters unchanged;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_variance_reference_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "all_six_density_identities_passed": true,
+      "maximum_density_identity_error": 2.7853275241795927e-12,
+      "old_GP_minimum_ESS": 78.16555141437529,
+      "old_GP_minimum_ESS_group": "eta",
+      "old_GP_minimum_ESS_site": {
+        "source_task": 3,
+        "policy": 23
+      }
+    },
+    {
+      "layout": "6",
+      "all_six_density_identities_passed": true,
+      "maximum_density_identity_error": 1.9042545318370685e-12,
+      "old_GP_minimum_ESS": 360.3714202824106,
+      "old_GP_minimum_ESS_group": "conditional_f_second_moment",
+      "old_GP_minimum_ESS_site": {
+        "source_task": 5,
+        "policy": 10
+      }
+    }
+  ],
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.025617226999999965,
+  "cost": {
+    "new_source_labels": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "new_MCMC_sweeps": 0,
+  "original_population_priors_and_exact_likelihood_unchanged": true,
+  "interpretation": "Variance-informed elliptical reference with exact density compensation;original scientific prior unchanged. All Gaussian log-variance factors cancel from the target law. No sampling or predictive claims."
+}

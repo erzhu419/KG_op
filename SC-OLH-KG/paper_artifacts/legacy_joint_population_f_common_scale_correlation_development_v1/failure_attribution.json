@@ -1,0 +1,61 @@
+{
+  "source_results": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_v1/results.json",
+  "development_results": "paper_artifacts/legacy_joint_population_f_common_scale_correlation_development_v1/results.json",
+  "rows": [
+    {
+      "layout": "5",
+      "mean_source_total_log_likelihood_gain": 5.9915147677286695,
+      "paid_f_mse_fraction_change": -0.007460162175330187,
+      "paid_prefix_total_log_evidence_change": -0.008132194421636818,
+      "unseen12_total_gaussian_mean_log_density_change": 0.02942309202662763,
+      "sequential_transcript_density_change": 0.0015207784003559155,
+      "raw_three_repeat_density_change": 0.0011338283922470715,
+      "task1_changes": {
+        "f_mse": 6.148891164710129e-05,
+        "f_gaussian_mean_density": -0.10112072673859451,
+        "f_raw_batch_density": -0.13414010168403112,
+        "raw_paid_log_evidence": 0.05145875118434162,
+        "sequential_transcript_density": -0.08299928354848518
+      },
+      "other5_changes": {
+        "f_mse": -1.5822301876541487e-05,
+        "f_gaussian_mean_density": 0.023166454550381667,
+        "f_raw_batch_density": 0.028188614407502532,
+        "raw_paid_log_evidence": -0.020050383542830376,
+        "sequential_transcript_density": 0.018424790790124757
+      }
+    },
+    {
+      "layout": "6",
+      "mean_source_total_log_likelihood_gain": 5.684628042510393,
+      "paid_f_mse_fraction_change": -0.0002692641550525732,
+      "paid_prefix_total_log_evidence_change": -0.030511471422976832,
+      "unseen12_total_gaussian_mean_log_density_change": 0.024448177246602754,
+      "sequential_transcript_density_change": -0.0004330924411695136,
+      "raw_three_repeat_density_change": 0.0027136814857966485,
+      "task1_changes": {
+        "f_mse": 2.886249226259456e-05,
+        "f_gaussian_mean_density": -0.02999998644869528,
+        "f_raw_batch_density": -0.12410171816932758,
+        "raw_paid_log_evidence": 0.13037992037053758,
+        "sequential_transcript_density": -0.016401422643843366
+      },
+      "other5_changes": {
+        "f_mse": -5.937949043872893e-06,
+        "f_gaussian_mean_density": 0.00844481501439942,
+        "f_raw_batch_density": 0.028076761416821427,
+        "raw_paid_log_evidence": -0.0626897497816806,
+        "sequential_transcript_density": 0.0027605735993652125
+      }
+    }
+  ],
+  "candidate_stopped": true,
+  "source_gain_is_not_transfer_evidence": true,
+  "judgment": "Joint common scales/spectrum/correlation improve source NLL and average paid MSE/raw density, but do not repair the persistent task1 loss. The assignment6 transcript failure is numerically small; no gate is relaxed. Source task1 paid-prefix evidence itself improves in bothlayouts, while its unseen12 mean/raw density worsen. Neither a generic paid-prefix problem nor common marginal estimation alone explains this failure. Stop this common covariance candidate; examine conditional task-population uncertainty before any new inflation or broader fit.",
+  "cost_cpu_seconds": 1.6152689359999999,
+  "new_f_source_fits": 12,
+  "new_simulator_calls": 0,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

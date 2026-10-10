@@ -1,0 +1,13 @@
+{
+  "incidents": [
+    {
+      "phase": "first source replay before any predictive projection or score access",
+      "reason": "Entrypoint selected the Stage206 plan's upstream Stage200 source_inputs instead of Stage206's frozen_inputs containing the learned covariances.",
+      "detected_by": "original posterior mean reproduction assertion at1e-10;max discrepancy8.49114915e-5",
+      "completed_recomputed_sweeps": 6144,
+      "cpu_seconds": null,
+      "action": "Select explicit Stage206 frozen_source_inputs. Same original seed,chain lengths,reference and scientific laws;no tolerance change. Discard failed old-covariance replay.",
+      "predictive_projection_or_score_from_failed_attempt": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "decision": "Both complete archive groups support testing the coordinated model on retained target paths.",
+  "basis": [
+    {
+      "archive_group": "shared",
+      "mean_gain": 0.017249443968283096,
+      "paired_seed_bootstrap95": [
+        0.014382619264503255,
+        0.020001250624091915
+      ],
+      "better": 16,
+      "worse": 0
+    },
+    {
+      "archive_group": "separate_heads",
+      "mean_gain": 0.0170972895939916,
+      "paired_seed_bootstrap95": [
+        0.014353286423986393,
+        0.020080381821994987
+      ],
+      "better": 16,
+      "worse": 0
+    }
+  ],
+  "scope": "Source calibration scores also fitted alpha; this is a calibration gate, not an independent nested evaluation. Target data have not been scored or used to tune alpha."
+}

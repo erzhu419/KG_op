@@ -1,0 +1,609 @@
+{
+  "execution": {
+    "status": "frozen before anisotropic source-only cubature",
+    "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+    "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+    "scaled_results": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1/results.json",
+    "attribution_results": "paper_artifacts/legacy_joint_population_f_level_shape_quadrature_error_v1/results.json",
+    "question": "Can reference-resolution intercept coordinates resolve its second-moment tail while median-scale shape coordinates use fewer nodes,passing every original source moment criterion within4096 components?",
+    "reason": "Stage140 finds both median-coordinate64x64 pilot failures exclusively in E[v^2];all other source moment blocks differ less than1e-8. Do not drop E[v^2] or loosen accuracy.",
+    "source_law": "Exactly Stage136/137 joint source likelihood and joint Jeffreys measure;native common/other task parameters,spectrum/support/tail remain frozen. No query outcomes,no scientific prior change.",
+    "coordinates": "v=source_signal*(t/(1-t))^2,a=source_conditional_median_a*(s/(1-s))^2,with exact physical Jacobians,complete t,s in(0,1). Units are source-only numerical coordinates.",
+    "level_nodes_per_axis": 128,
+    "shape_nodes_per_axis_resolutions": [
+      8,
+      16,
+      32
+    ],
+    "acceptance": {
+      "normalizer_relative_difference_vs_stage137": 1e-08,
+      "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+      "maximum_positive_nodes_per_fold": 4096
+    },
+    "reference": "Use saved small Stage139 reference moment vectors on task1 folds. Reconstruct once on saved Stage137 source nodes for the ten unattempted folds only after both pilots pass;save vectors for future use. Full scaled source moment vector is unchanged,including both variance second moments and common beta/H.",
+    "scope": "Source0-5 only;two task1 pilots first;other ten conditional on both passing. No paid labels,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls.",
+    "cost": {
+      "new_source_fits": 0,
+      "maximum_new_source_rules": 12,
+      "maximum_positive_nodes_per_fold": 4096,
+      "maximum_new_density_evaluations_per_fold": 7168,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small source JSON and compact local NPZ only",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1",
+    "planned_entrypoint": "performance/prepare_legacy_f_level_shape_anisotropic_quadrature.py",
+    "entrypoint_status": "implemented before execution",
+    "decision": "If all twelve source rules pass,freeze a separate bounded four-paid-observation task1 predictive comparison with raw likelihood and numerical refinement checks. No automatic model adoption or complete-model promotion. If these targeted rules fail,retain numerical limitation without another covariance fit or heavy online replay.",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_anisotropic_quadrature_plan_v1.json",
+    "entrypoint": "performance/prepare_legacy_f_level_shape_anisotropic_quadrature.py",
+    "frozen_before_source_evaluation": true
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0009441366805010842,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.006881365101884085
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 6.999370971705332e-09,
+            "scaled_moment_max_absolute_difference_vs_stage137": 2.0416128316602666e-05
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 8.958389585700388e-13,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.1377522257660644e-09
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        5.462600012649882e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout5_task1_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 0,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 0.7003213760000001
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0006090185339359122,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0019030511715220078
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.8654106259674563e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.3137237815374903e-06
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 8.145706331674774e-13,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.3868531878458157e-09
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        5.448786946312396e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout6_task1_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 0,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 0.686927447
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.002426639891954463,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.004380458013688582
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 8.144072505267275e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 8.699174708137747e-06
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 4.465872116554692e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.3799167364325626e-09
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        7.14189247793217e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout5_task0_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.230701959
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.003905236488543129,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.005662449203414077
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 2.4851515512125388e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 4.431327234710736e-06
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 2.814193322819847e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 5.694140714496143e-10
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        7.507050302291238e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout5_task2_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.2344269519999997
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0015777972659701822,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0037977153452652956
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 6.776000427421991e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 5.77534419099468e-06
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 4.105826789668754e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 2.587002834175678e-10
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        6.442378620228804e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout5_task3_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.2287398209999996
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.00048198498185292316,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0059048829755236065
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.7548946740220117e-09,
+            "scaled_moment_max_absolute_difference_vs_stage137": 2.190456867445789e-05
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 2.0321522242738865e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 4.0731740202915034e-10
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        5.5269276655036244e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout5_task4_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.198172458
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "passed": false,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.00035267109740333424,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0010439799232890845
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 2.7298139082532202e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 2.086549184010522e-05
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 4.972022793481301e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.7974280952515187e-08
+          },
+          "passed": false
+        }
+      ],
+      "source_coordinate_units": [
+        0.02,
+        2.7275509912855496e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout5_task5_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.231257919000001
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0008455684838399868,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0027690280268692913
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.688215267581228e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.0193912374223402e-06
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.5287771049088406e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.640958480209065e-10
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        6.564472827797342e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout6_task0_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.205585286
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0017926226558113711,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.003921673396019232
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 8.037258791837587e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.0357648476899683e-05
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.8030021919912542e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 6.161857690756278e-10
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        7.087461491009788e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout6_task2_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.2019888719999994
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0020475280145910713,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.004231671717576768
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 9.097768094434855e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 3.3978843341220255e-06
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 2.173483615308669e-12,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.0708922637547857e-10
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        7.653030564554548e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout6_task3_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.204013886000002
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0009939433731663838,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.0030425135396199288
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 3.031023121380372e-08,
+            "scaled_moment_max_absolute_difference_vs_stage137": 9.551094339865784e-07
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 32,
+          "node_count": 4096,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 2.0317081350640365e-13,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.8472778862133055e-11
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.020021252176237864,
+        6.230501398112417e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout6_task4_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 7168,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 2.203996043
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "passed": true,
+      "trials": [
+        {
+          "level_nodes": 128,
+          "shape_nodes": 8,
+          "node_count": 1024,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 0.0002461611132535957,
+            "scaled_moment_max_absolute_difference_vs_stage137": 0.00037588436636815103
+          },
+          "passed": false
+        },
+        {
+          "level_nodes": 128,
+          "shape_nodes": 16,
+          "node_count": 2048,
+          "errors": {
+            "normalizer_relative_difference_vs_stage137": 1.0358724988890344e-10,
+            "scaled_moment_max_absolute_difference_vs_stage137": 1.0962745156106735e-09
+          },
+          "passed": true
+        }
+      ],
+      "source_coordinate_units": [
+        0.02,
+        2.8843347587342794e-05
+      ],
+      "reference_moment_vector_file": "paper_artifacts/legacy_joint_population_f_level_shape_anisotropic_quadrature_v1/layout6_task5_reference_moments.npz",
+      "reference_moment_reconstruction_evaluations": 16384,
+      "density_evaluations": 3072,
+      "both_full_variance_tails_retained": true,
+      "cpu_seconds": 1.4156709279999973
+    }
+  ],
+  "all12_compact_source_rules_verified": false,
+  "pilot_both_task1_passed": true,
+  "cpu_seconds": 22.820526007999998,
+  "cost": {
+    "new_source_fits": 0,
+    "maximum_new_source_rules": 12,
+    "maximum_positive_nodes_per_fold": 4096,
+    "maximum_new_density_evaluations_per_fold": 7168,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_reference_reconstruction_evaluations": 163840,
+    "actual_density_evaluations": 81920
+  },
+  "compact_source_rule_bytes": 529742,
+  "no_prior_or_model_adopted": true,
+  "query_paid_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

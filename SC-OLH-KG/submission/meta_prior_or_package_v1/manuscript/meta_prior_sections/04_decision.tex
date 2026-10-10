@@ -1,0 +1,25 @@
+\section{Verification-Aware Decision Rule}\label{sec:mp_decision}
+
+After each paid target batch, the posterior supplies a predictive mean and
+covariance for $(f,g,\eta)$ over the public candidate bank.  A candidate's
+deployment value is the expected objective quality multiplied by the
+probability that an independent verifier will certify its constraint.  For a
+fixed recommendation $x$, the verifier uses fresh replications and the frozen
+chance level $\alpha$; search observations never enter this test.
+
+The acquisition rule evaluates the expected increase in this verified utility
+under the remaining target and verification budget.  It uses the correlated
+Gaussian approximation for the joint mean--risk posterior and finite
+quadrature for the fantasy observation.  The live physical-risk posterior updates factor-family weights; the mean
+function posteriors are updated by Gaussian conditioning.  The fantasy
+calculation uses the frozen approximation analyzed in the
+A45 numerical diagnostic.  That diagnostic found a maximum 9-versus-13-node
+difference of $2.93\times10^{-5}$ in the controlled risk-only probe, so the
+existing acquisition rule is retained for the reported pilots.
+
+This utility is a decision rule, not a theorem that the selected policy is the
+global optimum of the chance-constrained problem.  We report the initial
+recommendation, final recommendation, true post-decision reward, independent
+certificate, and false-certificate indicator separately.  A successful
+certificate requires a fresh verifier; a posterior feasibility probability is
+never reported as a deployment certificate.

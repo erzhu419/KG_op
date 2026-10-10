@@ -1,0 +1,26 @@
+{
+  "status": "registered before frozen-model source influence decompositions",
+  "basis_of_next_step": "Stages49-51: selected sparse main-effect span still has much smaller capacity error than predictions; a nested-flat start does not materially change g, and whole-source-task conditional density favors the native common spectrum over exponent0 in both assignments. Do not weaken low-frequency priors without evidence. Quantify the remaining finite-source uncertainty under the exact fitted law.",
+  "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+  "target_snapshot": "paper_artifacts/legacy_joint_population_function_coverage_target_v1/inputs.json",
+  "target_profiles": "paper_artifacts/legacy_joint_population_function_coverage_target_v1/calibration_profiles.json",
+  "layouts": [
+    "3",
+    "4"
+  ],
+  "mean_arms": [
+    "joint_structural",
+    "flat"
+  ],
+  "diagnostic_candidates": [
+    4,
+    63,
+    70,
+    71
+  ],
+  "attribution": "Reconstruct each frozen Gaussian common-mean posterior and its linear source-label influence weights. Require prior means and complete common/task moments to reproduce cached fits and target priors. Decompose common posterior variance exactly into source sample-mean noise, source residual task functions, source discrepancy, and prior-shrinkage uncertainty; show new-target residual variance separately. Retain every head/task/assignment and both structure/flat.",
+  "assignment_contrast": "Align source task/site identities across layouts. Reconstruct actual prior prediction shifts from their source-label weights plus prior origins. Under fixed fitted hyperparameters, calculate only the source sample-mean noise sensitivity of the assignment difference, sharing identical cached observations at overlapping sites rather than treating their noise independently.",
+  "interpretation": "conditional Gaussian-model variance/influence attribution. Labels already fitted the hyperparameters; these variances are not unconditional frequentist errors or a causal separation of actual target bias. Only the native sample-variance/3 noise estimate is used. No target truth enters the calculation.",
+  "execution": "local serial single-thread; cached JSON, zero new source fits/simulator/verifier calls/terminal integrals, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_source_influence_v1"
+}

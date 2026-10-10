@@ -1,0 +1,11 @@
+{
+  "status": "Registered after all144 initial cases finished and the original two-hour CPU cap stopped final processing after one case; no deployment outcomes are open.",
+  "parent_plan": "performance/manifests/historical_independent_queries_completion_v2.json",
+  "previous_axis_plan": "performance/manifests/historical_independent_query_axes_v1.json",
+  "entrypoint": "performance/refine_historical_independent_query_axes.py",
+  "risk_terminal_powers": [14, 15, 16],
+  "risk_tail_orders": [32, 64],
+  "maximum_single_thread_cpu_seconds": 900,
+  "scope": "Require all144 initial cases before any selective work. Complete missing native anchors for already-passing grids using the original risk cache, without recalculating either head. For actual grid HOLDs, use the registered cached axis decomposition and append only missing risk14/15/16 powers or positive tail64 labels. Preserve the original objective power pair, including10/12 when already sufficient, and the complete paired1e-4 terminal-resolution gate. All original results and partial head powers remain. Recheck anchors on changed risk heads. Prioritize wholly passing model states; this changes processing order only. Retain unsupported axes and numerical failures as HOLD. No source fits, physical observations, verifier, truth calls or server jobs.",
+  "output": "paper_artifacts/historical_independent_query_axes_v1"
+}

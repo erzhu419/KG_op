@@ -1,0 +1,100 @@
+{
+  "status": "source,CDF,identity and two-query fixed-action precision closed;complete ranking open",
+  "source_batch": "paper_artifacts/historical_source_variance_resolution_v4/batch_results.json",
+  "source_usable_cases": 32,
+  "complete_source_identities": 16,
+  "source_cases_resampled_in_this_phase": 0,
+  "predictive_CDF_precision": "paper_artifacts/historical_predictive_cdf_v2/results.json",
+  "all32_predictive_CDF_heads_passed": true,
+  "density_only_precision": "paper_artifacts/historical_predictive_martingale_v2/results.json",
+  "density_only_identity_precision_passed": true,
+  "positive_mixture_KG_precision": "paper_artifacts/historical_mixture_lookahead_precision_v4/results.json",
+  "raw_joint_KG_precision_passed": false,
+  "latest_query_precision": [
+    {
+      "layout": "5",
+      "candidate": 7,
+      "net_reward_of_paid_episode": 0.001770605884577392,
+      "adaptation_value": 0.0008198949873945705,
+      "filter_and_quadrature_baseline_drift": 0.0010282966243249925,
+      "maximum_identity_martingale_residual": 0.003759904003987541,
+      "precision_gate_passed": true
+    },
+    {
+      "layout": "6",
+      "candidate": 4,
+      "net_reward_of_paid_episode": 0.04239365632083347,
+      "adaptation_value": 0.05518112841581463,
+      "filter_and_quadrature_baseline_drift": -0.012721584881400905,
+      "maximum_identity_martingale_residual": 0.004595443797904386,
+      "precision_gate_passed": false
+    }
+  ],
+  "tests_passed": true,
+  "tests_run": 32,
+  "test_record": "paper_artifacts/historical_factorized_tower_v1/unit_tests.json",
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scientific_model_ranking_authorized": false,
+  "independent_confirmation": false,
+  "no_model_adopted": true,
+  "non_Gaussian_reference": "paper_artifacts/historical_positive_likelihood_reference_v3/results.json",
+  "reference_adequate": true,
+  "reference_projection_attribution": [
+    {
+      "layout": "5",
+      "likelihood_tower_drift": 0.0010026638592070536,
+      "projected_baseline_drift": 0.0009135736276146555,
+      "projection_minus_likelihood_baseline": -8.909023159238577e-05,
+      "predictive_log_evidence_max_error": 0.004079687137711119,
+      "effective_sample_size_min": 2476.925902264608,
+      "tower_precision_gate_passed": true
+    },
+    {
+      "layout": "6",
+      "likelihood_tower_drift": -0.012863427776094505,
+      "projected_baseline_drift": -0.011087120577576937,
+      "projection_minus_likelihood_baseline": 0.0017763071985175613,
+      "predictive_log_evidence_max_error": 0.0031510708887285688,
+      "effective_sample_size_min": 3431.9310828030243,
+      "tower_precision_gate_passed": false
+    }
+  ],
+  "factorized_terminal_precision": "paper_artifacts/historical_factorized_tower_v1/results.json",
+  "fixed_action_precision_passed": true,
+  "latest_fixed_action_precision": [
+    {
+      "layout": "5",
+      "fantasy_power": 4,
+      "head_raw_updates": 256,
+      "likelihood_tower_drift": -0.00024022414587909768,
+      "projected_baseline_drift": -0.00022157663918265236,
+      "control_variate_net_diagnostic": 0.0005207326210697472,
+      "likelihood_tower_precision_passed": true,
+      "projected_tower_precision_passed": true
+    },
+    {
+      "layout": "6",
+      "fantasy_power": 5,
+      "head_raw_updates": 512,
+      "likelihood_tower_drift": 0.0006697441005973359,
+      "projected_baseline_drift": -0.0026754763175583784,
+      "control_variate_net_diagnostic": 0.052439764884676,
+      "likelihood_tower_precision_passed": true,
+      "projected_tower_precision_passed": true
+    }
+  ],
+  "next_work": {
+    "numerical_integration": "Connect the independently integrated fixed-action baseline to the existing adaptive contrast as a control variate for complete action comparison. The adaptive maximum remains joint;two opened queries do not certify a full ranking.",
+    "source_learning": "Reuse performance/check_legacy_f_raw_covariance_mstep.py and the current64-head raw covariance scores for source-only learning and evidence normalization;then matched completeGP controls. No source law selected by opened target decision outcomes."
+  },
+  "legacy_evidence_retained": [
+    "performance/baselines/v51_observed_terminal_closure_evidence.json",
+    "paper_artifacts/legacy_frontend_evidence.json"
+  ]
+}

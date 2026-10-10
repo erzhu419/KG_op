@@ -1,0 +1,39 @@
+{
+  "status": "completed in Stage92: 24 source scales and covariance budgets reproduced; f floor inflates scale, g does not",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "correlation_results": "paper_artifacts/legacy_joint_population_coefficient_correlation_score_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heads": [
+    "f",
+    "g"
+  ],
+  "basis_of_next_step": "Task residual coefficient correlation directions have weak local source Fisher information (all below.408 for unit diagnostic perturbation); a small source-only gain along a selected direction does not justify a new covariance model. Inspect the existing source estimation scales instead. The regularizer uses mean(max(var(y)-mean(noise),.02)) and both common/task models retain a weak tail .01*that signal. The absolute .02 floor can be larger than actual function variation, but its materiality must be measured before proposing a change.",
+  "calculation": "Use only the same24 five-task f/g source laws and training labels/noises. Reproduce each saved source_signal_scale from the exact original ddof0 within-task variance minus mean label noise and per-task .02 clipping. Record unfloored per-task corrected variances, mean nonnegative corrected signal, binding-floor count and floor-to-data signal ratio. At the actual source policy coordinates decompose a new independent task's latent function covariance into task weak tail, learned task excess/intercept, posterior common-H and white discrepancy; center g residual design as in Stage88, leave f unchanged. This is a covariance budget audit, not source posterior calibration or heldout performance.",
+  "verification": "Reconstruct the source scale exactly and reproduce beta,H,R,delta through the saved Gaussian source likelihood. Verify the variance components sum to the same diagonal new-task covariance at source coordinates. These checks detect a wrong noise head, scale convention or covariance decomposition; do not repeat correlation/filtering tests.",
+  "next_action": "Only a materially binding signal floor with a nontrivial weak-tail contribution justifies registering one source-only data-scaled weak-tail contrast. Keep the fraction.01, original basis, groups/spectra, common prior mean/intercept, likelihood/noise and all gates; do not change the fraction on validation scores, add a covariance family, inspect source6/7 or claim independent decision gains. If it is immaterial, retain the scale and reassess common source estimation.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_function_signal_floor_audit_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_function_signal_floor_audit_execution_v1.json",
+  "result": "paper_artifacts/legacy_joint_population_function_signal_floor_audit_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage91_96_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_data_scaled_f_tail_plan_v1.json"
+}

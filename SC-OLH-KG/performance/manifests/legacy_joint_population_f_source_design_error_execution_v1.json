@@ -1,0 +1,12 @@
+{
+  "status": "frozen before attribution of already scored source-design forecasts",
+  "pilot_results": "paper_artifacts/legacy_joint_population_f_source_information_pilot_v1/results.json",
+  "entrypoint": "performance/diagnose_legacy_f_source_design_error.py",
+  "question": "After source-informed sampling improves actual prediction,does the remaining matched GP gap come from level or centered shape?",
+  "calculation": "Use frozen Stage151 predictions and its already-scored twelve-site noisy source batch labels. Exact MSE=level_error_squared+centered_shape_error. Separate design effect,common-design GP contrast and GP-own-design contrast. No prior replay,fitting,new paid labels or parameter selection.",
+  "verification": "Existing exact decomposition asserts ensure attribution sums to the saved observed MSE;failure prevents interpretation.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;small frozen JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_source_design_error_v1",
+  "decision": "Use the remaining error component to choose a source-learning diagnostic. Do not expand the failed overall method comparison,change the selected prefix or upgrade initialization gains to structural-prior/decision superiority. Complete-model HOLD remains."
+}

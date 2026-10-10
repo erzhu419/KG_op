@@ -1,0 +1,62 @@
+{
+  "status": "registered after both Stage80 transcript fits converged and passed the unchanged development gate, before all four fixed-parameter source6/7 forecasts or scores",
+  "calibration_execution": "performance/manifests/legacy_joint_population_task_transcript_calibration_execution_v1.json",
+  "calibration_results": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1/results.json",
+  "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "fixed_multipliers": {
+    "5": [
+      0.8560570510647199,
+      0.8038509228156204
+    ],
+    "6": [
+      3.6872687914154487,
+      0.4940610402231142
+    ]
+  },
+  "basis_of_next_step": "Source-only whole-transcript predictive calibration converges from the same native start. Task-intercept/function multipliers are(.8561,.8039)/(3.6873,.4941), replacing the conditional-only345-fold intercept. Sequential objective improves .000901/.016593; the unchanged training paid-MSE/raw-density development gate passes both assignments. Source6/7 have not selected these parameters. Test the fixed calibrated law using the same original repair gate and retain all failures.",
+  "candidate": "Use Stage72 cached full-source selected native beta,H,R,delta. Keep beta,H,delta and the original weak tail unchanged. Scale native task intercept variance by a and non-intercept excess above the weak tail by b, using the fixed Stage77 pair for its assignment. Save the new predictive-prior parameters as calibration, not a native source-likelihood fit. No source or risk refit, new spectrum/support, target observations or parameter change.",
+  "information_contract": "Original216-call mean information,144-call risk subset, unchanged full/six-deletion risk-only identities and equal prior weights. Use the same complete73-policy bank and paired raw observations0/1. Keep f/eta laws and Gaussian moment updates unchanged.",
+  "freeze_rule": "Save both full-source calibrated prior laws before indexing heldout paid observations. At a=b=1 reproduce native four-head prior/paid moments, episode variance, identity names/weights and paid predictive density at all73 policies. Freeze all four calibrated prior/paid forecasts before71-site scoring. No family selection or multiplier change on these opened development holdouts.",
+  "comparison": "Keep Stage53 same216-call native and GP, Stage72 selected native, and original144-call structural controls separate. Original repair gate stays g MSE nonincrease, joint raw batch density nondecrease and g raw batch density strict improvement in every case, against both same-information and144-call structural controls. Report all regressions and prior uncertainty changes; a training acceptance pass is not a source gate pass.",
+  "next_action": "A passing source gate permits only a separately registered bounded target decision diagnostic. Otherwise stop target promotion and diagnose the fit/transfer limitation from cached parameters and forecasts. Do not cap the large multiplier or search variants using source6/7, launch a covariance grid or waive failed cases.",
+  "cost": {
+    "new_scalar_fits": 0,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+  "entrypoint": "performance/check_legacy_task_transcript_holdout.py",
+  "output": "paper_artifacts/legacy_joint_population_task_transcript_holdout_v1",
+  "previous_holdout_execution": "performance/manifests/legacy_joint_population_task_transfer_holdout_execution_v1.json"
+}

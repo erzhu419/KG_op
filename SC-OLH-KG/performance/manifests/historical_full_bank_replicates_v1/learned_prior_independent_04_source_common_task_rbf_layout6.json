@@ -1,0 +1,22 @@
+{
+  "status": "Development continuation on six already opened tasks; not independent confirmation.",
+  "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "registration_output": "paper_artifacts/historical_full_bank_replicates_v1",
+  "query_rule": "For each task/layout freeze both models' previously frozen direct stopping recommendations as the common two-query roster. No truth-based filtering. Each learner sees the same cached paired observations at both queries.",
+  "batch_sizes": [
+    1,
+    4
+  ],
+  "observation_seed": 2026100906,
+  "observations": "Four new physical paired episodes per distinct task/global-policy query, shared across layouts and models. Single-observation arm receives only the first episode; repeated arm uses this fresh four-episode batch. Existing initialization samples never enter new sample variances.",
+  "target_prior": "Native all-eight-identity positive source mixture and frozen same-source GP on all73 public policies. Restore and replay exactly the original two paid samples. Keep every source component and update the shared identity using both heads.",
+  "terminal": "Diagnostic direct-only restriction of the existing terminal class: two direct allocations per73 primary. Same utility, tolerance verifier, source identity masses and total362-call cap. Debits2,3,6 leave360,359,356 verification calls. Full365 guarded-action precision remains HOLD; this experiment is not a KG policy or a precision repair.",
+  "reuse": "JointResponseMixture.update_replicates and the historical scalar local_joint_moments likelihood. Generalize existing vectorized raw moment integration to the same sample-variance likelihood, preserving its1e-8 numerical error cutoff. Native scalar anchors verify every identity/head before four-observation updates.",
+  "maximum_identity_integration_error_bound": 2e-06,
+  "maximum_case_cpu_seconds": 480,
+  "total_call_cap": 362,
+  "barrier": "All120 recommendations from24 shards freeze before any scoring truth is consulted. Cache shared observations once. No actual terminal verifier or source refit.",
+  "parallel": "24 independent task/layout/model shards, one CPU each, allowed node001-node006. First complete four source/GP layout smokes, then dispatch the remaining20. Source RAM12GB; peak measurement from smoke determines bulk admission.",
+  "output": "paper_artifacts/historical_full_bank_replicates_v1/shards/learned_prior_independent_04_source_common_task_rbf_layout6",
+  "state_name": "learned_prior_independent_04_source_common_task_rbf_layout6"
+}

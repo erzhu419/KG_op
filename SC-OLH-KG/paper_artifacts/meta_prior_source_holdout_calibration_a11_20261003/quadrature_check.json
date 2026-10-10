@@ -1,0 +1,86 @@
+{
+  "purpose": "Refit the held-source fold and compare 32/64/96-point family integration at the largest score change in every A11 group.",
+  "orders": [
+    32,
+    64,
+    96
+  ],
+  "tolerance": 0.0001,
+  "checks": [
+    {
+      "seed": 51,
+      "archive_group": "shared",
+      "held_task": 7,
+      "arm": "fixed_source",
+      "step": 24,
+      "contrast": "adapted_minus_source",
+      "max_abs_log_score_change": 8.881784197001252e-16
+    },
+    {
+      "seed": 51,
+      "archive_group": "shared",
+      "held_task": 7,
+      "arm": "fixed_source",
+      "step": 24,
+      "contrast": "a9_minus_source",
+      "max_abs_log_score_change": 8.881784197001252e-16
+    },
+    {
+      "seed": 48,
+      "archive_group": "shared",
+      "held_task": 2,
+      "arm": "risk_ard_mixture",
+      "step": 17,
+      "contrast": "adapted_minus_source",
+      "max_abs_log_score_change": 8.881784197001252e-16
+    },
+    {
+      "seed": 48,
+      "archive_group": "shared",
+      "held_task": 2,
+      "arm": "risk_ard_mixture",
+      "step": 17,
+      "contrast": "a9_minus_source",
+      "max_abs_log_score_change": 8.881784197001252e-16
+    },
+    {
+      "seed": 55,
+      "archive_group": "separate_heads",
+      "held_task": 0,
+      "arm": "fixed_source",
+      "step": 16,
+      "contrast": "adapted_minus_source",
+      "max_abs_log_score_change": 1.3322676295501878e-15
+    },
+    {
+      "seed": 55,
+      "archive_group": "separate_heads",
+      "held_task": 0,
+      "arm": "fixed_source",
+      "step": 16,
+      "contrast": "a9_minus_source",
+      "max_abs_log_score_change": 1.3322676295501878e-15
+    },
+    {
+      "seed": 48,
+      "archive_group": "separate_heads",
+      "held_task": 2,
+      "arm": "risk_ard_mixture",
+      "step": 17,
+      "contrast": "adapted_minus_source",
+      "max_abs_log_score_change": 4.440892098500626e-15
+    },
+    {
+      "seed": 48,
+      "archive_group": "separate_heads",
+      "held_task": 2,
+      "arm": "risk_ard_mixture",
+      "step": 17,
+      "contrast": "a9_minus_source",
+      "max_abs_log_score_change": 4.440892098500626e-15
+    }
+  ],
+  "cpu_seconds": 0.6207122749999999,
+  "max_abs_log_score_change": 4.440892098500626e-15,
+  "passed": true
+}

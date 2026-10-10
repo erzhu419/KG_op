@@ -1,0 +1,31 @@
+{
+  "stage": "meta_prior_covariance_mixture_family_diagnostic_a38_20261003",
+  "status": "complete_family_identification_and_within_family_loss_separated",
+  "fixed_after_a37_before_family_diagnostic": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/validation.json",
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/forecasts.json.gz",
+    "paper_artifacts/meta_prior_heterogeneous_covariance_mixture_a36_20261003/validation.json",
+    "paper_artifacts/meta_prior_heterogeneous_covariance_mixture_a36_20261003/forecasts.json.gz"
+  ],
+  "question": "Would knowing the true ordinary/high-frequency task family remove A37 regressions, or do losses remain within the correct class covariance?",
+  "oracle": "Only for diagnosis, use the declared simulator mechanism: high_frequency_risk has high-frequency eta functions; the other four regimes use ordinary eta functions. Identify the learned high-frequency class by its larger source-fitted high-frequency variance fraction. O retains local structural/full masses1/4,1/4 and gives mass1/2 to the known-family covariance class. This is unavailable to an actual algorithm, is not selected by held labels, and does not change any source fit or L prediction.",
+  "accounting": "Reconstruct L, LG and I from all unchanged cached component evidence/densities and frozen source class probabilities. Use the exact identity L-I=log((1-wMeta)+wMeta*exp(metaScore-I)), with class conditional weights learned from past eta evidence. Report meta mass and correct-family conditional class posterior at steps9/24. Compare A37 versus A36 scores and training likelihood by fold; the originally converged fold must reproduce exactly. No causal claim that one term uniquely explains a loss.",
+  "analysis": "Report O-I, O-L and A37-L minus A36-L by regime and overall; four pair blocks and20,000 bootstrap draws. Also report standalone meta density loss frequency and its remaining posterior mass. Retain all cases. Oracle success would motivate learnable class assignment; oracle failure identifies limits beyond family assignment for the current learned covariances.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 10,
+    "new_gaussian_forecasts": 0,
+    "new_covariance_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "paired_bootstrap_seed": 20261114,
+  "next": "Retain the converged but unpromoted covariance model and diagnose the remaining source structure problem. Do not promote it to conditional-sharing calibration or evaluation56-63. Any next model must be a new frozen source-learning hypothesis, with a same-label full-dictionary control and complete upstream held-pair exclusion; neither family oracle nor held-result-selected class weights can become the method.",
+  "next_plan": "performance/meta_prior_risk_information_design_plan.json"
+}

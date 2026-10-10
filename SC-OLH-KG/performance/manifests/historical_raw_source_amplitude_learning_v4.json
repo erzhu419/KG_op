@@ -1,0 +1,31 @@
+{
+  "status": "registered before the fourth source-only covariance iteration",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_stationary_source_continuation_v1/results.json",
+  "previous_precision": "paper_artifacts/historical_stationary_source_continuation_v1/phase_results.json",
+  "maximum_single_thread_cpu_seconds": 90,
+  "optimizer": {
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "scope": "All64 heads continue from the certified32 third-step mixtures using the same source templates,raw likelihood,means,covariance builders,Q and posterior gates. Track consecutive stationarity from the actual selected parameters. Any mean-head proposal failing split Q can only be held at its previous parameters after two registered stationary iterations;failed proposals remain archived. Risk updates require positive full/split Q. Recondition only actual HOLD candidates,one local CPU thread,no new labels,target evaluation or server work.",
+  "cost": {
+    "new_source_labels": 0,
+    "new_source_MCMC_sweeps": 0,
+    "new_covariance_Mstep_optimizations": 64,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_raw_source_amplitude_learning_v4"
+}

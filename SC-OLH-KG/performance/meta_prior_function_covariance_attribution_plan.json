@@ -1,0 +1,38 @@
+{
+  "stage": "meta_prior_function_covariance_attribution_a18_20261003",
+  "status": "source_attribution_complete_covariance_branch_loss_identified",
+  "fixed_after_a17_before_a18_results": true,
+  "question": "Why does head-derived covariance reallocation lose on separate-head sources despite strong function association on shared sources: branch prediction quality, residual branch mass or a changed R prior?",
+  "inputs": [
+    "paper_artifacts/meta_prior_function_covariance_source_a17_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_function_covariance_source_a17_20261003/validation.json"
+  ],
+  "analysis": "Retain the frozen 16^3 primary macro priors and rho=32 branch evidence/densities. Decompose A17 minus same-pool I/R into the F/G contribution at fixed A17 q and the q-calibration contribution. Report pure F and G forecast contrasts with I and their previously accumulated log-evidence ratios. Compute I/F/G/R posterior masses before steps 9 and 24, plus the change over the path. Average eight held tasks within each archive, then pair 16 seeds separately in both source groups and both prior arms.",
+  "scope": "Diagnostic accounting only. Pure branch scores and removed-branch contrasts do not define new winning methods. No source-fit covariance estimate is treated as an independent prediction label, and no target data or full-archive eta information is used to condition held-task weights.",
+  "within_fg_breakdown": "Before inspecting attribution results, also define each head's exact accounting contribution as the average of its two removal-order log-score differences, transferring removed mass to I. These two contributions sum to the combined F/G effect; they are explanatory quantities, not fitted weights or additional methods.",
+  "decision": "Judge whether meaningful conditional function information is being erased by a common macro prior or whether the proposed equal-within-selection reallocation itself predicts poorly. Identify the required form of a future source-trained joint prior and any missing fold-aware source information; do not retune or revive A17 using these results.",
+  "source_cohort": {
+    "paired_seeds": 16,
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "prior_profiles": 512,
+    "forecasts": 8192
+  },
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "new_source_fits": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "kg_calls": 0,
+    "new_searches": 0
+  },
+  "paired_bootstrap_seed": 20261027,
+  "limitations": "Explanatory reuse of A17 source development evidence, not independent confirmation or a basis for choosing the best seed/group-specific weight. Source associations alone do not establish decision benefits.",
+  "result_artifacts": "paper_artifacts/meta_prior_function_covariance_attribution_a18_20261003",
+  "next_plan": "performance/meta_prior_source_covariance_geometry_plan.json"
+}

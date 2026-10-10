@@ -1,0 +1,134 @@
+{
+  "status": "Registered before the complete17-case first pass;preserve all numerical failures and negative values.",
+  "entrypoint": "performance/check_historical_remaining_queries.py",
+  "parent_plan": "performance/manifests/historical_remaining_query_grids_v1.json",
+  "previous_coverage": "paper_artifacts/historical_query_objective_legendre_v1/phase_results.json",
+  "cases": [
+    {
+      "layout": "5",
+      "arm": "source_structural_mixture",
+      "query": 4
+    },
+    {
+      "layout": "5",
+      "arm": "source_structural_mixture",
+      "query": 6
+    },
+    {
+      "layout": "5",
+      "arm": "source_structural_mixture",
+      "query": 7
+    },
+    {
+      "layout": "5",
+      "arm": "source_structural_mixture",
+      "query": 1
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 4
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 6
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 7
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 1
+    },
+    {
+      "layout": "6",
+      "arm": "source_structural_mixture",
+      "query": 6
+    },
+    {
+      "layout": "6",
+      "arm": "source_structural_mixture",
+      "query": 4
+    },
+    {
+      "layout": "6",
+      "arm": "source_structural_mixture",
+      "query": 2
+    },
+    {
+      "layout": "6",
+      "arm": "source_structural_mixture",
+      "query": 7
+    },
+    {
+      "layout": "6",
+      "arm": "source_structural_mixture",
+      "query": 1
+    },
+    {
+      "layout": "6",
+      "arm": "source_common_task_rbf",
+      "query": 6
+    },
+    {
+      "layout": "6",
+      "arm": "source_common_task_rbf",
+      "query": 4
+    },
+    {
+      "layout": "6",
+      "arm": "source_common_task_rbf",
+      "query": 2
+    },
+    {
+      "layout": "6",
+      "arm": "source_common_task_rbf",
+      "query": 7
+    }
+  ],
+  "objective_prefixes": [
+    16,
+    32
+  ],
+  "risk_complement_prefixes": [
+    32,
+    64
+  ],
+  "risk_tail_orders": [
+    16,
+    32
+  ],
+  "low_constraint_probability": 0.125,
+  "initial_raw_powers": [
+    10,
+    12
+  ],
+  "final_raw_powers": [
+    12,
+    14
+  ],
+  "seed": 202610077,
+  "maximum_inverse_cdf_error": 1e-08,
+  "maximum_numerical_adaptation_difference": 0.0001,
+  "maximum_fixed_action_tower_residual": 0.0001,
+  "anchor_conditional_power": 16,
+  "anchor_full_joint_power": 18,
+  "extended_anchor_conditional_power": 18,
+  "extended_anchor_full_joint_power": 20,
+  "maximum_anchor_branch_error": 0.0002,
+  "maximum_single_thread_cpu_seconds": 1500,
+  "scope": "All17 missing frozen balanced4 model/query cases. Reuse source fields,GP fits,budgets,40 actions,raw likelihood and positive probability-space rules. Density checks precede utilities. Initial1024/4096-node terminal diagnostics cover every case before any16384-node refinement;append only missing powers for failed diagnostics without recomputing the old nodes. Analytically integrate each guarded primary risk mean,retaining all covariance and source identities. Check the largest actual risk-branch drift against native complete raw transport;extend a failed reference without changing its2e-4 threshold. Do not change candidate actions,source weights,paid states or model law to improve signs. Keep raw fixed-action tower checks separate from control-variate adaptive diagnostics. No source fits,new physical labels,verifier calls,independent targets,server jobs or full-ranking claim.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_labels": 0,
+    "new_physical_target_episodes": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0,
+    "independent_targets_opened": 0
+  },
+  "output": "paper_artifacts/historical_remaining_queries_v2"
+}

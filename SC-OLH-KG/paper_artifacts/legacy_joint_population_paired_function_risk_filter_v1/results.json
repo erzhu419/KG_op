@@ -1,0 +1,236 @@
+{
+  "execution": {
+    "status": "registered numerical repair after192-order cap failure; no model/source gate change",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "paired_source_execution": "performance/manifests/legacy_joint_population_paired_task_direction_fit_v1.json",
+    "paired_source_results": "paper_artifacts/legacy_joint_population_paired_task_direction_fit_v1/results.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "failed_mixture_results": "paper_artifacts/legacy_joint_population_counterbalanced_complete_mean_uncertainty_v1/results.json",
+    "source_dependence_results": "paper_artifacts/legacy_joint_population_counterbalanced_source_dependence_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "basis_of_next_step": "Full-rank complete deletion mixtures lose joint/g density in all eight source cases. Source-only paired f/g task moments reveal joint covariance directions beyond independent-head directions, and both paired scalar fits converge. Current JointResponseMixture assumes independent f/eta_f and g/eta_g fields within each identity, so it cannot propagate the fitted off-diagonal blocks unchanged.",
+    "initialization": "Project the full54-coefficient common posterior plus task covariance from the frozen paired fits to all73 public policies, retaining f/g cross-candidate blocks and head discrepancies. Combine this same mean law with each of the old full48/six-deleted40-record risk priors and their own public maps. Latent candidate/head order is(f,eta_f,g,eta_g). Uniform1/7 complete-identity weights; no deleted mean mixture or additional risk learning.",
+    "paid_update": "A physical episode supplies paired(f,centered g) with independent conditional Normal episode errors exp(eta_f)/exp(eta_g), while the latent four-field prior is correlated. Integrate the two eta variables after analytically conditioning both mean variables. Extend local posterior moments to the full field using Gaussian conditional moments and project after each paid batch, preserving all cross blocks. Update each identity weight using its paired predictive evidence, not the product of marginal predictive densities.",
+    "batch_density": "Three-repeat mean/variance labels use the same conditional Normal plus two log-chi-square variance densities as the current contract. Head marginal scores may use the existing two-dimensional local filter; joint density must integrate the complete four-dimensional latent law. Score fresh data without updating the paid posterior.",
+    "numerics": "Use analytic Gaussian conditioning to keep numerical integration two-dimensional. Prefer vectorized quadrature with an independent correlated-case integral comparison and a fixed accuracy comparison before source scoring; a numerical discrepancy blocks interpretation of prediction scores. Avoid adding a dense high-dimensional integral or a server matrix.",
+    "checks": "Zero coupling must reproduce the old same216-call conditional fields, shared identity weights, raw paid evidence and moments after identical two records. A correlated toy tests nonzero head cross blocks and joint evidence against an independent low-dimensional integral. Preserve source-fit covariance when initializing; test that a paid f observation can update correlated g, and that source scoring leaves posterior state unchanged.",
+    "freeze_rule": "Freeze both source-only fitted priors and all four coupled holdout forecasts after the same two raw records0/1 before scoring policies2..72. Holdout outcomes choose no prior parameter, representation, quadrature resolution or identity weight hyperparameter. No target observations/truth or known physical geometry enters this phase.",
+    "controls": "Same216-call structural and flat risk-only mixtures and strong complete GP from Stage53, with unchanged initial observations and proper batch density. Keep both assignments and all four source cases; retain original144-call structural repair reference and failed variants.",
+    "source_gate": "Require g MSE nonincrease, joint batch density nondecrease and g batch density improvement versus the same216-call structural control at both holdouts under both assignments, and also satisfy the original144-call repair gate. Report every case. No partial head/layout selection, after-the-fact gate waiver or promotion of training NLL improvement.",
+    "next_action": "Only a candidate passing both source gates may enter a separately registered target diagnostic. Risk-factor recovery, independent confirmation, terminal recommendation and KG remain separate required evidence; do not launch them automatically.",
+    "execution": "local serial single-thread, cached labels and frozen source fits, no new source/risk fits, simulator/verifier calls, terminal integrations, target archive reads, server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_paired_function_risk_filter_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_paired_function_risk_filter_plan_v1.json",
+    "integration_orders": [
+      24,
+      48,
+      96,
+      192,
+      384
+    ],
+    "integration_tolerance": 1e-07,
+    "integration_comparison": "maximum absolute change in log evidence and prior-standardized mean/covariance moments between successive fixed quadrature orders; convergence required",
+    "zero_coupling_checks": "existing same216-call predictions: all73 policy means/variances, expected episode variances, identity weights and paid joint evidence after the same two raw records",
+    "repaired_execution": "performance/manifests/legacy_joint_population_paired_function_risk_filter_execution_v1.json",
+    "numerical_repair": "Source layout6/task06 candidate37/drop5 needs one more quadrature level:192-versus96 normalized error2.01e-7 exceeds the unchanged1e-7 tolerance. Add384, retain all source priors, observations and gates. Four tests including this real case pass.",
+    "numerical_regression_fixture": "tests/fixtures/paired_function_risk_quadrature_case.json",
+    "reused_scoring_progress": "paper_artifacts/legacy_joint_population_paired_function_risk_filter_v1/scoring_progress_first_attempt.json"
+  },
+  "summary": {
+    "5": {
+      "observed_head_mse": [
+        0.0002070265190885303,
+        0.0014093839936906915,
+        2.306093368537581,
+        2.5335568591842565
+      ],
+      "joint_batch_log_score": 1.065836857665214,
+      "response_batch_log_scores": [
+        1.076627349194434,
+        -0.007861263704844343
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9577464788732395,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.6448817359557275,
+        0.6366144344170501,
+        1.0492745599585416,
+        1.1265700666638363
+      ]
+    },
+    "6": {
+      "observed_head_mse": [
+        0.0001399130582275151,
+        0.0009347102298504416,
+        2.0490129001067072,
+        2.532179501899682
+      ],
+      "joint_batch_log_score": 1.1821359732983459,
+      "response_batch_log_scores": [
+        1.1083549255208798,
+        0.07026731328242489
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9366197183098591,
+        0.9577464788732395
+      ],
+      "predictive_standardized_residual_rms": [
+        0.5238671338051485,
+        0.5283024756255736,
+        0.981626096230636,
+        1.0040821035395417
+      ]
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_structural",
+      "g_mse_difference": 1.9495315733767272e-05,
+      "joint_batch_score_difference": -0.021314230375129917,
+      "g_batch_score_difference": -0.011426134962522455,
+      "passed": false
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_structural",
+      "g_mse_difference": 6.337687443990305e-05,
+      "joint_batch_score_difference": -0.04633408112493087,
+      "g_batch_score_difference": -0.022629436801210878,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_structural",
+      "g_mse_difference": 3.8785340495165106e-05,
+      "joint_batch_score_difference": -0.024454471684011603,
+      "g_batch_score_difference": -0.02953762184531153,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "same216_call_structural",
+      "g_mse_difference": -0.0006524995438161738,
+      "joint_batch_score_difference": 0.1418141419543213,
+      "g_batch_score_difference": 0.021118198138722698,
+      "passed": true
+    }
+  ],
+  "parent_contrasts": [
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.0001282146654872149,
+      "joint_batch_score_difference": 0.1263493918039249,
+      "g_batch_score_difference": 0.05511558568933708,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "parent_layout": "3",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": 0.00013026435209659553,
+      "joint_batch_score_difference": 0.013453055301396843,
+      "g_batch_score_difference": -0.01658406282545613,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_06",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.001453628748955774,
+      "joint_batch_score_difference": 0.21571101663048298,
+      "g_batch_score_difference": 0.15052617816043154,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "parent_layout": "4",
+      "task_id": "related_inventory_07",
+      "mean_arm": "joint_structural",
+      "reference": "original144_call_structural",
+      "g_mse_difference": -0.00118454745697746,
+      "joint_batch_score_difference": 0.08253228215417785,
+      "g_batch_score_difference": 0.10813584333147472,
+      "passed": true
+    }
+  ],
+  "same216_source_gate_passed": false,
+  "parent144_source_gate_passed": false,
+  "structural_advance_gate_passed": false,
+  "zero_coupling_reproduction": [
+    {
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "passed": true
+    }
+  ],
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 13.583132142
+}

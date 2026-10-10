@@ -1,0 +1,361 @@
+{
+  "status": "TERMINAL_COMPLETE_PREDICTIVE_HOLD",
+  "latest_completed_phase": 26,
+  "latest_completed_actual_power": 18,
+  "running_phase": null,
+  "running_actual_powers": [],
+  "latest_development_preview": {
+    "cases": [
+      {
+        "case": "source_n1",
+        "replicates": 1,
+        "action_count": 365,
+        "prefixes": [
+          32,
+          128
+        ],
+        "net": 0.013575770201553207,
+        "raw_optimal_net": 0.01363081342636019,
+        "native_choice_loss": 5.504322480696586e-05,
+        "projected_bias_at_selected_action": 0.002361806776899374,
+        "fixed_action_tower_residual": 0.00022432644602984886,
+        "numerical_changes": [
+          4.199873300386736e-06,
+          0.0,
+          4.33178620354302e-06,
+          6.582940415000849e-08,
+          0.0
+        ],
+        "gates": {
+          "baseline": true,
+          "predictive": true,
+          "raw_action": true,
+          "native_action": true,
+          "evidence": true,
+          "identity": true
+        },
+        "terminal_diagnostics_passed": true,
+        "fixed_action_predictive_tower_diagnostic_passed": false,
+        "full_predictive_integration_admitted": false,
+        "maximum_raw_action_difference": 9.943988185578262e-05,
+        "maximum_native_action_difference": 9.976966853542102e-05,
+        "predictive_log_evidence_error": 7.720349934547954e-05
+      }
+    ],
+    "complete": true,
+    "collection_cpu_seconds": 33.004157654,
+    "new_physical_calls": 0,
+    "new_source_fits": 0,
+    "new_verifier_calls": 0,
+    "independent_confirmation": false,
+    "algorithmic_query_selection_complete": false,
+    "scope": "Frozen source single-call query63; reuse admitted body rules, positive upper-CDF-tail integration, original gates.",
+    "finish_cpu_seconds": 90.082545238
+  },
+  "source128_reference": [
+    {
+      "case": "source_n1",
+      "replicates": 1,
+      "action_count": 365,
+      "prefixes": [
+        32,
+        128
+      ],
+      "net": 0.013488653380710482,
+      "raw_optimal_net": 0.013544078362585534,
+      "native_choice_loss": 5.542498187498983e-05,
+      "projected_bias_at_selected_action": 0.0023040681767827363,
+      "fixed_action_tower_residual": 0.00010375269891574335,
+      "numerical_changes": [
+        4.842025454671051e-06,
+        0.0002680770076022576,
+        8.307581156330457e-08,
+        0.0
+      ],
+      "gates": {
+        "baseline": true,
+        "predictive": false,
+        "raw_action": true,
+        "native_action": true,
+        "evidence": true,
+        "identity": true
+      },
+      "terminal_diagnostics_passed": true,
+      "fixed_action_predictive_tower_diagnostic_passed": false,
+      "full_predictive_integration_admitted": false,
+      "maximum_raw_action_difference": 9.943988185578262e-05,
+      "maximum_native_action_difference": 9.976966853542102e-05,
+      "predictive_log_evidence_error": 7.720349934547954e-05
+    }
+  ],
+  "original_prior_preserved": true,
+  "action_count": 365,
+  "frozen_query": 63,
+  "paid_initial_episodes": 2,
+  "paid_future_episodes": 1,
+  "remaining_validation_budget": 359,
+  "independent_confirmation": false,
+  "algorithmic_query_selection_complete": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "fixed_axis_diagnostic": {
+    "complete": true,
+    "rows": [
+      {
+        "objective_prefix": 32,
+        "risk_body_prefix": 128,
+        "risk_tail_order": null,
+        "expected_reward": 0.7439673057168611,
+        "factorized_fixed_action_tower_residual": 0.00010488169333267017
+      },
+      {
+        "objective_prefix": 512,
+        "risk_body_prefix": 512,
+        "risk_tail_order": null,
+        "expected_reward": 0.74384007900882,
+        "factorized_fixed_action_tower_residual": -2.2345014708435862e-05
+      },
+      {
+        "objective_prefix": 32,
+        "risk_body_prefix": 64,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7451371745135986,
+        "factorized_fixed_action_tower_residual": 0.0012747504900701978
+      },
+      {
+        "objective_prefix": 32,
+        "risk_body_prefix": 128,
+        "risk_tail_order": 16,
+        "expected_reward": 0.7440871784571799,
+        "factorized_fixed_action_tower_residual": 0.00022475443365144177
+      },
+      {
+        "objective_prefix": 32,
+        "risk_body_prefix": 128,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7440867999079523,
+        "factorized_fixed_action_tower_residual": 0.00022437588442392187
+      },
+      {
+        "objective_prefix": 512,
+        "risk_body_prefix": 128,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7440903057806358,
+        "factorized_fixed_action_tower_residual": 0.00022788175710741765
+      },
+      {
+        "objective_prefix": 32,
+        "risk_body_prefix": 512,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7440522942374641,
+        "factorized_fixed_action_tower_residual": 0.00018987021393568337
+      },
+      {
+        "objective_prefix": 512,
+        "risk_body_prefix": 512,
+        "risk_tail_order": 32,
+        "expected_reward": 0.744055799947166,
+        "factorized_fixed_action_tower_residual": 0.00019337592363755096
+      }
+    ],
+    "tail_values": {
+      "4": {
+        "16": [
+          0.8034003198467237,
+          0.7979435492185056,
+          0.7877411028978185,
+          0.7720930008999882,
+          0.7499079152015599,
+          0.7196170852022045,
+          0.6790939502678118,
+          0.6256624102664254,
+          0.5564279010390102,
+          0.4694902326449555,
+          0.3669893551847269,
+          0.25976229903781717,
+          0.16616895975721274,
+          0.09765903232951882,
+          0.052662095137892044,
+          0.02413370771520499
+        ],
+        "32": [
+          0.8043337762778361,
+          0.8029479705785655,
+          0.8004298652358383,
+          0.7967355386620301,
+          0.791800851696276,
+          0.7855394515509999,
+          0.7778406821332635,
+          0.7685670649848693,
+          0.7575513891434519,
+          0.744593553047481,
+          0.7294574495876138,
+          0.7118684335602592,
+          0.6915123229688228,
+          0.6680375548538483,
+          0.6410631723971084,
+          0.6101969195038726,
+          0.5750699792494753,
+          0.5353976681071089,
+          0.49107766535785785,
+          0.44233575932752,
+          0.3899151763777273,
+          0.33526316122764266,
+          0.2805829776673592,
+          0.2285371979880784,
+          0.1815289872576318,
+          0.1409955791893685,
+          0.10727489686200306,
+          0.07993243373787869,
+          0.05813861619584616,
+          0.0409124291568753,
+          0.027182151576018443,
+          0.01531152035212575
+        ]
+      },
+      "5": {
+        "16": [
+          0.8475912787812827,
+          0.8426205460451579,
+          0.8332929786686621,
+          0.8189086031932797,
+          0.7983737127812229,
+          0.7701122115881285,
+          0.731978337162718,
+          0.6812394949913281,
+          0.6148094759322456,
+          0.5301260124513969,
+          0.42730751658661187,
+          0.31278698584213166,
+          0.20158794903234506,
+          0.11147463621333864,
+          0.05118490080426826,
+          0.017483535066513525
+        ],
+        "32": [
+          0.848440262021565,
+          0.8471797229763796,
+          0.844887030853718,
+          0.8415183806307132,
+          0.8370096974823285,
+          0.8312746398489167,
+          0.8242024622746154,
+          0.8156554342966649,
+          0.8054658521235561,
+          0.7934327737121576,
+          0.7793187356838507,
+          0.7628469167874075,
+          0.743699540730585,
+          0.7215188182146561,
+          0.6959124838639535,
+          0.6664670559813435,
+          0.632773351840611,
+          0.5944703704162131,
+          0.5513148086712807,
+          0.5032826694285922,
+          0.4507034696428994,
+          0.3944113377322255,
+          0.33586613383280395,
+          0.2771576950074869,
+          0.22079393902818528,
+          0.1692544972251349,
+          0.12446633737644869,
+          0.08745635564779614,
+          0.05831442254677907,
+          0.03639865145202527,
+          0.02062451598976097,
+          0.009678321344161918
+        ]
+      }
+    },
+    "new_fixed_action_evaluations": 96,
+    "reused_fixed_action_values": 2048,
+    "all_inner_rules_passed": true,
+    "maximum_evidence_error": 1.2372325386422744e-12,
+    "omitted_origin_mass": 5.901210981232743e-12,
+    "cpu_seconds": 4.668739532,
+    "new_physical_calls": 0,
+    "new_source_fits": 0,
+    "new_verifier_calls": 0,
+    "independent_confirmation": false,
+    "scope": "Known-identity fixed-action factorization for axis attribution; this does not admit the adaptive mixed-posterior KG bank."
+  },
+  "body_rule_screening_status": "FIXED_ACTION_PASS",
+  "fixed_body_diagnostic": {
+    "complete": true,
+    "rows": [
+      {
+        "objective_prefix": 32,
+        "risk_body_order": 16,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7438710908998762,
+        "factorized_fixed_action_tower_residual": 8.666876347818153e-06
+      },
+      {
+        "objective_prefix": 512,
+        "risk_body_order": 16,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7438745957555487,
+        "factorized_fixed_action_tower_residual": 1.2171732020282988e-05
+      },
+      {
+        "objective_prefix": 32,
+        "risk_body_order": 32,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7438639502961435,
+        "factorized_fixed_action_tower_residual": 1.5262726150711003e-06
+      },
+      {
+        "objective_prefix": 512,
+        "risk_body_order": 32,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7438674551180543,
+        "factorized_fixed_action_tower_residual": 5.031094525875801e-06
+      },
+      {
+        "objective_prefix": 32,
+        "risk_body_order": 64,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7438603116318854,
+        "factorized_fixed_action_tower_residual": -2.1123916430498824e-06
+      },
+      {
+        "objective_prefix": 512,
+        "risk_body_order": 64,
+        "risk_tail_order": 32,
+        "expected_reward": 0.7438638164365918,
+        "factorized_fixed_action_tower_residual": 1.3924130634057619e-06
+      }
+    ],
+    "selected_body_orders": [
+      16,
+      32
+    ],
+    "fixed_action_only_admitted": true,
+    "all_inner_rules_passed": true,
+    "maximum_evidence_error": 1.9806378759312793e-13,
+    "maximum_inverse_cdf_error": 8.636407066270425e-13,
+    "new_fixed_action_evaluations": 224,
+    "reused_fixed_action_values": 1120,
+    "cpu_seconds": 41.001490836,
+    "new_physical_calls": 0,
+    "new_source_fits": 0,
+    "new_verifier_calls": 0,
+    "independent_confirmation": false,
+    "scope": "Positive body-rule screening on the historical fixed-action law; full adaptive KG requires its complete action bank.",
+    "query": 63,
+    "prior_weights": [
+      8.247422641515386e-36,
+      8.147272405766678e-36,
+      8.699083104064694e-24,
+      7.776162150486291e-24,
+      0.6964353220376637,
+      0.30356467795643505,
+      3.78501689544287e-12,
+      2.1161940857733974e-12
+    ],
+    "omitted_origin_mass": 5.901210981232743e-12
+  },
+  "full_body_bank_status": "LOW_GROUP_RUNNING"
+}

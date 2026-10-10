@@ -1,0 +1,19 @@
+{
+  "status": "registered after valid source fits and before144-call target forecasts",
+  "source_execution": "performance/manifests/legacy_joint_population_public_mean_source_half_execution_v1.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/inputs.json",
+  "mean_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/source_fit.json",
+  "risk_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/risk_source_fit.json",
+  "target_inputs": "paper_artifacts/legacy_joint_population_source_budget_v1/inputs.json",
+  "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_public_mean_v1/target_calibration_profiles.json",
+  "output": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1",
+  "arms": ["public_mean_joint_structural", "public_mean_common_flat", "public_mean_joint_rbf"],
+  "source_information": "same48 selected labels and144 historical calls per arm; reuse all fitted mean/eta priors; reconstruct only the identical selected-label risk encoder",
+  "target_prefix": 2,
+  "target_tasks": 6,
+  "diagnostic_candidates": [27, 60, 63],
+  "freeze_rule": "freeze all18 local forecasts before cached target-truth scoring; no target-conditioned fit, action ranking or verification",
+  "interpretation": "opened-target predictive attribution after reducing all source information. No source-efficiency decision claim, independent deployment or KG evidence from these forecasts.",
+  "execution": "local serial single-thread; new simulator/verifier calls0, terminal posterior integrations0; no server jobs/pulls"
+}

@@ -1,0 +1,557 @@
+{
+  "execution": {
+    "status": "implemented with historical mixture engine;local cached diagnostic completed",
+    "source_learning_results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/results.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/frozen_inputs.json",
+    "risk_laws": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/risk_reconstruction.json",
+    "eta_components": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/mixtures.json",
+    "question": "Can retained source states identify an efficient raw marginal-likelihood learning direction for the remaining risk amplitude without forcing noisy near-stationary mean updates or more chains?",
+    "fixed_law": "Hold the accepted function law,eta center,common eta intercept,task weak covariance,original positive weak tails and selected risk shape/spectrum fixed. Only scale the common strong-shape excess above the original tail. Each arm uses its own last accepted scientific source prior and posterior,with the same roster/raw batches and diagnostic algorithm. This is one covariance-coordinate subproblem,not full meta-prior convergence.",
+    "relative_amplitude_points": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1,
+      1.25
+    ],
+    "calculation": "For each fixed amplitude a,K(a)=Kcurrent+(a-acurrent)D Astrong D^T. Evaluate log r(eta)=log N(eta;mu,K(a))-log N(eta;mu,Kcurrent) on the retained512 source posterior states. The exact source marginal-evidence ratio is E_current_posterior[r],because the raw source likelihood and function law are unchanged. Estimate -log mean(r),its chain functional ESS/Rhat,weight ESS and two-half discrepancy. No approximate variance likelihood or future labels enter this identity. Evaluate the unchanged point exactly as zero.",
+    "verification": "At the current amplitude,prior ratio and evidence difference must be zero. Its analytic derivative must match the Fisher score computed from the SAME retained states with population covariance,not full-state moments with a different normalization. Prior laws retain positive original tails at the zero strong-amplitude endpoint. Verify the evidence-ratio identity on an analytic Gaussian source specialization before interpreting the nonlinear source estimates.",
+    "precision_gates": {
+      "minimum_weight_ESS": 200,
+      "minimum_chain_functional_ESS": 100,
+      "maximum_chain_Rhat": 1.05,
+      "maximum_half_NLL_difference_per_batch": 0.02
+    },
+    "decision": "Interpret only eligible source amplitude points;failed endpoints remain failed. Evidence changes and their conditional Monte Carlo intervals determine whether direct marginal learning is feasible. No best task0 score,additional source chains,larger mixture or candidate adoption in this diagnostic. Any subsequent learned covariance still requires fresh source conditioning. If no improving point is eligible,report the remaining source learning limitation instead of forcing more draws.",
+    "maximum_single_thread_cpu_seconds": 5,
+    "cost": {
+      "source_amplitude_points": 24,
+      "new_covariance_optimizations": 0,
+      "new_source_chains": 0,
+      "new_future_predictions": 0,
+      "new_density_integrations": 0,
+      "new_source_labels": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small source JSON only;no server work or NPZ",
+    "scope": "Original orthogonal,sparse,low-order/additive and low-frequency priors retained. No task0/task1 outcomes,source6/7,target,KG,confirmation or manuscript changes. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_risk_amplitude_importance_v1"
+  },
+  "checks": [
+    {
+      "analytic_Gaussian_identity_error": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "same_retained_state_Fisher_score": 0.02052283379566759,
+      "finite_evidence_derivative": 0.02052283262389506,
+      "derivative_error": 1.1717725331705786e-09,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "same_retained_state_Fisher_score": 0.026727450028215558,
+      "finite_evidence_derivative": 0.026727448515090436,
+      "derivative_error": 1.513125121727077e-09,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "same_retained_state_Fisher_score": 0.002210636666906293,
+      "finite_evidence_derivative": 0.0022106373311568304,
+      "derivative_error": 6.642505373868901e-10,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "same_retained_state_Fisher_score": 0.005023802887254721,
+      "finite_evidence_derivative": 0.0050238031663249385,
+      "derivative_error": 2.790702174557125e-10,
+      "passed": true
+    }
+  ],
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.28519227753686255,
+      "relative_amplitude": 0,
+      "source_NLL_difference_per_batch": 9.243334555999057,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 1.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        9.228893989737392,
+        15.092971450030674
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.28519227753686255,
+      "relative_amplitude": 0.25,
+      "source_NLL_difference_per_batch": 0.008987617633738102,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 61.27634173193251,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.005346279452014,
+      "half_NLL_differences_per_batch": [
+        0.01197734514975655,
+        0.006373585106718649
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.28519227753686255,
+      "relative_amplitude": 0.5,
+      "source_NLL_difference_per_batch": 0.0007637336269645986,
+      "conditional_MC_interval_95": [
+        -0.0008102953394449997,
+        0.0023377625933741967
+      ],
+      "weight_ESS": 297.8193013088467,
+      "chain_functional_ESS": 484.931927637663,
+      "split_Rhat": 1.0055933729029836,
+      "half_NLL_differences_per_batch": [
+        0.0028147911811453596,
+        -0.0011033708700262286
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.28519227753686255,
+      "relative_amplitude": 0.75,
+      "source_NLL_difference_per_batch": -0.0008263057751819273,
+      "conditional_MC_interval_95": [
+        -0.0014371769141946016,
+        -0.00021543463616925283
+      ],
+      "weight_ESS": 465.29039072370944,
+      "chain_functional_ESS": 449.4295931233577,
+      "split_Rhat": 1.0081783513635076,
+      "half_NLL_differences_per_batch": [
+        -5.6090412451155945e-05,
+        -0.001569058309797533
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": true
+    },
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.28519227753686255,
+      "relative_amplitude": 1,
+      "source_NLL_difference_per_batch": -0.0,
+      "conditional_MC_interval_95": [
+        -0.0,
+        0.0
+      ],
+      "weight_ESS": 512.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        0.0,
+        0.0
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.28519227753686255,
+      "relative_amplitude": 1.25,
+      "source_NLL_difference_per_batch": 0.0018304543039310468,
+      "conditional_MC_interval_95": [
+        0.0013339220896317087,
+        0.002326986518230385
+      ],
+      "weight_ESS": 482.3031663192431,
+      "chain_functional_ESS": 417.2284381327486,
+      "split_Rhat": 1.0084625151790945,
+      "half_NLL_differences_per_batch": [
+        0.0014072564789636515,
+        0.002262427318833878
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "current_amplitude": 0.28848801943134805,
+      "relative_amplitude": 0,
+      "source_NLL_difference_per_batch": 6.936423722377371,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 1.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        6.921983156115705,
+        28.503963544122957
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "current_amplitude": 0.28848801943134805,
+      "relative_amplitude": 0.25,
+      "source_NLL_difference_per_batch": 0.006366481440092646,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 68.17814312449451,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 0.9958931312896987,
+      "half_NLL_differences_per_batch": [
+        0.006450354357203887,
+        0.00628294483346024
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "current_amplitude": 0.28848801943134805,
+      "relative_amplitude": 0.5,
+      "source_NLL_difference_per_batch": -0.0007022642471286219,
+      "conditional_MC_interval_95": [
+        -0.0021862386047339284,
+        0.0007817101104766845
+      ],
+      "weight_ESS": 309.4105036253176,
+      "chain_functional_ESS": 496.7156090596003,
+      "split_Rhat": 0.9958610982296536,
+      "half_NLL_differences_per_batch": [
+        -0.001124774165059535,
+        -0.00027100794000489703
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "current_amplitude": 0.28848801943134805,
+      "relative_amplitude": 0.75,
+      "source_NLL_difference_per_batch": -0.001450548616259632,
+      "conditional_MC_interval_95": [
+        -0.0020164886629022434,
+        -0.0008846085696170205
+      ],
+      "weight_ESS": 468.14662162221674,
+      "chain_functional_ESS": 488.606273489038,
+      "split_Rhat": 0.9949929501164059,
+      "half_NLL_differences_per_batch": [
+        -0.0015695866125094438,
+        -0.0013308265473287821
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": true
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "current_amplitude": 0.28848801943134805,
+      "relative_amplitude": 1,
+      "source_NLL_difference_per_batch": -0.0,
+      "conditional_MC_interval_95": [
+        -0.0,
+        0.0
+      ],
+      "weight_ESS": 512.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        0.0,
+        0.0
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "current_amplitude": 0.28848801943134805,
+      "relative_amplitude": 1.25,
+      "source_NLL_difference_per_batch": 0.0021342378972426337,
+      "conditional_MC_interval_95": [
+        0.0016227559054726,
+        0.0026457198890126677
+      ],
+      "weight_ESS": 473.9962191466449,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 0.9972510451268906,
+      "half_NLL_differences_per_batch": [
+        0.002086257774274717,
+        0.0021823287757603005
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.6577921017116809,
+      "relative_amplitude": 0,
+      "source_NLL_difference_per_batch": 20.29982760698277,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 1.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        20.285387040721105,
+        27.240812096858786
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.6577921017116809,
+      "relative_amplitude": 0.25,
+      "source_NLL_difference_per_batch": 0.01873328696002861,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 76.5598210747432,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 0.9948323331094258,
+      "half_NLL_differences_per_batch": [
+        0.01838895403767769,
+        0.019083406789970152
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.6577921017116809,
+      "relative_amplitude": 0.5,
+      "source_NLL_difference_per_batch": 0.003720882088258992,
+      "conditional_MC_interval_95": [
+        0.0021049398372803923,
+        0.005336824339237592
+      ],
+      "weight_ESS": 288.57709454062206,
+      "chain_functional_ESS": 495.3280186022573,
+      "split_Rhat": 1.0005018271779467,
+      "half_NLL_differences_per_batch": [
+        0.00339669645488061,
+        0.004050192191688691
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.6577921017116809,
+      "relative_amplitude": 0.75,
+      "source_NLL_difference_per_batch": 0.0003476902477419867,
+      "conditional_MC_interval_95": [
+        -0.0003618882863998543,
+        0.0010572687818838277
+      ],
+      "weight_ESS": 453.883490881064,
+      "chain_functional_ESS": 424.8473602752592,
+      "split_Rhat": 1.0023748902855862,
+      "half_NLL_differences_per_batch": [
+        0.00017532239679999653,
+        0.0005214961170760257
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.6577921017116809,
+      "relative_amplitude": 1,
+      "source_NLL_difference_per_batch": -0.0,
+      "conditional_MC_interval_95": [
+        -0.0,
+        0.0
+      ],
+      "weight_ESS": 512.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        0.0,
+        0.0
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "current_amplitude": 0.6577921017116809,
+      "relative_amplitude": 1.25,
+      "source_NLL_difference_per_batch": 0.0007732787950654277,
+      "conditional_MC_interval_95": [
+        8.221657027216833e-05,
+        0.0014643410198586873
+      ],
+      "weight_ESS": 465.45833671050224,
+      "chain_functional_ESS": 349.78848421338466,
+      "split_Rhat": 1.002576550933867,
+      "half_NLL_differences_per_batch": [
+        0.0009140160615139226,
+        0.0006334858876239265
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "current_amplitude": 0.6546402023643482,
+      "relative_amplitude": 0,
+      "source_NLL_difference_per_batch": 13.253788433285322,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 1.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        17.357311491979743,
+        13.239347867023659
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "current_amplitude": 0.6546402023643482,
+      "relative_amplitude": 0.25,
+      "source_NLL_difference_per_batch": 0.012138611174582795,
+      "conditional_MC_interval_95": null,
+      "weight_ESS": 49.32525828967123,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 0.9953627696646973,
+      "half_NLL_differences_per_batch": [
+        0.011351176386977635,
+        0.0129569816310894
+      ],
+      "precision_gate_passed": false,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "current_amplitude": 0.6546402023643482,
+      "relative_amplitude": 0.5,
+      "source_NLL_difference_per_batch": 0.0021796491547944608,
+      "conditional_MC_interval_95": [
+        0.0004482504817392677,
+        0.003911047827849654
+      ],
+      "weight_ESS": 275.86359635488463,
+      "chain_functional_ESS": 477.03815768209716,
+      "split_Rhat": 0.9981236901733046,
+      "half_NLL_differences_per_batch": [
+        0.0017456632411993651,
+        0.002622868249883392
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "current_amplitude": 0.6546402023643482,
+      "relative_amplitude": 0.75,
+      "source_NLL_difference_per_batch": -0.00018327566336164466,
+      "conditional_MC_interval_95": [
+        -0.0008623007340529209,
+        0.0004957494073296315
+      ],
+      "weight_ESS": 454.8527801518416,
+      "chain_functional_ESS": 455.2305125941958,
+      "split_Rhat": 0.9988723215485548,
+      "half_NLL_differences_per_batch": [
+        -0.00035967155732817097,
+        -5.373461861468698e-06
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "current_amplitude": 0.6546402023643482,
+      "relative_amplitude": 1,
+      "source_NLL_difference_per_batch": -0.0,
+      "conditional_MC_interval_95": [
+        -0.0,
+        0.0
+      ],
+      "weight_ESS": 512.0,
+      "chain_functional_ESS": 512.0,
+      "split_Rhat": 1.0,
+      "half_NLL_differences_per_batch": [
+        0.0,
+        0.0
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "current_amplitude": 0.6546402023643482,
+      "relative_amplitude": 1.25,
+      "source_NLL_difference_per_batch": 0.0011776240758109568,
+      "conditional_MC_interval_95": [
+        0.0005510433918294564,
+        0.0018042047597924573
+      ],
+      "weight_ESS": 466.91163728722387,
+      "chain_functional_ESS": 410.9173612504064,
+      "split_Rhat": 0.9999610671364626,
+      "half_NLL_differences_per_batch": [
+        0.001507268360586141,
+        0.0008531145860324885
+      ],
+      "precision_gate_passed": true,
+      "eligible_improvement_excludes_zero": false
+    }
+  ],
+  "all_identity_checks_passed": true,
+  "eligible_improving_points": 2,
+  "cpu_seconds": 0.09346198000000006,
+  "cost": {
+    "source_amplitude_points": 24,
+    "new_covariance_optimizations": 0,
+    "new_source_chains": 0,
+    "new_future_predictions": 0,
+    "new_density_integrations": 0,
+    "new_source_labels": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "historical_implementation_reused": "core.gpr.posterior_mixture_weights (d092d982,2026-07-19)",
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Cached raw-source evidence ratios in one risk covariance coordinate. Intervals describe conditional Monte Carlo error;failed weight/chain endpoints cannot select a law. Any covariance adoption requires fresh source conditioning."
+}

@@ -1,0 +1,47 @@
+{
+  "status": "registered before the complete conditional-risk batch",
+  "case": {
+    "layout": "5",
+    "selector": "spectral",
+    "support": "joint",
+    "treatment": "deconvolved_task",
+    "head": "f"
+  },
+  "source_learning": "paper_artifacts/historical_source_acceleration_selection_v1/results.json",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 16384,
+    "seed": 202610109
+  },
+  "refresh_seeds": [
+    202610110,
+    202610111
+  ],
+  "maximum_updates": 80,
+  "maximum_single_thread_cpu_seconds": 60,
+  "optimizer": {
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "scope": "Fixed selected response law,actual selected risk parameters,and existing labels. Up to80 risk-only MCEM updates with the original Q,score,evidence and two-consecutive stationarity gates. Fixed seeds;precision-triggered refresh only. Failed gates and caps terminate this case and remain recorded. Full states stay in RAM. No final response certificate,registry replacement,target adoption,new labels or server tasks.",
+  "output": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_joint_deconvolved_task_f"
+}

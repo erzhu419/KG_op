@@ -1,0 +1,80 @@
+{
+  "execution": {
+    "status": "registered before original48-source raw likelihood update",
+    "entrypoint": "performance/check_legacy_f_original_source_raw_update.py",
+    "source_contract_results": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/results.json",
+    "source_contract_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+    "collapsed_results": "paper_artifacts/legacy_joint_population_f_collapsed_source_raw_update_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "arms": [
+      "joint_spectral_geometry",
+      "source_gp"
+    ],
+    "question": "How does coherent raw conditioning of the ORIGINAL48 source batches change learned common-function posterior moments compared with fixed sample-variance/3?",
+    "law": "Use Stage200 unconditioned f and eta population Gaussian priors,with original maps,supports,positive tails,covariance templates/parameters and centers fixed at their source empirical estimates. Collapsed likelihood N(original_means;f_mean,C_f+diag(exp(eta)/3)) times the48 exact chi-square variance densities. Every original mean/S^2 likelihood factor appears once. Original32 Gaussian eta labels are NOT an extra likelihood or preconditioning step. Both f arms share the same risk population prior and48 batches;no extra source sites.",
+    "sampler": {
+      "chains": 4,
+      "warmup_sweeps_per_chain": 512,
+      "retained_sweeps_per_chain": 1024,
+      "seed": 202610072
+    },
+    "verification": "At each arm's interior eta point verify collapsed Gaussian density and conditional f posterior covariance against the dense/precision formulations. Stage199's one-site posterior check stays settled. Before interpretation require the same registered Monte Carlo precision criteria for eta and Rao-Blackwell f first/second moments. Derive common latent moments using their original joint Gaussian cross-covariance with source f and the total posterior f covariance;keep between-eta mean variation. Compare with the analytic fixed-noise common posterior,not an already-conditionally-updated prior.",
+    "monte_carlo_gate": {
+      "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+      "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+      "maximum_first_second_half_f_variance_relative_difference": 0.15
+    },
+    "decision": "If any precision gate fails,preserve the result and stop without additional draws or held-task forecasts. If all pass,register an honest source-validation predictive mixture comparison before any target update. Posterior moment summaries are diagnostics;do not collapse their non-Gaussian law to one Gaussian for paid updates or assert improved accuracy from changed training moments. No covariance hyperparameter relearning in this step.",
+    "maximum_single_thread_cpu_seconds": 40,
+    "cost": {
+      "new_source_labels": 0,
+      "new_source_coordinate_fits": 0,
+      "new_covariance_fits": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;Stage200 frozen48-source inputs,in-memory eta samples and analytic posterior sums;JSON summaries,no NPZ or server work",
+    "scope": "Original-source raw training conditional on empirical parameters,retaining the four original structural prior principles and matched GP. No task0/task1 predictions,source6/7,target,KG,confirmation or manuscript edits. Native intercept mixture reference;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_original_source_raw_update_v1"
+  },
+  "checks": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.7486012637846216e-14,
+      "precision_posterior_covariance_error": 7.20971151296811e-17,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.8762769116165146e-14,
+      "precision_posterior_covariance_error": 8.548256503690399e-17,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.759703494030873e-14,
+      "precision_posterior_covariance_error": 9.171873923194537e-17,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "dense_marginal_density_error": 0.0,
+      "precision_posterior_mean_error": 1.687538997430238e-14,
+      "precision_posterior_covariance_error": 1.171719734178187e-16,
+      "passed": true
+    }
+  ],
+  "all_checks_passed_before_sampling": true
+}

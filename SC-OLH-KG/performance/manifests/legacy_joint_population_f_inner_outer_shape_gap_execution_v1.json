@@ -1,0 +1,11 @@
+{
+  "status": "frozen after all ten honest inner raw folds;cached prediction attribution only",
+  "entrypoint": "performance/diagnose_legacy_f_inner_outer_shape_gap.py",
+  "inner_results": "paper_artifacts/legacy_joint_population_f_inner_raw_folds_v1/results.json",
+  "outer_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_pilot_v1/results.json",
+  "outer_reference_breakdown": "paper_artifacts/legacy_joint_population_f_source_design_error_v1/results.json",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_outer_shape_gap_v1",
+  "question": "Are the four already-scored outer candidate losses level or shape losses,and how does that differ from source training gains?",
+  "verification": "Reproduce cached outer MSE and candidate-minus-reference values,then require level+centered-shape differences to sum to each total gap. A mismatch blocks attribution. No new forecast or previously unscored outcome.",
+  "decision": "Retain the outer failure. Do not infer a universal filter defect from source4-versus-source5,task and query-design contrasts. No q tuning,source6/7,target,KG,independent confirmation or manuscript changes."
+}

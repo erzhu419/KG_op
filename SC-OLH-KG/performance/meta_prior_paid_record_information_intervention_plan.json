@@ -1,0 +1,35 @@
+{
+  "stage": "meta_prior_paid_record_information_intervention_a40_20261003",
+  "status": "complete_information_improves_some_recognition_without_structural_prediction_advantage",
+  "fixed_after_a39_before_intervention": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/validation.json",
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/forecasts.json.gz",
+    "paper_artifacts/meta_prior_risk_information_design_a39_20261003/candidate_information.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz"
+  ],
+  "question": "Does one risk-class-informative observation from already-paid records improve class recognition and held-record eta prediction relative to the original ninth queries at the same initial state?",
+  "cohort": "All40 training latent tasks on seeds48-55, same five mechanisms and common original first8 batches. A37 priors and all mixture masses remain fixed. Evaluation56-63 and recommendation/verification outcomes are excluded.",
+  "interventions": "Three nine-batch histories per task: common8 plus original risk_ard_mixture ninth batch, original fixed_source ninth batch, or information-selected batch. For the information selector, use only A39 cached initial-state information and observed input identities. Among each candidate's earliest unused paid batch, choose maximal information; exact ties choose smaller candidate ID. Only after choosing the batch reveal its cached eta response. No family oracle or future label enters selection.",
+  "evaluation": "Use the same held-record set for all three histories: remove the common8 records and every record at any of the three selected candidates. After updating each history with its one selected observation, average marginal eta predictive log densities over the remaining shared records without incorporating those records into the posterior. Preserve same-candidate discrepancy covariance and independent measurement noise. Report class probabilities and meta mass before/after the intervention; the correct-family probability is an audit using declared simulator family only.",
+  "analysis": "Primary information-selected minus each old-history held-record prediction score, separately for all tasks and each mechanism, four seed-pair blocks and20,000 paired bootstrap draws. Also report information ratios within the paid record pool, class probability changes, number of held records and coincident selected batches. Retain all cases and do not pick a best mechanism or model.",
+  "controls": "Selector inputs contain only cached information values, candidate/visit identities and the paid initial state. All unselected responses remain outside its input. Each selected candidate uses its earliest unused original visit. The two baseline ninth densities and initial posterior reproduce A37/A39. Shared evaluation records are identical across interventions. Coincident histories must give identical predictions. No class probability, covariance, mass, source fit or observation budget is tuned.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 10,
+    "gaussian_conditioning_solves_max": 640,
+    "new_covariance_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "paired_bootstrap_seed": 20261116,
+  "decision": "If information acquisition improves class recognition but not shared held-record prediction, preserve that separation; class information alone is insufficient. If it improves prediction, this supports a future acquisition hypothesis, not promotion of A37 or a deployment gain. Within-family failures from A38 still require a new source-conditioned function covariance hypothesis. No server or new-simulation campaign follows automatically.",
+  "limitations": "This is a retrospective intervention on the union of two adaptively selected paid history pools, with a candidate set smaller than the public384-point bank. The original historical selection itself can reveal task information. All algorithms receive the identical pool and evaluation set, but that does not turn it into independent prospective validation. Eta log score and class information do not establish verification utility or reward.",
+  "next_plan": "performance/meta_prior_latent_risk_error_plan.json"
+}

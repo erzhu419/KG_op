@@ -1,0 +1,20 @@
+{
+  "archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+  "replay": "paper_artifacts/legacy_mixture_budget_v1/replay.json",
+  "adaptation_calls": 4,
+  "source_folds": "same two leave-one-source-law-out folds, one other law for fitting, same source-only encoder/dictionary/priors and first four single raw observations",
+  "reason": "post-freeze support check shows original six-primary rosters exclude the sole feasible policy in each64-site bank; determine whether complete-bank posterior selection also fails, without choosing policies using truth",
+  "roster_rule": "include all64 public bank policies as primaries; same source-only512-node pre-score retained primary and existing paid supports; no truth-based filtering or extra observations",
+  "primary_roster_size": 64,
+  "selectors": ["paid_evidence_mixture", "fixed_retained_direct"],
+  "total_target_call_caps": [362],
+  "roster_draw_power": 9,
+  "terminal_draw_power": 13,
+  "integration_seed": 80701,
+  "control": "same pre-score retained recommendation and direct128 rule as original calibration; do not use newly revealed feasible policy indices to select the control",
+  "freeze_order": "freeze both source folds and all four terminal choices before any scoring truth; do not construct or score Inventory target",
+  "endpoints": "full-bank support and true loss to the best available terminal action; same-action joint reward/call calibration; diagnostic fixed-head substitutions as original contract",
+  "execution": "local serial single-thread; two full-bank rankings, four selected actions;0 new simulations or certificates, no server work or pulls; retain original40-choice calibration unchanged",
+  "scope": "bounded opened-source diagnosis of pruning versus posterior ranking, not a new paid policy campaign, source-prior superiority or generalization confirmation",
+  "output": "paper_artifacts/legacy_source_terminal_calibration_v1/full_bank.json"
+}

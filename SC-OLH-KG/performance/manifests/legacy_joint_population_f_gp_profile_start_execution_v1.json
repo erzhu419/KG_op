@@ -1,0 +1,50 @@
+{
+  "status": "frozen before f source GP-profile initializer refits and forecasts",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "projection_execution": "performance/manifests/legacy_joint_population_f_gp_orthogonal_projection_execution_v1.json",
+  "projection_results": "paper_artifacts/legacy_joint_population_f_gp_orthogonal_projection_v1/results.json",
+  "native_f_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Full-dictionary GP f projection retains its prediction advantage; native f common-group projection has paid MSE21.36%/24.02% below native structural f and raw density+.15393/+.16756. This differs from earlier g projection; currently learned f groups can represent the useful field, but original source beta/H/R estimation does not recover it. Stage71 initialization tested g only; test f optimization separately before expanding f support or claiming too few source tasks.",
+  "model": "Exactly the original uncentered f JointCovariancePopulationLikelihood with common and task sparse group variances, low-frequency exponents, original1% weak tail, mean/common intercept prior, source noise and discrepancy. g remains cached Stage88 centered law; eta_f/g and all risk/map laws unchanged.",
+  "initializer": "Use the existing Stage71 initial_profile calculation on each branch original source-only GP f shared-prior and residual kernels, projected on the original27-column public-policy design. Group masses minus the unchanged weak tail define nonnegative common/task amplitudes in original signal-scaled optimizer units; retain native common/task spectral exponents and fixed common intercept prior. No projected GP coefficient posterior or mean enters the fitted f law. Public query metadata is permitted; query outcomes are not used for initialization.",
+  "fit_and_selection": "One L-BFGS-B4096/ftol1e-9/gtol1e-5 f solve from this profile per five-source branch, no additional starts or completion. Compare source marginal NLL with saved native f and select candidate only if lower by more than original ftol. Freeze all12 complete selected laws before paid observations or scoring. Incomplete fit stops candidate scoring. Selection uses source training likelihood only, not deleted-fold accuracy.",
+  "verification": "Reproduce f source objective and laws at native parameters to ensure same original likelihood/regularizer/noise. Check physical variance profile and unchanged weak tail/common-intercept prior. Earlier dense likelihood/gradient verification need not be repeated. Native predictions are existing Stage93 controls.",
+  "forecast_and_gate": "Freeze original73 field forecasts after0/2 raw observations and same12 scoring policy forecasts before scores. Both layouts must have average paid f MSE nonincrease, strict proper raw f density improvement and sequential transcript density nondecrease versus original native f. Report source-NLL selection and all folds with task1-excluded results descriptively only. Retain rejected tail/centered f and projection/GP controls without adopting their posterior.",
+  "next_action": "Development pass permits separately registered full-six-source fits with the same source-NLL initialization/selection rule and cached Stage89 g, then original same216/old144 four-head source6/7 gates. Development failure stops this initializer repair; no target or source6/7 tuning. Repairing f cannot by itself be asserted to close the already failed g source6 contract.",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 4096,
+    "ftol": 1e-09,
+    "gtol": 1e-05
+  },
+  "cost": {
+    "planned_new_f_source_fits": 12,
+    "new_g_source_fits": 0,
+    "maximum_completion_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_gp_profile_start_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_gp_profile_start_plan_v1.json",
+  "entrypoint": "performance/check_legacy_f_gp_profile_start.py"
+}

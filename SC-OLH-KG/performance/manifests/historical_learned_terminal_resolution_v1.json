@@ -1,0 +1,12 @@
+{
+  "status": "Registered before the frozen terminal estimator resolution diagnostic.",
+  "entrypoint": "performance/check_historical_learned_terminal_resolution.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "kg_results": "paper_artifacts/historical_learned_prior_kg_precision_v1/results.json",
+  "powers": [9, 12, 14],
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 120,
+  "scope": "Freeze the same two paid states and40 terminal actions per budget. Reuse terminal_values at360 and359 calls with512,4096,16384 nested nodes. Record maxima,action identity,all40 values and changes from the512 rule. Source parameters/weights,target prefix,verification objective and actions remain fixed. No new fantasies,source sampling,labels or outcomes. This checks terminal quadrature resolution only;it cannot certify a KG ranking or isolate paid-filter projection bias. Keep all diagnostic resolutions regardless of sign.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_learned_terminal_resolution_v1"
+}

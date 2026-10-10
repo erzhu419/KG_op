@@ -1,0 +1,94 @@
+=== nodes ===
+  local       GPU0=0.65GB/8.00GB(free=7.12GB, mem:8%, util:3%)  cpu=15/16(wsl_load 1.2, host 6%, stale_node_probe_cache)  ram_free=20.0GB(eff)
+  jtl110gpu   GPU0=3.38GB/12.0GB(free=8.38GB, mem:28%, util:100%), GPU1=2.38GB/12.0GB(free=9.38GB, mem:20%, util:100%)  cpu=7/12(load 5.0, stale_node_probe_cache)  ram_free=477.2GB  claims(active_claims=5)
+  jtl110gpu2  GPU0=1.07GB/12.0GB(free=10.7GB, mem:9%, util:35%), GPU1=2.26GB/12.0GB(free=9.50GB, mem:19%, util:100%)  cpu=7/12(load 4.5, stale_node_probe_cache)  ram_free=489.6GB  claims(active_claims=4)
+  jtl311linux GPU0=0.82GB/8.00GB(free=6.79GB, mem:10%, util:22%), GPU1=0.76GB/8.00GB(free=6.84GB, mem:10%, util:19%)  cpu=0/8(load 31.2, stale_node_probe_cache)  ram_free=25.9GB  claims(active_claims=4)
+  node007     GPU0=4.20GB/11.0GB(free=6.55GB, mem:38%, util:92%), GPU1=1.13GB/11.0GB(free=9.63GB, mem:10%, util:92%), GPU2=1.13GB/11.0GB(free=9.63GB, mem:10%, util:100%), GPU3=1.13GB/11.0GB(free=9.63GB, mem:10%, util:100%)  cpu=48/64(load 16.0, stale_node_probe_cache)  ram_free=182.2GB
+  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=479.9GB
+  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=489.0GB
+  node001     CPU-only  cpu=69/96(load 27.0, stale_node_probe_cache, reserve 1)  ram_free=165.8GB
+  node002     CPU-only  cpu=28/96(load 68.2, stale_node_probe_cache, reserve 1)  ram_free=163.6GB
+  node003     CPU-only  cpu=0/96(load 97.3, stale_node_probe_cache, reserve 1)  ram_free=158.7GB
+  node004     CPU-only  cpu=67/96(load 29.3, stale_node_probe_cache, reserve 1)  ram_free=169.7GB
+  node005     CPU-only  cpu=66/96(load 29.8, stale_node_probe_cache, reserve 1)  ram_free=166.8GB
+  node006     CPU-only  cpu=67/96(load 29.1, stale_node_probe_cache, reserve 1)  ram_free=166.9GB
+=== dispatch === (79 queued)
+  [t121058] LAUNCH on node001:CPU  pid=22308  log=/tmp/sched_t121058.log
+  [t121059] LAUNCH on node001:CPU  pid=21852  log=/tmp/sched_t121059.log
+  [t121060] LAUNCH on node004:CPU  pid=176149  log=/tmp/sched_t121060.log
+  [t121061] LAUNCH on node006:CPU  pid=119649  log=/tmp/sched_t121061.log
+  [t121062] LAUNCH on node001:CPU  pid=22401  log=/tmp/sched_t121062.log
+  [t121063] LAUNCH on node004:CPU  pid=175784  log=/tmp/sched_t121063.log
+  [t121064] LAUNCH on node005:CPU  pid=453005  log=/tmp/sched_t121064.log
+  [t121065] LAUNCH on node006:CPU  pid=119864  log=/tmp/sched_t121065.log
+  [t121066] LAUNCH on node001:CPU  pid=22011  log=/tmp/sched_t121066.log
+  [t121067] LAUNCH on node004:CPU  pid=175510  log=/tmp/sched_t121067.log
+  [t121068] LAUNCH on node005:CPU  pid=453258  log=/tmp/sched_t121068.log
+  [t121069] LAUNCH on node006:CPU  pid=120386  log=/tmp/sched_t121069.log
+  [t121070] LAUNCH on node001:CPU  pid=21714  log=/tmp/sched_t121070.log
+  [t121071] LAUNCH on node004:CPU  pid=175449  log=/tmp/sched_t121071.log
+  [t121072] LAUNCH on node005:CPU  pid=453963  log=/tmp/sched_t121072.log
+  [t121073] LAUNCH on node006:CPU  pid=119598  log=/tmp/sched_t121073.log
+  [t121074] LAUNCH on node001:CPU  pid=22090  log=/tmp/sched_t121074.log
+  [t121075] LAUNCH on node004:CPU  pid=175035  log=/tmp/sched_t121075.log
+  [t121076] LAUNCH on node005:CPU  pid=452962  log=/tmp/sched_t121076.log
+  [t121077] LAUNCH on node006:CPU  pid=120360  log=/tmp/sched_t121077.log
+  [t121078] LAUNCH on node001:CPU  pid=21764  log=/tmp/sched_t121078.log
+  [t121079] LAUNCH on node004:CPU  pid=175858  log=/tmp/sched_t121079.log
+  [t121080] LAUNCH on node005:CPU  pid=453377  log=/tmp/sched_t121080.log
+  [t121081] LAUNCH on node006:CPU  pid=120019  log=/tmp/sched_t121081.log
+  [t121082] LAUNCH on node001:CPU  pid=21699  log=/tmp/sched_t121082.log
+  [t121083] LAUNCH on node004:CPU  pid=175443  log=/tmp/sched_t121083.log
+  [t121084] LAUNCH on node005:CPU  pid=454021  log=/tmp/sched_t121084.log
+  [t121085] LAUNCH on node006:CPU  pid=119896  log=/tmp/sched_t121085.log
+  [t121086] LAUNCH on node001:CPU  pid=21641  log=/tmp/sched_t121086.log
+  [t121087] LAUNCH on node004:CPU  pid=176133  log=/tmp/sched_t121087.log
+  [t121088] LAUNCH on node005:CPU  pid=453388  log=/tmp/sched_t121088.log
+  [t121089] LAUNCH on node006:CPU  pid=119399  log=/tmp/sched_t121089.log
+  [t121090] LAUNCH on node001:CPU  pid=21745  log=/tmp/sched_t121090.log
+  [t121091] LAUNCH on node004:CPU  pid=174969  log=/tmp/sched_t121091.log
+  [t121092] LAUNCH on node005:CPU  pid=452861  log=/tmp/sched_t121092.log
+  [t121093] LAUNCH on node006:CPU  pid=120046  log=/tmp/sched_t121093.log
+  [t121094] LAUNCH on node001:CPU  pid=21664  log=/tmp/sched_t121094.log
+  [t121095] LAUNCH on node004:CPU  pid=175747  log=/tmp/sched_t121095.log
+  [t121096] LAUNCH on node005:CPU  pid=453837  log=/tmp/sched_t121096.log
+  [t121097] LAUNCH on node006:CPU  pid=120167  log=/tmp/sched_t121097.log
+  [t121098] LAUNCH on node001:CPU  pid=21856  log=/tmp/sched_t121098.log
+  [t121099] LAUNCH on node004:CPU  pid=176018  log=/tmp/sched_t121099.log
+  [t121100] LAUNCH on node005:CPU  pid=453346  log=/tmp/sched_t121100.log
+  [t121101] LAUNCH on node006:CPU  pid=120034  log=/tmp/sched_t121101.log
+  [t121102] LAUNCH on node001:CPU  pid=21914  log=/tmp/sched_t121102.log
+  [t121103] LAUNCH on node004:CPU  pid=176201  log=/tmp/sched_t121103.log
+  [t121104] LAUNCH on node005:CPU  pid=453478  log=/tmp/sched_t121104.log
+  [t121105] LAUNCH on node006:CPU  pid=120453  log=/tmp/sched_t121105.log
+  [t121106] LAUNCH on node001:CPU  pid=22449  log=/tmp/sched_t121106.log
+  [t121107] LAUNCH on node004:CPU  pid=175266  log=/tmp/sched_t121107.log
+  [t121108] LAUNCH on node005:CPU  pid=453881  log=/tmp/sched_t121108.log
+  [t121109] LAUNCH on node006:CPU  pid=120107  log=/tmp/sched_t121109.log
+  [t121110] LAUNCH on node001:CPU  pid=22600  log=/tmp/sched_t121110.log
+  [t121111] LAUNCH on node004:CPU  pid=175564  log=/tmp/sched_t121111.log
+  [t121112] LAUNCH on node005:CPU  pid=453630  log=/tmp/sched_t121112.log
+  [t121113] LAUNCH on node006:CPU  pid=120526  log=/tmp/sched_t121113.log
+  [t121114] LAUNCH on node001:CPU  pid=22355  log=/tmp/sched_t121114.log
+  [t121115] LAUNCH on node004:CPU  pid=175644  log=/tmp/sched_t121115.log
+  [t121116] LAUNCH on node005:CPU  pid=453778  log=/tmp/sched_t121116.log
+  [t121117] LAUNCH on node006:CPU  pid=120480  log=/tmp/sched_t121117.log
+  [t121118] LAUNCH on node001:CPU  pid=22260  log=/tmp/sched_t121118.log
+  [t121119] LAUNCH on node004:CPU  pid=175962  log=/tmp/sched_t121119.log
+  [t121120] LAUNCH on node005:CPU  pid=453766  log=/tmp/sched_t121120.log
+  [t121121] LAUNCH on node006:CPU  pid=120249  log=/tmp/sched_t121121.log
+  [t121122] LAUNCH on node001:CPU  pid=22646  log=/tmp/sched_t121122.log
+  [t121123] LAUNCH on node004:CPU  pid=175877  log=/tmp/sched_t121123.log
+  [t121124] LAUNCH on node005:CPU  pid=453693  log=/tmp/sched_t121124.log
+  [t121125] LAUNCH on node006:CPU  pid=119900  log=/tmp/sched_t121125.log
+  [t121126] LAUNCH on node001:CPU  pid=22214  log=/tmp/sched_t121126.log
+  [t121127] LAUNCH on node004:CPU  pid=176062  log=/tmp/sched_t121127.log
+  [t121128] LAUNCH on node005:CPU  pid=453472  log=/tmp/sched_t121128.log
+  [t121129] LAUNCH on node006:CPU  pid=120293  log=/tmp/sched_t121129.log
+  [t121130] LAUNCH on node001:CPU  pid=22506  log=/tmp/sched_t121130.log
+  [t121131] LAUNCH on node004:CPU  pid=175946  log=/tmp/sched_t121131.log
+  [t121132] LAUNCH on node005:CPU  pid=453636  log=/tmp/sched_t121132.log
+  [t121133] LAUNCH on node006:CPU  pid=120199  log=/tmp/sched_t121133.log
+  [t121134] LAUNCH on node001:CPU  pid=22550  log=/tmp/sched_t121134.log
+  [t121135] LAUNCH on node004:CPU  pid=175691  log=/tmp/sched_t121135.log
+  [t121136] LAUNCH on node005:CPU  pid=453961  log=/tmp/sched_t121136.log

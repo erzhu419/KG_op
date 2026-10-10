@@ -1,0 +1,18 @@
+{
+  "status": "frozen_replay_existing_independent_eight_point_records",
+  "source_target_records": "paper_artifacts/inventory_physical_risk_20261004/independent_source_confirmation.json",
+  "method": "official_hyperbo",
+  "repository_commit": "e720fc1",
+  "source_training_steps": 200,
+  "heads": ["objective", "constraint_mean", "log_variance"],
+  "candidates": 96,
+  "target_initial_points": 8,
+  "verification_replicates": 928,
+  "evaluation_budgets": [1.0, 1.175478957908771, 1.1885871647186317],
+  "target_noise_contract": "pass saved per-point noise at adapt boundary; official HyperBO uses source-trained scalar likelihood noise",
+  "new_source_episode_calls": 0,
+  "new_target_episode_calls": 0,
+  "oracle_use": "post-recommendation scoring only",
+  "scientific_status": "mature-baseline initial-posterior comparison; not a full online search or final SOTA matrix",
+  "dispatch": "local isolated HyperBO environment only"
+}

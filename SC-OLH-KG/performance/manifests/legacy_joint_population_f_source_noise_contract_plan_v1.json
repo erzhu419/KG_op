@@ -1,0 +1,34 @@
+{
+  "status": "completed;source noise verified as sample-variance/3 estimate;latent-noise feasibility registered",
+  "entrypoint": "performance/diagnose_legacy_f_source_noise_contract.py",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "source_tasks": [
+    0,
+    2,
+    3,
+    4,
+    5
+  ],
+  "question": "How variable are the estimated source mean-noise weights that the current Gaussian likelihood freezes as known,and which inference statement is actually justified?",
+  "calculation": "Read only the existing five-source input noise arrays and outcome-free source replicate metadata. Report source mean label noise minimum/median/maximum,ratio and concentration of its diagonal inverse weights. For Gaussian batches with n=3,derive sample variance relative SD=sqrt(2/(n-1))=1 and E[1/S^2]=infinite. These are sampling facts,not observed true variance errors. White discrepancy/common/task covariance cap effective model precision;diagonal weight concentration is NOT total posterior leverage. No true variances or query labels used.",
+  "verification": "Require original batch replicate metadata equals3 and exact declared source roster excluding task1. All observed noise values positive and finite. Stop on mismatch rather than invent noise values.",
+  "decision": "Correct 'known noise' to 'frozen plug-in sample-variance/n' in this turn's source inference summaries. Current Gaussian NLL and conditional hyperparameter posteriors are exact only for that Gaussian approximation,not the raw source likelihood. Register a source-only latent-variance likelihood feasibility test before more source coverage fits or raw/outer forecasts. This diagnostic cannot by itself identify why a candidate lost or show the generic GP baseline used more information.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 0,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached noise arrays/source metadata;no server work,pulls or NPZ",
+  "scope": "Source inference contract audit;all candidates remain stopped and complete-model HOLD. No task1 outcomes,source6/7,target,KG,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_noise_contract_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_noise_contract_v1/results.json",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

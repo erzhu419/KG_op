@@ -1,0 +1,1004 @@
+{
+  "execution": {
+    "status": "frozen before source-only level-information calculation",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_information_plan_v1.json",
+    "development_execution": "performance/manifests/legacy_joint_population_f_level_shape_development_execution_v1.json",
+    "retained_source_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "intercept_source_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/source_laws.json",
+    "joint_source_laws": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "deleted_task": 1,
+    "entrypoint": "performance/diagnose_legacy_f_level_information.py",
+    "question": "Which prior mean,level-shape covariance and public four-site information differs from sourceGP?",
+    "calculation": "Exact source mixture first/second moments already integrated. Bank-average and original twelve-site-average means,variance components,level-to-prefix covariance,centered-shape coupling and Gaussian-linear level gain from source eta_f expected noise. Source design row-span and empirical-center audit. No new fitting,integration or paid-value reading.",
+    "verification": "Native moment reconstruction and native residual decomposition must agree with existing source law;GP covariance parts must sum to its prediction. A mismatch stops interpretation and requires a construction fix.",
+    "scope": "Only the five source0-5 training tasks in each task1 deletion,existing source laws and public metadata. Query paid/score values,source6/7,target and confirmation remain unopened.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_integrations": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_level_information_v1",
+    "decision": "Use this diagnostic to choose one source-learning follow-up or resolve a support/filter ambiguity. No variance floor,paid-label-selected geometry,expansion of the failed candidate or relaxation of its gate. Complete-model HOLD remains."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "native_prior_and_joint_native_residual_reproduced": true,
+      "eta_expected_observation_variances_at_prefix": [
+        4.717957045728391e-05,
+        6.307359727498783e-05,
+        6.237700414188068e-05,
+        5.948005994511045e-05
+      ],
+      "scoring_site_indices": [
+        45,
+        10,
+        51,
+        31,
+        48,
+        64,
+        72,
+        14,
+        50,
+        57,
+        67,
+        36
+      ],
+      "information": {
+        "native": {
+          "public_bank": {
+            "prior_mean": 0.39609009135032036,
+            "prior_variance": 5.8434613692276525e-05,
+            "variance_components": {
+              "common_function": 1.2614258255098757e-05,
+              "task_function": 4.582035543717776e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              7.189963863699799e-05,
+              4.680013468009004e-05,
+              9.89651067101443e-05,
+              5.8868990272919404e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              1.3465024944721467e-05,
+              -1.1634479012186488e-05,
+              4.0530493017867776e-05,
+              4.3437658064287914e-07
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              0.10438528243393316,
+              -0.12818559902563334,
+              0.18540606024238235,
+              0.002484226352811596
+            ],
+            "linear_gain_weights": [
+              0.14829733597767583,
+              0.18526518473972955,
+              0.049624850426122774,
+              0.11405148013603625
+            ],
+            "gain_sum": 0.49723885127956446,
+            "common_shift_retention": 0.5027611487204355,
+            "conditional_mean_intercept": 0.18612483501289623,
+            "conditional_level_variance": 2.7476429134664475e-05,
+            "explained_level_variance_fraction": 0.5297918921932376,
+            "observation_noise_in_linear_estimator": 4.129777185169954e-06,
+            "prefix_latent_variances": [
+              0.0003701158918540812,
+              0.00017614167039060603,
+              0.0009572930361427878,
+              0.0005825185018437512
+            ],
+            "prefix_prior_means": [
+              0.5058144425654532,
+              0.320177322099103,
+              0.6522572313009865,
+              0.3793764331992424
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.43225848314613,
+            "prior_variance": 8.774192266762896e-05,
+            "variance_components": {
+              "common_function": 1.947388944049005e-05,
+              "task_function": 6.82680332271389e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              7.258639847392264e-05,
+              2.7483806820416383e-05,
+              8.389612799074449e-05,
+              6.099264062087439e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -1.5155524193706318e-05,
+              -6.025811584721258e-05,
+              -3.845794676884465e-06,
+              -2.6749282046754568e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.09149847433846069,
+              -0.4450677694104841,
+              -0.013861896071658827,
+              -0.12195771479589446
+            ],
+            "linear_gain_weights": [
+              0.16323654193786824,
+              0.10721382493828616,
+              0.03439838639324807,
+              0.11580436452000845
+            ],
+            "gain_sum": 0.42065311778941095,
+            "common_shift_retention": 0.579346882210589,
+            "conditional_mean_intercept": 0.2489936042881853,
+            "conditional_level_variance": 6.299742052091924e-05,
+            "explained_level_variance_fraction": 0.28201458771815613,
+            "observation_noise_in_linear_estimator": 2.8536472874296445e-06,
+            "prefix_latent_variances": [
+              0.0003701158918540812,
+              0.00017614167039060603,
+              0.0009572930361427878,
+              0.0005825185018437512
+            ],
+            "prefix_prior_means": [
+              0.5058144425654532,
+              0.320177322099103,
+              0.6522572313009865,
+              0.3793764331992424
+            ]
+          }
+        },
+        "intercept_mixture": {
+          "public_bank": {
+            "prior_mean": 0.39610544288095323,
+            "prior_variance": 0.0001289910300406962,
+            "variance_components": {
+              "common_function": 2.4376762903435305e-05,
+              "task_function": 0.00010461426713726089,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              0.00014243674369772324,
+              0.00011733099321846231,
+              0.00016949954755799025,
+              0.00012950472914942588
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              1.3445713657027033e-05,
+              -1.1660036822233895e-05,
+              4.0508517517294046e-05,
+              5.136991087296744e-07
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              0.07012297866991092,
+              -0.08645197127406842,
+              0.1247074184134988,
+              0.0019754435120793506
+            ],
+            "linear_gain_weights": [
+              0.2027236028178091,
+              0.2767334836441039,
+              0.052620384999298594,
+              0.15581024961177975
+            ],
+            "gain_sum": 0.6878877210729912,
+            "common_shift_retention": 0.31211227892700877,
+            "conditional_mean_intercept": 0.1115162374586936,
+            "conditional_level_variance": 3.854903006750274e-05,
+            "explained_level_variance_fraction": 0.7011495291157791,
+            "observation_noise_in_linear_estimator": 8.385901394546158e-06,
+            "prefix_latent_variances": [
+              0.00044091043686481535,
+              0.0002466941456606998,
+              0.001027999225916118,
+              0.0006542568924425739
+            ],
+            "prefix_prior_means": [
+              0.5058573368288236,
+              0.32018488627312985,
+              0.6522431949375721,
+              0.37938978158653397
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.4322547740485143,
+            "prior_variance": 0.00015833046130554634,
+            "variance_components": {
+              "common_function": 3.1268516378324316e-05,
+              "task_function": 0.000127061944927222,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              0.00014309813955265535,
+              9.800053039160905e-05,
+              0.00015442913288033177,
+              0.00013170030079554524
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -1.5232321752890992e-05,
+              -6.03299309139373e-05,
+              -3.901328425214571e-06,
+              -2.6630160510001104e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.06841963368371556,
+              -0.33162936832911316,
+              -0.010466796562432453,
+              -0.0903091010709947
+            ],
+            "linear_gain_weights": [
+              0.2258772157465212,
+              0.2125600595707448,
+              0.03788304379330313,
+              0.16402118371294416
+            ],
+            "gain_sum": 0.6403415028235133,
+            "common_shift_retention": 0.3596584971764867,
+            "conditional_mean_intercept": 0.1629976901586782,
+            "conditional_level_variance": 7.772496855117683e-05,
+            "explained_level_variance_fraction": 0.5090965572241776,
+            "observation_noise_in_linear_estimator": 6.9466111857277e-06,
+            "prefix_latent_variances": [
+              0.00044091043686481535,
+              0.0002466941456606998,
+              0.001027999225916118,
+              0.0006542568924425739
+            ],
+            "prefix_prior_means": [
+              0.5058573368288236,
+              0.32018488627312985,
+              0.6522431949375721,
+              0.37938978158653397
+            ]
+          }
+        },
+        "joint_level_shape_mixture": {
+          "public_bank": {
+            "prior_mean": 0.3960978390135981,
+            "prior_variance": 0.00012751636255963126,
+            "variance_components": {
+              "common_function": 2.4157899484585e-05,
+              "task_function": 0.00010335846307504624,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              0.00014097643952896047,
+              0.00011581836084644244,
+              0.00016800850565925224,
+              0.0001281398447058845
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              1.3460076969329209e-05,
+              -1.1698001713188817e-05,
+              4.0492143099620984e-05,
+              6.23482146253231e-07
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              0.06198691404876967,
+              -0.08495078774925302,
+              0.11753327281920745,
+              0.002309226839352238
+            ],
+            "linear_gain_weights": [
+              0.17961238519579006,
+              0.26946954753803937,
+              0.0469273316047408,
+              0.16987938303143654
+            ],
+            "gain_sum": 0.6658886473700069,
+            "common_shift_retention": 0.33411135262999314,
+            "conditional_mean_intercept": 0.12385426631509383,
+            "conditional_level_variance": 4.133321808766794e-05,
+            "explained_level_variance_fraction": 0.6758594955346297,
+            "observation_noise_in_linear_estimator": 7.95595796514436e-06,
+            "prefix_latent_variances": [
+              0.0005242043585796558,
+              0.0002528243501373792,
+              0.0011392954539970255,
+              0.0007004379769152861
+            ],
+            "prefix_prior_means": [
+              0.5059994696612948,
+              0.32025979712856156,
+              0.6525332468918384,
+              0.3793155661863961
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.4322587559873672,
+            "prior_variance": 0.0001574428412055615,
+            "variance_components": {
+              "common_function": 3.115166464591822e-05,
+              "task_function": 0.00012629117655964326,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              0.00014359831797050273,
+              9.542546886882028e-05,
+              0.0001556990038219503,
+              0.00012893101984627763
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -1.3844523235058767e-05,
+              -6.201737233674122e-05,
+              -1.743837383611196e-06,
+              -2.8511821359283862e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.05555462938731804,
+              -0.33367026355320606,
+              -0.004427426950568787,
+              -0.09276434466891423
+            ],
+            "linear_gain_weights": [
+              0.2066002966077839,
+              0.20152799573704566,
+              0.03410612208869586,
+              0.17573784564714556
+            ],
+            "gain_sum": 0.617972260080671,
+            "common_shift_retention": 0.38202773991932903,
+            "conditional_mean_intercept": 0.17426232143403975,
+            "conditional_level_variance": 8.057613373876161e-05,
+            "explained_level_variance_fraction": 0.48821976838210573,
+            "observation_noise_in_linear_estimator": 6.484967791610773e-06,
+            "prefix_latent_variances": [
+              0.0005242043585796558,
+              0.0002528243501373792,
+              0.0011392954539970255,
+              0.0007004379769152861
+            ],
+            "prefix_prior_means": [
+              0.5059994696612948,
+              0.32025979712856156,
+              0.6525332468918384,
+              0.3793155661863961
+            ]
+          }
+        },
+        "source_gp": {
+          "public_bank": {
+            "prior_mean": 0.3986844503772487,
+            "prior_variance": 0.0006070915169314009,
+            "variance_components": {
+              "common_function": 0.00010210211659985966,
+              "task_function": 0.0005047002827387939,
+              "discrepancy": 2.8911759274735595e-07
+            },
+            "level_to_prefix_covariance": [
+              0.0005857525299710117,
+              0.0006513342612661713,
+              0.0005090547506952124,
+              0.0005918457574285011
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -2.133898696038926e-05,
+              4.424274433477036e-05,
+              -9.803676623618856e-05,
+              -1.5245759502899802e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.06603429956789551,
+              0.29525822053698075,
+              -0.21768918183364672,
+              -0.03786390456016359
+            ],
+            "linear_gain_weights": [
+              0.20621127413799314,
+              0.4622529661915438,
+              0.03745333590237525,
+              0.21346162037157662
+            ],
+            "gain_sum": 0.9193791966034888,
+            "common_shift_retention": 0.08062080339651123,
+            "conditional_mean_intercept": 0.03744825110363603,
+            "conditional_level_variance": 3.981939418284128e-05,
+            "explained_level_variance_fraction": 0.934409569113876,
+            "observation_noise_in_linear_estimator": 1.8281408679767853e-05,
+            "prefix_latent_variances": [
+              0.0007364237745625026,
+              0.0007325620339199781,
+              0.0007450976917179619,
+              0.0008436503601081007
+            ],
+            "prefix_prior_means": [
+              0.5071638907939034,
+              0.3197072616598611,
+              0.658270778146222,
+              0.3945122332799363
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.4354059238267517,
+            "prior_variance": 0.0005673134006635765,
+            "variance_components": {
+              "common_function": 9.644058291883591e-05,
+              "task_function": 0.00046911401905552747,
+              "discrepancy": 1.758798689213083e-06
+            },
+            "level_to_prefix_covariance": [
+              0.0005578210686233976,
+              0.0006231659003444767,
+              0.0004829424699802928,
+              0.0005742861587844487
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -9.492332040178931e-06,
+              5.585249968090018e-05,
+              -8.43709306832837e-05,
+              6.972758120872232e-06
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.02905846912419249,
+              0.3204624675083324,
+              -0.19028883636987182,
+              0.018072500477690972
+            ],
+            "linear_gain_weights": [
+              0.19293852212073032,
+              0.43548072922584513,
+              0.030391535230833443,
+              0.2224167972091417
+            ],
+            "gain_sum": 0.8812275837865506,
+            "common_shift_retention": 0.11877241621344936,
+            "conditional_mean_intercept": 0.09057611388613385,
+            "conditional_level_variance": 4.590323615562915e-05,
+            "explained_level_variance_fraction": 0.919086635179185,
+            "observation_noise_in_linear_estimator": 1.6717815075398216e-05,
+            "prefix_latent_variances": [
+              0.0007364237745625026,
+              0.0007325620339199781,
+              0.0007450976917179619,
+              0.0008436503601081007
+            ],
+            "prefix_prior_means": [
+              0.5071638907939034,
+              0.3197072616598611,
+              0.658270778146222,
+              0.3945122332799363
+            ]
+          }
+        }
+      },
+      "empirical_center_audit": {
+        "structural_empirical_intercept": 0.41376901482334666,
+        "structural_common_intercept_prior_variance": 0.25,
+        "structural_common_intercept_posterior_mean": 0.39539863167243205,
+        "structural_common_intercept_posterior_variance": 1.6095587520219193e-05,
+        "structural_native_task_intercept_variance": 3.780945079229659e-05,
+        "gp_empirical_constant": 0.9848683179029402,
+        "gp_common_intercept_prior_variance": 0.008627307088331933,
+        "gp_task_intercept_variance": 0.0,
+        "uncertainty_contract": "Both condition on source-fitted empirical centers/hyperparameters;shared-function posterior uncertainty retained. Mixtures additionally integrate registered variance uncertainty."
+      },
+      "design_support": {
+        "coefficient_dimension": 27,
+        "source_design_rank": 27,
+        "public_design_rank": 27,
+        "prefix_design_rank": 4,
+        "prefix_policy_indices": [
+          0,
+          1,
+          29,
+          58
+        ],
+        "level_functional_outside_prefix_row_span": {
+          "public_bank": 0.6701143370095302,
+          "fixed_score_roster": 0.9218724501434773
+        },
+        "support_definition": "Euclidean coefficient-space row-span diagnostic;not posterior information or a paid prediction score"
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "native_prior_and_joint_native_residual_reproduced": true,
+      "eta_expected_observation_variances_at_prefix": [
+        7.719205638265907e-05,
+        4.2386664169303285e-05,
+        5.984377366321974e-05,
+        5.087769579426856e-05
+      ],
+      "scoring_site_indices": [
+        45,
+        10,
+        51,
+        31,
+        23,
+        65,
+        19,
+        13,
+        49,
+        62,
+        59,
+        34
+      ],
+      "information": {
+        "native": {
+          "public_bank": {
+            "prior_mean": 0.39369386246612165,
+            "prior_variance": 1.3793274699678487e-05,
+            "variance_components": {
+              "common_function": 5.779898908120727e-06,
+              "task_function": 8.013375791557761e-06,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              2.7576378315739028e-05,
+              1.8684146933719781e-06,
+              5.411102040052104e-05,
+              1.4744311905967825e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              1.378310361606054e-05,
+              -1.192486000630651e-05,
+              4.0317745700842553e-05,
+              9.510372062893375e-07
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              0.21400490551215048,
+              -0.27093707363417685,
+              0.37143031097292734,
+              0.010800045872766614
+            ],
+            "linear_gain_weights": [
+              0.05080314724399042,
+              0.035338466217240426,
+              0.044943266929818024,
+              0.04531513235656314
+            ],
+            "gain_sum": 0.17640001274761202,
+            "common_shift_retention": 0.823599987252388,
+            "conditional_mean_intercept": 0.31102628339624927,
+            "conditional_level_variance": 9.226214502895663e-06,
+            "explained_level_variance_fraction": 0.3311077533233844,
+            "observation_noise_in_linear_estimator": 4.775160119424607e-07,
+            "prefix_latent_variances": [
+              0.00034209117512143736,
+              0.00013038727382170843,
+              0.0009486500992673267,
+              0.0005778766932548982
+            ],
+            "prefix_prior_means": [
+              0.4995949482116011,
+              0.31914935574266157,
+              0.6545229247057802,
+              0.36614559525209883
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.4597322288917342,
+            "prior_variance": 6.656785442875487e-05,
+            "variance_components": {
+              "common_function": 1.6420260079606196e-05,
+              "task_function": 5.0147594349148686e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              1.3103419577530204e-06,
+              -1.269403025717805e-05,
+              3.812910108315741e-05,
+              -8.56523567537467e-06
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -6.525751247100185e-05,
+              -7.926188468593292e-05,
+              -2.843875334559746e-05,
+              -7.513309010412953e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.39693071877581554,
+              -0.6515086710376481,
+              -0.113750885615739,
+              -0.35802175937336533
+            ],
+            "linear_gain_weights": [
+              -0.043663925600594206,
+              -0.09134167530117293,
+              0.048188156838525065,
+              -0.01961839689367106
+            ],
+            "gain_sum": -0.10643584095691314,
+            "common_shift_retention": 1.106435840956913,
+            "conditional_mean_intercept": 0.48634107862409587,
+            "conditional_level_variance": 6.346016781642061e-05,
+            "explained_level_variance_fraction": 0.04668449417519227,
+            "observation_noise_in_linear_estimator": 6.593593628857157e-07,
+            "prefix_latent_variances": [
+              0.00034209117512143736,
+              0.00013038727382170843,
+              0.0009486500992673267,
+              0.0005778766932548982
+            ],
+            "prefix_prior_means": [
+              0.4995949482116011,
+              0.31914935574266157,
+              0.6545229247057802,
+              0.36614559525209883
+            ]
+          }
+        },
+        "intercept_mixture": {
+          "public_bank": {
+            "prior_mean": 0.39395023131088347,
+            "prior_variance": 5.3464638997949804e-05,
+            "variance_components": {
+              "common_function": 1.2566893523698478e-05,
+              "task_function": 4.089774547425132e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              6.696080333691362e-05,
+              4.1260548063257715e-05,
+              9.363060921397713e-05,
+              5.541371787976938e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              1.3496164338963811e-05,
+              -1.2204090934692089e-05,
+              4.016597021602732e-05,
+              1.9490788818195785e-06
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              0.1063042895168342,
+              -0.14061359247255228,
+              0.18790213009858886,
+              0.011182250834222382
+            ],
+            "linear_gain_weights": [
+              0.12756670999107061,
+              0.19170422459731562,
+              0.050854526339185586,
+              0.10805116742588068
+            ],
+            "gain_sum": 0.4781766283534525,
+            "common_shift_retention": 0.5218233716465475,
+            "conditional_mean_intercept": 0.19608293794086265,
+            "conditional_level_variance": 2.6263791054229864e-05,
+            "explained_level_variance_fraction": 0.5087633331773362,
+            "observation_noise_in_linear_estimator": 3.562665168421375e-06,
+            "prefix_latent_variances": [
+              0.0003819327970472631,
+              0.00016994952419355577,
+              0.0009884430004078908,
+              0.0006256053242578508
+            ],
+            "prefix_prior_means": [
+              0.4991742300349752,
+              0.31894078128915815,
+              0.6548086648932219,
+              0.36785349398430905
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.4600049938826515,
+            "prior_variance": 0.00010673099818980717,
+            "variance_components": {
+              "common_function": 2.369903415796493e-05,
+              "task_function": 8.303196403184223e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              4.0930879212500496e-05,
+              2.6673355840820846e-05,
+              7.768164018952058e-05,
+              3.196136494329749e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -6.580011897730667e-05,
+              -8.005764234898632e-05,
+              -2.9049358000286587e-05,
+              -7.476963324650967e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.3157837908565774,
+              -0.5185376230095604,
+              -0.09172148054276193,
+              -0.2799350819117342
+            ],
+            "linear_gain_weights": [
+              0.06009089250894989,
+              0.1186476453739216,
+              0.05595932117041823,
+              0.06460551472104238
+            ],
+            "gain_sum": 0.2993033737743321,
+            "common_shift_retention": 0.700696626225668,
+            "conditional_mean_intercept": 0.3317595834639817,
+            "conditional_level_variance": 9.46948019762588e-05,
+            "explained_level_variance_fraction": 0.11277132620968812,
+            "observation_noise_in_linear_estimator": 1.275176773626741e-06,
+            "prefix_latent_variances": [
+              0.0003819327970472631,
+              0.00016994952419355577,
+              0.0009884430004078908,
+              0.0006256053242578508
+            ],
+            "prefix_prior_means": [
+              0.4991742300349752,
+              0.31894078128915815,
+              0.6548086648932219,
+              0.36785349398430905
+            ]
+          }
+        },
+        "joint_level_shape_mixture": {
+          "public_bank": {
+            "prior_mean": 0.39399161107518355,
+            "prior_variance": 5.330362320523461e-05,
+            "variance_components": {
+              "common_function": 1.259562100924554e-05,
+              "task_function": 4.070800219598906e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              6.67520667570875e-05,
+              4.1073060737665106e-05,
+              9.331791506775913e-05,
+              5.534404262155992e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              1.3448443551852891e-05,
+              -1.2230562467569506e-05,
+              4.001429186252452e-05,
+              2.0404194163253065e-06
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              0.09095826883854126,
+              -0.13835456228777726,
+              0.17307309628464368,
+              0.010765194445973257
+            ],
+            "linear_gain_weights": [
+              0.11378329577039323,
+              0.19146238295584653,
+              0.046447982052871775,
+              0.11601416261589055
+            ],
+            "gain_sum": 0.46770782339500205,
+            "common_shift_retention": 0.532292176604998,
+            "conditional_mean_intercept": 0.20305017364670372,
+            "conditional_level_variance": 2.7089285361207192e-05,
+            "explained_level_variance_fraction": 0.4917927950806367,
+            "observation_noise_in_linear_estimator": 3.367066679735251e-06,
+            "prefix_latent_variances": [
+              0.0004903129535198448,
+              0.00017544762595040313,
+              0.001136132412187455,
+              0.0007313511130981543
+            ],
+            "prefix_prior_means": [
+              0.4989955335197143,
+              0.31894241471646634,
+              0.6545260832630535,
+              0.3680342948767486
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.4600190004781659,
+            "prior_variance": 0.00010978231737871215,
+            "variance_components": {
+              "common_function": 2.4255838746612905e-05,
+              "task_function": 8.552647863209921e-05,
+              "discrepancy": 0.0
+            },
+            "level_to_prefix_covariance": [
+              5.853496423506753e-05,
+              2.8805242400772333e-05,
+              9.759483493690243e-05,
+              1.3677284954548606e-05
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -5.124735314364462e-05,
+              -8.097707497793983e-05,
+              -1.2187482441809724e-05,
+              -9.610503242416355e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.22254625175389495,
+              -0.5122608848702114,
+              -0.03588419936831862,
+              -0.32153387207704637
+            ],
+            "linear_gain_weights": [
+              0.07162546351548257,
+              0.12433848520715265,
+              0.05829319752058371,
+              0.053616500164345604
+            ],
+            "gain_sum": 0.30787364640756454,
+            "common_shift_retention": 0.6921263535924355,
+            "conditional_mean_intercept": 0.3267342682977328,
+            "conditional_level_variance": 9.55856800863974e-05,
+            "explained_level_variance_fraction": 0.12931624719982113,
+            "observation_noise_in_linear_estimator": 1.4009260871502038e-06,
+            "prefix_latent_variances": [
+              0.0004903129535198448,
+              0.00017544762595040313,
+              0.001136132412187455,
+              0.0007313511130981543
+            ],
+            "prefix_prior_means": [
+              0.4989955335197143,
+              0.31894241471646634,
+              0.6545260832630535,
+              0.3680342948767486
+            ]
+          }
+        },
+        "source_gp": {
+          "public_bank": {
+            "prior_mean": 0.3971356733217957,
+            "prior_variance": 0.0006956267738001211,
+            "variance_components": {
+              "common_function": 0.00011668313598075547,
+              "task_function": 0.0005787484500170667,
+              "discrepancy": 1.9518780229892201e-07
+            },
+            "level_to_prefix_covariance": [
+              0.0006739007843161526,
+              0.0007397983454248883,
+              0.000596184923248589,
+              0.0006781733027662036
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -2.1725989483968502e-05,
+              4.4171571624767236e-05,
+              -9.944185055153201e-05,
+              -1.7453471033917448e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.06478485691838329,
+              0.3153075736351665,
+              -0.20837171882238126,
+              -0.043561879486577484
+            ],
+            "linear_gain_weights": [
+              0.14265873417411706,
+              0.5246306062606978,
+              0.054983279959891995,
+              0.21723370181246457
+            ],
+            "gain_sum": 0.9395063222071713,
+            "common_shift_retention": 0.06049367779282866,
+            "conditional_mean_intercept": 0.03838166362586026,
+            "conditional_level_variance": 3.126578690658215e-05,
+            "explained_level_variance_fraction": 0.9550537902160074,
+            "observation_noise_in_linear_estimator": 1.5819225422601445e-05,
+            "prefix_latent_variances": [
+              0.0008138471753297627,
+              0.0008121823545027958,
+              0.0008241475075873701,
+              0.000891487048210363
+            ],
+            "prefix_prior_means": [
+              0.503277844328328,
+              0.3184761076938338,
+              0.6552659935001999,
+              0.38597161379121386
+            ]
+          },
+          "fixed_score_roster": {
+            "prior_mean": 0.46185367820435885,
+            "prior_variance": 0.0006912662931689172,
+            "variance_components": {
+              "common_function": 0.00011749435133609865,
+              "task_function": 0.0005725845493688334,
+              "discrepancy": 1.1873924639851088e-06
+            },
+            "level_to_prefix_covariance": [
+              0.0006353176708509143,
+              0.0007204359739256793,
+              0.0005480224984087932,
+              0.0006590314615495756
+            ],
+            "level_to_centered_prefix_shape_covariance": [
+              -5.59486223180029e-05,
+              2.9169680756762164e-05,
+              -0.00014324379476012396,
+              -3.223483161934155e-05
+            ],
+            "level_to_centered_prefix_shape_correlation": [
+              -0.13896823399539773,
+              0.14024993153774867,
+              -0.26604497886316036,
+              -0.07535873601780636
+            ],
+            "linear_gain_weights": [
+              0.12056834933730269,
+              0.5986057629679508,
+              -0.02114816181254911,
+              0.19228396555846458
+            ],
+            "gain_sum": 0.8903099160511689,
+            "common_shift_retention": 0.10969008394883106,
+            "conditional_mean_intercept": 0.15017418459055393,
+            "conditional_level_variance": 6.827845006698613e-05,
+            "explained_level_variance_fraction": 0.9012269935020516,
+            "observation_noise_in_linear_estimator": 1.8218357006516767e-05,
+            "prefix_latent_variances": [
+              0.0008138471753297627,
+              0.0008121823545027958,
+              0.0008241475075873701,
+              0.000891487048210363
+            ],
+            "prefix_prior_means": [
+              0.503277844328328,
+              0.3184761076938338,
+              0.6552659935001999,
+              0.38597161379121386
+            ]
+          }
+        }
+      },
+      "empirical_center_audit": {
+        "structural_empirical_intercept": 0.40382072935192204,
+        "structural_common_intercept_prior_variance": 0.25,
+        "structural_common_intercept_posterior_mean": 0.3932297297319214,
+        "structural_common_intercept_posterior_variance": 8.664590815824196e-06,
+        "structural_native_task_intercept_variance": 0.0,
+        "gp_empirical_constant": 1.0635316204298833,
+        "gp_common_intercept_prior_variance": 0.010457582064582307,
+        "gp_task_intercept_variance": 0.0,
+        "uncertainty_contract": "Both condition on source-fitted empirical centers/hyperparameters;shared-function posterior uncertainty retained. Mixtures additionally integrate registered variance uncertainty."
+      },
+      "design_support": {
+        "coefficient_dimension": 27,
+        "source_design_rank": 27,
+        "public_design_rank": 27,
+        "prefix_design_rank": 4,
+        "prefix_policy_indices": [
+          0,
+          1,
+          29,
+          58
+        ],
+        "level_functional_outside_prefix_row_span": {
+          "public_bank": 0.670807477518375,
+          "fixed_score_roster": 0.9558730036718198
+        },
+        "support_definition": "Euclidean coefficient-space row-span diagnostic;not posterior information or a paid prediction score"
+      }
+    }
+  ],
+  "cpu_seconds": 0.06742322699999997,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "query_paid_outcomes_read": false,
+  "no_forecast_or_replacement_prior_adopted": true,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "linear_diagnostic_contract": "Exact first/second source-prior moments plus E[exp(eta_f)] observation noise;linear projection information only,not the nonlinear raw moment/mixture filter."
+}

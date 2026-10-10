@@ -1,0 +1,30 @@
+{
+  "stage": "source_function_prior_mechanism_v1",
+  "frozen_before_results": true,
+  "seeds": [0, 1, 2, 3, 4, 5, 6, 7],
+  "regimes": ["shared_structure", "support_mismatch", "high_frequency_risk", "separate_risk_support"],
+  "arms": ["target_only", "fixed_source", "learned", "oracle_structure"],
+  "psi_dim": 8,
+  "source_tasks": 8,
+  "source_points": 64,
+  "candidates": 96,
+  "initial_points": 8,
+  "target_points": 24,
+  "replicates": 12,
+  "verification_replicates": 256,
+  "learned_active_dim_per_head": 4,
+  "chance_alpha": 0.05,
+  "risk_penalty": 4.0,
+  "penalty_temperature": 0.15,
+  "backend": "linearized_three_head_KG",
+  "recommendation": "posterior_safe_minimum_mean_else_penalized_mean",
+  "primary_comparison": "learned versus fixed_source on shared_structure",
+  "interpretation": {
+    "oracle_improves_only": "source identification or selected representation is insufficient",
+    "oracle_does_not_improve": "budget/candidate/backend sensitivity must be resolved before scaling",
+    "prediction_improves_only": "inspect constraint binding and decision mechanism before scaling",
+    "learned_improves_prediction_and_decision": "mechanism evidence only; independent confirmation required",
+    "negative_controls": "retain failures and negative transfer; no retuning this protocol"
+  },
+  "scope": "Public eight-dimensional canonical inputs; source-learned functions/support/covariance, not a learned trajectory encoder or high-dimensional application claim. Oracle receives support only, uses the same source data, and never receives target coefficients, noise truth, optima or free observations."
+}

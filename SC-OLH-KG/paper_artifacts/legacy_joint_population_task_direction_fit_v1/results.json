@@ -1,0 +1,174 @@
+{
+  "execution": {
+    "status": "registered before four source-only task-direction scale fits and holdout forecasts",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "direction_results": "paper_artifacts/legacy_joint_population_task_covariance_direction_v1/results.json",
+    "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+    "coverage_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "parent_layouts": {
+      "5": "3",
+      "6": "4"
+    },
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "basis_of_next_step": "Source-only residual covariance preflight reproduces native NLL with an independent dense marginal construction. Leading whitened posterior residual moment eigenvalues exceed1 in all f/g/assignment cases:1.843/1.910 for f and2.747/2.725 for g, with verified negative rank-one variance derivative. Test source-learned task-function correlations rather than dropping the low-frequency prior or increasing data again.",
+    "fit_rule": "Keep the216-call native common covariance, base diagonal residual covariance, regularizer origin, discrepancy, basis/normalization and fixed144-call risk laws. For each f/g head learn one nonnegative scale rho by the same Gaussian source marginal likelihood, R_task=R_diagonal+rho*v*v^T, using the previously frozen source-only direction v. Source signal/group/spectral parameters do not refit. Four scalar native L-BFGS-B objectives use original bounds/stopping.",
+    "representation": "Return complete common posterior covariance plus full task residual covariance to the mean SourceFunctionPrior; never discard the learned off-diagonal entries on restore. All seven risk identities share this full mean law and preserve their original maps/eta priors.",
+    "freeze_rule": "Freeze both fitted f/g laws and all four two-paid-record source predictions before raw three-repeat source scores. No task6/7 outcome, target input/truth or known source geometry parameter enters directions or scalar fits.",
+    "controls": "Reuse the completed same216-call structure/flat/strong complete-GP controls. Parent144-call structure remains the predeclared repair reference; retain both assignments and every source case.",
+    "source_gate": "Require g MSE nonincrease, joint density nondecrease and g density improvement on BOTH source holdouts in BOTH assignments. Preserve failed Stage53/54 gates. No after-the-fact changes or partial head/layout selection; no target/risk extension if this new candidate fails.",
+    "execution": "local serial single-thread; cached216-call labels, four scalar fits and source raw likelihood updates; no new physical simulator/verifier calls, terminal integration, server jobs/pulls or target archive reads",
+    "interpretation": "source-learned within-task function correlation in the existing orthogonal low-order library. The base spectra/group scales remain, while the added factor can couple components. This is empirical covariance fitting, not physical risk-factor recovery, Bayesian hyperparameter uncertainty or independent decision/KG superiority.",
+    "output": "paper_artifacts/legacy_joint_population_task_direction_fit_v1"
+  },
+  "summary": {
+    "5": {
+      "observed_head_mse": [
+        0.00015314035770316642,
+        0.0013794746893838808,
+        2.3068429252001534,
+        2.5336137443015945
+      ],
+      "joint_batch_log_score": 1.1007675274741626,
+      "response_batch_log_scores": [
+        1.1085980411775096,
+        -0.0034971031320276125
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9577464788732395,
+        0.9225352112676056
+      ],
+      "predictive_standardized_residual_rms": [
+        0.5323344411777647,
+        0.6265586747370498,
+        1.049340819392569,
+        1.1266375063522502
+      ]
+    },
+    "6": {
+      "observed_head_mse": [
+        0.0001634958195052041,
+        0.001153906809812027,
+        2.049299643611586,
+        2.531447538408562
+      ],
+      "joint_batch_log_score": 1.137509012753833,
+      "response_batch_log_scores": [
+        1.0799089847888814,
+        0.06020438104190491
+      ],
+      "predictive_moment_band_95_observed_coverage": [
+        1.0,
+        1.0,
+        0.9366197183098591,
+        0.9577464788732395
+      ],
+      "predictive_standardized_residual_rms": [
+        0.5428256651995543,
+        0.5563638359809029,
+        0.9818189638632276,
+        1.0038749394896538
+      ]
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "task_id": "related_inventory_06",
+      "g_mse_difference": -0.00015688733693819683,
+      "joint_batch_score_difference": 0.10454032194826723,
+      "g_batch_score_difference": 0.05617009116413185,
+      "passed": true
+    },
+    {
+      "layout": "5",
+      "task_id": "related_inventory_07",
+      "g_mse_difference": 9.911841493395615e-05,
+      "joint_batch_score_difference": 0.1051234647749516,
+      "g_batch_score_difference": -0.00891024715461744,
+      "passed": false
+    },
+    {
+      "layout": "6",
+      "task_id": "related_inventory_06",
+      "g_mse_difference": -0.0014787097380677804,
+      "joint_batch_score_difference": 0.20248462170714254,
+      "g_batch_score_difference": 0.1617080076610661,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "task_id": "related_inventory_07",
+      "g_mse_difference": -0.0007210733079422826,
+      "joint_batch_score_difference": 0.006504755988492539,
+      "g_batch_score_difference": 0.0768281493498002,
+      "passed": true
+    }
+  ],
+  "source_gate_passed": false,
+  "fits": [
+    {
+      "layout": "5",
+      "heads": [
+        {
+          "task_direction_scale": 1.5134244814323086,
+          "source_negative_log_likelihood_per_label": -2.3834753327785116,
+          "native_source_negative_log_likelihood_per_label": -2.3684498637736686,
+          "optimizer_iterations": 8,
+          "optimizer_converged": true
+        },
+        {
+          "task_direction_scale": 2.9062221933805077,
+          "source_negative_log_likelihood_per_label": -1.3166843761273077,
+          "native_source_negative_log_likelihood_per_label": -1.2742442487872045,
+          "optimizer_iterations": 10,
+          "optimizer_converged": true
+        }
+      ]
+    },
+    {
+      "layout": "6",
+      "heads": [
+        {
+          "task_direction_scale": 1.4545389970415763,
+          "source_negative_log_likelihood_per_label": -2.3918530800804123,
+          "native_source_negative_log_likelihood_per_label": -2.3763723299805606,
+          "optimizer_iterations": 8,
+          "optimizer_converged": true
+        },
+        {
+          "task_direction_scale": 2.861781842486181,
+          "source_negative_log_likelihood_per_label": -1.2878148685505955,
+          "native_source_negative_log_likelihood_per_label": -1.2465648923707422,
+          "optimizer_iterations": 10,
+          "optimizer_converged": true
+        }
+      ]
+    }
+  ],
+  "cost": {
+    "source_calls_per_model": 216,
+    "new_scalar_source_fits": 4,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 11.296235854999999
+}

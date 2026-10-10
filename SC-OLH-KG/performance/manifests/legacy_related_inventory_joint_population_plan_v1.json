@@ -1,0 +1,18 @@
+{
+  "status": "registered next-stage joint population fit; not executed",
+  "data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "reference": "paper_artifacts/legacy_related_inventory_population_mean_v1/results.json",
+  "training_tasks": [0,1,2,3,4,5],
+  "opened_development_holdouts": [6,7],
+  "basis": "same source-only observable maps and orthogonal low-order derivative basis; no extra features or access to task geometry/risk labels",
+  "model": "m~Normal(m0,C0), beta_t|m~Normal(m,B), y_t|beta_t~Normal(D_t beta_t,diag(observed_label_noise_t+delta)); m0,C0 are the original zero-mean-rule structural prior fitted only on the same training subset; B is the between-task residual covariance, not the uncentered function second moment",
+  "fit": "joint source marginal likelihood integrating m and all beta_t; learn nonnegative residual intercept variance, group ARD scales, spectral exponent in[0,4] and nonnegative discrepancy delta; retain original source-only relative tail rule. Do not assign delta from opened development scoring errors",
+  "likelihood_evaluation": "V_t=D_t B D_t^T+diag(noise_t+delta), P=C0^-1+sum(D_t^T V_t^-1 D_t); logdet K=sum(logdet V_t)+logdet C0+logdet P; source quadratic=sum(e_t^T V_t^-1 e_t)-r^T P^-1 r, e_t=y_t-D_t m0, r=sum(D_t^T V_t^-1 e_t). Use block and feature solves without constructing the full dense cross-task covariance",
+  "new_task_prior": "mean=m0+P^-1 r; covariance=B+P^-1; discrepancy=delta. Preserve population-mean uncertainty rather than using the stage18 plug-in mean as a completed model",
+  "controls": "stage18 common-mean fixed-covariance reference, jointly fitted structural prior, and same-source full residual covariance control; joint structural/full share mean, P^-1, residual intercept and discrepancy, with full control pooling only non-intercept residual variance",
+  "source_preflight": "six leave-one-task-out training folds; every encoder/basis/regularizer/joint fit uses only the other five tasks; observation-aware prediction across all73 heldout source sites. Report convergence, fitted residual/discrepancy scales, coverage and prediction scores before target continuation",
+  "development_replay": "same cached eight adaptation records, stage17 full73-policy terminal class and retained4/34, cap362,8192-node seed80771 integration; freeze all development recommendations before loading cached scoring truth; report genuine safe reward and false-certificate contribution separately",
+  "numerics": "zero discrepancy and shrunk covariance can produce positive-semidefinite marginal fields; use existing covariance square-root support if reached, without adding a statistical variance floor to conceal it",
+  "execution": "local serial single-thread and small cached JSON only; source-first diagnosis,0 new simulation/certification calls, no server dispatch or pulls; source optimizer cap1024 with convergence retained explicitly",
+  "interpretation": "development model repair on related Inventory tasks, not independent generalization, physical factor recovery, trajectory learning or KG superiority; fresh tasks and a matched closed loop remain necessary before deployment claims"
+}

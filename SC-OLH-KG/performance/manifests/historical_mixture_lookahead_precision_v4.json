@@ -1,0 +1,35 @@
+{
+  "status": "registered before common-resolution CDF KG replay",
+  "connection_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "reference": "paper_artifacts/historical_source_variance_resolution_v4/mixture_lookahead.json",
+  "queries": {
+    "5": 7,
+    "6": 4
+  },
+  "query_scope": "Same two opened queries,32 source fields,two paid observations,source weights,seed,guarded allocations and362-call cap. Two-dimensional checked inverseCDF rule. Common16 fantasies/identity selected only from density/identity precision,not terminal utility. FullKG uses128 fantasies total and512 terminal draws;original drift.005,identity.01,rawerror1e-8 gates unchanged. No source resampling,new outcomes or candidate expansion.",
+  "rules": [
+    [
+      9,
+      4
+    ]
+  ],
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 180,
+  "precision": {
+    "maximum_absolute_tower_drift": 0.005,
+    "maximum_identity_martingale_residual": 0.01,
+    "maximum_raw_integration_relative_error": 1e-08
+  },
+  "cdf_precision_results": "paper_artifacts/historical_predictive_cdf_v2/results.json",
+  "previous_precision_results": "paper_artifacts/historical_mixture_lookahead_precision_v3/results.json",
+  "entrypoint": "performance/refine_historical_mixture_lookahead.py",
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "output": "paper_artifacts/historical_mixture_lookahead_precision_v4",
+  "density_precision_results": "paper_artifacts/historical_predictive_martingale_v2/results.json"
+}

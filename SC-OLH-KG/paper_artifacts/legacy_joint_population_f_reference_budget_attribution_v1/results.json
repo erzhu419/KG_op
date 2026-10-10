@@ -1,0 +1,657 @@
+{
+  "execution": {
+    "status": "frozen before cached score-label accounting",
+    "mixture_execution": "performance/manifests/legacy_joint_population_f_reference_training_budget_execution_v1.json",
+    "mixture_results": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/results.json",
+    "mixture_profiles": "paper_artifacts/legacy_joint_population_f_reference_training_budget_v1/calibration_profiles.json",
+    "control_profiles": "paper_artifacts/legacy_joint_population_f_training_budget_controls_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "episode_count": 8,
+    "diagnostic": "Use only already-saved eight-episode mixture/sourceGP f predictions and original twelve score-site sample means/noises from source0\u20135. Decompose each MSE into squared bank-score average residual and centered-shape residual variance. Compute the mixture-minus-GP MSE gap and signed level/shape contributions. Report all six tasks,task1 and other5. Propagate score-mean noise through the paired difference at fixed forecasts as an approximate measurement interval;not a source-task confidence interval.",
+    "gaussian_accounting": "For the same saved Gaussian moment covariances plus original sample-mean noise,split log score difference into log determinant and Mahalanobis contributions. Descriptively swap saved posterior f means/covariances only in this Gaussian scoring identity to locate dependence of the score gap;these are arithmetic probes,not new raw-filter forecasts or a coherent refit of source priors. Preserve actual mixture and raw three-repeat density results separately.",
+    "verification": "Squared-level plus centered-shape error must reproduce every cached MSE and Gaussian scores must reproduce cached f Gaussian mean densities. Signed mean/covariance score differences must sum to the full score gap. A disagreement detects mismatched labels/site order or moment-versus-mixture score substitution and blocks attribution.",
+    "decision": "Use existing prediction accounting to select a separately frozen source-mean/covariance intervention question. Do not increase arbitrary variances,alter prefixes/source laws,select by source6/7 or call a component an identified causal physical factor. Keep previous failed complete gate and positive mixture development results intact.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;cached small JSON only;no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_reference_budget_attribution_v1",
+    "planned_entrypoint": "performance/diagnose_legacy_f_reference_budget_attribution.py"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "mixture": {
+        "mse": 0.00022775106954717357,
+        "squared_average_residual": 4.905369896092962e-05,
+        "centered_shape_mse": 0.0001786973705862439,
+        "gaussian_mean_density": 2.989560412491007,
+        "logdet_penalty": -4.102436932875187,
+        "mahalanobis_penalty": 0.1939379871795066
+      },
+      "source_gp": {
+        "mse": 0.00017961439801704023,
+        "squared_average_residual": 5.646576226151888e-05,
+        "centered_shape_mse": 0.00012314863575552134,
+        "gaussian_mean_density": 3.2068085034626663,
+        "logdet_penalty": -4.456435160739216,
+        "mahalanobis_penalty": 0.3306881240718766
+      },
+      "mixture_minus_gp": {
+        "mse": 4.813667153013334e-05,
+        "squared_average_residual": -7.4120633005892605e-06,
+        "centered_shape_mse": 5.554873483072255e-05,
+        "gaussian_mean_density": -0.2172480909716592,
+        "logdet_penalty": 0.3539982278640288,
+        "mahalanobis_penalty": -0.13675013689236998
+      },
+      "paired_mse_measurement_variance": 3.1271787714042225e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        1.3476362864129712e-05,
+        8.279698019613697e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.05475875923098705,
+        "mean_first_covariance_gain": 0.16248933174067215,
+        "covariance_first_covariance_gain": 0.12386515084275107,
+        "covariance_first_mean_gain": 0.09338294012890813
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "mixture": {
+        "mse": 0.0005325876764503118,
+        "squared_average_residual": 0.000359611111534237,
+        "centered_shape_mse": 0.00017297656491607492,
+        "gaussian_mean_density": 2.507403697866387,
+        "logdet_penalty": -4.107666845951026,
+        "mahalanobis_penalty": 0.6813246148799669
+      },
+      "source_gp": {
+        "mse": 0.0003011562817616777,
+        "squared_average_residual": 0.00014003740911725285,
+        "centered_shape_mse": 0.00016111887264442484,
+        "gaussian_mean_density": 2.8775916752534214,
+        "logdet_penalty": -4.536954030118761,
+        "mahalanobis_penalty": 0.7404238216606672
+      },
+      "mixture_minus_gp": {
+        "mse": 0.00023143139468863414,
+        "squared_average_residual": 0.00021957370241698415,
+        "centered_shape_mse": 1.1857692271650071e-05,
+        "gaussian_mean_density": -0.37018797738703446,
+        "logdet_penalty": 0.4292871841677357,
+        "mahalanobis_penalty": -0.05909920678070035
+      },
+      "paired_mse_measurement_variance": 5.595465323613237e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        0.0001850681122474689,
+        0.0002777946771297994
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.23802013152628732,
+        "mean_first_covariance_gain": 0.13216784586074715,
+        "covariance_first_covariance_gain": -0.08306279048368248,
+        "covariance_first_mean_gain": 0.45325076787071694
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "mixture": {
+        "mse": 0.0002218586192446318,
+        "squared_average_residual": 4.635399958225503e-05,
+        "centered_shape_mse": 0.0001755046196623768,
+        "gaussian_mean_density": 2.7603918268181595,
+        "logdet_penalty": -4.162858558242356,
+        "mahalanobis_penalty": 0.4835281982195237
+      },
+      "source_gp": {
+        "mse": 0.00027220808567597155,
+        "squared_average_residual": 4.9290862505056245e-05,
+        "centered_shape_mse": 0.00022291722317091523,
+        "gaussian_mean_density": 2.952630624183641,
+        "logdet_penalty": -4.570173860157214,
+        "mahalanobis_penalty": 0.6986047027689013
+      },
+      "mixture_minus_gp": {
+        "mse": -5.034946643133975e-05,
+        "squared_average_residual": -2.936862922801215e-06,
+        "centered_shape_mse": -4.741260350853843e-05,
+        "gaussian_mean_density": -0.19223879736548133,
+        "logdet_penalty": 0.4073153019148581,
+        "mahalanobis_penalty": -0.2150765045493776
+      },
+      "paired_mse_measurement_variance": 5.558048070800495e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        -9.655747165639484e-05,
+        -4.141461206284657e-06
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.03494112662470661,
+        "mean_first_covariance_gain": 0.15729767074077472,
+        "covariance_first_covariance_gain": 0.2105472856703421,
+        "covariance_first_mean_gain": -0.01830848830486076
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "mixture": {
+        "mse": 0.00012308911873515753,
+        "squared_average_residual": 3.2640592185355246e-06,
+        "centered_shape_mse": 0.000119825059516622,
+        "gaussian_mean_density": 2.908796328274675,
+        "logdet_penalty": -4.150219449397569,
+        "mahalanobis_penalty": 0.3224845879182209
+      },
+      "source_gp": {
+        "mse": 5.923564099022952e-05,
+        "squared_average_residual": 9.35542438079086e-06,
+        "centered_shape_mse": 4.988021660943866e-05,
+        "gaussian_mean_density": 3.184295400802348,
+        "logdet_penalty": -4.7197418812311405,
+        "mahalanobis_penalty": 0.6165079472241198
+      },
+      "mixture_minus_gp": {
+        "mse": 6.385347774492801e-05,
+        "squared_average_residual": -6.091365162255336e-06,
+        "centered_shape_mse": 6.994484290718335e-05,
+        "gaussian_mean_density": -0.2754990725276727,
+        "logdet_penalty": 0.5695224318335717,
+        "mahalanobis_penalty": -0.29402335930589896
+      },
+      "paired_mse_measurement_variance": 3.2233889715392324e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        2.8664031780171595e-05,
+        9.904292370968443e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.07165205529801755,
+        "mean_first_covariance_gain": 0.20384701722965515,
+        "covariance_first_covariance_gain": -0.17417316754642753,
+        "covariance_first_mean_gain": 0.4496722400741002
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "mixture": {
+        "mse": 0.0003173688971129901,
+        "squared_average_residual": 5.670129360890869e-05,
+        "centered_shape_mse": 0.0002606676035040814,
+        "gaussian_mean_density": 2.913118513666617,
+        "logdet_penalty": -4.1801288772294365,
+        "mahalanobis_penalty": 0.34807183035814665
+      },
+      "source_gp": {
+        "mse": 0.00025696811866251915,
+        "squared_average_residual": 4.234577880626762e-05,
+        "centered_shape_mse": 0.00021462233985625155,
+        "gaussian_mean_density": 2.9531056495101637,
+        "logdet_penalty": -4.676539344758905,
+        "mahalanobis_penalty": 0.8044951620440685
+      },
+      "mixture_minus_gp": {
+        "mse": 6.040077845047097e-05,
+        "squared_average_residual": 1.4355514802641069e-05,
+        "centered_shape_mse": 4.604526364782987e-05,
+        "gaussian_mean_density": -0.03998713584354663,
+        "logdet_penalty": 0.4964104675294685,
+        "mahalanobis_penalty": -0.4564233316859218
+      },
+      "paired_mse_measurement_variance": 3.783340043576018e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        2.227719111742789e-05,
+        9.852436578351405e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.053353475633843406,
+        "mean_first_covariance_gain": -0.013366339790296777,
+        "covariance_first_covariance_gain": -0.29283731430460014,
+        "covariance_first_mean_gain": 0.33282445014814677
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "mixture": {
+        "mse": 0.00010093451948814587,
+        "squared_average_residual": 3.0977840544111694e-08,
+        "centered_shape_mse": 0.00010090354164760178,
+        "gaussian_mean_density": 3.031488358078851,
+        "logdet_penalty": -4.193092499616461,
+        "mahalanobis_penalty": 0.2426656083329375
+      },
+      "source_gp": {
+        "mse": 9.56546359819316e-05,
+        "squared_average_residual": 1.684813749539012e-05,
+        "centered_shape_mse": 7.88064984865415e-05,
+        "gaussian_mean_density": 3.352044316108241,
+        "logdet_penalty": -4.579481643529729,
+        "mahalanobis_penalty": 0.30849879421681536
+      },
+      "mixture_minus_gp": {
+        "mse": 5.279883506214262e-06,
+        "squared_average_residual": -1.6817159654846006e-05,
+        "centered_shape_mse": 2.2097043161060272e-05,
+        "gaussian_mean_density": -0.3205559580293902,
+        "logdet_penalty": 0.3863891439132683,
+        "mahalanobis_penalty": -0.06583318588387788
+      },
+      "paired_mse_measurement_variance": 5.988948332434168e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        -4.268587919373569e-05,
+        5.324564620616422e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.06848751865830227,
+        "mean_first_covariance_gain": 0.2520684393710879,
+        "covariance_first_covariance_gain": 0.23947574152095186,
+        "covariance_first_mean_gain": 0.08108021650843833
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "mixture": {
+        "mse": 0.00018752128689331852,
+        "squared_average_residual": 1.7046487577789713e-05,
+        "centered_shape_mse": 0.0001704747993155288,
+        "gaussian_mean_density": 3.0820185458203944,
+        "logdet_penalty": -4.192818714040622,
+        "mahalanobis_penalty": 0.19186163501555473
+      },
+      "source_gp": {
+        "mse": 0.00016802558759647273,
+        "squared_average_residual": 2.159331980071679e-05,
+        "centered_shape_mse": 0.00014643226779575594,
+        "gaussian_mean_density": 3.1203954079634477,
+        "logdet_penalty": -4.6997490747870225,
+        "mahalanobis_penalty": 0.6604151336189019
+      },
+      "mixture_minus_gp": {
+        "mse": 1.9495699296845787e-05,
+        "squared_average_residual": -4.546832222927077e-06,
+        "centered_shape_mse": 2.4042531519772854e-05,
+        "gaussian_mean_density": -0.03837686214305336,
+        "logdet_penalty": 0.5069303607464004,
+        "mahalanobis_penalty": -0.46855349860334716
+      },
+      "paired_mse_measurement_variance": 1.3327857161763947e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        -3.1317831244560514e-06,
+        4.2123181718147626e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.0021780044120678355,
+        "mean_first_covariance_gain": 0.03619885773098552,
+        "covariance_first_covariance_gain": -0.05324911713817837,
+        "covariance_first_mean_gain": 0.09162597928123173
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "mixture": {
+        "mse": 0.0006125217423393789,
+        "squared_average_residual": 0.00043375581968778425,
+        "centered_shape_mse": 0.00017876592265159453,
+        "gaussian_mean_density": 2.6493741552354817,
+        "logdet_penalty": -4.1617270775012445,
+        "mahalanobis_penalty": 0.5934143890610906
+      },
+      "source_gp": {
+        "mse": 0.0003448980101386975,
+        "squared_average_residual": 0.00021777615909970407,
+        "centered_shape_mse": 0.00012712185103899338,
+        "gaussian_mean_density": 3.0253194410791964,
+        "logdet_penalty": -4.701800171871233,
+        "mahalanobis_penalty": 0.7575421975873634
+      },
+      "mixture_minus_gp": {
+        "mse": 0.00026762373220068136,
+        "squared_average_residual": 0.00021597966058808018,
+        "centered_shape_mse": 5.164407161260115e-05,
+        "gaussian_mean_density": -0.37594528584371467,
+        "logdet_penalty": 0.5400730943699887,
+        "mahalanobis_penalty": -0.16412780852627284
+      },
+      "paired_mse_measurement_variance": 5.403225534360122e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        0.0002220638471999509,
+        0.0003131836172014118
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.2926058801029714,
+        "mean_first_covariance_gain": 0.08333940574074328,
+        "covariance_first_covariance_gain": -0.35373880374787525,
+        "covariance_first_mean_gain": 0.7296840895915899
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "mixture": {
+        "mse": 0.0002972842097347576,
+        "squared_average_residual": 0.00011969220967049913,
+        "centered_shape_mse": 0.00017759200006425848,
+        "gaussian_mean_density": 2.8094242793401967,
+        "logdet_penalty": -4.150135391700543,
+        "mahalanobis_penalty": 0.4217725791556733
+      },
+      "source_gp": {
+        "mse": 0.00028679797494474623,
+        "squared_average_residual": 0.000148161056887267,
+        "centered_shape_mse": 0.00013863691805747922,
+        "gaussian_mean_density": 3.206720678435374,
+        "logdet_penalty": -4.574238691960571,
+        "mahalanobis_penalty": 0.4485794803205241
+      },
+      "mixture_minus_gp": {
+        "mse": 1.0486234790011361e-05,
+        "squared_average_residual": -2.8468847216767877e-05,
+        "centered_shape_mse": 3.8955082006779265e-05,
+        "gaussian_mean_density": -0.3972963990951772,
+        "logdet_penalty": 0.42410330026002807,
+        "mahalanobis_penalty": -0.026806901164850794
+      },
+      "paired_mse_measurement_variance": 2.06779783508646e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        -1.769825059338378e-05,
+        3.86707201734065e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.11260570561350614,
+        "mean_first_covariance_gain": 0.2846906934816711,
+        "covariance_first_covariance_gain": 0.26118447101481124,
+        "covariance_first_mean_gain": 0.13611192808036598
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "mixture": {
+        "mse": 7.291274261127428e-05,
+        "squared_average_residual": 2.598159692629096e-05,
+        "centered_shape_mse": 4.693114568498334e-05,
+        "gaussian_mean_density": 3.105311433012776,
+        "logdet_penalty": -4.137050659453284,
+        "mahalanobis_penalty": 0.11280069323583651
+      },
+      "source_gp": {
+        "mse": 3.5254566978325006e-05,
+        "squared_average_residual": 2.886442026986919e-06,
+        "centered_shape_mse": 3.236812495133809e-05,
+        "gaussian_mean_density": 3.4534140002334763,
+        "logdet_penalty": -4.627567679495107,
+        "mahalanobis_penalty": 0.2552151460569581
+      },
+      "mixture_minus_gp": {
+        "mse": 3.7658175632949276e-05,
+        "squared_average_residual": 2.309515489930404e-05,
+        "centered_shape_mse": 1.4563020733645252e-05,
+        "gaussian_mean_density": -0.34810256722070054,
+        "logdet_penalty": 0.49051702004182296,
+        "mahalanobis_penalty": -0.14241445282112158
+      },
+      "paired_mse_measurement_variance": 2.684699208932251e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        5.54347420037461e-06,
+        6.977287706552395e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": -0.013834171541125428,
+        "mean_first_covariance_gain": 0.36193673876182597,
+        "covariance_first_covariance_gain": 0.2509807137630542,
+        "covariance_first_mean_gain": 0.09712185345764635
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "mixture": {
+        "mse": 0.000199318527737171,
+        "squared_average_residual": 9.601785848773365e-06,
+        "centered_shape_mse": 0.00018971674188839765,
+        "gaussian_mean_density": 2.971917001867487,
+        "logdet_penalty": -4.095211718645122,
+        "mahalanobis_penalty": 0.20435618357296279
+      },
+      "source_gp": {
+        "mse": 0.0001935907075072859,
+        "squared_average_residual": 1.4846469038860082e-05,
+        "centered_shape_mse": 0.0001787442384684258,
+        "gaussian_mean_density": 3.193434956771851,
+        "logdet_penalty": -4.554875510021381,
+        "mahalanobis_penalty": 0.44250202004485706
+      },
+      "mixture_minus_gp": {
+        "mse": 5.727820229885092e-06,
+        "squared_average_residual": -5.244683190086717e-06,
+        "centered_shape_mse": 1.097250341997185e-05,
+        "gaussian_mean_density": -0.221517954904364,
+        "logdet_penalty": 0.4596637913762587,
+        "mahalanobis_penalty": -0.23814583647189427
+      },
+      "paired_mse_measurement_variance": 4.033702015398581e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        -3.3636973256624125e-05,
+        4.509261371639431e-05
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": -0.0008467179782289946,
+        "mean_first_covariance_gain": 0.22236467288259298,
+        "covariance_first_covariance_gain": 0.03250925593345633,
+        "covariance_first_mean_gain": 0.18900869897090766
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "mixture": {
+        "mse": 0.00014763189314541425,
+        "squared_average_residual": 1.7548768285885167e-06,
+        "centered_shape_mse": 0.00014587701631682578,
+        "gaussian_mean_density": 2.9368056080174836,
+        "logdet_penalty": -4.173241073839606,
+        "mahalanobis_penalty": 0.3174969326174499
+      },
+      "source_gp": {
+        "mse": 7.293526010236058e-05,
+        "squared_average_residual": 4.356881969200637e-06,
+        "centered_shape_mse": 6.857837813315994e-05,
+        "gaussian_mean_density": 3.428759155276387,
+        "logdet_penalty": -4.679419923502567,
+        "mahalanobis_penalty": 0.33172223502150633
+      },
+      "mixture_minus_gp": {
+        "mse": 7.469663304305366e-05,
+        "squared_average_residual": -2.6020051406121205e-06,
+        "centered_shape_mse": 7.729863818366584e-05,
+        "gaussian_mean_density": -0.4919535472589036,
+        "logdet_penalty": 0.5061788496629607,
+        "mahalanobis_penalty": -0.01422530240405645
+      },
+      "paired_mse_measurement_variance": 5.546833337706952e-10,
+      "fixed_prediction_mse_gap_measurement_interval_95": [
+        2.853526938237416e-05,
+        0.00012085799670373318
+      ],
+      "gaussian_posterior_scoring_paths": {
+        "mean_first_mean_gain": 0.16992131427924662,
+        "mean_first_covariance_gain": 0.322032232979657,
+        "covariance_first_covariance_gain": 0.04351668613654347,
+        "covariance_first_mean_gain": 0.44843686112236014
+      }
+    }
+  ],
+  "summary": {
+    "5": {
+      "all6": {
+        "mixture_minus_gp": {
+          "mse": 5.9792123248173494e-05,
+          "squared_average_residual": 3.34452943631889e-05,
+          "centered_shape_mse": 2.634682888498461e-05,
+          "gaussian_mean_density": -0.23595283868746408,
+          "logdet_penalty": 0.44048712620382185,
+          "mahalanobis_penalty": -0.20453428751635774
+        },
+        "signed_level_share_of_mse_gap": 0.5593595367799651,
+        "signed_shape_share_of_mse_gap": 0.4406404632200353,
+        "fixed_prediction_mse_gap_measurement_interval_95": [
+          4.2731373857104327e-05,
+          7.685287263924266e-05
+        ],
+        "gaussian_posterior_scoring_paths": {
+          "mean_first_mean_gain": 0.08686884449535737,
+          "mean_first_covariance_gain": 0.14908399419210672,
+          "covariance_first_covariance_gain": 0.003969150949889144,
+          "covariance_first_mean_gain": 0.23198368773757494
+        }
+      },
+      "task1": {
+        "mixture_minus_gp": {
+          "mse": 0.00023143139468863414,
+          "squared_average_residual": 0.00021957370241698415,
+          "centered_shape_mse": 1.1857692271650071e-05,
+          "gaussian_mean_density": -0.37018797738703446,
+          "logdet_penalty": 0.4292871841677357,
+          "mahalanobis_penalty": -0.05909920678070035
+        },
+        "signed_level_share_of_mse_gap": 0.9487636831312224,
+        "signed_shape_share_of_mse_gap": 0.05123631686877794,
+        "fixed_prediction_mse_gap_measurement_interval_95": [
+          0.0001850681122474689,
+          0.0002777946771297994
+        ],
+        "gaussian_posterior_scoring_paths": {
+          "mean_first_mean_gain": 0.23802013152628732,
+          "mean_first_covariance_gain": 0.13216784586074715,
+          "covariance_first_covariance_gain": -0.08306279048368248,
+          "covariance_first_mean_gain": 0.45325076787071694
+        }
+      },
+      "other5": {
+        "mixture_minus_gp": {
+          "mse": 2.5464268960081365e-05,
+          "squared_average_residual": -3.78038724757015e-06,
+          "centered_shape_mse": 2.9244656207651524e-05,
+          "gaussian_mean_density": -0.20910581094755,
+          "logdet_penalty": 0.4427271146110391,
+          "mahalanobis_penalty": -0.23362130366348924
+        },
+        "signed_level_share_of_mse_gap": -0.14845850291231258,
+        "signed_shape_share_of_mse_gap": 1.1484585029123129,
+        "fixed_prediction_mse_gap_measurement_interval_95": [
+          7.2116678812915815e-06,
+          4.371687003887115e-05
+        ],
+        "gaussian_posterior_scoring_paths": {
+          "mean_first_mean_gain": 0.056638587089171376,
+          "mean_first_covariance_gain": 0.15246722385837863,
+          "covariance_first_covariance_gain": 0.02137553923660347,
+          "covariance_first_mean_gain": 0.18773027171094653
+        }
+      }
+    },
+    "6": {
+      "all6": {
+        "mixture_minus_gp": {
+          "mse": 6.928138253223775e-05,
+          "squared_average_residual": 3.303540795283174e-05,
+          "centered_shape_mse": 3.624597457940604e-05,
+          "gaussian_mean_density": -0.31219876941098557,
+          "logdet_penalty": 0.48791106940957657,
+          "mahalanobis_penalty": -0.1757122999985905
+        },
+        "signed_level_share_of_mse_gap": 0.4768295138662948,
+        "signed_shape_share_of_mse_gap": 0.5231704861337054,
+        "fixed_prediction_mse_gap_measurement_interval_95": [
+          5.428704674271251e-05,
+          8.4275718321763e-05
+        ],
+        "gaussian_posterior_scoring_paths": {
+          "mean_first_mean_gain": 0.09377166914807293,
+          "mean_first_covariance_gain": 0.21842710026291265,
+          "covariance_first_covariance_gain": 0.030200534326968603,
+          "covariance_first_mean_gain": 0.28199823508401695
+        }
+      },
+      "task1": {
+        "mixture_minus_gp": {
+          "mse": 0.00026762373220068136,
+          "squared_average_residual": 0.00021597966058808018,
+          "centered_shape_mse": 5.164407161260115e-05,
+          "gaussian_mean_density": -0.37594528584371467,
+          "logdet_penalty": 0.5400730943699887,
+          "mahalanobis_penalty": -0.16412780852627284
+        },
+        "signed_level_share_of_mse_gap": 0.8070273096188826,
+        "signed_shape_share_of_mse_gap": 0.19297269038111736,
+        "fixed_prediction_mse_gap_measurement_interval_95": [
+          0.0002220638471999509,
+          0.0003131836172014118
+        ],
+        "gaussian_posterior_scoring_paths": {
+          "mean_first_mean_gain": 0.2926058801029714,
+          "mean_first_covariance_gain": 0.08333940574074328,
+          "covariance_first_covariance_gain": -0.35373880374787525,
+          "covariance_first_mean_gain": 0.7296840895915899
+        }
+      },
+      "other5": {
+        "mixture_minus_gp": {
+          "mse": 2.9612912598549037e-05,
+          "squared_average_residual": -3.553442574217951e-06,
+          "centered_shape_mse": 3.316635517276701e-05,
+          "gaussian_mean_density": -0.29944946612443973,
+          "logdet_penalty": 0.47747866441749415,
+          "mahalanobis_penalty": -0.17802919829305405
+        },
+        "signed_level_share_of_mse_gap": -0.11999638881830427,
+        "signed_shape_share_of_mse_gap": 1.119996388818305,
+        "fixed_prediction_mse_gap_measurement_interval_95": [
+          1.4097525801687577e-05,
+          4.51282993954105e-05
+        ],
+        "gaussian_posterior_scoring_paths": {
+          "mean_first_mean_gain": 0.05400482695709323,
+          "mean_first_covariance_gain": 0.24544463916734652,
+          "covariance_first_covariance_gain": 0.10698840194193737,
+          "covariance_first_mean_gain": 0.19246106418250236
+        }
+      }
+    }
+  },
+  "cached_mse_and_gaussian_scores_reproduced": true,
+  "no_model_adopted": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.02230600799999999,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

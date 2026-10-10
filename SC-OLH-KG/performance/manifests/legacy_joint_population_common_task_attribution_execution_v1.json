@@ -1,0 +1,43 @@
+{
+  "status": "registered before all sixteen component forecasts and source scoring",
+  "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "native_results": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1/results.json",
+  "restricted_execution": "performance/manifests/legacy_joint_population_intercept_task_holdout_execution_v1.json",
+  "restricted_results": "paper_artifacts/legacy_joint_population_intercept_task_holdout_v1/results.json",
+  "mean_shift_attribution": "paper_artifacts/legacy_joint_population_intercept_task_holdout_v1/mean_shift_attribution.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Restricted task variation improves all4 source holdout g/joint raw densities versus the native model and lowers average g MSE9.1%/11.2%; task6 MSE regresses under both assignments. Against GP it improves task7 g MSE/density but worsens both under task6. The post-hoc task6 MSE increment is99.7%/95.7% centered-shape contribution, with regressions remaining under fixed native predictive-variance weights. Shared curve learning and task covariance changed together, so neither an intercept-only error nor noise weighting alone explains the discrepancy. Isolate those two components before another fitted repair.",
+  "components": "For each full-source g law, separate the cached population coefficient mean beta, its covariance H, task residual coefficient diagonal R and white discrepancy delta. Common block is(beta,H); task block is(R,delta). Use exactly the native public orthogonal design D so g prior mean=D*beta and covariance=D*(H+diag(R))*D^T+delta*I. Retain unchanged f and full/six-deletion eta identities, uniform initial weights and paired raw update.",
+  "cases": [
+    "native_common_native_task",
+    "native_common_restricted_task",
+    "restricted_common_native_task",
+    "restricted_common_restricted_task"
+  ],
+  "freeze_rule": "Reconstruct both original endpoints at all73 policies before and after paired0/1 raw observations, including four-head means/variances, episode variance, identity weights and predictive scores, against Stage72/74. Freeze all16 prior/raw-paid source forecasts (8 new mixed branches) before scoring the same71 policies; reuse endpoint scores afterward. No source/target fitting or label-based parameter changes.",
+  "scoring": "Report per-case prior/paid observed g MSE, proper joint/g raw batch density and all four source cases separately. Attribute common-curve versus task-law substitutions and their interaction; keep all negative cases. This is component attribution on reused development holdouts, not model selection or independent confirmation.",
+  "next_action": "If preserving native common learning while using restricted task covariance removes task6 regressions, prioritize a source-trained regularization rule that retains common-function estimation and validates new-task residual structure using training tasks only. A mixed arm still cannot be promoted or treated as a coherent source fit. If regressions persist, identify their paid-update component before adding any covariance family. No automatic spectrum grid, target KG or gate waiver.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread using cached small JSON only; full73 field covariance in memory, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_common_task_attribution_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_common_task_attribution_plan_v1.json",
+  "entrypoint": "performance/check_legacy_common_task_attribution.py"
+}

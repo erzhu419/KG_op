@@ -1,0 +1,51 @@
+{
+  "status": "completed in Stage98: 48 covariance forecasts frozen/scored; no hybrid adopted",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "profile_results": "paper_artifacts/legacy_joint_population_f_gp_profile_start_v1/results.json",
+  "projection_execution": "performance/manifests/legacy_joint_population_f_gp_orthogonal_projection_execution_v1.json",
+  "projection_profiles": "paper_artifacts/legacy_joint_population_f_gp_orthogonal_projection_v1/calibration_profiles.json",
+  "native_f_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "cases": [
+    "projected_full_task",
+    "diagonal_task",
+    "native_group_spectrum_tail",
+    "native_task_law"
+  ],
+  "basis_of_next_step": "All12 f GP variance-profile starts converged; only2 source-NLL improvements were selected, both below8e-9 per label, and development acceptance failed. Stop further initialization fits. F projection retains gains even in native selected common groups, but this does not prove the original covariance family can learn that field. Separate task covariance compression from projected common mean/uncertainty before a new source-estimator choice.",
+  "diagnostic": "On each original73 public-policy f GP field, decompose covariance into source common posterior, independent GP task kernel and white discrepancy. Project common posterior and task kernel separately into the original27-column dictionary; retain the same projected GP common mean and common covariance in ALL cases. Compare full projected task covariance, its diagonal, original native task spectral exponent with GP projected group masses and original native1% weak tail, and the unchanged native task diagonal. This parallels earlier Stage70 g diagnostic but tests f. All f eta priors, original two raw observations and12 scoring policies unchanged. No common covariance diagonalization or GP posterior adoption is implied.",
+  "verification": "Check common+task coefficient covariance equals Stage96 full projection, and projected full prior/two-raw-paid12 means/covariances/paid evidence match the cached Stage96 baseline. Check common/task covariance symmetry/PSD before new filtering, and exact group mass including any variance added by retained native tail. These checks detect wrong f head, kernel scale, or decomposition that changes attribution. Do not repeat native likelihood/gradient or73 GP replay checks settled in earlier stages.",
+  "freeze_and_scores": "Freeze all48 field forecasts before twelve-site scores. Reuse reproduced full-projection baseline scores, score other variants using same proper raw f three-repeat density, f MSE, Gaussian mean density and descriptive transcript score. Report all folds, task1 constant/shape geometry, group masses, tail-added trace and projected/native task intercepts. No source6/7, target or confirmation labels enter.",
+  "interpretation": "This is a fixed posterior counterfactual diagnosing representation/covariance/estimation, not a source-learned original model or independent validation. If compressing task covariance retains gains, investigate common source mean/uncertainty estimation rather than broadening residual correlations. If gains disappear, investigate task covariance geometry/scale; do not adopt the best hybrid or tune a covariance multiplier from these folds. Keep all failed gates and original60/60 contracts.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_projected_task_spectrum_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_projected_task_spectrum_plan_v1.json",
+  "entrypoint": "performance/check_legacy_f_projected_task_spectrum.py",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_projected_task_spectrum_execution_v1.json",
+  "result": "paper_artifacts/legacy_joint_population_f_projected_task_spectrum_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage97_101_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_f_common_attribution_plan_v1.json"
+}

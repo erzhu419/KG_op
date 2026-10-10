@@ -1,0 +1,70 @@
+{
+  "status": "registered after Stage79 objective reversal and before both transcript calibrations or scoring",
+  "component_execution": "performance/manifests/legacy_joint_population_common_task_attribution_execution_v1.json",
+  "component_results": "paper_artifacts/legacy_joint_population_common_task_attribution_v1/results.json",
+  "update_execution": "performance/manifests/legacy_joint_population_paid_transfer_attribution_execution_v1.json",
+  "update_results": "paper_artifacts/legacy_joint_population_paid_transfer_attribution_v1/results.json",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "training_control_profiles": "paper_artifacts/legacy_joint_population_gp_profile_start_v1/calibration_profiles.json",
+  "holdout_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Stage79 reproduces all cached forecasts and MSE. Task6 conditional measurement intervals remain positive under both assignments. Stage77 conditional density gains reverse under the complete sequential score: source transcript-density changes-.00608/-.10108. The same two-parameter family can account for paid-observation predictive evidence without adding a covariance family or tuning on source6/7.",
+  "candidate": "For each cached native g law retain beta, H, white discrepancy, basis, sparse group support, task low-frequency exponent, weak tail and all f/eta laws. With t=.01*source_signal_scale/basis.feature_dim, replace R[0] by a*R_native[0] and R[1:] by t+b*(R_native[1:]-t), where a,b>=0. At a=b=1 reproduce native. This is a two-stage source-fitted predictive meta-prior calibration, not a refit of the integrated native hierarchical source likelihood; population-mean posterior uncertainty stays in the new-task prior. No posterior transplant, new covariance direction, support search or spectrum grid.",
+  "training_inputs": "Use the Stage71 five-task selected native fits and their registered12-site deleted-training-task prediction views. Keep the same deleted-task risk fit and raw g updates at candidates0/1 as Stage71/73. Scoring labels/noise come only from the six training tasks in the cached216-call mean information. Never index source6/7 or target/confirmation labels during calibration.",
+  "objective": "Minimize equal-task-average NEGATIVE sequential source transcript density: predictive log evidence of the same two raw g updates plus12 times the Gaussian whole-task conditional g-mean density with fixed original S2/3 noise, divided by14. The moment-projected filter gives a normalized sequential predictive law; this mixed-observation Gaussian approximation is distinct from exact whole-task raw density. Keep the same two multipliers, start, optimizer, bounds and development gate. Initial native objective must reproduce the Stage79 transcript score.",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "initial": [
+      1.0,
+      1.0
+    ],
+    "bounds": [
+      [
+        0.0,
+        null
+      ],
+      [
+        0.0,
+        null
+      ]
+    ],
+    "maxiter": 64,
+    "maxfun": 128,
+    "ftol": 1e-08,
+    "gtol": 1e-05,
+    "finite_difference_step": 0.0001
+  },
+  "freeze_rule": "Reproduce all73 native prior/paid g means and scoring-site covariance at a=b=1 before fitting; exercise zero excess function variance while retaining the original weak tail. Save both completed scalar fits and all12 calibrated prior/paid forecasts before raw scoring. Report optimizer convergence and all per-task changes. An incomplete fit does not select a candidate or receive a continuation/start search.",
+  "development_acceptance": "Provisionally prefer this rule only if the average paid g MSE does not increase AND average proper raw g batch density strictly improves versus Stage71 native selection under BOTH assignments. Keep Gaussian mean-density and raw batch-density columns separate. These six reused folds are calibration/selection data, not nested validation or independent confirmation; report every regression.",
+  "next_action": "Only if both transcript fits converge and the unchanged average paid MSE/raw-density development gate passes, register the resulting fixed parameters and the original four-case source gate before reusing source6/7. Otherwise retain native and stop this scalar calibration candidate. No multiplier cap, new start, parameter grid or target promotion.",
+  "cost": {
+    "planned_new_scalar_calibration_fits": 2,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread using cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_task_transcript_calibration_v1",
+  "entrypoint": "performance/calibrate_legacy_task_transcript.py",
+  "previous_calibration_execution": "performance/manifests/legacy_joint_population_task_transfer_calibration_execution_v1.json",
+  "diagnosis_execution": "performance/manifests/legacy_joint_population_task_transfer_diagnosis_execution_v1.json",
+  "diagnosis_results": "paper_artifacts/legacy_joint_population_task_transfer_diagnosis_v1/results.json"
+}

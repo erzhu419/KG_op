@@ -1,0 +1,51 @@
+{
+  "status": "frozen before full-source centered fits or source6/7 forecasts",
+  "training_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "training_results": "paper_artifacts/legacy_joint_population_task_bank_centering_v1/results.json",
+  "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "model": "Exactly the Stage88 original-dictionary common D and public-bank-centered residual Z model, with the same source Gaussian likelihood, common regularizer, sparse groups, task/common exponents, original weak tail and discrepancy family. For each full source input view recompute centers from the full public73-policy bank and its unchanged mean-coordinate transform. Fit each full-six-source g head once from Stage72 selected native parameters, using the same L-BFGS-B4096/ftol1e-9/gtol1e-5 bounds. No scalar/gamma calibration, extra starts or completion. Save both laws before indexing either holdout paid outcome.",
+  "information_contract": "Same216-call mean information,144-call risk subset; f/eta priors and full/six-deletion risk-only identity mixture/equal prior weights unchanged. Each query task uses its own public center to transform only residual R, plus common H and learned white discrepancy; two paired raw observations0/1 and original moment updates.",
+  "freeze_and_replay": "Reproduce native full-source Gaussian source objective and cached Stage72 all73 four-head prior/paid moments, episode variance, identity names/weights and paid density. Verify new transformed covariance/eta/f invariants. Freeze all four candidate prior/paid forecasts before71-unobserved-site scoring. Source6/7 cannot change the fitting rule or candidate family.",
+  "source_gate": "Original repair gate unchanged: g MSE nonincrease, joint raw batch density nondecrease and g raw batch density strict improvement in every case against BOTH original same216 native and original144 structural controls. Retain Stage72 selected native and GP comparisons separately. Development averages are not gate substitutes.",
+  "next_action": "A complete source gate pass permits only a separately registered bounded target diagnostic, not confirmation or manuscript claims. Otherwise retain every failed case and use cached source-law/forecast diagnostics, with no centered-family grid, source-score tuning, target scoring, gate waiver or server work.",
+  "cost": {
+    "planned_new_g_source_fits": 2,
+    "maximum_completion_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON/public coordinates only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_task_bank_centering_holdout_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_task_bank_centering_holdout_plan_v1.json",
+  "entrypoint": "performance/check_legacy_task_bank_centering_holdout.py"
+}

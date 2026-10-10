@@ -1,0 +1,2028 @@
+{
+  "execution": {
+    "status": "registered after Stage67, before swapped source prior forecasts or scores",
+    "gain_execution": "performance/manifests/legacy_joint_population_paid_covariance_gain_execution_v1.json",
+    "gain_results": "paper_artifacts/legacy_joint_population_paid_covariance_gain_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "cases": {
+      "SS": {
+        "mean": "joint_structural",
+        "covariance": "joint_structural"
+      },
+      "SG": {
+        "mean": "joint_structural",
+        "covariance": "joint_gp"
+      },
+      "GS": {
+        "mean": "joint_gp",
+        "covariance": "joint_structural"
+      },
+      "GG": {
+        "mean": "joint_gp",
+        "covariance": "joint_gp"
+      }
+    },
+    "basis_of_next_step": "Stage67 frozen-noise g prediction retains the structural-versus-GP gaps .001747/.002432; replacing latent-risk weighting changes mean error by only several1e-6. Separate already learned source common means from their complete new-task covariance before proposing any fitted repair.",
+    "contrast": "Reuse each five-task g mean field from structural and GP priors. Cross its mean and full common-plus-task/discrepancy covariance in the four stated cases, with the identical cached eta_g mean/covariance and zero initial mean/risk cross-covariance. Keep the original two raw paid updates. Also compute Stage67 fixed-noise Gaussian propagation for each case; no f model or decision is changed.",
+    "freeze_rule": "Freeze all48 case forecasts at the registered12 unobserved sites before scoring. Reproduce SS/GG prior and raw-paid g/eta_g moments at all73 sites against Stage66 before interpreting swapped cases. Preserve original matched source180-call/two-paid-call information and risk120-call subset.",
+    "scoring": "Use identical12 sites and original three-repeat labels. Report g MSE, full-task Gaussian g mean density with observed S2/3 noise, and proper per-site raw g batch density for prior/raw-paid fields. Gaussian fixed-noise scores are a separate attribution metric; no use of source holdout6/7 or target outcomes.",
+    "decision_rule": "This is a component transplant diagnostic, not a newly trained coherent hierarchical prior or a deployable method. Report mean substitution with covariance fixed, and covariance substitution with mean fixed, in both assignments. Do not tune/select hybrid arms or waive prior source gates.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread using cached small JSON, no server jobs or pulls",
+    "entrypoint": "performance/check_legacy_source_mean_covariance_swap.py",
+    "output": "paper_artifacts/legacy_joint_population_source_mean_covariance_swap_v1"
+  },
+  "summary": {
+    "5": {
+      "SS": {
+        "prior": {
+          "g_mse": 0.006989363160920564,
+          "g_gaussian_mean_density": 1.3841954583837845,
+          "g_raw_batch_density": -0.527593426008253
+        },
+        "raw_paid": {
+          "g_mse": 0.005399861055419268,
+          "g_gaussian_mean_density": 1.4861862674555866,
+          "g_raw_batch_density": -0.33171330301775387
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.005404032577260637,
+          "g_gaussian_mean_density": 1.4847478644944185
+        }
+      },
+      "SG": {
+        "prior": {
+          "g_mse": 0.006989363160920564,
+          "g_gaussian_mean_density": 1.1991975976080087,
+          "g_raw_batch_density": -1.0222862473953018
+        },
+        "raw_paid": {
+          "g_mse": 0.00450207589327357,
+          "g_gaussian_mean_density": 1.3619440961181921,
+          "g_raw_batch_density": -0.3558091682074373
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.0045011252884692605,
+          "g_gaussian_mean_density": 1.361821444792006
+        }
+      },
+      "GS": {
+        "prior": {
+          "g_mse": 0.005662982889371747,
+          "g_gaussian_mean_density": 1.4837720187820205,
+          "g_raw_batch_density": -0.48299572553178294
+        },
+        "raw_paid": {
+          "g_mse": 0.0045369659517360186,
+          "g_gaussian_mean_density": 1.5948835182736814,
+          "g_raw_batch_density": -0.27231513219053866
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.004540031990714198,
+          "g_gaussian_mean_density": 1.5928168413318913
+        }
+      },
+      "GG": {
+        "prior": {
+          "g_mse": 0.005662982889371747,
+          "g_gaussian_mean_density": 1.5449945957667692,
+          "g_raw_batch_density": -1.009157680049463
+        },
+        "raw_paid": {
+          "g_mse": 0.0036597363627103793,
+          "g_gaussian_mean_density": 1.726323397506644,
+          "g_raw_batch_density": -0.220254550037861
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.0036568481493644074,
+          "g_gaussian_mean_density": 1.7261265769792757
+        }
+      }
+    },
+    "6": {
+      "SS": {
+        "prior": {
+          "g_mse": 0.007763358475550923,
+          "g_gaussian_mean_density": 1.3092213180006034,
+          "g_raw_batch_density": -0.6148222807595889
+        },
+        "raw_paid": {
+          "g_mse": 0.006714143943494286,
+          "g_gaussian_mean_density": 1.422118039271543,
+          "g_raw_batch_density": -0.42382788813750233
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.006715032391082145,
+          "g_gaussian_mean_density": 1.420828371086472
+        }
+      },
+      "SG": {
+        "prior": {
+          "g_mse": 0.007763358475550923,
+          "g_gaussian_mean_density": 1.351157069510821,
+          "g_raw_batch_density": -1.019427992241921
+        },
+        "raw_paid": {
+          "g_mse": 0.005673244403162384,
+          "g_gaussian_mean_density": 1.511835204149591,
+          "g_raw_batch_density": -0.4025080380090778
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.005670015482220205,
+          "g_gaussian_mean_density": 1.5113791043554634
+        }
+      },
+      "GS": {
+        "prior": {
+          "g_mse": 0.006667617815068923,
+          "g_gaussian_mean_density": 1.4471644015854752,
+          "g_raw_batch_density": -0.5474203515577503
+        },
+        "raw_paid": {
+          "g_mse": 0.0055132413157498615,
+          "g_gaussian_mean_density": 1.5783423294473842,
+          "g_raw_batch_density": -0.3194259037968656
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.005514331125008199,
+          "g_gaussian_mean_density": 1.57649592073058
+        }
+      },
+      "GG": {
+        "prior": {
+          "g_mse": 0.006667617815068923,
+          "g_gaussian_mean_density": 1.6090632117737735,
+          "g_raw_batch_density": -0.9962737410664683
+        },
+        "raw_paid": {
+          "g_mse": 0.00428714226138057,
+          "g_gaussian_mean_density": 1.8090033257276332,
+          "g_raw_batch_density": -0.17101119177192847
+        },
+        "fixed_noise_paid": {
+          "g_mse": 0.004283196318666489,
+          "g_gaussian_mean_density": 1.808390192535006
+        }
+      }
+    }
+  },
+  "substitutions": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.609698150386509,
+        "g_raw_batch_density": -0.5132858638462086
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.050323831945465525,
+        "g_raw_batch_density": -0.5846337300485963
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.003311764737456563,
+        "g_gaussian_mean_density": 0.19931515592262294,
+        "g_raw_batch_density": 0.12287528628359476
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.003311764737456563,
+        "g_gaussian_mean_density": 0.7586894743636664,
+        "g_raw_batch_density": 0.05152742008120703
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0019808796225582676,
+        "g_gaussian_mean_density": -0.4974094264701773,
+        "g_raw_batch_density": -0.2704802764333692
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.001598301022971673,
+        "g_gaussian_mean_density": 0.07173180766038212,
+        "g_raw_batch_density": 0.03337915319505452
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.003248791745748863,
+        "g_gaussian_mean_density": 0.21422306794987533,
+        "g_raw_batch_density": 0.1807782023607949
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0036313703453354574,
+        "g_gaussian_mean_density": 0.7833643020804347,
+        "g_raw_batch_density": 0.4846376319892186
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.001976675779277571,
+        "g_gaussian_mean_density": -0.49764342067254663
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0015960645537772362,
+        "g_gaussian_mean_density": 0.07162960411065722
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0032501064782911185,
+        "g_gaussian_mean_density": 0.21393268117808706
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0036307177037914534,
+        "g_gaussian_mean_density": 0.7832057059612909
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.113650181261856,
+        "g_raw_batch_density": -0.46851993827045757
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.13746492363959617,
+        "g_raw_batch_density": -0.47489160646899786
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0021000981146219655,
+        "g_gaussian_mean_density": 0.01793713654566753,
+        "g_raw_batch_density": 0.04290515979585907
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0021000981146219655,
+        "g_gaussian_mean_density": 0.2690522414471197,
+        "g_raw_batch_density": 0.03653349159731878
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005164215675609414,
+        "g_gaussian_mean_density": -0.08355902872658683,
+        "g_raw_batch_density": -0.013011510381342628
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.000947054173061132,
+        "g_gaussian_mean_density": 0.16349857462452966,
+        "g_raw_batch_density": 0.15345360365752847
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0016019227109034554,
+        "g_gaussian_mean_density": 0.019981426934886137,
+        "g_raw_batch_density": 0.06750322607998377
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.002032555316403646,
+        "g_gaussian_mean_density": 0.2670390302860026,
+        "g_raw_batch_density": 0.23396834011885487
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005253010325487646,
+        "g_gaussian_mean_density": -0.08335249840668335
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0009516477707944737,
+        "g_gaussian_mean_density": 0.16380616398805037
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.001604515098359292,
+        "g_gaussian_mean_density": 0.019865815523211205
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.002030861836605001,
+        "g_gaussian_mean_density": 0.2670244779179449
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.015036183621206956,
+        "g_raw_batch_density": -0.8053990516238512
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.03964346968983423,
+        "g_raw_batch_density": -0.7444402552944303
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0007900913627089945,
+        "g_gaussian_mean_density": -0.003233639310126435,
+        "g_raw_batch_density": -0.07126858709520484
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.0007900913627089945,
+        "g_gaussian_mean_density": 0.02137364675850084,
+        "g_raw_batch_density": -0.010309790765783866
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005873625729476866,
+        "g_gaussian_mean_density": 0.1134443150679092,
+        "g_raw_batch_density": 0.08802244064612605
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0006027976153546851,
+        "g_gaussian_mean_density": 0.141366066520642,
+        "g_raw_batch_density": 0.09593004954185462
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0004637370810560361,
+        "g_gaussian_mean_density": 0.0043584752520478,
+        "g_raw_batch_density": -0.045376855208220726
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.00044830203864903756,
+        "g_gaussian_mean_density": 0.03228022670478059,
+        "g_raw_batch_density": -0.037469246312492155
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005887219039555412,
+        "g_gaussian_mean_density": 0.11437732257788236
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0006069835644542344,
+        "g_gaussian_mean_density": 0.14238148791647154
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.00046522914782732823,
+        "g_gaussian_mean_density": 0.004187243098348503
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.00044696748732863507,
+        "g_gaussian_mean_density": 0.032191408436937685
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.145282012211136,
+        "g_raw_batch_density": -0.07275671725540334
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.03848772870122752,
+        "g_raw_batch_density": 0.10452265239934044
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0031905864440438083,
+        "g_gaussian_mean_density": 0.16179833778714803,
+        "g_raw_batch_density": -0.28213092127418715
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.0031905864440438083,
+        "g_gaussian_mean_density": 0.2685926212970565,
+        "g_raw_batch_density": -0.10485155161944337
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.00037024671913599583,
+        "g_gaussian_mean_density": -0.17717599552503294,
+        "g_raw_batch_density": -0.1950877247948839
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00036193338184150204,
+        "g_gaussian_mean_density": -0.09177613764869408,
+        "g_raw_batch_density": -0.31308275435902
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.002427521634237955,
+        "g_gaussian_mean_density": 0.19539233441453063,
+        "g_raw_batch_density": -0.23420406003272365
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.0024358349715324487,
+        "g_gaussian_mean_density": 0.2807921922908695,
+        "g_raw_batch_density": -0.35219908959685975
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.00039395420998296696,
+        "g_gaussian_mean_density": -0.17024138926798904
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00039548532022703857,
+        "g_gaussian_mean_density": -0.08257876980468493
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0024280829831849924,
+        "g_gaussian_mean_density": 0.19282742788693963
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.002426551872940921,
+        "g_gaussian_mean_density": 0.28049004735024374
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.2625553426872733,
+        "g_raw_batch_density": -0.8410532243173168
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.12354867451137697,
+        "g_raw_batch_density": -0.8791638075916846
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.00031457225029452203,
+        "g_gaussian_mean_density": 0.052181677698378115,
+        "g_raw_batch_density": 0.04219851663608887
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.00031457225029452203,
+        "g_gaussian_mean_density": 0.19118834587427447,
+        "g_raw_batch_density": 0.0040879333617209745
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005910689570940665,
+        "g_gaussian_mean_density": -0.1406478250024954,
+        "g_raw_batch_density": 0.07395373174044073
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00020772045462951047,
+        "g_gaussian_mean_density": -0.002219378954827933,
+        "g_raw_batch_density": 0.07353102171833366
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0004819686108684766,
+        "g_gaussian_mean_density": 0.051960499328319365,
+        "g_raw_batch_density": 0.06771563756236396
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -9.86201084039206e-05,
+        "g_gaussian_mean_density": 0.19038894537598683,
+        "g_raw_batch_density": 0.06729292754025688
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005898626244899442,
+        "g_gaussian_mean_density": -0.1399056960178493
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00021055574872240294,
+        "g_gaussian_mean_density": -0.0015902961036706742
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.00048123416227559973,
+        "g_gaussian_mean_density": 0.05206825890129019
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.00010192728650805852,
+        "g_gaussian_mean_density": 0.19038365881546881
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.006162338270910839,
+        "g_raw_batch_density": -0.2671421330090561
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.4025873037371315,
+        "g_raw_batch_density": -0.5783649801017119
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.006212524333672659,
+        "g_gaussian_mean_density": 0.16946069374572414,
+        "g_raw_batch_density": 0.41300674851266944
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.006212524333672659,
+        "g_gaussian_mean_density": 0.5658856592119448,
+        "g_raw_batch_density": 0.1017839014200137
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.005302490778693759,
+        "g_gaussian_mean_density": 0.03989493263201482,
+        "g_raw_batch_density": 0.17202814808492822
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00474217293223868,
+        "g_gaussian_mean_density": 0.5060383431957425,
+        "g_raw_batch_density": 0.26915241916231447
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.002735946269872687,
+        "g_gaussian_mean_density": 0.16626770102890975,
+        "g_raw_batch_density": 0.3199728742010929
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.002175628423417608,
+        "g_gaussian_mean_density": 0.6324111115926374,
+        "g_raw_batch_density": 0.41709714527847913
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.005296279741048619,
+        "g_gaussian_mean_density": 0.039207163572712034
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00473049519767783,
+        "g_gaussian_mean_density": 0.506210223777481
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0027414599113649452,
+        "g_gaussian_mean_density": 0.1655324344369622
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.002175675367994157,
+        "g_gaussian_mean_density": 0.6325354946417312
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.4312387137056668,
+        "g_raw_batch_density": -0.7504046680726326
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.2390635959736871,
+        "g_raw_batch_density": -0.781655464850068
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0008248841879299235,
+        "g_gaussian_mean_density": 0.15201908010561138,
+        "g_raw_batch_density": 0.04053275776357135
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0008248841879299235,
+        "g_gaussian_mean_density": 0.3441941978375911,
+        "g_raw_batch_density": 0.009281960986135873
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.003851314660823095,
+        "g_gaussian_mean_density": -0.33272563991544546,
+        "g_raw_batch_density": -0.27367984188807626
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0027063054443029954,
+        "g_gaussian_mean_density": -0.10239038765197073,
+        "g_raw_batch_density": -0.02449714960675692
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0013492320491403625,
+        "g_gaussian_mean_density": 0.15106165412160522,
+        "g_raw_batch_density": 0.1436048556906088
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.002494241265660462,
+        "g_gaussian_mean_density": 0.38139690638507995,
+        "g_raw_batch_density": 0.39278754797192816
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0038480105273766023,
+        "g_gaussian_mean_density": -0.3323301152849081
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.002704519252379514,
+        "g_gaussian_mean_density": -0.10237257830364066
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.001347593061522056,
+        "g_gaussian_mean_density": 0.150929971906947
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0024910843365191443,
+        "g_gaussian_mean_density": 0.38088750888821443
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.12928771359074365,
+        "g_raw_batch_density": 0.10029656287386923
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.24799095636279533,
+        "g_raw_batch_density": -0.14392182228301076
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0059160525211149565,
+        "g_gaussian_mean_density": 0.41996788523657036,
+        "g_raw_batch_density": 0.37712177215805176
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0059160525211149565,
+        "g_gaussian_mean_density": 0.538671128008622,
+        "g_raw_batch_density": 0.13290338700117177
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0066996647497310855,
+        "g_gaussian_mean_density": 0.1835728777095189,
+        "g_raw_batch_density": 0.28604446555342866
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.005498568193408369,
+        "g_gaussian_mean_density": 0.3063949736880651,
+        "g_raw_batch_density": 0.36867024508368196
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.005989353401810818,
+        "g_gaussian_mean_density": 0.4172131106551147,
+        "g_raw_batch_density": 0.41891023160834706
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.004788256845488102,
+        "g_gaussian_mean_density": 0.5400352066336609,
+        "g_raw_batch_density": 0.5015360111386004
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.006698080953715496,
+        "g_gaussian_mean_density": 0.18406296346327933
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.005496509092885922,
+        "g_gaussian_mean_density": 0.30689698134178545
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0059882286492187915,
+        "g_gaussian_mean_density": 0.4171435834983823
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.004786656788389218,
+        "g_gaussian_mean_density": 0.5399776013768884
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.21545413241396316,
+        "g_raw_batch_density": -0.687227286315955
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.19810674539616158,
+        "g_raw_batch_density": -0.6034038306775527
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0013176236635934406,
+        "g_gaussian_mean_density": -0.04579346625070069,
+        "g_raw_batch_density": -0.10074466154376074
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.0013176236635934406,
+        "g_gaussian_mean_density": -0.06314085326850227,
+        "g_raw_batch_density": -0.016921205905358394
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0008973095304753973,
+        "g_gaussian_mean_density": 0.31419705857993163,
+        "g_raw_batch_density": 0.13097946077232372
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0010564631840361207,
+        "g_gaussian_mean_density": 0.2932979128626858,
+        "g_raw_batch_density": 0.155565001272449
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.001454020035905466,
+        "g_gaussian_mean_density": -0.03630640457649115,
+        "g_raw_batch_density": -0.10541459462592782
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.0012948663823447427,
+        "g_gaussian_mean_density": -0.05720555029373697,
+        "g_raw_batch_density": -0.08082905412580255
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0009117460120175234,
+        "g_gaussian_mean_density": 0.31654922163247545
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0010722675037068002,
+        "g_gaussian_mean_density": 0.2955466712031676
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0014467294340685644,
+        "g_gaussian_mean_density": -0.036463052391592976
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.0012862079423792876,
+        "g_gaussian_mean_density": -0.05746560282090085
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.2743759048540666,
+        "g_raw_batch_density": -0.15678917812406828
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.2732568987309012,
+        "g_raw_batch_density": -0.13638948548614777
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.00024639947735630684,
+        "g_gaussian_mean_density": -0.03366357953971666,
+        "g_raw_batch_density": -0.027893178568752508
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": 0.00024639947735630684,
+        "g_gaussian_mean_density": -0.03478258566288206,
+        "g_raw_batch_density": -0.007493485930831989
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0005957136530105539,
+        "g_gaussian_mean_density": 0.22183850018813533,
+        "g_raw_batch_density": -0.07883353313641189
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00041841377911103466,
+        "g_gaussian_mean_density": 0.23845166403485307,
+        "g_raw_batch_density": -0.04615324857857263
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0003105070247365338,
+        "g_gaussian_mean_density": 0.03445471507087983,
+        "g_raw_batch_density": 0.03415206504145955
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.00013320715083701452,
+        "g_gaussian_mean_density": 0.051067878917597564,
+        "g_raw_batch_density": 0.06683234959929882
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0006092595028464242,
+        "g_gaussian_mean_density": 0.22532757733811692
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00043098781286998733,
+        "g_gaussian_mean_density": 0.24314722786798892
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0003137896989294179,
+        "g_gaussian_mean_density": 0.03302932767626454
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.000135518008952981,
+        "g_gaussian_mean_density": 0.05084897820613654
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": -0.14378659150915363,
+        "g_raw_batch_density": -0.5426985172293115
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.20450290277010463,
+        "g_raw_batch_density": -0.572365896079941
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.000901983112489613,
+        "g_gaussian_mean_density": 0.3496924300161779,
+        "g_raw_batch_density": 0.042679656553687884
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.000901983112489613,
+        "g_gaussian_mean_density": 0.6979819242954362,
+        "g_raw_batch_density": 0.01301227770305835
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 8.709964589796206e-05,
+        "g_gaussian_mean_density": -0.09881975337760651,
+        "g_raw_batch_density": -0.16536426108951885
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00024648421907532726,
+        "g_gaussian_mean_density": 0.29817990110410375,
+        "g_raw_batch_density": 0.1629789176302858
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0017236400530880771,
+        "g_gaussian_mean_density": 0.41722378878592714,
+        "g_raw_batch_density": 0.15811406937399536
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0020572239180613665,
+        "g_gaussian_mean_density": 0.8142234432676374,
+        "g_raw_batch_density": 0.4864572480938
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 8.938705785624303e-05,
+        "g_gaussian_mean_density": -0.09896444151262518
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.00024609661995679327,
+        "g_gaussian_mean_density": 0.29843876925829504
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0017215855650107447,
+        "g_gaussian_mean_density": 0.41654517254788237
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.002057069242823781,
+        "g_gaussian_mean_density": 0.8139483833188026
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.20752206341735513,
+        "g_raw_batch_density": -0.3908111820258939
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": 0.0,
+        "g_gaussian_mean_density": 0.2865989538435143,
+        "g_raw_batch_density": -0.45538383767558815
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.0004955472823072486,
+        "g_gaussian_mean_density": -0.014563848058709583,
+        "g_raw_batch_density": 0.072715228848235
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "prior",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0004955472823072486,
+        "g_gaussian_mean_density": 0.06451304236744959,
+        "g_raw_batch_density": 0.008142573198540726
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.001991123615495431,
+        "g_gaussian_mean_density": 0.2502399460837559,
+        "g_raw_batch_density": 0.22877281055880125
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0028429703948878926,
+        "g_gaussian_mean_density": 0.35003191364375863,
+        "g_raw_batch_density": 0.27392450634853555
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0007132967264037783,
+        "g_gaussian_mean_density": -0.04630112300198763,
+        "g_raw_batch_density": -0.02295472104466291
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "raw_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.0001385500529886834,
+        "g_gaussian_mean_density": 0.053490844558015116,
+        "g_raw_batch_density": 0.022196974745071374
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_structural_mean",
+      "changed_case": "SG",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": -0.001988412569825033,
+        "g_gaussian_mean_density": 0.24865919397761016
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "covariance_at_gp_mean",
+      "changed_case": "GG",
+      "baseline_case": "GS",
+      "differences": {
+        "g_mse": -0.0028454670610102697,
+        "g_gaussian_mean_density": 0.3497085594589626
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_structural_covariance",
+      "changed_case": "GS",
+      "baseline_case": "SS",
+      "differences": {
+        "g_mse": 0.0007202599441687783,
+        "g_gaussian_mean_density": -0.04717970537323568
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stage": "fixed_noise_paid",
+      "component": "mean_at_gp_covariance",
+      "changed_case": "GG",
+      "baseline_case": "SG",
+      "differences": {
+        "g_mse": -0.00013679454701645858,
+        "g_gaussian_mean_density": 0.05386966010811678
+      }
+    }
+  ],
+  "SS_GG_reproduction_passed": true,
+  "no_model_selected": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 3.842632077
+}

@@ -1,0 +1,125 @@
+{
+  "execution": {
+    "status": "frozen after source shape-allocation probe passed;before two predictive q fits",
+    "probe_results": "paper_artifacts/legacy_joint_population_f_inner_shape_allocation_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "outer_deleted_task": 1,
+    "entrypoint": "performance/fit_legacy_f_source_predictive_shape.py",
+    "objective": "One scalar q per source5 outer branch minimizes mean proper twelve-label Gaussian NLL over its five honestly source4-refitted inner folds. Each template,nuisance prior and empirical center excludes the inner query. Select no other parameter,template,task weighting or prefix. This is source training,not a new independent validation set.",
+    "law": "Same Stage155 diagonal shape allocation0<=q<=1 on the native common/task support union at native low-frequency spectral weights. Original independent task-level variance,1% tail,common A,empirical center,discrepancy and observed-label noise fixed. Rebuild outer source5 template from its own existing GP and native fit;coherently condition common beta/H on all60 training labels. No outer task1 outcomes.",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 4096,
+      "ftol": 1e-09,
+      "gtol": 1e-05
+    },
+    "initial_q": 0,
+    "verification": "Both q fits must converge on original optimizer rule and not worsen their source predictive objective. Native source5 likelihood/beta/H must reproduce before outer law construction. Keep task intercept exactly unchanged and PSD diagonal task covariance. No extra starts,completion fits or source holdout scoring.",
+    "cost": {
+      "maximum_source_predictive_q_fits": 2,
+      "new_native_source_refits": 0,
+      "new_source_integrations": 0,
+      "new_outer_query_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;source training JSON only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1",
+    "decision": "Completed source fits permit rebuilding conditional intercept-variance uncertainty under the new shape law and separately freezing a two-task1 prediction pilot. Reuse both fixed and already-frozen source-design prefixes;do not choose the favorable one after scoring. Original GP/flat/native/retained-mixture controls and numerical gates stay. Complete-model HOLD remains."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "q": 1.0,
+      "source_predictive_nll_per_label": -2.600816962672954,
+      "native_source_predictive_nll_per_label": -2.575465723308451,
+      "density_gain_per_label": 0.02535123936450301,
+      "initial_predictive_q_gradient": -0.07462312794307757,
+      "final_predictive_q_gradient": -0.005030725047631706,
+      "optimizer_converged": true,
+      "optimizer_iterations": 5,
+      "optimizer_evaluations": 6,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "folds": [
+        {
+          "inner_query_task": "related_inventory_00",
+          "predictive_log_density_gain_per_label": 0.006204875600379189
+        },
+        {
+          "inner_query_task": "related_inventory_02",
+          "predictive_log_density_gain_per_label": 0.03265527735638374
+        },
+        {
+          "inner_query_task": "related_inventory_03",
+          "predictive_log_density_gain_per_label": -0.015872964622695385
+        },
+        {
+          "inner_query_task": "related_inventory_04",
+          "predictive_log_density_gain_per_label": -0.0026649479227640605
+        },
+        {
+          "inner_query_task": "related_inventory_05",
+          "predictive_log_density_gain_per_label": 0.10643395641121112
+        }
+      ]
+    },
+    {
+      "layout": "6",
+      "q": 1.0,
+      "source_predictive_nll_per_label": -2.777403180964174,
+      "native_source_predictive_nll_per_label": -2.7255617071061544,
+      "density_gain_per_label": 0.051841473858019516,
+      "initial_predictive_q_gradient": -0.14332458379077564,
+      "final_predictive_q_gradient": -0.01629599903883638,
+      "optimizer_converged": true,
+      "optimizer_iterations": 4,
+      "optimizer_evaluations": 5,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "folds": [
+        {
+          "inner_query_task": "related_inventory_00",
+          "predictive_log_density_gain_per_label": 0.015297679885926119
+        },
+        {
+          "inner_query_task": "related_inventory_02",
+          "predictive_log_density_gain_per_label": 0.013401449740892524
+        },
+        {
+          "inner_query_task": "related_inventory_03",
+          "predictive_log_density_gain_per_label": 0.002445206339319217
+        },
+        {
+          "inner_query_task": "related_inventory_04",
+          "predictive_log_density_gain_per_label": 0.022825517548362484
+        },
+        {
+          "inner_query_task": "related_inventory_05",
+          "predictive_log_density_gain_per_label": 0.20523751577559768
+        }
+      ]
+    }
+  ],
+  "all_fits_complete": true,
+  "laws_frozen_before_query_outcomes": true,
+  "cost": {
+    "maximum_source_predictive_q_fits": 2,
+    "new_native_source_refits": 0,
+    "new_source_integrations": 0,
+    "new_outer_query_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_source_predictive_q_fits": 2
+  },
+  "cpu_seconds": 0.08015967400000001,
+  "no_model_adopted": true,
+  "outer_query_paid_or_score_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "source_predictive_selection_is_training_evidence": true
+}

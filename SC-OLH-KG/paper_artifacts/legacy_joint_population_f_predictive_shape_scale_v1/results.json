@@ -1,0 +1,341 @@
+{
+  "execution": {
+    "status": "frozen after both-layout coherent shrink probe passed;before one-dimensional source scale learning",
+    "entrypoint": "performance/fit_legacy_f_predictive_shape_scale.py",
+    "direction_results": "paper_artifacts/legacy_joint_population_f_source_shape_scale_direction_v1/results.json",
+    "source_context_plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+    "reference_forecasts": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+    "full_source_rules": "paper_artifacts/legacy_joint_population_f_predictive_shape_reference_v1/source_quadrature.json",
+    "full_source_reference_results": "paper_artifacts/legacy_joint_population_f_predictive_shape_reference_v1/results.json",
+    "full_source_reference_execution": "performance/manifests/legacy_joint_population_f_predictive_shape_reference_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "paid_prefix": [
+      0,
+      1,
+      29,
+      58
+    ],
+    "scale_bounds": [
+      0,
+      1
+    ],
+    "optimizer_xatol": 0.001,
+    "optimizer_max_iterations": 64,
+    "learning_nodes_per_interval": 32,
+    "final_refinement_nodes_per_interval": 64,
+    "source_rule_tolerances": {
+      "raw_mass_absolute": 1e-08,
+      "mean_variance_relative": 1e-06,
+      "coefficient_mean_max_absolute": 1e-08,
+      "common_covariance_relative_frobenius": 1e-06
+    },
+    "prediction_tolerances": {
+      "mean_max_absolute": 1e-07,
+      "covariance_relative_frobenius": 1e-05,
+      "paid_log_evidence_absolute": 1e-06
+    },
+    "density_refinement_tolerance": 1e-05,
+    "maximum_single_thread_cpu_seconds": 180,
+    "law": "One offline scale per source layout on frozen q1 task-shape excess;original support/spectrum/common prior/empirical center/weak tail/independent intercept/eta maps retained. All common moments and the full-tail conditional Jeffreys variance law recondition on the same source data. No posterior covariance scaling and no q refitting.",
+    "learning_objective": "Average proper joint future three-repeat batch density across the five honest source4 branches after the same four fixed-prefix raw observations. Original held-source calls already exist. Inner tasks participate in scale selection,so final inner gains remain training evidence. No target or outer task1 values enter learning.",
+    "optimization": "Single bounded scalar search started by the standard deterministic bounded method,no grid or extra starts;compare its candidate with the two legal endpoints. Bounds permit shrinkage supported by the preceding probe. Selected-point source/forecast32-versus64 quadrature checks must pass before constructing source5 laws. Stop at the CPU budget without promoting incomplete fits.",
+    "decision": "Freeze both completed source5 laws before any outer query data. Report MSE and transcript alongside the learned proper density and all source objectives,including deterioration. Passing source training gates does not adopt this candidate or authorize source6/7,target,KG or independent confirmation. Any later cached outer check needs a separate fixed contract.",
+    "cost": {
+      "maximum_source_predictive_scalar_fits": 2,
+      "new_native_source_parameter_fits": 0,
+      "new_risk_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "output": "paper_artifacts/legacy_joint_population_f_predictive_shape_scale_v1",
+    "execution": "local serial single-thread;small cached JSON and ten final score-site NPZ only;no server jobs or pulls"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "scale": 0.43364224622540537,
+      "optimizer_converged": true,
+      "optimizer_message": "Solution found.",
+      "bounded_optimizer_evaluations": 9,
+      "actual_objective_evaluations": 10,
+      "baseline_scores": {
+        "f_mse": 0.000350751156575197,
+        "f_gaussian_mean_density": 2.676913581052422,
+        "f_raw_batch_density": 0.8245989045027766,
+        "raw_paid_log_evidence": 10.608055657279603,
+        "sequential_transcript_density": 2.668613692141582,
+        "actual_mixture_mean_density": 2.674269180963048,
+        "actual_mixture_transcript_density": 2.6668507587486654,
+        "level_mse": 6.611411216047416e-05,
+        "centered_shape_mse": 0.00028463704441472284
+      },
+      "selected_scores": {
+        "f_mse": 0.0003528119574049781,
+        "f_gaussian_mean_density": 2.6750522113661197,
+        "f_raw_batch_density": 0.8333486083718397,
+        "raw_paid_log_evidence": 10.67896753963847,
+        "sequential_transcript_density": 2.6732821025472857,
+        "actual_mixture_mean_density": 2.6726171301718957,
+        "actual_mixture_transcript_density": 2.6716587150844697
+      },
+      "numerical_checks": [
+        {
+          "query_task": 0,
+          "errors": {
+            "mean_max_absolute": 4.440892098500626e-16,
+            "covariance_relative_frobenius": 9.47511925194329e-16,
+            "paid_log_evidence_absolute": 1.7763568394002505e-15
+          },
+          "raw_density_refinement_error": 4.996003610813204e-16,
+          "passed": true
+        },
+        {
+          "query_task": 2,
+          "errors": {
+            "mean_max_absolute": 4.440892098500626e-16,
+            "covariance_relative_frobenius": 6.638621020577434e-16,
+            "paid_log_evidence_absolute": 0.0
+          },
+          "raw_density_refinement_error": 3.3306690738754696e-16,
+          "passed": true
+        },
+        {
+          "query_task": 3,
+          "errors": {
+            "mean_max_absolute": 3.885780586188048e-16,
+            "covariance_relative_frobenius": 8.079872122541322e-16,
+            "paid_log_evidence_absolute": 1.7763568394002505e-15
+          },
+          "raw_density_refinement_error": 1.1102230246251565e-16,
+          "passed": true
+        },
+        {
+          "query_task": 4,
+          "errors": {
+            "mean_max_absolute": 6.106226635438361e-16,
+            "covariance_relative_frobenius": 9.15251309117276e-16,
+            "paid_log_evidence_absolute": 1.7763568394002505e-15
+          },
+          "raw_density_refinement_error": 2.220446049250313e-16,
+          "passed": true
+        },
+        {
+          "query_task": 5,
+          "errors": {
+            "mean_max_absolute": 5.551115123125783e-16,
+            "covariance_relative_frobenius": 7.147181751267132e-16,
+            "paid_log_evidence_absolute": 0.0
+          },
+          "raw_density_refinement_error": 4.440892098500626e-16,
+          "passed": true
+        }
+      ],
+      "proper_density_gain": 0.008749703869063041,
+      "scale_learned_from_source_only": true
+    },
+    {
+      "layout": "6",
+      "scale": 0.5779399678566043,
+      "optimizer_converged": true,
+      "optimizer_message": "Solution found.",
+      "bounded_optimizer_evaluations": 8,
+      "actual_objective_evaluations": 9,
+      "baseline_scores": {
+        "f_mse": 0.00012559280656601864,
+        "f_gaussian_mean_density": 2.9394973736069976,
+        "f_raw_batch_density": 1.166950587626797,
+        "raw_paid_log_evidence": 10.535179289695346,
+        "sequential_transcript_density": 2.8375965232126106,
+        "actual_mixture_mean_density": 2.9416708546117665,
+        "actual_mixture_transcript_density": 2.839045510549123,
+        "level_mse": 2.1143231703502787e-05,
+        "centered_shape_mse": 0.00010444957486251587
+      },
+      "selected_scores": {
+        "f_mse": 0.00014007390875268923,
+        "f_gaussian_mean_density": 2.9409053149615074,
+        "f_raw_batch_density": 1.1721355636159339,
+        "raw_paid_log_evidence": 10.579133974001868,
+        "sequential_transcript_density": 2.8421980411411605,
+        "actual_mixture_mean_density": 2.9435426194593632,
+        "actual_mixture_transcript_density": 2.843956244139731
+      },
+      "numerical_checks": [
+        {
+          "query_task": 0,
+          "errors": {
+            "mean_max_absolute": 3.3306690738754696e-16,
+            "covariance_relative_frobenius": 8.972835787163648e-16,
+            "paid_log_evidence_absolute": 1.7763568394002505e-15
+          },
+          "raw_density_refinement_error": 3.3306690738754696e-16,
+          "passed": true
+        },
+        {
+          "query_task": 2,
+          "errors": {
+            "mean_max_absolute": 2.7755575615628914e-16,
+            "covariance_relative_frobenius": 6.431443984698161e-16,
+            "paid_log_evidence_absolute": 1.7763568394002505e-15
+          },
+          "raw_density_refinement_error": 2.220446049250313e-16,
+          "passed": true
+        },
+        {
+          "query_task": 3,
+          "errors": {
+            "mean_max_absolute": 4.440892098500626e-16,
+            "covariance_relative_frobenius": 3.6416837923569694e-15,
+            "paid_log_evidence_absolute": 3.552713678800501e-15
+          },
+          "raw_density_refinement_error": 1.1102230246251565e-15,
+          "passed": true
+        },
+        {
+          "query_task": 4,
+          "errors": {
+            "mean_max_absolute": 3.3306690738754696e-16,
+            "covariance_relative_frobenius": 6.056393459366462e-16,
+            "paid_log_evidence_absolute": 0.0
+          },
+          "raw_density_refinement_error": 0.0,
+          "passed": true
+        },
+        {
+          "query_task": 5,
+          "errors": {
+            "mean_max_absolute": 5.551115123125783e-16,
+            "covariance_relative_frobenius": 6.497283066535979e-16,
+            "paid_log_evidence_absolute": 0.0
+          },
+          "raw_density_refinement_error": 0.0,
+          "passed": true
+        }
+      ],
+      "proper_density_gain": 0.00518497598913692,
+      "scale_learned_from_source_only": true
+    }
+  ],
+  "full_source_rows": [
+    {
+      "layout": "5",
+      "scale": 0.43364224622540537,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 3.780945079229659e-05,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 0.00010043261822948637,
+        "standard_deviation": 0.00035558129161720423,
+        "quantiles": {
+          "0.025": 5.608329482797085e-06,
+          "0.5": 5.3099322964117324e-05,
+          "0.975": 0.0004658418296998408
+        },
+        "normalization_integral": 0.0049728138791704304,
+        "normalization_absolute_error": 1.1853524515832578e-12,
+        "normalization_relative_error": 2.3836654264265353e-10,
+        "normalized_vector_integral_error": 1.1471159681129335e-09,
+        "normalized_mass_error": 1.199040866595169e-13,
+        "normalized_vector_evaluations": 1785
+      },
+      "posterior_task_intercept_standard_deviation": 0.010021607567126462,
+      "mean_variance_over_native": 2.656283445670912,
+      "stage105_slice_upper_variance": 0.00010470703069046978,
+      "posterior_mass_above_stage105_slice_upper": 0.25060768302272285,
+      "common_mean_bank_rms_change": 0.00016485591672388145,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00011699860475376648,
+        "integrated": 0.00013061282036674839
+      },
+      "public_average_common_level_variance": {
+        "native": 1.2550532830720704e-05,
+        "integrated": 2.508372106241999e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 1.4564157629395858e-09,
+      "scalar_quadrature_evaluations": 3822,
+      "maximum_scalar_quadrature_error": 2.34799116868832e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true,
+        "interior_physical_variance": 0.0020021252176237866,
+        "interior_total_nll_error": 3.723243935382925e-12,
+        "interior_fisher_relative_error": 1.021405182655144e-14
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true,
+      "rule_complete": true
+    },
+    {
+      "layout": "6",
+      "scale": 0.5779399678566043,
+      "source_task_count": 5,
+      "source_label_count": 60,
+      "native_task_intercept_variance": 0.0,
+      "source_signal_scale": 0.020021252176237864,
+      "reference_posterior": {
+        "mean": 3.4219971750922526e-05,
+        "standard_deviation": 0.00015434074835616118,
+        "quantiles": {
+          "0.025": 4.353277131448233e-07,
+          "0.5": 1.4095957237620295e-05,
+          "0.975": 0.00018276474241334684
+        },
+        "normalization_integral": 0.0008538668596982456,
+        "normalization_absolute_error": 3.4645229457071414e-14,
+        "normalization_relative_error": 4.05745100229267e-11,
+        "normalized_vector_integral_error": 9.68246979215778e-10,
+        "normalized_mass_error": 2.1316282072803006e-14,
+        "normalized_vector_evaluations": 1680
+      },
+      "posterior_task_intercept_standard_deviation": 0.005849783906344107,
+      "mean_variance_over_native": null,
+      "stage105_slice_upper_variance": 1.4935879453708563e-05,
+      "posterior_mass_above_stage105_slice_upper": 0.48300873970329783,
+      "common_mean_bank_rms_change": 0.0011274995199183897,
+      "common_posterior_average_bank_variance": {
+        "native": 0.00010802804846052931,
+        "integrated": 0.00011892283136500979
+      },
+      "public_average_common_level_variance": {
+        "native": 5.6751559203422094e-06,
+        "integrated": 1.2762833494077121e-05
+      },
+      "public_average_common_level_variance_from_conditional_mean_uncertainty": 5.535733085561502e-08,
+      "scalar_quadrature_evaluations": 4347,
+      "maximum_scalar_quadrature_error": 8.722243023136624e-09,
+      "verification": {
+        "native_source_nll_and_common_moments_reproduced": true,
+        "interior_physical_variance": 0.0020021252176237866,
+        "interior_total_nll_error": 1.1368683772161603e-12,
+        "interior_fisher_relative_error": 1.2656542480726785e-14
+      },
+      "conditional_posterior_integrated_without_variance_floor_or_cutoff": true,
+      "rule_complete": true
+    }
+  ],
+  "all_source_predictive_fits_and_rules_complete": true,
+  "cost": {
+    "maximum_source_predictive_scalar_fits": 2,
+    "new_native_source_parameter_fits": 0,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_source_predictive_scalar_fits": 2,
+    "source4_integrations": 105,
+    "cv_forecasts": 105,
+    "refinement_forecasts": 10,
+    "source5_integrations": 2
+  },
+  "cpu_seconds": 53.199062217000005,
+  "no_model_adopted": true,
+  "outer_task1_query_outcomes_used": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "training_diagnostic_only": true,
+  "component_artifact_bytes": 2154356
+}

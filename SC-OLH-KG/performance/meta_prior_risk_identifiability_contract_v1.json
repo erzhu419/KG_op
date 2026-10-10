@@ -1,0 +1,36 @@
+{
+  "contract_id": "inventory_risk_identifiability_v1",
+  "status": "geometry_preflight_ready",
+  "purpose": "Test common/local/volume risk-factor recovery with a public multi-context design.",
+  "parent_deployment_contract": "performance/meta_prior_feasible_deployment_contract.json",
+  "candidate_bank": "existing_public_96",
+  "source_contexts": 4,
+  "source_sites_per_context": 16,
+  "source_sites_total": 64,
+  "selection": "For each public context, select 16 rows by deterministic QR column pivoting on the nine public physical-risk exposure columns; no source or target outcomes are used.",
+  "constraint_price_range": [0.4, 0.9],
+  "source_law_seed_start": 95500,
+  "source_noise_seed_start": 96500,
+  "source_tasks": 8,
+  "replicates_per_site": 12,
+  "source_episode_calls": 6144,
+  "source_archive_output": "paper_artifacts/meta_prior_risk_identifiability_v1/source_archive.json",
+  "target_initial_points": 8,
+  "target_replicates": 12,
+  "development_target_law_seeds": [95425, 95426, 95427, 95428, 95430, 95431, 95432, 95434],
+  "heldout_confirmation_law_seeds": [95433, 95435, 95436, 95437, 95438, 95439, 95440, 95441],
+  "geometry_gate": {
+    "required_rank": 9,
+    "maximum_condition_number": 500.0,
+    "minimum_context_sites": 16,
+    "target_oracle_used": false
+  },
+  "decision_gate": {
+    "compare": ["source_learned_factor_families", "same_source_pooled_factor_families", "known_factor_geometry_diagnostic"],
+    "risk_metrics": ["factor_coefficient_error", "heldout_log_variance_rmse", "interval_coverage", "final_verified_reward"],
+    "known_factor_geometry_diagnostic_is_not_a_deployable_arm": true,
+    "independent_verifier": true
+  },
+  "promotion_rule": "Do not use the heldout confirmation block unless the geometry gate passes and the development block has finite factor estimates, no false certificates, and a predeclared paired risk decision comparison.",
+  "negative_evidence": "The original 16-row single-context risk design and all previous physical-risk failures remain unchanged."
+}

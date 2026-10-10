@@ -1,0 +1,73 @@
+{
+  "stage": "meta_prior_task_direction_prior_a42_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a41_before_individual_task_fitting": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/forecasts.json.gz",
+    "paper_artifacts/meta_prior_latent_risk_error_a41_20261003/decision.json"
+  ],
+  "question": "Does retaining source-task function support co-occurrence avoid the compatible-task loss from a pooled within-class covariance?",
+  "cohort": {
+    "meta_training_seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "outer_seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ]
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "path_policies": [
+      "risk_ard_mixture",
+      "fixed_source"
+    ]
+  },
+  "source_learning": "Fit one existing noise-aware ARD covariance to each of the40 historical tasks separately after exact precision collapse of repeated candidate visits. Use the common public seed48 normalization, original isotropic source-signal initialization,120 iteration cap, original one-percent signal tail,0.25 intercept variance and0.02 discrepancy. Each fit uses only its own observed eta labels; reuse that fit across eligible outer folds. No regime labels, analytic truth, support count or archive grouping informs a fit. All nonintercept means remain zero.",
+  "prior": "For each held seed pair, exclude all10 tasks from those seeds. Retain the30 eligible source-task covariances with equal empirical masses. Use a common intercept mean from those30 source fits for every empirical component; no per-archive intercept transfer. Target signed function coefficients start at zero. The prior retains the empirical distribution of simultaneous function variance directions, not a newly fitted frequency classification.",
+  "comparisons": "D places1/4 on each original local structural/full atom and1/2 on the empirical task-direction distribution. DG replaces each empirical covariance with its own same-trace isotropic covariance, retaining mean, discrepancy and atom mass. P replaces the empirical distribution by its exact average covariance, retaining the same mean, discrepancy and total mass. All components update from strictly past eta only. Compare D-I, D-DG, D-P and D-A37_L; do not recalibrate the mass or infer a preferred variant from the scores.",
+  "analysis": "Same80 held source-validation paths and steps9-24; average old policies within each task and report all five regimes plus four seed-pair blocks with20000 paired bootstrap draws. Primary outcome is marginal next-observed-eta log score; early9-12 and late21-24 D-I retained. No latent truth scoring or cohort56-63.",
+  "controls": "Original I must reproduce saved A37 on unchanged paid paths. Every scored seed is absent from its empirical prior. Nonintercept means remain zero. DG has the same per-component total coefficient variance and P the exact empirical first two prior coefficient moments. All atom masses and intercept/discrepancy choices are fixed before scoring.",
+  "gate": "Promote to further source validation only if all40 task ARD optimizers converge, overall D-I, D-DG and D-P95 percent intervals are strictly positive, and no regime has a strictly negative D-I or D-DG interval. Failure preserves the full failed candidate and stops calibration, evaluation and KG. No automatic iteration extension or mass/support-count search.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "source_task_ard_fits_max": 40,
+    "prequential_component_factorizations_max": 5040,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "paired_bootstrap_seed": 20261118,
+  "limitations": "A single noisy historical task cannot establish a known support. The equal empirical distribution has finite archive coverage and point-estimated ARD hyperparameters. This is a different prespecified development hypothesis on already-studied seeds, not independent confirmation or a solution to head sharing/HVD/decision alignment."
+}

@@ -1,0 +1,773 @@
+{
+  "execution": {
+    "status": "frozen after joint source direction failed;before derivative attribution",
+    "joint_results": "paper_artifacts/legacy_joint_population_f_inner_task_level_shape_v1/results.json",
+    "entrypoint": "performance/diagnose_legacy_f_inner_joint_attribution.py",
+    "question": "Which component changes the sign of the honest source predictive score between layouts,and is the penalty in conditional mean adaptation or covariance?",
+    "calculation": "Decompose only the stopped q=0 tangent into level variance,existing task-shape marginals,new task groups,level-shape coupling and shape coupling. Coherently differentiate source-conditioned beta/H and held-source covariance. Attribute proper predictive NLL derivative to covariance log volume,residual covariance quadratic and mean shift. Record induced average-level mean/variance derivatives. Components are algebraic score contributions,not separate valid covariance candidates.",
+    "verification": "Five coefficient directions must sum to the stopped joint direction,and their predictive/training gradients must sum to saved Stage153 gradients. A mismatch stops interpretation and requires an attribution fix. No new finite probes,raw filters or source fits.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_source_integrations": 0,
+      "new_outer_query_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;source training JSON only;no server work",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_joint_attribution_v1",
+    "decision": "Use the attribution to identify a representation/support/learning mismatch or stop parameter chasing. It cannot waive the failed two-layout condition,permit a q sweep or justify a component-wise model without a coherent separately registered source-only definition. No outer task1 outcomes,source6/7,target,KG,confirmation or manuscript change;complete-model HOLD remains."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_00",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": 0.038844834074580704,
+          "predictive_covariance_volume_term": 0.2579309879911282,
+          "predictive_residual_covariance_term": -0.2100189624046043,
+          "predictive_mean_term": -0.00906719151194318,
+          "training_q_gradient_per_label": 9.235537369238026e-06,
+          "held_task_average_mean_derivative": 0.0013231577339903047,
+          "held_task_average_predictive_variance_derivative": 0.0004565592648912298,
+          "common_conditioning_level_variance_derivative": 9.18356743074039e-05,
+          "direct_task_level_variance_derivative": 0.0003647235905838259
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.0029060807823294795,
+          "predictive_covariance_volume_term": -0.00950351254632971,
+          "predictive_residual_covariance_term": 0.007430165265472414,
+          "predictive_mean_term": -0.0008327335014721841,
+          "training_q_gradient_per_label": -1.5271880051750952e-06,
+          "held_task_average_mean_derivative": -3.644550298349298e-05,
+          "held_task_average_predictive_variance_derivative": -9.204356032758786e-07,
+          "common_conditioning_level_variance_derivative": -2.2289581168400268e-07,
+          "direct_task_level_variance_derivative": -6.975397915918754e-07
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": -0.011882722581216846,
+          "predictive_covariance_volume_term": 0.02201758809577159,
+          "predictive_residual_covariance_term": -0.025668062787363815,
+          "predictive_mean_term": -0.00823224788962462,
+          "training_q_gradient_per_label": 0.007460287099763188,
+          "held_task_average_mean_derivative": 0.0006644662029629196,
+          "held_task_average_predictive_variance_derivative": 2.1488011155631448e-06,
+          "common_conditioning_level_variance_derivative": 9.427748686614613e-07,
+          "direct_task_level_variance_derivative": 1.2060262469016845e-06
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.012170601992328679,
+          "predictive_covariance_volume_term": -0.0009720594757429596,
+          "predictive_residual_covariance_term": 0.013262762370947444,
+          "predictive_mean_term": -0.00012010090287580426,
+          "training_q_gradient_per_label": 0.010670901125895452,
+          "held_task_average_mean_derivative": 0.00019468393292218454,
+          "held_task_average_predictive_variance_derivative": -4.5564940282431e-05,
+          "common_conditioning_level_variance_derivative": -9.161782884579627e-06,
+          "direct_task_level_variance_derivative": -3.640315739785136e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.004256271749442244,
+          "predictive_covariance_volume_term": -0.001374966266287053,
+          "predictive_residual_covariance_term": 0.004991221833252281,
+          "predictive_mean_term": 0.0006400161824770162,
+          "training_q_gradient_per_label": 0.0020245183356170583,
+          "held_task_average_mean_derivative": -0.00011839317186124295,
+          "held_task_average_predictive_variance_derivative": 2.0972975719137667e-07,
+          "common_conditioning_level_variance_derivative": 4.205407942729781e-08,
+          "direct_task_level_variance_derivative": 1.676756777640788e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_02",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": 0.09576848053151438,
+          "predictive_covariance_volume_term": 0.3835382808183479,
+          "predictive_residual_covariance_term": -0.4927891629424088,
+          "predictive_mean_term": 0.2050193626555753,
+          "training_q_gradient_per_label": -1.3215441551750473e-05,
+          "held_task_average_mean_derivative": 0.0026427444859316493,
+          "held_task_average_predictive_variance_derivative": 0.0005606160236768094,
+          "common_conditioning_level_variance_derivative": 0.0001147129524376817,
+          "direct_task_level_variance_derivative": 0.00044590307123912776
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": 0.009528721349233587,
+          "predictive_covariance_volume_term": -0.02151465410859024,
+          "predictive_residual_covariance_term": 0.03658928401640198,
+          "predictive_mean_term": -0.005545908558578152,
+          "training_q_gradient_per_label": -1.4304117090547612e-06,
+          "held_task_average_mean_derivative": 0.00040751931488671253,
+          "held_task_average_predictive_variance_derivative": -5.123173109047217e-06,
+          "common_conditioning_level_variance_derivative": -8.237908446969686e-07,
+          "direct_task_level_variance_derivative": -4.299382264350249e-06
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": -0.07812238319741954,
+          "predictive_covariance_volume_term": 0.052963274474270815,
+          "predictive_residual_covariance_term": -0.11665497628002369,
+          "predictive_mean_term": -0.01443068139166667,
+          "training_q_gradient_per_label": 0.00888975428912421,
+          "held_task_average_mean_derivative": -0.0003245017688102862,
+          "held_task_average_predictive_variance_derivative": 7.786315488315522e-06,
+          "common_conditioning_level_variance_derivative": 2.8967077650661557e-06,
+          "direct_task_level_variance_derivative": 4.8896077232493656e-06
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": -0.04608931550258726,
+          "predictive_covariance_volume_term": 0.0090544626091228,
+          "predictive_residual_covariance_term": -0.06666726121637646,
+          "predictive_mean_term": 0.011523483104666402,
+          "training_q_gradient_per_label": 0.018129122781478404,
+          "held_task_average_mean_derivative": 0.0016085305681062788,
+          "held_task_average_predictive_variance_derivative": -2.1276095794316325e-05,
+          "common_conditioning_level_variance_derivative": -3.844767149037498e-06,
+          "direct_task_level_variance_derivative": -1.7431328645278827e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.012931269238565177,
+          "predictive_covariance_volume_term": -0.007069641879010296,
+          "predictive_residual_covariance_term": 0.0150892621183042,
+          "predictive_mean_term": 0.00491164899927127,
+          "training_q_gradient_per_label": -0.001673389612647059,
+          "held_task_average_mean_derivative": 7.421257033180342e-05,
+          "held_task_average_predictive_variance_derivative": -1.6013868104321444e-06,
+          "common_conditioning_level_variance_derivative": -3.783072194617598e-07,
+          "direct_task_level_variance_derivative": -1.2230795909703847e-06
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_03",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": 0.1600078945696195,
+          "predictive_covariance_volume_term": 0.6171636087810697,
+          "predictive_residual_covariance_term": -0.41120428742087217,
+          "predictive_mean_term": -0.045951426790578,
+          "training_q_gradient_per_label": 1.571113123984465e-05,
+          "held_task_average_mean_derivative": 0.016718484944098538,
+          "held_task_average_predictive_variance_derivative": 0.0010357209046598997,
+          "common_conditioning_level_variance_derivative": 0.00021543183648198955,
+          "direct_task_level_variance_derivative": 0.0008202890681779101
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": 0.006961848059172538,
+          "predictive_covariance_volume_term": 0.019871039776207165,
+          "predictive_residual_covariance_term": -0.00907506923272254,
+          "predictive_mean_term": -0.0038341224843120862,
+          "training_q_gradient_per_label": 7.133967731831614e-08,
+          "held_task_average_mean_derivative": -8.468628232380674e-05,
+          "held_task_average_predictive_variance_derivative": 1.228575300593609e-05,
+          "common_conditioning_level_variance_derivative": 2.5857976664880986e-06,
+          "direct_task_level_variance_derivative": 9.69995533944799e-06
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": 0.0030684867290116423,
+          "predictive_covariance_volume_term": 0.026622218639719974,
+          "predictive_residual_covariance_term": -0.01811902370899968,
+          "predictive_mean_term": -0.005434708201708652,
+          "training_q_gradient_per_label": 0.004448819477484644,
+          "held_task_average_mean_derivative": -0.00030334055844505526,
+          "held_task_average_predictive_variance_derivative": 9.642755593581134e-07,
+          "common_conditioning_level_variance_derivative": 4.862842634191708e-07,
+          "direct_task_level_variance_derivative": 4.779912959389428e-07
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.030173661203015935,
+          "predictive_covariance_volume_term": 0.024296403593205323,
+          "predictive_residual_covariance_term": 0.038739695288113836,
+          "predictive_mean_term": -0.03286243767830322,
+          "training_q_gradient_per_label": 0.016130002770172524,
+          "held_task_average_mean_derivative": 0.0013482005112061774,
+          "held_task_average_predictive_variance_derivative": -2.6021775877248863e-05,
+          "common_conditioning_level_variance_derivative": -4.678799265863967e-06,
+          "direct_task_level_variance_derivative": -2.1342976611384888e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.007364307148447914,
+          "predictive_covariance_volume_term": -0.00503500936635555,
+          "predictive_residual_covariance_term": 0.01020141453347845,
+          "predictive_mean_term": 0.0021979019813250142,
+          "training_q_gradient_per_label": 0.0026936541459694767,
+          "held_task_average_mean_derivative": 2.673295107425671e-05,
+          "held_task_average_predictive_variance_derivative": 1.0969564718520129e-06,
+          "common_conditioning_level_variance_derivative": 1.5547776432584714e-07,
+          "direct_task_level_variance_derivative": 9.414787075261657e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_04",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": -2.3206132006335074,
+          "predictive_covariance_volume_term": 0.7702864448122707,
+          "predictive_residual_covariance_term": -2.6752246783094047,
+          "predictive_mean_term": -0.4156749671363733,
+          "training_q_gradient_per_label": -7.479563633339126e-06,
+          "held_task_average_mean_derivative": -0.009942366845092572,
+          "held_task_average_predictive_variance_derivative": 0.0005700047086134357,
+          "common_conditioning_level_variance_derivative": 0.00011775029576614892,
+          "direct_task_level_variance_derivative": 0.0004522544128472868
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.009282516885449343,
+          "predictive_covariance_volume_term": -0.011223927477012592,
+          "predictive_residual_covariance_term": 0.003085966861848983,
+          "predictive_mean_term": -0.0011445562702857351,
+          "training_q_gradient_per_label": -1.1249240789920623e-07,
+          "held_task_average_mean_derivative": -9.605176169061646e-05,
+          "held_task_average_predictive_variance_derivative": -4.681689821466744e-07,
+          "common_conditioning_level_variance_derivative": -1.3691362552929429e-07,
+          "direct_task_level_variance_derivative": -3.3125535661737993e-07
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": 0.006093321495959432,
+          "predictive_covariance_volume_term": 0.035604521892182835,
+          "predictive_residual_covariance_term": -0.05068634377652523,
+          "predictive_mean_term": 0.021175143380301825,
+          "training_q_gradient_per_label": 0.0022320329903126692,
+          "held_task_average_mean_derivative": 0.0005056937885792797,
+          "held_task_average_predictive_variance_derivative": 2.150879549686383e-06,
+          "common_conditioning_level_variance_derivative": 7.890912251014353e-07,
+          "direct_task_level_variance_derivative": 1.3617883245849474e-06
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.04609665698484923,
+          "predictive_covariance_volume_term": 0.022553752530810323,
+          "predictive_residual_covariance_term": 0.006818155127538858,
+          "predictive_mean_term": 0.01672474932650005,
+          "training_q_gradient_per_label": 0.0038085500008673092,
+          "held_task_average_mean_derivative": 0.0003865341694816337,
+          "held_task_average_predictive_variance_derivative": -1.255256655419551e-05,
+          "common_conditioning_level_variance_derivative": -2.4131823271895486e-06,
+          "direct_task_level_variance_derivative": -1.013938422700596e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.003106654484132723,
+          "predictive_covariance_volume_term": -0.0018924576838533665,
+          "predictive_residual_covariance_term": 0.003972311594502574,
+          "predictive_mean_term": 0.0010268005734835153,
+          "training_q_gradient_per_label": 0.0025143534482969065,
+          "held_task_average_mean_derivative": -3.0058976353594777e-05,
+          "held_task_average_predictive_variance_derivative": -4.6597285705069473e-07,
+          "common_conditioning_level_variance_derivative": -1.452552812709465e-07,
+          "direct_task_level_variance_derivative": -3.2071757577974816e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "5",
+      "inner_query_task": "related_inventory_05",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": 0.0036084143451557,
+          "predictive_covariance_volume_term": 0.24880945473864216,
+          "predictive_residual_covariance_term": -0.12227139849193734,
+          "predictive_mean_term": -0.12292964190154913,
+          "training_q_gradient_per_label": -4.129807130788994e-06,
+          "held_task_average_mean_derivative": 0.0017560935641166078,
+          "held_task_average_predictive_variance_derivative": 0.0004968538041635785,
+          "common_conditioning_level_variance_derivative": 0.00010214341562719416,
+          "direct_task_level_variance_derivative": 0.0003947103885363844
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.11159124340351599,
+          "predictive_covariance_volume_term": 0.04631098610660628,
+          "predictive_residual_covariance_term": -0.16034791133516593,
+          "predictive_mean_term": 0.0024456818250436657,
+          "training_q_gradient_per_label": 7.011022046301182e-07,
+          "held_task_average_mean_derivative": 0.00038926233400278433,
+          "held_task_average_predictive_variance_derivative": 5.768276286355672e-06,
+          "common_conditioning_level_variance_derivative": 1.674844341644907e-06,
+          "direct_task_level_variance_derivative": 4.093431944710765e-06
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": -0.18498307049886542,
+          "predictive_covariance_volume_term": 0.04179026299150073,
+          "predictive_residual_covariance_term": -0.23807654119615598,
+          "predictive_mean_term": 0.011303207705789837,
+          "training_q_gradient_per_label": 0.012667321650245091,
+          "held_task_average_mean_derivative": 0.00019188687675394855,
+          "held_task_average_predictive_variance_derivative": 6.328469965229527e-07,
+          "common_conditioning_level_variance_derivative": 2.3752913220803575e-07,
+          "direct_task_level_variance_derivative": 3.9531786431491716e-07
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": -0.011974343408837344,
+          "predictive_covariance_volume_term": 0.006770682392843706,
+          "predictive_residual_covariance_term": -0.012911269285792011,
+          "predictive_mean_term": -0.005833756515889039,
+          "training_q_gradient_per_label": 0.019168766397878113,
+          "held_task_average_mean_derivative": 0.00039265249961906683,
+          "held_task_average_predictive_variance_derivative": -2.9514261732998666e-05,
+          "common_conditioning_level_variance_derivative": -5.8470280776556494e-06,
+          "direct_task_level_variance_derivative": -2.366723365534301e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.039079346107547604,
+          "predictive_covariance_volume_term": -0.0048740993280340225,
+          "predictive_residual_covariance_term": 0.040735938112750496,
+          "predictive_mean_term": 0.003217507322831129,
+          "training_q_gradient_per_label": 0.0034386361108849194,
+          "held_task_average_mean_derivative": -3.5023696324025065e-05,
+          "held_task_average_predictive_variance_derivative": -5.067183077560311e-07,
+          "common_conditioning_level_variance_derivative": -1.0129037677553148e-07,
+          "direct_task_level_variance_derivative": -4.0542793098049967e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_00",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": 1.2354380178190774,
+          "predictive_covariance_volume_term": 1.2795406689995132,
+          "predictive_residual_covariance_term": -0.02889635775886271,
+          "predictive_mean_term": -0.015206293421573128,
+          "training_q_gradient_per_label": -5.813714802090549e-05,
+          "held_task_average_mean_derivative": -0.028656053775896063,
+          "held_task_average_predictive_variance_derivative": 0.0006645107335857964,
+          "common_conditioning_level_variance_derivative": 0.00014868631055018708,
+          "direct_task_level_variance_derivative": 0.0005158244230356092
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.02806025305289042,
+          "predictive_covariance_volume_term": 0.025156946484219563,
+          "predictive_residual_covariance_term": -0.05089598931982203,
+          "predictive_mean_term": -0.0023212102172879513,
+          "training_q_gradient_per_label": -8.915989024305127e-07,
+          "held_task_average_mean_derivative": -0.0006714113203150004,
+          "held_task_average_predictive_variance_derivative": 4.168953026597022e-06,
+          "common_conditioning_level_variance_derivative": 1.1408547498671492e-06,
+          "direct_task_level_variance_derivative": 3.0280982767298734e-06
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": 0.0,
+          "predictive_covariance_volume_term": 0.0,
+          "predictive_residual_covariance_term": 0.0,
+          "predictive_mean_term": 0.0,
+          "training_q_gradient_per_label": 0.0,
+          "held_task_average_mean_derivative": 0.0,
+          "held_task_average_predictive_variance_derivative": 0.0,
+          "common_conditioning_level_variance_derivative": 0.0,
+          "direct_task_level_variance_derivative": 0.0
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.041057825034083256,
+          "predictive_covariance_volume_term": 0.03383927100071216,
+          "predictive_residual_covariance_term": 0.010946791729534494,
+          "predictive_mean_term": -0.0037282376961633944,
+          "training_q_gradient_per_label": -0.008115631124414035,
+          "held_task_average_mean_derivative": -0.00108400303801748,
+          "held_task_average_predictive_variance_derivative": -1.0388538061988025e-05,
+          "common_conditioning_level_variance_derivative": -1.2995552908904197e-06,
+          "direct_task_level_variance_derivative": -9.088982771097605e-06
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": -0.0011381454687581505,
+          "predictive_covariance_volume_term": -0.0023780880929992615,
+          "predictive_residual_covariance_term": 0.00011261472113726262,
+          "predictive_mean_term": 0.0011273279031038482,
+          "training_q_gradient_per_label": 0.0037793130493246215,
+          "held_task_average_mean_derivative": 0.00012527942547914414,
+          "held_task_average_predictive_variance_derivative": -3.3484510922274076e-07,
+          "common_conditioning_level_variance_derivative": -2.0917242879562216e-07,
+          "direct_task_level_variance_derivative": -1.2567268042711866e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_02",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": -0.04964912552243658,
+          "predictive_covariance_volume_term": 1.6910858575256567,
+          "predictive_residual_covariance_term": -1.4938657452586177,
+          "predictive_mean_term": -0.24686923778947553,
+          "training_q_gradient_per_label": 0.43117027407710484,
+          "held_task_average_mean_derivative": 0.01648947062689349,
+          "held_task_average_predictive_variance_derivative": 0.0010575130348025798,
+          "common_conditioning_level_variance_derivative": 0.0002898614213455666,
+          "direct_task_level_variance_derivative": 0.0007676516134570134
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.024688750879950882,
+          "predictive_covariance_volume_term": 0.025852580305789092,
+          "predictive_residual_covariance_term": -0.04620914626364805,
+          "predictive_mean_term": -0.004332184922091927,
+          "training_q_gradient_per_label": 2.4020754276071754e-06,
+          "held_task_average_mean_derivative": -0.00019528598780359056,
+          "held_task_average_predictive_variance_derivative": 3.4080692130452985e-06,
+          "common_conditioning_level_variance_derivative": 8.166553095046773e-07,
+          "direct_task_level_variance_derivative": 2.591413903540621e-06
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": 0.0,
+          "predictive_covariance_volume_term": 0.0,
+          "predictive_residual_covariance_term": 0.0,
+          "predictive_mean_term": 0.0,
+          "training_q_gradient_per_label": 0.0,
+          "held_task_average_mean_derivative": 0.0,
+          "held_task_average_predictive_variance_derivative": 0.0,
+          "common_conditioning_level_variance_derivative": 0.0,
+          "direct_task_level_variance_derivative": 0.0
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.032329501954555945,
+          "predictive_covariance_volume_term": 0.03775666470928681,
+          "predictive_residual_covariance_term": -0.028253355481957728,
+          "predictive_mean_term": 0.022826192727226857,
+          "training_q_gradient_per_label": 0.002403816951389859,
+          "held_task_average_mean_derivative": 0.001954053111614856,
+          "held_task_average_predictive_variance_derivative": -2.6518081642985056e-05,
+          "common_conditioning_level_variance_derivative": -4.155714136120851e-06,
+          "direct_task_level_variance_derivative": -2.236236750686421e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.0029087335618635116,
+          "predictive_covariance_volume_term": -0.0006093206862015471,
+          "predictive_residual_covariance_term": 0.004921424198086166,
+          "predictive_mean_term": -0.0014033699500211074,
+          "training_q_gradient_per_label": 0.0008437381366201823,
+          "held_task_average_mean_derivative": 8.84290659179186e-06,
+          "held_task_average_predictive_variance_derivative": -2.4465586976179736e-07,
+          "common_conditioning_level_variance_derivative": -4.85223107331244e-08,
+          "direct_task_level_variance_derivative": -1.9613355902867288e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_03",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": 1.1540301520783987,
+          "predictive_covariance_volume_term": 2.062935678626359,
+          "predictive_residual_covariance_term": -0.6863611809918463,
+          "predictive_mean_term": -0.22254434555611427,
+          "training_q_gradient_per_label": 0.08687990209999796,
+          "held_task_average_mean_derivative": 0.055213900989369076,
+          "held_task_average_predictive_variance_derivative": 0.0008488928034474487,
+          "common_conditioning_level_variance_derivative": 0.00020326731818910023,
+          "direct_task_level_variance_derivative": 0.0006456254852583486
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.0017543437956830203,
+          "predictive_covariance_volume_term": -0.004365040155838859,
+          "predictive_residual_covariance_term": 0.0007366641440427012,
+          "predictive_mean_term": 0.0018740322161131375,
+          "training_q_gradient_per_label": 2.3906472779398427e-09,
+          "held_task_average_mean_derivative": -1.2048860578546867e-05,
+          "held_task_average_predictive_variance_derivative": -1.4836338109883498e-07,
+          "common_conditioning_level_variance_derivative": -7.023934564293095e-08,
+          "direct_task_level_variance_derivative": -7.812403545590389e-08
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": -0.008759030720800313,
+          "predictive_covariance_volume_term": 0.025045276380646218,
+          "predictive_residual_covariance_term": -0.026048039017310898,
+          "predictive_mean_term": -0.007756268084135632,
+          "training_q_gradient_per_label": 0.0027928615047726527,
+          "held_task_average_mean_derivative": -5.710959464491888e-05,
+          "held_task_average_predictive_variance_derivative": 6.972024884979419e-07,
+          "common_conditioning_level_variance_derivative": 1.5799625783175069e-07,
+          "direct_task_level_variance_derivative": 5.392062306661911e-07
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.009542083309776711,
+          "predictive_covariance_volume_term": 0.013764096028221257,
+          "predictive_residual_covariance_term": 0.025680078257841635,
+          "predictive_mean_term": -0.029902090976286183,
+          "training_q_gradient_per_label": 0.006192981281166553,
+          "held_task_average_mean_derivative": 0.0005229135292943642,
+          "held_task_average_predictive_variance_derivative": -4.6953489242368585e-05,
+          "common_conditioning_level_variance_derivative": -9.632893810843546e-06,
+          "direct_task_level_variance_derivative": -3.732059543152503e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.003929484515715544,
+          "predictive_covariance_volume_term": -0.0004736189314265694,
+          "predictive_residual_covariance_term": 0.005003385441402453,
+          "predictive_mean_term": -0.0006002819942603404,
+          "training_q_gradient_per_label": 0.001370795919711781,
+          "held_task_average_mean_derivative": -0.00010857697206373842,
+          "held_task_average_predictive_variance_derivative": 1.290998491718506e-07,
+          "common_conditioning_level_variance_derivative": 4.986225274290949e-09,
+          "direct_task_level_variance_derivative": 1.2411362389755966e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_04",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": -0.7474041947185958,
+          "predictive_covariance_volume_term": 1.466108141775477,
+          "predictive_residual_covariance_term": -2.036189879541386,
+          "predictive_mean_term": -0.17732245695268664,
+          "training_q_gradient_per_label": 0.49778443557062735,
+          "held_task_average_mean_derivative": -0.016252000731536504,
+          "held_task_average_predictive_variance_derivative": 0.0006800172418906163,
+          "common_conditioning_level_variance_derivative": 0.00015162792673258012,
+          "direct_task_level_variance_derivative": 0.0005283893151580363
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.01216440804118509,
+          "predictive_covariance_volume_term": -0.015271470216233382,
+          "predictive_residual_covariance_term": 0.006467235477790279,
+          "predictive_mean_term": -0.0033601733027419866,
+          "training_q_gradient_per_label": -4.0826687843174375e-07,
+          "held_task_average_mean_derivative": -8.876877851104777e-05,
+          "held_task_average_predictive_variance_derivative": -1.1124473202142357e-06,
+          "common_conditioning_level_variance_derivative": -2.5241879062872014e-07,
+          "direct_task_level_variance_derivative": -8.60028529585515e-07
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": -0.02906103856643905,
+          "predictive_covariance_volume_term": 0.024524397720842528,
+          "predictive_residual_covariance_term": -0.05284932207207146,
+          "predictive_mean_term": -0.0007361142152101187,
+          "training_q_gradient_per_label": 0.007900071074706807,
+          "held_task_average_mean_derivative": 0.00022584177130556516,
+          "held_task_average_predictive_variance_derivative": 1.9802626589728396e-06,
+          "common_conditioning_level_variance_derivative": 7.585539309091419e-07,
+          "direct_task_level_variance_derivative": 1.2217087280636977e-06
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": 0.004923788683983238,
+          "predictive_covariance_volume_term": -0.0035549532527466726,
+          "predictive_residual_covariance_term": 0.0030979989573961444,
+          "predictive_mean_term": 0.005380742979333767,
+          "training_q_gradient_per_label": 0.006803958959566407,
+          "held_task_average_mean_derivative": 0.0008717288912561184,
+          "held_task_average_predictive_variance_derivative": -5.975663855541591e-05,
+          "common_conditioning_level_variance_derivative": -1.2255625756082805e-05,
+          "direct_task_level_variance_derivative": -4.75010127993331e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": -0.000601814028084945,
+          "predictive_covariance_volume_term": -0.0009195441277959454,
+          "predictive_residual_covariance_term": -0.0012848293887792427,
+          "predictive_mean_term": 0.001602559488490243,
+          "training_q_gradient_per_label": 0.002150376916512767,
+          "held_task_average_mean_derivative": -4.8458082651430854e-05,
+          "held_task_average_predictive_variance_derivative": 4.307093579411198e-07,
+          "common_conditioning_level_variance_derivative": 8.211351139447525e-08,
+          "direct_task_level_variance_derivative": 3.485958465466445e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    },
+    {
+      "layout": "6",
+      "inner_query_task": "related_inventory_05",
+      "component_attribution": {
+        "level_variance": {
+          "predictive_q_gradient_per_label": -0.8600917878658036,
+          "predictive_covariance_volume_term": 1.1324159157082,
+          "predictive_residual_covariance_term": -2.472047812396939,
+          "predictive_mean_term": 0.47954010882293513,
+          "training_q_gradient_per_label": 0.25253563324726813,
+          "held_task_average_mean_derivative": -0.013345975912225992,
+          "held_task_average_predictive_variance_derivative": 0.000676123072230505,
+          "common_conditioning_level_variance_derivative": 0.0001662852668818215,
+          "direct_task_level_variance_derivative": 0.0005098378053486836
+        },
+        "existing_task_shape_marginals": {
+          "predictive_q_gradient_per_label": -0.23618357999396547,
+          "predictive_covariance_volume_term": 0.035342517046280136,
+          "predictive_residual_covariance_term": -0.2957080226367707,
+          "predictive_mean_term": 0.024181925596525072,
+          "training_q_gradient_per_label": -1.1872060268665792e-07,
+          "held_task_average_mean_derivative": 0.0001401520550623246,
+          "held_task_average_predictive_variance_derivative": 3.0933414270928217e-07,
+          "common_conditioning_level_variance_derivative": -4.836327495641679e-08,
+          "direct_task_level_variance_derivative": 3.576974176656986e-07
+        },
+        "new_task_group_marginals": {
+          "predictive_q_gradient_per_label": -0.3759515139027355,
+          "predictive_covariance_volume_term": 0.07268671471193265,
+          "predictive_residual_covariance_term": -0.46077636024245155,
+          "predictive_mean_term": 0.012138131627783396,
+          "training_q_gradient_per_label": 0.022014149485588653,
+          "held_task_average_mean_derivative": -0.00019311685251814195,
+          "held_task_average_predictive_variance_derivative": 7.005122788742224e-06,
+          "common_conditioning_level_variance_derivative": 1.9385170858142568e-06,
+          "direct_task_level_variance_derivative": 5.0666057029279666e-06
+        },
+        "level_shape_correlation": {
+          "predictive_q_gradient_per_label": -0.1358006464287376,
+          "predictive_covariance_volume_term": 0.03481238695892317,
+          "predictive_residual_covariance_term": -0.1695224519373764,
+          "predictive_mean_term": -0.0010905814502843833,
+          "training_q_gradient_per_label": 0.024081427897393346,
+          "held_task_average_mean_derivative": -0.00014253702298066266,
+          "held_task_average_predictive_variance_derivative": -3.0913976394436196e-05,
+          "common_conditioning_level_variance_derivative": -5.122504246813589e-06,
+          "direct_task_level_variance_derivative": -2.5791472147622605e-05
+        },
+        "shape_correlation": {
+          "predictive_q_gradient_per_label": 0.06304587141808224,
+          "predictive_covariance_volume_term": -0.006979846343078816,
+          "predictive_residual_covariance_term": 0.06906961798489278,
+          "predictive_mean_term": 0.0009560997762682755,
+          "training_q_gradient_per_label": -0.0013859944851574296,
+          "held_task_average_mean_derivative": 2.5268675654974643e-05,
+          "held_task_average_predictive_variance_derivative": -5.971392048823201e-07,
+          "common_conditioning_level_variance_derivative": -1.83048218275097e-07,
+          "direct_task_level_variance_derivative": -4.140909866072231e-07
+        }
+      },
+      "additive_parts_and_saved_predictive_training_gradients_reproduced": true
+    }
+  ],
+  "summary": {
+    "5": {
+      "level_variance": {
+        "predictive_q_gradient_per_label": -0.4044767154225274,
+        "predictive_covariance_volume_term": 0.4555457554282918,
+        "predictive_residual_covariance_term": -0.7823016979138454,
+        "predictive_mean_term": -0.07772077293697367,
+        "training_q_gradient_per_label": 2.4371258640816698e-08,
+        "held_task_average_mean_derivative": 0.002499622776608905,
+        "held_task_average_predictive_variance_derivative": 0.0006239509412009906,
+        "common_conditioning_level_variance_derivative": 0.00012837483492408365,
+        "direct_task_level_variance_derivative": 0.0004955761062769069
+      },
+      "existing_task_shape_marginals": {
+        "predictive_q_gradient_per_label": -0.021457854332577738,
+        "predictive_covariance_volume_term": 0.004787986350176181,
+        "predictive_residual_covariance_term": -0.024463512884833023,
+        "predictive_mean_term": -0.0017823277979208984,
+        "training_q_gradient_per_label": -4.595300480361257e-07,
+        "held_task_average_mean_derivative": 0.00011591962037831613,
+        "held_task_average_predictive_variance_derivative": 2.3084503195643983e-06,
+        "common_conditioning_level_variance_derivative": 6.154083452445481e-07,
+        "direct_task_level_variance_derivative": 1.69304197431985e-06
+      },
+      "new_task_group_marginals": {
+        "predictive_q_gradient_per_label": -0.053165273610506145,
+        "predictive_covariance_volume_term": 0.03579957321868919,
+        "predictive_residual_covariance_term": -0.08984098954981368,
+        "predictive_mean_term": 0.0008761427206183438,
+        "training_q_gradient_per_label": 0.007139643101385961,
+        "held_task_average_mean_derivative": 0.00014684090820816126,
+        "held_task_average_predictive_variance_derivative": 2.736623741889223e-06,
+        "common_conditioning_level_variance_derivative": 1.0704774508912516e-06,
+        "direct_task_level_variance_derivative": 1.6661462909979715e-06
+      },
+      "level_shape_correlation": {
+        "predictive_q_gradient_per_label": 0.006075452253753848,
+        "predictive_covariance_volume_term": 0.012340648330047837,
+        "predictive_residual_covariance_term": -0.004151583543113667,
+        "predictive_mean_term": -0.0021136125331803228,
+        "training_q_gradient_per_label": 0.013581468615258361,
+        "held_task_average_mean_derivative": 0.0007861203362670682,
+        "held_task_average_predictive_variance_derivative": -2.698592804823807e-05,
+        "common_conditioning_level_variance_derivative": -5.189111940865258e-06,
+        "direct_task_level_variance_derivative": -2.179681610737281e-05
+      },
+      "shape_correlation": {
+        "predictive_q_gradient_per_label": 0.013347569745627133,
+        "predictive_covariance_volume_term": -0.004049234904708057,
+        "predictive_residual_covariance_term": 0.014998029638457599,
+        "predictive_mean_term": 0.002398775011877589,
+        "training_q_gradient_per_label": 0.0017995544856242603,
+        "held_task_average_mean_derivative": -1.6506064626560533e-05,
+        "held_task_average_predictive_variance_derivative": -2.5347834923909613e-07,
+        "common_conditioning_level_variance_derivative": -8.546420675101856e-08,
+        "direct_task_level_variance_derivative": -1.6801414248807759e-07
+      }
+    },
+    "6": {
+      "level_variance": {
+        "predictive_q_gradient_per_label": 0.146464612358128,
+        "predictive_covariance_volume_term": 1.5264172525270412,
+        "predictive_residual_covariance_term": -1.3434721951895303,
+        "predictive_mean_term": -0.03648044497938289,
+        "training_q_gradient_per_label": 0.2536624215693955,
+        "held_task_average_mean_derivative": 0.002689868239320801,
+        "held_task_average_predictive_variance_derivative": 0.0007854113771913892,
+        "common_conditioning_level_variance_derivative": 0.0001919456487398511,
+        "direct_task_level_variance_derivative": 0.0005934657284515382
+      },
+      "existing_task_shape_marginals": {
+        "predictive_q_gradient_per_label": -0.06057026715273498,
+        "predictive_covariance_volume_term": 0.01334310669284331,
+        "predictive_residual_covariance_term": -0.07712185171968156,
+        "predictive_mean_term": 0.003208477874103269,
+        "training_q_gradient_per_label": 1.971759382672402e-07,
+        "held_task_average_mean_derivative": -0.00016547257842917219,
+        "held_task_average_predictive_variance_derivative": 1.3251091362077062e-06,
+        "common_conditioning_level_variance_derivative": 3.1729772962875164e-07,
+        "direct_task_level_variance_derivative": 1.0078114065789548e-06
+      },
+      "new_task_group_marginals": {
+        "predictive_q_gradient_per_label": -0.08275431663799497,
+        "predictive_covariance_volume_term": 0.024451277762684277,
+        "predictive_residual_covariance_term": -0.10793474426636677,
+        "predictive_mean_term": 0.000729149865687529,
+        "training_q_gradient_per_label": 0.006541416413013623,
+        "held_task_average_mean_derivative": -4.8769351714991324e-06,
+        "held_task_average_predictive_variance_derivative": 1.9365175872426008e-06,
+        "common_conditioning_level_variance_derivative": 5.710134549110299e-07,
+        "direct_task_level_variance_derivative": 1.365504132331571e-06
+      },
+      "level_shape_correlation": {
+        "predictive_q_gradient_per_label": -0.009589489489267689,
+        "predictive_covariance_volume_term": 0.02332349308887935,
+        "predictive_residual_covariance_term": -0.03161018769491237,
+        "predictive_mean_term": -0.0013027948832346672,
+        "training_q_gradient_per_label": 0.006273310793020426,
+        "held_task_average_mean_derivative": 0.00042443109423343916,
+        "held_task_average_predictive_variance_derivative": -3.490614477943876e-05,
+        "common_conditioning_level_variance_derivative": -6.4932586481502425e-06,
+        "direct_task_level_variance_derivative": -2.841288613128851e-05
+      },
+      "shape_correlation": {
+        "predictive_q_gradient_per_label": 0.013628825999763639,
+        "predictive_covariance_volume_term": -0.002272083636300428,
+        "predictive_residual_covariance_term": 0.015564442591347882,
+        "predictive_mean_term": 0.0003364670447161838,
+        "training_q_gradient_per_label": 0.0013516459074023844,
+        "held_task_average_mean_derivative": 4.711906021482715e-07,
+        "held_task_average_predictive_variance_derivative": -1.2336619535077756e-07,
+        "common_conditioning_level_variance_derivative": -7.072864422701547e-08,
+        "direct_task_level_variance_derivative": -5.2637551123762085e-08
+      }
+    }
+  },
+  "cpu_seconds": 0.06106111000000003,
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_outer_query_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "attribution_only_no_component_probe_or_new_candidate": true,
+  "outer_query_paid_or_score_outcomes_read": false,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

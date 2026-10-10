@@ -1,0 +1,14 @@
+{
+  "incidents": [
+    {
+      "stage": "before forecasts and scores",
+      "error": "StopIteration in public source-branch lookup",
+      "cause": "plan used task name related_inventory_00 where source branch schema uses integer query_task=0",
+      "correction": "use the existing integer branch key and derive the same task name for label/source-fit lookup",
+      "scientific_task_changed": false,
+      "tolerance_or_parameters_changed": false,
+      "forecasts_scored_in_failed_attempt": 0,
+      "failed_attempt_CPU_seconds": "not recorded"
+    }
+  ]
+}

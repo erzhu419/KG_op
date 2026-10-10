@@ -1,0 +1,43 @@
+{
+  "status": "frozen before all14 source quadrature constructions",
+  "reference_execution": "performance/manifests/legacy_joint_population_f_task_level_reference_integration_execution_v1.json",
+  "reference_results": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/results.json",
+  "reference_laws": "paper_artifacts/legacy_joint_population_f_task_level_reference_integration_v1/source_laws.json",
+  "law": "Same original native conditional Jeffreys posterior over physical task-intercept v, with source common beta/H conditioned at each v. No source parameter refit or new prior scale. Quadrature coordinates alone may use the cached source posterior median.",
+  "construction": "First produce a positive adaptive source quadrature on the Stage111 q coordinate. Compress via fully reorthogonalized Lanczos/Gaussian quadrature on t=v/(median_v+v), for the tilted source measure posterior(v)dv/(1-t)^2. Undo the tilt at Gaussian nodes to obtain positive posterior weights. This preserves normalization, mean v and second moment v of the base quadrature for at least two nodes; it is numerical integration, not added uncertainty or a source estimator.",
+  "adaptive_positive_rule": "Adapt a vector containing mass, v/mean_v, v^2/second_v_moment and common shrinkage first/second products over the entire q range. Apply a fixed16-point Gauss-Legendre positive rule per resulting interval. No tail cutoff or removal of low probability nodes.",
+  "compression_resolutions": [
+    16,
+    32,
+    64
+  ],
+  "resolution_rule": "Use the first resolution meeting all source-only approximation tolerances; otherwise retain incomplete status with no paid forecasts. This refines integration accuracy, not task-score hyperparameters. Save all source weights before any query observation.",
+  "tolerances": {
+    "raw_mass_absolute": 1e-08,
+    "mean_variance_relative": 1e-06,
+    "coefficient_mean_max_absolute": 1e-08,
+    "common_covariance_relative_frobenius": 1e-06,
+    "second_moment_extra_relative": 1e-06
+  },
+  "second_moment_bound": "Compare second moment with Stage111 allowing its declared normalized vector error times source_signal^2, plus the new numerical tolerance. The rare tail is included; do not silently alter its variance.",
+  "quadrature": {
+    "relative_tolerance": 1e-08,
+    "absolute_tolerance_for_scaled_integrals": 1e-09,
+    "maximum_subintervals": 128
+  },
+  "interpretation": "A validated compressed rule enables the existing raw Bayesian mixture update to learn component weights after target observations at much lower cost. Moment agreement is a source quadrature check, not a prediction or deployment claim. Future predictive numerical adequacy still needs the registered development comparison.",
+  "next_action": "If all14 source rules verify, separately register the original12 five-source development forecasts with coherent variance-mixture weights, unchanged eta_f and two paid records. No point-Gaussian covariance inflation or retuning of rejected common candidates. Keep source6/7, target/KG and confirmation closed.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_task_level_reference_quadrature_v1",
+  "planned_entrypoint": "performance/prepare_legacy_f_task_level_reference_quadrature.py",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_task_level_reference_quadrature_plan_v1.json",
+  "entrypoint": "performance/prepare_legacy_f_task_level_reference_quadrature.py"
+}

@@ -1,0 +1,17 @@
+{
+  "status": "registered after Stage83, before continuous task-spectral conditional likelihood evaluation",
+  "information_results": "paper_artifacts/legacy_joint_population_source_information_v1/results.json",
+  "native_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "layouts": ["5", "6"],
+  "training_tasks": [0, 1, 2, 3, 4, 5],
+  "basis_of_next_step": "Stage83 dense covariance likelihood reproduces native. Active covariance directions are full rank9/11 with standardized eigenvalues roughly.37–1.66; deleted-source mean changes are.23–.73/.25–.53 full-fit conditional common SD. No severe rank failure or underestimated common uncertainty is established. Task exponent remains at4 while its local expected information is only.0156/.0214. Boundary/local curvature alone does not establish global weak identification.",
+  "conditional_likelihood": "For each native full-six/five-source g fit, restore its original Gaussian likelihood and complete parameter vector. Keep all common/task amplitudes, common exponent, discrepancy, mean/intercept, basis and noise fixed. Only evaluate task exponent gamma within its original[0,4] interval; integrate exp(-label_count*(NLL(gamma)-NLL(4))) by adaptive one-dimensional quadrature. Reproduce NLL(4). No optimization, initialization search or model grid.",
+  "reference_measure": "Report normalized likelihood mean/SD and mass gamma<=2/gamma>=3 with a Uniform[0,4] reference measure. This is a conditional diagnostic with fixed source-fitted nuisance parameters, not a full Bayesian hyperposterior or a new adopted prior. Record endpoint likelihood contrast and raw quadrature error. Do not construct target forecasts or select a spectral value using this calculation.",
+  "next_action": "If likelihood supports a broad upper range, register training-only propagation of this conditional spectral uncertainty in the original orthogonal sparse family and compare proper predictive scores before any source6/7 access. If it concentrates near4, retain the low-frequency law and reassess task-population/model mismatch. Do not blame sample size or change gates from local information alone.",
+  "cost": {"new_scalar_fits": 0, "new_native_source_fits": 0, "new_risk_fits": 0, "new_map_fits": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread, cached source Gaussian likelihoods only, no server jobs or pulls",
+  "entrypoint": "performance/diagnose_legacy_task_spectral_information.py",
+  "output": "paper_artifacts/legacy_joint_population_task_spectral_information_v1"
+}

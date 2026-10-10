@@ -345,8 +345,9 @@ class TransferableAdditiveGroupBank:
         one = arr.ndim == 1
         if one:
             arr = arr[None, :]
+        # Clipping whitened columns destroys their source orthogonality and
+        # low-order ANOVA span. Quantiles remain support diagnostics only.
         out = self._transform_unclipped(arr)
-        out = np.clip(out, self.clip_low_, self.clip_high_)
         return out[0].copy() if one else np.asarray(out, dtype=float)
 
     def support_saturation(self, psi, index):

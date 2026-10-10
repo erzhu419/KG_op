@@ -1,0 +1,16 @@
+{
+  "status": "registered next-stage generic joint GP mean/covariance attribution; not executed",
+  "source_inputs": "paper_artifacts/legacy_joint_population_matched_baseline_v1/inputs.json",
+  "source_kernel_regularizer": "paper_artifacts/legacy_joint_population_known_noise_gp_v1/source_fit.json",
+  "source_tasks": [0, 1, 2, 3, 4, 5],
+  "scientific_question": "joint structural and pooled-function controls learn a common function mean, whereas both generic GP controls have only a common scalar mean; can a generic joint GP with common function mean and fitted task residuals reproduce their decision gains?",
+  "source_model": "shared population mean is a GP; independent task residuals are GPs on the same source-only10 coordinates; source joint likelihood integrates both and includes recorded label measurement errors",
+  "shared_mean_regularizer": "freeze the fitted known-noise RBF kernel and scalar-mean uncertainty from sources only, excluding its per-site discrepancy; do not use an orthogonal dictionary or the joint model's learned functional mean",
+  "residual_model": "same frozen RBF lengthscales, fitted nonnegative residual amplitude, between-task intercept variance and per-site discrepancy; source-only fitting once, no target-based hyperparameter choice",
+  "target_prior": "source-posterior common function mean; task residual covariance plus full common-mean posterior covariance, including target/source kernel interpolation uncertainty",
+  "comparison": "same original73-policy bank, same four cached paid episodes,362 cap, reference retention and guarded/direct evaluator; freeze all new recommendations before cached scoring; compare with joint structural, joint full and the retained three GP controls",
+  "scope": "opened-stage20 cached attribution, not a new independent target or source confirmation; earlier positive and negative results remain unchanged",
+  "adaptive_followup": "after common-function-mean attribution, use the same frozen prior to compare stopping, fixed paid queries and KG; no common-initialization result is credited to KG",
+  "new_simulator_call_cap": 0,
+  "execution": "reuse small source records and descriptors, local serial single-thread, no source optimizer per target, scheduler/server dispatch or pulls"
+}

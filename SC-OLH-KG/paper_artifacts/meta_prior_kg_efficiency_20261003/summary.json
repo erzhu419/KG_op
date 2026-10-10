@@ -1,0 +1,82 @@
+{
+  "status": "implemented and locally validated; no server deployment or experiments",
+  "comparison": "Frozen pre-change V6 blocked kernel versus factorized kernel on the same initial/logged posterior states. Each timed call uses a fresh serial single-thread subprocess.",
+  "scope": "Four local snapshots, one timed call per implementation per snapshot; kernel timing rather than a full-trajectory or multi-node speed claim. Historical V1-V6 results and deployments unchanged.",
+  "checks": {
+    "test_verification_meta_prior": 9,
+    "all_four_full_score_vectors_agree": true,
+    "all_actions_equal": true,
+    "all_live_posterior_states_unchanged": true
+  },
+  "snapshots": [
+    {
+      "case": "initial96",
+      "bank": 96,
+      "verification_replicates": 256,
+      "reference_seconds": 0.5187835319666192,
+      "factorized_seconds": 0.14968193299137056,
+      "speedup": 3.4659061491177297,
+      "reference_peak_rss_mb": 130.546875,
+      "factorized_peak_rss_mb": 108.97265625,
+      "peak_rss_reduction_fraction": 0.16526032315978456,
+      "max_score_error": 2.7755575615628914e-17,
+      "same_action": true,
+      "action": 19,
+      "posterior_unchanged": true
+    },
+    {
+      "case": "initial384",
+      "bank": 384,
+      "verification_replicates": 256,
+      "reference_seconds": 8.057971641013864,
+      "factorized_seconds": 2.3949799509719014,
+      "speedup": 3.3645257187826885,
+      "reference_peak_rss_mb": 232.6796875,
+      "factorized_peak_rss_mb": 142.33984375,
+      "peak_rss_reduction_fraction": 0.3882584024443474,
+      "max_score_error": 2.7755575615628914e-17,
+      "same_action": true,
+      "action": 280,
+      "posterior_unchanged": true
+    },
+    {
+      "case": "logged52",
+      "bank": 384,
+      "verification_replicates": 928,
+      "reference_seconds": 7.697974359965883,
+      "factorized_seconds": 2.295812586962711,
+      "speedup": 3.353049984863993,
+      "reference_peak_rss_mb": 234.984375,
+      "factorized_peak_rss_mb": 144.96484375,
+      "peak_rss_reduction_fraction": 0.3830873063368575,
+      "max_score_error": 2.220446049250313e-16,
+      "same_action": true,
+      "action": 348,
+      "posterior_unchanged": true
+    },
+    {
+      "case": "logged61",
+      "bank": 384,
+      "verification_replicates": 928,
+      "reference_seconds": 8.002246351970825,
+      "factorized_seconds": 2.4270950100035407,
+      "speedup": 3.29704701257622,
+      "reference_peak_rss_mb": 235.1015625,
+      "factorized_peak_rss_mb": 145.3046875,
+      "peak_rss_reduction_fraction": 0.381949290532682,
+      "max_score_error": 1.1102230246251565e-16,
+      "same_action": true,
+      "action": 158,
+      "posterior_unchanged": true
+    }
+  ],
+  "work_reduction": {
+    "old_distinct_probability_evaluations_per_candidate_action": 27,
+    "new_distinct_probability_evaluations_per_candidate_action": 9,
+    "retained_joint_fantasies": 27,
+    "candidate_bank_unchanged": true,
+    "quadrature_nodes_unchanged": true,
+    "asymptotic_cost": "O(N_recommend * N_sample); candidate-squared cost remains"
+  },
+  "new_server_jobs": 0
+}

@@ -1,0 +1,19 @@
+{
+  "status": "frozen after source-only joint attribution;before shape allocation probe",
+  "joint_results": "paper_artifacts/legacy_joint_population_f_inner_task_level_shape_v1/results.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_f_inner_joint_attribution_v1/results.json",
+  "layouts": ["5", "6"],
+  "outer_deleted_task": 1,
+  "entrypoint": "performance/diagnose_legacy_f_inner_shape_allocation.py",
+  "question": "Does a coherent diagonal shape-budget learner improve honest inner source prediction without adding unsupported common level variance?",
+  "law": "Use Stage153 projected source4 GP task shape group budgets on native common/task support union,reweighted by each native low-frequency spectrum. Keep task intercept,common A,empirical center,discrepancy,label noise and independent1% tail unchanged. Rshape(q) has the convexly interpolated diagonal shape excess;no level increment or coefficient correlation. This is a new conditional source-predictive family selected from training-only attribution,not an independent validation claim.",
+  "fixed_probe_q": 0.01,
+  "gradient_verification_task": "related_inventory_00",
+  "gradient_point": 0.2,
+  "gradient_step": 1e-5,
+  "verification": "PSD endpoint diagonals and unchanged intercept/no correlation;source predictive derivative must equal the saved sum of existing/new shape-margin contributions. Compare derivative with finite difference on one fold per layout. No raw filter replay or q sweep.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_outer_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;source training JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_shape_allocation_v1",
+  "decision": "Only negative mean predictive gradient and positive q=.01 predictive density gain in both layouts permits a separately frozen one-parameter source-predictive fit. Otherwise stop this family. Failed joint and shape-correlation candidates stay stopped;no outer task1 outcomes,source6/7,target,KG,confirmation or manuscript changes;complete-model HOLD remains."
+}

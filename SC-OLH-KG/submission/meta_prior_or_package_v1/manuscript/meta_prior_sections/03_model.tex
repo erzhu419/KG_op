@@ -1,0 +1,59 @@
+\section{Source-Learned Structural Prior}\label{sec:mp_model}
+
+\subsection{Ordered policies and observable coordinates}
+
+Let $h:[0,1]\to[0,1]$ be an ordered policy profile.  A public candidate $x$
+is represented by an eight-dimensional coordinate $\psi(x)$ constructed from
+the declared trajectory and cost exposures.  This coordinate is observable
+before target outcomes are collected.  It is not an encoder trained from
+unobserved target trajectories.  A nominally long profile is therefore treated
+as a discretized ordered rule, rather than as an arbitrary vector of unrelated
+free variables.
+
+For target task $q$, one replication returns an objective $Y^f_q(x)$ and a
+constraint observation $Y^g_q(x)$.  We minimize $f_q(x)=\mathbb E Y^f_q(x)$
+under the chance constraint
+\begin{equation}
+ \Pr\{Y^g_q(x)\le 0\}\ge 1-\alpha.
+ \label{eq:mp_chance}
+\end{equation}
+The environment's cumulative risk is represented by $\eta_q(x)=\log
+\operatorname{Var}(Y^g_q(x))$.  The risk head describes total log variance; it
+does not claim to identify separate physical common and local shocks.
+
+\subsection{Finite function model}
+
+Each source head $t\in\{f,g,\eta\}$ uses the declared finite dictionary
+$\{\phi_k(\psi)\}_{k=1}^{68}$:
+\begin{equation}
+ H_{q,t}(x)=b_{q,t}+\sum_{k=1}^{68}\beta_{q,t,k}\phi_k(\psi(x))+r_{q,t}(x).
+ \label{eq:mp_head}
+\end{equation}
+The dictionary is centered and scaled using only the public candidate bank.
+Source tasks estimate which functions are useful and the cross-task coefficient
+variation.  The target coefficient mean for non-intercept functions is zero;
+source information enters through the covariance and the structural support.
+The residual $r_{q,t}$ is epistemic model error and is kept separate from
+environmental risk.
+
+The target arms differ in the declared source information: a source-selected
+support, the same-source full dictionary, or a target-only full dictionary.
+A paid target observation $y$ updates the Gaussian function posterior,
+\begin{equation}
+ \theta_j^+ = \theta_j^-+K_j(y-\hat y_j),
+ \label{eq:mp_update}
+\end{equation}
+where the observation noise is recorded separately for each head.  The
+physical-risk head additionally maintains a finite factor-family particle
+mixture; its weights are updated by the exact Gaussian log-sample-variance
+likelihood.  This separates mean-structure correction from risk-family
+reweighting and leaves negative transfer visible in the paired controls.
+
+\subsection{What the prior does not claim}
+
+The coordinate is declared, the dictionary is finite and non-orthogonal, and
+the risk head models total variance.  Consequently, the present method does
+not establish learned trajectory representations, separate factor recovery,
+stable deployment superiority, or optimization over general independent
+high-dimensional variables.  Those are distinct research questions rather
+than implicit consequences of \eqref{eq:mp_head}.

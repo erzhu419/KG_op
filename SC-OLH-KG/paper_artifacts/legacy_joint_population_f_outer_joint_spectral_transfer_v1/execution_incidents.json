@@ -1,0 +1,10 @@
+{
+  "incidents": [{
+    "stage": "JSON export after both diagnostic rows completed",
+    "failure": "A count obtained from NumPy comparisons was numpy.int64 and the existing JSON writer could not serialize it.",
+    "resolution": "Convert that count to Python int. Replay only the24 new local diagnostic integrals to persist the result;no source fit,paid forecast or cached control is replayed.",
+    "tolerances_or_scientific_parameters_changed": false,
+    "measured_wall_seconds": 0.702157401,
+    "cpu_seconds": null
+  }]
+}

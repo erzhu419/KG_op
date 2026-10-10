@@ -1,0 +1,20 @@
+{
+  "status": "completed;forty source-only covariance checks passed;matched source fitting and raw development followed",
+  "execution_manifest": "performance/manifests/legacy_joint_population_f_inner_joint_spectral_compatibility_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_compatibility_v1/results.json",
+  "parent_results": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_tail_attribution_v1/results.json",
+  "with_tail_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_v1/source_laws.json",
+  "without_tail_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_compression_tail_attribution_v1/source_laws.json",
+  "source_fit_results": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "question": "How much of the useful joint finite coefficient geometry is compatible with the original source-learned low-frequency law,and how large is the original weak-tail budget relative to its source-derived smooth signal?",
+  "source_scope": "Ten honest source4 folds,outer task1 and inner held task absent. Reuse only saved pre-query common/task coefficient covariances,source-fitted spectral/group parameters and outcome-free public basis. Do not read paid/future values,predictions or scores for optimization.",
+  "analysis": "For common and task covariances separately,measure the original weak-tail contribution to public-bank level and centered-shape variance,relative to the saved no-tail smooth prior. Record each positive support group's roughness/diagonal variance spectrum. Fit the declared normalized spectral_weights(basis,p),p in[0,4],to the source-derived within-group variance fractions using a single source-only log-fraction objective weighted by group variance;report endpoint and fitted residuals. Preserve the saved coefficient correlation geometry when reconstructing the constrained diagonal spectrum. Keep group total variances fixed;no group/support search and no new source population optimizer.",
+  "verification": "Use exact saved with/without coefficient covariance differences to reproduce the declared weak tail. PSD and public-bank variance decompositions detect an incorrect coefficient/basis map;stop on failure. Coefficient diagonal spectral compatibility does not imply physical-factor recovery.",
+  "decision": "If source-derived geometry is spectrally compatible but the fixed weak tail dominates its signal,register a coherent source-only positive-tail scale rule based on smooth source variance,and a matched spectral joint-population pilot. If spectral distortion is material,first register joint group/spectrum/geometry source learning. Do not adopt zero tail or select a per-query budget from Stage178 scores. Report all ten folds without a new target gate.",
+  "maximum_single_thread_cpu_seconds": 60,
+  "cost": {"new_source_population_fits": 0, "new_source_likelihood_integrations": 0, "new_raw_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;small cached source-law JSON only;no server jobs,pulls or new NPZ",
+  "scope": "Source-only learning-design diagnostic. Stage178 remains attribution,not an adopted method. Retained native mixture remains reference;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_compatibility_v1"
+}

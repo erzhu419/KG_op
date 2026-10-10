@@ -1,0 +1,16 @@
+{
+  "status": "frozen after source shape-allocation probe passed;before two predictive q fits",
+  "probe_results": "paper_artifacts/legacy_joint_population_f_inner_shape_allocation_v1/results.json",
+  "layouts": ["5", "6"],
+  "outer_deleted_task": 1,
+  "entrypoint": "performance/fit_legacy_f_source_predictive_shape.py",
+  "objective": "One scalar q per source5 outer branch minimizes mean proper twelve-label Gaussian NLL over its five honestly source4-refitted inner folds. Each template,nuisance prior and empirical center excludes the inner query. Select no other parameter,template,task weighting or prefix. This is source training,not a new independent validation set.",
+  "law": "Same Stage155 diagonal shape allocation0<=q<=1 on the native common/task support union at native low-frequency spectral weights. Original independent task-level variance,1% tail,common A,empirical center,discrepancy and observed-label noise fixed. Rebuild outer source5 template from its own existing GP and native fit;coherently condition common beta/H on all60 training labels. No outer task1 outcomes.",
+  "optimizer": {"method": "L-BFGS-B", "max_iterations": 4096, "ftol": 1e-9, "gtol": 1e-5},
+  "initial_q": 0,
+  "verification": "Both q fits must converge on original optimizer rule and not worsen their source predictive objective. Native source5 likelihood/beta/H must reproduce before outer law construction. Keep task intercept exactly unchanged and PSD diagonal task covariance. No extra starts,completion fits or source holdout scoring.",
+  "cost": {"maximum_source_predictive_q_fits": 2, "new_native_source_refits": 0, "new_source_integrations": 0, "new_outer_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;source training JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_source_predictive_shape_v1",
+  "decision": "Completed source fits permit rebuilding conditional intercept-variance uncertainty under the new shape law and separately freezing a two-task1 prediction pilot. Reuse both fixed and already-frozen source-design prefixes;do not choose the favorable one after scoring. Original GP/flat/native/retained-mixture controls and numerical gates stay. Complete-model HOLD remains."
+}

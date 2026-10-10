@@ -1,0 +1,478 @@
+{
+  "status": "Registered before separate-bank normalization for all structures. Same-bank Gaussian fit/bridge reuse is withdrawn;reuse two already certified separate-bank cases.",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "source_learning": "paper_artifacts/historical_last_joint_precision_v1/source_candidates.json",
+  "source_precision": "paper_artifacts/historical_last_joint_precision_v1/source_precision.json",
+  "candidate_identities": [
+    [
+      "5",
+      "additive",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "additive",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "5",
+      "additive",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "additive",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "6",
+      "additive",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "additive",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "6",
+      "additive",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "additive",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "joint",
+      "observed_task"
+    ]
+  ],
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "maximum_single_thread_cpu_seconds": 235,
+  "output": "paper_artifacts/historical_source_normalizer_separate_banks_v1",
+  "scope": "Freeze each original Gaussian reference fitted from retained components. Use separate current-law exact source chains for bridge estimation:reuse two already passed separate-bank cases;fresh8192-sweep chains for28 other cases;extend two failed separate-bank prefixes once to16384. Keep original source-risk seeds and all scientific priors unchanged. Extend Gaussian integration from1024 to4096 per chain once,preserving each original prefix and seed. No same-bank fit/evaluation,threshold changes,seed retries,original-law resampling,labels,target/verifier calls or server work. Save scalar density-ratio sufficient statistics,not raw chains. Preserve every initial failure and previous same-bank estimate as historical diagnostics.",
+  "source_row_alignment": "Within-layout comparisons preserve their own ordered48 task-policy batches. Layout5/layout6 site sets differ and their evidence normalizers are never combined.",
+  "execution_incident": "Two initial preparations stopped before evidence comparisons:positional rows differed,and complete task-policy sets then revealed32 common and16 differing batches per layout. Registered all8 within-layout structures separately before evaluating evidence;failed-preparation CPU not recorded.",
+  "reference_identities_by_layout": {
+    "5": [
+      "5",
+      "spectral",
+      "head_specific",
+      "observed_task"
+    ],
+    "6": [
+      "6",
+      "spectral",
+      "head_specific",
+      "observed_task"
+    ]
+  },
+  "cross_layout_observation_contract": {
+    "layout5_source_batches": 48,
+    "layout6_source_batches": 48,
+    "shared_batches": 32,
+    "different_batches_in_each_layout": 16,
+    "common_cross_layout_normalizer_valid": false
+  },
+  "cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 16384
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 8192
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "retained_sweeps_per_chain": 16384
+    }
+  ],
+  "all_identities": [
+    [
+      "5",
+      "additive",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "additive",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "5",
+      "additive",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "additive",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "5",
+      "spectral",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "6",
+      "additive",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "additive",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "6",
+      "additive",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "additive",
+      "joint",
+      "observed_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "head_specific",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "head_specific",
+      "observed_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "joint",
+      "deconvolved_task"
+    ],
+    [
+      "6",
+      "spectral",
+      "joint",
+      "observed_task"
+    ]
+  ],
+  "Gaussian_draws_per_chain": 4096,
+  "seed": 202610111,
+  "previous_results": "paper_artifacts/historical_source_normalizers_v1/results.json",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 8192,
+    "seed": 202610109
+  },
+  "maximum_case_single_thread_cpu_seconds": 25,
+  "reused_normalizer_results": [
+    "paper_artifacts/historical_source_normalizer_precision_v1/cases/5_additive_head_specific_deconvolved_task_f/results.json",
+    "paper_artifacts/historical_source_normalizer_precision_v1/cases/6_spectral_head_specific_deconvolved_task_f/results.json"
+  ]
+}

@@ -1,0 +1,1426 @@
+{
+  "protocol": {
+    "replay": "paper_artifacts/legacy_mixture_budget_v1/replay.json",
+    "cases": [
+      {
+        "domain": "FactorShockStatePolicyRZDT1",
+        "prefix": 13
+      },
+      {
+        "domain": "InventorySupplyChain",
+        "prefix": 4
+      },
+      {
+        "domain": "InventorySupplyChain",
+        "prefix": 13
+      },
+      {
+        "domain": "QueueResourceControl",
+        "prefix": 4
+      },
+      {
+        "domain": "QueueResourceControl",
+        "prefix": 13
+      }
+    ],
+    "draw_power": 13,
+    "seeds": [
+      80561,
+      80562
+    ],
+    "views": [
+      "observable_source_full",
+      "fixed_equal_mixture",
+      "paid_evidence_mixture"
+    ],
+    "lookahead_probe": {
+      "domain": "InventorySupplyChain",
+      "prefix": 4,
+      "candidates": [
+        2,
+        63
+      ],
+      "draw_power": 9,
+      "fantasy_power": 4,
+      "seed": 80561
+    },
+    "purpose": "detect whether retained early benefit and late regressions are numerical ranking artifacts; separate increased-fantasy baseline drift from adaptation before any new paid action",
+    "diagnostics": "pre-observation head log score sums; selected action posterior g/eta and feasible-probability compared with opened truth only after all recommendations freeze; repeat no source holdout",
+    "execution": "local serial single-thread; no simulator calls or server tasks; same frozen method, no parameters changed",
+    "output": "precision.json"
+  },
+  "rows": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "prefix": 13,
+      "model_weights": [
+        1.6689917530464594e-11,
+        0.9999999999827193,
+        5.908013779379971e-13
+      ],
+      "weight_replay_max_error": 0.0,
+      "head_log_score_sums": [
+        [
+          -20.658258513771443,
+          -14.737298839409915
+        ],
+        [
+          -5.535915057292291,
+          -5.043425976384964
+        ],
+        [
+          -28.54795849557093,
+          -10.188679050019568
+        ]
+      ],
+      "integrations": [
+        {
+          "seed": 80561,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 24,
+                "shortlist": [
+                  24,
+                  0,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  126,
+                  126,
+                  81
+                ]
+              },
+              "action_index": 168,
+              "predicted_reward": 0.5535335288674961,
+              "predicted_verification_calls": 280.63680814440045,
+              "reward_gap_to_other_primary": 0.027677416317108183,
+              "truth": {
+                "reward": 0.791223647672893,
+                "total_calls": 280.9738981958677,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 50,
+                "shortlist": [
+                  50,
+                  0,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  126,
+                  126,
+                  81
+                ]
+              },
+              "action_index": 194,
+              "predicted_reward": 0.43120087683764147,
+              "predicted_verification_calls": 282.04210523928924,
+              "reward_gap_to_other_primary": 0.0015702444370592206,
+              "truth": {
+                "reward": 0.790832507123031,
+                "total_calls": 265.0000846234367,
+                "primary_feasible": false
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 24,
+                "shortlist": [
+                  24,
+                  0,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  126,
+                  126,
+                  81
+                ]
+              },
+              "action_index": 168,
+              "predicted_reward": 0.5535335288672636,
+              "predicted_verification_calls": 280.63680814434537,
+              "reward_gap_to_other_primary": 0.027677416316637116,
+              "truth": {
+                "reward": 0.791223647672893,
+                "total_calls": 280.9738981958677,
+                "primary_feasible": true
+              }
+            }
+          }
+        },
+        {
+          "seed": 80562,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 24,
+                "shortlist": [
+                  24,
+                  0,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  126,
+                  126,
+                  81
+                ]
+              },
+              "action_index": 168,
+              "predicted_reward": 0.5528812085681236,
+              "predicted_verification_calls": 280.7026336646783,
+              "reward_gap_to_other_primary": 0.026764364793214646,
+              "truth": {
+                "reward": 0.791223647672893,
+                "total_calls": 280.9738981958677,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 50,
+                "shortlist": [
+                  50,
+                  0,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  126,
+                  126,
+                  81
+                ]
+              },
+              "action_index": 194,
+              "predicted_reward": 0.4306469541038879,
+              "predicted_verification_calls": 282.0878887328129,
+              "reward_gap_to_other_primary": 0.0015825768647599325,
+              "truth": {
+                "reward": 0.790832507123031,
+                "total_calls": 265.0000846234367,
+                "primary_feasible": false
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 24,
+                "shortlist": [
+                  24,
+                  0,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  126,
+                  126,
+                  81
+                ]
+              },
+              "action_index": 168,
+              "predicted_reward": 0.5528812085678985,
+              "predicted_verification_calls": 280.7026336646225,
+              "reward_gap_to_other_primary": 0.02676436479276134,
+              "truth": {
+                "reward": 0.791223647672893,
+                "total_calls": 280.9738981958677,
+                "primary_feasible": true
+              }
+            }
+          }
+        }
+      ],
+      "candidate_diagnostics": {
+        "24": {
+          "components": [
+            {
+              "mean_g": 0.46251327877201964,
+              "mean_eta": -7.185945870306232,
+              "sd_g": 0.16806998244696794,
+              "sd_eta": 0.8986393614380858,
+              "probability_feasible": 0.0009765625
+            },
+            {
+              "mean_g": -0.07194041321748672,
+              "mean_eta": -7.098555916328052,
+              "sd_g": 0.2332108798442024,
+              "sd_eta": 1.9429542313558423,
+              "probability_feasible": 0.5015869140625
+            },
+            {
+              "mean_g": 0.2174355948813378,
+              "mean_eta": -4.736579716667133,
+              "sd_g": 0.1996820443425784,
+              "sd_eta": 1.853955900549195,
+              "probability_feasible": 0.033935546875
+            }
+          ],
+          "mixture_probability_feasible": 0.5015869140538686,
+          "observed": false,
+          "truth": {
+            "mean_g": -0.07923414781147516,
+            "mean_eta": -6.842106546910614,
+            "chance_margin": -0.025483624380634923
+          }
+        },
+        "50": {
+          "components": [
+            {
+              "mean_g": 0.6231818697344749,
+              "mean_eta": -7.317222441013778,
+              "sd_g": 0.4761416311555036,
+              "sd_eta": 2.358068614158969,
+              "probability_feasible": 0.0736083984375
+            },
+            {
+              "mean_g": 0.7311301890718487,
+              "mean_eta": -7.139950706652239,
+              "sd_g": 1.1785437790542679,
+              "sd_eta": 3.295348023756534,
+              "probability_feasible": 0.2333984375
+            },
+            {
+              "mean_g": -0.03136175856173225,
+              "mean_eta": -8.112685518216654,
+              "sd_g": 0.4298052999016694,
+              "sd_eta": 2.7934429561156007,
+              "probability_feasible": 0.4708251953125
+            }
+          ],
+          "mixture_probability_feasible": 0.23339843749747338,
+          "observed": false,
+          "truth": {
+            "mean_g": 0.7204692244797352,
+            "mean_eta": -5.2596972470544925,
+            "chance_margin": 0.8390456928472757
+          }
+        }
+      },
+      "max_reward_difference": {
+        "observable_source_full": 0.0012640281860548108,
+        "fixed_equal_mixture": 0.001301260033610696,
+        "paid_evidence_mixture": 0.0012640281860357705
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "prefix": 4,
+      "model_weights": [
+        0.27680681141622426,
+        0.0926734489661977,
+        0.6305197396175779
+      ],
+      "weight_replay_max_error": 0.0,
+      "head_log_score_sums": [
+        [
+          0.29969452355721593,
+          -0.6718334584480119
+        ],
+        [
+          -0.2216373130394211,
+          -1.2447394403827396
+        ],
+        [
+          0.8796241148001992,
+          -0.4285384180556341
+        ]
+      ],
+      "integrations": [
+        {
+          "seed": 80561,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 10,
+                "shortlist": [
+                  10,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 156,
+              "predicted_reward": 0.4697580739559871,
+              "predicted_verification_calls": 295.2942171822715,
+              "reward_gap_to_other_primary": 0.0026943005513255236,
+              "truth": {
+                "reward": 0.015884255572766477,
+                "total_calls": 344.36010922428204,
+                "primary_feasible": false
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 63,
+                "shortlist": [
+                  63,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 209,
+              "predicted_reward": 0.4536591891371801,
+              "predicted_verification_calls": 297.6311638040467,
+              "reward_gap_to_other_primary": 0.0014979244161682503,
+              "truth": {
+                "reward": 0.806121717232469,
+                "total_calls": 264.3201068295798,
+                "primary_feasible": true
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 63,
+                "shortlist": [
+                  63,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 209,
+              "predicted_reward": 0.45363511997784955,
+              "predicted_verification_calls": 297.6330017430775,
+              "reward_gap_to_other_primary": 0.008845141537583867,
+              "truth": {
+                "reward": 0.806121717232469,
+                "total_calls": 264.3201068295798,
+                "primary_feasible": true
+              }
+            }
+          }
+        },
+        {
+          "seed": 80562,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 10,
+                "shortlist": [
+                  10,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 156,
+              "predicted_reward": 0.47028535038414215,
+              "predicted_verification_calls": 295.2641709691751,
+              "reward_gap_to_other_primary": 0.0025772564875094495,
+              "truth": {
+                "reward": 0.015884255572766477,
+                "total_calls": 344.36010922428204,
+                "primary_feasible": false
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 63,
+                "shortlist": [
+                  63,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 209,
+              "predicted_reward": 0.4544925191918178,
+              "predicted_verification_calls": 297.5548923801235,
+              "reward_gap_to_other_primary": 0.0012373112424751698,
+              "truth": {
+                "reward": 0.806121717232469,
+                "total_calls": 264.3201068295798,
+                "primary_feasible": true
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 63,
+                "shortlist": [
+                  63,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 209,
+              "predicted_reward": 0.4544442325613241,
+              "predicted_verification_calls": 297.5673880661733,
+              "reward_gap_to_other_primary": 0.00902206245707432,
+              "truth": {
+                "reward": 0.806121717232469,
+                "total_calls": 264.3201068295798,
+                "primary_feasible": true
+              }
+            }
+          }
+        }
+      ],
+      "candidate_diagnostics": {
+        "10": {
+          "components": [
+            {
+              "mean_g": 0.10597190712049442,
+              "mean_eta": -6.604616445206434,
+              "sd_g": 1.1763241516608653,
+              "sd_eta": 1.2445759999735013,
+              "probability_feasible": 0.439453125
+            },
+            {
+              "mean_g": 0.07297354641847409,
+              "mean_eta": -6.445229922678263,
+              "sd_g": 0.5955385682251184,
+              "sd_eta": 1.3163124554375476,
+              "probability_feasible": 0.398681640625
+            },
+            {
+              "mean_g": 0.6812590971562377,
+              "mean_eta": -6.4451973692900735,
+              "sd_g": 0.3954129156495165,
+              "sd_eta": 1.2647972068105222,
+              "probability_feasible": 0.02783203125
+            }
+          ],
+          "mixture_probability_feasible": 0.1761394660711446,
+          "observed": false,
+          "truth": {
+            "mean_g": 0.6544046780940722,
+            "mean_eta": -6.146629174139346,
+            "chance_margin": 0.7305080133810488
+          }
+        },
+        "63": {
+          "components": [
+            {
+              "mean_g": -0.0034047130142030313,
+              "mean_eta": -6.606633275571895,
+              "sd_g": 0.2902457132513611,
+              "sd_eta": 0.9115190296749072,
+              "probability_feasible": 0.412841796875
+            },
+            {
+              "mean_g": 0.13236053717227278,
+              "mean_eta": -6.446614573455609,
+              "sd_g": 0.40565395307183555,
+              "sd_eta": 0.9858137437825811,
+              "probability_feasible": 0.30712890625
+            },
+            {
+              "mean_g": 0.03686029941098459,
+              "mean_eta": -6.461328968467099,
+              "sd_g": 0.3337997568467824,
+              "sd_eta": 0.9182135110371592,
+              "probability_feasible": 0.3726806640625
+            }
+          ],
+          "mixture_probability_feasible": 0.3777226316969103,
+          "observed": false,
+          "truth": {
+            "mean_g": -0.06780462943237285,
+            "mean_eta": -7.353462294727414,
+            "chance_margin": -0.02618068740157182
+          }
+        }
+      },
+      "max_reward_difference": {
+        "observable_source_full": 0.002372509334948203,
+        "fixed_equal_mixture": 0.0018059204597744016,
+        "paid_evidence_mixture": 0.002217010648628337
+      },
+      "lookahead": {
+        "stop_action": {
+          "kind": "guarded",
+          "primary": 63,
+          "shortlist": [
+            63,
+            3,
+            2
+          ],
+          "incumbent_position": 1,
+          "budgets": [
+            130,
+            130,
+            82
+          ]
+        },
+        "stop_expected_reward": 0.45118366973372737,
+        "stop_expected_verification_calls": 297.960620676539,
+        "lookahead": [
+          {
+            "candidate": 2,
+            "expected_future_reward": 0.44970588598508576,
+            "net_reward_of_paid_episode": -0.0014777837486416034,
+            "adaptation_value": 0.00042685490586052977,
+            "projection_tower_drift": -0.0017440477255681874,
+            "verification_budget_opportunity_cost": 0.00016059092893394578,
+            "expected_eta_variance_reduction_fraction": 0.09005246330217205,
+            "expected_model_weights": [
+              0.2746602629645022,
+              0.09283381756287576,
+              0.6325059194726221
+            ]
+          },
+          {
+            "candidate": 63,
+            "expected_future_reward": 0.5501087753755804,
+            "net_reward_of_paid_episode": 0.09892510564185308,
+            "adaptation_value": 0.08172013798271777,
+            "projection_tower_drift": 0.017365558588069263,
+            "verification_budget_opportunity_cost": 0.00016059092893394578,
+            "expected_eta_variance_reduction_fraction": 0.0017340412962420844,
+            "expected_model_weights": [
+              0.2795306458590652,
+              0.09027796561675716,
+              0.6301913885241776
+            ]
+          }
+        ],
+        "choice": "sample",
+        "sampling_candidate": 63,
+        "remaining_calls": 358,
+        "draw_count": 512,
+        "fantasies_per_component": 16,
+        "fantasy_count": 48
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "prefix": 13,
+      "model_weights": [
+        0.009577912827937933,
+        1.496782985489553e-06,
+        0.9904205903890765
+      ],
+      "weight_replay_max_error": 0.0,
+      "head_log_score_sums": [
+        [
+          4.5911039426079405,
+          1.5820809219310645
+        ],
+        [
+          0.20728019598871383,
+          -2.7979921823745943
+        ],
+        [
+          7.165486267751628,
+          3.6463685878756467
+        ]
+      ],
+      "integrations": [
+        {
+          "seed": 80561,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  3,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.5281783444155963,
+              "predicted_verification_calls": 259.7722478697052,
+              "reward_gap_to_other_primary": 0.0016753585534103888,
+              "truth": {
+                "reward": 0.8085905377291759,
+                "total_calls": 218.4880647864561,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  3,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.4954138622327065,
+              "predicted_verification_calls": 264.5682192928029,
+              "reward_gap_to_other_primary": 0.010421529516683625,
+              "truth": {
+                "reward": 0.8085905377291759,
+                "total_calls": 218.4880647864561,
+                "primary_feasible": true
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 27,
+                "shortlist": [
+                  27,
+                  3,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 27,
+              "predicted_reward": 0.4553221308007721,
+              "predicted_verification_calls": 272.1251206440726,
+              "reward_gap_to_other_primary": 0.0025911267269553284,
+              "truth": {
+                "reward": 0.807812480336191,
+                "total_calls": 343.4479683822451,
+                "primary_feasible": false
+              }
+            }
+          }
+        },
+        {
+          "seed": 80562,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  3,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.5289789969514602,
+              "predicted_verification_calls": 259.6140822348319,
+              "reward_gap_to_other_primary": 0.001993734768390487,
+              "truth": {
+                "reward": 0.8085905377291759,
+                "total_calls": 218.4880647864561,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  3,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.49559306252385854,
+              "predicted_verification_calls": 264.39088409335403,
+              "reward_gap_to_other_primary": 0.008168078717654459,
+              "truth": {
+                "reward": 0.8085905377291759,
+                "total_calls": 218.4880647864561,
+                "primary_feasible": true
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 27,
+                "shortlist": [
+                  27,
+                  3,
+                  4
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 27,
+              "predicted_reward": 0.45774832564018053,
+              "predicted_verification_calls": 271.63614665679705,
+              "reward_gap_to_other_primary": 0.0017685507271124057,
+              "truth": {
+                "reward": 0.807812480336191,
+                "total_calls": 343.4479683822451,
+                "primary_feasible": false
+              }
+            }
+          }
+        }
+      ],
+      "candidate_diagnostics": {
+        "71": {
+          "components": [
+            {
+              "mean_g": 0.002787846071426357,
+              "mean_eta": -6.668939746825193,
+              "sd_g": 0.16543152599354602,
+              "sd_eta": 0.7277109704744525,
+              "probability_feasible": 0.348876953125
+            },
+            {
+              "mean_g": -0.006826881819095915,
+              "mean_eta": -6.510608547712672,
+              "sd_g": 0.2651779276288058,
+              "sd_eta": 1.1258900216935384,
+              "probability_feasible": 0.401611328125
+            },
+            {
+              "mean_g": 0.03289662426594219,
+              "mean_eta": -6.623396642128134,
+              "sd_g": 0.19047730210830108,
+              "sd_eta": 1.0288099154509827,
+              "probability_feasible": 0.300537109375
+            }
+          ],
+          "mixture_probability_feasible": 0.3010002554707245,
+          "observed": false,
+          "truth": {
+            "mean_g": -0.05616249223901452,
+            "mean_eta": -7.72904947820914,
+            "chance_margin": -0.021665161900210075
+          }
+        },
+        "27": {
+          "components": [
+            {
+              "mean_g": 0.07840621582515271,
+              "mean_eta": -6.666005008115531,
+              "sd_g": 0.1827467178061094,
+              "sd_eta": 0.7044112268563698,
+              "probability_feasible": 0.2218017578125
+            },
+            {
+              "mean_g": 0.1279060161546306,
+              "mean_eta": -6.510608508070314,
+              "sd_g": 0.2747417036979195,
+              "sd_eta": 1.0371119435993663,
+              "probability_feasible": 0.2353515625
+            },
+            {
+              "mean_g": 0.01936890562081924,
+              "mean_eta": -6.540050151791098,
+              "sd_g": 0.17883587524420974,
+              "sd_eta": 0.9521969106586422,
+              "probability_feasible": 0.3126220703125
+            }
+          ],
+          "mixture_probability_feasible": 0.3117520856191875,
+          "observed": false,
+          "truth": {
+            "mean_g": 0.02876056266898355,
+            "mean_eta": -7.720248250227947,
+            "chance_margin": 0.06341003696019058
+          }
+        }
+      },
+      "max_reward_difference": {
+        "observable_source_full": 0.0035645761750967564,
+        "fixed_equal_mixture": 0.002683273496468075,
+        "paid_evidence_mixture": 0.003866547160706113
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "prefix": 4,
+      "model_weights": [
+        0.21861860337285213,
+        0.17570163390911236,
+        0.6056797627180357
+      ],
+      "weight_replay_max_error": 0.0,
+      "head_log_score_sums": [
+        [
+          -0.05191722121780862,
+          -0.6801611619262964
+        ],
+        [
+          -0.07106086801406158,
+          -0.8795588950219496
+        ],
+        [
+          0.5312004333724389,
+          -0.24425608895035134
+        ]
+      ],
+      "integrations": [
+        {
+          "seed": 80561,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 217,
+              "predicted_reward": 0.4655095274460672,
+              "predicted_verification_calls": 297.53834557108087,
+              "reward_gap_to_other_primary": 0.00033021838863578346,
+              "truth": {
+                "reward": 0.8178114370571095,
+                "total_calls": 264.00000389432125,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 50,
+                "shortlist": [
+                  50,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 196,
+              "predicted_reward": 0.4298098301268604,
+              "predicted_verification_calls": 299.56486184886586,
+              "reward_gap_to_other_primary": 0.007139974736863841,
+              "truth": {
+                "reward": 5.051750160092501e-13,
+                "total_calls": 345.99999999994895,
+                "primary_feasible": false
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 50,
+                "shortlist": [
+                  50,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 196,
+              "predicted_reward": 0.41764311033687096,
+              "predicted_verification_calls": 301.3833132086578,
+              "reward_gap_to_other_primary": 0.007413480774458248,
+              "truth": {
+                "reward": 5.051750160092501e-13,
+                "total_calls": 345.99999999994895,
+                "primary_feasible": false
+              }
+            }
+          }
+        },
+        {
+          "seed": 80562,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 217,
+              "predicted_reward": 0.46778859872922746,
+              "predicted_verification_calls": 297.3324971180051,
+              "reward_gap_to_other_primary": 0.0008957670364209691,
+              "truth": {
+                "reward": 0.8178114370571095,
+                "total_calls": 264.00000389432125,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 50,
+                "shortlist": [
+                  50,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 196,
+              "predicted_reward": 0.4309712845020475,
+              "predicted_verification_calls": 299.45947144952993,
+              "reward_gap_to_other_primary": 0.007111802761859742,
+              "truth": {
+                "reward": 5.051750160092501e-13,
+                "total_calls": 345.99999999994895,
+                "primary_feasible": false
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 50,
+                "shortlist": [
+                  50,
+                  3,
+                  2
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  130,
+                  130,
+                  82
+                ]
+              },
+              "action_index": 196,
+              "predicted_reward": 0.41902935624200144,
+              "predicted_verification_calls": 301.2236057888611,
+              "reward_gap_to_other_primary": 0.007198832780460407,
+              "truth": {
+                "reward": 5.051750160092501e-13,
+                "total_calls": 345.99999999994895,
+                "primary_feasible": false
+              }
+            }
+          }
+        }
+      ],
+      "candidate_diagnostics": {
+        "71": {
+          "components": [
+            {
+              "mean_g": 0.03416205686334669,
+              "mean_eta": -6.682936552602787,
+              "sd_g": 0.20294573059670087,
+              "sd_eta": 1.0515680083375343,
+              "probability_feasible": 0.3134765625
+            },
+            {
+              "mean_g": 0.016752548627684036,
+              "mean_eta": -6.602221019932558,
+              "sd_g": 0.4020900224494112,
+              "sd_eta": 1.2142061373104671,
+              "probability_feasible": 0.4124755859375
+            },
+            {
+              "mean_g": 0.02986310239739732,
+              "mean_eta": -6.629872255496735,
+              "sd_g": 0.1947010811952417,
+              "sd_eta": 1.207020553484285,
+              "probability_feasible": 0.3072509765625
+            }
+          ],
+          "mixture_probability_feasible": 0.32710014125996956,
+          "observed": false,
+          "truth": {
+            "mean_g": -0.06588842645291966,
+            "mean_eta": -7.4893666293345476,
+            "chance_margin": -0.02699896251563822
+          }
+        },
+        "50": {
+          "components": [
+            {
+              "mean_g": 0.06823390313631442,
+              "mean_eta": -6.678618935312869,
+              "sd_g": 0.5001098280302702,
+              "sd_eta": 1.730167644490481,
+              "probability_feasible": 0.3829345703125
+            },
+            {
+              "mean_g": 0.19357432808776318,
+              "mean_eta": -6.598251606821818,
+              "sd_g": 1.1114489596997765,
+              "sd_eta": 2.1741743218930583,
+              "probability_feasible": 0.3944091796875
+            },
+            {
+              "mean_g": 0.035234683591583764,
+              "mean_eta": -6.6381488583013,
+              "sd_g": 0.23927281640552256,
+              "sd_eta": 1.7536704943035213,
+              "probability_feasible": 0.318359375
+            }
+          ],
+          "mixture_probability_feasible": 0.3458387889538106,
+          "observed": false,
+          "truth": {
+            "mean_g": 0.03496809372869177,
+            "mean_eta": -7.343800187648139,
+            "chance_margin": 0.07679360976734063
+          }
+        }
+      },
+      "max_reward_difference": {
+        "observable_source_full": 0.002974274434245583,
+        "fixed_equal_mixture": 0.0023740033163991425,
+        "paid_evidence_mixture": 0.0026235325153285416
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "prefix": 13,
+      "model_weights": [
+        0.007189041624505532,
+        2.26741803886661e-05,
+        0.9927882841951058
+      ],
+      "weight_replay_max_error": 0.0,
+      "head_log_score_sums": [
+        [
+          5.4904117791693885,
+          1.9357081900985054
+        ],
+        [
+          2.273790924992536,
+          -0.6067572554056043
+        ],
+        [
+          7.629698659420805,
+          4.724380872885243
+        ]
+      ],
+      "integrations": [
+        {
+          "seed": 80561,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  6,
+                  3
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.7005699419162057,
+              "predicted_verification_calls": 235.79489739517194,
+              "reward_gap_to_other_primary": 0.010940336816868235,
+              "truth": {
+                "reward": 0.8178113910717709,
+                "total_calls": 233.9964786469635,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  6,
+                  3
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.687058925860018,
+              "predicted_verification_calls": 236.4305586554698,
+              "reward_gap_to_other_primary": 0.00865385562594323,
+              "truth": {
+                "reward": 0.8178113910717709,
+                "total_calls": 233.9964786469635,
+                "primary_feasible": true
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 72,
+                "shortlist": [
+                  72,
+                  6,
+                  3
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 72,
+              "predicted_reward": 0.6945077151099467,
+              "predicted_verification_calls": 235.43763568196533,
+              "reward_gap_to_other_primary": 0.006233219594531825,
+              "truth": {
+                "reward": 0.8174187539539314,
+                "total_calls": 218.00052496099636,
+                "primary_feasible": false
+              }
+            }
+          }
+        },
+        {
+          "seed": 80562,
+          "decisions": {
+            "observable_source_full": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  6,
+                  3
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.7025850940040812,
+              "predicted_verification_calls": 235.41625639520828,
+              "reward_gap_to_other_primary": 0.012587517600744613,
+              "truth": {
+                "reward": 0.8178113910717709,
+                "total_calls": 233.9964786469635,
+                "primary_feasible": true
+              }
+            },
+            "fixed_equal_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 71,
+                "shortlist": [
+                  71,
+                  6,
+                  3
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 71,
+              "predicted_reward": 0.688446596856172,
+              "predicted_verification_calls": 236.25534456720834,
+              "reward_gap_to_other_primary": 0.011166571736147546,
+              "truth": {
+                "reward": 0.8178113910717709,
+                "total_calls": 233.9964786469635,
+                "primary_feasible": true
+              }
+            },
+            "paid_evidence_mixture": {
+              "action": {
+                "kind": "guarded",
+                "primary": 72,
+                "shortlist": [
+                  72,
+                  6,
+                  3
+                ],
+                "incumbent_position": 1,
+                "budgets": [
+                  79,
+                  126,
+                  128
+                ]
+              },
+              "action_index": 72,
+              "predicted_reward": 0.6947896749778084,
+              "predicted_verification_calls": 235.28633407972566,
+              "reward_gap_to_other_primary": 0.004628089322505913,
+              "truth": {
+                "reward": 0.8174187539539314,
+                "total_calls": 218.00052496099636,
+                "primary_feasible": false
+              }
+            }
+          }
+        }
+      ],
+      "candidate_diagnostics": {
+        "71": {
+          "components": [
+            {
+              "mean_g": -0.004509452316597383,
+              "mean_eta": -6.80975646565005,
+              "sd_g": 0.16924390505248793,
+              "sd_eta": 0.9916695111389641,
+              "probability_feasible": 0.3712158203125
+            },
+            {
+              "mean_g": -0.05184201775869814,
+              "mean_eta": -6.6937528399336355,
+              "sd_g": 0.2990370365800177,
+              "sd_eta": 1.1818081241660967,
+              "probability_feasible": 0.4779052734375
+            },
+            {
+              "mean_g": -0.0227043420505348,
+              "mean_eta": -6.87798062695918,
+              "sd_g": 0.17115772881899663,
+              "sd_eta": 1.1072854663827696,
+              "probability_feasible": 0.4139404296875
+            }
+          ],
+          "mixture_probability_feasible": 0.4136347310427181,
+          "observed": false,
+          "truth": {
+            "mean_g": -0.06588842645291966,
+            "mean_eta": -7.4893666293345476,
+            "chance_margin": -0.02699896251563822
+          }
+        },
+        "72": {
+          "components": [
+            {
+              "mean_g": 0.04870548901504176,
+              "mean_eta": -6.800356119591514,
+              "sd_g": 0.2858619752791907,
+              "sd_eta": 1.1332577003232054,
+              "probability_feasible": 0.34814453125
+            },
+            {
+              "mean_g": 0.40513041790306775,
+              "mean_eta": -6.684822126535048,
+              "sd_g": 0.6939154313668003,
+              "sd_eta": 1.7919781799604249,
+              "probability_feasible": 0.2410888671875
+            },
+            {
+              "mean_g": -0.03155490906297118,
+              "mean_eta": -6.929508766428557,
+              "sd_g": 0.20880588362728772,
+              "sd_eta": 1.5405457771962319,
+              "probability_feasible": 0.43408203125
+            }
+          ],
+          "mixture_probability_feasible": 0.4334598470235783,
+          "observed": false,
+          "truth": {
+            "mean_g": -0.007969800491653545,
+            "mean_eta": -7.677159334535179,
+            "chance_margin": 0.02743427751369857
+          }
+        }
+      },
+      "max_reward_difference": {
+        "observable_source_full": 0.0020151520878755047,
+        "fixed_equal_mixture": 0.0013876709961540001,
+        "paid_evidence_mixture": 0.0024259540092269605
+      }
+    }
+  ],
+  "new_calls": 0,
+  "cpu_seconds": 216.630119275
+}

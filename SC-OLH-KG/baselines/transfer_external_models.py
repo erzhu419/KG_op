@@ -657,7 +657,11 @@ class OfficialTransferGPBOSurrogate:
 
 
 class OfficialHyperBOSurrogate:
-    """Pinned HyperBO GP-prior training and target conditioning."""
+    """Pinned HyperBO with source-learned homoscedastic label noise.
+
+    ScalarTaskData.noise and adapt's noise argument are not consumed by the
+    upstream likelihood. They remain available to other comparison methods.
+    """
 
     adaptation_kind = "posterior_conditioning"
     implementation_family = "hyperbo_pretrained_gp_prior"
@@ -785,6 +789,13 @@ class OfficialHyperBOSurrogate:
         return posterior_mean, np.maximum(
             posterior_variance.reshape(-1), 1e-12)
 
+    def observation_noise_variance(self):
+        """Frozen label noise in response units, for matching KG fantasies."""
+        _, _, _, gp, _, _, utils = self._modules()
+        noise, = gp.retrieve_params(self.params, ["noise_variance"],
+                                   warp_func=utils.DEFAULT_WARP_FUNC)
+        return float(np.asarray(noise))
+
     def diagnostics(self):
         return {
             "family": self.implementation_family,
@@ -799,6 +810,9 @@ class OfficialHyperBOSurrogate:
             "online_parameters_changed": ["target_gp_posterior"],
             "source_steps": int(self.source_steps),
             "n_target": int(self.n_target),
+            "conditioning_noise": "source_learned_scalar_label_variance",
+            "supplied_per_point_noise_consumed": False,
+            "prediction_covariance": "latent_function_without_fresh_label_noise",
         }
 
 

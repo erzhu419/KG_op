@@ -1,0 +1,878 @@
+{
+  "execution": {
+    "status": "frozen before f common mean/uncertainty factorial forecasts",
+    "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+    "spectrum_results": "paper_artifacts/legacy_joint_population_f_projected_task_spectrum_v1/results.json",
+    "covariance_laws": "paper_artifacts/legacy_joint_population_f_projected_task_spectrum_v1/covariance_laws.json",
+    "native_f_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_candidates": [
+      0,
+      1
+    ],
+    "cases": [
+      "native_common",
+      "gp_common_mean_only",
+      "gp_common_covariance_only",
+      "gp_common_mean_and_covariance"
+    ],
+    "basis_of_next_step": "F GP-profile starts have no substantive benefit. Removing projected task offdiagonals retains85.93%/90.56% MSE gain, improves raw density, and offdiagonal squared covariance mass is below.005 on average. Keeping native task R still retains54.44%/59.43% gain, but common mean and uncertainty both differ and GP white discrepancy remained in that contrast. Separate these two factors with native R and native white discrepancy fixed before a source-estimator repair.",
+    "diagnostic": "Use the same original27-column design and the stored projected GP coefficient common mean/common posterior H. Factorialize native versus GP projected common coefficient mean and native versus GP projected common H. Keep native task coefficient diagonal R, native white discrepancy, eta_f prior, public coordinates and original two raw f observations fixed in ALL four arms. This yields an exact original-native endpoint plus three fixed posterior counterfactuals; no projected common law is adopted or refitted.",
+    "verification": "Reproduce original native12-site prior/two-raw-paid means/covariances/evidence against frozen Stage93 controls, detecting accidental change in R, discrepancy or head order. Preserve eta_f prior and native R/discrepancy by construction. New covariance matrices are sums of already-verified PSD common H and native diagonal R; no repeat eigenvalue/dense source checks needed.",
+    "freeze_and_score": "Freeze all48 four-arm prior/paid forecasts before original12-site source scores. Reuse reproduced native scores and calculate f MSE, proper raw batch density, Gaussian mean density, paid raw evidence and descriptive transcript score for the three counterfactuals. Report all folds, factorial differences/interactions and task1 constant/shape residual geometry. Do not select a hybrid from scores.",
+    "interpretation": "Identify common mean versus common uncertainty, conditional on unchanged native task law, basis, prior eta and discrepancy. These source-derived posterior swaps are diagnostic, not coherent original-source fits or independent validation. Use the attribution to design one coherent estimator contrast using training tasks0\u20135 only. No additional initializers, correlation models, tail grids, source6/7 or target evaluation.",
+    "cost": {
+      "new_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_f_common_attribution_v1",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_common_attribution_plan_v1.json",
+    "entrypoint": "performance/diagnose_legacy_f_common_attribution.py"
+  },
+  "summary": {
+    "5": {
+      "native_common": {
+        "prior": {
+          "f_mse": 0.00042362169399154495,
+          "f_gaussian_mean_density": 2.641085489417869,
+          "f_raw_batch_density": 0.6743920814649632
+        },
+        "raw_paid": {
+          "f_mse": 0.0003937045272706875,
+          "f_gaussian_mean_density": 2.672499213241919,
+          "f_raw_batch_density": 0.795169657346439,
+          "raw_paid_log_evidence": 5.635704702503221,
+          "sequential_transcript_density": 2.6932639472433038
+        }
+      },
+      "gp_common_mean_only": {
+        "prior": {
+          "f_mse": 0.0003975515973165473,
+          "f_gaussian_mean_density": 2.666516184422274,
+          "f_raw_batch_density": 0.6946767067270954
+        },
+        "raw_paid": {
+          "f_mse": 0.0003669955254761398,
+          "f_gaussian_mean_density": 2.6994280604595082,
+          "f_raw_batch_density": 0.8186166970151326,
+          "raw_paid_log_evidence": 5.632149149401859,
+          "sequential_transcript_density": 2.7160918482082823
+        }
+      },
+      "gp_common_covariance_only": {
+        "prior": {
+          "f_mse": 0.00042362169399154495,
+          "f_gaussian_mean_density": 2.716979513815286,
+          "f_raw_batch_density": 0.6740875793744677
+        },
+        "raw_paid": {
+          "f_mse": 0.00037543147829193147,
+          "f_gaussian_mean_density": 2.7379776279737484,
+          "f_raw_batch_density": 0.8379596471292498,
+          "raw_paid_log_evidence": 5.6122027149197,
+          "sequential_transcript_density": 2.7477095893289056
+        }
+      },
+      "gp_common_mean_and_covariance": {
+        "prior": {
+          "f_mse": 0.0003975515973165473,
+          "f_gaussian_mean_density": 2.736662367555122,
+          "f_raw_batch_density": 0.692909092283032
+        },
+        "raw_paid": {
+          "f_mse": 0.0003506670387977583,
+          "f_gaussian_mean_density": 2.7614558391355892,
+          "f_raw_batch_density": 0.8606470702851405,
+          "raw_paid_log_evidence": 5.610738258650346,
+          "sequential_transcript_density": 2.76772916630553
+        }
+      }
+    },
+    "6": {
+      "native_common": {
+        "prior": {
+          "f_mse": 0.0005080756171403308,
+          "f_gaussian_mean_density": 2.511554372556837,
+          "f_raw_batch_density": 0.6814771839083832
+        },
+        "raw_paid": {
+          "f_mse": 0.0005120454773049969,
+          "f_gaussian_mean_density": 2.5522763730185627,
+          "f_raw_batch_density": 0.7484473618483646,
+          "raw_paid_log_evidence": 5.657783634407231,
+          "sequential_transcript_density": 2.5917928650449986
+        }
+      },
+      "gp_common_mean_only": {
+        "prior": {
+          "f_mse": 0.0004985035211102704,
+          "f_gaussian_mean_density": 2.5404586632012944,
+          "f_raw_batch_density": 0.7011586798961179
+        },
+        "raw_paid": {
+          "f_mse": 0.0004971498037390211,
+          "f_gaussian_mean_density": 2.5806365894979497,
+          "f_raw_batch_density": 0.7819349971256481,
+          "raw_paid_log_evidence": 5.6696872568243455,
+          "sequential_transcript_density": 2.6169518807714103
+        }
+      },
+      "gp_common_covariance_only": {
+        "prior": {
+          "f_mse": 0.0005080756171403308,
+          "f_gaussian_mean_density": 2.7499608257327206,
+          "f_raw_batch_density": 0.690199931794604
+        },
+        "raw_paid": {
+          "f_mse": 0.0004545662402757704,
+          "f_gaussian_mean_density": 2.7802829984580817,
+          "f_raw_batch_density": 0.8533937302502586,
+          "raw_paid_log_evidence": 5.615029202206905,
+          "sequential_transcript_density": 2.78417322740742
+        }
+      },
+      "gp_common_mean_and_covariance": {
+        "prior": {
+          "f_mse": 0.0004985035211102704,
+          "f_gaussian_mean_density": 2.743202135815474,
+          "f_raw_batch_density": 0.7051559254027401
+        },
+        "raw_paid": {
+          "f_mse": 0.00044431779499080963,
+          "f_gaussian_mean_density": 2.7756432937069753,
+          "f_raw_batch_density": 0.8785792989479909,
+          "raw_paid_log_evidence": 5.618058429940483,
+          "sequential_transcript_density": 2.7804127110302983
+        }
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": -4.857614873550985e-06,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": -4.857614873550985e-06,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.0023769344799196013,
+            "covariance_only_minus_native": 0.056487749907426554,
+            "both_minus_native": 0.05327771034302842,
+            "factorial_interaction": -0.0008331050844785359
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.009492918421345142,
+            "covariance_only_minus_native": -0.00018180760710836963,
+            "both_minus_native": -0.008657826839230769,
+            "factorial_interaction": 0.0010168991892227433
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": -4.3784314420403206e-05,
+            "covariance_only_minus_native": 2.7848509769734585e-05,
+            "both_minus_native": -2.0507377599052244e-05,
+            "factorial_interaction": -4.571572948383596e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.01822428430542189,
+            "covariance_only_minus_native": 0.05829090945696658,
+            "both_minus_native": 0.08257011425963867,
+            "factorial_interaction": 0.006054920497250205
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.029519752251521147,
+            "covariance_only_minus_native": 0.02479421766318693,
+            "both_minus_native": 0.0646241458211031,
+            "factorial_interaction": 0.01031017590639502
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": -0.06219266202463025,
+            "covariance_only_minus_native": -0.02418993390314661,
+            "both_minus_native": -0.08092401737476607,
+            "factorial_interaction": 0.0054585785530107955
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.011178482117173427,
+            "covariance_only_minus_native": 0.048235784255746594,
+            "both_minus_native": 0.06499409669577849,
+            "factorial_interaction": 0.00557983032285847
+          }
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": -0.0001366606591418438,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": -0.0001366606591418438,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.037881348698753925,
+            "covariance_only_minus_native": 0.2449419173910936,
+            "both_minus_native": 0.20328263622949683,
+            "factorial_interaction": -0.07954062986035071
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.11797132274172467,
+            "covariance_only_minus_native": 0.03832492306451879,
+            "both_minus_native": 0.1441583486388382,
+            "factorial_interaction": -0.012137897167405265
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": -0.0001290265673670423,
+            "covariance_only_minus_native": -7.53711167278048e-05,
+            "both_minus_native": -0.0001892794734215602,
+            "factorial_interaction": 1.5118210673286921e-05
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.082234260423101,
+            "covariance_only_minus_native": 0.212858235641475,
+            "both_minus_native": 0.23444702534149098,
+            "factorial_interaction": -0.060645470723085015
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.15048123988155035,
+            "covariance_only_minus_native": 0.07436860621333621,
+            "both_minus_native": 0.2181185145754145,
+            "factorial_interaction": -0.006731331519472056
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": -0.0091323492377402,
+            "covariance_only_minus_native": -0.13165472695313163,
+            "both_minus_native": -0.1482265604931543,
+            "factorial_interaction": -0.007439484302282473
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.0698341982742483,
+            "covariance_only_minus_native": 0.1730460071960409,
+            "both_minus_native": 0.19036698168605293,
+            "factorial_interaction": -0.052513223784236285
+          }
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": 1.994349596646871e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": 1.994349596646871e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.018326933859659,
+            "covariance_only_minus_native": 0.012851348885204672,
+            "both_minus_native": 0.046184855619107346,
+            "factorial_interaction": 0.015006572874243673
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.02791114202464995,
+            "covariance_only_minus_native": -0.007098859928353574,
+            "both_minus_native": -0.03229062613982092,
+            "factorial_interaction": 0.0027193758131826007
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": 1.307470185103705e-05,
+            "covariance_only_minus_native": -1.4088558374315092e-05,
+            "both_minus_native": -3.0985782527806092e-06,
+            "factorial_interaction": -2.0847217295025667e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.0019104531892555343,
+            "covariance_only_minus_native": -0.003147999583032579,
+            "both_minus_native": 0.00861823885332802,
+            "factorial_interaction": 0.013676691625616133
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.04524401118468502,
+            "covariance_only_minus_native": 0.02806244953712378,
+            "both_minus_native": -0.021240704789877496,
+            "factorial_interaction": -0.004059143142316257
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": -0.0025708254016327814,
+            "covariance_only_minus_native": -0.07450193599989507,
+            "both_minus_native": -0.07606418705891915,
+            "factorial_interaction": 0.0010085743426087035
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": -0.0018211616909074024,
+            "covariance_only_minus_native": -0.008019852214021128,
+            "both_minus_native": 0.0019539056557866807,
+            "factorial_interaction": 0.011794919560715211
+          }
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": -6.590712198202618e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": -6.590712198202618e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.09533429128292914,
+            "covariance_only_minus_native": -0.011754248514602939,
+            "both_minus_native": 0.14879569178507657,
+            "factorial_interaction": 0.06521564901675037
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.04704910111237759,
+            "covariance_only_minus_native": -0.017998300888954266,
+            "both_minus_native": 0.02773114641268648,
+            "factorial_interaction": -0.0013196538107368427
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": -6.547759099549985e-05,
+            "covariance_only_minus_native": 1.3745195468188684e-05,
+            "both_minus_native": -5.2433963011085905e-05,
+            "factorial_interaction": -7.015674837747396e-07
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.08641060715250504,
+            "covariance_only_minus_native": -0.006889892027336142,
+            "both_minus_native": 0.14364478570059314,
+            "factorial_interaction": 0.06412407057542424
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.047857770503477726,
+            "covariance_only_minus_native": 0.043993577932872174,
+            "both_minus_native": 0.10585378573871296,
+            "factorial_interaction": 0.014002437302363058
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": -0.04592144783098817,
+            "covariance_only_minus_native": -0.10475851157479443,
+            "both_minus_native": -0.13996871161217683,
+            "factorial_interaction": 0.010711247793605772
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.0707861312856477,
+            "covariance_only_minus_native": -0.01338837256448766,
+            "both_minus_native": 0.1131263369139246,
+            "factorial_interaction": 0.055728578192764555
+          }
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": 1.9498890380355662e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": 1.9498890380355662e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.023208577533576857,
+            "covariance_only_minus_native": 0.07284281135376336,
+            "both_minus_native": 0.027420404813014,
+            "factorial_interaction": -0.022213829007172503
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.0008800961085628778,
+            "covariance_only_minus_native": -0.008956030807767967,
+            "both_minus_native": -0.011242986579430791,
+            "factorial_interaction": -0.0014068596630999464
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": 3.2728886619538084e-05,
+            "covariance_only_minus_native": -6.144790045500479e-05,
+            "both_minus_native": -2.7038773839820627e-05,
+            "factorial_interaction": 1.6802399956460752e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.0205121301516491,
+            "covariance_only_minus_native": 0.045308170533287395,
+            "both_minus_native": -0.003365590849767397,
+            "factorial_interaction": -0.028161631231405693
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.03572399122779557,
+            "covariance_only_minus_native": 0.05707288261057286,
+            "both_minus_native": 0.0008487845575870789,
+            "factorial_interaction": -0.020500106825190212
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": 0.005679293636678295,
+            "covariance_only_minus_native": 0.17363438270476284,
+            "both_minus_native": 0.17564010184025491,
+            "factorial_interaction": -0.0036735745011862164
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": -0.017176162013079477,
+            "covariance_only_minus_native": 0.05123803065030064,
+            "both_minus_native": 0.009660929403074281,
+            "factorial_interaction": -0.02440093923414688
+          }
+        }
+      }
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": 1.156242960061014e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": 1.156242960061014e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.02662710819858649,
+            "covariance_only_minus_native": 0.07999456736161825,
+            "both_minus_native": 0.0944999700337954,
+            "factorial_interaction": -0.012121705526409343
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.005028515726751115,
+            "covariance_only_minus_native": -0.0059169363753071025,
+            "both_minus_native": -0.008595990584629787,
+            "factorial_interaction": 0.0023494615174284306
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": 3.223087354508404e-05,
+            "covariance_only_minus_native": -3.244235533352057e-07,
+            "both_minus_native": 3.4133235286724017e-05,
+            "factorial_interaction": 2.2267852949751812e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.0028734852345890793,
+            "covariance_only_minus_native": 0.08645106436961747,
+            "both_minus_native": 0.06782518205673727,
+            "factorial_interaction": -0.015752397078291125
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.0062085222119070416,
+            "covariance_only_minus_native": 0.028448204739773164,
+            "both_minus_native": 0.02465995172926938,
+            "factorial_interaction": 0.002420269201403258
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": 0.09280467225013833,
+            "covariance_only_minus_native": 0.02045880022507962,
+            "both_minus_native": 0.11974471158151623,
+            "factorial_interaction": 0.0064812391062982755
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.004165917816790099,
+            "covariance_only_minus_native": 0.07556225519003457,
+            "both_minus_native": 0.06668906401873986,
+            "factorial_interaction": -0.013039108988084802
+          }
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": -8.20136006887291e-06,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": -8.20136006887291e-06,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.038880863546645994,
+            "covariance_only_minus_native": 0.0712612041349523,
+            "both_minus_native": 0.016761532822586744,
+            "factorial_interaction": -0.015618807765719556
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.0015802683241714632,
+            "covariance_only_minus_native": -0.022059833607116608,
+            "both_minus_native": -0.023981006400363825,
+            "factorial_interaction": -0.00034090446907575345
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": -1.4863586189725066e-05,
+            "covariance_only_minus_native": 2.160301079911635e-05,
+            "both_minus_native": -1.6558389632945441e-06,
+            "factorial_interaction": -8.39526357268583e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.0501594046537881,
+            "covariance_only_minus_native": 0.08059170138883509,
+            "both_minus_native": 0.010825176867043762,
+            "factorial_interaction": -0.01960711986800323
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.011843864769854662,
+            "covariance_only_minus_native": 0.05033529234529954,
+            "both_minus_native": 0.03870508489662039,
+            "factorial_interaction": 0.00021365732117550884
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": -0.041261735512478914,
+            "covariance_only_minus_native": -0.042823277604870924,
+            "both_minus_native": -0.10111671821275703,
+            "factorial_interaction": -0.01703170509540719
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": -0.045941042239852514,
+            "covariance_only_minus_native": 0.06601979564722527,
+            "both_minus_native": 0.002056100299411945,
+            "factorial_interaction": -0.018022653107960807
+          }
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": -0.0001037167259174479,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": -0.0001037167259174479,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.2042411339054715,
+            "covariance_only_minus_native": 1.1052670846474861,
+            "both_minus_native": 1.0844285206515447,
+            "factorial_interaction": -0.2250796979014129
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.13917990689226598,
+            "covariance_only_minus_native": 0.11408514054109237,
+            "both_minus_native": 0.22317335869875832,
+            "factorial_interaction": -0.030091688734599997
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": -0.00011959203244646952,
+            "covariance_only_minus_native": -0.00036700141854992263,
+            "both_minus_native": -0.00043761898221704367,
+            "factorial_interaction": 4.897446877934848e-05
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.2074426257278692,
+            "covariance_only_minus_native": 1.039314872696666,
+            "both_minus_native": 1.0273906157678316,
+            "factorial_interaction": -0.21936688265670345
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.19669692154540275,
+            "covariance_only_minus_native": 0.4743001616189162,
+            "both_minus_native": 0.5967826379841333,
+            "factorial_interaction": -0.0742144451801856
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": 0.040256081573467384,
+            "covariance_only_minus_native": -0.14109265181291786,
+            "both_minus_native": -0.13270478283101905,
+            "factorial_interaction": -0.03186821259156858
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.18068339930770705,
+            "covariance_only_minus_native": 0.8807632728962194,
+            "both_minus_native": 0.87114161474164,
+            "factorial_interaction": -0.19030505746228643
+          }
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": 2.0103969382804273e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": 2.0103969382804273e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.008660175243875745,
+            "covariance_only_minus_native": 0.06376501176987937,
+            "both_minus_native": 0.08096947243135189,
+            "factorial_interaction": 0.008544285417596775
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.022799001582195277,
+            "covariance_only_minus_native": -0.01969275200480869,
+            "both_minus_native": -0.04047444304815584,
+            "factorial_interaction": 0.002017310538848127
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": 8.646216571613844e-06,
+            "covariance_only_minus_native": -5.3057027034402945e-06,
+            "both_minus_native": 4.3617393746869446e-06,
+            "factorial_interaction": 1.0212255065133948e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.019671425700948486,
+            "covariance_only_minus_native": 0.05417364177008421,
+            "both_minus_native": 0.09289065703219679,
+            "factorial_interaction": 0.01904558956116409
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.009765536644466444,
+            "covariance_only_minus_native": 0.0047037804569294295,
+            "both_minus_native": -0.007912254659955709,
+            "factorial_interaction": -0.0028504984724186944
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": -0.026562618200077104,
+            "covariance_only_minus_native": -0.15327896178969436,
+            "both_minus_native": -0.18316019779333725,
+            "factorial_interaction": -0.003318617803565793
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.014963892157950465,
+            "covariance_only_minus_native": 0.03548605281795103,
+            "both_minus_native": 0.06653769189950198,
+            "factorial_interaction": 0.016087746923600488
+          }
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": 2.3287224671119365e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": 2.3287224671119365e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.007248894894885893,
+            "covariance_only_minus_native": 0.05146317934342859,
+            "both_minus_native": 0.04077453614179438,
+            "factorial_interaction": -0.0034397483067483137
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.01393458444202289,
+            "covariance_only_minus_native": -0.019783615925033193,
+            "both_minus_native": -0.03494868753628266,
+            "factorial_interaction": -0.0012304871692265795
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": 1.7999368489317688e-05,
+            "covariance_only_minus_native": 6.519039879550342e-06,
+            "both_minus_native": 1.764999846089215e-05,
+            "factorial_interaction": -6.868409907975878e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.025510151297863715,
+            "covariance_only_minus_native": 0.06534896693095238,
+            "both_minus_native": 0.03589343469660955,
+            "factorial_interaction": -0.003945380936479115
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.021949048346278976,
+            "covariance_only_minus_native": 0.04605800231787294,
+            "both_minus_native": 0.026913613906554446,
+            "factorial_interaction": 0.002804659934960485
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": 0.022678997790569255,
+            "covariance_only_minus_native": -0.09916670223705637,
+            "both_minus_native": -0.08725810059695771,
+            "factorial_interaction": -0.010770396150470596
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": -0.02024591555598576,
+            "covariance_only_minus_native": 0.04893006435245528,
+            "both_minus_native": 0.02453307969731089,
+            "factorial_interaction": -0.004151069099158633
+          }
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": 1.4736836347532844e-05,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": 1.4736836347532844e-05,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.013672426577851393,
+            "covariance_only_minus_native": 0.03780398661693374,
+            "both_minus_native": 0.0729935494491385,
+            "factorial_interaction": 0.021517136254353364
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.006498087051777901,
+            "covariance_only_minus_native": 0.0072833771460218966,
+            "both_minus_native": 0.013350735161384408,
+            "factorial_interaction": -0.0004307290364153893
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": -2.5245195276197142e-05,
+            "covariance_only_minus_native": 8.652374899153548e-06,
+            "both_minus_native": -3.251042244385114e-05,
+            "factorial_interaction": -1.5917602066807545e-05
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": 0.043112809175302136,
+            "covariance_only_minus_native": 0.020967342451808424,
+            "both_minus_native": 0.09309872437817113,
+            "factorial_interaction": 0.029018572751060567
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.05559430956251843,
+            "covariance_only_minus_native": 0.01423667695574915,
+            "both_minus_native": 0.09898099585462483,
+            "factorial_interaction": 0.029150009336357252
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": 0.010371800949497967,
+            "covariance_only_minus_native": 0.1552918473309699,
+            "both_minus_native": 0.157534210632992,
+            "factorial_interaction": -0.008129437647475868
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": 0.0376946793609374,
+            "covariance_only_minus_native": 0.029064282625190785,
+            "both_minus_native": 0.09105135022650312,
+            "factorial_interaction": 0.02429238824037494
+          }
+        }
+      }
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "stages": {
+        "prior": {
+          "f_mse": {
+            "mean_only_minus_native": -3.6425205954980153e-06,
+            "covariance_only_minus_native": 0.0,
+            "both_minus_native": -3.6425205954980153e-06,
+            "factorial_interaction": 0.0
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.007018233418917497,
+            "covariance_only_minus_native": 0.1008782525426235,
+            "both_minus_native": 0.09395896805540538,
+            "factorial_interaction": 9.894893169937191e-05
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": 0.010724836330753162,
+            "covariance_only_minus_native": -0.007495828832830287,
+            "both_minus_native": 0.004952492090800842,
+            "factorial_interaction": 0.0017234845928779663
+          }
+        },
+        "raw_paid": {
+          "f_mse": {
+            "mean_only_minus_native": 4.368118745560535e-05,
+            "covariance_only_minus_native": -9.34272649981611e-06,
+            "both_minus_native": 4.340741190348688e-05,
+            "factorial_interaction": 9.068950947697637e-06
+          },
+          "f_gaussian_mean_density": {
+            "mean_only_minus_native": -0.02439600577614387,
+            "covariance_only_minus_native": 0.1076432273987682,
+            "both_minus_native": 0.08010291538862147,
+            "factorial_interaction": -0.0031443062340028582
+          },
+          "f_raw_batch_density": {
+            "mean_only_minus_native": -0.007806969683620046,
+            "covariance_only_minus_native": 0.040044296716596595,
+            "both_minus_native": 0.02732154461578029,
+            "factorial_interaction": -0.004915782417196257
+          },
+          "raw_paid_log_evidence": {
+            "mean_only_minus_native": 0.06593920790170493,
+            "covariance_only_minus_native": 0.024543152911617128,
+            "both_minus_native": 0.10835436200058979,
+            "factorial_interaction": 0.017872001187267728
+          },
+          "sequential_transcript_density": {
+            "mean_only_minus_native": -0.016200918672287123,
+            "covariance_only_minus_native": 0.09401870583548844,
+            "both_minus_native": 0.0763992390474324,
+            "factorial_interaction": -0.001418548115768914
+          }
+        }
+      }
+    }
+  ],
+  "native_endpoint_reproduced": true,
+  "no_model_selected": true,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 3.281604472,
+  "source_holdouts_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

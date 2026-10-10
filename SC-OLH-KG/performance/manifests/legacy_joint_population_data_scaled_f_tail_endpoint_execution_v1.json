@@ -1,0 +1,35 @@
+{
+  "status": "frozen before cached f residual and noise-density attribution",
+  "tail_execution": "performance/manifests/legacy_joint_population_data_scaled_f_tail_execution_v1.json",
+  "tail_profiles": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_v1/calibration_profiles.json",
+  "gp_profiles": "paper_artifacts/legacy_joint_population_paid_covariance_gain_v1/predictions.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "basis_of_next_step": "Stage93 tail-floor repair fails unchanged development gate: assignment6 raw f density loses.002452, despite lower MSE and higher transcript density. Task1 raw density loses.049107/.232134, while other five folds improve. Do not exclude task1 or retune the tail.",
+  "diagnostic": "Use frozen native/data-tail f predictions and original12 sample-mean labels/noise to separate Gaussian residual energy into predetermined constant offset and centered shape, plus log-volume score contribution. Compare with cached same-source GP. Replay only the original two raw f updates with saved laws to recover otherwise-unsaved eta_f local moments. Integrate the exact Gaussian eta marginal density of the same bias-corrected log sample variance, using the existing log-variance observation density. Split the stored raw batch log score into marginal log-variance density and conditional sample-mean density by the probability chain rule; no Gaussian sample-mean score is substituted for this conditional term. Record average eta_f mean/variance shifts and original/candidate task-intercept variance.",
+  "verification": "Check new source replay selected f means/covariances against frozen Stage93 endpoint so the diagnostic cannot silently use another field or branch. Check new marginal integration on actual task1 eta moments against independent fixed Gauss-Hermite quadrature orders256/512; accept only if quadrature difference and adaptive-vs512 error are below1e-7. Reconstruct stored Gaussian density from Cholesky energy/logdet. No refit or repeated native likelihood/gradient checks.",
+  "interpretation": "Repeatedly reused source tasks remain development diagnostics. Offset/shape energy uses conditional Gaussian reference dimensions and is not an independent calibration test. Report all folds and task1-excluded means descriptively without changing gate. Diagnose before choosing a new source population question; no source6/7 or target labels.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_data_scaled_f_tail_endpoint_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_data_scaled_f_tail_endpoint_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_data_scaled_f_tail_endpoint.py",
+  "numerical_verification_repair": "Original64/128 Gauss-Hermite verification did not converge to1e-7 on actual task1 eta marginal (difference2.55e-5). Retain adaptive primary integral and tolerance; increase independent check to256/512 nodes. No fits, gates or source model changed."
+}

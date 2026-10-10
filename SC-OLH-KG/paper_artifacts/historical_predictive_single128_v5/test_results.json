@@ -1,0 +1,15 @@
+{
+  "passed": 56,
+  "elapsed_seconds": 5.751,
+  "result": "OK",
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_historical_upper_risk test_historical_independent_query_axes test_predictive_extension test_observed_batch_predictive test_achievable_precision test_raw_terminal_head_grid test_positive_batch_lookahead",
+  "validated": [
+    "Positive upper-tail mass, original CDF and paired body/tail rules.",
+    "Native choices priced under raw posterior.",
+    "Parallel group equals serial raw and native records.",
+    "Legacy lower-tail and existing batch-cache protocols.",
+    "Stage completed low rules without claiming numerical admission; retain old inputs.",
+    "Batched and individual gates agree for heterogeneous rules and joint identities.",
+    "Merge grades both heads against the completed bank."
+  ]
+}

@@ -1,0 +1,1727 @@
+{
+  "protocol": {
+    "status": "frozen_before_joint_group_comparison",
+    "source_records": "paper_artifacts/inventory_physical_risk_20261004/check.json",
+    "reference": "public source trajectory geometry only",
+    "candidate_supports": "greedy at most four functions in augmented dictionary versus the four public billing quantities jointly",
+    "group_selection": "two-fold source-task normalized squared error; select billing block if its paired gain exceeds one source-task standard error",
+    "residual_candidates": [
+      0.0,
+      0.02
+    ],
+    "residual_selection": "inner source-law leave-one-out mean conditional log density with chosen support; outer held law never enters selection",
+    "held_task_adaptation_positions": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14
+    ],
+    "held_task_test_positions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15
+    ],
+    "coefficient_prior": "existing source coefficient second moments; zero non-intercept target means",
+    "new_episode_calls": 0,
+    "target_records_used": false,
+    "scientific_status": "source-only follow-up to the failed greedy interface; known physical group is public, its acceptance is learned; not independent final confirmation",
+    "local_cpu_limit_seconds": 45,
+    "dispatch": "local single thread only"
+  },
+  "rows": [
+    {
+      "left_out_task": 0,
+      "head": 0,
+      "label_rmse": 0.04504751116977097,
+      "mean_working_conditional_log_density": 1.610214609974671,
+      "standardized_residual_rms": 1.0706554002855844,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.0088983021646953,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.022142528317461628,
+          0.049438096582419114,
+          0.45840092334724053,
+          0.06196936536111752
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          61
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.9508002420130133,
+            "source_task_standard_error": 0.15184098750886696,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.11423292720421384,
+            "source_task_standard_error": 0.06244928605181924,
+            "accepted": true
+          },
+          {
+            "index": 61,
+            "name": "sin(4*pi*psi1)",
+            "added_cv_improvement": 0.10018582149474932,
+            "source_task_standard_error": 0.027485273813908317,
+            "accepted": true
+          },
+          {
+            "index": 66,
+            "name": "sin(4*pi*psi6)",
+            "added_cv_improvement": 0.00040706445991881696,
+            "source_task_standard_error": 0.004632446581633629,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.02634070632386353,
+        "billing_block_task_se": 0.009216117902125162,
+        "discrepancy_source_scores": {
+          "0.0": [
+            0.8959721423062335,
+            1.7023716417636523,
+            1.9565754268683737,
+            1.951082643779828,
+            1.8613808927086977,
+            1.6990985400556715,
+            1.6276606183655984
+          ],
+          "0.02": [
+            0.70420145673521,
+            0.7313144684757071,
+            0.7561295191522015,
+            0.7337021854787065,
+            0.7490873406696374,
+            0.7035970234545578,
+            0.7252197668255281
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 0,
+      "head": 1,
+      "label_rmse": 0.3057280216818347,
+      "mean_working_conditional_log_density": -0.7942890264669842,
+      "standardized_residual_rms": 1.8160391689256947,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.04700028832782555,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.045718780587832554
+        ],
+        "selected_names": [
+          "psi0*psi4"
+        ],
+        "active_dim": 1,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          35
+        ],
+        "greedy_indices": [
+          35
+        ],
+        "greedy_cv": [
+          {
+            "index": 35,
+            "name": "psi0*psi4",
+            "added_cv_improvement": 0.6772749004423745,
+            "source_task_standard_error": 0.10825396432180581,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.02588041359680136,
+            "source_task_standard_error": 0.11375642723963279,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.21668126346091482,
+        "billing_block_task_se": 0.5733235715721142,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -6.075896703850932,
+            -7.74421009081512,
+            -7.056064977796864,
+            -0.7922652207819121,
+            -5.746600087631435,
+            -0.8322260643727257,
+            -2.0164248108750606
+          ],
+          "0.02": [
+            -0.15024175791121863,
+            0.26966372782865,
+            0.08250003702617992,
+            0.5317487592387748,
+            -0.18461313251290218,
+            0.4340485857920175,
+            0.20175811810897332
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 1,
+      "head": 0,
+      "label_rmse": 0.08311126982787892,
+      "mean_working_conditional_log_density": 0.8959739555295301,
+      "standardized_residual_rms": 1.6046043882541456,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.0646614629511197,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.021660055015990273,
+          0.05180959395258745,
+          0.44610202108303043,
+          0.0566293677406554
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          60
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 0.9566545732877257,
+            "source_task_standard_error": 0.1486447282824458,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.13776573754202298,
+            "source_task_standard_error": 0.052023236894409484,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.0734429041923362,
+            "source_task_standard_error": 0.0378084910847432,
+            "accepted": true
+          },
+          {
+            "index": 60,
+            "name": "sin(4*pi*psi0)",
+            "added_cv_improvement": 0.009968414691330158,
+            "source_task_standard_error": 0.006497953152568386,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.01635432801385181,
+        "billing_block_task_se": 0.008623395781345996,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6145164294807515,
+            1.701881680719418,
+            1.9589805013578072,
+            1.9540889999531892,
+            1.8601890517232644,
+            1.7001498404083375,
+            1.6261301180914858
+          ],
+          "0.02": [
+            0.7363409856465808,
+            0.7304457736145755,
+            0.757842120507623,
+            0.7369211451496811,
+            0.7474322860273865,
+            0.7051021734291074,
+            0.7231582267429133
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 1,
+      "head": 1,
+      "label_rmse": 0.24520293187450168,
+      "mean_working_conditional_log_density": -0.14490762260094753,
+      "standardized_residual_rms": 1.4240801549642639,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.026888158420256568,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.05410282710873621
+        ],
+        "selected_names": [
+          "psi0*psi4"
+        ],
+        "active_dim": 1,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          35
+        ],
+        "greedy_indices": [
+          35
+        ],
+        "greedy_cv": [
+          {
+            "index": 35,
+            "name": "psi0*psi4",
+            "added_cv_improvement": 0.6161803483420875,
+            "source_task_standard_error": 0.123112572043057,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.024941967353251857,
+            "source_task_standard_error": 0.11365350907089414,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.14173457779501092,
+        "billing_block_task_se": 0.5946362445921326,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -12.586240656455477,
+            -7.738330803230793,
+            -7.0471336188093225,
+            -0.7882674072457669,
+            -5.73884870368548,
+            -0.829143659741146,
+            -2.011514084283231
+          ],
+          "0.02": [
+            -0.7956032391548475,
+            0.27285710190147655,
+            0.08788555813906448,
+            0.5343709363070297,
+            -0.18157211060274783,
+            0.4345650856667026,
+            0.20655773265065475
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 2,
+      "head": 0,
+      "label_rmse": 0.04514701754074307,
+      "mean_working_conditional_log_density": 1.701310485555903,
+      "standardized_residual_rms": 0.981888810638141,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.9453243592681417,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.02173149925524325,
+          0.054227366998081096,
+          0.5294884768198399,
+          0.062104421140318875
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          60
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 0.9661943946037909,
+            "source_task_standard_error": 0.1495049474996167,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.12799277629908842,
+            "source_task_standard_error": 0.05275881697549557,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.07303940554258892,
+            "source_task_standard_error": 0.03792754357735002,
+            "accepted": true
+          },
+          {
+            "index": 60,
+            "name": "sin(4*pi*psi0)",
+            "added_cv_improvement": 0.00964138459969943,
+            "source_task_standard_error": 0.00662421535450885,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.014774482814670769,
+        "billing_block_task_se": 0.008184022183544677,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6097033181723925,
+            0.8946265180518884,
+            1.9564628195744094,
+            1.9520891874005604,
+            1.8618951944707276,
+            1.6985138254491745,
+            1.628794588387
+          ],
+          "0.02": [
+            0.7331439997010275,
+            0.7036945302280219,
+            0.7556882273537247,
+            0.734497095194832,
+            0.7506009015103683,
+            0.7027812413199592,
+            0.7237759181993055
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 2,
+      "head": 1,
+      "label_rmse": 0.18572999696416417,
+      "mean_working_conditional_log_density": 0.2778853305582084,
+      "standardized_residual_rms": 1.0695328655858072,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.04268879648323854,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.053935058858150954
+        ],
+        "selected_names": [
+          "psi2*psi3"
+        ],
+        "active_dim": 1,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          45
+        ],
+        "greedy_indices": [
+          45
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5879004332506541,
+            "source_task_standard_error": 0.09511009347570766,
+            "accepted": true
+          },
+          {
+            "index": 63,
+            "name": "sin(4*pi*psi3)",
+            "added_cv_improvement": -0.019290936535212504,
+            "source_task_standard_error": 0.09472683266942042,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.10131293609307758,
+        "billing_block_task_se": 0.5726935275944923,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -10.229223975156573,
+            -5.7817685736683355,
+            -6.488733818149143,
+            -0.5183053386727212,
+            -5.580522531187583,
+            -0.5478622961179632,
+            -1.33996749663115
+          ],
+          "0.02": [
+            -0.6708254008019989,
+            -0.11836784861474403,
+            0.09613931689100122,
+            0.5194482943089103,
+            -0.2096087624522387,
+            0.4188015857538128,
+            0.23201080822443063
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 3,
+      "head": 0,
+      "label_rmse": 0.028453582463515592,
+      "mean_working_conditional_log_density": 1.956917723388973,
+      "standardized_residual_rms": 0.6729510124744893,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.9557072423297077,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.022010067782261306,
+          0.05401159440581138,
+          0.515797456248281,
+          0.06208818640507209
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          61
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.9405352085248803,
+            "source_task_standard_error": 0.13213342110536166,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.1181862064985768,
+            "source_task_standard_error": 0.06011529492955201,
+            "accepted": true
+          },
+          {
+            "index": 61,
+            "name": "sin(4*pi*psi1)",
+            "added_cv_improvement": 0.09176213999495829,
+            "source_task_standard_error": 0.029008050689364722,
+            "accepted": true
+          },
+          {
+            "index": 37,
+            "name": "psi0*psi6",
+            "added_cv_improvement": 0.005674409671746844,
+            "source_task_standard_error": 0.005778179959631736,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.025214706197997646,
+        "billing_block_task_se": 0.009859409059684856,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6101377744524143,
+            0.8958786332834776,
+            1.7015022862454903,
+            1.952311999986553,
+            1.8613931276014228,
+            1.6991375881623394,
+            1.6283814547488709
+          ],
+          "0.02": [
+            0.7332503762175648,
+            0.7040410347365629,
+            0.730196521010805,
+            0.7346503534546405,
+            0.7499416541848756,
+            0.7032270783682942,
+            0.7247288065356399
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 3,
+      "head": 1,
+      "label_rmse": 0.20896594184485495,
+      "mean_working_conditional_log_density": 0.08770211472284142,
+      "standardized_residual_rms": 1.2332696125754576,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.05076364816277511,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.05299062385724494
+        ],
+        "selected_names": [
+          "psi0*psi4"
+        ],
+        "active_dim": 1,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          35
+        ],
+        "greedy_indices": [
+          35
+        ],
+        "greedy_cv": [
+          {
+            "index": 35,
+            "name": "psi0*psi4",
+            "added_cv_improvement": 0.5734028301803594,
+            "source_task_standard_error": 0.11042485750483379,
+            "accepted": true
+          },
+          {
+            "index": 19,
+            "name": "cos(pi*psi1)",
+            "added_cv_improvement": -0.005965982610625468,
+            "source_task_standard_error": 0.07269482134003664,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.07566241032464237,
+        "billing_block_task_se": 0.605375347050272,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -12.588927011695354,
+            -6.06613815020596,
+            -7.738255597814601,
+            -0.7882275764878521,
+            -5.739122766137687,
+            -0.8287500829123179,
+            -2.0125081838543295
+          ],
+          "0.02": [
+            -0.7973617415590069,
+            -0.1451267539810855,
+            0.2729436611420676,
+            0.53423089401893,
+            -0.1819770804664987,
+            0.4353976553379551,
+            0.20563780036313448
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 4,
+      "head": 0,
+      "label_rmse": 0.029779930756107808,
+      "mean_working_conditional_log_density": 1.9515274958621984,
+      "standardized_residual_rms": 0.6809552307248624,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.9583757901824614,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.019290373554089087,
+          0.04898637277916395,
+          0.5169441199147876,
+          0.06643459402072613
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          14
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.9600138714319658,
+            "source_task_standard_error": 0.12897884633533008,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.08770264324837791,
+            "source_task_standard_error": 0.060448573667584486,
+            "accepted": true
+          },
+          {
+            "index": 14,
+            "name": "psi6^2",
+            "added_cv_improvement": 0.10474547768124269,
+            "source_task_standard_error": 0.02207911642282976,
+            "accepted": true
+          },
+          {
+            "index": 34,
+            "name": "psi0*psi3",
+            "added_cv_improvement": 0.007621006893764852,
+            "source_task_standard_error": 0.011155019673225998,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.02111035108726434,
+        "billing_block_task_se": 0.007774593358596538,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6074161620455987,
+            0.8959214861773398,
+            1.701807900357978,
+            1.9558851505694934,
+            1.8618762140241616,
+            1.6943633524246526,
+            1.6308320683377273
+          ],
+          "0.02": [
+            0.731015556879505,
+            0.7051160862789763,
+            0.7308270963757879,
+            0.7555245667702126,
+            0.7517503284889637,
+            0.6975003528759387,
+            0.7262503784613045
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 4,
+      "head": 1,
+      "label_rmse": 0.13811448884395086,
+      "mean_working_conditional_log_density": 0.5187050601025806,
+      "standardized_residual_rms": 0.8107272224155649,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.009696752839932056,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.05287486809710894
+        ],
+        "selected_names": [
+          "psi2*psi3"
+        ],
+        "active_dim": 1,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          45
+        ],
+        "greedy_indices": [
+          45
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5430488085003866,
+            "source_task_standard_error": 0.07788131396692653,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": -0.05179615620489348,
+            "source_task_standard_error": 0.10526731293502457,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.06383086668426233,
+        "billing_block_task_se": 0.5777017465439602,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -10.232638070692081,
+            -5.782645057826683,
+            -7.784891501131204,
+            -6.491677444070104,
+            -5.581840236468423,
+            -0.5494081783685885,
+            -1.3401892086942868
+          ],
+          "0.02": [
+            -0.6733277822028887,
+            -0.1193880692050828,
+            0.278156995019609,
+            0.09391583309318552,
+            -0.20962357326384046,
+            0.41730471932912777,
+            0.2318754952519829
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 5,
+      "head": 0,
+      "label_rmse": 0.03824329836675504,
+      "mean_working_conditional_log_density": 1.8615681263840949,
+      "standardized_residual_rms": 0.8022409302577347,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.081974749418797,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.02162276833100349,
+          0.04855371775595836,
+          0.4312104536939202,
+          0.055060568998904096
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          24,
+          57,
+          61
+        ],
+        "greedy_cv": [
+          {
+            "index": 24,
+            "name": "sin(pi*psi4)",
+            "added_cv_improvement": 0.937384460232496,
+            "source_task_standard_error": 0.1334744916314057,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.12022786058011826,
+            "source_task_standard_error": 0.06185189864506955,
+            "accepted": true
+          },
+          {
+            "index": 61,
+            "name": "sin(4*pi*psi1)",
+            "added_cv_improvement": 0.09541811306066786,
+            "source_task_standard_error": 0.026785440252839143,
+            "accepted": true
+          },
+          {
+            "index": 0,
+            "name": "psi0",
+            "added_cv_improvement": -0.002118962482424842,
+            "source_task_standard_error": 0.005358296386913487,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.021195558496631163,
+        "billing_block_task_se": 0.008579565258014874,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6119474488142032,
+            0.8933515419327164,
+            1.701201866236283,
+            1.9583515466015537,
+            1.9528933029235978,
+            1.6992287368274388,
+            1.626667076977556
+          ],
+          "0.02": [
+            0.7342252075957012,
+            0.7003288741036823,
+            0.7299763592586065,
+            0.7574745736371005,
+            0.7359390932157097,
+            0.704445002941755,
+            0.7231181427485758
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 5,
+      "head": 1,
+      "label_rmse": 0.2635657713921072,
+      "mean_working_conditional_log_density": -0.21031096768663896,
+      "standardized_residual_rms": 1.4221359925815542,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.02745039611702828,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.052008361290553
+        ],
+        "selected_names": [
+          "psi2*psi3"
+        ],
+        "active_dim": 1,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          45
+        ],
+        "greedy_indices": [
+          45
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.6117422666082977,
+            "source_task_standard_error": 0.0686280387228158,
+            "accepted": true
+          },
+          {
+            "index": 63,
+            "name": "sin(4*pi*psi3)",
+            "added_cv_improvement": -0.07896102641842216,
+            "source_task_standard_error": 0.10271142034131396,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.15403545424658768,
+        "billing_block_task_se": 0.5683675089708105,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -10.235493228105748,
+            -5.784008104617312,
+            -7.784978766650071,
+            -6.491598654703166,
+            -0.5195616542224191,
+            -0.549279048104927,
+            -1.3406948092563666
+          ],
+          "0.02": [
+            -0.6749828726185421,
+            -0.11981119323657491,
+            0.2781876195089734,
+            0.0941572337999248,
+            0.5187901689342481,
+            0.41789676883972116,
+            0.2312957233987205
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 6,
+      "head": 0,
+      "label_rmse": 0.04875055638077358,
+      "mean_working_conditional_log_density": 1.6980569105974488,
+      "standardized_residual_rms": 0.9853572650704527,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -2.906105620917882,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.021604493661553932,
+          0.05035982724282818,
+          0.5478672028230206,
+          0.06613848483130413
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          71
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 1.1303870295830936,
+            "source_task_standard_error": 0.17922157962673022,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.09052773692200797,
+            "source_task_standard_error": 0.04763290810593082,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.03131847469500349,
+            "source_task_standard_error": 0.021050182484035618,
+            "accepted": true
+          },
+          {
+            "index": 71,
+            "name": "order_frequency",
+            "added_cv_improvement": 0.045210322017998114,
+            "source_task_standard_error": 0.017847402620282168,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.008359930615197655,
+        "billing_block_task_se": 0.004059097116922034,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6075269243421337,
+            0.8996120068492748,
+            1.701379706068839,
+            1.9554924561252156,
+            1.945417639138932,
+            1.8625106092828951,
+            1.6339173621482357
+          ],
+          "0.02": [
+            0.7322729194459048,
+            0.7074341793657686,
+            0.7313927014546623,
+            0.755906225813777,
+            0.7287078154225378,
+            0.7523659425810852,
+            0.7271030701888923
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 6,
+      "head": 1,
+      "label_rmse": 0.16402369751295962,
+      "mean_working_conditional_log_density": 0.3645111223345081,
+      "standardized_residual_rms": 0.919083500210767,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -0.0038318808746736458,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.07980480379176264,
+          0.020794743117988738
+        ],
+        "selected_names": [
+          "psi2*psi3",
+          "sin(4*pi*psi4)"
+        ],
+        "active_dim": 2,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          45,
+          64
+        ],
+        "greedy_indices": [
+          45,
+          64
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5986675060677147,
+            "source_task_standard_error": 0.0799487652532719,
+            "accepted": true
+          },
+          {
+            "index": 64,
+            "name": "sin(4*pi*psi4)",
+            "added_cv_improvement": 0.12121273662927733,
+            "source_task_standard_error": 0.041446209577514076,
+            "accepted": true
+          },
+          {
+            "index": 11,
+            "name": "psi3^2",
+            "added_cv_improvement": 0.061989750343640085,
+            "source_task_standard_error": 0.06541495733880952,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.013422391143363669,
+        "billing_block_task_se": 0.30092142685340095,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -8.854518731930675,
+            -6.094263144923493,
+            -7.78380294272392,
+            -6.746542966654998,
+            0.32113640811684235,
+            -5.765010432172737,
+            0.3473418471276599
+          ],
+          "0.02": [
+            -0.24957116214795577,
+            0.17041538669961942,
+            0.38808147593916,
+            0.12991942460485528,
+            0.6304771813489389,
+            -0.12857130567250305,
+            0.6457257341758632
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    },
+    {
+      "left_out_task": 7,
+      "head": 0,
+      "label_rmse": 0.045353897343999625,
+      "mean_working_conditional_log_density": 1.628782776290156,
+      "standardized_residual_rms": 1.0532786910486507,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          -3.0026114163737634,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.018510226387194045,
+          0.052126470854445,
+          0.5353393720264193,
+          0.05919200664080901
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          6
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 1.1387045426582956,
+            "source_task_standard_error": 0.17548761242169322,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.0645551465679443,
+            "source_task_standard_error": 0.027541744271884522,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.05579446596832049,
+            "source_task_standard_error": 0.027855532982203286,
+            "accepted": true
+          },
+          {
+            "index": 6,
+            "name": "psi6",
+            "added_cv_improvement": 0.04001244620566857,
+            "source_task_standard_error": 0.018918474948916776,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.0065215831002668955,
+        "billing_block_task_se": 0.004035461855533828,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.6105123998592508,
+            0.8949138195939863,
+            1.6977033824794243,
+            1.9573379046079629,
+            1.9509498556246772,
+            1.8631815378981136,
+            1.6927399970727954
+          ],
+          "0.02": [
+            0.7352827890055051,
+            0.7048818226803119,
+            0.72807206936741,
+            0.7576113648260381,
+            0.7343941062402002,
+            0.7527257791687212,
+            0.6995387850610512
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "left_out_task": 7,
+      "head": 1,
+      "label_rmse": 0.08522173180478955,
+      "mean_working_conditional_log_density": 0.568760329840388,
+      "standardized_residual_rms": 0.41659340769473396,
+      "selection": {
+        "mode": "group_source",
+        "source_label_count": 112,
+        "source_task_count": 7,
+        "coefficient_mean": [
+          0.01586291605876509,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.056588896684559055,
+          0.027362585573306647,
+          0.039802366897126594,
+          0.02243173402988961
+        ],
+        "selected_names": [
+          "psi2*psi3",
+          "sin(4*pi*psi4)",
+          "psi3^2",
+          "sin(4*pi*psi5)"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          45,
+          64,
+          11,
+          65
+        ],
+        "greedy_indices": [
+          45,
+          64,
+          11,
+          65
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.5879256771444414,
+            "source_task_standard_error": 0.08228504856888519,
+            "accepted": true
+          },
+          {
+            "index": 64,
+            "name": "sin(4*pi*psi4)",
+            "added_cv_improvement": 0.09262305845229124,
+            "source_task_standard_error": 0.03303844806465615,
+            "accepted": true
+          },
+          {
+            "index": 11,
+            "name": "psi3^2",
+            "added_cv_improvement": 0.0953506143606628,
+            "source_task_standard_error": 0.07116641672904231,
+            "accepted": true
+          },
+          {
+            "index": 65,
+            "name": "sin(4*pi*psi5)",
+            "added_cv_improvement": 0.15820006238406353,
+            "source_task_standard_error": 0.1332816369791411,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": -0.2565435165844967,
+        "billing_block_task_se": 0.35455877879429415,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -0.23187141849210893,
+            0.3867770470026093,
+            1.03170589443649,
+            1.1194167105086463,
+            -0.9339493305937623,
+            -0.7652821094214723,
+            0.9434639543122514
+          ],
+          "0.02": [
+            0.34514689538236465,
+            0.49991062963487876,
+            0.5808950599249241,
+            0.5707252546387674,
+            0.4723595759809635,
+            0.1169100866580069,
+            0.541231402241071
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    }
+  ],
+  "summary": {
+    "0": {
+      "label_rmse": 0.045485882981193076,
+      "mean_working_conditional_log_density": 1.6630440104478719,
+      "standardized_residual_rms": 0.9814914660942575
+    },
+    "1": {
+      "label_rmse": 0.19956907273989533,
+      "mean_working_conditional_log_density": 0.08350704260049448,
+      "standardized_residual_rms": 1.1389327406192304
+    }
+  },
+  "all_source_priors": [
+    {
+      "mean": [
+        -2.990457367950821,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "covariance": [
+        [
+          0.25,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.021071501538099627,
+          0.019811396638895588,
+          0.06209582623647405,
+          0.02090622903069786
+        ],
+        [
+          0.0,
+          0.019811396638895588,
+          0.05118913007141182,
+          0.13585156577420032,
+          0.043126008255811886
+        ],
+        [
+          0.0,
+          0.06209582623647405,
+          0.13585156577420032,
+          0.4976437532445675,
+          0.15358835502539128
+        ],
+        [
+          0.0,
+          0.02090622903069786,
+          0.043126008255811886,
+          0.15358835502539128,
+          0.06120212439236341
+        ]
+      ],
+      "discrepancy_variance": 0.0,
+      "diagnostics": {
+        "mode": "group_source",
+        "source_label_count": 128,
+        "source_task_count": 8,
+        "coefficient_mean": [
+          -2.990457367950821,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.021071501538099627,
+          0.05118913007141182,
+          0.4976437532445675,
+          0.06120212439236341
+        ],
+        "selected_names": [
+          "order_quantity",
+          "holding_quantity",
+          "lost_sales_quantity",
+          "order_frequency"
+        ],
+        "active_dim": 4,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          68,
+          69,
+          70,
+          71
+        ],
+        "greedy_indices": [
+          4,
+          52,
+          57,
+          6
+        ],
+        "greedy_cv": [
+          {
+            "index": 4,
+            "name": "psi4",
+            "added_cv_improvement": 1.0728481126278826,
+            "source_task_standard_error": 0.165632110297039,
+            "accepted": true
+          },
+          {
+            "index": 52,
+            "name": "psi3*psi6",
+            "added_cv_improvement": 0.0928384911736028,
+            "source_task_standard_error": 0.03699808562933824,
+            "accepted": true
+          },
+          {
+            "index": 57,
+            "name": "psi5*psi6",
+            "added_cv_improvement": 0.05762194973457542,
+            "source_task_standard_error": 0.024192720707020252,
+            "accepted": true
+          },
+          {
+            "index": 6,
+            "name": "psi6",
+            "added_cv_improvement": 0.03782284653764565,
+            "source_task_standard_error": 0.01652954529020081,
+            "accepted": true
+          }
+        ],
+        "billing_block_selected": true,
+        "billing_block_cv_gain": 0.005748270591764498,
+        "billing_block_task_se": 0.003579347220710456,
+        "discrepancy_source_scores": {
+          "0.0": [
+            1.610214609974671,
+            0.8959739555295301,
+            1.701310485555903,
+            1.956917723388973,
+            1.9515274958621984,
+            1.8615681263840949,
+            1.6980569105974488,
+            1.628782776290156
+          ],
+          "0.02": [
+            0.733650305348987,
+            0.7045219676580412,
+            0.7304314967858627,
+            0.7564787766678556,
+            0.7343558601377075,
+            0.7505261017695175,
+            0.7026851184501757,
+            0.7248483672238049
+          ]
+        },
+        "chosen_discrepancy_variance": 0.0
+      }
+    },
+    {
+      "mean": [
+        -0.016313144935560728,
+        0.0,
+        0.0
+      ],
+      "covariance": [
+        [
+          0.25,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0740981827735114,
+          -0.02449987712893587
+        ],
+        [
+          0.0,
+          -0.02449987712893587,
+          0.019819369056135853
+        ]
+      ],
+      "discrepancy_variance": 0.02,
+      "diagnostics": {
+        "mode": "group_source",
+        "source_label_count": 128,
+        "source_task_count": 8,
+        "coefficient_mean": [
+          -0.016313144935560728,
+          0.0,
+          0.0
+        ],
+        "coefficient_prior_diagonal": [
+          0.25,
+          0.0740981827735114,
+          0.019819369056135853
+        ],
+        "selected_names": [
+          "psi2*psi3",
+          "sin(4*pi*psi4)"
+        ],
+        "active_dim": 2,
+        "orthogonalization": "none",
+        "input_coordinates": "public_inventory_trajectory",
+        "selected_indices": [
+          45,
+          64
+        ],
+        "greedy_indices": [
+          45,
+          64
+        ],
+        "greedy_cv": [
+          {
+            "index": 45,
+            "name": "psi2*psi3",
+            "added_cv_improvement": 0.6140289192303583,
+            "source_task_standard_error": 0.0758913773816487,
+            "accepted": true
+          },
+          {
+            "index": 64,
+            "name": "sin(4*pi*psi4)",
+            "added_cv_improvement": 0.11863050041236334,
+            "source_task_standard_error": 0.038665764252077774,
+            "accepted": true
+          },
+          {
+            "index": 11,
+            "name": "psi3^2",
+            "added_cv_improvement": 0.0673015318995836,
+            "source_task_standard_error": 0.06771443848580008,
+            "accepted": false
+          }
+        ],
+        "billing_block_selected": false,
+        "billing_block_cv_gain": 0.005384462634380749,
+        "billing_block_task_se": 0.26165691094745275,
+        "discrepancy_source_scores": {
+          "0.0": [
+            -8.857156568930705,
+            -6.096510099119429,
+            -7.785489677198223,
+            -6.748495158774809,
+            0.3207408636636496,
+            -5.767618768204686,
+            -1.378823982378085,
+            0.348875043998391
+          ],
+          "0.02": [
+            -0.2520932784675287,
+            0.16873108605866696,
+            0.38701294185172497,
+            0.1287666813620094,
+            0.6300106797324789,
+            -0.1299282762159248,
+            0.3645111223345081,
+            0.6450303466073464
+          ]
+        },
+        "chosen_discrepancy_variance": 0.02
+      }
+    }
+  ],
+  "new_episode_calls": 0,
+  "target_records_used": false,
+  "local_cpu_seconds": 1.907373573
+}

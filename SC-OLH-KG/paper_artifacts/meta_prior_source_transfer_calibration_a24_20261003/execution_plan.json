@@ -1,0 +1,102 @@
+{
+  "stage": "meta_prior_source_transfer_calibration_a24_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a23_before_a24_results": true,
+  "question": "Can a source-only calibration that represents both compatible and cross-archive prediction improve transfer without sacrificing compatible forecasts, with the covariance model unchanged?",
+  "basis": "A23 learns that transferred-I forecasts lose0.0748/0.0861 against matched-I in shared/separate-head archives, with all eight pair blocks worse. R-minus-I increases by0.0247/0.0268 from the matched condition in all eight blocks, but transferred pure-R gains0.0045/0.0054 have intervals crossing zero. The frozen mixture's transfer gains are tiny and uncertain. Calibration and the covariance model must be distinguished; target-selected q cannot resolve this question.",
+  "inputs": [
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/transfer_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/diagnostic.json",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/execution_plan.json"
+  ],
+  "model": "Keep A20/A23 I/F/G/R densities, rho reference, source priors and selected functions unchanged. Use the original uniform Dirichlet(1,1,1) theta and independent uniform q reference. Fit empirical source-CV densities and use their expected four macro masses; retain uncertainty and do not choose a winning branch or impose q floors.",
+  "calibrations": {
+    "matched_only": "Control: calibrate only the saved A20 within-archive held-function scores, now excluding the entire held seed pair.",
+    "transfer_only": "Diagnostic: calibrate only A23 cross-archive scores, excluding the entire held pair. Retain its compatible-forecast cost; do not promote it based only on transfer scores.",
+    "balanced": "Primary candidate: use half the matched-condition CV score plus half the transfer-condition CV score for every scored source task and step. Equal condition weight is fixed before results; these are two contexts for the same paid labels, not two independent sets of observations."
+  },
+  "outer_validation": "Leave one of the eight original disjoint seed pairs out. Calibrate on both source groups of the other seven pairs, separately for learned and generic arms. Exclude both applied and scored seeds of the held pair from every calibration condition. Issue the frozen expected masses before evaluating that pair in both matched and transfer conditions. No target records or generator supports are inputs.",
+  "cohort": {
+    "seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ],
+      [
+        56,
+        57
+      ],
+      [
+        58,
+        59
+      ],
+      [
+        60,
+        61
+      ],
+      [
+        62,
+        63
+      ]
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "prior_arms": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "conditions": [
+      "matched",
+      "transfer"
+    ],
+    "source_prior_profiles_per_condition": 512,
+    "saved_forecasts_per_condition": 8192,
+    "forecast_steps": [
+      9,
+      24
+    ],
+    "primary_macro_fits": 48
+  },
+  "primary_contrast": "Balanced minus matched-only calibrated predictive log score, separately in each archive group, prior arm and evaluation condition. Average16 steps within task, eight tasks within directed source archive and both seed directions within each of the eight pair blocks. Report all eight strata with nominal pair-block bootstrap intervals; retain negative results.",
+  "secondary_contrasts": "Transfer-only minus matched-only in both evaluation conditions; each calibration versus pure I and versus the original frozen A20 masses as distinct development comparisons. Report q, theta spread, prior masses and step9/24 posterior masses. Compare recovered transfer gain with A23's large I transfer loss descriptively; do not interpret a small calibration gain as repaired covariance generalization.",
+  "implementation": "Evaluate each matched/transfer profile once per quadrature grid, accumulate node score sums by pair and prior arm, then reuse these sums for all three calibrations and eight exclusions. No Gaussian prediction, source reconstruction or source/target simulation is needed. Keep compact arrays and stream grid evaluations.",
+  "controls": "Require complete A20 and A23 evidence and exact aligned scored-seed/group/task/arm/step identities. Verify that each transfer prior's applied seed is the fixed partner, and calibration excludes both seeds of the held pair. Generic F=G=I must preserve flat theta and reduce to weighted one-dimensional I/R calibration under the same score rule. Pure branch scores must reconstruct saved densities; target information cannot alter any issued mass.",
+  "numerics": "Primary macro order16 per axis at cached rho32; confirm24/32 using the same saved branch forecasts. Require maximum held-source predictive log-score changes <=1e-4 for all three calibrations and both evaluation conditions. Preserve primary parameters; retain and stop on unresolved precision within budget.",
+  "resource_admission": "Retain the first complete matched-plus-transfer pair block's order16 grid evaluation. Project the eight blocks and grid ratios1+(24/16)^3+(32/16)^3, with a1.25 safety factor and20 CPU seconds for held scoring and summaries. Stop with partial evidence if the120-local-CPU-second cap would be exceeded.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 120,
+    "new_gaussian_component_fits": 0,
+    "new_eta_ard_refits": 0,
+    "new_fg_selection_fits": 0,
+    "new_branch_forecasts": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "candidate_recommendations": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "information_cost": "Each held-pair macro calibration uses28 historical source archives,172032 previously paid simulator calls. Four source archives in the held pair remain excluded from calibration. Both scoring conditions reuse the same held source observations, while their component priors each condition on448 paid eta labels. No equal-source-cost claim against the old one-archive A12 calibration.",
+  "decision": "A balanced calibration with complete source evidence of transfer improvement and no coherent compatible regression may proceed to a separately frozen test. If compatible costs dominate or transfer gains remain too small to resolve the covariance gap, stop calibration-only modification and design a source-learned covariance model for between-archive structural uncertainty. Do not select transfer-only or a condition weight from target outcomes. No automatic target/recommendation replay or new search is authorized by this source study.",
+  "paired_bootstrap_seed": 20261102,
+  "limitations": "A retrospective source development test on eight pair blocks, with overlapping calibration training sets and no new independent data. Fixed equal matched/transfer condition weight is a study design, not an estimated deployment frequency. Existing sources do not contain high-frequency target risk shifts. Macro calibration alone cannot recover missing functional support or source covariance variation."
+}

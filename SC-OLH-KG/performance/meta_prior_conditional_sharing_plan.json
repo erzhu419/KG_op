@@ -1,0 +1,61 @@
+{
+  "stage": "meta_prior_conditional_sharing_a30_20261003",
+  "status": "reference_source_validation_complete_matched_regression_not_promoted",
+  "fixed_after_a29_before_a30_results": true,
+  "question": "Can source-learned uncertainty about head sharing preserve the joint archive benefit while permitting eta to escape an f/g-compatible archive?",
+  "inputs": [
+    "paper_artifacts/meta_prior_joint_archive_a27_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003/source_fold_contexts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/full_source_contexts.json.gz",
+    "paper_artifacts/meta_prior_joint_archive_attribution_a29_20261003/decision.json"
+  ],
+  "core": "Keep the source-learned risk covariance atoms and per-archive risk/full reference unchanged. Add a latent shared versus separate archive identity for eta and f/g. Shared has the A27 joint evidence. Separate has p(f/g past) times p(eta past) using the same source archive pool. A prior on sharing is updated only by source calibration and target prefixes; no hard switch based on detected regime or generator metadata.",
+  "primary_reference": "Uniform Beta(1,1) sharing probability, integrated before any source empirical update. Retain the sharing posterior and coefficient-mixture uncertainty. Compare against unchanged J and A, without promoting a secondary model from target outcomes.",
+  "phase_1": "Source-only reference-prior validation on the original eight held seed pairs, both matched and co-shift conditions. Recover the same small f/g moment priors and raw component prefix evidence once. Preserve all source losses, including compatible loss if the extra uncertainty is costly. No target records are inputs.",
+  "phase_2": "If source calibration is justified by phase1, freeze it separately before fitting. Any outer held-pair calibration must also exclude that pair from the population priors used in its training scores: cache per-archive evidence and remove both outer-held and inner-scored pair columns. Do not calibrate on meta-priors that already contain held-archive parameters.",
+  "risk_only_stress": "A source-only optional diagnostic can recombine f/g records from one existing archive with eta records from its fixed partner, using their own observed input banks and noises. This is a cross-head record stress, not a co-observed physical simulator task, not new data and not an estimated deployment frequency. Freeze its weight separately before using it in any calibration; never claim it independently confirms target risk-only performance.",
+  "high_frequency_scope": "Sharing uncertainty cannot be assumed to repair directions missing from all source risk covariances. Keep the A28 generic full-risk reference and high-frequency negative result. A risk covariance/family-discrepancy update is a separate later one-variable study, not combined with the sharing modification.",
+  "analysis": "All pair-block source strata, early9-12/late21-24, joint versus eta-only posterior sharing and risk-family masses. Eight-block nominal bootstrap. No target-driven q, weight floors or winning-branch selection.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 90,
+    "new_eta_ard_refits": 0,
+    "new_fg_selection_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0
+  },
+  "resource_admission": "Retain source priors and first complete component-evidence path; project complete256-path source coverage with1.25 safety factor and20 CPU seconds summary reserve. Cache Gaussian prefix evidence once and reuse branch/sharing computations. Stop on projected90-CPU-second excess.",
+  "gate": "Reference-prior/source-calibration evidence must be reviewed before freezing any target test. No target study, recommendation replay or new search follows automatically.",
+  "limitations": "The original source archives do not contain naturally co-observed risk-only structural shifts. Sharing frequency for such deployment shifts cannot be identified merely from shared/co-shift panels. More source information, finite empirical covariance atoms and noise-model assumptions remain explicit.",
+  "implementation_fixed_before_run": {
+    "reference_shared_state_mass": 0.5,
+    "cohort_inherited_from": "paper_artifacts/meta_prior_joint_archive_a27_20261003/execution_plan.json",
+    "profiles": 512,
+    "paths": 256,
+    "forecast_steps": [
+      9,
+      24
+    ],
+    "paired_bootstrap_seed": 20261108,
+    "raw_component_archive_count": 32,
+    "population_archives": 28,
+    "retained_cache": "Per-archive prefix evidence is kept for all32 archives; each issued prediction drops both held seeds except its explicit local prior. Subsequent nested calibration can drop outer-held pair columns as well without repeating Gaussian inference.",
+    "primary_contrasts": [
+      "U-I",
+      "U-J",
+      "U-A",
+      "U-G"
+    ],
+    "sharing_state_vs_parameter": "A uniform Beta prior integrates to shared-state prior1/2. The posterior shared-state probability is distinct from the continuous sharing-probability mean: E[q|data]=(1+P(shared|data))/3 under the reference.",
+    "phase_2_executed_automatically": false,
+    "risk_only_stress_executed": false
+  },
+  "artifacts": "paper_artifacts/meta_prior_conditional_sharing_a30_20261003",
+  "execution_cpu_seconds": 13.211528954,
+  "next_plan": "performance/meta_prior_conditional_sharing_calibration_plan.json",
+  "next": "performance/meta_prior_conditional_sharing_calibration_plan.json"
+}

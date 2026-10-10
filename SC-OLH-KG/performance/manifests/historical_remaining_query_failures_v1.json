@@ -1,0 +1,43 @@
+{
+  "status": "Registered after all17 cases completed and four failures were localized;before any selective extension.",
+  "parent_plan": "performance/manifests/historical_remaining_queries_v2.json",
+  "cases": [
+    {
+      "layout": "6",
+      "arm": "source_structural_mixture",
+      "query": 6
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 4
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 6
+    },
+    {
+      "layout": "5",
+      "arm": "source_common_task_rbf",
+      "query": 7
+    }
+  ],
+  "gp_risk_powers": [
+    14,
+    15,
+    16
+  ],
+  "gp_objective_power": 14,
+  "source_risk_tail_orders": [
+    32,
+    64
+  ],
+  "source_raw_powers": [
+    12,
+    14
+  ],
+  "maximum_single_thread_cpu_seconds": 900,
+  "scope": "The three GP failures have F-only terminal differences below1e-9 and G-only differences1.15e-4 to2.24e-4;reuse F14 and append only G15,then G16 only if the unchanged1e-4 diagnostics still fail. Report the separate F/G powers explicitly. The source failure has terminal difference2.35e-6,but low-risk tail16-to32 difference1.30e-4;reuse every head and add only64 positive Legendre tail labels,comparing32-to64 with the original12/14 terminal powers. Keep all original failures,native anchors,source weights and labels. No source fits,physical observations,independent targets or server jobs.",
+  "output": "paper_artifacts/historical_remaining_query_failures_v1"
+}

@@ -1,0 +1,36 @@
+{
+  "stage": "meta_prior_latent_risk_error_a41_20261003",
+  "status": "complete_latent_function_and_uncertainty_errors_separated",
+  "fixed_after_a40_before_latent_error_scoring": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_heterogeneous_archive_a33_20261003/meta_training_archive.json.gz",
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/validation.json",
+    "paper_artifacts/meta_prior_covariance_mixture_optimizer_completion_a37_20261003/forecasts.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_target_validation_a21_20261003/source_contexts.json.gz",
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_paid_record_information_intervention_a40_20261003/diagnostic.json"
+  ],
+  "question": "Are within-family risk failures primarily visible as inaccurate eta functions, miscalibrated latent uncertainty, or environmental-variance moment bias?",
+  "cohort": "All40 training latent tasks on seeds48-55. Initial state uses common8 observed batches once per task; later state uses each old policy's first23 batches, preceding its24th query. No evaluation56-63, covariance learning or new queries.",
+  "models": "Original local I, A37 mixture L, same-scale mixture LG and unavailable known-family O from A38. Reuse all source-fitted means/covariances and original source masses; update only from each state's paid past eta labels. Predict latent eta on the same384 public candidates with future measurement noise0. Local/full and between-class uncertainty are retained.",
+  "truth": "After producing all model predictions, reconstruct the original analytic eta function using the unchanged base protocol and A33 generator recipe: public bank seed51000+s, task seed61000+100*s+original regime index and original support generation, including separate-head risk support override. Generator truth is used for scoring only. This evaluates the already-declared latent bank; it does not generate new noisy observations.",
+  "analysis": "Score the same unqueried candidates for all models in each state. Report eta posterior-mean RMSE, noise-free latent log predictive score,90 percent mixture posterior coverage from the truth PIT in[0.05,0.95], lower/upper misses, mean latent posterior variance, and prediction bias of E[exp(eta)] versus exp(true_eta). Exact Gaussian-mixture variance moments include within-component and between-component uncertainty. Report all five mechanisms and four seed-pair blocks; do not tune or promote models based on latent truth.",
+  "controls": "Each old next-query observed density, obtained by restoring its known eta measurement noise, must reproduce A37. The common8 state must match across old policies. No queried candidate enters the unqueried-candidate population score. Oracle family is confined to the diagnostic O model. Nonintercept source means, prior masses and every fitted covariance remain unchanged.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "gaussian_conditioning_solves_max": 720,
+    "new_covariance_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "recommendations": 0,
+    "evaluation_paths_scored": 0
+  },
+  "paired_bootstrap_seed": 20261117,
+  "decision": "Use the fixed scoring to define the next source-learning hypothesis. Mean function errors motivate source-conditioned function directions; uncertainty and variance-moment errors motivate a source-validated uncertainty model. Do not merely add covariance classes, optimize class information alone, choose parameters from latent truth or launch new KG trials. Preserve the failed models and their useful compatible-regime source learning.",
+  "limitations": "Analytic latent-function diagnostics on an already-studied synthetic cohort are development evidence. They are neither new observations nor prospective independent confirmation. Finite public dictionary, four pair blocks and Gaussian eta approximation remain. No submission or deployment advantage follows from this diagnostic alone.",
+  "next_plan": "performance/meta_prior_task_direction_prior_plan.json"
+}

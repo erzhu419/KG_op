@@ -1,0 +1,36 @@
+{
+  "status": "frozen before source likelihood support and bank geometry",
+  "moments_execution": "performance/manifests/legacy_joint_population_task_spectral_moments_execution_v1.json",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "basis_of_next_step": "Native paid Gaussian residual energy averages below dimension12 and shape energy below11, while task1 signed offset z is2.801/2.324 versus GP.026/.101. Stage83 already found the assignment5 deleted-task1 intercept variance is0. Investigate this boundary and the existing public-bank offset/shape geometry before any repair fit.",
+  "source_likelihood": "Keep every native source parameter except task intercept amplitude fixed. Reproduce native source NLL, then find lower/upper nonnegative intercept amplitudes where total source log likelihood is0.5 below the actual native point, using scalar root solves and an expanding upper bracket. Return lower0 if included. This is a conditional likelihood support range, not a confidence interval, new optimized fit or chosen prior. Record conditional loss at0 and native source derivative.",
+  "public_geometry": "For each deleted training-task public73-policy bank compute original orthogonal design using that fold's unchanged public centering/scaling. Decompose task bank-average variance into explicit intercept r0 and sum_j R_j mean(phi_j)^2; record common-H and white-discrepancy contributions separately. Compute mean centered task shape variance and RMS offset/shape covariance divided by mean task marginal variance. No outcomes are called, no basis is centered or changed and no predictions are repaired.",
+  "likelihood_drop": 0.5,
+  "root_absolute_tolerance_on_signal_scaled_amplitude": 1e-10,
+  "decision_rule": "If zero remains in broad conditional source support and the bank offset depends on task shape groups, register a fixed public-bank intercept/shape separation contrast in the original basis before any source-only fit. Otherwise inspect the source mean population instead. Do not infer causality from task1, choose amplitudes on residuals, integrate an improper uniform prior on unbounded variance, start a spectral/calibration grid, evaluate source6/7/targets or relax source gates.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_task_offset_geometry_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_task_offset_geometry_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_task_offset_geometry.py"
+}

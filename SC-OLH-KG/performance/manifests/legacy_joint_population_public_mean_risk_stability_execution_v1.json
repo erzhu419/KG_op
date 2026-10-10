@@ -1,0 +1,49 @@
+{
+  "status": "registered before all deleted-task risk fits and forecasts",
+  "basis_of_next_step": "144-call source reduction worsens structural g prediction and eta_g target MSE.263 to.849, with49% moment truth coverage. At63, source-input eta_g bias changes.007 to.709; paid update only-.003. Ateta_f63 query transfer shifts-1.208. Need distinguish learned-risk representation and fitted risk law instability before terminal or KG ranking.",
+  "source_execution": "performance/manifests/legacy_joint_population_public_mean_source_half_execution_v1.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/inputs.json",
+  "reference_risk_fit": "paper_artifacts/legacy_joint_population_public_mean_source_half_v1/risk_source_fit.json",
+  "reference_target_inputs": "paper_artifacts/legacy_joint_population_public_mean_source_half_target_v1/inputs.json",
+  "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "deletion_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "modes": [
+    "risk_fit_only_at_frozen48_label_map",
+    "relearn_map_and_risk_fit_on40_labels"
+  ],
+  "selected_information": "same registered8 sites/task and three repeats/site; union information144 historical response calls. Each deleted branch trains risk laws on five tasks40 records. No unselected label or new raw episode.",
+  "fixed_map_mode": "keep the full48-label risk encoder, normalizer and public reference; refit eta_g/eta_f priors on the five remaining tasks. This intentionally retains deleted-task map information to attribute risk-law estimation variability; it is not independent leave-task-out validation.",
+  "relearned_map_mode": "exclude the deleted task before any source label moments, supervised encoder or normalizer fitting; rebuild public reference and joint eta priors from only remaining40 records.",
+  "mean_control": "hold the144-call public f/g mean priors fixed; no mean refitting or target-truth-based tuning",
+  "source_fit": "eta_g/eta_f regularizer1024, fixed population1024, joint common/task covariance4096 withftol1e-9 andgtol1e-5; original intercept, tails, label noises, source likelihood and native stopping rules.12 branches x two heads x three native fits=72 fits, cached once; continue only actual capped joint objectives before forecasts.",
+  "queries": "public73-source catalog, opened source holdouts6/7 and response-free inputs of the six opened targets; compare prior mean/covariance variation at27/60/63 and across full banks, with learned-map versus fixed-map query-shift decomposition",
+  "freeze_rule": "save all completed branch priors and query forecasts before existing holdout or target outcome diagnostics; no best-branch selection on opened outcomes",
+  "next_action": "judge whether representation refitting or risk-population fitting dominates the observed variation; specify source-uncertainty treatment only after this attribution. No automatic variance floor, new representation replacement, target ranking or expensive KG sweep.",
+  "execution": "local serial single-thread, small source matrices; new simulator/verifier calls0, terminal integrations0, no server/scheduler dispatch or pulls",
+  "interpretation": "source estimation stability attribution within the original learned-risk meta-prior, not a validated uncertainty estimator, repaired deployment or complete method claim",
+  "output": "paper_artifacts/legacy_joint_population_public_mean_risk_stability_v1",
+  "plan": "performance/manifests/legacy_joint_population_public_mean_risk_stability_plan_v1.json",
+  "regularizer_max_iterations": 1024,
+  "fixed_population_max_iterations": 1024,
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 4096,
+    "ftol": 1e-09,
+    "gtol": 1e-05
+  },
+  "target_scoring": "paper_artifacts/legacy_joint_population_independent_pilot_v1/results.json",
+  "diagnostic_candidates": [
+    27,
+    60,
+    63
+  ],
+  "public_reference_provider": "always source task0 public73-catalog even when task0 labels are deleted; response-free public reference provider remains fixed",
+  "moment_forecasts": "prior eta means and marginal variances only; no paid filtering or terminal utilities. Deletion spread is descriptive, not a calibrated uncertainty estimate."
+}

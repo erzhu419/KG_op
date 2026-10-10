@@ -1,0 +1,423 @@
+{
+  "execution": {
+    "status": "frozen before honest source4 risk fitting and finite-moment rules",
+    "plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+    "entrypoint": "performance/prepare_legacy_f_inner_raw_contract.py",
+    "finite_moment_tolerances": {
+      "raw_mass_absolute": 1e-08,
+      "mean_variance_relative": 1e-06,
+      "coefficient_mean_max_absolute": 1e-08,
+      "common_covariance_relative_frobenius": 1e-06
+    },
+    "output": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1",
+    "decision": "All source fits and four finite full-tail rules must complete before any raw forecast. Existing second-moment routines remain unchanged;four-task law uses only its finite predictive moments. No q tuning,independent confirmation or manuscript claims."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "native",
+      "source_task_count": 4,
+      "source_label_count": 48,
+      "reference_posterior": {
+        "mean": 0.00015916590209581698,
+        "variance_second_moment": "infinite",
+        "variance_standard_deviation": "infinite",
+        "density_tail_power": -3,
+        "normalization_relative_error": 9.74805764356525e-09,
+        "normalized_vector_integral_error": 6.391070991130158e-10,
+        "normalized_mass_error": 7.116529587847253e-13
+      },
+      "native_and_interior_dense_likelihood_fisher_and_common_moments_verified": true,
+      "finite_full_tail_moments_integrated": true,
+      "adaptive_u_intervals": [
+        [
+          0.0,
+          0.3535533905932738
+        ],
+        [
+          0.3535533905932738,
+          0.7071067811865476
+        ],
+        [
+          0.7071067811865476,
+          0.85306536677157
+        ],
+        [
+          0.85306536677157,
+          0.9260446595640811
+        ],
+        [
+          0.9260446595640811,
+          0.9625343059603366
+        ],
+        [
+          0.9625343059603366,
+          0.9807791291584644
+        ],
+        [
+          0.9807791291584644,
+          0.9899015407575283
+        ],
+        [
+          0.9899015407575283,
+          0.9944627465570604
+        ],
+        [
+          0.9944627465570604,
+          0.9990239523565922
+        ],
+        [
+          0.9990239523565922,
+          1.0
+        ]
+      ],
+      "rule_trials": [
+        {
+          "nodes_per_interval": 4,
+          "component_count": 40,
+          "errors": {
+            "raw_mass_absolute": 0.00024782107424003996,
+            "mean_variance_relative": 0.0001901829640400532,
+            "coefficient_mean_max_absolute": 4.065606741300576e-07,
+            "common_covariance_relative_frobenius": 3.6578363018683054e-05
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_interval": 8,
+          "component_count": 80,
+          "errors": {
+            "raw_mass_absolute": 8.302980769592239e-08,
+            "mean_variance_relative": 1.1063776061970287e-07,
+            "coefficient_mean_max_absolute": 1.6385692108711325e-10,
+            "common_covariance_relative_frobenius": 2.000644099810604e-08
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_interval": 16,
+          "component_count": 160,
+          "errors": {
+            "raw_mass_absolute": 6.981082378842984e-13,
+            "mean_variance_relative": 6.946665465079604e-13,
+            "coefficient_mean_max_absolute": 9.679756995950584e-16,
+            "common_covariance_relative_frobenius": 1.580403127436051e-13
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true
+    },
+    {
+      "layout": "5",
+      "arm": "shape",
+      "source_task_count": 4,
+      "source_label_count": 48,
+      "reference_posterior": {
+        "mean": 0.00017068438906841396,
+        "variance_second_moment": "infinite",
+        "variance_standard_deviation": "infinite",
+        "density_tail_power": -3,
+        "normalization_relative_error": 3.1204344951477043e-10,
+        "normalized_vector_integral_error": 5.751153007758149e-10,
+        "normalized_mass_error": 4.440892098500626e-16
+      },
+      "native_and_interior_dense_likelihood_fisher_and_common_moments_verified": true,
+      "finite_full_tail_moments_integrated": true,
+      "adaptive_u_intervals": [
+        [
+          0.0,
+          0.3535533905932738
+        ],
+        [
+          0.3535533905932738,
+          0.7071067811865476
+        ],
+        [
+          0.7071067811865476,
+          0.85306536677157
+        ],
+        [
+          0.85306536677157,
+          0.9260446595640811
+        ],
+        [
+          0.9260446595640811,
+          0.9625343059603366
+        ],
+        [
+          0.9625343059603366,
+          0.9807791291584644
+        ],
+        [
+          0.9807791291584644,
+          0.9899015407575283
+        ],
+        [
+          0.9899015407575283,
+          0.9944627465570604
+        ],
+        [
+          0.9944627465570604,
+          0.9990239523565922
+        ],
+        [
+          0.9990239523565922,
+          1.0
+        ]
+      ],
+      "rule_trials": [
+        {
+          "nodes_per_interval": 4,
+          "component_count": 40,
+          "errors": {
+            "raw_mass_absolute": 0.00032309938416341666,
+            "mean_variance_relative": 0.00027940003200888075,
+            "coefficient_mean_max_absolute": 3.9944940181946276e-07,
+            "common_covariance_relative_frobenius": 5.9210268929799454e-05
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_interval": 8,
+          "component_count": 80,
+          "errors": {
+            "raw_mass_absolute": 4.871092285085865e-08,
+            "mean_variance_relative": 7.53522580998478e-08,
+            "coefficient_mean_max_absolute": 1.7808316279954717e-10,
+            "common_covariance_relative_frobenius": 1.2998903516476409e-08
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_interval": 16,
+          "component_count": 160,
+          "errors": {
+            "raw_mass_absolute": 1.0658141036401503e-14,
+            "mean_variance_relative": 1.3766765505351941e-14,
+            "coefficient_mean_max_absolute": 1.734723475976807e-17,
+            "common_covariance_relative_frobenius": 4.669796208469371e-15
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true
+    },
+    {
+      "layout": "6",
+      "arm": "native",
+      "source_task_count": 4,
+      "source_label_count": 48,
+      "reference_posterior": {
+        "mean": 8.114930572112285e-05,
+        "variance_second_moment": "infinite",
+        "variance_standard_deviation": "infinite",
+        "density_tail_power": -3,
+        "normalization_relative_error": 4.100759015877391e-09,
+        "normalized_vector_integral_error": 2.1826982894173793e-13,
+        "normalized_mass_error": 3.526068326209497e-13
+      },
+      "native_and_interior_dense_likelihood_fisher_and_common_moments_verified": true,
+      "finite_full_tail_moments_integrated": true,
+      "adaptive_u_intervals": [
+        [
+          0.0,
+          0.3535533905932738
+        ],
+        [
+          0.3535533905932738,
+          0.7071067811865476
+        ],
+        [
+          0.7071067811865476,
+          0.8535521030825648
+        ],
+        [
+          0.8535521030825648,
+          0.9267747640305735
+        ],
+        [
+          0.9267747640305735,
+          0.9633860945045778
+        ],
+        [
+          0.9633860945045778,
+          0.98169175974158
+        ],
+        [
+          0.98169175974158,
+          0.990844592360081
+        ],
+        [
+          0.990844592360081,
+          0.9954210086693316
+        ],
+        [
+          0.9954210086693316,
+          0.9977092168239567
+        ],
+        [
+          0.9977092168239567,
+          0.9988533209012693
+        ],
+        [
+          0.9988533209012693,
+          0.9994253729399256
+        ],
+        [
+          0.9994253729399256,
+          0.999997424978582
+        ],
+        [
+          0.999997424978582,
+          1.0
+        ]
+      ],
+      "rule_trials": [
+        {
+          "nodes_per_interval": 4,
+          "component_count": 52,
+          "errors": {
+            "raw_mass_absolute": 2.4682823400734577e-06,
+            "mean_variance_relative": 1.0147849765274053e-05,
+            "coefficient_mean_max_absolute": 9.546887816749838e-09,
+            "common_covariance_relative_frobenius": 1.8946151506069693e-06
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_interval": 8,
+          "component_count": 104,
+          "errors": {
+            "raw_mass_absolute": 7.44879713465707e-11,
+            "mean_variance_relative": 4.128723252172506e-09,
+            "coefficient_mean_max_absolute": 1.6944778913341452e-13,
+            "common_covariance_relative_frobenius": 2.4705056167169354e-09
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true
+    },
+    {
+      "layout": "6",
+      "arm": "shape",
+      "source_task_count": 4,
+      "source_label_count": 48,
+      "reference_posterior": {
+        "mean": 8.231726659990005e-05,
+        "variance_second_moment": "infinite",
+        "variance_standard_deviation": "infinite",
+        "density_tail_power": -3,
+        "normalization_relative_error": 4.19056072493873e-09,
+        "normalized_vector_integral_error": 2.0636846373888273e-13,
+        "normalized_mass_error": 3.5793590313915047e-13
+      },
+      "native_and_interior_dense_likelihood_fisher_and_common_moments_verified": true,
+      "finite_full_tail_moments_integrated": true,
+      "adaptive_u_intervals": [
+        [
+          0.0,
+          0.3535533905932738
+        ],
+        [
+          0.3535533905932738,
+          0.7071067811865476
+        ],
+        [
+          0.7071067811865476,
+          0.8535521030825648
+        ],
+        [
+          0.8535521030825648,
+          0.9267747640305735
+        ],
+        [
+          0.9267747640305735,
+          0.9633860945045778
+        ],
+        [
+          0.9633860945045778,
+          0.98169175974158
+        ],
+        [
+          0.98169175974158,
+          0.990844592360081
+        ],
+        [
+          0.990844592360081,
+          0.9954210086693316
+        ],
+        [
+          0.9954210086693316,
+          0.9977092168239567
+        ],
+        [
+          0.9977092168239567,
+          0.9988533209012693
+        ],
+        [
+          0.9988533209012693,
+          0.9994253729399256
+        ],
+        [
+          0.9994253729399256,
+          0.999997424978582
+        ],
+        [
+          0.999997424978582,
+          1.0
+        ]
+      ],
+      "rule_trials": [
+        {
+          "nodes_per_interval": 4,
+          "component_count": 52,
+          "errors": {
+            "raw_mass_absolute": 2.58585672696654e-06,
+            "mean_variance_relative": 1.0344414820062653e-05,
+            "coefficient_mean_max_absolute": 9.743786418339728e-09,
+            "common_covariance_relative_frobenius": 1.9056407851873305e-06
+          },
+          "passed": false
+        },
+        {
+          "nodes_per_interval": 8,
+          "component_count": 104,
+          "errors": {
+            "raw_mass_absolute": 6.762856941122664e-11,
+            "mean_variance_relative": 4.151944676955566e-09,
+            "coefficient_mean_max_absolute": 1.5525081220602033e-13,
+            "common_covariance_relative_frobenius": 2.515657180544726e-09
+          },
+          "passed": true
+        }
+      ],
+      "rule_complete": true
+    }
+  ],
+  "all_source_laws_complete": true,
+  "cost": {
+    "maximum_risk_coordinate_refits": 2,
+    "maximum_risk_objective_fits": 6,
+    "new_f_source_fits": 0,
+    "maximum_source_variance_integrations": 4,
+    "maximum_inner_raw_forecasts": 8,
+    "maximum_numerical_reference_forecasts": 4,
+    "new_outer_task1_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_risk_coordinate_refits": 2,
+    "actual_risk_objective_fits": 6,
+    "actual_source_variance_integrations": 4,
+    "actual_inner_raw_forecasts": 0,
+    "actual_numerical_reference_forecasts": 0
+  },
+  "raw_query_values_used": false,
+  "no_model_adopted": true,
+  "source6_7_evaluated": false,
+  "target_promoted": false,
+  "independent_confirmation": false,
+  "cpu_seconds": 0.55520058
+}

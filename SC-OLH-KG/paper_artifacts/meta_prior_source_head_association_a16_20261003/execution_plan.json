@@ -1,0 +1,56 @@
+{
+  "stage": "meta_prior_source_head_association_audit_a16_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a15_before_a16_results": true,
+  "question": "Do the saved source fits contain function-level f/g-to-eta association beyond broad public-family membership, and which parts of a finer structural meta-prior could those data identify?",
+  "basis": "A15's score decomposition attributes most remaining shifted-risk loss to global structural-choice coordination rather than source-q recalibration. Avoid another global mixing-weight variant before inspecting source information.",
+  "inputs": [
+    "paper_artifacts/meta_prior_calibration_replay_a_20261003/inputs.json.gz",
+    "paper_artifacts/meta_prior_cross_head_structure_mixture_a14_20261003/source_summary.json",
+    "performance/meta_prior_risk_family_reweighting_plan.json"
+  ],
+  "cohort": {
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "unique_source_archives": 32,
+    "source_tasks_per_archive": 8,
+    "functions": 68,
+    "source_fg_holdout_selections": 256
+  },
+  "analysis": "Use only saved f/g source-selected indices and eta source_function_variance, plus the existing six public families. Deduplicate reused source archives across target regimes and priors. Normalize eta variance over the 68 functions. Measure its mass on f, g and their union, compared with uniform function allocation and deterministic within-family matched allocation. Report both archive groups, paired by seed. Use held-task f/g selections to describe source-selection stability; eta fold variances were not saved, so do not invent joint fold uncertainty.",
+  "separation": "Do not read target forecasts, recommendations, simulator support or verifier outcomes. Learned eta variance is a covariance estimate, not true support or an independent risk-prediction label. Functions and overlapping source folds are not independent replicates; summarize at archive level and use seed as the paired unit.",
+  "decision": "Judge whether source function association is coherent beyond family effects and how far shared versus separate-head archives distinguish the relationship. If useful source signal exists, formulate one source-trained function-level covariance model with whole-seed archive holdout and proper risk-predictive validation before target evaluation. Otherwise report insufficient source information and specify the smallest additional source variation needed. No coefficient-prior model is promoted from this metadata audit.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 60,
+    "new_component_fits": 0,
+    "new_simulation_samples": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0
+  },
+  "paired_bootstrap_seed": 20261025,
+  "deliverables": "One compact source-association JSON, a short decision and the resulting next model/data plan. Prospective searches and recommendation replay remain on hold.",
+  "limitations": "Only 16 paired seed archives with fixed support inside each archive are available. Saved risk covariance has no uncertainty distribution. This audit cannot establish learned factor identifiability, risk prediction or deployment gains."
+}

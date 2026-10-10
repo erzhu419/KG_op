@@ -1,0 +1,17 @@
+{
+  "status": "registered before reading source risk probe results",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "source_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v2/results.json",
+  "source_precision": "paper_artifacts/historical_raw_source_amplitude_learning_v2/phase_results.json",
+  "relative_common_task_points": [[1.0, 1.0], [0.75, 0.75], [0.5, 0.5], [0.25, 0.25], [0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
+  "maximum_single_thread_cpu_seconds": 30,
+  "precision_gates": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "scope": "Reuse all32 certified round2 source posterior mixtures. Hold f means/covariances, risk means, sparse/spectral/additive maps, and white discrepancy fixed. Compare normalized source evidence for registered risk common/task amplitude points using historical exact Gaussian prior ratios. MC intervals concern numerical error on these source states, not independent tasks. Failed endpoints remain HOLD; this probe adopts no source prior.",
+  "cost": {"new_source_labels": 0, "new_source_MCMC_sweeps": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_source_risk_plateau_v1"
+}

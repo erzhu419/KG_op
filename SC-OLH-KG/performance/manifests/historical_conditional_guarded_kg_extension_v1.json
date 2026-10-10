@@ -1,0 +1,21 @@
+{
+  "status": "Registered before the16-fantasy guarded KG extension;run regardless of pilot sign.",
+  "entrypoint": "performance/check_historical_conditional_kg.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "efficiency_results": "paper_artifacts/historical_conditional_efficiency_v2/results.json",
+  "paid_anchor_results": "paper_artifacts/historical_conditional_efficiency_v2/anchors.json",
+  "terminal_results": "paper_artifacts/historical_conditional_terminal_completion_v1/results.json",
+  "completed_prefix": "paper_artifacts/historical_conditional_guarded_kg_pilot_v1/results.json",
+  "fixed_action_reference": "paper_artifacts/historical_conditional_guarded_reference_v1/results.json",
+  "old_kg_results": "paper_artifacts/historical_learned_prior_kg_completion_v1/results.json",
+  "layout": "5",
+  "candidate": 5,
+  "terminal_power": 14,
+  "joint_fantasy_power": 4,
+  "fixed_action_fantasy_power": 5,
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 650,
+  "scope": "Extend the same guarded query from four to16 fantasies per identity,irrespective of sign. Reuse the32 completed pilot terminal evaluations and evaluate only96 new futures at the unchanged16384-node rule. Preserve every source identity/component,paid state,40 terminal actions and budget. Use the same32-head-fantasy guarded fixed baseline and record eight/16 adaptive contrast,raw/projected drift and identity martingale residual. No source selection,threshold relaxation,new simulator/verifier data or server jobs;full ranking and independent superiority remain untested.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_conditional_guarded_kg_extension_v1"
+}

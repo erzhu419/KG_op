@@ -1,0 +1,36 @@
+{
+  "status": "registered before four source-only task-direction scale fits and holdout forecasts",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "direction_results": "paper_artifacts/legacy_joint_population_task_covariance_direction_v1/results.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "coverage_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "basis_of_next_step": "Source-only residual covariance preflight reproduces native NLL with an independent dense marginal construction. Leading whitened posterior residual moment eigenvalues exceed1 in all f/g/assignment cases:1.843/1.910 for f and2.747/2.725 for g, with verified negative rank-one variance derivative. Test source-learned task-function correlations rather than dropping the low-frequency prior or increasing data again.",
+  "fit_rule": "Keep the216-call native common covariance, base diagonal residual covariance, regularizer origin, discrepancy, basis/normalization and fixed144-call risk laws. For each f/g head learn one nonnegative scale rho by the same Gaussian source marginal likelihood, R_task=R_diagonal+rho*v*v^T, using the previously frozen source-only direction v. Source signal/group/spectral parameters do not refit. Four scalar native L-BFGS-B objectives use original bounds/stopping.",
+  "representation": "Return complete common posterior covariance plus full task residual covariance to the mean SourceFunctionPrior; never discard the learned off-diagonal entries on restore. All seven risk identities share this full mean law and preserve their original maps/eta priors.",
+  "freeze_rule": "Freeze both fitted f/g laws and all four two-paid-record source predictions before raw three-repeat source scores. No task6/7 outcome, target input/truth or known source geometry parameter enters directions or scalar fits.",
+  "controls": "Reuse the completed same216-call structure/flat/strong complete-GP controls. Parent144-call structure remains the predeclared repair reference; retain both assignments and every source case.",
+  "source_gate": "Require g MSE nonincrease, joint density nondecrease and g density improvement on BOTH source holdouts in BOTH assignments. Preserve failed Stage53/54 gates. No after-the-fact changes or partial head/layout selection; no target/risk extension if this new candidate fails.",
+  "execution": "local serial single-thread; cached216-call labels, four scalar fits and source raw likelihood updates; no new physical simulator/verifier calls, terminal integration, server jobs/pulls or target archive reads",
+  "interpretation": "source-learned within-task function correlation in the existing orthogonal low-order library. The base spectra/group scales remain, while the added factor can couple components. This is empirical covariance fitting, not physical risk-factor recovery, Bayesian hyperparameter uncertainty or independent decision/KG superiority.",
+  "output": "paper_artifacts/legacy_joint_population_task_direction_fit_v1"
+}

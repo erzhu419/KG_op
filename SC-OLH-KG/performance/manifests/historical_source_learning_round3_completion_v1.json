@@ -1,0 +1,28 @@
+{
+  "status": "registered before third-step adjacent evidence and failed-site integration",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "previous_learning": "paper_artifacts/historical_raw_source_amplitude_learning_v2/results.json",
+  "learning_results": "paper_artifacts/historical_stationary_source_continuation_v1/results.json",
+  "fresh_results": "paper_artifacts/historical_changed_candidate_reconditioning_v3/results.json",
+  "functional_cases": [
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "axis": 44,
+      "sites": [
+        44
+      ]
+    }
+  ],
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "integration_batch_size": 16,
+  "maximum_single_thread_cpu_seconds_per_case": 45,
+  "scope": "Use all8 saved third-step candidate mixtures for exact reverse Z(round3)/Z(round2),with the actual previous f/risk law. Only one posterior variance coordinate fails:layout5/additive/head_specific/deconvolved_task/g site44. Reuse the tested local one-dimensional conditional integral at that site;all other full-chain estimates and all positive mixture states/weights remain fixed. One local thread,no MCMC,source labels,prior fitting,target evaluation or server work.",
+  "output": "paper_artifacts/historical_source_learning_round3_completion_v1"
+}

@@ -1,0 +1,24 @@
+{
+  "status": "registered before fixed sixth-law source-risk statistics",
+  "case": {
+    "layout": "5",
+    "selector": "spectral",
+    "support": "head_specific",
+    "treatment": "deconvolved_task",
+    "head": "g"
+  },
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "source_learning": "paper_artifacts/historical_source_learning_round6/results.json",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 16384,
+    "seed": 202610096
+  },
+  "prefix_sweeps_per_chain": 4096,
+  "prefix_stride": 16,
+  "maximum_single_thread_cpu_seconds": 45,
+  "stationarity_threshold": 0.001,
+  "scope": "All32 sixth-law cases have a moment-score direction with95percent Monte Carlo halfwidth above0.001 in the certified1024-component mixture. Reuse the passed fixed-parameter pilot and sample only risk sufficient statistics in the remaining31 cases,using the exact historical raw-source sampler and fixed registered seeds. Existing fresh sixth-law cases keep their seed and verify their exact4096-step prefix;other cases start four fixed current-law chains. Save only full/split eta moments and score error;keep KG at1024 components and original passed laws untouched. Stop source-risk parameter updates if any score precision case remains unresolved. One local serial scientific process,one library thread,no seed search,new labels,simulator/verifier calls or server jobs.",
+  "output": "paper_artifacts/historical_source_risk_score_banks_v1/bank_5_spectral_head_specific_deconvolved_task_g"
+}

@@ -1,0 +1,135 @@
+{
+  "role": "read-only recovery of historical comparison; not a new experiment",
+  "source_host": "jtl311linux",
+  "source_csv": "/home/erzhu419/wsl_cleanup_backup_before_delete_20260914/home/erzhu419/mine_code/KG_op/SC-OLH-KG/results/completed_non_online_sota_20260716/structural_backend/rows.csv",
+  "source_analysis": "/home/erzhu419/wsl_cleanup_backup_before_delete_20260914/home/erzhu419/mine_code/KG_op/SC-OLH-KG/results/completed_non_online_sota_20260716/analysis.md",
+  "total_rows": 1350,
+  "full_reference_variant": "structural_backend/backends/source_informed_risk_ts",
+  "groups": [
+    {
+      "variant": "structural_backend/backends/source_informed_risk_ts",
+      "count": 30,
+      "true_feasible": 25,
+      "wins_vs_full": 0,
+      "losses_vs_full": 0,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/additivity_only",
+      "count": 30,
+      "true_feasible": 28,
+      "wins_vs_full": 4,
+      "losses_vs_full": 1,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/leave_out_additivity",
+      "count": 30,
+      "true_feasible": 26,
+      "wins_vs_full": 3,
+      "losses_vs_full": 2,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/leave_out_low_frequency",
+      "count": 30,
+      "true_feasible": 28,
+      "wins_vs_full": 3,
+      "losses_vs_full": 0,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/leave_out_orthogonality",
+      "count": 30,
+      "true_feasible": 24,
+      "wins_vs_full": 2,
+      "losses_vs_full": 3,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/leave_out_sparsity",
+      "count": 30,
+      "true_feasible": 25,
+      "wins_vs_full": 0,
+      "losses_vs_full": 0,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/low_frequency_only",
+      "count": 30,
+      "true_feasible": 25,
+      "wins_vs_full": 2,
+      "losses_vs_full": 2,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/none",
+      "count": 30,
+      "true_feasible": 29,
+      "wins_vs_full": 5,
+      "losses_vs_full": 1,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/orthogonality_only",
+      "count": 30,
+      "true_feasible": 25,
+      "wins_vs_full": 3,
+      "losses_vs_full": 3,
+      "scalar_contract_matches_full": true
+    },
+    {
+      "variant": "structural_backend/priors/sparsity_only",
+      "count": 30,
+      "true_feasible": 28,
+      "wins_vs_full": 4,
+      "losses_vs_full": 1,
+      "scalar_contract_matches_full": true
+    }
+  ],
+  "posterior_feasible_total": 0,
+  "posterior_certificate_vacuous_total": 1350,
+  "scalar_contract_fields": [
+    "d",
+    "N",
+    "n0",
+    "source_calls",
+    "total_calls",
+    "initial_design",
+    "decision_backend",
+    "hvd_profile",
+    "source_discrepancy_update",
+    "risk_penalty",
+    "utility_weight",
+    "recheck_top_k"
+  ],
+  "limitation": "Historical analysis documents that none disabled spectral flags but retained ordered structural assumptions. These are not clean four-prior ablations. Scalar CSV contracts do not establish identical full runtime states.",
+  "source_files_downloaded": false,
+  "new_simulations": 0,
+  "runtime_sample": {
+    "domain": "FactorShockStatePolicyRZDT1",
+    "seed": 0,
+    "source_host": "node006",
+    "source_root": "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy/SC-OLH-KG/profiles/scolh_structural_backend_gate_n20_s10_20260716",
+    "records": [
+      "priors/none/FactorShockStatePolicyRZDT1/seed0/result.json",
+      "backends/source_informed_risk_ts/FactorShockStatePolicyRZDT1/seed0/result.json"
+    ],
+    "stored_initial_design_and_archive_metadata_agree": true,
+    "none_retains_ordered_settings": {
+      "meta_ordered_exposure_orthogonal_coordinates": true,
+      "meta_ordered_exposure_adaptive_sparsity": true,
+      "meta_ordered_exposure_latent_structure_selection": true,
+      "meta_ordered_exposure_group_ridge_learning": true,
+      "meta_ordered_exposure_frequency_penalty": 0.1,
+      "meta_ordered_exposure_basis_mode": "diagonal_quadratic"
+    },
+    "none_disables_spectral_settings": {
+      "meta_spectral_low_frequency_prior": false,
+      "meta_spectral_orthogonalization": "none",
+      "meta_spectral_coefficient_shrinkage": false,
+      "meta_spectral_additive_adaptation": false
+    },
+    "scope": "One saved matched pair inspected; not a full runtime-config audit of all historical rows."
+  }
+}

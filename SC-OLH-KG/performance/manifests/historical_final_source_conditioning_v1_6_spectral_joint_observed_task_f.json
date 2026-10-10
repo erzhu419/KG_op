@@ -1,0 +1,44 @@
+{
+  "status": "registered before conditional fresh repair if the direct fixed candidate fails",
+  "risk_pilot": "paper_artifacts/historical_final_source_certification_v1/inputs/6_spectral_joint_observed_task_f.json",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "parent_learning": "paper_artifacts/historical_source_acceleration_selection_v1/results.json",
+  "parent_precision": "paper_artifacts/historical_source_acceleration_selection_v1/phase_results.json",
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "optimizer": {
+    "maxiter": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "output": "paper_artifacts/historical_final_source_certification_v1/conditioned/6_spectral_joint_observed_task_f",
+  "scope": "Only the fixed final conditional-risk candidate whose parent reweighting failed. Reuse exact compensated historical sampling with four fixed chains;compute full response moments once and retain1024 components. Apply original posterior and retention gates;diagnose response stationarity without updating response. Preserve all failures. No source-registry or target adoption,new labels,server tasks or original-law resampling. Final-versus-parent evidence remains separately unresolved.",
+  "failed_parent_reweighting": "paper_artifacts/historical_final_source_certification_v1/direct/6_spectral_joint_observed_task_f/results.json",
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 4096,
+    "seed": 202610115
+  },
+  "retained_mixture": {
+    "stride_per_chain": 16,
+    "components_per_arm": 1024,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "maximum_single_thread_cpu_seconds": 60
+}

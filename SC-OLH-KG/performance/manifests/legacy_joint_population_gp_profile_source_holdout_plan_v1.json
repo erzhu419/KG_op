@@ -1,0 +1,58 @@
+{
+  "status": "completed Stage72; original source repair gate failed; followed by Stage73-74 task regularization development checks",
+  "profile_execution": "performance/manifests/legacy_joint_population_gp_profile_start_execution_v1.json",
+  "profile_results": "paper_artifacts/legacy_joint_population_gp_profile_start_v1/results.json",
+  "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/calibration_profiles.json",
+  "parent_reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "parent_layouts": {
+    "5": "3",
+    "6": "4"
+  },
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "paid_candidates": [
+    0,
+    1
+  ],
+  "basis_of_next_step": "Stage69 retains GP signal in the original27-column space; Stage70 isolates remaining source-estimation differences without requiring task coefficient correlations for low MSE. Stage71 finds a better native source objective in7/12 branches by more than .09 NLL per label, selecting10/12 starts by the existing ftol. Training whole-task-out averages favor the fixed native/GP-profile two-start source-NLL rule: paid g MSE falls12.5%/14.0%, raw g density rises .06054/.07489. Assignment5 still loses raw density on3/6 branches, and GP remains better on average. A provisional source-only evaluation is justified; no stable superiority is established.",
+  "fixed_candidate": "Use the unchanged native hierarchical orthogonal group/spectral g model, optimizer, regularizer mean, fixed common intercept, weak tail and bounds. Reuse Stage71 initial_profile on each full-six-task cached GP common PRIOR/task kernel; jointly refit native g once per assignment, allowing at most one saved completion. Select against the original native g fit only by source NLL improvement beyond the existing optimizer ftol. Keep f and eta_f/eta_g fits unchanged. Do not change initialization/exponents/support on source6/7 scores.",
+  "information_contract": "Full72 source mean records cost216 original physical calls; risk48 records/144 calls are a subset and reuse the original fit. GP and native source models see the same records. Preserve Stage53's original risk-only full/deleted identity mixture, equal initial weights, paid filter and heldout coordinate maps. The failed complete mean-deletion mixture, task-direction covariance, f/g coupling and projected GP posterior transplants are not used.",
+  "freeze_rule": "Fit and choose both full-source g laws, then freeze all4 candidate source6/7 prior/raw-paid forecasts before scoring the original71 unobserved policies. Reproduce Stage53 native controls before interpreting changes. No target observations, verifier outcomes, terminal integrations or confirmation blocks.",
+  "comparison": "Compare both holdouts in both assignments with their same216-call Stage53 structural control; retain the matched GP and original144-call structural parent results separately. Report g MSE, proper joint and g raw batch density and all case differences. Reuse the existing source repair gate without relaxation: g MSE nonincrease, joint density nondecrease and g density strict improvement in every case, against the same-information and original144-call counterparts. A failed gate retains useful optimization findings but blocks target promotion.",
+  "interpretation": "Development source generalization of a coherent optimization repair. The holdouts were opened in earlier studies, so this is not independent confirmation. No source/target decision benefit, factor recovery or high-dimensional optimization follows from a pass.",
+  "next_action": "If the source repair gate passes, separately register a bounded target decision diagnostic with the original frontend, same total-call budget and independent terminal verifier. If it fails, stop further initialization searches and assess source predictive regularization/calibration inside the original function space; preserve the branch failures and GP control.",
+  "cost": {
+    "planned_new_g_source_fits": 2,
+    "maximum_completion_fits": 2,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only; no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1",
+  "execution_manifest": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "results": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1/results.json",
+  "followup_results": [
+    "paper_artifacts/legacy_joint_population_intercept_task_validation_v1/results.json",
+    "paper_artifacts/legacy_joint_population_intercept_task_holdout_v1/results.json"
+  ],
+  "report": "docs/orthogonal_meta_prior_stage72_74_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_common_task_attribution_plan_v1.json"
+}

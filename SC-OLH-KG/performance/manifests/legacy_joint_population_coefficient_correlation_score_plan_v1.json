@@ -1,0 +1,44 @@
+{
+  "status": "completed in Stage91: 24 law derivatives, fixed-marginal small probes and Fisher information complete; broader coefficient correlation not adopted",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "centering_results": "paper_artifacts/legacy_joint_population_task_bank_centering_v1/results.json",
+  "endpoint_results": "paper_artifacts/legacy_joint_population_task_bank_centering_endpoint_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "basis_of_next_step": "Centered task level/shape source learning passes the registered development gate, but94\u201395% of MSE gain comes from task1; other five tasks lose average raw density. The unchanged source gates pass2/4 and3/4. Assignment5 task6 shape loss already exists before paid adaptation. Do not tune against source6/7 or repeat centering variants. The next source-only model question is whether diagonal residual coefficient covariance omits supported shape correlations. The remaining original144 joint failure at assignment6/task7 also has f raw-density loss-.146723 versus g gain+.095562, so a g-only repair cannot be assumed to close the complete-model gate.",
+  "distinction": "Earlier Stages62\u201365 coupled DIFFERENT source tasks using task descriptors. This calculation examines correlations BETWEEN function coefficients WITHIN a task residual in the unchanged original orthogonal dictionary. Basis orthogonality under a public reference does not by itself imply population coefficient independence.",
+  "source_only_calculation": "For every five-task branch inspect BOTH function heads: restore g with the Stage88 centered-task source law and f with its unchanged Stage71 original task law. Reproduce each law's source NLL,beta,H,R using its own regularizer and source noise. At fixed fitted parameters compute Gaussian likelihood gradient G for task coefficient covariance with the actual common D_i and residual Z_i (centered for g, unchanged D_i for f) and common posterior H. Exclude task intercept and keep the weak tail independent. Let E_j be positive learned nonintercept excess variance above the original weak tail. Form B=diag(sqrt(E)) G_shape diag(sqrt(E)); inspect its off-diagonal part at fixed original coefficient marginals. No f centering or refit is implied.",
+  "direction_and_verification": "The minimum eigenvector v of offdiag(B) defines the source-only diagnostic direction DeltaR=diag(sqrt(E))*(v*v^T-diag(v^2))*diag(sqrt(E)) in nonintercept coefficients, with zero intercept row/column. Verify unchanged diagonal, PSD for the declared small perturbations, native dense Gaussian marginal NLL and the analytic directional derivative against a central finite difference. Record active excess dimension, eigenvalues, source directional score and the source log-likelihood change at one fixed positive probe. No new optimizer, amplitude/support/spectrum change, target forecasts or covariance transplant.",
+  "finite_difference_epsilon": 0.0001,
+  "fixed_source_probe": 0.01,
+  "interpretation": "Directions are adaptively extracted from the same small source cohort. A negative score or training-likelihood gain is not statistical evidence of population correlation, independence failure, predictive benefit, or permission to adopt a broader model. Zero-diagonal symmetric scores generically have a negative eigenvalue; quantify source effect size and identification rather than treating its sign as a discovery.",
+  "next_action": "Use all24 source diagnostics to judge whether one separately registered constrained covariance contrast is justified; do not automatically fit it because an eigenvalue is negative. Keep source6/7 outside this calculation and do not select loading directions or amplitudes from their failures. Preserve original complete-model source gates and historical60/60; no target/confirmation or manuscript claim changes.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_coefficient_correlation_score_v1",
+  "heads": [
+    "f",
+    "g"
+  ],
+  "execution_manifest": "performance/manifests/legacy_joint_population_coefficient_correlation_score_execution_v1.json",
+  "result": "paper_artifacts/legacy_joint_population_coefficient_correlation_score_v1/results.json",
+  "report": "docs/orthogonal_meta_prior_stage91_96_20261006.md",
+  "next_plan": "performance/manifests/legacy_joint_population_function_signal_floor_audit_plan_v1.json"
+}

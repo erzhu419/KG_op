@@ -1,0 +1,21 @@
+{
+  "stage": "meta_prior_local_likelihood_a2_20261003",
+  "scope": "Local one-batch inference conditional on legacy pre-observation Gaussian component priors; no counterfactual trajectory or deployment-reward claim.",
+  "fixed_before_diagnostic_results": true,
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "base_protocol": "Use the saved stage-A execution_plan.json base_protocol and its n24_v928 allocation.",
+  "site_rule": "For each of the 160 archived paths, probe the last paid batch at its original recommendation. Record the three unobserved recommendations without inventing observations.",
+  "additional_anchor": {"seed": 60, "regime": "high_frequency_risk", "arm": "risk_ard_mixture", "candidate": 191, "reason": "Post hoc regression identified in stage A; report separately from original-winner sites."},
+  "variants": {
+    "legacy": ["gaussian", "sample_variance"],
+    "exact_eta_label": ["log_chi_square", "sample_variance"],
+    "joint_gaussian_label": ["gaussian", "latent_variance"],
+    "joint_exact_label": ["log_chi_square", "latent_variance"]
+  },
+  "likelihood": "For each original component pair, integrate its eta prior times the batch log-variance likelihood and the marginalized g batch-mean likelihood; g conditional on eta remains Gaussian. Retain posterior g/eta covariance and component probabilities.",
+  "source_information": "Source selection and ARD parameters stay fixed; target supports and simulator truth enter only post-inference diagnostics.",
+  "scoring": "Compute immediate local posterior errors and verifier power for all variants at each paid site; preserve every regime/arm and the separate anchor. Explain any difference between exact component-mixture power and legacy moment-matched power.",
+  "resource_limits": {"local_threads": 1, "local_cpu_hours_cap": 0.1, "server_experiment_jobs": 0, "kg_calls": 0, "new_searches": 0, "new_random_verifications": 0, "new_server_pulls": 0},
+  "partial_results": "Retain completed sites; an incomplete cohort supports no full-cohort diagnostic claim.",
+  "next_step": "Use the findings to choose risk-support correction versus a likelihood change; do not promote a local likelihood probe as a full-method fix."
+}

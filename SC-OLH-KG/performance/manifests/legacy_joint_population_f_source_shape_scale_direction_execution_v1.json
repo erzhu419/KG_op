@@ -1,0 +1,19 @@
+{
+  "status": "frozen after verified conditional calibration;before coherent source covariance probes",
+  "entrypoint": "performance/check_legacy_f_source_shape_scale_direction.py",
+  "calibration_results": "paper_artifacts/legacy_joint_population_f_inner_conditional_calibration_v1/results.json",
+  "source_context_plan": "performance/manifests/legacy_joint_population_f_inner_raw_contract_plan_v1.json",
+  "reference_forecasts": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+  "fixed_scales": [0.99, 1.01],
+  "paid_prefix": [0, 1, 29, 58],
+  "source_rule_tolerances": {"raw_mass_absolute": 1e-8, "mean_variance_relative": 1e-6, "coefficient_mean_max_absolute": 1e-8, "common_covariance_relative_frobenius": 1e-6},
+  "prediction_tolerances": {"mean_max_absolute": 1e-7, "covariance_relative_frobenius": 1e-5, "paid_log_evidence_absolute": 1e-6},
+  "question": "Does reducing source task-shape budget improve the actual few-shot proper predictive objective after coherent source mean/variance integration and raw adaptation,rather than only scaling a saved posterior?",
+  "law": "At the frozen q1 rule multiply only task-shape excess over its original weak tail by the fixed scale. Preserve support,within-group low-frequency ratios,independent native intercept,common prior,empirical center,white discrepancy and eta source law. Recondition source beta/H and the full-tail conditional Jeffreys intercept-variance law using the same four training tasks. No refitted q,regularizer,GP teacher or risk map.",
+  "freeze": "Freeze both probes and all twenty rebuilt source rules before existing four-episode paid values;freeze all twenty forecasts before eight future batch score labels. Reuse ten q1 baseline forecasts and their original sources,public prefix and score roster. Source4/144 historical calls and four query episodes per arm remain unchanged.",
+  "decision": "Only positive mean proper raw-density gain for scale.99 AND negative gain for1.01 in BOTH layouts supports a separately frozen source-predictive shrink-learning step. Otherwise stop this scalar source direction,no scan or alternative step sizes. Always report MSE/transcript changes and all folds;source training evidence cannot promote the stopped candidate or authorize independent confirmation.",
+  "cost": {"new_source_parameter_fits": 0, "new_risk_coordinate_fits": 0, "new_risk_objective_fits": 0, "maximum_source_variance_integrations": 20, "maximum_raw_forecasts": 20, "maximum_numerical_reference_forecasts": 20, "reused_baseline_forecasts": 10, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "output": "paper_artifacts/legacy_joint_population_f_source_shape_scale_direction_v1",
+  "execution": "local serial single-thread;small cached source/prediction JSON/NPZ;no server jobs or pulls",
+  "scope": "Original orthogonal,sparse,low-order,low-frequency source prior contract. No posterior covariance edit adopted,no q optimization,source6/7,target,KG,independent confirmation or manuscript change;complete-model HOLD remains."
+}

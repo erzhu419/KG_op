@@ -1,0 +1,435 @@
+{
+  "execution": {
+    "status": "registered after unstable risk moment gradients;before implementation or replay",
+    "entrypoint": "performance/diagnose_legacy_f_raw_source_risk_stein_score.py",
+    "level_risk_plan": "performance/manifests/legacy_joint_population_f_raw_source_level_risk_score_plan_v1.json",
+    "moment_score_results": "paper_artifacts/legacy_joint_population_f_raw_source_level_risk_score_v1/results.json",
+    "original_source_execution": "performance/manifests/legacy_joint_population_f_learned_covariance_source_update_plan_v1.json",
+    "original_source_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+    "question": "Do equivalent raw likelihood derivative scores settle the absent risk task/white directions without increasing posterior draw count?",
+    "identity": "For scientific raw collapsed likelihood L(eta),risk prior mean gradient is -E[grad log L]/48 and covariance gradient is -.5/48 E[trace((Hess log L+grad log L grad log L^T)dK)]. Gaussian integration by parts gives the SAME marginal source gradient as the prior-moment Fisher expression. Different finite-sample estimators need not coincide pointwise. Use raw likelihood,not the density-corrected computational residual.",
+    "calculation": "With v=exp(eta)/3,W=(K_f+diag(v))^-1,alpha=W(y-m),g_mean=.5 v*(alpha^2-diag W),g=g_mean+(S^2 exp(-eta)-1). H=diag(g_mean-S^2 exp(-eta))+.5(v v^T)*(W^2-2(alpha alpha^T)*W). Reconstruct exactly Stage206's original4096 retained states per arm;reproduce original f/eta moments and512 subset before use. Compute derivative-score series and its ESS/Rhat/full-versus-half means. Save source eta split moments and scalar score records for the next M step;do not discard needed moments and force another replay.",
+    "verification": "Before replay,analytic raw g/H must reproduce finite gradients and Hessian columns at an existing eta reference point;the Gaussian likelihood specialization must reproduce its analytic marginal risk score at1e-8. Scientific eta prior/fixed learned function covariance stay unchanged. Source replay uses the frozen LEARNED Stage206 inputs. No new derivatives of the approximate q or new scalar density integrals.",
+    "decision": "Only derivative directions with Rhat<=1.05,ESS>=100 and matching full/half projected signs support a learning pilot. Report conditional Monte Carlo SE per score;weak or sign-unstable directions remain fixed. Zero-variance positive gradients stay projected at the boundary. Source derivative evidence is not a held-task correction or independent decision claim.",
+    "maximum_single_thread_cpu_seconds": 12,
+    "cost": {
+      "recomputed_original_sweeps": 24576,
+      "additional_independent_chains": 0,
+      "new_source_labels": 0,
+      "new_covariance_optimizations": 0,
+      "new_density_integrations": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;original source-state replay and analytic48-dimensional derivatives;small JSON,no NPZ or server work",
+    "scope": "Same original-source raw model and four priors. No task0/task1 outcomes,source6/7,target,KG,confirmation or manuscript changes. Complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "raw_Stein_scores_full_first_second": [
+        [
+          0.020506253682500065,
+          0.02863725896027498,
+          5.7046453033865375e-05,
+          0.04391074651172562,
+          0.15651470609699256
+        ],
+        [
+          0.0239768664797021,
+          0.010654247434371598,
+          5.6646865011664374e-05,
+          0.032280762513775346,
+          0.156120744842986
+        ],
+        [
+          0.017035640885298027,
+          0.04662027048617844,
+          5.744604105606618e-05,
+          0.05554073050967576,
+          0.15690866735099807
+        ]
+      ],
+      "projected_scores_full_first_second": [
+        [
+          0.020506253682500065,
+          0.02863725896027498,
+          5.7046453033865375e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.0239768664797021,
+          0.010654247434371598,
+          5.6646865011664374e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.017035640885298027,
+          0.04662027048617844,
+          5.744604105606618e-05,
+          0.0,
+          0.0
+        ]
+      ],
+      "conditional_MC_standard_errors": [
+        0.0063931913728483055,
+        0.02332136697476466,
+        7.794049674445936e-07,
+        0.009485767900393044,
+        0.0027247528827921996
+      ],
+      "diagnostics": {
+        "split_rhat": [
+          1.0019769685975486,
+          1.0031788195603935,
+          1.0044634668414163,
+          1.0063733915077493,
+          1.0046655408222862
+        ],
+        "autocorrelation_ess": [
+          510.33380202332694,
+          1056.024043378688,
+          780.1927921116722,
+          696.7692325537485,
+          928.8317794657374
+        ]
+      },
+      "stable_nonzero_projected_directions": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "positive_boundary_scores_excluding_zero": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "original_source_replay_matched": true,
+      "source_posterior_unchanged": true
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "raw_Stein_scores_full_first_second": [
+        [
+          0.03054185096486049,
+          0.04716884749133135,
+          5.3218709026182246e-05,
+          0.08543431376234338,
+          0.1659553422155952
+        ],
+        [
+          0.03525660275222151,
+          0.09189639845629834,
+          5.3426501382649394e-05,
+          0.08817632663889216,
+          0.1679441469558345
+        ],
+        [
+          0.02582709917749939,
+          0.002441296526364123,
+          5.30109166697149e-05,
+          0.08269230088579484,
+          0.16396653747535547
+        ]
+      ],
+      "projected_scores_full_first_second": [
+        [
+          0.03054185096486049,
+          0.04716884749133135,
+          5.3218709026182246e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.03525660275222151,
+          0.09189639845629834,
+          5.3426501382649394e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.02582709917749939,
+          0.002441296526364123,
+          5.30109166697149e-05,
+          0.0,
+          0.0
+        ]
+      ],
+      "conditional_MC_standard_errors": [
+        0.006056856785244813,
+        0.019124702683816646,
+        7.08920711257966e-07,
+        0.0077823388666659185,
+        0.0020606067931472575
+      ],
+      "diagnostics": {
+        "split_rhat": [
+          1.0092689898114688,
+          1.0031645745691367,
+          1.0011772460428947,
+          1.0005980989678231,
+          1.0002819444718287
+        ],
+        "autocorrelation_ess": [
+          507.84838459818906,
+          1444.5754037340946,
+          942.8272507709835,
+          888.6263308987385,
+          1418.6552051638541
+        ]
+      },
+      "stable_nonzero_projected_directions": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "positive_boundary_scores_excluding_zero": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "original_source_replay_matched": true,
+      "source_posterior_unchanged": true
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "raw_Stein_scores_full_first_second": [
+        [
+          0.025058836017429593,
+          0.025054315514516787,
+          7.330155434536082e-05,
+          -0.0070640887004428405,
+          0.21168662463242743
+        ],
+        [
+          0.031740725458342355,
+          0.018826360554429523,
+          7.32575888135732e-05,
+          0.006771541881902698,
+          0.21316455650550895
+        ],
+        [
+          0.01837694657651686,
+          0.03128227047460424,
+          7.334551987714818e-05,
+          -0.02089971928278848,
+          0.2102086927593453
+        ]
+      ],
+      "projected_scores_full_first_second": [
+        [
+          0.025058836017429593,
+          0.025054315514516787,
+          7.330155434536082e-05,
+          -0.0070640887004428405,
+          0.0
+        ],
+        [
+          0.031740725458342355,
+          0.018826360554429523,
+          7.32575888135732e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.01837694657651686,
+          0.03128227047460424,
+          7.334551987714818e-05,
+          -0.02089971928278848,
+          0.0
+        ]
+      ],
+      "conditional_MC_standard_errors": [
+        0.0075644296090543435,
+        0.014610427380812238,
+        5.362227298097403e-07,
+        0.010173057522222547,
+        0.0016203443778035347
+      ],
+      "diagnostics": {
+        "split_rhat": [
+          1.0153792998985647,
+          1.0030831083587013,
+          1.0042043231570374,
+          1.0098322926213108,
+          1.0074913458761379
+        ],
+        "autocorrelation_ess": [
+          335.8247033450822,
+          1051.055162663594,
+          673.9619289169406,
+          584.9193211591855,
+          695.562762805844
+        ]
+      },
+      "stable_nonzero_projected_directions": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "positive_boundary_scores_excluding_zero": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "original_source_replay_matched": true,
+      "source_posterior_unchanged": true
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "parameter_names": [
+        "eta_mean_offset",
+        "common_covariance_multiplier",
+        "task_covariance_multiplier",
+        "task_intercept_variance",
+        "white_variance"
+      ],
+      "raw_Stein_scores_full_first_second": [
+        [
+          0.01791995871209669,
+          -0.00376714960692104,
+          6.879213087685463e-05,
+          0.08114314180532285,
+          0.2110429987740016
+        ],
+        [
+          0.017410551996424405,
+          -0.026559109917601496,
+          6.884451984414113e-05,
+          0.08521082537456581,
+          0.21042748245888593
+        ],
+        [
+          0.018429365427768817,
+          0.019024810703759408,
+          6.873974190956827e-05,
+          0.07707545823608027,
+          0.21165851508911712
+        ]
+      ],
+      "projected_scores_full_first_second": [
+        [
+          0.01791995871209669,
+          -0.00376714960692104,
+          6.879213087685463e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.017410551996424405,
+          -0.026559109917601496,
+          6.884451984414113e-05,
+          0.0,
+          0.0
+        ],
+        [
+          0.018429365427768817,
+          0.019024810703759408,
+          6.873974190956827e-05,
+          0.0,
+          0.0
+        ]
+      ],
+      "conditional_MC_standard_errors": [
+        0.008201131569281237,
+        0.014568325566571618,
+        5.497911164537138e-07,
+        0.008875432500193061,
+        0.0014210929910765343
+      ],
+      "diagnostics": {
+        "split_rhat": [
+          1.0062807846320048,
+          1.0033096159305284,
+          1.0045571392208006,
+          1.0041874835722528,
+          1.0023918110399088
+        ],
+        "autocorrelation_ess": [
+          328.2361575670909,
+          1285.7102944237943,
+          828.9235614891825,
+          750.5305189909501,
+          936.2672909224549
+        ]
+      },
+      "stable_nonzero_projected_directions": [
+        true,
+        false,
+        true,
+        false,
+        false
+      ],
+      "positive_boundary_scores_excluding_zero": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "original_source_replay_matched": true,
+      "source_posterior_unchanged": true
+    }
+  ],
+  "all_original_source_replays_matched": true,
+  "all_derivative_checks_passed": true,
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 7.077945854,
+  "cost": {
+    "recomputed_original_sweeps": 24576,
+    "additional_independent_chains": 0,
+    "new_source_labels": 0,
+    "new_covariance_optimizations": 0,
+    "new_density_integrations": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "Gaussian integration-by-parts score of the same raw source likelihood,using original retained states. Stable derivative directions are source learning evidence only. Posterior law unchanged;moments/gradient records retained for a later M step. No future scoring or extra independent samples."
+}

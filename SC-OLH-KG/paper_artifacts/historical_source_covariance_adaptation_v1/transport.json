@@ -1,0 +1,397 @@
+{
+  "execution": {
+    "status": "registered after all16 direct cached-proposal overlap failures",
+    "entrypoint": "performance/transport_historical_source_samples.py",
+    "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+    "covariance_results": "paper_artifacts/historical_source_covariance_adaptation_v1/results.json",
+    "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+    "proposal": "Reuse the existing variance_reference Gaussian construction for old and new unconditioned eta source laws. T(eta)=m_new+L_new L_old^-1(eta-m_old). T is fixed by source labels/laws,not estimated from the cached samples. Push forward all512 actual old non-Gaussian posterior states;never substitute a Gaussian distribution for them.",
+    "density_ratio": "log p_new(eta_new)+log L_new(eta_new)+log|det T|-log p_old(eta_old)-log L_old(eta_old). Both L use the same collapsed f batch likelihood and exact chi-square sample variance likelihood. This is an exact source evidence-ratio identity for the deterministic pushforward,not a new scientific covariance law or an extra Gaussian eta-label likelihood.",
+    "controls": "All16 observed/deconvolved laws,source regularizers and positive point-discrepancies remain frozen. Same four sources and old512 states. One fixed transformation per law,no scale sweep,refit,extra source chain,tail tuning,target or fantasy scoring. Keep original direct-overlap failures.",
+    "verification": "Unchanged-reference transport must reproduce draws and have zero log-Jacobian. A known Gaussian posterior change with correlated covariances must reproduce the exact evidence ratio under product quadrature;omitting the Jacobian must fail that check. Existing precision gates remain unchanged. Stop on mismatch or CPU budget,retain failed cases.",
+    "maximum_single_thread_cpu_seconds": 10,
+    "output": "paper_artifacts/historical_source_covariance_adaptation_v1/transport.json"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 110.81229832425936,
+      "weight_ESS": 26.797930262925625,
+      "maximum_weight": 0.1352764965399901,
+      "weights_by_chain": [
+        0.17817365054612172,
+        0.2212803154016571,
+        0.3694263381342745,
+        0.2311196959179468
+      ],
+      "raw_source_log_evidence_ratio_estimate": -14.57835679926933,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 104.75054365729554,
+      "weight_ESS": 58.21060729537295,
+      "maximum_weight": 0.08713280776013829,
+      "weights_by_chain": [
+        0.25405242318197124,
+        0.22079805531134572,
+        0.31542344448584564,
+        0.20972607702083743
+      ],
+      "raw_source_log_evidence_ratio_estimate": -13.645453089647262,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 111.85205978058067,
+      "weight_ESS": 20.56838903660896,
+      "maximum_weight": 0.18307893435781106,
+      "weights_by_chain": [
+        0.35925885289416354,
+        0.21881499505917162,
+        0.22339269402273876,
+        0.19853345802392622
+      ],
+      "raw_source_log_evidence_ratio_estimate": -37.1519808488417,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 106.01268374515112,
+      "weight_ESS": 79.00018650168921,
+      "maximum_weight": 0.050543212243843984,
+      "weights_by_chain": [
+        0.28138021161558047,
+        0.2375091508911995,
+        0.29289783764809774,
+        0.18821279984512246
+      ],
+      "raw_source_log_evidence_ratio_estimate": -36.8226042660967,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 116.56507427375803,
+      "weight_ESS": 46.54511732697591,
+      "maximum_weight": 0.06576222057461005,
+      "weights_by_chain": [
+        0.2973219416196189,
+        0.17816303625024787,
+        0.30820441911096413,
+        0.21631060301916916
+      ],
+      "raw_source_log_evidence_ratio_estimate": -52.067738909560035,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 108.78240440181604,
+      "weight_ESS": 42.232512892325815,
+      "maximum_weight": 0.09404799402584581,
+      "weights_by_chain": [
+        0.4032435534173922,
+        0.21346690577481833,
+        0.20386790645140512,
+        0.17942163435638445
+      ],
+      "raw_source_log_evidence_ratio_estimate": -49.283319046615375,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 114.70772954078113,
+      "weight_ESS": 58.796021819057145,
+      "maximum_weight": 0.05752209689470841,
+      "weights_by_chain": [
+        0.21770898807111658,
+        0.20492532493002458,
+        0.42682802947311593,
+        0.15053765752574294
+      ],
+      "raw_source_log_evidence_ratio_estimate": -29.283798999421418,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "5",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 104.09101168480245,
+      "weight_ESS": 93.40648975194809,
+      "maximum_weight": 0.04195402141197254,
+      "weights_by_chain": [
+        0.2433511597848903,
+        0.264510452389618,
+        0.3191457491041581,
+        0.17299263872133352
+      ],
+      "raw_source_log_evidence_ratio_estimate": -27.218741858598857,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 106.8720846365802,
+      "weight_ESS": 25.3044358489055,
+      "maximum_weight": 0.11281361166246753,
+      "weights_by_chain": [
+        0.2907713838997706,
+        0.16026949053016748,
+        0.13211945483312393,
+        0.41683967073693795
+      ],
+      "raw_source_log_evidence_ratio_estimate": -46.56253908639368,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 100.36946014606602,
+      "weight_ESS": 52.04880499165448,
+      "maximum_weight": 0.06310734642794047,
+      "weights_by_chain": [
+        0.26764366431610664,
+        0.16334691617290298,
+        0.190521633027545,
+        0.3784877864834454
+      ],
+      "raw_source_log_evidence_ratio_estimate": -45.95602197361861,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 107.31307448330071,
+      "weight_ESS": 9.169662330807157,
+      "maximum_weight": 0.30908372463581846,
+      "weights_by_chain": [
+        0.19897312512086684,
+        0.1568288633704976,
+        0.17058460168613915,
+        0.4736134098224962
+      ],
+      "raw_source_log_evidence_ratio_estimate": -28.591263736136483,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 99.4708301740751,
+      "weight_ESS": 22.07155765860347,
+      "maximum_weight": 0.165957812055804,
+      "weights_by_chain": [
+        0.24057805386350897,
+        0.21021926496114493,
+        0.20456075592481263,
+        0.34464192525053355
+      ],
+      "raw_source_log_evidence_ratio_estimate": -27.18341553194901,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 110.49724003020843,
+      "weight_ESS": 37.90162571417002,
+      "maximum_weight": 0.10193918104375951,
+      "weights_by_chain": [
+        0.1901211702795974,
+        0.24016832097532465,
+        0.27622583207121915,
+        0.293484676673859
+      ],
+      "raw_source_log_evidence_ratio_estimate": -64.63824969599081,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 100.4678633694844,
+      "weight_ESS": 20.35102133885841,
+      "maximum_weight": 0.2066390524354791,
+      "weights_by_chain": [
+        0.23262489007008547,
+        0.19365042184104503,
+        0.3826501607696243,
+        0.19107452731924518
+      ],
+      "raw_source_log_evidence_ratio_estimate": -64.48372323315415,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "observed_task",
+      "affine_log_Jacobian": 112.88862665650338,
+      "weight_ESS": 52.0618684637418,
+      "maximum_weight": 0.09142791369970897,
+      "weights_by_chain": [
+        0.2892061132922307,
+        0.2123388540161273,
+        0.2122523431512165,
+        0.2862026895404255
+      ],
+      "raw_source_log_evidence_ratio_estimate": -48.47203185781396,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    },
+    {
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "affine_log_Jacobian": 106.29169956530674,
+      "weight_ESS": 68.31085107546372,
+      "maximum_weight": 0.049199763786608196,
+      "weights_by_chain": [
+        0.21509857336900232,
+        0.26434213464788486,
+        0.25618274537621866,
+        0.26437654660689397
+      ],
+      "raw_source_log_evidence_ratio_estimate": -47.49602146265408,
+      "chain_functional_ESS": null,
+      "split_Rhat": null,
+      "half_NLL_differences": null,
+      "precision_gate_passed": false,
+      "conditional_MC_interval_95": null,
+      "failure": "insufficient_cached_proposal_overlap"
+    }
+  ],
+  "checks": [
+    {
+      "layout": "5",
+      "unchanged_transport_max_error": 0.0,
+      "unchanged_log_Jacobian": 0.0,
+      "reference_is_not_replacing_the_scientific_prior": true,
+      "passed": true
+    },
+    {
+      "layout": "6",
+      "unchanged_transport_max_error": 0.0,
+      "unchanged_log_Jacobian": 0.0,
+      "reference_is_not_replacing_the_scientific_prior": true,
+      "passed": true
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "eligible_raw_importance_cases": 0,
+  "cpu_seconds": 0.5386991869999999,
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "cost": {
+    "new_source_chains": 0,
+    "new_source_data": 0,
+    "new_simulator_calls": 0,
+    "new_verifier_calls": 0
+  },
+  "limitations": "Exact change-of-variables ratio for a transformed cached source posterior. Reference maps use fixed labels and unconditioned source laws,not the cached draws or target labels. A Gaussian reference does not add a Gaussian variance-label likelihood. Failed overlap or chain gates cannot rank covariance treatments or attach a source posterior."
+}

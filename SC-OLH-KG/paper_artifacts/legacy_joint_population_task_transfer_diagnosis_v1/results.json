@@ -1,0 +1,442 @@
+{
+  "execution": {
+    "status": "registered after Stage78 failed the original source gate, before conditional MSE intervals or source transcript-density diagnostics",
+    "calibration_execution": "performance/manifests/legacy_joint_population_task_transfer_calibration_execution_v1.json",
+    "calibration_results": "paper_artifacts/legacy_joint_population_task_transfer_calibration_v1/results.json",
+    "holdout_execution": "performance/manifests/legacy_joint_population_task_transfer_holdout_execution_v1.json",
+    "holdout_profiles": "paper_artifacts/legacy_joint_population_task_transfer_holdout_v1/calibration_profiles.json",
+    "native_profiles": "paper_artifacts/legacy_joint_population_gp_profile_source_holdout_v1/calibration_profiles.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "training_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "heldout_tasks": [
+      6,
+      7
+    ],
+    "basis_of_next_step": "Both scalar fits pass the average training gate and lower source6/7 average paid g MSE10.6%/12.4%, yet task6 loses .000040/.000153 MSE and assignment6 also loses raw density. The345-fold task intercept multiplier greatly worsens training prior raw density. Diagnose scoring resolution and the conditional-only objective before another fit, without changing the source gate.",
+    "holdout_noise_diagnostic": "On frozen Stage78 versus Stage72 g means at71 sites, reuse the existing paired_interval calculation:4*sum((new-old)^2*S2/3)/71^2 with Welch-Satterthwaite approximate95% interval. The cached supported simulator uses independent Gaussian site/repeat draws. Reproduce saved MSE differences. These are conditional fixed-bank measurement intervals, not task-population or selection-adjusted confirmation; do not replace the failed gate.",
+    "source_objective_diagnostic": "Replay only fixed native and Stage77 calibrated single-risk g fields on training tasks0\u20135, recording predictive evidence for the same two raw updates. Reproduce cached twelve-site prior/paid g mean/covariance before reporting. Add raw-paid predictive log evidence to12 times the already-scored Gaussian conditional mean density, then divide by14. Report paired evidence, conditional density, combined score and native/scaled intercept variances. This normalized sequential score uses Gaussian moment projection and fixed mean-label noises; it is not the exact raw whole-task density. No new fit or selection.",
+    "next_action": "If large-intercept conditional gains reverse when paid evidence is included, register a source-only predictive calibration objective for the whole existing observation transcript, retaining the same two-parameter family and original acceptance/source gates. Otherwise do not guess a multiplier cap or add a covariance grid; reassess common-function estimation/source information. Holdout noise intervals alone cannot authorize target promotion.",
+    "cost": {
+      "new_scalar_fits": 0,
+      "new_native_source_fits": 0,
+      "new_risk_fits": 0,
+      "new_map_fits": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread, cached small JSON and fixed-model raw updates only, no server jobs or pulls",
+    "entrypoint": "performance/diagnose_legacy_task_transfer.py",
+    "output": "paper_artifacts/legacy_joint_population_task_transfer_diagnosis_v1"
+  },
+  "holdout_measurement_intervals": [
+    {
+      "layout": "5",
+      "task_index": 6,
+      "paired_mse_difference": 4.004851883498257e-05,
+      "measurement_standard_error": 1.1803545575225154e-05,
+      "welch_degrees_of_freedom": 28.31867181873991,
+      "approximate_95_interval": [
+        1.5882303584642466e-05,
+        6.421473408532269e-05
+      ]
+    },
+    {
+      "layout": "5",
+      "task_index": 7,
+      "paired_mse_difference": -0.0003299859160096617,
+      "measurement_standard_error": 5.311667756904777e-05,
+      "welch_degrees_of_freedom": 30.4671332917234,
+      "approximate_95_interval": [
+        -0.0004383949408892469,
+        -0.00022157689113007654
+      ]
+    },
+    {
+      "layout": "6",
+      "task_index": 6,
+      "paired_mse_difference": 0.00015285488862021174,
+      "measurement_standard_error": 3.505313993751265e-05,
+      "welch_degrees_of_freedom": 29.295643230203694,
+      "approximate_95_interval": [
+        8.119458082166341e-05,
+        0.00022451519641876006
+      ]
+    },
+    {
+      "layout": "6",
+      "task_index": 7,
+      "paired_mse_difference": -0.00046156917543951426,
+      "measurement_standard_error": 0.00010512813403069091,
+      "welch_degrees_of_freedom": 30.329778523860845,
+      "approximate_95_interval": [
+        -0.0006761716183447837,
+        -0.00024696673253424474
+      ]
+    }
+  ],
+  "source_summary": {
+    "5": {
+      "native_source_nll_selection": {
+        "raw_paid_log_evidence": 3.1661060465798134,
+        "paid_gaussian_mean_density_per_label": 1.552164678442935,
+        "sequential_transcript_density_per_label": 1.5565772991353597
+      },
+      "source_transfer_calibration": {
+        "raw_paid_log_evidence": 3.0310313696949436,
+        "paid_gaussian_mean_density_per_label": 1.5563326076570252,
+        "sequential_transcript_density_per_label": 1.5505016186842322
+      }
+    },
+    "6": {
+      "native_source_nll_selection": {
+        "raw_paid_log_evidence": 3.1394021700476924,
+        "paid_gaussian_mean_density_per_label": 1.561131295012057,
+        "sequential_transcript_density_per_label": 1.562355550728027
+      },
+      "source_transfer_calibration": {
+        "raw_paid_log_evidence": 1.0069338525024711,
+        "paid_gaussian_mean_density_per_label": 1.6209150844253248,
+        "sequential_transcript_density_per_label": 1.461279633257598
+      }
+    }
+  },
+  "source_rows": [
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.6019158610733735,
+      "raw_paid_step_log_evidence": [
+        1.702202837263129,
+        1.8997130238102444
+      ],
+      "paid_gaussian_mean_density_per_label": 1.6376574336956893,
+      "sequential_transcript_density_per_label": 1.660986076101546,
+      "task_intercept_variance": 0.0009271652341334666
+    },
+    {
+      "layout": "5",
+      "deleted_task": 0,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 3.462520898078985,
+      "raw_paid_step_log_evidence": [
+        1.642275294517555,
+        1.8202456035614298
+      ],
+      "paid_gaussian_mean_density_per_label": 1.633529884360369,
+      "sequential_transcript_density_per_label": 1.6474913936002438,
+      "task_intercept_variance": 0.002155732109595832
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 2.614949988918712,
+      "raw_paid_step_log_evidence": [
+        0.8732331077939899,
+        1.7417168811247221
+      ],
+      "paid_gaussian_mean_density_per_label": 1.3719052468497466,
+      "sequential_transcript_density_per_label": 1.3627009250796909,
+      "task_intercept_variance": 0.0
+    },
+    {
+      "layout": "5",
+      "deleted_task": 1,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 2.4711724559025994,
+      "raw_paid_step_log_evidence": [
+        0.8072988570207923,
+        1.6638735988818072
+      ],
+      "paid_gaussian_mean_density_per_label": 1.3790710440711906,
+      "sequential_transcript_density_per_label": 1.3585732131969206,
+      "task_intercept_variance": 0.0
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.6332810080885776,
+      "raw_paid_step_log_evidence": [
+        1.6528730744806936,
+        1.980407933607884
+      ],
+      "paid_gaussian_mean_density_per_label": 1.8317730666096026,
+      "sequential_transcript_density_per_label": 1.829611271957415,
+      "task_intercept_variance": 0.0008569574523291842
+    },
+    {
+      "layout": "5",
+      "deleted_task": 2,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 3.539184337586626,
+      "raw_paid_step_log_evidence": [
+        1.6031950191796442,
+        1.9359893184069816
+      ],
+      "paid_gaussian_mean_density_per_label": 1.8298112239748778,
+      "sequential_transcript_density_per_label": 1.8212085018060828,
+      "task_intercept_variance": 0.001992493493643583
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.328961118070513,
+      "raw_paid_step_log_evidence": [
+        1.213964939060198,
+        2.1149961790103147
+      ],
+      "paid_gaussian_mean_density_per_label": 0.9463845082690887,
+      "sequential_transcript_density_per_label": 1.0489696583785413,
+      "task_intercept_variance": 0.0006231999359453567
+    },
+    {
+      "layout": "5",
+      "deleted_task": 3,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 3.2640586752335663,
+      "raw_paid_step_log_evidence": [
+        1.2263255111887272,
+        2.037733164044839
+      ],
+      "paid_gaussian_mean_density_per_label": 0.9749430305759638,
+      "sequential_transcript_density_per_label": 1.0688125030103666,
+      "task_intercept_variance": 0.0014489888783104214
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.6655894728229055,
+      "raw_paid_step_log_evidence": [
+        1.6377616209646324,
+        2.027827851858273
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7775670013943492,
+      "sequential_transcript_density_per_label": 1.785456677825364,
+      "task_intercept_variance": 0.000786548379079517
+    },
+    {
+      "layout": "5",
+      "deleted_task": 4,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 3.5366436037949063,
+      "raw_paid_step_log_evidence": [
+        1.5983841908233567,
+        1.9382594129715494
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7732671770114454,
+      "sequential_transcript_density_per_label": 1.7725606948523038,
+      "task_intercept_variance": 0.0018287868592451854
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 2.1519388305048017,
+      "raw_paid_step_log_evidence": [
+        0.045136029840754266,
+        2.1068028006640476
+      ],
+      "paid_gaussian_mean_density_per_label": 1.747700813839134,
+      "sequential_transcript_density_per_label": 1.6517391854696004,
+      "task_intercept_variance": 0.0006391832897595153
+    },
+    {
+      "layout": "5",
+      "deleted_task": 5,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 1.9126082475729742,
+      "raw_paid_step_log_evidence": [
+        0.16165740595440792,
+        1.7509508416185664
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7473732859483053,
+      "sequential_transcript_density_per_label": 1.6343634056394742,
+      "task_intercept_variance": 0.0014861514333413112
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.4525491714481698,
+      "raw_paid_step_log_evidence": [
+        1.6153167472054037,
+        1.8372324242427662
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7153656631759053,
+      "sequential_transcript_density_per_label": 1.716924080682788,
+      "task_intercept_variance": 0.001343921440501597
+    },
+    {
+      "layout": "6",
+      "deleted_task": 0,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 1.0526369172024772,
+      "raw_paid_step_log_evidence": [
+        -0.5393678852048837,
+        1.592004802407361
+      ],
+      "paid_gaussian_mean_density_per_label": 1.700304226186965,
+      "sequential_transcript_density_per_label": 1.5325919736747182,
+      "task_intercept_variance": 0.4641544869571204
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 2.8588131116499653,
+      "raw_paid_step_log_evidence": [
+        1.031873904350181,
+        1.8269392072997843
+      ],
+      "paid_gaussian_mean_density_per_label": 1.248088322842329,
+      "sequential_transcript_density_per_label": 1.2739909275541366,
+      "task_intercept_variance": 0.00018647169748226382
+    },
+    {
+      "layout": "6",
+      "deleted_task": 1,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 1.9345155064091084,
+      "raw_paid_step_log_evidence": [
+        0.368945897333929,
+        1.5655696090751794
+      ],
+      "paid_gaussian_mean_density_per_label": 1.6184009251305829,
+      "sequential_transcript_density_per_label": 1.525380471998293,
+      "task_intercept_variance": 0.06440233221117413
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.513671761599622,
+      "raw_paid_step_log_evidence": [
+        1.5537063031907952,
+        1.9599654584088269
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7625115455961673,
+      "sequential_transcript_density_per_label": 1.761700736339545,
+      "task_intercept_variance": 0.001245726445411984
+    },
+    {
+      "layout": "6",
+      "deleted_task": 2,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 1.2010869520320309,
+      "raw_paid_step_log_evidence": [
+        -0.5030100923336509,
+        1.7040970443656818
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7730445385357247,
+      "sequential_transcript_density_per_label": 1.6055443867471948,
+      "task_intercept_variance": 0.43024056446581377
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.3296656246118435,
+      "raw_paid_step_log_evidence": [
+        1.2292783907431761,
+        2.100387233868667
+      ],
+      "paid_gaussian_mean_density_per_label": 1.1849621440640064,
+      "sequential_transcript_density_per_label": 1.2535150966699942,
+      "task_intercept_variance": 0.0009285116999999416
+    },
+    {
+      "layout": "6",
+      "deleted_task": 3,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 1.0780343784799753,
+      "raw_paid_step_log_evidence": [
+        -0.3629750768852964,
+        1.4410094553652717
+      ],
+      "paid_gaussian_mean_density_per_label": 1.1987103099408392,
+      "sequential_transcript_density_per_label": 1.1044684355550032,
+      "task_intercept_variance": 0.3206830836676755
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 3.5782565345508828,
+      "raw_paid_step_log_evidence": [
+        1.5814059735374175,
+        1.9968505610134653
+      ],
+      "paid_gaussian_mean_density_per_label": 1.726143069739636,
+      "sequential_transcript_density_per_label": 1.735140955101894,
+      "task_intercept_variance": 0.0012507428106823305
+    },
+    {
+      "layout": "6",
+      "deleted_task": 4,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": 1.203124220075661,
+      "raw_paid_step_log_evidence": [
+        -0.5042733712060847,
+        1.7073975912817458
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7141092858516578,
+      "sequential_transcript_density_per_label": 1.555173975021111,
+      "task_intercept_variance": 0.4319730827353178
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "case": "native_source_nll_selection",
+      "raw_paid_log_evidence": 2.1034568164256724,
+      "raw_paid_step_log_evidence": [
+        0.49058544865833165,
+        1.612871367767341
+      ],
+      "paid_gaussian_mean_density_per_label": 1.729717024654299,
+      "sequential_transcript_density_per_label": 1.6328615080198043,
+      "task_intercept_variance": 0.0013288022569056571
+    },
+    {
+      "layout": "6",
+      "deleted_task": 5,
+      "case": "source_transfer_calibration",
+      "raw_paid_log_evidence": -0.4277948591844273,
+      "raw_paid_step_log_evidence": [
+        -0.5437668783151186,
+        0.11597201913069133
+      ],
+      "paid_gaussian_mean_density_per_label": 1.7209212209061802,
+      "sequential_transcript_density_per_label": 1.4445185565492669,
+      "task_intercept_variance": 0.45893272570404836
+    }
+  ],
+  "cached_training_moments_and_holdout_mse_reproduced": true,
+  "source_gate_remains_failed": true,
+  "cost": {
+    "new_scalar_fits": 0,
+    "new_native_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.6091344569999999,
+  "target_promoted": false,
+  "independent_confirmation": false
+}

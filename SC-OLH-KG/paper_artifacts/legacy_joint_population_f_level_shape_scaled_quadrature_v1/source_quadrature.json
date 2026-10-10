@@ -1,0 +1,46 @@
+{
+  "execution": {
+    "status": "frozen before source-only median-coordinate cubature pilot",
+    "reference_execution": "performance/manifests/legacy_joint_population_f_level_shape_joint_quadrature_execution_v1.json",
+    "reference_results": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/results.json",
+    "reference_rules": "paper_artifacts/legacy_joint_population_f_level_shape_joint_quadrature_v1/source_quadrature.json",
+    "stopped_compact_results": "paper_artifacts/legacy_joint_population_f_level_shape_compact_quadrature_v1/results.json",
+    "question": "Does source-only median coordinate scaling concentrate positive cubature nodes more efficiently than the large source_signal coordinate scale,without changing the physical two-variance law?",
+    "source_law": "Exactly the retained Stage136/137 joint source Gaussian likelihood and joint Jeffreys measure,all nuisance/support/spectrum/tail frozen. No posterior product,no prior refit,no physical variance floor or cutoff.",
+    "coordinates": "v=median_v*(t/(1-t))^2,a=median_a*(s/(1-s))^2,t,s in(0,1),where medians are existing source-only conditional source posterior medians. Each true Jacobian is2median*t/(1-t)^3. These are numerical coordinate units,not chosen physical prior scales. Both complete variance tails are retained.",
+    "algorithm": "Positive global tensor Gauss-Legendre at8,16,32,64 nodes per axis. Compare normalization and the full scaled source moment vector directly against the verified Stage137 reference. Select the first resolution satisfying unchanged1e-8 limits;record all failures and do not increase the4096 component budget.",
+    "resolutions": [
+      8,
+      16,
+      32,
+      64
+    ],
+    "acceptance": {
+      "normalizer_relative_difference_vs_stage137": 1e-08,
+      "scaled_moment_max_absolute_difference_vs_stage137": 1e-08,
+      "maximum_positive_nodes_per_fold": 4096
+    },
+    "source_reference_moments": "Same vector as Stage137/138,including v,a first/second/cross moments,common beta,average H and covariance of beta. Reconstruct once from saved Stage137 weighted source nodes where the full vector was not persisted;save this small vector to avoid future reconstruction.",
+    "scope": "Source0-5 only;pilot task1 layouts5/6 first;continue other ten folds only if both pilots pass. No paid query outcomes,source6/7,target,KG,confirmation,manuscript edits,server tasks or pulls.",
+    "cost": {
+      "new_source_fits": 0,
+      "maximum_new_compact_source_rules": 12,
+      "maximum_positive_rule_nodes_per_fold": 4096,
+      "maximum_new_density_evaluations_per_fold": 5440,
+      "new_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached source JSON and compact local NPZ",
+    "output": "paper_artifacts/legacy_joint_population_f_level_shape_scaled_quadrature_v1",
+    "planned_entrypoint": "performance/prepare_legacy_f_level_shape_scaled_quadrature.py",
+    "entrypoint_status": "implemented before execution",
+    "decision": "If all twelve compact rules pass,freeze a separate bounded paid-prefix prediction comparison beginning with task1 and the original four paid observations. Native and Stage137 full reference remain intact. If source coordinate rescaling fails,retain the numerical limitation;do not inflate variances,change the reference measure or launch heavy online work.",
+    "entrypoint": "performance/prepare_legacy_f_level_shape_scaled_quadrature.py",
+    "plan_manifest": "performance/manifests/legacy_joint_population_f_level_shape_scaled_quadrature_plan_v1.json",
+    "frozen_before_source_evaluation": true
+  },
+  "rows": [],
+  "all12_source_rules_frozen_without_query_data": false
+}

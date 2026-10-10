@@ -1,0 +1,122 @@
+{
+  "execution_plan": "performance/manifests/historical_conditional_efficiency_v2.json",
+  "rows": [
+    {
+      "layout": "5",
+      "remaining_calls": 360,
+      "power": 12,
+      "maximum_reward_difference": 1.734723475976807e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 2.453724083,
+      "reference_cpu_seconds": 5.226136817,
+      "speedup_over_saved_reference": 2.1298795790480085
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 359,
+      "power": 12,
+      "maximum_reward_difference": 3.469446951953614e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 2.455642076,
+      "reference_cpu_seconds": 5.253928759999997,
+      "speedup_over_saved_reference": 2.139533611737966
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 360,
+      "power": 12,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 2.029787463,
+      "reference_cpu_seconds": 6.026403911999999,
+      "speedup_over_saved_reference": 2.9689827244735523
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 359,
+      "power": 12,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 2.0999259499999994,
+      "reference_cpu_seconds": 5.951044537000001,
+      "speedup_over_saved_reference": 2.833930661697858
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 360,
+      "power": 16,
+      "maximum_reward_difference": 1.734723475976807e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 12.900693110999999,
+      "reference_cpu_seconds": 28.061804535000007,
+      "speedup_over_saved_reference": 2.1752168114961687
+    },
+    {
+      "layout": "5",
+      "remaining_calls": 359,
+      "power": 16,
+      "maximum_reward_difference": 3.469446951953614e-18,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 12.919113430000003,
+      "reference_cpu_seconds": 28.035512730999997,
+      "speedup_over_saved_reference": 2.1700802367674537
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 360,
+      "power": 16,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 12.697101732,
+      "reference_cpu_seconds": 28.253853257999992,
+      "speedup_over_saved_reference": 2.225220672745571
+    },
+    {
+      "layout": "6",
+      "remaining_calls": 359,
+      "power": 16,
+      "maximum_reward_difference": 5.551115123125783e-17,
+      "maximum_cost_difference": 0.0,
+      "same_actions": true,
+      "same_best_action": true,
+      "equivalent": true,
+      "cpu_seconds": 12.623513374000005,
+      "reference_cpu_seconds": 28.159708604000002,
+      "speedup_over_saved_reference": 2.230734643336228
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "all_cases_equivalent": true,
+  "cpu_seconds": 64.565018252,
+  "cpu_budget_stopped": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "scope": "Reuse historical Gaussian eta quadrature with adjacent-rule convergence;unresolved certificates keep adaptive integration. No quadrature threshold/seed changes after seeing values. Compare all40 terminal values/costs in the same8 registered prior cases against saved references. Check all16 direct actions against independent scalar adaptive references at two preselected real paid-filter fantasies. Keep all source components,complete identities,paid prefix,40 actions and budgets unchanged. Nested GH differences are diagnostics,not rigorous error bounds;scalar reference equivalence is required before KG extension.",
+  "decision_ranking_certified": false,
+  "independent_confirmation": false
+}

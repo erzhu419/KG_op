@@ -1,0 +1,43 @@
+{
+  "status": "frozen before all24 common-prior diagnostics",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "common_attribution_results": "paper_artifacts/legacy_joint_population_f_common_attribution_v1/results.json",
+  "conditional_results": "paper_artifacts/legacy_joint_population_f_source_conditional_estimator_v1/results.json",
+  "source_bank_results": "paper_artifacts/legacy_joint_population_f_source_bank_projection_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "heads": [
+    "f",
+    "g"
+  ],
+  "basis_of_next_step": "F initializers and the conditional empirical-Bayes estimator fail original training gates. Common mean/H swaps retain benefits with native task law and discrepancy. Current source/public query banks have exactly identical73 coordinates; source-bank projection cannot establish transfer across different coordinate supports. Prior Stage91 examined TASK coefficient correlations, not the COMMON-function prior covariance A. Inspect this distinct restriction before another estimator or correlated-model fit.",
+  "diagnostic": "Restore each unchanged native f law and Stage88 centered g law with its original empirical regularizer/noise. Project the existing source GP COMMON PRIOR kernel (not its posterior H) onto the original27-column73-policy design. Compare common prior shape correlations and marginal/group/spectral masses with the original native diagonal common A. Exclude intercept correlations; keep fixed original common intercept variance, group supports, spectra and independent weak tail. Note explicitly that there is one shared common function per source cohort, not five independent draws of common coefficients.",
+  "fixed_marginal_direction": "For native nonintercept excess E=A_diag-tail, use the projected GP common prior correlation C_GP on active positive-variance coefficients. DeltaA_shape=diag(sqrt(E))*(C_GP-I)*diag(sqrt(E)), with zero intercept row/column and zero diagonal. Native common marginals, group/spectral budgets, supports and weak tail are unchanged. A(p)=A_native+p*DeltaA at fixed p=.01 corresponds to mixing the native excess identity correlation and the GP-derived excess correlation. Save actual projected eigenvalues; if the source-projected correlation is not numerically defined/PSD on actual active coefficients, report that failure and do not probe or invent a correlation repair.",
+  "source_effect": "Use actual common D and task Z (g public-bank centered, f uncentered) to form Gaussian source covariance C=D*A*D.T+blockdiag(Z*R*Z.T+diag(noise+delta)). Reproduce native Gaussian NLL,beta,H at p=0. Check analytic fixed-direction NLL derivative using posterior common second moment and independent dense covariance differentiation against central finite differences. Record fixed1% probe total source log-likelihood change and conditional expected Gaussian Fisher information .5*tr((C^-1*D*DeltaA*D.T)^2). No optimizer, query paid observations/forecasts, source6/7 or target outcomes.",
+  "finite_difference_epsilon": 0.0001,
+  "fixed_source_probe": 0.01,
+  "interpretation": "The GP prior direction is learned from the same source cohort; a likelihood gain is descriptive and does not prove population correlation, independent prediction, trajectory structure or decision value. Original basis orthogonality does not force prior coefficient independence. Use effect size and identification to judge whether a single separately registered common-correlation contrast is justified; weak information stops expansion. Do not automatically fit it or select a direction from source6/7 failures.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_common_prior_geometry_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_common_prior_geometry_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_common_prior_geometry.py",
+  "projection_reference": "Cached inputs.public_mean_reference: original73 public policy coordinates; no outcomes or task6/7 metadata read."
+}

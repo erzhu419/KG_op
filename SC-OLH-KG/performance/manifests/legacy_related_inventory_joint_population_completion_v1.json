@@ -1,0 +1,17 @@
+{
+  "plan": "performance/manifests/legacy_related_inventory_joint_population_plan_v1.json",
+  "pilot": "paper_artifacts/legacy_related_inventory_joint_population_v1/",
+  "output": "paper_artifacts/legacy_related_inventory_joint_population_completion_v1/",
+  "arms": ["common_mean_structural", "joint_population_structural", "joint_population_full"],
+  "source_head_fits_per_fold": 4,
+  "completion": "warm-start only the three capped g fits: source holdout02,source holdout04 and all six training tasks; additional max4096 iterations, same likelihood,parameter bounds,tail,ftol1e-9 and gtol1e-5; preserve the original1024-iteration pilot",
+  "reuse": "restore the25 already converged joint heads from their recorded coefficient means,population mean covariances,residual variances and discrepancy; reconstruct source-only encoders and regularizers with28 original head fits; no repeated optimization of converged joint heads",
+  "selection": "complete capped source likelihoods independently of any development score; no choice between pilot/completion based on target utility",
+  "terminal_class": "same stage17 full73-policy guarded/direct actions and pre-scoring retained4/34 for all arms",
+  "adaptation_calls": 4,
+  "total_target_call_cap": 362,
+  "terminal_draw_power": 13,
+  "integration_seed": 80771,
+  "freeze": "save all six completion recommendations before loading cached scoring truth",
+  "execution": "local serial single-thread,31 source optimizations including3 continuations,0 new simulator calls/certificates/server tasks/pulls"
+}

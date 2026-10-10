@@ -1,0 +1,196 @@
+{
+  "heads": [
+    {
+      "head": "f",
+      "hyperparameters": {
+        "constant": 0.34898318370226256,
+        "lengthscale": [
+          0.34649173622658724,
+          5.0299043570508895,
+          5.772513669221352,
+          6.457614226783911,
+          7.915227549335477,
+          7.140925164176212,
+          2.680627243014459,
+          7.075287697760263,
+          6.447011978707074,
+          6.5104944085385466
+        ],
+        "signal_variance": 0.45352611760893097,
+        "noise_variance": 0.004876895303101684
+      },
+      "normalization": {
+        "mean": 0.40057075149521204,
+        "scale": 0.10258435272089048
+      },
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "official_hyperbo_code_with_gfile_shim",
+        "official_provenance": {
+          "repository": "google-research/hyperbo",
+          "commit": "e720fc1"
+        },
+        "compatibility_shims": [
+          "tensorflow_io_gfile_only"
+        ],
+        "source_prior_frozen_online": true,
+        "online_parameters_changed": [
+          "target_gp_posterior"
+        ],
+        "source_steps": 10000,
+        "n_target": 0,
+        "conditioning_noise": "source_learned_scalar_label_variance",
+        "supplied_per_point_noise_consumed": false,
+        "prediction_covariance": "latent_function_without_fresh_label_noise"
+      },
+      "kernel_reconstruction_max_error": 5.551115123125783e-17,
+      "source_label_count": 438,
+      "cpu_seconds": 108.21054666100001
+    },
+    {
+      "head": "g",
+      "hyperparameters": {
+        "constant": 0.1950501975248387,
+        "lengthscale": [
+          0.6281406344254419,
+          5.715260345204916,
+          3.8882753948676387,
+          2.770758855739645,
+          5.210888772164989,
+          6.726934359376144,
+          6.540927653517024,
+          6.50314807633954,
+          5.1275307733082816,
+          6.643708152100815
+        ],
+        "signal_variance": 0.5383052470612095,
+        "noise_variance": 0.0064975562916990415
+      },
+      "normalization": {
+        "mean": 0.261773565895208,
+        "scale": 0.32745621974887523
+      },
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "official_hyperbo_code_with_gfile_shim",
+        "official_provenance": {
+          "repository": "google-research/hyperbo",
+          "commit": "e720fc1"
+        },
+        "compatibility_shims": [
+          "tensorflow_io_gfile_only"
+        ],
+        "source_prior_frozen_online": true,
+        "online_parameters_changed": [
+          "target_gp_posterior"
+        ],
+        "source_steps": 10000,
+        "n_target": 0,
+        "conditioning_noise": "source_learned_scalar_label_variance",
+        "supplied_per_point_noise_consumed": false,
+        "prediction_covariance": "latent_function_without_fresh_label_noise"
+      },
+      "kernel_reconstruction_max_error": 1.1102230246251565e-16,
+      "source_label_count": 438,
+      "cpu_seconds": 119.42435351900001
+    },
+    {
+      "head": "eta_g",
+      "hyperparameters": {
+        "constant": -3.207585084091169e-08,
+        "lengthscale": [
+          0.054808447606547996,
+          0.058329773031170755,
+          0.03505528720849108,
+          0.06588636174259362,
+          0.13976646365727652,
+          0.0010872833491131855,
+          0.02673207399682699,
+          0.04294468229968952,
+          0.07201641923007375,
+          0.019352785077615814
+        ],
+        "signal_variance": 0.96106344950233,
+        "noise_variance": 0.038935910125158596
+      },
+      "normalization": {
+        "mean": -7.2332063630257055,
+        "scale": 1.3400969820446245
+      },
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "official_hyperbo_code_with_gfile_shim",
+        "official_provenance": {
+          "repository": "google-research/hyperbo",
+          "commit": "e720fc1"
+        },
+        "compatibility_shims": [
+          "tensorflow_io_gfile_only"
+        ],
+        "source_prior_frozen_online": true,
+        "online_parameters_changed": [
+          "target_gp_posterior"
+        ],
+        "source_steps": 10000,
+        "n_target": 0,
+        "conditioning_noise": "source_learned_scalar_label_variance",
+        "supplied_per_point_noise_consumed": false,
+        "prediction_covariance": "latent_function_without_fresh_label_noise"
+      },
+      "kernel_reconstruction_max_error": 6.098637220230962e-20,
+      "source_label_count": 438,
+      "cpu_seconds": 94.21864507500001
+    },
+    {
+      "head": "eta_f",
+      "hyperparameters": {
+        "constant": 0.0007877637943889749,
+        "lengthscale": [
+          0.05905231020163914,
+          0.05976628434885203,
+          0.04793678252005601,
+          0.059094125164361355,
+          0.26828186712291086,
+          0.003764329997536681,
+          0.03790090705186586,
+          0.05328279105672505,
+          0.07425112428582674,
+          0.022667723680017137
+        ],
+        "signal_variance": 0.9632669823770604,
+        "noise_variance": 0.03735061194801552
+      },
+      "normalization": {
+        "mean": -9.698313841570407,
+        "scale": 1.320100302423033
+      },
+      "diagnostics": {
+        "family": "hyperbo_pretrained_gp_prior",
+        "adaptation_kind": "posterior_conditioning",
+        "implementation_fidelity": "official_hyperbo_code_with_gfile_shim",
+        "official_provenance": {
+          "repository": "google-research/hyperbo",
+          "commit": "e720fc1"
+        },
+        "compatibility_shims": [
+          "tensorflow_io_gfile_only"
+        ],
+        "source_prior_frozen_online": true,
+        "online_parameters_changed": [
+          "target_gp_posterior"
+        ],
+        "source_steps": 10000,
+        "n_target": 0,
+        "conditioning_noise": "source_learned_scalar_label_variance",
+        "supplied_per_point_noise_consumed": false,
+        "prediction_covariance": "latent_function_without_fresh_label_noise"
+      },
+      "kernel_reconstruction_max_error": 5.551115123125783e-17,
+      "source_label_count": 438,
+      "cpu_seconds": 95.08081995100002
+    }
+  ]
+}

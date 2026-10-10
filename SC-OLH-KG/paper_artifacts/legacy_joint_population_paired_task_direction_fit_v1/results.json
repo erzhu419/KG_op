@@ -1,0 +1,65 @@
+{
+  "execution": {
+    "status": "registered after source-only paired direction preflight and before two scalar fits",
+    "coverage_execution": "performance/manifests/legacy_joint_population_counterbalanced_source_mean_execution_v1.json",
+    "direction_results": "paper_artifacts/legacy_joint_population_counterbalanced_source_dependence_v1/results.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "fit_rule": "Use only source tasks0..5 from the frozen216-call views. Keep native independent-head common covariance, base task residual variances, group spectra, regularizer origins and head discrepancies. Fit one nonnegative rho per assignment, R_task=blockdiag(R_f,R_g)+rho*v*v^T, by the exact paired144-label Gaussian marginal likelihood. Use the original native L-BFGS-B method and stopping tolerances, starting at0.",
+    "representation": "Export the complete54-coefficient common posterior covariance and task residual covariance, including f/g off-diagonal blocks. The latent coefficient order is all27 f coefficients followed by all27 g coefficients.",
+    "checks": "Before fitting, zero coupling must reproduce the native independent-head common coefficient means and average NLL, and the analytic scale derivative must match the independently checked dense preflight. A correlated toy dense marginal and central finite difference test the same implementation.",
+    "freeze_rule": "Freeze both source-only fits. No source holdout outcome, target observation/truth, physical geometry parameter or decision score enters the fits. There are no paid-update forecasts in this fit stage.",
+    "next_action": "Implement and validate a four-field paid update preserving within-identity f/g dependence and mean/risk covariance, including joint batch density. Zero coupling must reproduce the existing independent-field raw filter before source scoring; retain existing risk identities and the same216-call controls. Register forecasts and source gates separately.",
+    "interpretation": "Fitted source function covariance only. Training likelihood improvement does not establish heldout prediction, physical risk-factor recovery, deployment or KG advantage.",
+    "execution": "local serial single-thread, two scalar fits, no new risk fits, simulator/verifier calls, terminal integration, target archive reads, server jobs or pulls",
+    "output": "paper_artifacts/legacy_joint_population_paired_task_direction_fit_v1"
+  },
+  "fits": [
+    {
+      "layout": "5",
+      "source_paired_records": 72,
+      "source_label_count": 144,
+      "task_direction_scale": 4.151095892982039,
+      "source_negative_log_likelihood_per_label": -1.855394530263611,
+      "native_independent_head_source_nll": -1.821347056280443,
+      "optimizer_converged": true,
+      "optimizer_iterations": 10,
+      "optimizer_gradient": -5.779612175861149e-06,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "source_fit_cpu_seconds": 0.006680980000000003,
+      "discrepancy_by_head": [
+        0.0,
+        0.0
+      ],
+      "basis_reference": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/layout5/inputs.json"
+    },
+    {
+      "layout": "6",
+      "source_paired_records": 72,
+      "source_label_count": 144,
+      "task_direction_scale": 4.095158692892725,
+      "source_negative_log_likelihood_per_label": -1.8476877821059159,
+      "native_independent_head_source_nll": -1.8114686111756544,
+      "optimizer_converged": true,
+      "optimizer_iterations": 10,
+      "optimizer_gradient": -9.69182816163682e-06,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "source_fit_cpu_seconds": 0.006631346000000038,
+      "discrepancy_by_head": [
+        0.0,
+        0.0
+      ],
+      "basis_reference": "paper_artifacts/legacy_joint_population_counterbalanced_source_mean_v1/layout6/inputs.json"
+    }
+  ],
+  "cost": {
+    "new_scalar_source_fits": 2,
+    "new_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "cpu_seconds": 0.05389025399999997
+}

@@ -1,0 +1,19 @@
+{
+  "status": "implemented with historical mixture engine;local cached diagnostic completed",
+  "source_learning_results": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/results.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/frozen_inputs.json",
+  "risk_laws": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/risk_reconstruction.json",
+  "eta_components": "paper_artifacts/legacy_joint_population_f_bounded_level_risk_learning_v2/mixtures.json",
+  "question": "Can retained source states identify an efficient raw marginal-likelihood learning direction for the remaining risk amplitude without forcing noisy near-stationary mean updates or more chains?",
+  "fixed_law": "Hold the accepted function law,eta center,common eta intercept,task weak covariance,original positive weak tails and selected risk shape/spectrum fixed. Only scale the common strong-shape excess above the original tail. Each arm uses its own last accepted scientific source prior and posterior,with the same roster/raw batches and diagnostic algorithm. This is one covariance-coordinate subproblem,not full meta-prior convergence.",
+  "relative_amplitude_points": [0, 0.25, 0.5, 0.75, 1, 1.25],
+  "calculation": "For each fixed amplitude a,K(a)=Kcurrent+(a-acurrent)D Astrong D^T. Evaluate log r(eta)=log N(eta;mu,K(a))-log N(eta;mu,Kcurrent) on the retained512 source posterior states. The exact source marginal-evidence ratio is E_current_posterior[r],because the raw source likelihood and function law are unchanged. Estimate -log mean(r),its chain functional ESS/Rhat,weight ESS and two-half discrepancy. No approximate variance likelihood or future labels enter this identity. Evaluate the unchanged point exactly as zero.",
+  "verification": "At the current amplitude,prior ratio and evidence difference must be zero. Its analytic derivative must match the Fisher score computed from the SAME retained states with population covariance,not full-state moments with a different normalization. Prior laws retain positive original tails at the zero strong-amplitude endpoint. Verify the evidence-ratio identity on an analytic Gaussian source specialization before interpreting the nonlinear source estimates.",
+  "precision_gates": {"minimum_weight_ESS": 200, "minimum_chain_functional_ESS": 100, "maximum_chain_Rhat": 1.05, "maximum_half_NLL_difference_per_batch": 0.02},
+  "decision": "Interpret only eligible source amplitude points;failed endpoints remain failed. Evidence changes and their conditional Monte Carlo intervals determine whether direct marginal learning is feasible. No best task0 score,additional source chains,larger mixture or candidate adoption in this diagnostic. Any subsequent learned covariance still requires fresh source conditioning. If no improving point is eligible,report the remaining source learning limitation instead of forcing more draws.",
+  "maximum_single_thread_cpu_seconds": 5,
+  "cost": {"source_amplitude_points": 24, "new_covariance_optimizations": 0, "new_source_chains": 0, "new_future_predictions": 0, "new_density_integrations": 0, "new_source_labels": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;cached small source JSON only;no server work or NPZ",
+  "scope": "Original orthogonal,sparse,low-order/additive and low-frequency priors retained. No task0/task1 outcomes,source6/7,target,KG,confirmation or manuscript changes. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_risk_amplitude_importance_v1"
+}

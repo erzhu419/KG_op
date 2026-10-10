@@ -1,0 +1,28 @@
+{
+  "status": "registered after frozen-span attribution and before all covered deletion-mean fits",
+  "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+  "attribution_results": "paper_artifacts/legacy_joint_population_covered_mean_attribution_v1/results.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "layouts": [
+    "3",
+    "4"
+  ],
+  "mean_arms": [
+    "joint_structural",
+    "flat"
+  ],
+  "method": "Each complete identity uses f/g means and eta_f/eta_g laws from the same full48 or deleted40 source records. Source means, normalizers and supervised risk maps remain paired by the same deleted task. The full48 mean/risk fits and every risk fit are reused; GP control remains its existing complete identity law. Fit only the original regularizer/fixed/joint structural and flat mean objectives for six deleted tasks per layout, no unused GP refitting.",
+  "information": "144 historical calls per treatment, 48 records, six source tasks; each deletion uses only40 of those records. No labels are pooled between assignments. Two raw holdout records update one shared complete identity weight, uniform1/7 initially.",
+  "source_gate": "Compare each candidate arm to its own frozen risk-only mean counterpart. Require g MSE not to increase, joint batch log density not to decrease, and g batch log density to increase at BOTH source holdouts under BOTH layouts. Report per-holdout/per-layout failures; never choose an assignment by target performance. Only an arm passing all four holdout cases may advance to a separately frozen target diagnostic.",
+  "freeze_rule": "Fit all12 source deletions and freeze all8 new source forecasts before scoring heldout three-repeat labels. No target observation, truth, posterior or terminal integration in this stage. Verify the complete full identity reproduces the previous risk-only full component after identical raw updates; keep the earlier layout0 Stage37 failure unchanged.",
+  "next_action": "Assess source gate and critical-policy density/moment changes. Failing arms remain unpromoted; a passing main arm may enter a separately frozen same-four-candidate target check. No automatic full-bank or KG experiment.",
+  "execution": "local serial single-thread, no simulator/verifier calls, server jobs or pulls",
+  "cost": {
+    "maximum_native_mean_fits_before_original_joint_continuations": 96,
+    "new_source_risk_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "output": "paper_artifacts/legacy_joint_population_covered_complete_mean_uncertainty_v1"
+}

@@ -1,0 +1,114 @@
+{
+  "execution_plan": "performance/manifests/historical_positive_likelihood_reference_v3.json",
+  "rows": [
+    {
+      "candidate": 7,
+      "seed": 202610077,
+      "action": {
+        "kind": "guarded",
+        "primary": 5,
+        "shortlist": [
+          5,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "prior_expected_reward": 0.1880450251949674,
+      "likelihood_tower_drift": 0.0010026638592070536,
+      "projected_baseline_drift": 0.0009135736276146555,
+      "projection_minus_likelihood_baseline": -8.909023159238577e-05,
+      "predictive_log_evidence_max_error": 0.004079687137711119,
+      "effective_sample_size_min": 2476.925902264608,
+      "model_weight_martingale_residual": [
+        -0.00013037403370721318,
+        -0.0002831139344812994,
+        -0.0037599040039874854,
+        -0.002685601713994512,
+        0.001205751422366487,
+        0.001650820827390792,
+        0.002101347918699037,
+        0.0019010735177141802
+      ],
+      "draw_count": 4096,
+      "fantasies_per_component": 16,
+      "fantasy_count": 128,
+      "positive_source_components_retained": true,
+      "reference": "posterior-component and eta proposal with analytic query-mean transport",
+      "previous_paid_projection_retained": true,
+      "layout": "5",
+      "maximum_identity_martingale_residual": 0.0037599040039874854,
+      "likelihood_reference_adequate": true,
+      "tower_precision_gate_passed": true
+    },
+    {
+      "candidate": 4,
+      "seed": 202610077,
+      "action": {
+        "kind": "guarded",
+        "primary": 4,
+        "shortlist": [
+          4,
+          0,
+          1
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          130,
+          130,
+          83
+        ]
+      },
+      "prior_expected_reward": 0.37375205299018005,
+      "likelihood_tower_drift": -0.012863427776094505,
+      "projected_baseline_drift": -0.011087120577576937,
+      "projection_minus_likelihood_baseline": 0.0017763071985175613,
+      "predictive_log_evidence_max_error": 0.0031510708887285688,
+      "effective_sample_size_min": 3431.9310828030243,
+      "model_weight_martingale_residual": [
+        0.0032105083859576,
+        0.0035658186004274284,
+        -0.004595443797904497,
+        -0.0027372495094316607,
+        -0.001389480167365259,
+        -0.001379485662569093,
+        0.0016608747094065401,
+        0.0016644574414789864
+      ],
+      "draw_count": 4096,
+      "fantasies_per_component": 16,
+      "fantasy_count": 128,
+      "positive_source_components_retained": true,
+      "reference": "posterior-component and eta proposal with analytic query-mean transport",
+      "previous_paid_projection_retained": true,
+      "layout": "6",
+      "maximum_identity_martingale_residual": 0.004595443797904497,
+      "likelihood_reference_adequate": true,
+      "tower_precision_gate_passed": false
+    }
+  ],
+  "all_two_references_complete": true,
+  "all_references_adequate": true,
+  "stopped_at_cpu_budget": false,
+  "cpu_seconds": 134.25953739,
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "scientific_model_ranking_authorized": false,
+  "limitations": [
+    "Reference is a finite self-normalized likelihood integral;ESS and evidence errors must pass before attributing projection bias.",
+    "Starting fields retain their previous two paid moment projections.",
+    "Fixed action only;this does not compare adaptive selection or independent decision performance."
+  ]
+}

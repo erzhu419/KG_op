@@ -1,0 +1,1488 @@
+{
+  "execution_plan": "performance/manifests/historical_matched_gp_connection_v1.json",
+  "all_registered_cases_complete": true,
+  "source_fits_converged": true,
+  "source_fit_count": 24,
+  "connected_control_count": 6,
+  "lookahead_query_count": 2,
+  "lookahead_numerical_gates_passed": false,
+  "lookahead": [
+    {
+      "layout": "5",
+      "candidate": 5,
+      "arm": "source_common_task_rbf",
+      "rows": [
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 9,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0032480597333463973,
+          "raw_net_reward_control_variate": 0.003199588275240306,
+          "raw_adaptation_of_projected_choice": 0.003219816304849191,
+          "action_selection_loss": 2.8243428497206312e-05,
+          "action_selection_loss_identity_interval": [
+            2.8243428497206312e-05,
+            2.8243428497206312e-05
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.003199588275240306,
+            0.003199588275240306
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0029878334987051766,
+          "raw_fixed_action_tower_residual": -0.0002117547765351363,
+          "projected_adaptation_value": 0.0026669382177536595,
+          "projected_value_bias_at_selected_action": 0.003075808252589773,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0007997952601302462,
+            "low_constraint": 0.0024482644732161506
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 1,
+          "predictive_log_evidence_max_error": 1.7490374345285886e-05,
+          "effective_sample_size_min": 4091.7205650595047,
+          "tail_count": 2,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 6.552900382739808e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 9,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0032462594148573985,
+          "raw_net_reward_control_variate": 0.0031977879567513107,
+          "raw_adaptation_of_projected_choice": 0.003212354810563359,
+          "action_selection_loss": 3.390460429403925e-05,
+          "action_selection_loss_identity_interval": [
+            3.390460429403925e-05,
+            3.390460429403925e-05
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0031977879567513107,
+            0.0031977879567513107
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0029925013157020494,
+          "raw_fixed_action_tower_residual": -0.00020528664104924738,
+          "projected_adaptation_value": 0.0026669382177536595,
+          "projected_value_bias_at_selected_action": 0.0030768016113897237,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0008314545213005313,
+            "low_constraint": 0.002414804893556867
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 1,
+          "predictive_log_evidence_max_error": 1.0391608505244676e-05,
+          "effective_sample_size_min": 16366.689096083132,
+          "nested_terminal_raw_adaptation_difference": 1.8003184889987811e-06,
+          "tail_count": 2,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 6.552900382739808e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 11,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0030835381652458025,
+          "raw_net_reward_control_variate": 0.003035066707139711,
+          "raw_adaptation_of_projected_choice": 0.0030552947367485962,
+          "action_selection_loss": 2.8243428497206312e-05,
+          "action_selection_loss_identity_interval": [
+            2.8243428497206312e-05,
+            2.8243428497206312e-05
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.003035066707139711,
+            0.003035066707139711
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.002123504330880148,
+          "raw_fixed_action_tower_residual": -0.0009115623762595698,
+          "projected_adaptation_value": 0.0025755953056210007,
+          "projected_value_bias_at_selected_action": 0.003499696373040771,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0007997952601302462,
+            "low_constraint": 0.002283742905115556
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 1,
+          "predictive_log_evidence_max_error": 2.2891883910247657e-05,
+          "effective_sample_size_min": 4087.8370123694776,
+          "tail_count": 4,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 6.722028437583397e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 11,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0030800465662083674,
+          "raw_net_reward_control_variate": 0.0030315751081022788,
+          "raw_adaptation_of_projected_choice": 0.0030461419619143277,
+          "action_selection_loss": 3.390460429403925e-05,
+          "action_selection_loss_identity_interval": [
+            3.390460429403925e-05,
+            3.390460429403925e-05
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0030315751081022788,
+            0.0030315751081022788
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0021280723106255894,
+          "raw_fixed_action_tower_residual": -0.0009035027974766824,
+          "projected_adaptation_value": 0.0025755953056210007,
+          "projected_value_bias_at_selected_action": 0.00350078956909215,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0008314545213005313,
+            "low_constraint": 0.0022485920449078363
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 1,
+          "predictive_log_evidence_max_error": 1.127016200541675e-05,
+          "effective_sample_size_min": 16351.272420560763,
+          "nested_terminal_raw_adaptation_difference": 3.491599037435105e-06,
+          "tail_count": 4,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 6.722028437583397e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 15,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0029660489585458835,
+          "raw_net_reward_control_variate": 0.0029175775004397914,
+          "raw_adaptation_of_projected_choice": 0.002937805530048677,
+          "action_selection_loss": 2.8243428497206312e-05,
+          "action_selection_loss_identity_interval": [
+            2.8243428497206312e-05,
+            2.8243428497206312e-05
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0029175775004397914,
+            0.0029175775004397914
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0012309742439931201,
+          "raw_fixed_action_tower_residual": -0.0016866032564466747,
+          "projected_adaptation_value": 0.0024955236322852475,
+          "projected_value_bias_at_selected_action": 0.0038467740618430427,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0007997952601302462,
+            "low_constraint": 0.002166253698415637
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 1,
+          "predictive_log_evidence_max_error": 0.00010856064938025156,
+          "effective_sample_size_min": 4040.8563722144813,
+          "tail_count": 8,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 6.767304667685767e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 15,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0029621045972074247,
+          "raw_net_reward_control_variate": 0.0029136331391013334,
+          "raw_adaptation_of_projected_choice": 0.002928199992913385,
+          "action_selection_loss": 3.390460429403925e-05,
+          "action_selection_loss_identity_interval": [
+            3.390460429403925e-05,
+            3.390460429403925e-05
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0029136331391013334,
+            0.0029136331391013334
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0012343560742563847,
+          "raw_fixed_action_tower_residual": -0.0016792770648449418,
+          "projected_adaptation_value": 0.0024955236322852475,
+          "projected_value_bias_at_selected_action": 0.003849053407376603,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0008314545213005313,
+            "low_constraint": 0.0021306500759068936
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 1,
+          "predictive_log_evidence_max_error": 6.082031254450726e-05,
+          "effective_sample_size_min": 16178.317865760817,
+          "nested_terminal_raw_adaptation_difference": 3.944361338458803e-06,
+          "tail_count": 8,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 6.767304667685767e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 16,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0035460279493190537,
+          "raw_net_reward_control_variate": 0.003497556491212965,
+          "raw_adaptation_of_projected_choice": 0.0033663469868745067,
+          "action_selection_loss": 0.00017968096244454706,
+          "action_selection_loss_identity_interval": [
+            0.00017968096244454706,
+            0.00017968096244454706
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.003497556491212965,
+            0.003497556491212965
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0039383992495564055,
+          "raw_fixed_action_tower_residual": 0.0004408427583434474,
+          "projected_adaptation_value": 0.002779241407850351,
+          "projected_value_bias_at_selected_action": 0.0026423544320234643,
+          "adaptation_contributions_by_region": {
+            "complement": 0.001097763476102903,
+            "low_constraint": 0.0024482644732161506
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32,
+            32,
+            32,
+            32,
+            37,
+            32,
+            32,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 3,
+          "predictive_log_evidence_max_error": 2.1248689010988642e-05,
+          "effective_sample_size_min": 4088.9196791927075,
+          "tail_count": 2,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 7.950260252534688e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 16,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0035432852024681757,
+          "raw_net_reward_control_variate": 0.0034948137443620853,
+          "raw_adaptation_of_projected_choice": 0.0033621329190247134,
+          "action_selection_loss": 0.0001811522834434629,
+          "action_selection_loss_identity_interval": [
+            0.0001811522834434629,
+            0.0001811522834434629
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0034948137443620853,
+            0.0034948137443620853
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0039401511016718335,
+          "raw_fixed_action_tower_residual": 0.00044533735730974133,
+          "projected_adaptation_value": 0.002779241407850351,
+          "projected_value_bias_at_selected_action": 0.0026420739009069597,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0011284803089113087,
+            "low_constraint": 0.002414804893556867
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32,
+            32,
+            32,
+            32,
+            37,
+            32,
+            32,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 3,
+          "predictive_log_evidence_max_error": 1.0989198379718346e-05,
+          "effective_sample_size_min": 16355.543305256606,
+          "nested_terminal_raw_adaptation_difference": 2.742746850878039e-06,
+          "tail_count": 2,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 7.950260252534688e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 18,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0033815063812184594,
+          "raw_net_reward_control_variate": 0.00333303492311237,
+          "raw_adaptation_of_projected_choice": 0.003201825418773912,
+          "action_selection_loss": 0.00017968096244454706,
+          "action_selection_loss_identity_interval": [
+            0.00017968096244454706,
+            0.00017968096244454706
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.00333303492311237,
+            0.00333303492311237
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.003074070081731377,
+          "raw_fixed_action_tower_residual": -0.00025896484138099307,
+          "projected_adaptation_value": 0.0026878984957176924,
+          "projected_value_bias_at_selected_action": 0.003066242552474463,
+          "adaptation_contributions_by_region": {
+            "complement": 0.001097763476102903,
+            "low_constraint": 0.002283742905115556
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32,
+            32,
+            32,
+            32,
+            37,
+            32,
+            32,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 3,
+          "predictive_log_evidence_max_error": 2.2891883910247657e-05,
+          "effective_sample_size_min": 4087.8370123694776,
+          "tail_count": 4,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 8.119388307378277e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 18,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.003377072353819145,
+          "raw_net_reward_control_variate": 0.0033286008957130533,
+          "raw_adaptation_of_projected_choice": 0.0031959200703756824,
+          "action_selection_loss": 0.0001811522834434629,
+          "action_selection_loss_identity_interval": [
+            0.0001811522834434629,
+            0.0001811522834434629
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0033286008957130533,
+            0.0033286008957130533
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0030757220965953666,
+          "raw_fixed_action_tower_residual": -0.00025287879911768674,
+          "projected_adaptation_value": 0.0026878984957176924,
+          "projected_value_bias_at_selected_action": 0.003066061858609386,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0011284803089113087,
+            "low_constraint": 0.0022485920449078363
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32,
+            32,
+            32,
+            32,
+            37,
+            32,
+            32,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 3,
+          "predictive_log_evidence_max_error": 1.127016200541675e-05,
+          "effective_sample_size_min": 16351.272420560763,
+          "nested_terminal_raw_adaptation_difference": 4.434027399314363e-06,
+          "tail_count": 4,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 8.119388307378277e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 22,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0032640171745185404,
+          "raw_net_reward_control_variate": 0.0032155457164124504,
+          "raw_adaptation_of_projected_choice": 0.003084336212073993,
+          "action_selection_loss": 0.00017968096244454706,
+          "action_selection_loss_identity_interval": [
+            0.00017968096244454706,
+            0.00017968096244454706
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.0032155457164124504,
+            0.0032155457164124504
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.002181539994844349,
+          "raw_fixed_action_tower_residual": -0.0010340057215680945,
+          "projected_adaptation_value": 0.002607826822381939,
+          "projected_value_bias_at_selected_action": 0.0034133202412767343,
+          "adaptation_contributions_by_region": {
+            "complement": 0.001097763476102903,
+            "low_constraint": 0.002166253698415637
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32,
+            32,
+            32,
+            32,
+            37,
+            32,
+            32,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 3,
+          "predictive_log_evidence_max_error": 0.00010856064938025156,
+          "effective_sample_size_min": 4040.8563722144813,
+          "tail_count": 8,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 8.164664537480646e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 22,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0032591303848182028,
+          "raw_net_reward_control_variate": 0.003210658926712115,
+          "raw_adaptation_of_projected_choice": 0.0030779781013747396,
+          "action_selection_loss": 0.0001811522834434629,
+          "action_selection_loss_identity_interval": [
+            0.0001811522834434629,
+            0.0001811522834434629
+          ],
+          "raw_net_control_variate_identity_interval": [
+            0.003210658926712115,
+            0.003210658926712115
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.002182005860226162,
+          "raw_fixed_action_tower_residual": -0.001028653066485953,
+          "projected_adaptation_value": 0.002607826822381939,
+          "projected_value_bias_at_selected_action": 0.0034143256968938384,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0011284803089113087,
+            "low_constraint": 0.0021306500759068936
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            37,
+            32,
+            21,
+            32,
+            32,
+            32,
+            21,
+            32,
+            32,
+            32,
+            32,
+            37,
+            32,
+            32,
+            32
+          ],
+          "computed_projected_raw_action_disagreement_count": 3,
+          "predictive_log_evidence_max_error": 6.082031254450726e-05,
+          "effective_sample_size_min": 16178.317865760817,
+          "nested_terminal_raw_adaptation_difference": 4.886789700337627e-06,
+          "tail_count": 8,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 8.164664537480646e-05,
+          "verification_budget_opportunity_cost": 4.8471458106089105e-05
+        }
+      ],
+      "numerical_changes": {
+        "terminal_absolute_contrast": 8.164664537480646e-05,
+        "tail_adaptation": 0.0001179419690009423,
+        "complement_adaptation": 0.00029702578761077805
+      },
+      "numerical_gates_passed": false
+    },
+    {
+      "layout": "6",
+      "candidate": 1,
+      "arm": "source_common_task_rbf",
+      "rows": [
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 9,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0006591918497937388,
+          "raw_fixed_action_tower_residual": 0.0007056650873708548,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00020476539694803259,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 3.937502492235012e-05,
+          "effective_sample_size_min": 4092.660047845406,
+          "tail_count": 2,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 9,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0006733997768325617,
+          "raw_fixed_action_tower_residual": 0.0007198730144096777,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.0001905574699092097,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 6.904740938473708e-05,
+          "effective_sample_size_min": 16367.781442979462,
+          "nested_terminal_raw_adaptation_difference": 0.0,
+          "tail_count": 2,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 11,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0005650581874982463,
+          "raw_fixed_action_tower_residual": 0.0006115314250753068,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00020517196832306288,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 4.130721341866206e-05,
+          "effective_sample_size_min": 4092.660047845406,
+          "tail_count": 4,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 11,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0005792818255112575,
+          "raw_fixed_action_tower_residual": 0.0006257550630883735,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00019094833031008118,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 7.433450847571521e-05,
+          "effective_sample_size_min": 16366.595514994076,
+          "nested_terminal_raw_adaptation_difference": 0.0,
+          "tail_count": 4,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 15,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.001111576813230819,
+          "raw_fixed_action_tower_residual": 0.001158050050807935,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00020523908617697123,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 5.391068306970226e-05,
+          "effective_sample_size_min": 4091.3751989821553,
+          "tail_count": 8,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 15,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.0011258170066003048,
+          "raw_fixed_action_tower_residual": 0.0011722902441774208,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00019099889280745942,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 0.00010332251723887964,
+          "effective_sample_size_min": 16356.69738932502,
+          "nested_terminal_raw_adaptation_difference": 0.0,
+          "tail_count": 8,
+          "complement_prefix": 8,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 16,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": -0.0002939333857151505,
+          "raw_fixed_action_tower_residual": -0.0002474601481380345,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00020722028935051678,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 3.937502492235012e-05,
+          "effective_sample_size_min": 4092.660047845406,
+          "tail_count": 2,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 16,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": -0.00028017676473535147,
+          "raw_fixed_action_tower_residual": -0.0002337035271582355,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00019346366837071083,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 6.904740938473708e-05,
+          "effective_sample_size_min": 16367.781442979462,
+          "nested_terminal_raw_adaptation_difference": 0.0,
+          "tail_count": 2,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 18,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": -0.00038806704801069847,
+          "raw_fixed_action_tower_residual": -0.000341593810433527,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00020762686072554708,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 4.130721341866206e-05,
+          "effective_sample_size_min": 4092.660047845406,
+          "tail_count": 4,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 18,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": -0.00037429471605671116,
+          "raw_fixed_action_tower_residual": -0.0003278214784795397,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00019385452877158232,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 7.433450847571521e-05,
+          "effective_sample_size_min": 16366.595514994076,
+          "nested_terminal_raw_adaptation_difference": 0.0,
+          "tail_count": 4,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 12,
+          "weighted_joint_futures": 22,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.00015845157772198526,
+          "raw_fixed_action_tower_residual": 0.0002049248152989902,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00020769397857945543,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 5.391068306970226e-05,
+          "effective_sample_size_min": 4091.3751989821553,
+          "tail_count": 8,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        },
+        {
+          "raw_draw_power": 14,
+          "weighted_joint_futures": 22,
+          "terminal_action_count": 40,
+          "raw_adaptation_value": 0.0,
+          "raw_net_reward_control_variate": -4.647323757711597e-05,
+          "raw_adaptation_of_projected_choice": 0.0,
+          "action_selection_loss": 0.0,
+          "action_selection_loss_identity_interval": [
+            0.0,
+            0.0
+          ],
+          "raw_net_control_variate_identity_interval": [
+            -4.647323757711597e-05,
+            -4.647323757711597e-05
+          ],
+          "identity_and_rare_origin_error_bound": 0.0,
+          "weighted_omitted_terminal_identity_mass": 0.0,
+          "rare_predictive_origin_mass": 0.0,
+          "raw_net_reward_uncorrected": 0.00017224046503233614,
+          "raw_fixed_action_tower_residual": 0.00021871370260950762,
+          "projected_adaptation_value": 0.0,
+          "projected_value_bias_at_selected_action": 0.00019390509126896056,
+          "adaptation_contributions_by_region": {
+            "complement": 0.0,
+            "low_constraint": 0.0
+          },
+          "predictive_mass_by_region": {
+            "complement": 0.875,
+            "low_constraint": 0.125
+          },
+          "expected_model_weights": [
+            1.0
+          ],
+          "raw_selected_action_indices": [
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36,
+            36
+          ],
+          "computed_projected_raw_action_disagreement_count": 0,
+          "predictive_log_evidence_max_error": 0.00010332251723887964,
+          "effective_sample_size_min": 16356.69738932502,
+          "nested_terminal_raw_adaptation_difference": 0.0,
+          "tail_count": 8,
+          "complement_prefix": 16,
+          "weighted_absolute_terminal_contrast_difference": 0.0,
+          "verification_budget_opportunity_cost": 4.647323757711597e-05
+        }
+      ],
+      "numerical_changes": {
+        "terminal_absolute_contrast": 0.0,
+        "tail_adaptation": 0.0,
+        "complement_adaptation": 0.0
+      },
+      "numerical_gates_passed": true
+    }
+  ],
+  "cpu_seconds": 96.01435545199999,
+  "cpu_budget_stopped": false,
+  "cost": {
+    "new_source_labels": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0,
+    "independent_targets_opened": 0
+  },
+  "independent_confirmation": false,
+  "decision_ranking_certified": false,
+  "scope": "Two opened development layouts, same four source tasks2-5, source batches, frozen mean/risk coordinates, eight candidates, two paired raw paid observations without invented variance labels, 360/359 remaining calls,40 terminal actions and16-node verifier-SD quadrature. Freeze all baseline source fits before using paid observations. Reuse source terminal action arrays for reciprocal model valuations; these are not realized performance. For the complete common/task GP only, evaluate the two previously examined queries with the same predictive uniforms and probability strata, retaining all40 raw actions and primary-mean refinement. No complete query ranking or independent target scoring.",
+  "limitations": [
+    "Common/task GP uses a Gaussian source-label approximation at source-only ARD lengthscales.",
+    "Fixed GP shares frozen source-derived coordinates; it is not a source-free representation control.",
+    "Two paid updates retain Gaussian moment projection; only the next raw posterior is unprojected.",
+    "Reciprocal valuations and KG estimates are model expectations, not deployment-performance comparisons.",
+    "Only one fixed query per layout is compared; no complete query ranking or independent advantage."
+  ]
+}

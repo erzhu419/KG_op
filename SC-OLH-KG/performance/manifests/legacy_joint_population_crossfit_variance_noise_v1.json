@@ -1,0 +1,23 @@
+{
+  "status": "registered after complete-mean mixture source failure, before all cross-fitted noise estimates and mean fits",
+  "source_execution": "performance/manifests/legacy_joint_population_function_coverage_source_execution_v1.json",
+  "reference_profiles": "paper_artifacts/legacy_joint_population_function_coverage_source_v1/calibration_profiles.json",
+  "previous_results": "paper_artifacts/legacy_joint_population_covered_complete_mean_uncertainty_v1/results.json",
+  "layouts": [
+    "3",
+    "4"
+  ],
+  "mean_arms": [
+    "joint_structural",
+    "flat"
+  ],
+  "replicates": 3,
+  "noise_estimator": "At each selected source site, restore the eta_f/eta_g prior and supervised map from the existing deletion of that entire source task. Fit maps only on the other40 selected raw records. Integrate the exact three-repeat sample-variance likelihood against that Gaussian eta prior using ONLY that site sample variance, then set f/g sample-mean noise to E[exp(eta)|S2,other source tasks]/3. No current-task sample mean or source holdout/target label fits its noise prior.",
+  "fit": "Freeze all192 site/head variance estimates and source input views before fitting. Refit only the original regularizer/fixed/joint/flat mean objectives on the same48 labels with corrected f/g noise;16 native objectives plus original capped joint continuations at most. Preserve normalizers, basis, weak tails, full/deletion risk priors and risk-only mixture identity class.",
+  "source_gate": "For each arm require g MSE not to increase, joint density not to decrease and g density to increase on BOTH source holdouts under BOTH assignments compared with its fixed original counterpart. Retain every result. A failing arm does not enter target scoring or ranking.",
+  "freeze_rule": "Both noise layouts freeze before all mean fits; all8 source prior/posterior forecasts freeze before any new source label scoring. No source or target truth enters fitting. No target experiment in this stage.",
+  "interpretation": "source-only risk-smoothed noise attribution within the existing empirical-Bayes method; variance integration is exact locally, mean fitting uses a Gaussian moment approximation, not an exact joint source posterior. Generic GP stays its earlier frozen comparator and is not refitted or used to claim same-noise structural superiority here.",
+  "next_action": "Judge source predictive improvements and noise corrections; only a robustly passing main arm can advance to separately registered target analysis. If it fails, retain the result and investigate source mean likelihood/shrinkage rather than adding terminal/KG calls.",
+  "execution": "local serial single-thread; reuse all risk fits; no simulator/verifier calls, terminal integrations, server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_crossfit_variance_noise_v1"
+}

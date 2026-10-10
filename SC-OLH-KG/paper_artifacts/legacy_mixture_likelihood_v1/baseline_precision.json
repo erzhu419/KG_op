@@ -1,0 +1,174 @@
+{
+  "protocol": {
+    "replay": "paper_artifacts/legacy_mixture_budget_v1/replay.json",
+    "likelihood_replay": "paper_artifacts/legacy_mixture_likelihood_v1/replay.json",
+    "domain": "InventorySupplyChain",
+    "prefix": 4,
+    "candidates": [
+      2,
+      63
+    ],
+    "action": {
+      "kind": "guarded",
+      "primary": 63,
+      "shortlist": [
+        63,
+        3,
+        2
+      ],
+      "incumbent_position": 1,
+      "budgets": [
+        129,
+        129,
+        83
+      ]
+    },
+    "draw_power": 13,
+    "fantasy_power": 7,
+    "seeds": [
+      80563,
+      80564
+    ],
+    "fantasy_rule": "four-dimensional Sobol for independent head eta and marginal raw values; integrate out query means analytically, same continuous predictive law as the original six-dimensional rule",
+    "purpose": "resolve the observed query-dependent starting reward discrepancy and fixed-action tower drift; compare next-update projection under identical fantasies and marginal draws without repeating all terminal rankings",
+    "execution": "local single-thread, fantasy blocks of 32; source fitted once; zero new source/target simulations, server jobs, pulls or truth queries",
+    "scope": "numerical refinement of a fixed action, not an additional optimizer or deployment run",
+    "output": "paper_artifacts/legacy_mixture_likelihood_v1/baseline_precision.json"
+  },
+  "rows": [
+    {
+      "candidate": 2,
+      "seed": 80563,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "prior_expected_reward": 0.4540169210109884,
+      "likelihood_tower_drift": 0.0005777025838998862,
+      "projected_baseline_drift": 0.0014273535735222498,
+      "projection_minus_likelihood_baseline": 0.0008496509896223938,
+      "predictive_log_evidence_max_error": 3.494553110972021e-05,
+      "effective_sample_size_min": 802.6066164088384,
+      "model_weight_martingale_residual": [
+        0.000461035552800082,
+        -8.609360644495911e-05,
+        -0.0003749419463551229
+      ],
+      "draw_count": 8192,
+      "fantasies_per_component": 128,
+      "fantasy_count": 384
+    },
+    {
+      "candidate": 63,
+      "seed": 80563,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "prior_expected_reward": 0.45442844467749016,
+      "likelihood_tower_drift": 0.00014526544760024018,
+      "projected_baseline_drift": -0.00015559611990356714,
+      "projection_minus_likelihood_baseline": -0.0003008615675038091,
+      "predictive_log_evidence_max_error": 0.0004436759105335142,
+      "effective_sample_size_min": 7093.838921551411,
+      "model_weight_martingale_residual": [
+        0.002745432474914822,
+        -0.0010041528226433366,
+        -0.0017412796522715546
+      ],
+      "draw_count": 8192,
+      "fantasies_per_component": 128,
+      "fantasy_count": 384
+    },
+    {
+      "candidate": 2,
+      "seed": 80564,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "prior_expected_reward": 0.4554239865278039,
+      "likelihood_tower_drift": -0.0002702769763783808,
+      "projected_baseline_drift": 0.00017668429417783127,
+      "projection_minus_likelihood_baseline": 0.0004469612705561368,
+      "predictive_log_evidence_max_error": 3.827345554729966e-05,
+      "effective_sample_size_min": 2073.0652235549924,
+      "model_weight_martingale_residual": [
+        -7.958170216376681e-05,
+        0.00012161757484215052,
+        -4.2035872678369834e-05
+      ],
+      "draw_count": 8192,
+      "fantasies_per_component": 128,
+      "fantasy_count": 384
+    },
+    {
+      "candidate": 63,
+      "seed": 80564,
+      "action": {
+        "kind": "guarded",
+        "primary": 63,
+        "shortlist": [
+          63,
+          3,
+          2
+        ],
+        "incumbent_position": 1,
+        "budgets": [
+          129,
+          129,
+          83
+        ]
+      },
+      "prior_expected_reward": 0.45453025857636264,
+      "likelihood_tower_drift": -3.939847711176281e-05,
+      "projected_baseline_drift": -0.0003556082822892548,
+      "projection_minus_likelihood_baseline": -0.00031620980517743543,
+      "predictive_log_evidence_max_error": 0.0010608703742747139,
+      "effective_sample_size_min": 6987.1495367039615,
+      "model_weight_martingale_residual": [
+        -0.0003123243565600897,
+        -9.467926538429816e-05,
+        0.00040700362194434625
+      ],
+      "draw_count": 8192,
+      "fantasies_per_component": 128,
+      "fantasy_count": 384
+    }
+  ],
+  "new_calls": 0,
+  "cpu_seconds": 90.368533891
+}

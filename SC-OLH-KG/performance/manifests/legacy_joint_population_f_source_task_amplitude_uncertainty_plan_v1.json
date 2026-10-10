@@ -1,0 +1,38 @@
+{
+  "status": "completed;both full-support source amplitude posteriors and finite moments verify",
+  "entrypoint": "performance/check_legacy_f_source_task_amplitude_uncertainty.py",
+  "source_probe_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+  "information_results": "paper_artifacts/legacy_joint_population_f_source_predictive_information_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "query_task": 0,
+  "question": "Does proper source-only uncertainty in the dimensionless task root amplitude materially change the sparse joint predictive prior?",
+  "law": "NEW conditional empirical-Bayes candidate: task root amplitude a>=0 has proper half-Cauchy(scale1) prior. Scale1 is the unit of the frozen source-derived GP correlation/budget template,not a held-task fit or grid choice. Common amplitude/common exponent/task exponent remain at their frozen source4 fit;the task exponent is4. Keep source-derived center,intercept variances,white discrepancy,selected support,orthogonal low-order basis,and each component's strictly positive1% shape tail. Posterior weights are exact48-label Gaussian source likelihood times the prior. Prior amplitude second moment is infinite;target predictive moments must be finite AFTER source conditioning,verified across full-support quadratures. This does not include joint parameter,template or support uncertainty.",
+  "calculation": "Transform u=(2/pi)arctan(a),so du is the normalized half-Cauchy prior and a=tan(pi*u/2). Gauss-Legendre16 versus32 nodes on four fixed CDF intervals[0,.25],[.25,.5],[.5,.75],[.75,1];full unbounded amplitude support,no cutoff or posterior-selected nodes. Record normalized weights,normalized-prior log evidence,amplitude mean/second moment/variance,probability a>=1 and aggregate beta/E(H+R)+Cov(beta). Save node/weight/NLL summaries and aggregate coefficients only;no raw forecasts.",
+  "verification": "Reproduce source point states;require normalized posterior mass,PSD,total covariance identity and finite parameter/predictive moments. Compare selected/refined log evidence and first/second amplitude moments/public predictive moments at unchanged tolerances. Stop on mismatch without increasing cutoffs or relaxing tolerances.",
+  "tolerances": {
+    "log_evidence_absolute": 1e-06,
+    "amplitude_mean_absolute": 1e-06,
+    "amplitude_second_moment_absolute": 1e-06,
+    "f_mean_max_absolute": 1e-07,
+    "f_covariance_relative_frobenius": 1e-05
+  },
+  "freeze": "Only the canonical two source4 rosters and48 means with known original batch-label noise;query0/task1 excluded. Public73 reference outcome-free;no query score/paid arrays indexed.",
+  "decision": "If the posterior makes a material predictive change and all checks pass,register two matched inner raw-mixture pilots with selected/refined rules,retaining every amplitude component through paid updates. Reuse native mixture/GP and stopped point-spectral inner controls. No outer task1 rerun on these two pilots alone. If effect is small or the numerical check fails,stop this expansion.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "maximum_source_conditionings": 386,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;small cached source JSON;no server jobs,pulls or NPZ",
+  "scope": "New source-only conditional amplitude candidate. Original point-spectral candidate remains stopped;native intercept mixture retained;complete-model HOLD. No source6/7,target,KG,independent confirmation or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_task_amplitude_uncertainty_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_task_amplitude_uncertainty_v1/results.json",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

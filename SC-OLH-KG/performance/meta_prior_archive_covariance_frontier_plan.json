@@ -1,0 +1,32 @@
+{
+  "stage": "meta_prior_archive_covariance_frontier_a26_20261003",
+  "status": "complete_weight_only_modification_closed",
+  "fixed_after_a25_before_a26_results": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_archive_covariance_a25_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_archive_covariance_a25_20261003/validation.json"
+  ],
+  "question": "Can changing population mass alone remove A25 compatible losses while retaining its transfer gain, or does this frozen covariance family require a different structural model?",
+  "model": "Retain 1/2 full-dictionary mass. Allocate the other half as (1-lambda) local source structure plus lambda empirical-population structure. Cached A25 component densities and evidence determine all scores. Lambda=0 is I, lambda=0.5 is frozen H, lambda=1 is M.",
+  "grid": {
+    "lambda_start": 0,
+    "lambda_stop": 1,
+    "lambda_nodes": 201
+  },
+  "analysis": "Diagnose all four condition-by-source-group strata on the original eight pair blocks. Compute nominal pair-block bootstrap intervals at every fixed mass, retain all values, and inspect whether any nonzero mass avoids compatible losses in both groups. Report H gains at steps9-12 and21-24 to locate the tradeoff in observation time. Do not select a fitted mass, tune a target model or treat this retrospective grid as independent confirmation.",
+  "controls": "Cached endpoints0/0.5/1 must reconstruct I/H/M exactly. A25 profiles, scored seeds and groups must retain the original cohort. If an acceptable nonzero region exists, freeze source-held calibration separately; otherwise close weight-only modifications of this model.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 30,
+    "new_gaussian_fits": 0,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "target_paths_scored": 0,
+    "kg_calls": 0
+  },
+  "paired_bootstrap_seed": 20261104,
+  "limitations": "This diagnoses one empirical archive-mixture covariance family. It is not an impossibility theorem for richer meta-priors, a deployment-frequency estimate or target evidence.",
+  "next_plan": "performance/meta_prior_joint_archive_plan.json"
+}

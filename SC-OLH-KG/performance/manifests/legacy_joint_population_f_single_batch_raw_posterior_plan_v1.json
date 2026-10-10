@@ -1,0 +1,32 @@
+{
+  "status": "completed;all192 joint densities reproduced;small sample variance drives large local posterior variance changes;joint GP precision failure remains",
+  "entrypoint": "performance/diagnose_legacy_f_single_batch_raw_posterior.py",
+  "known_source_results": "paper_artifacts/legacy_joint_population_f_known_source_latent_noise_v1/results.json",
+  "known_source_inputs": "paper_artifacts/legacy_joint_population_f_known_source_latent_noise_v1/frozen_inputs.json",
+  "joint_source_inputs": "paper_artifacts/legacy_joint_population_f_correlated_source_raw_update_v1/frozen_inputs.json",
+  "joint_source_results": "paper_artifacts/legacy_joint_population_f_correlated_source_raw_update_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "question": "Can deterministic SINGLE-batch Bayesian updating explain the large latent-f variance changes seen in three passing joint source chains,without more sampling or asserting the failing GP control is settled?",
+  "calculation": "At each of the existing96 added source batches,integrate the Gaussian eta prior times the chi-square sample-variance likelihood times N(batch_mean;f_prior_mean,f_prior_variance+exp(eta)/3). Integrate f analytically conditional on eta,then retain E[conditional_f_variance]+Var[conditional_f_mean]. Compare with the scalar Gaussian f posterior that fixes sample_variance/3. Both arms share the same original risk law. New S^2 appears once in the posterior joint likelihood. This is a singleton update,not the joint48-source posterior and not a new source covariance fit.",
+  "verification": "Each two-arm integral must reproduce the corresponding Stage196 proper joint-batch log density at1e-8,under the same existing12-SD integration domain and1e-7 numerical error bound. Positive posterior variance and the known-noise scalar Gaussian formula must hold. No old score replay,extra MCMC sweeps,new data or coordinate fitting.",
+  "decision": "Report the latent-f posterior variance ratios and their relationship to small sample variances. Distinguish posterior f variance from Stage196 pre-mean-update predictive variance. Preserve the failed joint GP precision gate;do not adopt a candidate or run outer forecasts. The next source-learning design must account for the conditional likelihood and Monte Carlo precision rather than claiming repaired stable decision value.",
+  "maximum_single_thread_cpu_seconds": 15,
+  "cost": {
+    "maximum_two_arm_integrations": 96,
+    "new_source_labels": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_coordinate_fits": 0,
+    "new_covariance_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;existing small JSON priors and observations only,no NPZ or server work",
+  "scope": "Exact local conditional-likelihood diagnostic under the frozen approximate source Gaussian laws. Original four prior principles retained;complete-model HOLD. No task0/task1 outcomes,source6/7,target,KG,confirmation or manuscript edits.",
+  "output": "paper_artifacts/legacy_joint_population_f_single_batch_raw_posterior_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_single_batch_raw_posterior_v1/results.json"
+}

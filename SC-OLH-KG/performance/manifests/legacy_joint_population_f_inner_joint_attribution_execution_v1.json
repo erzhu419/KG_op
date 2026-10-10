@@ -1,0 +1,12 @@
+{
+  "status": "frozen after joint source direction failed;before derivative attribution",
+  "joint_results": "paper_artifacts/legacy_joint_population_f_inner_task_level_shape_v1/results.json",
+  "entrypoint": "performance/diagnose_legacy_f_inner_joint_attribution.py",
+  "question": "Which component changes the sign of the honest source predictive score between layouts,and is the penalty in conditional mean adaptation or covariance?",
+  "calculation": "Decompose only the stopped q=0 tangent into level variance,existing task-shape marginals,new task groups,level-shape coupling and shape coupling. Coherently differentiate source-conditioned beta/H and held-source covariance. Attribute proper predictive NLL derivative to covariance log volume,residual covariance quadratic and mean shift. Record induced average-level mean/variance derivatives. Components are algebraic score contributions,not separate valid covariance candidates.",
+  "verification": "Five coefficient directions must sum to the stopped joint direction,and their predictive/training gradients must sum to saved Stage153 gradients. A mismatch stops interpretation and requires an attribution fix. No new finite probes,raw filters or source fits.",
+  "cost": {"new_source_fits": 0, "new_source_integrations": 0, "new_outer_query_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;source training JSON only;no server work",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_joint_attribution_v1",
+  "decision": "Use the attribution to identify a representation/support/learning mismatch or stop parameter chasing. It cannot waive the failed two-layout condition,permit a q sweep or justify a component-wise model without a coherent separately registered source-only definition. No outer task1 outcomes,source6/7,target,KG,confirmation or manuscript change;complete-model HOLD remains."
+}

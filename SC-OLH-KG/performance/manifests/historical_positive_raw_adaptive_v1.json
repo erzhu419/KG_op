@@ -1,0 +1,20 @@
+{
+  "status": "Registered before positive-mixture raw adaptive pilot; retain all signs and resolutions.",
+  "entrypoint": "performance/check_historical_positive_raw_adaptive.py",
+  "connection_plan": "performance/manifests/historical_learned_prior_kg_connection_v1.json",
+  "terminal_results": "paper_artifacts/historical_conditional_terminal_completion_v1/results.json",
+  "projected_heads": "paper_artifacts/historical_conditional_guarded_reference_v2/heads.json",
+  "raw_reference_phase": "paper_artifacts/historical_conditional_raw_guarded_v2/phase_results.json",
+  "old_projected_pilot": "paper_artifacts/historical_conditional_guarded_kg_pilot_v1/results.json",
+  "layout": "5",
+  "candidate": 5,
+  "fantasy_power": 2,
+  "raw_draw_powers": [12, 14],
+  "projected_draw_power": 14,
+  "seed": 202610077,
+  "maximum_single_thread_cpu_seconds": 600,
+  "maximum_projected_pilot_reproduction_error": 0.00000001,
+  "scope": "Adapt historical raw-optimal versus projected-choice comparison to actual positive source components without pooling them into one Gaussian. Preserve all8 complete identities and every component/weight,40 guarded/direct actions,two paid prefixes and360/359 budgets. Reuse four saved predictive labels per identity,32 joint futures. Evaluate raw next-episode utility at4096/16384 nodes and projected choices at the existing16384 rule. All source identities participate in the adaptive maximum;no low-weight approximation. Save every future's40 raw/projected values,choices,weights and diagnostics so prefixes can be extended without repeating completed terminal evaluations. The old projected pilot stored only aggregates,so recomputing its per-action values is necessary to evaluate its selected action under raw likelihood;check exact aggregate reproduction. Use the unprojected fixed-action Bayesian tower identity as a control variate and report finite-fantasy residual separately. No independent advantage or complete query ranking claim,no new labels/source fits/simulator or verifier calls/server jobs.",
+  "cost": {"new_source_labels": 0, "new_target_simulator_calls": 0, "new_verifier_calls": 0, "server_jobs": 0},
+  "output": "paper_artifacts/historical_positive_raw_adaptive_v1"
+}

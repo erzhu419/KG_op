@@ -1,0 +1,57 @@
+{
+  "covariance_plan": "performance/manifests/historical_source_covariance_adaptation_v1.json",
+  "selection_plan": "performance/manifests/historical_source_structure_adaptation_v1.json",
+  "source_laws": "paper_artifacts/historical_source_covariance_adaptation_v1/source_laws.json",
+  "maps": "paper_artifacts/historical_source_structure_adaptation_v1/maps.json",
+  "development_states": "paper_artifacts/historical_prior_posterior_connection_v1/states.json",
+  "legacy_connection_plan": "performance/manifests/historical_prior_posterior_connection_v1.json",
+  "cost": {
+    "new_source_labels": 0,
+    "new_selector_fits": 0,
+    "new_covariance_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "monte_carlo_gate": {
+    "maximum_split_rhat_eta_and_rao_blackwell_f_moments": 1.05,
+    "minimum_autocorrelation_ess_eta_and_rao_blackwell_f_moments": 100,
+    "maximum_first_second_half_f_variance_relative_difference": 0.15
+  },
+  "mixture_lookahead": {
+    "status": "registered before mixed-source KG execution",
+    "maximum_single_thread_cpu_seconds_per_layout": 60,
+    "draw_power": 7,
+    "fantasy_power": 0,
+    "seed": 202610077,
+    "scope": "All six balanced4 actions on both cached states. One stratified predictive fantasy per complete identity tests full mixture interfaces;no numerical decision ranking. Fantasy updates use the actual paid filter and terminal evaluations retain positive components. No variance labels are invented. Source HOLD identities remain present with their flags,not dropped from comparisons."
+  },
+  "raw_learning_diagnostic": {
+    "entrypoint": "performance/connect_historical_raw_learning_scores.py",
+    "maximum_single_thread_cpu_seconds": 15,
+    "scope": "All64 heads;reuse old covariance score with correctly weighted retained moments for the three corrected cases and original unweighted moments for the29 unchanged cases. No optimizer or convergence claim."
+  },
+  "status": "registered before variance-tilted source sampling",
+  "previous_source_registry": "paper_artifacts/historical_complete_reuse_v1/blocked_source_results.json",
+  "completed_source_registry": "paper_artifacts/historical_source_variance_resolution_v1/source_results.json",
+  "output": "paper_artifacts/historical_source_variance_resolution_v1",
+  "maximum_single_thread_cpu_seconds": 120,
+  "integration_maximum_single_thread_cpu_seconds": 30,
+  "tilt_sites_per_case": 3,
+  "sampler": {
+    "chains": 4,
+    "warmup_sweeps_per_chain": 512,
+    "retained_sweeps_per_chain": 4096,
+    "seed": 202610080
+  },
+  "retained_mixture": {
+    "stride_per_chain": 16,
+    "components_per_arm": 1024,
+    "maximum_source_f_diagonal_variance_relative_difference_vs_all_draws": 0.15,
+    "maximum_source_f_mean_rms_difference_in_full_posterior_sd": 0.1
+  },
+  "source_entrypoint": "performance/resolve_historical_source_variance.py",
+  "integration_entrypoint": "performance/connect_complete_historical_reuse.py",
+  "scope": "Reuse all29 passed cases. Only three blocked variance cases get one fixed four-chain old global+four-task conditional elliptical run. Tilt h=1+mean((conditional f variance+(conditional f mean-pilot mean)^2)/pilot variance) over the three worst pilot half-variance sites. The source-only pilot freezes center,scale,sites. Original posterior recovered with inverse-h weights;no prior,likelihood,gate,fit,data or scientific model-selection change. Diagnose self-normalized ratio influences plus central variance and normalizer;all old thresholds remain. Retain4x256 fixed states with their positive weights. Old failures stay in their original package.",
+  "replay_rule": "Never resample completed cases on replay. Reuse saved source resolution results and resume missing cached KG actions. No new simulator or verifier calls."
+}

@@ -1,0 +1,30 @@
+{
+  "status": "completed;delete-one source variation material;not a posterior variance correction",
+  "entrypoint": "performance/diagnose_legacy_f_source_task_jackknife.py",
+  "inner_source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+  "outer_source_laws": "paper_artifacts/legacy_joint_population_f_outer_joint_spectral_geometry_v1/source_laws.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "question": "How much does the complete source-estimated common mean/prior change across the existing five delete-one source rosters,including their changed GP templates,centers,support and spectral fits?",
+  "calculation": "Reuse the five existing four-source laws and existing five-source law per layout. All four-source rosters must be subsets of the five source identities excluding task1. Use the same outcome-free73-coordinate basis. Compute delete-one mean changes,mixture scatter with divisor5,and classical delete-one task jackknife covariance(4/5 times unnormalized scatter),including level/shape parts and relative to five-source common posterior H and full H+R+white. Record support,parameter and coefficient/covariance changes for all five deletions.",
+  "verification": "Check exact roster deletions/coordinate coefficient dimensions;verify jackknife covariance PSD and its independent coefficient/public covariance identity. These checks detect mixing unrelated folds or a factor-of-five error. No likelihood,derivative or raw filter rerun.",
+  "decision": "This is source-task stability,NOT a Bayesian posterior or covariance correction. If full source-learning variation is material while single-parameter uncertainty was small or unhelpful,design a proper source population/mean estimation uncertainty model before any more raw task1 forecasts. If negligible,do not invoke omitted source fitting uncertainty as an explanation. No source deletion selection or ensemble deployed from this diagnostic.",
+  "maximum_single_thread_cpu_seconds": 30,
+  "cost": {
+    "new_source_optimizations": 0,
+    "new_source_conditionings": 0,
+    "reused_source_laws": 12,
+    "new_raw_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached source coefficient summaries and public metadata;no server work,pulls or NPZ",
+  "scope": "Source-only stability of empirical priors,not independent confirmation. Stopped point/amplitude candidates remain stopped;native intercept mixture remains reference;complete-model HOLD. No task1 outcomes,source6/7,target,KG or manuscript changes.",
+  "output": "paper_artifacts/legacy_joint_population_f_source_task_jackknife_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_source_task_jackknife_v1/results.json",
+  "noise_contract_correction": "Source Gaussian likelihood/conditional uncertainty is exact only given the original frozen plug-in sample-variance/n noise,not the raw source likelihood. This terminology correction changes no numerical input,prior,rule or decision."
+}

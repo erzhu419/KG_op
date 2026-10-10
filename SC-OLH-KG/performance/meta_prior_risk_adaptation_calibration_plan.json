@@ -1,0 +1,91 @@
+{
+  "stage": "meta_prior_risk_adaptation_calibration_a10_20261003",
+  "status": "chronological_validation_complete_not_promoted_no_recommendation_replay",
+  "fixed_before_a10_results": true,
+  "input_artifacts": "paper_artifacts/meta_prior_calibration_replay_a_20261003",
+  "a9_execution_plan": "paper_artifacts/meta_prior_risk_family_reweighting_a9_20261003/execution_plan.json",
+  "hypothesis": "Calibrate how much to trust family adaptation while retaining the learned source predictor; target prediction should improve under mismatch without sacrificing compatible tasks.",
+  "single_change": "Replace the A9 marginal-evidence source/adaptation model weight by one continuous predictive calibration weight pi; retain all A9 family/rho/component inference within each of the two predictors.",
+  "source_predictor_p0": "Normalized null branches of A9, equal to the original source predictive mixture.",
+  "adapted_predictor_p1": "Normalized adapted branches of A9, averaging all six public families and rho under their unchanged priors.",
+  "weight_fit": "At each prefix t=8..23, use only the t earlier paid labels. Hold out each earlier candidate and all its repeats, fit P0/P1 on remaining earlier candidates, and compute their full joint held-group densities. Choose pi in [0,1] to maximize sum_g log((1-pi)*P0_g+pi*P1_g); use concavity and include both endpoints. No regime-specific tuning or hard family choice.",
+  "prediction": "Refit P0/P1 on all t earlier observations. Before exposing label t+1, issue (1-pi)*P0+pi*P1 for that old historical query. Evaluate its proper log density after observing the archived label.",
+  "primary_endpoint": "Per-seed mean new-minus-original-source predictive log score over forecast steps 9..24; report every regime and both source priors, preserving all 160 paths.",
+  "cohort": {
+    "paths": 160,
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "forecast_steps": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ]
+  },
+  "unchanged": "Source priors, function variance budgets, original component means/intercepts/discrepancies, six public families, uniform rho, 32 quadrature points, f/g models, observation likelihood, query paths, target call budgets and verification utility.",
+  "excluded_fit_inputs": "True target supports, latent truth, future paid labels, old verifier outcomes and other-seed/regime results. Latent simulation data may only reconstruct the exact already-paid labels.",
+  "inference_scope": "Empirical predictive stacking, not an exact Bayesian model posterior. Weight uncertainty is not integrated; outer chronological scores must assess overfitting.",
+  "implementation_checks": "Source predictor equivalence; endpoint/interior concave solutions; next-label changes cannot alter fitted pi or issued predictor; original component and repeated-candidate semantics preserved.",
+  "resource_admission": "Measure one complete learned-prior path including every inner fit, retain it, and project all 160 paths. Stop with partial evidence if the projection exceeds 900 local CPU seconds; do not shrink the cohort or dispatch server jobs.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_hours_cap": 0.25,
+    "server_experiment_jobs": 0,
+    "new_server_pulls": 0,
+    "kg_calls": 0,
+    "new_searches": 0,
+    "new_random_verifications": 0
+  },
+  "paired_bootstrap_seed": 20261019,
+  "promotion_condition": "Broad learned-source chronological predictive improvement without material compatible-regime regression before any recommendation replay. A failed condition ends this stage without automatic expansion.",
+  "limitations": "Retrospective development on reused historical query paths. Candidate-group inner calibration inherits adaptive-design limitations, while each outer issued predictor uses strictly earlier labels only. Method selection used earlier analyses of this same cohort, so the outer scores are not independent confirmation. No new-policy acquisition or deployment claim follows.",
+  "next_scope_if_passed": "Freeze a separate retrospective recommendation assessment. Prospective search remains on hold under the user compute stop; this plan does not authorize scheduling.",
+  "artifacts": "paper_artifacts/meta_prior_risk_adaptation_calibration_a10_20261003",
+  "weight_solver": "Concave log-mixture optimization by endpoint derivative checks and Brent root solving; use densities scaled by a common per-group maximum log score.",
+  "admission_first_path": {
+    "seed": 48,
+    "regime": "shared_structure",
+    "arm": "risk_ard_mixture"
+  },
+  "control_reproduction": "Every issued source/adapted/A9 predictive log density must reproduce the matching A9 chronological forecast within 1e-9.",
+  "next_plan": "performance/meta_prior_source_holdout_calibration_diagnostic_plan.json"
+}

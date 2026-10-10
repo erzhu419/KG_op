@@ -1,0 +1,16 @@
+{
+  "diagnosis": "paper_artifacts/legacy_risk_transfer_diagnosis_v1/results.json",
+  "pilot": "paper_artifacts/legacy_one_step_closed_loop_v1/results.json",
+  "query": 63,
+  "fresh_replicates": [3],
+  "retained_policy": 63,
+  "draw_power": 10,
+  "fantasy_power": 6,
+  "seeds": [80621],
+  "starting_state": "identical five paid records, source models, six primary roster, retained63, 362-call cap and raw batch likelihood as legacy_repeat_batch_v1",
+  "reason": "this saved node gives positive raw net value but negative projected assigned net value; assess the approximate filter's chosen action under raw conditional utility to distinguish value bias from choice loss",
+  "endpoints": "actual approximate-selector model-side reward, adaptation, lost value relative to raw optimal action, and assigned value bias at that selected action",
+  "execution": "one selected-posterior re-evaluation only; local single-thread; no new simulator episodes, scoring truth, independent certificates, server work or pulls; preserve all six original nodes",
+  "scope": "model-side approximation attribution, not actual deployment reward or a new optimizer comparison",
+  "output": "paper_artifacts/legacy_repeat_batch_v1/choice_audit.json"
+}

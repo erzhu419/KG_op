@@ -1,0 +1,143 @@
+{
+  "execution_plan": "performance/manifests/historical_independent_kg_preflight_completion_v2.json",
+  "pilot_plan": "performance/manifests/historical_independent_kg_pilot_v1.json",
+  "new_task_count": 6,
+  "restored_model_state_count": 24,
+  "query_case_count": 144,
+  "all_density_and_rare_origin_prechecks_passed": true,
+  "all_original17_cases_preserved": true,
+  "complete_old_source_connection_preserved": true,
+  "source_restoration": [
+    {
+      "layout": "5",
+      "source_prior_exactly_preserved": true,
+      "prior_paid_episodes": 0,
+      "positive_components_by_identity_and_head": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "positive_source_components": 16384,
+      "maximum_source_projection_error": 2.534214157967618e-15,
+      "gp_zero_paid_prior_preserved": true
+    },
+    {
+      "layout": "6",
+      "source_prior_exactly_preserved": true,
+      "prior_paid_episodes": 0,
+      "positive_components_by_identity_and_head": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "positive_source_components": 15360,
+      "maximum_source_projection_error": 1.7763568394002505e-15,
+      "gp_zero_paid_prior_preserved": true
+    }
+  ],
+  "cost": {
+    "source_fits": 0,
+    "new_physical_initialization_calls_this_execution": 0,
+    "shared_physical_initialization_calls": 12,
+    "logical_initialization_calls_for_final48_arms": 96,
+    "new_search_calls": 0,
+    "new_verifier_calls": 0,
+    "new_terminal_head_evaluations": 0,
+    "server_jobs": 0
+  },
+  "cpu_seconds": 361.149599605,
+  "successful_tests": 29,
+  "cdf_efficiency_smoke": {
+    "case": "learned_prior_independent_00_source_structural_mixture_layout5_query5",
+    "rows": [
+      {
+        "head": 0,
+        "labels": 48,
+        "old_bisection_cpu_seconds": 4.134176001,
+        "newton_cpu_seconds": 1.3130703920000002,
+        "speedup": 3.148480101438461,
+        "maximum_label_difference": 4.496403249731884e-15,
+        "native_inverse_cdf_error": 9.434782279726338e-13
+      },
+      {
+        "head": 1,
+        "labels": 104,
+        "old_bisection_cpu_seconds": 8.703469250000001,
+        "newton_cpu_seconds": 2.3448473080000003,
+        "speedup": 3.7117424321430486,
+        "maximum_label_difference": 1.742356259271105e-14,
+        "native_inverse_cdf_error": 9.446822690634078e-13
+      }
+    ],
+    "all_registered_inverse_gates_passed": true,
+    "old_labels_exactly_reproduced": true,
+    "old_initial_case_count": 17,
+    "new_physical_calls": 0
+  },
+  "cached_replay_cpu_seconds": 0.36673971400000005,
+  "independent_outcomes_opened": false,
+  "independent_confirmation": false,
+  "limitations": [
+    "Predictive-density prechecks do not establish terminal precision,query rankings or deployment benefit.",
+    "Six same-population d50 tasks and earlier paid moment projections remain the declared pilot scope."
+  ],
+  "next": "Compute target-specific terminal baselines and all six KG values per saved model state; freeze all48 recommendations before verification."
+}

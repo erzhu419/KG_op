@@ -1,0 +1,16 @@
+{
+  "paid_paths": "paper_artifacts/legacy_joint_bridge_v1/results.json",
+  "replay": "paper_artifacts/guarded_deployment_replay_v1/replay.json",
+  "cases": [
+    {"domain": "FactorShockStatePolicyRZDT1", "prefix": 10},
+    {"domain": "InventorySupplyChain", "prefix": 10},
+    {"domain": "InventorySupplyChain", "prefix": 13},
+    {"domain": "QueueResourceControl", "prefix": 10}
+  ],
+  "integrations": [[12, 80508], [13, 80508], [13, 80509]],
+  "incumbent_control_budgets": [128, 80, 128],
+  "control_role": "same frozen shortlist, old incumbent as primary, same familywise delta and same three-budget multiset; skip challenger that only purchases a 128-call incumbent certificate",
+  "interpretation": "source-orthogonal opened development states only; independent scramble differences diagnose integration error, not statistical confidence intervals; truth fields scored only after decisions are frozen",
+  "new_simulator_calls": 0,
+  "execution": "local serial single-thread, no new experiments or scheduler dispatch"
+}

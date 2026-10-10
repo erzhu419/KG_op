@@ -1,0 +1,71 @@
+{
+  "execution_plan": "performance/manifests/historical_predictive_martingale_v2.json",
+  "rows": [
+    {
+      "layout": "5",
+      "candidate": 7,
+      "fantasy_power": 4,
+      "fantasy_count": 128,
+      "maximum_inverse_cdf_error": 5.406709524535813e-10,
+      "maximum_adaptive_error_bound": 1.210408793468419e-12,
+      "maximum_posterior_weight_refinement_error": 7.939456281302881e-08,
+      "actual_paid_filter_reproduction_error": null,
+      "model_weight_martingale_residual": [
+        -0.00013037403386576343,
+        -0.0002831139345602779,
+        -0.0037599028429225467,
+        -0.0026856028723319936,
+        0.0012057514208806755,
+        0.0016508208264193747,
+        0.0021013479186790807,
+        0.0019010735177014404
+      ],
+      "maximum_identity_martingale_residual": 0.0037599028429225467,
+      "density_quadrature_adequate": true,
+      "precision_gate_passed": true,
+      "cpu_seconds": 18.836438156
+    },
+    {
+      "layout": "6",
+      "candidate": 4,
+      "fantasy_power": 4,
+      "fantasy_count": 128,
+      "maximum_inverse_cdf_error": 8.93729534823251e-14,
+      "maximum_adaptive_error_bound": 1.0910607056600455e-12,
+      "maximum_posterior_weight_refinement_error": 8.913009219568835e-15,
+      "actual_paid_filter_reproduction_error": null,
+      "model_weight_martingale_residual": [
+        0.0032105083859575237,
+        0.0035658186004274076,
+        -0.004595443797904442,
+        -0.002737249509431605,
+        -0.0013894801673652625,
+        -0.0013794856625691035,
+        0.0016608747094065332,
+        0.0016644574414789587
+      ],
+      "maximum_identity_martingale_residual": 0.004595443797904442,
+      "density_quadrature_adequate": true,
+      "precision_gate_passed": true,
+      "cpu_seconds": 15.344400983999996
+    }
+  ],
+  "selected_fantasy_power": {
+    "5": 4,
+    "6": 4
+  },
+  "all_layouts_complete": true,
+  "stopped_at_cpu_budget": false,
+  "cpu_seconds": 37.529185711,
+  "cost": {
+    "new_source_labels": 0,
+    "new_prior_fits": 0,
+    "new_target_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "server_jobs": 0
+  },
+  "terminal_actions_evaluated": 0,
+  "full_fantasy_moment_updates": 0,
+  "scientific_model_ranking_authorized": false,
+  "independent_confirmation": false
+}

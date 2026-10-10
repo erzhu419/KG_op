@@ -1,0 +1,31 @@
+{
+  "status": "registered before full-parent-bank evidence replay of fixed final candidate",
+  "candidate": "paper_artifacts/historical_final_source_certification_v1/inputs/5_spectral_head_specific_deconvolved_task_f.json",
+  "initial_risk_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_head_specific_deconvolved_task_f/results.json",
+  "source_plan": "performance/manifests/historical_source_variance_resolution_v4.json",
+  "parent_learning": "paper_artifacts/historical_source_acceleration_selection_v1/results.json",
+  "score_precision": {
+    "maximum_split_Rhat": 1.05,
+    "minimum_functional_ESS": 100,
+    "maximum_scaled_95_MC_halfwidth": 0.001
+  },
+  "evidence_precision": {
+    "minimum_importance_ESS": 100,
+    "minimum_chain_functional_ESS": 100,
+    "maximum_split_Rhat": 1.05,
+    "maximum_split_log_ratio_difference": 0.1
+  },
+  "convergence": {
+    "maximum_relative_covariance_change": 0.01,
+    "maximum_scaled_projected_raw_score": 0.001,
+    "required_consecutive_iterations": 2
+  },
+  "optimizer": {
+    "maxiter": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-07
+  },
+  "maximum_single_thread_cpu_seconds": 60,
+  "output": "paper_artifacts/historical_final_source_certification_v1/evidence/5_spectral_head_specific_deconvolved_task_f",
+  "scope": "One replay of the exact original selected-parent risk bank with its original seed and reference. Estimate the normalized final/parent prior ratio directly. Preserve failed compact-component evidence. Source response covariance is unchanged;source evidence is within identity. Diagnose final risk using actual weights without changing parameters. No source-registry replacement,target calls or server work."
+}

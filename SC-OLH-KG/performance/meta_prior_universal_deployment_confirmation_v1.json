@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "contract_id": "meta_prior_universal_deployment_confirmation_v1",
+  "status": "design_only_frozen_before_new_target_outcomes",
+  "purpose": "Test a bounded cross-family claim that a source-selected prior improves final decision utility under a fixed information, search, verification, and cost contract.",
+  "claim_boundary": "This contract can support stable performance across the registered task families; it cannot establish mathematical universality over arbitrary optimization problems.",
+  "families": [
+    {
+      "name": "inventory",
+      "status": "contract_ready",
+      "requirement": "Reuse the feasible [0.4,0.9] contract, retain every predeclared target block, and keep the v2 block as adverse evidence."
+    },
+    {
+      "name": "queue",
+      "status": "new_contract_required",
+      "requirement": "Freeze a public candidate bank with at least two feasible candidates and a nontrivial feasible objective span before target observations."
+    },
+    {
+      "name": "energy",
+      "status": "new_contract_required",
+      "requirement": "Use a three-head target contract with paid replication for objective, constraint mean, and log variance; the existing two-head energy archive is not sufficient."
+    }
+  ],
+  "arms": [
+    "source_selected_structure",
+    "same_source_full_dictionary",
+    "target_only_full_dictionary",
+    "target_only_rbf_kg"
+  ],
+  "primary_estimand": "paired final true expected verification reward: source_selected_structure minus target_only_rbf_kg, with the same candidate bank, initial points, target budget, keyed observation streams, and independent verifier within each target block",
+  "secondary_estimands": [
+    "source_selected_structure minus same_source_full_dictionary",
+    "source_selected_structure minus target_only_full_dictionary",
+    "certification rate difference",
+    "source calls and target calls separately charged"
+  ],
+  "target_blocks": {
+    "minimum_per_family": 16,
+    "preferred_per_family": 32,
+    "rule": "Freeze the complete seed list before any new target outcome is read; no block may be dropped for infeasibility, apparent negative transfer, or verifier failure."
+  },
+  "preflight": {
+    "must_be_outcome_free": true,
+    "minimum_feasible_candidates": 2,
+    "minimum_feasible_objective_span": 0.04,
+    "retain_infeasible_candidate": true,
+    "if_failed": "Do not run the family as a decision comparison; report the contract failure and do not pool it with the other families."
+  },
+  "success_gate": {
+    "primary": "Pooled paired 95 percent confidence interval for source_selected_structure minus target_only_rbf_kg has a strictly positive lower endpoint.",
+    "family_consistency": "Every registered family has a nonnegative point estimate and no family has a negative paired interval beyond the predeclared tolerance.",
+    "safety": "False certificates remain zero and certification is not materially lower than target_only_rbf_kg.",
+    "mechanism": "The source-selected arm must retain a positive contrast against same_source_full_dictionary in the same contract; otherwise a generic representation effect cannot be separated from source selection.",
+    "failure_action": "If any primary gate fails, retain the result as bounded or negative evidence and do not use stable or universal source-prior wording."
+  },
+  "frozen_controls": {
+    "no_post_hoc_tuning": true,
+    "no_target_outcomes_for_source_selection": true,
+    "no_target_truth_for_candidate_or_seed_filtering": true,
+    "same_initial_design": true,
+    "same_paid_target_budget": true,
+    "same_independent_verifier": true,
+    "include_source_and_target_costs": true,
+    "mature_baseline": "Include an official external baseline only when its candidate feasibility and three-head information contract are complete; otherwise mark it unavailable rather than substituting incompatible rows."
+  },
+  "current_evidence_status": {
+    "inventory_development": "positive development attribution only",
+    "inventory_v2": "negative independent confirmation of source-selected versus same-source full dictionary",
+    "inventory_rbf": "source-selected is not superior to generic target-only RBF-KG",
+    "energy": "existing source-design result lacks the required three-head target contract",
+    "queue": "no matching feasible-deployment contract yet"
+  }
+}

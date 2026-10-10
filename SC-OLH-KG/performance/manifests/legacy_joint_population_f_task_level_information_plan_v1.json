@@ -1,0 +1,42 @@
+{
+  "status": "completed:all14 native f source laws and likelihood slice derivatives verify;no variance floor selected",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "native_full_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "correlation_results": "paper_artifacts/legacy_joint_population_common_correlation_v1/results.json",
+  "complete_gate_results": "paper_artifacts/legacy_joint_population_common_correlation_holdout_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "head": "f",
+  "basis_of_next_step": "Common-correlation g passes both unchanged development layouts and all4 original same216 source6/7 gates; original144 remains3/4 with assignment6/task7 f raw-density loss-.146786 and g gain+.114642. f common correlation fails both development layouts; task1 losses are-.126450/-.117832 while otherfive raw densities improve. Do not broaden or tune the rejected f common correlation. Original f task-intercept variance falls from full-six-source .000120421/.000103567 to .0000378095/0 when source task1 is excluded. Whether this reflects strong evidence for a boundary or weak source identification is unresolved. Prior Stage87 did task-level conditional slices for g, not f.",
+  "diagnostic": "Use the unchanged native f common/task laws and empirical regularizers in all12 five-source branches and two cached full-six-source branches. Restore actual source Gaussian NLL. Inspect only the source-task intercept variance v0: exact score and conditional curvature/information, conditional likelihood slice in physical cost-variance units, and source common-function uncertainty. f remains uncentered, original27 dictionary/common A/R shape groups/spectra/independent tails/noise/discrepancy fixed. No GP prior/posterior swap, g refit or query outcome.",
+  "information": "Compute dense Gaussian Fisher information for v0 with covariance derivative blockdiag(ones pertask). Account for covariance nuisance directions from the original currently positive common/task group variances, nonzero spectrum derivatives and discrepancy. Save the actual active-direction eigenvalues/rank and v0 Schur complement using a rank-revealing solve, without invented ridge or claiming boundary-normal confidence intervals. Compare conditional and nuisance-adjusted information and source leave-one-task influence in physical variance units.",
+  "conditional_slice": "At each cached native source law vary only v0>=0, holding every other source parameter and empirical prior fixed. Report the component around the native mode with total source log-likelihood drop<=.5, solving its lower/upper endpoints numerically. This is a one-parameter conditional likelihood slice, not a full nuisance profile or confidence interval. Report when zero is inside and widths relative to fitted new-task task-level variance. No optimizer or candidate fit.",
+  "verification": "The source covariance at v0_native must reproduce its cached NLL/common beta/H. Verify the v0 analytic dense likelihood derivative against central finite difference at a declared positive interior variance based on native source signal units. A mismatch stops the diagnostic. No rerun of settled g/GP/native all73 prediction checks.",
+  "interpretation": "Strong identification and a narrow zero-compatible slice would argue against adding f intercept uncertainty as a repair; focus instead on common mean/family mismatch. A wide slice or strong nuisance coupling would support a separately specified treatment of variance/support uncertainty or source design, not arbitrary variance inflation. Empirical regularizer and fixed supports omit selection/population uncertainty. Source tasks6/7 cannot select any model, variance or slice rule.",
+  "next_action": "Judge source identification before any f variance integration or new fit. Keep the useful g result as development evidence and retain complete-model HOLD. No target/confirmation/KG trial, common-correlation variants or new source jobs.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_g_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_task_level_information_v1",
+  "planned_entrypoint": "performance/diagnose_legacy_f_task_level_information.py",
+  "report": "docs/orthogonal_meta_prior_stage105_106_20261006.md",
+  "results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_group_spectral_restriction_plan_v1.json"
+}

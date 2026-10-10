@@ -1,0 +1,1983 @@
+{
+  "contract": {
+    "contract_id": "orthogonal_joint_gaussian_batch_replay_v1",
+    "study_role": "complete-prefix development replay, not a new executed search or independent confirmation",
+    "source_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_archive.json",
+    "target_response_archive": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_arm.json",
+    "recorded_path_arm": "source_selected_structure",
+    "initial_points": 8,
+    "stages": [
+      8,
+      24
+    ],
+    "replicates": 12,
+    "verification_replicates": 928,
+    "chance_alpha": 0.05,
+    "arms": [
+      "u1_plugin_independent",
+      "u1_joint_batch",
+      "full_joint_batch"
+    ],
+    "comparison": "same source priors and paid labels; plugin versus joint likelihood, then same-likelihood structural versus pooled priors",
+    "shared_decision_rule": "joint Gaussian moment verification utility and centered 27-node KG",
+    "posterior_approximation": "each joint component projects to Gaussian moments after each batch",
+    "prequential_score": "exact joint density of constraint batch mean and bias-corrected log sample variance, evaluated before update for every arm",
+    "target_truth_used": false,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "output": "paper_artifacts/orthogonal_joint_replay_v1/replay.json"
+  },
+  "basis": {
+    "reference_measure": "product_of_public_empirical_coordinate_marginals",
+    "orthogonalization": "within_main_effect_derivative_eigenbasis",
+    "interaction_order": 2,
+    "active_dim": 68,
+    "selected_names": [
+      "main:0/mode:0",
+      "main:0/mode:1",
+      "main:0/mode:2",
+      "main:0/mode:3",
+      "main:0/mode:4",
+      "main:1/mode:0",
+      "main:1/mode:1",
+      "main:1/mode:2",
+      "main:1/mode:3",
+      "main:1/mode:4",
+      "main:2/mode:0",
+      "main:2/mode:1",
+      "main:2/mode:2",
+      "main:2/mode:3",
+      "main:2/mode:4",
+      "main:3/mode:0",
+      "main:3/mode:1",
+      "main:3/mode:2",
+      "main:3/mode:3",
+      "main:3/mode:4",
+      "main:4/mode:0",
+      "main:4/mode:1",
+      "main:4/mode:2",
+      "main:4/mode:3",
+      "main:4/mode:4",
+      "main:5/mode:0",
+      "main:5/mode:1",
+      "main:5/mode:2",
+      "main:5/mode:3",
+      "main:5/mode:4",
+      "main:6/mode:0",
+      "main:6/mode:1",
+      "main:6/mode:2",
+      "main:6/mode:3",
+      "main:6/mode:4",
+      "main:7/mode:0",
+      "main:7/mode:1",
+      "main:7/mode:2",
+      "main:7/mode:3",
+      "main:7/mode:4",
+      "pair:0,1/linear",
+      "pair:0,2/linear",
+      "pair:0,3/linear",
+      "pair:0,4/linear",
+      "pair:0,5/linear",
+      "pair:0,6/linear",
+      "pair:0,7/linear",
+      "pair:1,2/linear",
+      "pair:1,3/linear",
+      "pair:1,4/linear",
+      "pair:1,5/linear",
+      "pair:1,6/linear",
+      "pair:1,7/linear",
+      "pair:2,3/linear",
+      "pair:2,4/linear",
+      "pair:2,5/linear",
+      "pair:2,6/linear",
+      "pair:2,7/linear",
+      "pair:3,4/linear",
+      "pair:3,5/linear",
+      "pair:3,6/linear",
+      "pair:3,7/linear",
+      "pair:4,5/linear",
+      "pair:4,6/linear",
+      "pair:4,7/linear",
+      "pair:5,6/linear",
+      "pair:5,7/linear",
+      "pair:6,7/linear"
+    ],
+    "function_groups": [
+      "main:0",
+      "main:0",
+      "main:0",
+      "main:0",
+      "main:0",
+      "main:1",
+      "main:1",
+      "main:1",
+      "main:1",
+      "main:1",
+      "main:2",
+      "main:2",
+      "main:2",
+      "main:2",
+      "main:2",
+      "main:3",
+      "main:3",
+      "main:3",
+      "main:3",
+      "main:3",
+      "main:4",
+      "main:4",
+      "main:4",
+      "main:4",
+      "main:4",
+      "main:5",
+      "main:5",
+      "main:5",
+      "main:5",
+      "main:5",
+      "main:6",
+      "main:6",
+      "main:6",
+      "main:6",
+      "main:6",
+      "main:7",
+      "main:7",
+      "main:7",
+      "main:7",
+      "main:7",
+      "pair:0,1",
+      "pair:0,2",
+      "pair:0,3",
+      "pair:0,4",
+      "pair:0,5",
+      "pair:0,6",
+      "pair:0,7",
+      "pair:1,2",
+      "pair:1,3",
+      "pair:1,4",
+      "pair:1,5",
+      "pair:1,6",
+      "pair:1,7",
+      "pair:2,3",
+      "pair:2,4",
+      "pair:2,5",
+      "pair:2,6",
+      "pair:2,7",
+      "pair:3,4",
+      "pair:3,5",
+      "pair:3,6",
+      "pair:3,7",
+      "pair:4,5",
+      "pair:4,6",
+      "pair:4,7",
+      "pair:5,6",
+      "pair:5,7",
+      "pair:6,7"
+    ],
+    "roughness_eigenvalues": [
+      0.7511963055596803,
+      3.368536271621109,
+      7.105923188377176,
+      16.05045832815115,
+      27.942907370549563,
+      0.8178521064428707,
+      1.0283240242866543,
+      4.3015361534900345,
+      14.518116723041379,
+      38.57638524902655,
+      0.6469040796693522,
+      3.2125033734855255,
+      5.755898376824711,
+      24.593493731806657,
+      66.02759686645956,
+      0.6387371487970476,
+      3.905368743500597,
+      6.715471549259059,
+      12.036438547173349,
+      41.16088797285063,
+      0.49436429304378077,
+      3.510355367175204,
+      6.777422211187357,
+      27.858765779031295,
+      52.934493891592886,
+      0.8195715656703956,
+      2.0545008943617042,
+      8.246685616395197,
+      9.893400615955668,
+      105.0280750996186,
+      0.5457869730766259,
+      4.17587056160335,
+      5.672570814552241,
+      24.353372880545177,
+      86.25902587940251,
+      0.24217534051855827,
+      1.730285177381221,
+      10.948444498710373,
+      12.92245215204792,
+      420.4463729615791,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0
+    ],
+    "product_gram_max_error": 7.083829242501547e-11,
+    "product_centering_max_error": 5.887160793582868e-10,
+    "joint_reference_gram_max_error": 2.7259162638432892
+  },
+  "summary": [
+    {
+      "arm": "u1_plugin_independent",
+      "task_blocks": 8,
+      "mean_label_rmse_after_initial": [
+        0.11711006968342053,
+        0.5541112410235225
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.011680550417539563
+    },
+    {
+      "arm": "u1_joint_batch",
+      "task_blocks": 8,
+      "mean_label_rmse_after_initial": [
+        0.11754674491418522,
+        0.556981541168887
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.01298839515092258
+    },
+    {
+      "arm": "full_joint_batch",
+      "task_blocks": 8,
+      "mean_label_rmse_after_initial": [
+        0.1579168603841119,
+        0.5613595686079385
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.17474034026034063
+    }
+  ],
+  "rows": [
+    {
+      "law_seed": 95425,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        64,
+        84,
+        35,
+        59,
+        34,
+        81,
+        81,
+        63,
+        43,
+        50,
+        38,
+        56,
+        95,
+        12,
+        65,
+        45
+      ],
+      "label_rmse_after_initial": [
+        0.1994485813846738,
+        0.6554290889757846
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.05239159624721229,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8718357437888006,
+          "predicted_verifier_power": 0.9941381558301225,
+          "next_kg_probe": 35,
+          "max_kg": 0.0029578980097790244,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8767723915473956,
+          "predicted_verifier_power": 0.999474920363705,
+          "next_kg_probe": 81,
+          "max_kg": 0.001107115244445841,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95425,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        64,
+        84,
+        35,
+        59,
+        34,
+        81,
+        81,
+        63,
+        43,
+        50,
+        38,
+        56,
+        95,
+        12,
+        65,
+        45
+      ],
+      "label_rmse_after_initial": [
+        0.19994856557019683,
+        0.6422185101684427
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.055475614830568204,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8503535915148005,
+          "predicted_verifier_power": 0.9696424553531876,
+          "next_kg_probe": 54,
+          "max_kg": 0.0037467790496861367,
+          "g_eta_correlation_at_recommendation": 0.05825560955962218,
+          "max_abs_g_eta_correlation": 0.07688413234701033
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8716885887767362,
+          "predicted_verifier_power": 0.9936796496431226,
+          "next_kg_probe": 81,
+          "max_kg": 0.00393913576844182,
+          "g_eta_correlation_at_recommendation": 0.04703122058633352,
+          "max_abs_g_eta_correlation": 0.12181417231430286
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.8991525824522194,
+          0.09137128662783593,
+          0.008603385887494912,
+          0.0008727450324496916
+        ],
+        "g_structural_weight": 0.9905238690800553,
+        "eta_structural_weight": 0.9077559683397143,
+        "max_integration_relative_error": 1.6195795312267763e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95425,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        64,
+        84,
+        35,
+        59,
+        34,
+        81,
+        81,
+        63,
+        43,
+        50,
+        38,
+        56,
+        95,
+        12,
+        65,
+        45
+      ],
+      "label_rmse_after_initial": [
+        0.2786667646845415,
+        0.6513510598103629
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.3472101768588181,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8493000695938164,
+          "predicted_verifier_power": 0.9679260969516954,
+          "next_kg_probe": 35,
+          "max_kg": 0.008664789178579456,
+          "g_eta_correlation_at_recommendation": 0.04937353799354486,
+          "max_abs_g_eta_correlation": 0.04937353799354486
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8690447619986572,
+          "predicted_verifier_power": 0.9905357110275944,
+          "next_kg_probe": 81,
+          "max_kg": 0.007457957459643936,
+          "g_eta_correlation_at_recommendation": 0.037173610684600115,
+          "max_abs_g_eta_correlation": 0.11904407737954174
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 1.529445924907247e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95426,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        37,
+        35,
+        80,
+        54,
+        54,
+        61,
+        7,
+        1,
+        81,
+        64,
+        12,
+        54,
+        49,
+        55,
+        92,
+        87
+      ],
+      "label_rmse_after_initial": [
+        0.0842324235140403,
+        0.46187528846416187
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.1546746329989751,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8692403358764228,
+          "predicted_verifier_power": 0.9835681400403029,
+          "next_kg_probe": 54,
+          "max_kg": 0.007420591886802219,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 12,
+          "predicted_utility": 0.8748565947979298,
+          "predicted_verifier_power": 0.9994197698242978,
+          "next_kg_probe": 93,
+          "max_kg": 0.001251807523037424,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95426,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        37,
+        35,
+        80,
+        54,
+        54,
+        61,
+        7,
+        1,
+        81,
+        64,
+        12,
+        54,
+        49,
+        55,
+        92,
+        87
+      ],
+      "label_rmse_after_initial": [
+        0.08459088344410823,
+        0.46452380547434896
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.15748161439240796,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.877100600197484,
+          "predicted_verifier_power": 0.9924622343884402,
+          "next_kg_probe": 2,
+          "max_kg": 0.0051551708183102,
+          "g_eta_correlation_at_recommendation": 0.03685680156947681,
+          "max_abs_g_eta_correlation": 0.04344490849512226
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8761247088758913,
+          "predicted_verifier_power": 0.9951802255860259,
+          "next_kg_probe": 93,
+          "max_kg": 0.0016131282099650817,
+          "g_eta_correlation_at_recommendation": -0.06758100578457936,
+          "max_abs_g_eta_correlation": 0.06758100578457936
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.7137703071934949,
+          0.27309358293798724,
+          0.009493461207976304,
+          0.0036426486605415187
+        ],
+        "g_structural_weight": 0.9868638901314821,
+        "eta_structural_weight": 0.7232637684014712,
+        "max_integration_relative_error": 5.4935938356257824e-11,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95426,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        37,
+        35,
+        80,
+        54,
+        54,
+        61,
+        7,
+        1,
+        81,
+        64,
+        12,
+        54,
+        49,
+        55,
+        92,
+        87
+      ],
+      "label_rmse_after_initial": [
+        0.10996780012902362,
+        0.4730644687794627
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.019148093406280736,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8709271734791595,
+          "predicted_verifier_power": 0.9850143847844451,
+          "next_kg_probe": 78,
+          "max_kg": 0.010224524666407003,
+          "g_eta_correlation_at_recommendation": 0.02423510601903744,
+          "max_abs_g_eta_correlation": 0.02820940470289868
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 12,
+          "predicted_utility": 0.8746866110271682,
+          "predicted_verifier_power": 0.9992349543360135,
+          "next_kg_probe": 71,
+          "max_kg": 0.004600886356263899,
+          "g_eta_correlation_at_recommendation": 0.03612824994503908,
+          "max_abs_g_eta_correlation": 0.0893126804845771
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 5.4935938356257824e-11,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95427,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        37,
+        64,
+        73,
+        73,
+        5,
+        35,
+        20,
+        46,
+        81,
+        66,
+        34,
+        59,
+        38,
+        56,
+        50,
+        45
+      ],
+      "label_rmse_after_initial": [
+        0.1046029377679903,
+        0.6475349313325477
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.05582208185818405,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 18,
+          "predicted_utility": 0.8262159390303048,
+          "predicted_verifier_power": 0.9917192205139119,
+          "next_kg_probe": 81,
+          "max_kg": 0.006589514865188235,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 73,
+          "predicted_utility": 0.8508579061547543,
+          "predicted_verifier_power": 0.9888507716867415,
+          "next_kg_probe": 62,
+          "max_kg": 0.0011456294120858732,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95427,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        37,
+        64,
+        73,
+        73,
+        5,
+        35,
+        20,
+        46,
+        81,
+        66,
+        34,
+        59,
+        38,
+        56,
+        50,
+        45
+      ],
+      "label_rmse_after_initial": [
+        0.1055136324815302,
+        0.6508189682062361
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.052711662731002945,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 18,
+          "predicted_utility": 0.8242646567337578,
+          "predicted_verifier_power": 0.9893770674922633,
+          "next_kg_probe": 81,
+          "max_kg": 0.006932483180092881,
+          "g_eta_correlation_at_recommendation": 0.04363383500100028,
+          "max_abs_g_eta_correlation": 0.04580074192142971
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 73,
+          "predicted_utility": 0.8490452761813196,
+          "predicted_verifier_power": 0.9867441678283912,
+          "next_kg_probe": 73,
+          "max_kg": 0.0018604433751948316,
+          "g_eta_correlation_at_recommendation": 0.1261388387426101,
+          "max_abs_g_eta_correlation": 0.1261388387426101
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.7512364492341038,
+          0.24367613147517084,
+          0.00384412859325351,
+          0.0012432906974718055
+        ],
+        "g_structural_weight": 0.9949125807092747,
+        "eta_structural_weight": 0.7550805778273574,
+        "max_integration_relative_error": 8.303506229353999e-11,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95427,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        37,
+        64,
+        73,
+        73,
+        5,
+        35,
+        20,
+        46,
+        81,
+        66,
+        34,
+        59,
+        38,
+        56,
+        50,
+        45
+      ],
+      "label_rmse_after_initial": [
+        0.1974825525569683,
+        0.6546183613549934
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.2914172412672896,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 18,
+          "predicted_utility": 0.8237018692314869,
+          "predicted_verifier_power": 0.9886609342240845,
+          "next_kg_probe": 81,
+          "max_kg": 0.013612009721867019,
+          "g_eta_correlation_at_recommendation": 0.024765032649417446,
+          "max_abs_g_eta_correlation": 0.03371949033084906
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 73,
+          "predicted_utility": 0.8384826008136069,
+          "predicted_verifier_power": 0.974399697057174,
+          "next_kg_probe": 73,
+          "max_kg": 0.006802516644694988,
+          "g_eta_correlation_at_recommendation": 0.1413745784296612,
+          "max_abs_g_eta_correlation": 0.1413745784296612
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 8.083806232747946e-11,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95428,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        39,
+        35,
+        7,
+        73,
+        73,
+        73,
+        73,
+        81,
+        64,
+        93,
+        93,
+        4,
+        4,
+        12,
+        6,
+        82
+      ],
+      "label_rmse_after_initial": [
+        0.1309804195856606,
+        0.5121005217613768
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.2865208360314543,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 14,
+          "predicted_utility": 0.846834327062128,
+          "predicted_verifier_power": 0.9877339897439155,
+          "next_kg_probe": 74,
+          "max_kg": 0.009002849374059811,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 93,
+          "predicted_utility": 0.8563409696739873,
+          "predicted_verifier_power": 0.9857459929190122,
+          "next_kg_probe": 93,
+          "max_kg": 0.003907099866569344,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95428,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        39,
+        35,
+        7,
+        73,
+        73,
+        73,
+        73,
+        81,
+        64,
+        93,
+        93,
+        4,
+        4,
+        12,
+        6,
+        82
+      ],
+      "label_rmse_after_initial": [
+        0.1309610536094549,
+        0.5253342444647388
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.2870245656821318,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 14,
+          "predicted_utility": 0.8490960042965554,
+          "predicted_verifier_power": 0.990371973829922,
+          "next_kg_probe": 74,
+          "max_kg": 0.009541268738734413,
+          "g_eta_correlation_at_recommendation": 0.027308541345896914,
+          "max_abs_g_eta_correlation": 0.028406009179174116
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 93,
+          "predicted_utility": 0.855579511308263,
+          "predicted_verifier_power": 0.9848694676103222,
+          "next_kg_probe": 93,
+          "max_kg": 0.0035745502726153757,
+          "g_eta_correlation_at_recommendation": 0.009333443224636523,
+          "max_abs_g_eta_correlation": 0.16345025311018727
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.6554915441733482,
+          0.32962410781808454,
+          0.00993057609336716,
+          0.004953771915200084
+        ],
+        "g_structural_weight": 0.9851156519914328,
+        "eta_structural_weight": 0.6654221202667153,
+        "max_integration_relative_error": 1.415253985702091e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95428,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        39,
+        35,
+        7,
+        73,
+        73,
+        73,
+        73,
+        81,
+        64,
+        93,
+        93,
+        4,
+        4,
+        12,
+        6,
+        82
+      ],
+      "label_rmse_after_initial": [
+        0.14604072382299593,
+        0.5436395470548673
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.42936124826659267,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 14,
+          "predicted_utility": 0.8486648157008964,
+          "predicted_verifier_power": 0.989206800298463,
+          "next_kg_probe": 81,
+          "max_kg": 0.009137734102347153,
+          "g_eta_correlation_at_recommendation": 0.019148129543698846,
+          "max_abs_g_eta_correlation": 0.0193767829812539
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 93,
+          "predicted_utility": 0.8474213617614156,
+          "predicted_verifier_power": 0.975421211526773,
+          "next_kg_probe": 93,
+          "max_kg": 0.005709257659293505,
+          "g_eta_correlation_at_recommendation": -0.007343712924916164,
+          "max_abs_g_eta_correlation": 0.18819307121051287
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 1.3528920284959307e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95430,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        26,
+        54,
+        35,
+        81,
+        5,
+        93,
+        4,
+        12,
+        6,
+        52,
+        82,
+        45,
+        56,
+        61,
+        37,
+        77
+      ],
+      "label_rmse_after_initial": [
+        0.15949484099184913,
+        0.5729870063405237
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.019628150147260562,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 14,
+          "predicted_utility": 0.809324185122083,
+          "predicted_verifier_power": 0.9798349604560246,
+          "next_kg_probe": 26,
+          "max_kg": 0.017867532508675524,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8481688220774433,
+          "predicted_verifier_power": 0.9995098607368212,
+          "next_kg_probe": 38,
+          "max_kg": 0.0006379489067845982,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95430,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        26,
+        54,
+        35,
+        81,
+        5,
+        93,
+        4,
+        12,
+        6,
+        52,
+        82,
+        45,
+        56,
+        61,
+        37,
+        77
+      ],
+      "label_rmse_after_initial": [
+        0.1610761417676116,
+        0.5702566813809601
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.028208308428392156,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 26,
+          "predicted_utility": 0.802660326371144,
+          "predicted_verifier_power": 0.9461224033177469,
+          "next_kg_probe": 26,
+          "max_kg": 0.022838672944091993,
+          "g_eta_correlation_at_recommendation": 0.05566293300472013,
+          "max_abs_g_eta_correlation": 0.061801263503341114
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8473202345583265,
+          "predicted_verifier_power": 0.9985098574698089,
+          "next_kg_probe": 38,
+          "max_kg": 0.000659605694304486,
+          "g_eta_correlation_at_recommendation": 0.10446104561507567,
+          "max_abs_g_eta_correlation": 0.10617623405652574
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.6087618068823112,
+          0.3680013337609818,
+          0.014542496073498638,
+          0.00869436328320835
+        ],
+        "g_structural_weight": 0.9767631406432931,
+        "eta_structural_weight": 0.6233043029558099,
+        "max_integration_relative_error": 1.6051106585276036e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95430,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        26,
+        54,
+        35,
+        81,
+        5,
+        93,
+        4,
+        12,
+        6,
+        52,
+        82,
+        45,
+        56,
+        61,
+        37,
+        77
+      ],
+      "label_rmse_after_initial": [
+        0.19634341393673974,
+        0.5550916241939757
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.13013145563934808,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 14,
+          "predicted_utility": 0.8045962978653192,
+          "predicted_verifier_power": 0.9734594142583242,
+          "next_kg_probe": 26,
+          "max_kg": 0.02236721547667423,
+          "g_eta_correlation_at_recommendation": 0.03218183960165246,
+          "max_abs_g_eta_correlation": 0.039081808315483905
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8473025308413571,
+          "predicted_verifier_power": 0.9983296370104415,
+          "next_kg_probe": 63,
+          "max_kg": 0.002894247270486526,
+          "g_eta_correlation_at_recommendation": 0.08322434984636813,
+          "max_abs_g_eta_correlation": 0.08322434984636813
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 1.496135836142476e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95431,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        7,
+        81,
+        64,
+        14,
+        37,
+        5,
+        33,
+        12,
+        4,
+        93,
+        82,
+        65,
+        31,
+        4,
+        80,
+        92
+      ],
+      "label_rmse_after_initial": [
+        0.07752827372863474,
+        0.6103868390506695
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.011921895498432335,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 76,
+          "predicted_utility": 0.7215452241633725,
+          "predicted_verifier_power": 0.8951349523432999,
+          "next_kg_probe": 2,
+          "max_kg": 0.03395688076356639,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 76,
+          "predicted_utility": 0.7349914773537948,
+          "predicted_verifier_power": 0.9118165314867324,
+          "next_kg_probe": 74,
+          "max_kg": 0.01592998253967858,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95431,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        7,
+        81,
+        64,
+        14,
+        37,
+        5,
+        33,
+        12,
+        4,
+        93,
+        82,
+        65,
+        31,
+        4,
+        80,
+        92
+      ],
+      "label_rmse_after_initial": [
+        0.07860831824416191,
+        0.6121616037638861
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.019475260890509934,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 33,
+          "predicted_utility": 0.7208406899751479,
+          "predicted_verifier_power": 0.9095135495527046,
+          "next_kg_probe": 2,
+          "max_kg": 0.028894521773828494,
+          "g_eta_correlation_at_recommendation": 0.0554065838609891,
+          "max_abs_g_eta_correlation": 0.06672111830462907
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 14,
+          "predicted_utility": 0.6267623527122798,
+          "predicted_verifier_power": 0.7875574695035156,
+          "next_kg_probe": 74,
+          "max_kg": 0.039693586215931526,
+          "g_eta_correlation_at_recommendation": -0.032331747258479496,
+          "max_abs_g_eta_correlation": 0.08058185687856287
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.30548054038701605,
+          0.6780147391158462,
+          0.0051385973747236895,
+          0.011366123122414046
+        ],
+        "g_structural_weight": 0.9834952795028622,
+        "eta_structural_weight": 0.3106191377617397,
+        "max_integration_relative_error": 1.463197059449534e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95431,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        7,
+        81,
+        64,
+        14,
+        37,
+        5,
+        33,
+        12,
+        4,
+        93,
+        82,
+        65,
+        31,
+        4,
+        80,
+        92
+      ],
+      "label_rmse_after_initial": [
+        0.07557270829408073,
+        0.6058998285000536
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.14293304460526463,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 33,
+          "predicted_utility": 0.7119902052670602,
+          "predicted_verifier_power": 0.8986617544068093,
+          "next_kg_probe": 81,
+          "max_kg": 0.03627705819683657,
+          "g_eta_correlation_at_recommendation": 0.03527182195958543,
+          "max_abs_g_eta_correlation": 0.03527182195958543
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 14,
+          "predicted_utility": 0.6590614149103211,
+          "predicted_verifier_power": 0.8279483632121234,
+          "next_kg_probe": 76,
+          "max_kg": 0.05063210919521099,
+          "g_eta_correlation_at_recommendation": -0.03980747511869709,
+          "max_abs_g_eta_correlation": 0.09143329020148004
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 1.4590018564449967e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95432,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        35,
+        64,
+        37,
+        73,
+        73,
+        73,
+        93,
+        4,
+        12,
+        82,
+        52,
+        65,
+        31,
+        45,
+        5,
+        6
+      ],
+      "label_rmse_after_initial": [
+        0.1135031417844791,
+        0.47674731389216224
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.24899884044944487,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.845630892988576,
+          "predicted_verifier_power": 0.9993373313929855,
+          "next_kg_probe": 35,
+          "max_kg": 0.00440202568166199,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8452977252821944,
+          "predicted_verifier_power": 0.9990313910062444,
+          "next_kg_probe": 81,
+          "max_kg": 0.0009147457957017671,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95432,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        35,
+        64,
+        37,
+        73,
+        73,
+        73,
+        93,
+        4,
+        12,
+        82,
+        52,
+        65,
+        31,
+        45,
+        5,
+        6
+      ],
+      "label_rmse_after_initial": [
+        0.11289756801395232,
+        0.49140621254097827
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.2445596451492377,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8446266050698832,
+          "predicted_verifier_power": 0.9981504986779818,
+          "next_kg_probe": 35,
+          "max_kg": 0.004493189516330615,
+          "g_eta_correlation_at_recommendation": 0.0380755153463202,
+          "max_abs_g_eta_correlation": 0.0380755153463202
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8434723340564961,
+          "predicted_verifier_power": 0.9968740172421885,
+          "next_kg_probe": 54,
+          "max_kg": 0.0010594441198421894,
+          "g_eta_correlation_at_recommendation": 0.02841257098838635,
+          "max_abs_g_eta_correlation": 0.06119731897223551
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.8023592903742147,
+          0.18031696070935294,
+          0.014132968178167832,
+          0.0031907807382644585
+        ],
+        "g_structural_weight": 0.9826762510835676,
+        "eta_structural_weight": 0.8164922585523825,
+        "max_integration_relative_error": 8.697077036399052e-11,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95432,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        35,
+        64,
+        37,
+        73,
+        73,
+        73,
+        93,
+        4,
+        12,
+        82,
+        52,
+        65,
+        31,
+        45,
+        5,
+        6
+      ],
+      "label_rmse_after_initial": [
+        0.1827257283616869,
+        0.49602430752542703
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.06449529670317633,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 54,
+          "predicted_utility": 0.8457305547515364,
+          "predicted_verifier_power": 0.998972056770446,
+          "next_kg_probe": 10,
+          "max_kg": 0.015475967602773564,
+          "g_eta_correlation_at_recommendation": 0.03371323485396579,
+          "max_abs_g_eta_correlation": 0.03371323485396579
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 54,
+          "predicted_utility": 0.8433707158649286,
+          "predicted_verifier_power": 0.9963705051212158,
+          "next_kg_probe": 81,
+          "max_kg": 0.007858984322473514,
+          "g_eta_correlation_at_recommendation": 0.025954447501539846,
+          "max_abs_g_eta_correlation": 0.06919818787197457
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 8.359139882666621e-11,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95434,
+      "arm": "u1_plugin_independent",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        73,
+        35,
+        37,
+        20,
+        64,
+        46,
+        5,
+        45,
+        59,
+        81,
+        50,
+        66,
+        56,
+        38,
+        34,
+        85
+      ],
+      "label_rmse_after_initial": [
+        0.06708993871003645,
+        0.49582893837095415
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.07679918937991892,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 26,
+          "predicted_utility": 0.8733043850775735,
+          "predicted_verifier_power": 0.9999847034751538,
+          "next_kg_probe": 73,
+          "max_kg": 0.013394555068309291,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 56,
+          "predicted_utility": 0.8948001167392394,
+          "predicted_verifier_power": 0.9995613625149182,
+          "next_kg_probe": 38,
+          "max_kg": 0.003541000431173735,
+          "g_eta_correlation_at_recommendation": 0.0,
+          "max_abs_g_eta_correlation": 0.0
+        }
+      ],
+      "joint_diagnostics": null
+    },
+    {
+      "law_seed": 95434,
+      "arm": "u1_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        73,
+        35,
+        37,
+        20,
+        64,
+        46,
+        5,
+        45,
+        59,
+        81,
+        50,
+        66,
+        56,
+        38,
+        34,
+        85
+      ],
+      "label_rmse_after_initial": [
+        0.06677779618246572,
+        0.4991323033515047
+      ],
+      "mean_joint_log_predictive_density_after_initial": 0.08834469737155573,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 73,
+          "predicted_utility": 0.8833572522510567,
+          "predicted_verifier_power": 0.9859712941719239,
+          "next_kg_probe": 73,
+          "max_kg": 0.006202647283275703,
+          "g_eta_correlation_at_recommendation": 0.014059402910933817,
+          "max_abs_g_eta_correlation": 0.07047269949543802
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 73,
+          "predicted_utility": 0.896685587468975,
+          "predicted_verifier_power": 0.9976689607437371,
+          "next_kg_probe": 38,
+          "max_kg": 0.002543304467687471,
+          "g_eta_correlation_at_recommendation": -0.04878368348463422,
+          "max_abs_g_eta_correlation": 0.06796955053669905
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          0.681815656537303,
+          0.3070218815514355,
+          0.007690697313059999,
+          0.003471764598201364
+        ],
+        "g_structural_weight": 0.9888375380887385,
+        "eta_structural_weight": 0.6895063538503631,
+        "max_integration_relative_error": 1.4659276979752587e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    },
+    {
+      "law_seed": 95434,
+      "arm": "full_joint_batch",
+      "recorded_policy_indices": [
+        42,
+        14,
+        18,
+        26,
+        73,
+        33,
+        54,
+        76,
+        73,
+        35,
+        37,
+        20,
+        64,
+        46,
+        5,
+        45,
+        59,
+        81,
+        50,
+        66,
+        56,
+        38,
+        34,
+        85
+      ],
+      "label_rmse_after_initial": [
+        0.0765351912868583,
+        0.5111873516443652
+      ],
+      "mean_joint_log_predictive_density_after_initial": -0.10221675874230748,
+      "stages": [
+        {
+          "paid_points": 8,
+          "recommendation": 26,
+          "predicted_utility": 0.8731181683942674,
+          "predicted_verifier_power": 0.9999621277518034,
+          "next_kg_probe": 81,
+          "max_kg": 0.013446716281014601,
+          "g_eta_correlation_at_recommendation": 0.043943656469093886,
+          "max_abs_g_eta_correlation": 0.043943656469093886
+        },
+        {
+          "paid_points": 24,
+          "recommendation": 56,
+          "predicted_utility": 0.8937480386107238,
+          "predicted_verifier_power": 0.998315214847573,
+          "next_kg_probe": 63,
+          "max_kg": 0.004854406759318914,
+          "g_eta_correlation_at_recommendation": 0.020574499170143572,
+          "max_abs_g_eta_correlation": 0.05362844602131543
+        }
+      ],
+      "joint_diagnostics": {
+        "paid_batches": 24,
+        "paid_episodes": 288,
+        "component_weights": [
+          1.0
+        ],
+        "g_structural_weight": 0.0,
+        "eta_structural_weight": 0.0,
+        "max_integration_relative_error": 1.4659276979752587e-10,
+        "likelihood": "exact Normal sample mean and log-chi-square sample variance",
+        "posterior_approximation": "Gaussian moment projection after each paid batch"
+      }
+    }
+  ],
+  "paired_joint_vs_plugin": [
+    {
+      "law_seed": 95425,
+      "joint_minus_plugin_log_score": -0.003084018583355913,
+      "recommendation_changes": [
+        false,
+        false
+      ],
+      "kg_probe_changes": [
+        true,
+        false
+      ]
+    },
+    {
+      "law_seed": 95426,
+      "joint_minus_plugin_log_score": 0.002806981393432856,
+      "recommendation_changes": [
+        false,
+        true
+      ],
+      "kg_probe_changes": [
+        true,
+        false
+      ]
+    },
+    {
+      "law_seed": 95427,
+      "joint_minus_plugin_log_score": 0.003110419127181102,
+      "recommendation_changes": [
+        false,
+        false
+      ],
+      "kg_probe_changes": [
+        false,
+        true
+      ]
+    },
+    {
+      "law_seed": 95428,
+      "joint_minus_plugin_log_score": -0.0005037296506775202,
+      "recommendation_changes": [
+        false,
+        false
+      ],
+      "kg_probe_changes": [
+        false,
+        false
+      ]
+    },
+    {
+      "law_seed": 95430,
+      "joint_minus_plugin_log_score": 0.008580158281131595,
+      "recommendation_changes": [
+        true,
+        false
+      ],
+      "kg_probe_changes": [
+        false,
+        false
+      ]
+    },
+    {
+      "law_seed": 95431,
+      "joint_minus_plugin_log_score": -0.007553365392077599,
+      "recommendation_changes": [
+        true,
+        true
+      ],
+      "kg_probe_changes": [
+        false,
+        false
+      ]
+    },
+    {
+      "law_seed": 95432,
+      "joint_minus_plugin_log_score": -0.004439195300207172,
+      "recommendation_changes": [
+        false,
+        false
+      ],
+      "kg_probe_changes": [
+        false,
+        true
+      ]
+    },
+    {
+      "law_seed": 95434,
+      "joint_minus_plugin_log_score": 0.01154550799163681,
+      "recommendation_changes": [
+        true,
+        true
+      ],
+      "kg_probe_changes": [
+        false,
+        false
+      ]
+    }
+  ],
+  "source_calls_in_reused_archive": 1536,
+  "target_calls_in_reused_paths": 2304,
+  "head_order": [
+    "constraint_mean",
+    "log_variance"
+  ],
+  "new_source_calls": 0,
+  "new_target_calls": 0,
+  "new_verification_calls": 0,
+  "target_truth_used": false,
+  "independent_confirmation": false,
+  "local_cpu_seconds": 16.166608666000002
+}

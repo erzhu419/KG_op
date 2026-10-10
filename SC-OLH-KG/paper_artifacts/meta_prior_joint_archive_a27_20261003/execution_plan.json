@@ -1,0 +1,99 @@
+{
+  "stage": "meta_prior_joint_archive_a27_20261003",
+  "status": "planned_not_run",
+  "fixed_after_a26_before_a27_results": true,
+  "inputs": [
+    "paper_artifacts/meta_prior_source_covariance_geometry_a19_20261003/source_fold_contexts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/full_source_contexts.json.gz",
+    "paper_artifacts/meta_prior_scale_preserving_source_covariance_a20_20261003/source_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/transfer_forecasts.json.gz",
+    "paper_artifacts/meta_prior_source_cross_archive_transfer_a23_20261003/execution_plan.json",
+    "paper_artifacts/meta_prior_archive_covariance_frontier_a26_20261003/decision.json"
+  ],
+  "question": "Can joint source-archive inference use past target f/g information to retain compatible source precision and improve transfer, rather than merely diluting the local risk covariance?",
+  "cohort": {
+    "seed_pairs": [
+      [
+        48,
+        49
+      ],
+      [
+        50,
+        51
+      ],
+      [
+        52,
+        53
+      ],
+      [
+        54,
+        55
+      ],
+      [
+        56,
+        57
+      ],
+      [
+        58,
+        59
+      ],
+      [
+        60,
+        61
+      ],
+      [
+        62,
+        63
+      ]
+    ],
+    "archive_groups": [
+      "shared",
+      "separate_heads"
+    ],
+    "held_tasks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "forecast_steps": [
+      9,
+      24
+    ],
+    "paths": 256,
+    "conditions": [
+      "matched",
+      "transfer"
+    ]
+  },
+  "source_learning": "Retain all recovered seven-task eta ARD and full priors. For each archive/fold/head f or g, reuse its recorded source-only four-function support and cheaply fit zero-nonintercept-mean coefficient second moments on the same seven source tasks using FixedFunctionBasis(reference, selected_indices), SourceFunctionPrior.from_basis(mode=learned). No new function selection or ARD optimization. Keep original source observation noises and learn head-specific covariance, not identical risk/f/g covariance.",
+  "components": "Two risk atoms per archive: learned eta ARD and generic full dictionary, each half within its archive. Both atoms share that archive's independently learned f/g priors. Local archive gets half the overall mass; the other28 archives outside the held pair share the other half equally. This adds population full-dictionary escape to A25 as well as f/g information; the eta-only control uses exactly the same new components and prior masses.",
+  "primary": "J: component posterior proportional to prior mass times marginal evidence of all strictly past f/g/eta responses. Given an archive, the three task coefficient draws are independent; only the latent archive covariance identity is shared. Neither current f/g responses nor future labels select the risk forecast. Risk/full odds within any archive use eta evidence only because their f/g evidence is identical.",
+  "controls_models": "A: identical hierarchical archive components but posterior weights use eta evidence only. G: identical joint archive f/g evidence but only full-dictionary eta covariances, with the same total archive information cost. I: saved original local risk mixture. Primary J minus I in all four strata; J minus A localizes joint inference and J minus G tests learned risk structure against an equally informed covariance control. Preserve all results including negative regimes; no outcome-selected component weights.",
+  "outer_exclusion": "All28 population archives exclude both held seeds in both source groups. Every local or population source prior uses only seven tasks excluding the scored task index. Scored task responses enter only earlier prefixes of J/A/G. Matched local archive is the scored seed; transfer local archive is its original fixed partner.",
+  "analysis": "Average steps9-24 within task, eight tasks and both directions within each of the eight original pair blocks. Paired block bootstrap20000. Report early9-12 and late21-24 scores, archive-local/population posterior mass, and risk learned/full mass. Nominal retrospective development intervals.",
+  "controls": "Reproduce saved I forecasts and unchanged full eta predictions in all paths. Source held-task identities and population exclusions must match. Joint inference adds only past-head log evidences; risk posterior at step t cannot depend on f/g labels at t or later. Repeat-candidate and native normalization kernels use the A25-tested Cholesky implementation.",
+  "decision": "Only complete improvement over I in transfer with no coherent matched regression permits a separately frozen target forecast study. Otherwise retain the joint-model failure and close promotion; no macro or target tuning. This rule concerns source-prediction dominance, not an impossibility result for joint meta-priors.",
+  "limits": {
+    "local_threads": 1,
+    "local_cpu_seconds_cap": 90,
+    "new_eta_ard_refits": 0,
+    "new_fg_selection_fits": 0,
+    "cheap_fg_moment_fits": 512,
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "server_jobs": 0,
+    "server_pulls": 0,
+    "kg_calls": 0,
+    "target_paths_scored": 0,
+    "candidate_recommendations": 0
+  },
+  "resource_admission": "Retain512 small f/g source-moment fits; time the first complete path and both conditions. Project the other255 paths with1.25 factor and15 CPU seconds summary reserve, stopping within90 CPU seconds.",
+  "information_cost": "28 external historical source archives172032 paid calls, plus the original local archive, all reused. Joint and eta-only controls receive identical source priors; G receives the same archive pool and f/g structure. No equal-source-cost claim against one-archive I.",
+  "paired_bootstrap_seed": 20261105,
+  "limitations": "Empirical archive covariance classes and source-selected f/g support are finite and point-estimated. Conditional head independence within class is a model assumption. A source cross-archive stress test shifts all heads; risk-only target shifts need separate validation. Source score improvements do not establish KG or verified decision value."
+}

@@ -1,0 +1,667 @@
+{
+  "rows": [
+    {
+      "execution_plan": "performance/manifests/historical_final_risk_evidence_bridge_v1_5_spectral_head_specific_observed_task_f.json",
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "segments": [
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_v1/results.json",
+          "bank": 1,
+          "seed": 202610099,
+          "initial_scales": [
+            0.16833681930806477,
+            0.20055652570131655
+          ],
+          "final_scales": [
+            0.1475311887491724,
+            0.08089373039572456
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.2540286970174419,
+            "conditional_MC_interval_95": [
+              0.22631560654203592,
+              0.2817417874928479
+            ],
+            "importance_ESS": 14273.492405899797,
+            "split_Rhat": 1.0002463919158764,
+            "chain_functional_ESS": 17964.63710514928,
+            "split_log_ratio_difference": 0.052822908844881056,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_v1/results.json",
+          "bank": 2,
+          "seed": 202610100,
+          "initial_scales": [
+            0.1475311887491724,
+            0.08089373039572456
+          ],
+          "final_scales": [
+            0.14217983077968155,
+            0.06881929799633403
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.02061557473769149,
+            "conditional_MC_interval_95": [
+              0.01616643598009362,
+              0.025064713495289357
+            ],
+            "importance_ESS": 61116.1541701386,
+            "split_Rhat": 0.9999766483652259,
+            "chain_functional_ESS": 14035.179508668007,
+            "split_log_ratio_difference": 0.0014965316967234799,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_v2/results.json",
+          "bank": 1,
+          "seed": 202610102,
+          "initial_scales": [
+            0.14217983077968155,
+            0.06881929799633403
+          ],
+          "final_scales": [
+            0.1403715862990509,
+            0.026383388867903597
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.07435628990481646,
+            "conditional_MC_interval_95": [
+              0.05058228851358261,
+              0.09813029129605032
+            ],
+            "importance_ESS": 17954.465999451615,
+            "split_Rhat": 1.0001567073441702,
+            "chain_functional_ESS": 18012.75526612306,
+            "split_log_ratio_difference": 0.00522570799227573,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_v3/results.json",
+          "bank": 1,
+          "seed": 202610105,
+          "initial_scales": [
+            0.1403715862990509,
+            0.026383388867903597
+          ],
+          "final_scales": [
+            0.13648896491231532,
+            0.02468364218090036
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.003646448922536294,
+            "conditional_MC_interval_95": [
+              0.0020288938463682315,
+              0.005264003998704357
+            ],
+            "importance_ESS": 64898.30572171293,
+            "split_Rhat": 1.0001877829175407,
+            "chain_functional_ESS": 14427.124417705201,
+            "split_log_ratio_difference": 0.0013242531023465176,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        }
+      ],
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.35264701058248615,
+        "conditional_MC_interval_95": [
+          0.27930394649214935,
+          0.42599007467282296
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.497705474412374,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "final_vs_parent_evidence_certified": true,
+      "completed_candidate_MCMC_sweeps": 270336,
+      "cpu_seconds": 31.023256778,
+      "source_registry_replaced": false,
+      "joint_source_learning_converged": false,
+      "new_source_labels": 0,
+      "new_target_simulator_calls": 0,
+      "new_verifier_calls": 0,
+      "server_jobs": 0,
+      "independent_confirmation": false,
+      "scope": "Actual chronological source-risk anchors and already qualified fixed updates,at fixed response law. Joint conditional numerical interval uses a union bound. No cross-identity absolute evidence,source-convergence or decision claim."
+    },
+    {
+      "execution_plan": "performance/manifests/historical_final_risk_evidence_bridge_v1_6_additive_head_specific_observed_task_f.json",
+      "layout": "6",
+      "selector": "additive",
+      "support": "head_specific",
+      "treatment": "observed_task",
+      "head": "f",
+      "segments": [
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+          "bank": 1,
+          "seed": 202610109,
+          "initial_scales": [
+            0.3011013108780072,
+            0.4053225509746793
+          ],
+          "final_scales": [
+            0.2570653768754975,
+            0.23537257883989543
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.10971912056801969,
+            "conditional_MC_interval_95": [
+              0.08592715312327874,
+              0.13351108801276063
+            ],
+            "importance_ESS": 28019.649868613596,
+            "split_Rhat": 1.0004187815226107,
+            "chain_functional_ESS": 9086.903835292222,
+            "split_log_ratio_difference": 0.029832943825735647,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+          "bank": 2,
+          "seed": 202610110,
+          "initial_scales": [
+            0.2570653768754975,
+            0.23537257883989543
+          ],
+          "final_scales": [
+            0.23604133652051573,
+            0.12998285645537233
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.0426460698374278,
+            "conditional_MC_interval_95": [
+              0.018623179550417177,
+              0.06666896012443843
+            ],
+            "importance_ESS": 26499.09036835531,
+            "split_Rhat": 1.0002056156035655,
+            "chain_functional_ESS": 9806.470290557421,
+            "split_log_ratio_difference": 0.019999684814586693,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+          "bank": 3,
+          "seed": 202610111,
+          "initial_scales": [
+            0.23604133652051573,
+            0.12998285645537233
+          ],
+          "final_scales": [
+            0.2256685046772336,
+            0.055888934374981235
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.06897964595675532,
+            "conditional_MC_interval_95": [
+              0.04014884335282037,
+              0.09781044856069027
+            ],
+            "importance_ESS": 17602.472506466132,
+            "split_Rhat": 1.000033706360241,
+            "chain_functional_ESS": 12585.51582712094,
+            "split_log_ratio_difference": 0.006277686856040354,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "certified fixed update",
+          "reference_results": "paper_artifacts/historical_stopped_risk_precision_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+          "initial_scales": [
+            0.2256685046772336,
+            0.055888934374981235
+          ],
+          "final_scales": [
+            0.22548839228750361,
+            0.054170469931030155
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.0025034781299186903,
+            "conditional_MC_interval_95": [
+              0.001495324933110387,
+              0.003511631326726994
+            ],
+            "importance_ESS": 32520.65128646171,
+            "split_Rhat": 1.0000517934522577,
+            "chain_functional_ESS": 34792.99634650031,
+            "split_log_ratio_difference": 0.00022206133813718054,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          }
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+          "bank": 1,
+          "seed": 202610112,
+          "initial_scales": [
+            0.22548839228750361,
+            0.054170469931030155
+          ],
+          "final_scales": [
+            0.22474572734345483,
+            0.01014922672229208
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.12346285236372267,
+            "conditional_MC_interval_95": [
+              0.09185644825908322,
+              0.15506925646836212
+            ],
+            "importance_ESS": 13227.161153797635,
+            "split_Rhat": 1.0000192517996693,
+            "chain_functional_ESS": 34261.72312564058,
+            "split_log_ratio_difference": 0.021266417978396568,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_head_specific_observed_task_f/results.json",
+          "bank": 2,
+          "seed": 202610113,
+          "initial_scales": [
+            0.22474572734345483,
+            0.01014922672229208
+          ],
+          "final_scales": [
+            0.22287850086369035,
+            0.009793598264634764
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.0014809301633516014,
+            "conditional_MC_interval_95": [
+              0.0010088144466262334,
+              0.0019530458800769695
+            ],
+            "importance_ESS": 130891.29871211911,
+            "split_Rhat": 1.0000701773716982,
+            "chain_functional_ESS": 23794.08509857661,
+            "split_log_ratio_difference": 0.0005986849796428828,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        }
+      ],
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.3487920970191958,
+        "conditional_MC_interval_95": [
+          0.20108693038327963,
+          0.49649726365511193
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.638257273476751,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "final_vs_parent_evidence_certified": true,
+      "completed_candidate_MCMC_sweeps": 468992,
+      "cpu_seconds": 61.388809421,
+      "source_registry_replaced": false,
+      "joint_source_learning_converged": false,
+      "new_source_labels": 0,
+      "new_target_simulator_calls": 0,
+      "new_verifier_calls": 0,
+      "server_jobs": 0,
+      "independent_confirmation": false,
+      "scope": "Actual chronological source-risk anchors and already qualified fixed updates,at fixed response law. Joint conditional numerical interval uses a union bound. No cross-identity absolute evidence,source-convergence or decision claim."
+    },
+    {
+      "execution_plan": "performance/manifests/historical_final_risk_evidence_bridge_v1_6_spectral_joint_observed_task_f.json",
+      "layout": "6",
+      "selector": "spectral",
+      "support": "joint",
+      "treatment": "observed_task",
+      "head": "f",
+      "segments": [
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_joint_observed_task_f/results.json",
+          "bank": 1,
+          "seed": 202610109,
+          "initial_scales": [
+            0.2313340853219332,
+            0.21251716179214192
+          ],
+          "final_scales": [
+            0.20172677503907477,
+            0.08874083793193847
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.18728585778949114,
+            "conditional_MC_interval_95": [
+              0.15789885900645026,
+              0.21667285657253202
+            ],
+            "importance_ESS": 15146.661418479847,
+            "split_Rhat": 1.0002824186983026,
+            "chain_functional_ESS": 14798.92059280324,
+            "split_log_ratio_difference": 0.05067545050966071,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_spectral_joint_observed_task_f/results.json",
+          "bank": 2,
+          "seed": 202610110,
+          "initial_scales": [
+            0.20172677503907477,
+            0.08874083793193847
+          ],
+          "final_scales": [
+            0.19016840256924422,
+            0.04800923664572209
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.05124012388483834,
+            "conditional_MC_interval_95": [
+              0.03488770472164468,
+              0.067592543048032
+            ],
+            "importance_ESS": 32265.395581542638,
+            "split_Rhat": 1.0001467024063586,
+            "chain_functional_ESS": 14814.208213922026,
+            "split_log_ratio_difference": 0.01579413098153104,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        }
+      ],
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.23852598167432948,
+        "conditional_MC_interval_95": [
+          0.1862196264989454,
+          0.29083233684971355
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.241402727604947,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "final_vs_parent_evidence_certified": true,
+      "completed_candidate_MCMC_sweeps": 135168,
+      "cpu_seconds": 17.286441732,
+      "source_registry_replaced": false,
+      "joint_source_learning_converged": false,
+      "new_source_labels": 0,
+      "new_target_simulator_calls": 0,
+      "new_verifier_calls": 0,
+      "server_jobs": 0,
+      "independent_confirmation": false,
+      "scope": "Actual chronological source-risk anchors and already qualified fixed updates,at fixed response law. Joint conditional numerical interval uses a union bound. No cross-identity absolute evidence,source-convergence or decision claim."
+    },
+    {
+      "execution_plan": "performance/manifests/historical_final_risk_evidence_bridge_v1_6_additive_joint_deconvolved_task_f.json",
+      "layout": "6",
+      "selector": "additive",
+      "support": "joint",
+      "treatment": "deconvolved_task",
+      "head": "f",
+      "segments": [
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+          "bank": 1,
+          "seed": 202610109,
+          "initial_scales": [
+            0.21608458779261552,
+            0.798327060815726
+          ],
+          "final_scales": [
+            0.2115487951770561,
+            0.7771340849035565
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.0017850664496794622,
+            "conditional_MC_interval_95": [
+              0.0003891636575108948,
+              0.0031809692418480295
+            ],
+            "importance_ESS": 65346.67533912268,
+            "split_Rhat": 1.000569479536086,
+            "chain_functional_ESS": 5712.051422205963,
+            "split_log_ratio_difference": 0.0012970106721059693,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "certified fixed update",
+          "reference_results": "paper_artifacts/historical_stopped_risk_precision_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+          "initial_scales": [
+            0.2115487951770561,
+            0.7771340849035565
+          ],
+          "final_scales": [
+            0.21047133646509927,
+            0.7694191218205341
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.0005197785502684127,
+            "conditional_MC_interval_95": [
+              0.00020492741329246507,
+              0.0008346296872443603
+            ],
+            "importance_ESS": 130414.90689717628,
+            "split_Rhat": 1.0001134569182841,
+            "chain_functional_ESS": 11964.732997226265,
+            "split_log_ratio_difference": 0.00029293317374978756,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          }
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_risk_precision_continuation_v1/cases/6_additive_joint_deconvolved_task_f/results.json",
+          "bank": 1,
+          "seed": 202610112,
+          "initial_scales": [
+            0.21047133646509927,
+            0.7694191218205341
+          ],
+          "final_scales": [
+            0.20991759164869433,
+            0.736366838431112
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.001922557681535153,
+            "conditional_MC_interval_95": [
+              0.0007779356928366381,
+              0.003067179670233668
+            ],
+            "importance_ESS": 130468.59337759964,
+            "split_Rhat": 1.0003786133178552,
+            "chain_functional_ESS": 13561.114378531665,
+            "split_log_ratio_difference": 0.0004335860844904005,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        }
+      ],
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.004227402681483028,
+        "conditional_MC_interval_95": [
+          0.0007397943813787157,
+          0.0077150109815873405
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.3939797998185104,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "final_vs_parent_evidence_certified": true,
+      "completed_candidate_MCMC_sweeps": 200704,
+      "cpu_seconds": 27.510937817,
+      "source_registry_replaced": false,
+      "joint_source_learning_converged": false,
+      "new_source_labels": 0,
+      "new_target_simulator_calls": 0,
+      "new_verifier_calls": 0,
+      "server_jobs": 0,
+      "independent_confirmation": false,
+      "scope": "Actual chronological source-risk anchors and already qualified fixed updates,at fixed response law. Joint conditional numerical interval uses a union bound. No cross-identity absolute evidence,source-convergence or decision claim."
+    },
+    {
+      "execution_plan": "performance/manifests/historical_final_risk_evidence_bridge_v1_5_spectral_head_specific_deconvolved_task_g.json",
+      "layout": "5",
+      "selector": "spectral",
+      "support": "head_specific",
+      "treatment": "deconvolved_task",
+      "head": "g",
+      "segments": [
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_head_specific_deconvolved_task_g/results.json",
+          "bank": 1,
+          "seed": 202610109,
+          "initial_scales": [
+            0.18456102422734205,
+            0.3008709720638276
+          ],
+          "final_scales": [
+            0.15969845597037285,
+            0.09027908089723466
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.16809120339849315,
+            "conditional_MC_interval_95": [
+              0.1323847703351806,
+              0.2037976364618057
+            ],
+            "importance_ESS": 10124.841239450343,
+            "split_Rhat": 1.0001147685293872,
+            "chain_functional_ESS": 16490.538725872815,
+            "split_log_ratio_difference": 0.049649159252003194,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_head_specific_deconvolved_task_g/results.json",
+          "bank": 2,
+          "seed": 202610110,
+          "initial_scales": [
+            0.15969845597037285,
+            0.09027908089723466
+          ],
+          "final_scales": [
+            0.1474298306650581,
+            0.014996567265432493
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.14042171009482818,
+            "conditional_MC_interval_95": [
+              0.0936729947199504,
+              0.18717042546970597
+            ],
+            "importance_ESS": 4955.770796455002,
+            "split_Rhat": 1.0001296642470143,
+            "chain_functional_ESS": 21488.153965731177,
+            "split_log_ratio_difference": 0.012000745820119896,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        },
+        {
+          "kind": "actual bank endpoints",
+          "reference_results": "paper_artifacts/historical_source_risk_state_reuse_batch_v1/cases/5_spectral_head_specific_deconvolved_task_g/results.json",
+          "bank": 3,
+          "seed": 202610111,
+          "initial_scales": [
+            0.1474298306650581,
+            0.014996567265432493
+          ],
+          "final_scales": [
+            0.14804945271959377,
+            0.014025213907092077
+          ],
+          "source_evidence": {
+            "log_source_evidence_ratio": 0.0029061919995996277,
+            "conditional_MC_interval_95": [
+              0.0017496205759198714,
+              0.004062763423279384
+            ],
+            "importance_ESS": 65180.83125927503,
+            "split_Rhat": 1.000692574575751,
+            "chain_functional_ESS": 15649.075829020387,
+            "split_log_ratio_difference": 0.0009485453005257938,
+            "precision_gate_passed": true,
+            "eligible_improvement_excludes_zero": true
+          },
+          "prefix_score_maximum_error": 0.0
+        }
+      ],
+      "source_evidence": {
+        "log_source_evidence_ratio": 0.31141910549292096,
+        "conditional_MC_interval_95": [
+          0.20929422366771627,
+          0.41354398731812564
+        ],
+        "precision_gate_passed": true,
+        "eligible_improvement_excludes_zero": true,
+        "per_segment_normal_quantile": 2.3939797998185104,
+        "composition": "Bonferroni allocation of0.05 across conditional normal-MC intervals;no error independence assumed."
+      },
+      "final_vs_parent_evidence_certified": true,
+      "completed_candidate_MCMC_sweeps": 202752,
+      "cpu_seconds": 23.06440482900001,
+      "source_registry_replaced": false,
+      "joint_source_learning_converged": false,
+      "new_source_labels": 0,
+      "new_target_simulator_calls": 0,
+      "new_verifier_calls": 0,
+      "server_jobs": 0,
+      "independent_confirmation": false,
+      "scope": "Actual chronological source-risk anchors and already qualified fixed updates,at fixed response law. Joint conditional numerical interval uses a union bound. No cross-identity absolute evidence,source-convergence or decision claim."
+    }
+  ],
+  "all_registered_cases_complete": true,
+  "registered_cases": 5,
+  "final_vs_parent_evidence_cases_certified": 5,
+  "cpu_seconds": 160.27385057700002,
+  "completed_candidate_MCMC_sweeps": 1277952
+}

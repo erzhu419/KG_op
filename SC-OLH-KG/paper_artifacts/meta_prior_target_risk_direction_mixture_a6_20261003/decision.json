@@ -1,0 +1,11 @@
+{
+  "stage": "meta_prior_target_risk_direction_mixture_a6_20261003",
+  "decision": "do_not_promote_single_direction_mixture_or_replay_recommendations",
+  "reason": "At 24 batches the learned-prior shared and separate-head strata retain negative nominal paired intervals and 15/16 seeds lose in each; high-frequency gain remains uncertain. Averaging and fixed-prior regularization greatly reduce A5 losses but do not provide broad retained-source predictive improvement.",
+  "recommendation_replay_run": false,
+  "server_experiment_jobs": 0,
+  "new_server_pulls": 0,
+  "cpu_seconds": 9.351017579999999,
+  "quadrature_check": "quadrature_check.json",
+  "next_plan": "performance/meta_prior_target_risk_joint_plan.json"
+}

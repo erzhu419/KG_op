@@ -1,0 +1,145 @@
+{
+  "stage": "meta_prior_calibration_next_20261003",
+  "stage_a": {
+    "type": "retrospective_fixed_query_replay",
+    "cohort": "meta_prior_total_budget_v6_20261002",
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "difficulty": "binding",
+    "allocation": "n24_v928",
+    "priors": [
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "existing_paths": 160,
+    "updates_per_path": [
+      "sample_variance_plugin",
+      "pre_batch_risk_predictive"
+    ],
+    "new_searches": 0,
+    "kg_calls": 0,
+    "new_random_verifications": 0,
+    "threads": 1,
+    "local_cpu_hours_cap": 0.5,
+    "source_reconstruction": "Reuse logged source selection indices and ARD variances; reconstruct deterministic archived source observations without rerunning source CV.",
+    "data_transfer": "Compact compressed JSON containing required query paths and prior parameters only.",
+    "analysis": "Score calibration and expected verified reward after recommendation for all five regimes; do not use truth or previous verification outcomes as model inputs.",
+    "interpretation": "Development evidence on unchanged old query paths, not a prospective closed-loop result.",
+    "plan_fixed_before_replay": true
+  },
+  "control_noise_g": "current_batch_sample_variance / replicates",
+  "proposed_noise_g": "exp(pre_batch_moment_matched_eta_mean + pre_batch_moment_matched_eta_variance / 2) / replicates",
+  "change_scope": "Target g observation variance for both g mixture-weight and component updates only; calculate before observing any current-batch responses.",
+  "base_protocol": {
+    "stage": "meta_prior_total_budget_v6_20261002",
+    "frozen_before_results": true,
+    "seeds": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "regimes": [
+      "shared_structure",
+      "support_mismatch",
+      "high_frequency_risk",
+      "separate_risk_support",
+      "separate_head_structure"
+    ],
+    "difficulty_offsets": {
+      "baseline": 0.0,
+      "binding": 1.0
+    },
+    "arms": [
+      "target_only",
+      "fixed_source",
+      "risk_ard_mixture"
+    ],
+    "decision_schemes": [
+      "verification_kg"
+    ],
+    "psi_dim": 8,
+    "source_tasks": 8,
+    "source_points": 64,
+    "candidates": 384,
+    "initial_points": 8,
+    "replicates": 12,
+    "learned_active_dim_per_head": 4,
+    "chance_alpha": 0.05,
+    "risk_penalty": 4.0,
+    "penalty_temperature": 0.15,
+    "backend": "Joint 27-node Gaussian-fantasy verification-utility KG, sampling actions evaluated in blocks of 32; same complete 384 recommendation bank.",
+    "verification_utility": "Failed verification earns zero; successful deployment earns clip((5-f)/10,0,1). The declared simulator bounds the true objective within [-5,5]. This operational utility is distinct from the mathematical chance-constrained objective.",
+    "verification_power": "Same t/chi-square verifier and 9x12 quadrature. Normalized Golub-Welsch Gamma quadrature avoids overflow at large verification samples.",
+    "risk_ard": "Source-only marginal covariance likelihood across independent signed task coefficients, known log-variance label noise and projected task intercepts; nonnegative function variances and 1 percent weak total tail. Mean heads retain conditional source selection.",
+    "transfer_mixture": "Per-head equal prior weights on the source structural model and the fixed-source full dictionary; update weights with pre-observation predictive densities using only paid target observations; retain between-model covariance. Weights stay fixed in Gaussian acquisition fantasies.",
+    "analysis_units": "Sixteen new paired seed blocks 48-63. Report all ten strata, paired seed bootstrap intervals (nominal and unadjusted), every allocation and all regressions. Do not pool old cohorts.",
+    "scoring": "Retain feasibility, mathematical feasible regret and old penalized regret; also report realized verified reward, analytically expected verified reward, verifier power and posterior calibration. Simulator truth enters only observation generation and post-decision scoring.",
+    "interpretation": "Test whether source structure allows a predeclared shorter search and more independent validation to improve deployment at the same target-call cost. Candidate coverage, objective and verifier confidence are unchanged. Finite bank, public eight-dimensional dictionary; no continuous or learned trajectory representation guarantee.",
+    "scope": "Public canonical inputs and finite dictionary source priors. Not a learned state/trajectory encoder, a factor-level HVD recovery claim or a high-dimensional guarantee.",
+    "initial_bank_size": 96,
+    "reference_bank_size": 96,
+    "total_target_calls": 1216,
+    "allocations": {
+      "n08_v1120": {
+        "target_points": 8,
+        "verification_replicates": 1120
+      },
+      "n24_v928": {
+        "target_points": 24,
+        "verification_replicates": 928
+      },
+      "n40_v736": {
+        "target_points": 40,
+        "verification_replicates": 736
+      },
+      "n80_v256": {
+        "target_points": 80,
+        "verification_replicates": 256
+      }
+    },
+    "primary_comparisons": [
+      "Within each of the ten regime/difficulty strata: learned n24_v928 minus fixed_source n80_v256; predeclared operational allocation comparison.",
+      "Within the same stratum and each common allocation: risk_ard_mixture minus fixed_source, and risk_ard_mixture minus target_only."
+    ],
+    "allocation_rule": "All three methods receive all four frozen allocations. Each search and recommendation uses its own planned verification budget from the start. No truth-selected winning allocation is an implementable policy.",
+    "source_cost": "Source-informed arms use the same archive: 8 tasks x 64 points x 12 replicates = 6144 source calls. Target-only receives no source labels and costs zero source calls. Source cost is separate from the common 1216 target calls; no amortization or source acquisition savings are asserted.",
+    "sharding": "One independent paid search per seed, regime, difficulty, prior and allocation: 1920 shards, 1 CPU each on node001-node006.",
+    "implementation": "The target-only arm may use generator supports only to construct simulator truth; fitting, KG and recommendation receive no target support or labels other than paid observations. Source priors fit identical conditional CV and risk ARD as V5, omitting unused adaptive/leave-one-out arms."
+  }
+}

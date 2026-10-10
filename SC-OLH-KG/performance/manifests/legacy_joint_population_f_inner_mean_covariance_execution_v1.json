@@ -1,0 +1,54 @@
+{
+  "status": "frozen after one exact full-mixture moment pilot;before twenty inner prior-swap forecasts",
+  "entrypoint": "performance/diagnose_legacy_f_inner_mean_covariance.py",
+  "exact_mixture_results": "paper_artifacts/legacy_joint_population_f_exact_mixture_moments_v1/results.json",
+  "source_fit_results": "paper_artifacts/legacy_joint_population_f_inner_task_learning_v1/results.json",
+  "control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+  "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "query_tasks": [
+    0,
+    2,
+    3,
+    4,
+    5
+  ],
+  "paid_prefix": [
+    0,
+    1,
+    29,
+    58
+  ],
+  "arms": [
+    "structural_mean_gp_covariance",
+    "gp_mean_structural_covariance"
+  ],
+  "metrics": [
+    "f_mse",
+    "f_raw_batch_density",
+    "sequential_transcript_density"
+  ],
+  "law": "Swap only f mean or f covariance between each already-fitted source4 structural Gaussian point prior and same-source GP prior. Both were fitted without outer task1 and inner held task. Retain shared honest source4 eta_f law,public physical policies,raw four-observation filter and eight scored future batches. Covariance-swap is a diagnostic Gaussian prior,not a learned structural law or permission to abandon orthogonality,sparsity,low-order and low-frequency assumptions.",
+  "freeze": "Reproduce both original source4 priors on the eight future sites from their saved zero-shot forecasts before any new paid values. Freeze all twenty swapped priors before cached paid data;freeze all forecasts before previously scored future batch labels. Reuse all native-point/GP controls without replay.",
+  "prior_tolerances": {
+    "mean_max_absolute": 1e-08,
+    "covariance_relative_frobenius": 1e-06
+  },
+  "decision": "Report all ten task pairs and both layout averages of MSE,proper raw density,transcript and level/shape errors. Consistent benefit from covariance replacement supports a source-only covariance-geometry learning probe;mean replacement supports centering work;neither/both means their interaction needs study. Do not select a target-specific arm or promote a partial aggregate. No outer/new target evaluation.",
+  "cost": {
+    "new_source_fits": 0,
+    "new_source_integrations": 0,
+    "new_raw_forecasts": 20,
+    "reused_control_forecasts": 20,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "maximum_single_thread_cpu_seconds": 60,
+  "execution": "local serial single-thread;small cached JSON and twenty single-component score-site NPZ;no server jobs or pulls",
+  "scope": "Inner source0/2/3/4/5 training diagnostic only;no new task1 forecasts,source6/7,target,KG,independent confirmation,manuscript or legacy60/60 changes. Candidates stay stopped;retained native mixture remains reference;complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_inner_mean_covariance_v1"
+}

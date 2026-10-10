@@ -1,0 +1,44 @@
+{
+  "status": "completed:all14 group gradients verify;source effects modest and task directions weak/bound-blocked;no new spectral fit",
+  "centering_execution": "performance/manifests/legacy_joint_population_task_bank_centering_execution_v1.json",
+  "native_full_execution": "performance/manifests/legacy_joint_population_gp_profile_source_holdout_execution_v1.json",
+  "level_information_results": "paper_artifacts/legacy_joint_population_f_task_level_information_v1/results.json",
+  "layouts": [
+    "5",
+    "6"
+  ],
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "head": "f",
+  "basis_of_next_step": "All14 native f task-level source laws and conditional slices verify. Native task1 intercept variance differs sharply by assignment, but nuisance-adjusted information retains98.1%/86.0%; the zero-boundary branch half-log-likelihood upper variance is1.4936e-5. No arbitrary variance floor or intercept-uncertainty repair is justified by confounding. Common posterior swaps showed useful f mean/H changes. Original f common/task models impose one exponent shared by all positive groups; examine this restriction without abandoning orthogonality/sparse low-order/low-frequency priors.",
+  "diagnostic": "All12 native five-source f branches plus two cached full-six-source f laws, source0–5 only. Keep original common/task group budgets, supports, intercepts, empirical mean, independent weak tails, noise and white discrepancy fixed. For each positive group with nonzero spectral derivative, compute exact source Gaussian derivative and expected information for varying that group exponent alone. Each exponent remains in[0,4]; group weights stay normalized and group variance mass unchanged. No new functions, correlations, GP teacher or covariance transplant.",
+  "information": "Whiten group exponent covariance derivatives with native source covariance. Project out positive common/task group amplitude derivatives, physical task intercept and discrepancy derivatives using rank-revealing least squares. Record conditional and nuisance-adjusted group exponent information, standardized eigenvalues/rank and source gradients. This is fixed-support local information, not evidence of an identified population exponent or independent prediction.",
+  "verification": "For each actual positive varying group, compare its source derivative at interior exponent2 with central epsilon1e-4 from dense Gaussian NLL; verify group budget/tail unchanged. At native parameters, sum individual group derivatives within each common/task component must equal the original shared-exponent analytic derivative. These detect an incorrect spectral mask or covariance derivative; no rerun of native all73 forecasts or Stage105 slices.",
+  "fixed_probe": "Single source-only feasible downhill step of size.01 for each group separately, keeping allother groups at the native shared exponent. If native exponent is at a bound and the descent direction is blocked, record that fact and do not probe outside[0,4]. Direction sign is selected from the same sources; positive probe gain is descriptive, not a calibrated test. No search over step sizes or averaging weights.",
+  "interpretation": "Strong finite source effects and sufficiently informative free group directions may justify a separately registered single original-family spectral contrast. Weak information, blocked directions or negligible effects stop expansion; task1/source6/7 outcomes cannot select a group/exponent. This isolates a shared frequency-rate restriction within the original core, unlike the rejected f common-correlation candidate.",
+  "next_action": "Judge common and task frequency components from these source-only diagnostics before any source fit. Preserve g development repair and complete-model HOLD; no target/confirmation/KG or server work.",
+  "gradient_verification_exponent": 2.0,
+  "gradient_verification_epsilon": 0.0001,
+  "fixed_source_probe": 0.01,
+  "cost": {
+    "new_source_fits": 0,
+    "new_risk_fits": 0,
+    "new_map_fits": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread, cached small JSON only, no server jobs or pulls",
+  "output": "paper_artifacts/legacy_joint_population_f_group_spectral_restriction_v1",
+  "plan_manifest": "performance/manifests/legacy_joint_population_f_group_spectral_restriction_plan_v1.json",
+  "entrypoint": "performance/diagnose_legacy_f_group_spectral_restriction.py",
+  "report": "docs/orthogonal_meta_prior_stage105_106_20261006.md",
+  "results": "paper_artifacts/legacy_joint_population_f_group_spectral_restriction_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_f_coherent_common_compression_plan_v1.json"
+}

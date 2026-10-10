@@ -1,0 +1,50 @@
+{
+  "status": "implemented; source-only comparison and cached target attribution completed; predictive improvement did not yield target decision gain",
+  "basis_of_next_step": "public-reference repair removes extreme feature growth, but public maxmin16 improves same-encoder generic GP g observed MSE to.006953 while structure remains.067865 on both opened source holdouts; pooled task residuals do not repair it",
+  "source_data": "paper_artifacts/legacy_related_inventory_source_v1/observations.json",
+  "training_tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "source_sites": [
+    45,
+    10,
+    51,
+    31,
+    20,
+    50,
+    19,
+    11,
+    26,
+    52,
+    49,
+    48,
+    64,
+    15,
+    18,
+    36
+  ],
+  "replicates_per_source_site": 3,
+  "heldout_tasks": [
+    6,
+    7
+  ],
+  "information": "same16-site encoder, selected-label feature/response normalization, known source-label errors and complete public73-site reference; no heldout labels or d1000 target truth in source fitting",
+  "current_model": "orthogonal shared-mean prior covariance C0 fixed by an independent-task regularizer, then fit task residual B and discrepancy jointly; generic GP common kernel likewise fixed by its independent-task anchor",
+  "candidate": "joint source marginal likelihood learns separate common-function and task-residual covariance scales and spectral/group parameters in the existing orthogonal basis; common and residual roles must not be pooled; preserve declared relative weak tails, intercept convention and environmental-risk observation likelihood",
+  "matched_generic_control": "allow the generic shared-function GP common and residual amplitudes to be learned in its source population likelihood, with the same selected labels, error model and kernel lengthscale convention; cache the existing fixed-anchor controls for attribution",
+  "implementation_first": "derive and verify common-covariance likelihood gradients and new-task posterior against a small full Gaussian calculation; record objective changes and projected gradients before interpreting source-heldout predictions",
+  "source_only_endpoints": "first two cached raw records per heldout task, remaining71-site observed four-head MSE and exact replicated batch joint log score; report both tasks separately and retain every failed/negative fit",
+  "progress_rule": "do not start target terminal integration until source-only joint fitting improves the actual g/batch-predictive failure; MSE gains with worse batch density are insufficient to declare the calibration repaired; if fixed/common covariance attribution fails, report the remaining function-class/noise-identifiability gap before changing the method",
+  "boundaries": "no arbitrary target-selected covariance floor, risk-boundary adjustment, new hard tasks, repeated source fitting per target or unsupported physical-factor claims",
+  "execution": "local serial single-thread source fits and small predictive records only; no scheduler/server dispatch or pulls; new simulator/verifier calls0",
+  "interpretation": "opened-source development attribution, not independent confirmation, universal sample-efficiency evidence or completed incremental KG",
+  "execution_manifest": "performance/manifests/legacy_joint_population_joint_common_covariance_execution_v1.json",
+  "source_result": "paper_artifacts/legacy_joint_population_joint_common_covariance_v1/results.json",
+  "target_result": "paper_artifacts/legacy_joint_population_joint_common_decision_v1/results.json",
+  "next_plan": "performance/manifests/legacy_joint_population_diverse_source_design_plan_v1.json"
+}

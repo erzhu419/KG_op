@@ -1,0 +1,8 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m unittest tests.test_source_variance_tilt tests.test_source_risk_continuation tests.test_continued_source_learning tests.test_source_risk_state_reuse tests.test_joint_source_stationarity",
+  "tests_run": 21,
+  "passed": true,
+  "failed": 0,
+  "wall_seconds": 0.189,
+  "scope": "Analytic Gaussian normalized evidence/Q and source-score identities;both-head stationarity requires two distinct actual laws,accepted transition and posterior/score precision."
+}

@@ -1,0 +1,312 @@
+{
+  "execution": {
+    "status": "registered after stable split raw covariance scores;not implemented or executed",
+    "score_results": "paper_artifacts/legacy_joint_population_f_raw_source_covariance_score_v1/results.json",
+    "source_posterior_results": "paper_artifacts/legacy_joint_population_f_corrected_reference_source_update_v1/results.json",
+    "source_inputs": "paper_artifacts/legacy_joint_population_f_original_source_raw_contract_v1/frozen_inputs.json",
+    "source_mean_plan": "performance/manifests/legacy_joint_population_f_source_spectral_uncertainty_plan_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "arms": [
+      "joint_spectral_geometry",
+      "source_gp"
+    ],
+    "question": "Does one Monte Carlo EM covariance-learning step under the original-source raw likelihood improve its source-only expected complete-data objective while retaining the structural core and equal-information GP control?",
+    "objective": "Use Stage203 posterior sufficient moments E[(f-m)(f-m)^T] from the ORIGINAL48 raw source batches. Minimize Q(theta)=.5/48*(48log(2pi)+logdet K(theta)+trace(K(theta)^-1 E[(f-m)(f-m)^T])). This is the expected negative Gaussian f-prior log density in the same hierarchical raw source model,with the eta law fixed. No new posterior draws or labels needed for this ONE M step. Posterior means and covariance include the between-eta term. Do not mistake Q improvement for verified marginal raw likelihood improvement.",
+    "parameters": "Structural: ORIGINAL common/task root amplitudes and spectral exponents,p in[0,4];source-derived correlation templates,active support,order2,orthogonal basis,separate positive tails,intercept variances,white discrepancy and center fixed. GP: ORIGINAL common/task RBF amplitudes,task intercept and white discrepancy;lengthscales,common intercept,normalization and center fixed. Four parameters per arm;nonnegative original amplitude bounds,including exact zeros. Risk population law/coordinate remain fixed empirical source estimates.",
+    "optimizer": {
+      "method": "L-BFGS-B",
+      "max_iterations": 200,
+      "ftol": 1e-12,
+      "gtol": 1e-07
+    },
+    "verification": "At original parameters,the new Q gradient must reproduce Stage204 raw score at1e-8 before optimization. Retain PSD/positive-tail and original support properties. Singular GP latent covariance on its allowed zero-amplitude boundary has infinite Q for the full-rank posterior sufficient statistic;handle that as its mathematical objective domain,without a jitter/floor or relaxed bounds. Record each reached optimizer and projected gradient. Reached Q must improve versus old parameters in the full posterior and separately in BOTH split posterior moment summaries. Stop any nonconverged or split-failing candidate without extra optimization restarts.",
+    "decision": "If all four source M-step candidates pass,register a fresh original-source raw posterior update under the learned covariances,then an honest development predictive-mixture comparison. Do not attach current old-posterior moments to the new covariance as if already reconditioned. No Gaussian collapse for paid target updates,no covariance selection by held-task MSE,and no outer task1 or independent confirmation.",
+    "maximum_single_thread_cpu_seconds": 30,
+    "cost": {
+      "maximum_new_covariance_Mstep_optimizations": 4,
+      "new_source_labels": 0,
+      "new_MCMC_sweeps": 0,
+      "new_source_coordinate_fits": 0,
+      "new_raw_paid_forecasts": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;posterior sufficient moments and original covariance derivatives only;small JSON,no NPZ or server work",
+    "scope": "Source covariance-learning pilot under the raw likelihood,not a complete EM fit or decision improvement. Original orthogonal,sparse,low-order,low-frequency prior constraints remain. Earlier sampler/candidate failures retained;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_raw_covariance_mstep_v1",
+    "entrypoint": "performance/check_legacy_f_raw_covariance_mstep.py",
+    "numerical_optimization_coordinates": "Optimize theta_j/initial_theta_j for positive starting parameters,and unit scale for zero starts. This changes numerical units only,preserves all original bounds/exact zeros,and is fixed before optimization. Record gradients in both coordinates."
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "arm": "joint_spectral_geometry",
+      "parameter_names": [
+        "common_root_amplitude",
+        "common_spectral_exponent",
+        "task_root_amplitude",
+        "task_spectral_exponent"
+      ],
+      "old_parameters": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "learned_parameters": [
+        0.7356752195624413,
+        0.9741705437906916,
+        1.1683073404953304,
+        4.0
+      ],
+      "optimization_parameter_scales": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "optimizer_iterations": 5,
+      "optimizer_function_evaluations": 6,
+      "old_expected_complete_NLL_per_batch": -2.559744241704388,
+      "learned_expected_complete_NLL_per_batch": -2.5597624244184685,
+      "old_split_expected_NLL": [
+        -2.5594029049957867,
+        -2.5600851040666472
+      ],
+      "learned_split_expected_NLL": [
+        -2.5594236485003177,
+        -2.5601007278284293
+      ],
+      "full_and_split_Q_improvements": [
+        1.8182714080605678e-05,
+        2.0743504530962298e-05,
+        1.5623761782102008e-05
+      ],
+      "candidate_gate_passed": true,
+      "original_parameter_projected_gradient": [
+        1.515558722964272e-08,
+        -1.0840466019290673e-07,
+        -2.8132590376185596e-08,
+        0.0
+      ],
+      "optimization_coordinate_projected_gradient": [
+        1.1147289454547006e-08,
+        -1.0600583609764077e-07,
+        -3.2538130235363674e-08,
+        0.0
+      ],
+      "initial_raw_score_identity_max_error": 1.548344785717859e-12,
+      "source_prior_trace_ratio": 1.0000516946083833
+    },
+    {
+      "layout": "5",
+      "arm": "source_gp",
+      "parameter_names": [
+        "common_RBF_amplitude",
+        "task_RBF_amplitude",
+        "task_intercept_variance",
+        "white_discrepancy"
+      ],
+      "old_parameters": [
+        5.313344446215945,
+        0.02993354495437173,
+        0.0,
+        0.00205085491625314
+      ],
+      "learned_parameters": [
+        5.130093956458935,
+        0.03087273020678096,
+        0.0,
+        0.0019014617744265044
+      ],
+      "optimization_parameter_scales": [
+        5.313344446215945,
+        0.02993354495437173,
+        1.0,
+        0.00205085491625314
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "optimizer_iterations": 9,
+      "optimizer_function_evaluations": 10,
+      "old_expected_complete_NLL_per_batch": -2.565344173519781,
+      "learned_expected_complete_NLL_per_batch": -2.565861635445921,
+      "old_split_expected_NLL": [
+        -2.5645942367947647,
+        -2.566093532255387
+      ],
+      "learned_split_expected_NLL": [
+        -2.565094326668232,
+        -2.566628338936733
+      ],
+      "full_and_split_Q_improvements": [
+        0.0005174619261403279,
+        0.0005000898734670578,
+        0.0005348066813462005
+      ],
+      "candidate_gate_passed": true,
+      "original_parameter_projected_gradient": [
+        -4.2323455851089875e-09,
+        -5.153556442705209e-07,
+        0.0,
+        -1.5284851042629555e-05
+      ],
+      "optimization_coordinate_projected_gradient": [
+        -2.2487909909105414e-08,
+        -1.5426421345260844e-08,
+        0.0,
+        -3.1347011904973756e-08
+      ],
+      "initial_raw_score_identity_max_error": 7.618972119871614e-11,
+      "source_prior_trace_ratio": 0.969501869469755
+    },
+    {
+      "layout": "6",
+      "arm": "joint_spectral_geometry",
+      "parameter_names": [
+        "common_root_amplitude",
+        "common_spectral_exponent",
+        "task_root_amplitude",
+        "task_spectral_exponent"
+      ],
+      "old_parameters": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "learned_parameters": [
+        0.7153009030482637,
+        1.161924404296179,
+        1.2160728578465239,
+        4.0
+      ],
+      "optimization_parameter_scales": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "optimizer_iterations": 4,
+      "optimizer_function_evaluations": 5,
+      "old_expected_complete_NLL_per_batch": -2.6497284898024955,
+      "learned_expected_complete_NLL_per_batch": -2.649735891841282,
+      "old_split_expected_NLL": [
+        -2.6498156864524445,
+        -2.649640944453818
+      ],
+      "learned_split_expected_NLL": [
+        -2.6498229582784574,
+        -2.649648476984263
+      ],
+      "full_and_split_Q_improvements": [
+        7.402038786352705e-06,
+        7.271826012900107e-06,
+        7.532530445164554e-06
+      ],
+      "candidate_gate_passed": true,
+      "original_parameter_projected_gradient": [
+        1.455174425402106e-09,
+        -1.542019512079662e-08,
+        4.494663108714492e-09,
+        0.0
+      ],
+      "optimization_coordinate_projected_gradient": [
+        1.0446562680191468e-09,
+        -1.7868557904037703e-08,
+        5.4448412822251335e-09,
+        0.0
+      ],
+      "initial_raw_score_identity_max_error": 8.12798613136767e-13,
+      "source_prior_trace_ratio": 0.9996260184372664
+    },
+    {
+      "layout": "6",
+      "arm": "source_gp",
+      "parameter_names": [
+        "common_RBF_amplitude",
+        "task_RBF_amplitude",
+        "task_intercept_variance",
+        "white_discrepancy"
+      ],
+      "old_parameters": [
+        6.0853913983273875,
+        0.03841143442898013,
+        0.0,
+        0.001184244757360003
+      ],
+      "learned_parameters": [
+        6.072821501111713,
+        0.04066888600490225,
+        0.0,
+        0.0009371688803287687
+      ],
+      "optimization_parameter_scales": [
+        6.0853913983273875,
+        0.03841143442898013,
+        1.0,
+        0.001184244757360003
+      ],
+      "optimizer_converged": true,
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "optimizer_iterations": 11,
+      "optimizer_function_evaluations": 12,
+      "old_expected_complete_NLL_per_batch": -2.60723740303756,
+      "learned_expected_complete_NLL_per_batch": -2.61048258011638,
+      "old_split_expected_NLL": [
+        -2.607335488842163,
+        -2.607138867549663
+      ],
+      "learned_split_expected_NLL": [
+        -2.6105820737335916,
+        -2.6103825734694794
+      ],
+      "full_and_split_Q_improvements": [
+        0.003245177078820216,
+        0.0032465848914284834,
+        0.0032437059198162643
+      ],
+      "candidate_gate_passed": true,
+      "original_parameter_projected_gradient": [
+        -8.308655985445057e-10,
+        -5.181939272125291e-07,
+        0.0,
+        8.393341051471381e-05
+      ],
+      "optimization_coordinate_projected_gradient": [
+        -5.056142366548871e-09,
+        -1.9904572056619763e-08,
+        0.0,
+        9.939770136939478e-08
+      ],
+      "initial_raw_score_identity_max_error": 2.454925152051146e-11,
+      "source_prior_trace_ratio": 0.9984723110950592
+    }
+  ],
+  "all_four_optimizations_complete": true,
+  "all_source_Mstep_gates_passed": true,
+  "diagnostic_interpreted": true,
+  "cpu_seconds": 0.10718085400000005,
+  "cost": {
+    "maximum_new_covariance_Mstep_optimizations": 4,
+    "new_source_labels": 0,
+    "new_MCMC_sweeps": 0,
+    "new_source_coordinate_fits": 0,
+    "new_raw_paid_forecasts": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0,
+    "actual_new_covariance_Mstep_optimizations": 4
+  },
+  "no_model_adopted": true,
+  "independent_confirmation": false,
+  "interpretation": "One Monte Carlo EM source covariance M step using original48-source raw posterior sufficient moments. Q decreases do not prove marginal raw likelihood or held-source decision improvement. Original structural constraints and matched source information retained;new covariance requires fresh source raw conditioning."
+}

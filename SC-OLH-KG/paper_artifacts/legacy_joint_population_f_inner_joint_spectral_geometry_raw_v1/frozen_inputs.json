@@ -1,0 +1,445 @@
+{
+  "execution": {
+    "status": "frozen after all ten source fits and structural/conditioning checks;before ten raw forecasts",
+    "entrypoint": "performance/check_legacy_f_inner_joint_spectral_geometry.py",
+    "source_results": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/results.json",
+    "source_laws": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_v1/source_laws.json",
+    "control_results": "paper_artifacts/legacy_joint_population_f_inner_query_design_v1/results.json",
+    "source_context_execution": "performance/manifests/legacy_joint_population_f_sparse_task_template_execution_v1.json",
+    "layouts": [
+      "5",
+      "6"
+    ],
+    "query_tasks": [
+      0,
+      2,
+      3,
+      4,
+      5
+    ],
+    "paid_prefix": [
+      0,
+      1,
+      29,
+      58
+    ],
+    "controls": [
+      "native_mixture",
+      "native_point",
+      "source_gp"
+    ],
+    "metrics": [
+      "f_mse",
+      "f_raw_batch_density",
+      "sequential_transcript_density"
+    ],
+    "law": "Use exactly the ten frozen source4 joint coefficient laws,with original orthogonal low-order basis,source-selected strong support,source-learned separate spectra and strictly positive separate tails. Add common posterior uncertainty,independent task covariance and unchanged source GP latent discrepancy. No query-based parameter or support selection. Retain identical source4 eta_f,raw update and scoring measure.",
+    "freeze": "Reproduce outcome-free source coordinates;freeze ten priors before paid values and ten forecasts before scoring the same eight cached future batches. Each source law used144 historical mean calls;the96 risk calls are a subset. All controls share the same physical prefix,budget and validator-free prediction contract and are reused without replay.",
+    "decision": "Assess all three metrics against retained native mixture and same-source GP in both layouts,with per-task signs. Source NLL gain alone or improvement over only native point is insufficient. If the constrained law loses predictive benefit,retain the loss and diagnose source-to-held-task transfer before any outer expansion;no task-specific choice or another spectrum grid. Inner averages cannot establish stable independent decision value.",
+    "maximum_single_thread_cpu_seconds": 60,
+    "cost": {
+      "new_source_fits": 0,
+      "new_raw_forecasts": 10,
+      "reused_control_forecasts": 30,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_terminal_integrations": 0
+    },
+    "execution": "local serial single-thread;small cached JSON and ten single-component score-site NPZ;no server jobs or pulls",
+    "scope": "Repeated inner development evidence only;no task1,source6/7,target,KG,independent confirmation or manuscript changes. Retained native mixture remains reference;complete-model HOLD.",
+    "output": "paper_artifacts/legacy_joint_population_f_inner_joint_spectral_geometry_raw_v1"
+  },
+  "rows": [
+    {
+      "layout": "5",
+      "query_task": 0,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7355234268154316,
+        0.9778715777440081,
+        1.1565991542288758,
+        4.0
+      ],
+      "positive_component_tails": [
+        5.073056154825732e-06,
+        2.8579843825987307e-08
+      ]
+    },
+    {
+      "layout": "6",
+      "query_task": 0,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7178907557631646,
+        1.158776381495917,
+        1.2114014222041216,
+        4.0
+      ],
+      "positive_component_tails": [
+        4.735559041461756e-06,
+        2.989119412363001e-08
+      ]
+    },
+    {
+      "layout": "5",
+      "query_task": 2,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        49,
+        62,
+        59,
+        34
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6202185912245072,
+        1.5165186742150158,
+        1.1572116876915233,
+        4.0
+      ],
+      "positive_component_tails": [
+        7.4342120913932e-06,
+        3.103513716478263e-08
+      ]
+    },
+    {
+      "layout": "5",
+      "query_task": 3,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        23,
+        65,
+        19,
+        13
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6500458392084202,
+        1.0210959271814024,
+        1.0044983297579613,
+        4.0
+      ],
+      "positive_component_tails": [
+        6.576793191714589e-06,
+        4.802789560186448e-08
+      ]
+    },
+    {
+      "layout": "5",
+      "query_task": 4,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        23,
+        65,
+        19,
+        13,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.8184082232650912,
+        1.0208588772140281,
+        1.150825733082901,
+        4.0
+      ],
+      "positive_component_tails": [
+        5.060099664098375e-06,
+        3.118231778852262e-08
+      ]
+    },
+    {
+      "layout": "5",
+      "query_task": 5,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        22,
+        20,
+        53,
+        33,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "parameters": [
+        0.8414120619596833,
+        0.8710765831932298,
+        0.9466591828909833,
+        4.0
+      ],
+      "positive_component_tails": [
+        4.337027645399584e-06,
+        3.277282472707789e-08
+      ]
+    },
+    {
+      "layout": "6",
+      "query_task": 2,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        49,
+        62,
+        59,
+        34,
+        50,
+        57,
+        67,
+        36
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.7191052198832694,
+        1.1559124787023498,
+        1.1845933645149416,
+        4.0
+      ],
+      "positive_component_tails": [
+        5.677814471056563e-06,
+        3.8020800776911076e-08
+      ]
+    },
+    {
+      "layout": "6",
+      "query_task": 3,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        50,
+        57,
+        67,
+        36,
+        48,
+        64,
+        72,
+        14
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6285728275434639,
+        1.1628729495120314,
+        1.222722634046002,
+        4.0
+      ],
+      "positive_component_tails": [
+        5.952886498786127e-06,
+        3.6350312303661535e-08
+      ]
+    },
+    {
+      "layout": "6",
+      "query_task": 4,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        48,
+        64,
+        72,
+        14,
+        52,
+        24,
+        11,
+        42
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_05"
+      ],
+      "parameters": [
+        0.6903459784526975,
+        1.1816184329308996,
+        1.1884944654355316,
+        4.0
+      ],
+      "positive_component_tails": [
+        5.519006790547408e-06,
+        3.215650160047838e-08
+      ]
+    },
+    {
+      "layout": "6",
+      "query_task": 5,
+      "arm": "joint_spectral_geometry",
+      "design": "fixed_public_prefix",
+      "episode_count": 4,
+      "paid_prefix": [
+        0,
+        1,
+        29,
+        58
+      ],
+      "scoring_sites": [
+        52,
+        24,
+        11,
+        42,
+        22,
+        20,
+        53,
+        33
+      ],
+      "source_task_names": [
+        "related_inventory_00",
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04"
+      ],
+      "parameters": [
+        0.6964037855878337,
+        1.09042110816748,
+        1.156630986791515,
+        4.0
+      ],
+      "positive_component_tails": [
+        5.159263410088731e-06,
+        3.0627893305683686e-08
+      ]
+    }
+  ],
+  "all_ten_priors_frozen_before_paid_values": true
+}

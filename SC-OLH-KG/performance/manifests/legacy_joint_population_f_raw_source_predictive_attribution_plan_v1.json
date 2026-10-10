@@ -1,0 +1,15 @@
+{
+  "status": "completed;eligible layout6 loses in both level and shape;average density Monte Carlo interval remains negative;no extra sampling justified",
+  "entrypoint": "performance/diagnose_legacy_f_raw_source_predictive_attribution.py",
+  "predictions": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1/results.json",
+  "functional_records": "paper_artifacts/legacy_joint_population_f_raw_source_full_state_prediction_v1/functional_records.json",
+  "question": "In the numerically eligible layout6,is the structure-versus-GP mean loss due to a common level offset or policy-dependent shape? Does remaining density Monte Carlo error warrant more sampling?",
+  "calculation": "Use only already-scored12 task0 batch means and frozen full-state forecasts. Decompose MSE=mean(error)^2+mean((error-mean(error))^2) and report matched level/shape differences. Use retained per-chain conditional future-batch density logs to estimate the Monte Carlo standard error of the average log predictive density:influence_i=mean_j(d_ij/mean_i(d_ij)-1),with autocorrelation ESS of that influence and MCSE=sqrt(sample_variance/ESS). Combine the two separate source sampler streams' MCSEs for a nominal conditional Monte Carlo interval on structure-minus-GP mean density. This interval conditions on the frozen source law and observed development batches;it is NOT a task/bootstrap confidence interval or independent evidence.",
+  "interpretation": "Keep original per-site split bounds and all failures unchanged. Interpret matched predictive success only for a layout whose BOTH arms meet Stage209 functional gates. Layout6 failure already rules out the declared both-layout pilot success,so do not spend more draws solely to rescue layout5 precision. A shape-dominated loss points to source common-function/selected-support shrinkage;level-dominated loss points to center/intercept learning. These are follow-up hypotheses,not causal attribution or authorization to substitute unrestricted GP for the four-prior core.",
+  "maximum_single_thread_cpu_seconds": 5,
+  "cost": {"new_source_draws": 0, "new_density_integrations": 0, "new_coordinate_fits": 0, "new_covariance_fits": 0, "new_source_labels": 0, "new_raw_paid_forecasts": 0, "new_simulator_calls": 0, "new_verification_calls": 0, "new_terminal_integrations": 0},
+  "execution": "local serial single-thread;existing small functional JSON and scored batch means only;no server work or NPZ",
+  "scope": "Post-hoc source-development attribution. Original four priors preserved;complete-model HOLD. No outer task1,source6/7,target,KG,confirmation or manuscript edits.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_attribution_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_attribution_v1/results.json"
+}

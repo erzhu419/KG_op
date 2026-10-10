@@ -1,0 +1,36 @@
+{
+  "status": "completed;all four source-only Msteps converge with full/half component Q improvements;one-step pilot,not convergence",
+  "entrypoint": "performance/check_legacy_f_raw_level_risk_mstep.py",
+  "level_risk_plan": "performance/manifests/legacy_joint_population_f_raw_source_level_risk_score_plan_v1.json",
+  "source_inputs": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/frozen_inputs.json",
+  "source_posterior_results": "paper_artifacts/legacy_joint_population_f_learned_covariance_source_update_v1/results.json",
+  "risk_partitions": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1/source_eta_partitions.json",
+  "risk_score_results": "paper_artifacts/legacy_joint_population_f_raw_source_risk_stein_score_v1/results.json",
+  "question": "Can one constrained source-only M step learn the still-fixed function level and risk center/selected-shape amplitude with consistent expected complete-likelihood improvement?",
+  "parameters": "Four per arm:function center,function task intercept root multiplier(structure) or constant variance(GP),eta center offset,and common eta strong-shape covariance multiplier. Common function and risk intercept covariance remain fixed:jointly fitting a free global mean and its common intercept variance can collapse uncertainty from one common function draw. Function shape law is Stage205's learned law. Risk selected-shape ratios/spectrum and support stay unchanged;scale only their excess above the original positive weak tail. Keep risk task weak tail and white=0 fixed because Stage212 supplies no stable negative absent-variance direction.",
+  "risk_original_shape_tail_budget": 0.0002,
+  "objective": "Q=.5/48[48log(2pi)+logdet(K)+tr(K^-1(Cpost+(mpost-m)(mpost-m)^T))] for f and eta,using the Stage206 raw posterior under the current scientific law. Add Qf+Qeta;original48 means and48 sample variances appear only through the original posterior. Reuse full-chain first/second eta moments saved in Stage212,not its thinned approximations. This is one Monte Carlo EM M step,not a converged fit or marginal-likelihood comparison.",
+  "verification": "New constrained covariance builders must reproduce the old laws and Gaussian marginal-score/finite-derivative identities. Verify analytic Q derivatives once against finite differences at the candidate. Positive structural shape tails,orthogonal coordinates,selected supports,spectral exponents and common intercept variances remain exact. A failure stops adoption;no restart or alternative parameter search.",
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "max_iterations": 200,
+    "ftol": 1e-12,
+    "gtol": 1e-08
+  },
+  "decision": "Require convergence and strictly positive full/first/second joint Q improvements,with neither f nor eta component worsening beyond1e-10. If all four pass,register fresh conditioning under the new function AND risk laws before any future prediction. Never attach old posterior moments to a new prior. No held-task outcome affects learning.",
+  "maximum_single_thread_cpu_seconds": 15,
+  "cost": {
+    "new_joint_source_Mstep_optimizations": 4,
+    "new_source_labels": 0,
+    "new_coordinate_fits": 0,
+    "new_posterior_chains": 0,
+    "new_density_integrations": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;existing small source JSON and48-dimensional linear algebra only",
+  "scope": "Original orthogonality,sparsity,low-order/additive and low-frequency priors retained. No source6/7,task0/task1 outcomes,target,KG,confirmation or manuscript edits. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/results.json"
+}

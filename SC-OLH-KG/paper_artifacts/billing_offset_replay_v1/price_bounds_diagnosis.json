@@ -1,0 +1,113 @@
+{
+  "scope": "posterior decoding using public quantities and fixed observed labels; no target price truth",
+  "case_selection": "two largest early errors from already-open analytic development scoring",
+  "target_truth_used_for_case_selection": true,
+  "target_price_truth_used": false,
+  "new_episode_calls": 0,
+  "rows": [
+    {
+      "law_seed": 95431,
+      "paid_points": 8,
+      "recommendation": 67,
+      "price_order": [
+        "order_quantity",
+        "holding_quantity",
+        "lost_sales_quantity",
+        "order_frequency"
+      ],
+      "public_constraint_price_range": [
+        0.4,
+        0.9
+      ],
+      "posterior_price_mean": [
+        0.926680089864389,
+        0.5719816120876209,
+        0.07330804876949326,
+        0.6702136660609618
+      ],
+      "posterior_price_sd": [
+        0.3485498114976634,
+        0.44606423594934375,
+        0.15243405120115364,
+        0.5875184091418034
+      ],
+      "posterior_price_marginal_95_intervals": [
+        [
+          0.24352245932896877,
+          1.6098377203998093
+        ],
+        [
+          -0.3023042903730928,
+          1.4462675145483346
+        ],
+        [
+          -0.22546269158476784,
+          0.37207878912375436
+        ],
+        [
+          -0.481322415856973,
+          1.8217497479788967
+        ]
+      ],
+      "posterior_mean_outside_public_bounds": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "reconstructed_mean_max_error": 6.030509425158925e-12
+    },
+    {
+      "law_seed": 95425,
+      "paid_points": 8,
+      "recommendation": 50,
+      "price_order": [
+        "order_quantity",
+        "holding_quantity",
+        "lost_sales_quantity",
+        "order_frequency"
+      ],
+      "public_constraint_price_range": [
+        0.4,
+        0.9
+      ],
+      "posterior_price_mean": [
+        1.358951228958019,
+        -0.7701723799680205,
+        0.6568012777929206,
+        0.022324504787038305
+      ],
+      "posterior_price_sd": [
+        0.38516149235743624,
+        0.4828856179870679,
+        0.14776902790673915,
+        0.6406027742037892
+      ],
+      "posterior_price_marginal_95_intervals": [
+        [
+          0.604034703937444,
+          2.113867753978594
+        ],
+        [
+          -1.7166281912226735,
+          0.1762834312866326
+        ],
+        [
+          0.3671739830957119,
+          0.9464285724901293
+        ],
+        [
+          -1.2332569326523883,
+          1.2779059422264651
+        ]
+      ],
+      "posterior_mean_outside_public_bounds": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "reconstructed_mean_max_error": 1.2497780588205387e-11
+    }
+  ]
+}

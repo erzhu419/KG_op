@@ -1,0 +1,28 @@
+{
+  "status": "completed;both layout mean-functional diagnostics pass;layout6 mean disadvantage exceeds MC error;source covariance scores nonstationary",
+  "entrypoint": "performance/diagnose_legacy_f_level_risk_learning_attribution.py",
+  "prediction_results": "paper_artifacts/legacy_joint_population_f_level_risk_predictive_mixture_v1/results.json",
+  "predictions": "paper_artifacts/legacy_joint_population_f_level_risk_predictive_mixture_v1/predictions.json",
+  "source_results": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/results.json",
+  "source_partitions": "paper_artifacts/legacy_joint_population_f_level_risk_source_update_v1/source_eta_partitions.json",
+  "Mstep_plan": "performance/manifests/legacy_joint_population_f_raw_level_risk_mstep_plan_v1.json",
+  "Mstep_results": "paper_artifacts/legacy_joint_population_f_raw_level_risk_mstep_v1/results.json",
+  "previous_attribution": "paper_artifacts/legacy_joint_population_f_raw_source_predictive_attribution_v1/results.json",
+  "question": "Which function mean-error component remains after level/risk learning,and are the source learning directions stationary under the fresh posterior?",
+  "calculation": "Cached task0 MSE decomposes exactly into squared mean error and centered policy-shape error. Assess MSE Monte Carlo sensitivity using per-component conditional mean influences2*error^T(component_mean-full_mean)/12,with chain ESS/Rhat and split forecast checks. Combine independent arm influence standard errors in quadrature;this is conditional computational error,not a task confidence interval. Evaluate full/half f/risk Fisher source scores at Stage213 parameters using Stage214's new posterior;do not use task0 errors to choose parameters or supports.",
+  "decision": "Keep Stage215 joint-density numerical failures unchanged. A stable MSE sign can diagnose mean representation independently of unresolved density precision,but does not pass the joint predictive gate. Nonzero matching source-score signs justify a bounded convergence pilot on the same frozen source objective,not a new task0 correction. Do not increase mixture size or run paid updates while the layout6 mean disadvantage persists.",
+  "maximum_single_thread_cpu_seconds": 5,
+  "cost": {
+    "new_covariance_optimizations": 0,
+    "new_source_chains": 0,
+    "new_density_integrations": 0,
+    "new_source_labels": 0,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_terminal_integrations": 0
+  },
+  "execution": "local serial single-thread;cached small JSON and48-dimensional source moments only",
+  "scope": "Original four priors retained;task0 development and conditional MC error only. No target,source6/7,KG,confirmation or manuscript changes. Complete-model HOLD.",
+  "output": "paper_artifacts/legacy_joint_population_f_level_risk_learning_attribution_v1",
+  "results": "paper_artifacts/legacy_joint_population_f_level_risk_learning_attribution_v1/results.json"
+}
