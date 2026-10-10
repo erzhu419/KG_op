@@ -21,7 +21,8 @@ BANK_STAGES={'label-bank-coarse':'coarse','label-bank-fine':'fine','label-bank-i
     'label-bank-gh-pilot':'gh_pilot','label-bank-gh-full':'gh_full','cdf-bank-coarse':'coarse'}
 LABEL_MODES={'label-control':('label_control','resolution'),
     'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive'),
-    'label-groups-direct':('label_groups','direct'),'cdf-bank-pilot':('cdf_bank','pilot')}
+    'label-groups-direct':('label_groups','direct'),'cdf-bank-pilot':('cdf_bank','pilot'),
+    'body-reference-pilot':('body_reference_pilot','resolution')}
 UPPER_MODES={'upper-decisions-pilot':'pilot','upper-decisions-full':'full'}
 
 
@@ -126,7 +127,9 @@ def launch(stage):
 def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.validate_historical_upper_decisions','collect','--phase',UPPER_MODES[stage]] if stage in UPPER_MODES else
+    worker=(['performance.validate_historical_label_groups','collect','--stage','resolution',
+        '--plan','performance/manifests/historical_body_reference_pilot_v1.json'] if stage=='body-reference-pilot' else
+        ['performance.validate_historical_upper_decisions','collect','--phase',UPPER_MODES[stage]] if stage in UPPER_MODES else
         ['performance.probe_historical_label_gh','collect','--stage',BANK_STAGES[stage]] if stage in ('label-bank-gh-pilot','label-bank-gh-full') else
         ['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage],
             '--plan','performance/manifests/historical_cdf_bank_v1.json' if stage=='cdf-bank-coarse' else 'performance/manifests/historical_label_bank_v1.json'] if stage in BANK_STAGES else

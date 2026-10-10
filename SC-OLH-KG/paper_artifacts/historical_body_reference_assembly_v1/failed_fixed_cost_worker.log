@@ -1,0 +1,20 @@
+SCHEDULEURM_PROGRESS {"origin": 4, "records": 64, "cpu_seconds": 67.525779431}
+Traceback (most recent call last):
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/diagnose_historical_decision_regions.py", line 214, in <module>
+    p=argparse.ArgumentParser();p.add_argument('mode',choices=['cached','direct','dominance','integrated'],nargs='?',default='cached');run(p.parse_args().mode)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/diagnose_historical_decision_regions.py", line 117, in run
+    for entry in applied[name,kind]:apply_entry(row,f,prior,entry,origin)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/assemble_historical_risk_references.py", line 140, in apply_entry
+    assert c[active].min() >= 0 and c[active].max() <= 359
+AssertionError
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)

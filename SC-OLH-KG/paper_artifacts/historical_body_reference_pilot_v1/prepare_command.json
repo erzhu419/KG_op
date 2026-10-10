@@ -1,0 +1,15 @@
+{
+  "remote_cwd": "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG",
+  "args": [
+    "env",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "PYTHONPATH=.",
+    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python",
+    "-u",
+    "-c",
+    "import json,signal,time,shutil\nfrom performance.complete_historical_source_heads import ROOT,read,save,cpu_timeout\nfrom performance.validate_historical_component_transfer import part_path\nfrom performance.validate_historical_label_groups import prepare\nstart=time.process_time();signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)\nplan='performance/manifests/historical_body_reference_pilot_v1.json';spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)\nshutil.copy2(ROOT/'paper_artifacts/historical_label_groups_v1/anchor_costs.json',out/'anchor_costs.json')\nselected=read(spec['selection'])['selected'];reused=0.;rows=0\nfor name in spec['records']:\n for row in selected:\n  row=dict(row,record=name)\n  for h in (4,5):\n   source=read(str(part_path(ROOT/'paper_artifacts/historical_cdf_bank_v1',row,h)))\n   data=dict(record=name,group=row['group'],kind=row['kind'],identity=h,rows={'E5':source['rows']['E5']})\n   path=part_path(out,row,h);path.parent.mkdir(parents=True,exist_ok=True);save(path,data)\n   reused+=source['rows']['E5']['cpu_seconds'];rows+=1\nwork=prepare(plan)\nmeta=dict(reused_rule_rows=rows,reused_integral_cpu_seconds=reused,total_preparation_cpu_seconds=time.process_time()-start,\n cumulative_estimated_cpu_seconds=work['estimated_cpu_seconds']+480+600,maximum_estimated_cpu_seconds=3600)\nassert meta['cumulative_estimated_cpu_seconds']<=3600 and work['estimated_cost_admitted']\nsave(out/'phase_budget.json',meta);signal.setitimer(signal.ITIMER_PROF,0.);print('PHASE_BUDGET '+json.dumps(meta))\n"
+  ],
+  "maximum_cpu_seconds": 120,
+  "returncode": 0
+}

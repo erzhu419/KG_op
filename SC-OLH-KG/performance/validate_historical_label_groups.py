@@ -213,13 +213,14 @@ def collect(plan=PLAN,stage='resolution'):
         maximum_task_peak_rss_mb=max(t['peak_rss_mb'] for t in tasks),
         new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         independent_confirmation=False,full_predictive_integration_admitted=False,
-        scope='Frozen five historical worst group-kind pairs and three development labels. Direct reference availability and admission are recorded per combination. Failed low-order controls remain recorded, with validated direct256 fallback where available. All original budgets and identity mixture retained; no full-bank/full-KG or independent-decision admission.')
+        scope=f'Frozen {len(spec["groups"])} historical worst group-kind pairs and {len(spec["records"])} development labels. Direct reference availability and admission are recorded per combination. Failed low-order controls remain recorded, with validated direct256 fallback where available. All original budgets and identity mixture retained; no full-bank/full-KG or independent-decision admission.')
     save(out/'summary.json',result);print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
     return result
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','prepare-refinement','prepare-direct','collect'])
-    parser.add_argument('--stage',choices=['resolution','adaptive','direct'],default='resolution');args=parser.parse_args()
-    if args.mode=='collect':collect(stage=args.stage)
-    else:{'prepare':prepare,'prepare-refinement':prepare_refinement,'prepare-direct':prepare_direct}[args.mode]()
+    parser.add_argument('--stage',choices=['resolution','adaptive','direct'],default='resolution')
+    parser.add_argument('--plan',default=PLAN);args=parser.parse_args()
+    if args.mode=='collect':collect(plan=args.plan,stage=args.stage)
+    else:{'prepare':prepare,'prepare-refinement':prepare_refinement,'prepare-direct':prepare_direct}[args.mode](args.plan)

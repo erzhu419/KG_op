@@ -11,6 +11,8 @@ from scipy.special import roots_legendre
 from performance.complete_historical_source_heads import ROOT, read, save, cpu_timeout
 from performance.extend_historical_upper_risk import head_rules
 from performance.refine_historical_achievable_precision import assemble_case, compose_records, rule_pair
+from performance.assemble_historical_risk_references import (
+    OUTPUT as ASSEMBLY_OUTPUT, load_entries, apply_entry, reference_masks, remaining_risk_checks, entry_summary)
 
 PLAN='performance/manifests/historical_predictive_positive_body_v7.json'
 OUTPUT='paper_artifacts/historical_decision_regions_v1'
@@ -76,12 +78,13 @@ def run(mode='cached'):
     stop=read(spec['stop_inputs'][case['state']])['rows'][-1]
     assert layout['actions']==debited['actions'] and len(layout['actions'])==365
     fixed=debited['best_action_index'];rules=read(spec['output']+'/risk_rules.json')
-    if mode in ('direct','dominance'):
+    if mode in ('direct','dominance','integrated'):
         direct=read(str(out/'direct_summary.json'));assert direct['complete'] and direct['all_references_admitted']
         direct_contexts=read(str(out/'direct_contexts.json'))
-    if mode=='dominance':
+    if mode in ('dominance','integrated'):
         refs=read(str(out/'native_reference_summary.json'));assert refs['complete'] and refs['all_references_admitted']
         native_names={r['record'] for r in refs['records']};native_contexts=read(str(out/'contexts.json'))
+    entries=load_entries(layout) if mode=='integrated' else {}
     tail_rules=read(spec['retained_tail_rule_input']);selection=head_rules(spec,rules,bank['origins'],32,32,32)
     group_of={a:g['group'] for g in layout['groups'] for a in g['action_indices']}
     edges=[0.,.9,.93,.96,.99,1.];regions={str((a,b)):[] for a,b in zip(edges[:-1],edges[1:])}
@@ -92,7 +95,8 @@ def run(mode='cached'):
             index={r['position']:r for r in heads[h,origin]}
             selected.append([index[p] for p in selection[h,origin]['positions']])
         f,g=selected
-        if mode in ('direct','dominance'):
+        applied={}
+        if mode in ('direct','dominance','integrated'):
             for row in g[:32]:
                 name=f'source_n1_o{origin}_h1_p{row["position"]}'
                 context=direct_contexts[name]
@@ -100,19 +104,28 @@ def run(mode='cached'):
                 assert context['prior_weights']==bank['prior_weights']
                 part={h:read(str(out/'direct_parts'/name/f'{h}.json')) for h in bank['utility_identities']}
                 overlay_direct(row,part,layout['groups'][136]['action_indices'])
-                if mode=='dominance' and name in native_names:
+                if mode in ('dominance','integrated') and name in native_names:
                     context=native_contexts[name]
                     assert row['label']==context['label'] and row['head_log_scores']==context['head_log_scores'] and context['prior_weights']==bank['prior_weights']
                     part={h:read(str(out/'parts'/name/f'063_{h}_projected.json')) for h in bank['utility_identities']}
                     overlay_direct(row,part,layout['groups'][63]['action_indices'],kind='projected',pair=('F8','E8'))
+        if mode=='integrated':
+            for row in g:
+                name=f'source_n1_o{origin}_h1_p{row["position"]}'
+                for kind in ('raw','projected'):
+                    applied[name,kind]=[entry for (n,k,_),entry in entries.items() if (n,k)==(name,kind)]
+                    for entry in applied[name,kind]:apply_entry(row,f,prior,entry,origin)
         cdf=np.r_[.9*(roots_legendre(32)[0]+1)/2,.9+.1*(roots_legendre(32)[0]+1)/2]
         assert [r['label'] for r in g]==rules[str(origin)]['32']['labels']+tail_rules[str(origin)]['32']['labels']
         values,costs,posterior,_=compose_records(f,g,prior,'raw',1)
         native,nc,_,_=compose_records(f,g,prior,'projected',1)
         low=compose_records(f,g,prior,'raw',0)[0];nl=compose_records(f,g,prior,'projected',0)[0]
-        if mode=='dominance':
+        if mode in ('dominance','integrated'):
             uppers={kind:objective_upper([r[kind][str(rule_pair(r,kind)[1])]['statistics'] for r in f],posterior,bank['utility_identities'])
                 for kind in ('raw','projected')}
+        if mode=='integrated':
+            risk_low={kind:compose_records(f,g,prior,kind,(1,0))[0] for kind in ('raw','projected')}
+            objective_low={kind:compose_records(f,g,prior,kind,(0,1))[0] for kind in ('raw','projected')}
         weights=prior[origin]*np.outer(selection[0,origin]['weights'],selection[1,origin]['weights'])
         totals.append(region_metrics(values,costs,native,nc,weights,fixed))
         for j,row in enumerate(g):
@@ -135,7 +148,7 @@ def run(mode='cached'):
                 low_native_winners=sorted(map(int,np.unique(low_choice))),
                 low_native_winner_groups=sorted({group_of[int(a)] for a in np.unique(low_choice)}),
                 weighted_achieved_choice_change=float(np.sum(w*achieved_change)))
-            if mode=='dominance' and j<32:
+            if mode in ('dominance','integrated') and j<32:
                 for kind,high,difference in [('raw',raw,delta),('projected',nat,ndelta)]:
                     dominated=uppers[kind][:,j]+2e-4<high[:,fixed,None]
                     unresolved=(difference>1e-4)&~dominated
@@ -144,6 +157,22 @@ def run(mode='cached'):
                         unresolved_action_head_pairs=int(unresolved.sum()),
                         unresolved_action_indices=np.flatnonzero(unresolved.any(axis=0)).tolist(),
                         unresolved_groups=sorted({group_of[int(a)] for a in np.flatnonzero(unresolved.any(axis=0))}))
+                    if mode=='integrated':
+                        masks=reference_masks(layout,applied[record['record'],kind])
+                        if kind=='raw':masks['direct_target'][layout['groups'][136]['action_indices']]=True
+                        else:
+                            if record['record'] in native_names:masks['direct_target'][layout['groups'][63]['action_indices']]=True
+                            direct_ix=[a for group in layout['groups'] if group['kind']=='direct' for a in group['action_indices']]
+                            levels=[row[kind][str(p)] for p in rule_pair(row,kind)]
+                            assert max(np.max(abs(np.asarray(levels[0][key])[:,direct_ix]-np.asarray(levels[1][key])[:,direct_ix])) for key in ('statistics','costs'))<=1e-12
+                            masks['native_analytic'][direct_ix]=True
+                            masks['direct_target'][direct_ix]=False
+                        masks['paired_residual'][masks['direct_target']|masks['native_analytic']]=False
+                        remaining=remaining_risk_checks(abs(high-risk_low[kind][:,j]),dominated,masks)
+                        remaining['unreferenced_relevant_groups']=sorted({group_of[a] for a in remaining['unreferenced_relevant_action_indices']})
+                        remaining['maximum_objective_axis_difference']=float(abs(high-objective_low[kind][:,j]).max())
+                        remaining['objective_axis_imprecise_action_head_pairs']=int((abs(high-objective_low[kind][:,j])>1e-4).sum())
+                        record[kind+'_reference_coverage']=remaining
             records.append(record)
             for a,b in zip(edges[:-1],edges[1:]):
                 if a<=cdf[j]<b:regions[str((a,b))].append(record);break
@@ -163,13 +192,28 @@ def run(mode='cached'):
         new_integrations=0,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
         full_predictive_integration_admitted=False,
         scope='Opened development caches only. Original positive body/tail weights and all identity likelihoods, no weight renormalization. Same-origin objective/risk pairs follow the existing joint mixture grid. Full365-action values use historical rules whose body precision remains unresolved; selected-action differences are diagnostics, not an alternative admission gate. Historical observed-query matrix has146 direct actions and is not a full365-action KG comparison. No truth scores or confirmation block read.',
-        direct_body_overlay=mode in ('direct','dominance'),
+        direct_body_overlay=mode in ('direct','dominance','integrated'),
         direct_overlay_scope='Group136 body raw risk statistics/costs use GH64 selected values and GH128 references. Objective heads and all scores remain cached. Dominance mode also replaces native group63 at its two validated conflict records with E8/F8; other values remain cached.')
     if mode=='dominance':result['objective_bound_scope']='Diagnostic conditional on cached objective heads and posterior identity weights. Verifier branch probabilities sum to at most1. Uncomputed identity utility contributes worst-case1; use a2e-4 separation margin. Two native group63 reference records are also overlaid E8/F8; other historical group references still require bank integration. No action is removed, no gate or algorithm is changed, and no rigorous quadrature error bound or full KG admission is asserted.'
-    save(out/('dominance_summary.json' if mode=='dominance' else 'summary_with_direct.json' if mode=='direct' else 'summary.json'),result);signal.setitimer(signal.ITIMER_PROF,0.)
+    if mode=='integrated':
+        result['reference_assembly']=entry_summary(entries)
+        result['reference_assembly']['body_totals']={kind:{key:sum(r[kind+'_reference_coverage'][key] for r in records if r['cdf']<.9)
+            for key in ('unreferenced_actions','unreferenced_imprecise_action_head_pairs','unreferenced_relevant_action_head_pairs','objective_axis_imprecise_action_head_pairs')} for kind in ('raw','projected')}
+        result['scope']='Opened development state and frozen query63; original365 actions,source prior,all8 identity scores and positive body/tail weights. Actual selected reference statistics/costs replace high-rule entries only. Historical low values remain separate and their differences are not treated as new reference failures or evidence. Direct target,paired residual and native analytic coverage are reported separately; all are conditional on the matched32 cached objective heads. Unreferenced comparisons and the objective axis remain open. No full KG or independent deployment claim.'
+        result['direct_overlay_scope']='All historical source-anchor,nearby full bank,selected body groups,CDF pilot and switching-tail references are integrated at their matching labels/actions; prior direct136 and native63 references are retained.'
+        target=ROOT/ASSEMBLY_OUTPUT;target.mkdir(parents=True,exist_ok=True)
+        save(target/'reference_sources.json',[dict(record=n,kind=k,group=gid,scope=e['scope'],sources=e['sources'],method=e['method'],action_indices=e['group']['action_indices']) for (n,k,gid),e in sorted(entries.items())])
+        save(target/'summary.json',result)
+    else:save(out/('dominance_summary.json' if mode=='dominance' else 'summary_with_direct.json' if mode=='direct' else 'summary.json'),result)
+    signal.setitimer(signal.ITIMER_PROF,0.)
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k not in ('records','actions','observed_query_matrix')}),flush=True)
     return result
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('mode',choices=['cached','direct','dominance'],nargs='?',default='cached');run(p.parse_args().mode)
+    p=argparse.ArgumentParser();p.add_argument('mode',choices=['cached','direct','dominance','integrated'],nargs='?',default='cached')
+    mode=p.parse_args().mode
+    try:run(mode)
+    finally:
+        print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
+            peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)

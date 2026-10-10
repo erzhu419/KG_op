@@ -1,0 +1,118 @@
+{
+  "complete": true,
+  "scheduler_states": {
+    "t141516": "failed",
+    "t141519": "done",
+    "t141520": "done",
+    "t141521": "done",
+    "t141522": "done",
+    "t141523": "done",
+    "t141524": "done",
+    "t141525": "done",
+    "t141526": "done",
+    "t141527": "done",
+    "t141528": "done",
+    "t141529": "done",
+    "t141530": "done"
+  },
+  "worker_count": 13,
+  "successful_workers": 12,
+  "maximum_concurrent_workers": 8,
+  "priority": "low",
+  "cpus_per_worker": 1,
+  "cumulative_estimated_cpu_seconds": 3312.4115025032,
+  "maximum_estimated_cpu_seconds": 3600,
+  "reused_target_E5_rule_rows": 10,
+  "reused_integral_cpu_seconds": 24.335505835999992,
+  "new_integral_cpu_seconds": 1683.716225349,
+  "reported_successful_pilot_worker_cpu_seconds": 1684.13675714,
+  "successful_cache_process_cpu_seconds": 152.225261115,
+  "reported_successful_worker_cpu_seconds": 1836.362018255,
+  "measured_preparation_cpu_seconds": 3.500773637,
+  "measured_pricing_cpu_seconds": 4.5239001860000005,
+  "failed_initial_cache_worker_cpu_seconds": null,
+  "failed_initial_cache_worker_cpu_budget_seconds": 240,
+  "cpu_measurement_scope": "Cache CPU includes process startup; pilot CPU is the existing evaluation-loop timer. The failed first cache worker and collection CPU were not fully timed; their240/120-second budget reserves remain included. Cached E5 timers are subtracted from new integral CPU.",
+  "maximum_integral_worker_peak_rss_mb": 423.01171875,
+  "maximum_cache_peak_rss_mb": 4679.57421875,
+  "failed_cache_resolution": "Original bank raw direct costs359.0000000000001 are now read through existing tables(),which assigns fixed128/359 budgets analytically. No probability clipping or tolerance change; failed log retained.",
+  "reference_group_entries": 853,
+  "body_reference_actions_by_scope": {
+    "raw": {
+      "direct_target": 555,
+      "paired_residual": 348,
+      "native_analytic": 0
+    },
+    "projected": {
+      "direct_target": 273,
+      "paired_residual": 207,
+      "native_analytic": 9344
+    }
+  },
+  "pilot_action_checks_passed": {
+    "raw": 9,
+    "projected": 6
+  },
+  "pilot_selected_actions_by_method": {
+    "control32": {
+      "raw": 0,
+      "projected": 6
+    },
+    "control128": {
+      "raw": 6,
+      "projected": 0
+    },
+    "direct256": {
+      "raw": 3,
+      "projected": 0
+    },
+    "HOLD": {
+      "raw": 0,
+      "projected": 0
+    }
+  },
+  "raw32_control_rejected": true,
+  "raw32_control_direct_E9_difference": 0.0001003186881687046,
+  "model_net_preview": 0.01357641652258601,
+  "model_preview_change_from_initial_assembly": 0.0,
+  "maximum_body_objective_axis_difference": {
+    "raw": 1.303850607681234e-05,
+    "projected": 6.774847749468904e-07
+  },
+  "remaining_risk_comparison_estimated_cpu_hours": 180.84346370917436,
+  "full_matrix_dispatched": false,
+  "tests": {
+    "passed": 39,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m unittest tests.test_risk_reference_assembly tests.test_decision_regions tests.test_upper_decisions tests.test_component_bank tests.test_label_groups tests.test_component_transfer"
+  },
+  "contract": "Original source prior,all8 identity scores/weights,all512/1024 positive utility components,full covariance,365 actions and359 budget. Positive body/tail weights kept unchanged.",
+  "replay": {
+    "prepare": "Pilot prepare_command.json stages historical E5 rows and anchor_costs,then calls existing validate_historical_label_groups.prepare with the new manifest.",
+    "dispatch": "python -m performance.launch_historical_component_bank body-reference-pilot",
+    "assembly": "python -m performance.diagnose_historical_decision_regions integrated",
+    "pricing": "python paper_artifacts/historical_body_reference_assembly_v1/price_remaining.py",
+    "inputs": "All large banks,contexts,marginals and head shards stay on the server. Exact scheduler commands/resources are saved in scheduler_spec files and pilot *_specs.jsonl."
+  },
+  "next_anchor_probe": {
+    "implemented": false,
+    "dispatched": false,
+    "target": "source_n1_o4_h1_p197",
+    "target_label": -0.2478038865433076,
+    "nearest_validated_label_anchor": "source_n1_o4_h1_p202",
+    "anchor_label": -0.19863555076600076,
+    "groups": [
+      28,
+      32,
+      40,
+      66,
+      68
+    ],
+    "scope": "Compare nearest-label and original p207 controls at the same opened target and original32 objective heads; reuse copied E5 and validated E8/F8/H8/E9 anchor rows. Price all missing target rules before any dispatch."
+  },
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "limitations": "One opened development state and frozen query63. Fixed-head numerical references and finite rule comparisons do not establish full outer KG,rigorous integration bounds or stable independent decision advantage. Body risk coverage remains incomplete."
+}
