@@ -31,6 +31,11 @@ def launch(stage):
         elif stage=='pilot-cheaper':assert json.loads((out/'cheaper_plan.json').read_text())['estimated_cost_admitted']
         pending=[dict(identity=h,kind=r['kind'],shard=i) for i,r in enumerate(pilot['selected']) if i in selected for h in identities]
     elif stage=='screen':counts=dict(raw=prep['guarded_groups']+prep['direct_groups'],projected=prep['guarded_groups'])
+    elif stage=='adaptive':
+        old=json.loads((out/'next_bank_plan.json').read_text());counts={k:len(v) for k,v in old['remaining_groups'].items()}
+    elif stage=='adaptive-resolution':
+        old=json.loads((out/'adaptive_summary.json').read_text());assert old['complete']
+        counts={k:len(v) for k,v in old['failed_groups'].items()}
     else:
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
@@ -95,6 +100,7 @@ def collect_remote(stage,out):
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
     name={'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
+        'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
     relative='paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
@@ -103,6 +109,32 @@ def collect_remote(stage,out):
     result=json.loads(body);(out/name).write_text(json.dumps(result,indent=2)+'\n')
     print('COLLECTED '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
     return result
+
+
+def continue_adaptive():
+    spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text());out=ROOT/spec['output']
+    plan=json.loads((out/'next_bank_plan.json').read_text())
+    status=dict(state='running_adaptive',maximum_live_workers=8,
+        estimated_initial_cpu_seconds=plan['estimated_initial_refinement_cpu_seconds'],
+        maximum_estimated_resolution_cpu_seconds=plan['maximum_estimated_resolution_cpu_seconds'],
+        full_predictive_integration_admitted=False,independent_confirmation=False)
+    path=out/'adaptive_status.json';path.write_text(json.dumps(status,indent=2)+'\n')
+    launch('adaptive');summary=collect_remote('adaptive',out)
+    status['measured_cpu_seconds_by_stage']={'adaptive':summary['cpu_seconds']}
+    estimate=sum(r['estimated_cpu_seconds'] for rows in summary['next_resolution_estimates'].values() for r in rows.values())
+    status['estimated_resolution_cpu_seconds']=estimate
+    if not summary['single_record_risk_bank_precision_passed']:
+        if estimate<=plan['maximum_estimated_resolution_cpu_seconds']:
+            status['state']='running_adaptive_resolution';path.write_text(json.dumps(status,indent=2)+'\n')
+            launch('adaptive-resolution');summary=collect_remote('adaptive-resolution',out)
+            status['measured_cpu_seconds_by_stage']['adaptive-resolution']=summary['cpu_seconds']
+        else:status['state']='resolution_cost_hold'
+    if summary['single_record_risk_bank_precision_passed']:status['state']='single_record_risk_precision_passed'
+    elif status['state']!='resolution_cost_hold':status['state']='precision_hold'
+    status.update(last_stage=summary['stage'],failed_groups=summary['failed_groups'],actions_checked=summary['actions_checked'],
+        single_record_risk_bank_precision_passed=summary['single_record_risk_bank_precision_passed'],
+        measured_cpu_seconds=sum(status['measured_cpu_seconds_by_stage'].values()))
+    path.write_text(json.dumps(status,indent=2)+'\n');print('ADAPTIVE_DONE '+json.dumps(status),flush=True)
 
 
 def continue_pipeline():
@@ -147,7 +179,9 @@ def continue_pipeline():
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue']+list(PILOT_MODES))
+    parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
+        'adaptive','adaptive-resolution','continue-adaptive']+list(PILOT_MODES))
     args=parser.parse_args()
     if args.stage=='continue':continue_pipeline()
+    elif args.stage=='continue-adaptive':continue_adaptive()
     else:launch(args.stage)

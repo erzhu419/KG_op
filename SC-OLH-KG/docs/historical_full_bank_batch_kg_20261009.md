@@ -160,3 +160,10 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 接续选每类比较的实际最大失败，去重得到raw组68／32／28、native组40／66。五组的独立256点、GH64→128全部通过；三组128→256变化仍超门槛，另做512点确认，最大256→512差7.62e−5，五组均通过。随后GH32／256点及独立规则也与已验证高规则一致，单套规则实测加速2.29倍。[高规则确认](../paper_artifacts/historical_component_bank_v1/failure_pilot/resolution_summary.json)、[较低GH阶数检查](../paper_artifacts/historical_component_bank_v1/failure_pilot/cheaper_summary.json)。26个任务共0.809单核小时，最多8核滚动、峰值内存671MB；三轮累计预计3472秒，未超过3600秒限制。五项相关测试通过。入口为`python -m performance.diagnose_historical_bank_failures prepare`／`prepare-resolution`／`prepare-cheaper`和`python -m performance.launch_historical_component_bank pilot`／`pilot-resolution`／`pilot-cheaper`；服务器端前一模块`collect --stage refine|resolution|cheaper`汇总，逐片命令在`failure_pilot`子目录。
 
 局限与下一步：通过覆盖现为raw272／native299个动作，还剩31／22组。按实测计时，剩余组采用GH32／256点、独立规则及GH64／256对照的初始加密预计2.74单核小时；该计划已保存但未派发，512确认另计。继续按失败类型加密，保持1e−4门槛和最多8个低优先级核心。这里只覆盖一条开发观测及固定32条目标头缓存，规则差不是严格误差界；完整银行、96条／外层KG和独立决策收益仍待验证。未读取独立确认块，也未增加物理、拟合或验证调用。来源meta-prior及原身份／分量、协方差和预算不变。
+
+
+## 剩余53组接续（2026-10-10，已启动）
+
+剩余raw31／native22组已接入GH32／256点、独立256点及GH64／256比较，复用五个已通过最差组和原生direct缓存。16个分片最多8个低优先级单核滚动，允许node001–node006；初始预计2.74单核小时。完成后自动在服务器汇总，只拉取小JSON。若仅128→256比较失败，保留已通过的独立／GH检查，再对E8检查512点；若独立或GH检查失败，另接GH64的独立256点、GH128／256点和GH64／512点。只有后续加密总预计成本不超过3600 CPU秒才派发，否则保留失败并停止；不是实耗硬上限。
+
+7项相关测试通过，覆盖已通过组的复用、三种非连续预算索引、原始失败文件保留及预计成本限制。入口为`PYTHONPATH=. python -m performance.launch_historical_component_bank continue-adaptive`，状态与命令在同名artifact目录的`adaptive_status.json`、`adaptive_controller.log`和`adaptive_specs.jsonl`。本节记录启动状态，尚无新增通过结论；来源meta-prior、全身份权重／似然、原计值身份的全部正分量、联合协方差和365动作保持，无新增物理、拟合或验证调用。完整KG与独立决策收益仍待验证。

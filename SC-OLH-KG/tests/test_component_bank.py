@@ -11,7 +11,7 @@ import numpy as np
 
 from core.budgeted_guarded_kg import BudgetedTerminalActions
 from core.raw_terminal_head_grid import compose_head_grid
-from performance.validate_historical_component_bank import action_groups, group_checks, collect
+from performance.validate_historical_component_bank import action_groups, group_checks, collect, adaptive_resolution_rules
 from performance.diagnose_historical_component_guarded import compressed_write
 from performance import launch_historical_component_bank as launcher
 from performance.diagnose_historical_bank_failures import select_failures
@@ -119,6 +119,73 @@ class ComponentBankTests(unittest.TestCase):
             self.assertEqual(result['groups'][1]['selected_rules']['raw'],'G7')
             table=json.loads((out/'refine_risk_bank.json').read_text())
             for kind in ('raw','projected'):np.testing.assert_array_equal(table['statistics'][kind],g)
+
+            # Resume from the original failed screen, merge an already confirmed
+            # pilot, and refine only the other failed group (three separated budgets).
+            path=out/'parts/001_2_raw.json';part=json.loads(path.read_text())
+            part['rows']['E5']['statistics'][1][0]+=.01;path.write_text(json.dumps(part))
+            with contextlib.redirect_stdout(io.StringIO()):screen=collect('screen',str(plan))
+            self.assertEqual(screen['failed_groups']['raw'],[0,1])
+            (out/'failure_pilot').mkdir()
+            (out/'failure_pilot/cheaper_summary.json').write_text(json.dumps(dict(complete=True,
+                selected_failure_precision_passed=True,groups=[dict(group=0,kind='raw',checks=result['groups'][0]['checks']['raw'])])))
+            for gid in (0,1):
+                for h in range(3):
+                    path=out/f'parts/{gid:03d}_{h}_raw.json';part=json.loads(path.read_text())
+                    part['rows'].update({n:dict(copy.deepcopy(part['rows']['G7']),cpu_seconds=1.) for n in ('E8','F8','H8')})
+                    if gid==1 and h==2:part['rows']['E7']['statistics'][1][0]+=.01
+                    path.write_text(json.dumps(part))
+            (out/'tasks/adaptive').mkdir()
+            for h in range(3):
+                (out/f'tasks/adaptive/{h}_raw_0.json').write_text(json.dumps(dict(complete=True,cpu_seconds=1.,peak_rss_mb=0.)))
+            with contextlib.redirect_stdout(io.StringIO()):adaptive=collect('adaptive',str(plan))
+            self.assertEqual(adaptive['failed_groups'],dict(raw=[1],projected=[]))
+            self.assertEqual(adaptive['groups'][0]['selected_rules']['raw'],'E8')
+            self.assertEqual(adaptive['next_resolution_estimates']['raw']['1']['rules'],['K9'])
+            self.assertEqual(adaptive['next_resolution_estimates']['raw']['1']['estimated_cpu_seconds'],7.5)
+            self.assertEqual(json.loads((out/'screen_summary.json').read_text())['failed_groups']['raw'],[0,1])
+            for h in range(3):
+                path=out/f'parts/001_{h}_raw.json';part=json.loads(path.read_text())
+                part['rows']['K9']=copy.deepcopy(part['rows']['H8']);path.write_text(json.dumps(part))
+            (out/'tasks/adaptive-resolution').mkdir()
+            for h in range(3):
+                (out/f'tasks/adaptive-resolution/{h}_raw_0.json').write_text(json.dumps(dict(complete=True,cpu_seconds=1.,peak_rss_mb=0.)))
+            with contextlib.redirect_stdout(io.StringIO()):resolved=collect('adaptive-resolution',str(plan))
+            self.assertTrue(resolved['single_record_risk_bank_precision_passed'])
+            self.assertEqual(resolved['actions_checked'],dict(raw=10,projected=10))
+            table=json.loads((out/'adaptive-resolution_risk_bank.json').read_text())
+            for kind in ('raw','projected'):np.testing.assert_array_equal(table['statistics'][kind],g)
+
+    def test_resolution_keeps_failed_independent_and_gh_checks(self):
+        checks=dict(maximum_log_evidence_error=0.,comparisons=[dict(low=a,high=b,maximum_difference=d)
+            for a,b,d in [('E7','E8',2e-4),('E8','F8',1e-5),('E8','H8',1e-5)]])
+        self.assertEqual(adaptive_resolution_rules(checks,1e-4),['K9'])
+        for i in (1,2):
+            failed=copy.deepcopy(checks);failed['comparisons'][i]['maximum_difference']=2e-4
+            self.assertEqual(adaptive_resolution_rules(failed,1e-4),['I8','J8','K9'])
+        checks['maximum_log_evidence_error']=2e-4
+        self.assertEqual(adaptive_resolution_rules(checks,1e-4),['I8','J8','K9'])
+
+    def test_adaptive_controller_respects_resolution_budget(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'performance/manifests').mkdir(parents=True);out=root/'out';out.mkdir()
+            (root/'performance/manifests/historical_component_bank_v1.json').write_text(json.dumps(dict(output='out')))
+            (out/'next_bank_plan.json').write_text(json.dumps(dict(estimated_initial_refinement_cpu_seconds=20.,
+                maximum_estimated_resolution_cpu_seconds=10.)))
+            for estimate,expected,stages in [(11.,'resolution_cost_hold',['adaptive']),
+                    (9.,'single_record_risk_precision_passed',['adaptive','adaptive-resolution'])]:
+                summary=dict(stage='adaptive',cpu_seconds=3.,single_record_risk_bank_precision_passed=False,
+                    failed_groups=dict(raw=[1],projected=[]),actions_checked=dict(raw=7,projected=10),
+                    next_resolution_estimates=dict(raw={'1':dict(estimated_cpu_seconds=estimate)}))
+                resolved=dict(summary,stage='adaptive-resolution',cpu_seconds=2.,single_record_risk_bank_precision_passed=True,
+                    failed_groups=dict(raw=[],projected=[]),actions_checked=dict(raw=10,projected=10))
+                with patch.object(launcher,'ROOT',root),patch.object(launcher,'launch') as launch,\
+                    patch.object(launcher,'collect_remote',side_effect=[summary,resolved]),\
+                    contextlib.redirect_stdout(io.StringIO()):launcher.continue_adaptive()
+                self.assertEqual([c.args[0] for c in launch.call_args_list],stages)
+                status=json.loads((out/'adaptive_status.json').read_text());self.assertEqual(status['state'],expected)
+                self.assertEqual(status['measured_cpu_seconds'],3. if estimate>10. else 5.)
+                self.assertFalse(status['full_predictive_integration_admitted'])
 
     def test_pipeline_stops_without_submitting_passed_or_over_budget_groups(self):
         with tempfile.TemporaryDirectory() as tmp:

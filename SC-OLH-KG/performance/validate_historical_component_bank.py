@@ -22,6 +22,33 @@ PLAN = 'performance/manifests/historical_component_bank_v1.json'
 RULES = {'E5': (32,5,0), 'E7': (32,7,0), 'F7': (32,7,101), 'G7': (64,7,0),
     'E8': (32,8,0), 'F8': (32,8,101),
     'H8': (64,8,0), 'I8': (64,8,101), 'J8': (128,8,0), 'K9': (64,9,0)}
+SUMMARY_NAMES = {'screen':'screen_summary.json', 'refine':'refined_summary.json',
+    'resolution':'admitted_summary.json', 'adaptive':'adaptive_summary.json',
+    'adaptive-resolution':'adaptive_resolution_summary.json'}
+
+
+def previous_summary(stage,out):
+    if stage=='screen':return None
+    name={'refine':'screen_summary.json','resolution':'refined_summary.json',
+        'adaptive':'screen_summary.json','adaptive-resolution':'adaptive_summary.json'}[stage]
+    previous=read(str(out/name))
+    assert previous['complete']
+    if stage=='adaptive':
+        pilot=read(str(out/'failure_pilot/cheaper_summary.json'))
+        assert pilot['complete'] and pilot['selected_failure_precision_passed']
+        for row in pilot['groups']:
+            group=previous['groups'][row['group']]
+            group['checks'][row['kind']]=row['checks']
+            group['selected_rules'][row['kind']]='E8'
+    return previous
+
+
+def adaptive_resolution_rules(checks,tolerance):
+    # When only the coarse comparison failed, retain the already checked E8
+    # independent/GH comparisons and check its continuous resolution against K9.
+    cheap_passed=all(c['maximum_difference']<=tolerance for c in checks['comparisons']
+        if c['low']=='E8') and checks['maximum_log_evidence_error']<=tolerance
+    return ['K9'] if cheap_passed else ['I8','J8','K9']
 
 
 def action_groups(actions):
@@ -120,7 +147,7 @@ def run_group(group,identity,kind,rules,spec):
 
 def selected_groups(context,stage,out,kind):
     if stage=='screen':return [g['group'] for g in context['groups'] if kind=='raw' or g['kind']=='guarded']
-    previous=read(str(out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')))
+    previous=previous_summary(stage,out)
     return [g['group'] for g in previous['groups'] if not g['checks'][kind]['passed']]
 
 
@@ -128,13 +155,17 @@ def run(identity,kind,shard,stage,plan=PLAN):
     spec=read(plan);out=ROOT/spec['output'];context=read(str(out/'context.json'))
     (out/'tasks'/stage).mkdir(parents=True,exist_ok=True)
     groups=selected_groups(context,stage,out,kind)[shard::spec['shards_per_identity_kind']]
-    rules={'screen':['E5','E7','F7','G7'],'refine':['H8','I8','J8'],'resolution':['K9']}[stage]
+    rules={'screen':['E5','E7','F7','G7'],'refine':['H8','I8','J8'],'resolution':['K9'],
+        'adaptive':['E8','F8','H8'],'adaptive-resolution':[]}[stage]
+    previous=previous_summary(stage,out) if stage=='adaptive-resolution' else None
     started=time.process_time();handler=signal.signal(signal.SIGPROF,cpu_timeout)
     signal.setitimer(signal.ITIMER_PROF,spec['maximum_job_cpu_seconds'])
     complete=0;result=dict(identity=identity,kind=kind,shard=shard,stage=stage,groups=groups,complete=False)
     try:
         for group in groups:
-            run_group(group,identity,kind,rules,spec);complete+=1
+            group_rules=adaptive_resolution_rules(previous['groups'][group]['checks'][kind],
+                spec['maximum_action_difference']) if previous else rules
+            run_group(group,identity,kind,group_rules,spec);complete+=1
             print('SCHEDULEURM_PROGRESS '+json.dumps(dict(current=complete,total=len(groups),unit='joint_policy_groups',
                 identity=identity,kind=kind,shard=shard,stage=stage)),flush=True)
         result['complete']=True
@@ -165,7 +196,7 @@ def group_checks(bundle,parts,kind,pairs,tolerance):
 
 def collect(stage,plan=PLAN):
     spec=read(plan);out=ROOT/spec['output'];context=read(str(out/'context.json'));groups=[]
-    previous=read(str(out/('screen_summary.json' if stage=='refine' else 'refined_summary.json'))) if stage!='screen' else None
+    previous=previous_summary(stage,out)
     tables={k:np.asarray(context['baseline'][k]['statistics']).copy() for k in ('raw','projected')}
     costs={k:np.asarray(context['baseline'][k]['costs']).copy() for k in ('raw','projected')}
     for group in context['groups']:
@@ -180,10 +211,16 @@ def collect(stage,plan=PLAN):
             else:
                 pairs={'screen':[('E5','E7'),('E7','F7'),('E7','G7')],
                     'refine':[('G7','H8'),('H8','I8'),('H8','J8')],
-                    'resolution':[('H8','I8'),('H8','J8'),('H8','K9')]}[stage]
+                    'resolution':[('H8','I8'),('H8','J8'),('H8','K9')],
+                    'adaptive':[('E7','E8'),('E8','F8'),('E8','H8')],
+                    'adaptive-resolution':[('H8','I8'),('H8','J8'),('H8','K9')]}[stage]
+                selected={'screen':'G7','refine':'H8','resolution':'H8','adaptive':'E8',
+                    'adaptive-resolution':'H8'}[stage]
+                if stage=='adaptive-resolution' and adaptive_resolution_rules(old,spec['maximum_action_difference'])==['K9']:
+                    pairs=[('E8','F8'),('E8','H8'),('E8','K9')];selected='E8'
                 parts=[read(str(out/'parts'/f'{gid:03d}_{h}_{kind}.json')) for h in context['utility_identities']]
                 checks[kind]=group_checks(bundle,parts,kind,pairs,spec['maximum_action_difference'])
-                chosen[kind]={'screen':'G7','refine':'H8','resolution':'H8'}[stage]
+                chosen[kind]=selected
             for h in context['utility_identities']:
                 r=read(str(out/'parts'/f'{gid:03d}_{h}_{kind}.json'))['rows'][chosen[kind]]
                 tables[kind][h,group['action_indices']]=r['statistics'];costs[kind][h,group['action_indices']]=r['costs']
@@ -199,6 +236,26 @@ def collect(stage,plan=PLAN):
         if selected_groups(context,stage,out,k)[s::spec['shards_per_identity_kind']]]
     tasks=[read(str(p)) for p in expected]
     complete=all(t['complete'] for t in tasks)
+    estimates={}
+    if stage=='adaptive':
+        # Use the slowest observed group of this kind, summed across both utility
+        # identities, to cost only missing rules on the remaining failed groups.
+        for kind,ids in failed.items():
+            estimates[kind]={}
+            if not ids:continue
+            cached={}
+            for g in groups:
+                if g['kind']!='guarded':continue
+                for h in context['utility_identities']:
+                    path=out/'parts'/f'{g["group"]:03d}_{h}_{kind}.json'
+                    if path.exists():cached[g['group'],h]=read(str(path))
+            unit={h:max(p['rows']['H8']['cpu_seconds'] for (gid,identity),p in cached.items()
+                if identity==h and 'H8' in p['rows']) for h in context['utility_identities']}
+            for gid in ids:
+                rules=adaptive_resolution_rules(groups[gid]['checks'][kind],spec['maximum_action_difference'])
+                total=sum(unit[h]*{'I8':1.,'J8':2.,'K9':2.5}[name] for name in rules
+                    for h in context['utility_identities'] if name not in cached[gid,h]['rows'])
+                estimates[kind][str(gid)]=dict(rules=rules,estimated_cpu_seconds=total)
     summary=dict(complete=complete,record=spec['record'],stage=stage,groups=groups,failed_groups=failed,
         actions=len(context['actions']),actions_checked={k:sum(len(g['action_indices']) for g in groups if g['checks'][k]['passed']) for k in tables},
         single_record_risk_bank_precision_passed=complete and not any(failed.values()),
@@ -206,17 +263,18 @@ def collect(stage,plan=PLAN):
         changed_recommendation_count={k:int(np.count_nonzero(values[k].argmax(axis=1)!=old_values[k].argmax(axis=1))) for k in tables},
         maximum_best_value_change={k:float(abs(values[k].max(axis=1)-old_values[k].max(axis=1)).max()) for k in tables},
         cpu_seconds=sum(t['cpu_seconds'] for t in tasks),maximum_task_peak_rss_mb=max((t['peak_rss_mb'] for t in tasks),default=0.),
+        next_resolution_estimates=estimates,
         full_predictive_integration_admitted=False,independent_confirmation=False,
         new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         scope='One opened development risk observation, all 365 actions, fixed cached opposite head. Rule differences are diagnostics, not strict error bounds.')
-    save(out/({'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json'}[stage]),summary)
+    save(out/SUMMARY_NAMES[stage],summary)
     save(out/(stage+'_risk_bank.json'),dict(statistics={k:v.tolist() for k,v in tables.items()},costs={k:v.tolist() for k,v in costs.items()}))
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in summary.items() if k!='groups'}),flush=True);return summary
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','run','collect'])
-    parser.add_argument('--stage',choices=['screen','refine','resolution'],default='screen')
+    parser.add_argument('--stage',choices=list(SUMMARY_NAMES),default='screen')
     parser.add_argument('--identity',type=int);parser.add_argument('--kind',choices=['raw','projected'])
     parser.add_argument('--shard',type=int);parser.add_argument('--plan',default=PLAN);args=parser.parse_args()
     if args.mode=='prepare':prepare(args.plan)
