@@ -126,7 +126,7 @@ def load_entries(layout):
         add_entry(entries, context, group, 'raw', *data, 'direct_target', str(base/'full_summary.json'), 'E7')
     for directory in ('historical_reference_upgrade_v1','historical_risk_competition_v1',
             'historical_risk_competition_batch_v1','historical_risk_competition_batch_v2',
-            'historical_risk_competition_batch_v3'):
+            'historical_risk_competition_batch_v3','historical_risk_competition_batch_v4'):
         base = ROOT/'paper_artifacts'/directory
         result = read(str(base/'summary.json')); assert result['complete']
         contexts = read(str(base/'contexts.json'))
