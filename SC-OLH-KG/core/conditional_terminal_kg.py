@@ -118,8 +118,9 @@ def risk_coordinates_from_moments(eta, mean, covariance, position, nodes, mean_n
     return draws, np.exp(.5 * eta), last_mean, last_variance[position]
 
 
-def guarded_risk_statistics(coordinates, incumbent, budgets, protocol, sample_weights=None,
+def guarded_risk_values(coordinates, incumbent, budgets, protocol,
         integrated_position=None):
+    """Pointwise values of the same correlated verifier branches."""
     draws, sigma, last_mean, last_variance = coordinates
     n = len(budgets); delta = protocol['familywise_delta'] / n
     integrated = n-1 if integrated_position is None else integrated_position
@@ -130,10 +131,21 @@ def guarded_risk_statistics(coordinates, incumbent, budgets, protocol, sample_we
     threshold = _tolerance_factor(budgets[integrated], protocol['chance_alpha'], delta) * sd
     total_sd = np.sqrt(last_variance + sigma[:, integrated]**2 / budgets[integrated])
     powers[integrated] = ndtr(-(last_mean[:, None] + sigma[:, integrated, None] * threshold)/total_sd[:, None]) @ weights
-    uniform = (np.full((1, len(draws)), 1 / len(draws)) if sample_weights is None else sample_weights[None])
-    branches, cost = risk_branch_statistics(np.stack(powers, axis=-1)[None], uniform,
+    branches, cost = risk_branch_statistics(np.stack(powers, axis=-1)[:, None], np.ones((len(draws), 1)),
         incumbent, budgets, protocol)
-    return branches[0], float(cost[0])
+    return branches, cost
+
+
+def guarded_risk_statistics(coordinates, incumbent, budgets, protocol, sample_weights=None,
+        integrated_position=None):
+    branches, cost = guarded_risk_values(coordinates, incumbent, budgets, protocol, integrated_position)
+    weights = np.full(len(branches), 1/len(branches)) if sample_weights is None else sample_weights
+    expected_cost=float(weights @ cost)
+    if incumbent:
+        # The historical partial-mass diagnostic still pays the two initial
+        # certificates in full; its sample weights only scale later branches.
+        expected_cost+=(1-float(np.sum(weights)))*(budgets[0]+budgets[incumbent])
+    return weights @ branches, expected_cost
 
 
 def guarded_objective_statistics(field, indices, incumbent, nodes, protocol):

@@ -1,0 +1,10 @@
+{
+  "tests": 15,
+  "passed": true,
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_component_risk_control test_conditional_raw_reference test_conditional_terminal_kg",
+  "wall_seconds": 16.438,
+  "scope": "Raw/native control, positive component split/reorder invariance, identical-component cancellation, historical direct and full joint-transport references, alternative integrated mean coordinates, and partial-mass diagnostic certificate costs.",
+  "additional_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_component_risk_control.ComponentRiskControlTests.test_integrating_incumbent_retains_the_full_joint_raw_reference",
+  "additional_wall_seconds": 3.36,
+  "additional_scope": "All three analytic mean coordinates match the historical full raw transport at GH64/power12; the first power9 rule was too coarse (maximum statistic difference 4.48e-4) and was refined without changing tolerances."
+}

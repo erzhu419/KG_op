@@ -115,10 +115,18 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.exte
 
 显式分量GH32使本轮evidence误差降到1.55e−14；共用32个连续QMC节点的独立规则差仍达raw6.69e−4／native1.49e−2。改为每分量独立scramble、按均值规范排序保持重排／拆分不变后，每分量128点的两组独立规则差降为raw1.04e−4／native3.34e−4；32→128变化仍达raw6.63e−4／native6.21e−4。原1e−4局部门未全过，六例均不能据此替换完整银行。[汇总](../paper_artifacts/historical_component_guarded_v1/summary.json)。
 
-21项不同相关测试通过。服务器计量CPU1241.64秒（0.345单核小时），仅六个低优先级单核任务并行；两个快照恢复启动失败留档、未计时，不含本地测试和控制器开销。历史单策略快照恢复已扩展到实际四策略联合块。约50MB全身份小边际留服务器；本地仅取最差独立规则记录o5/p207的1.68MB重放包和0.41MB参考结果，原合同未计值身份的权重／似然保留，其完整协方差仍在服务器。该包24项旧头／动作积分本地复现最大差2.22e−16，用时0.48 CPU秒。[重放验证](../paper_artifacts/historical_component_guarded_v1/small_joint_replay_validation.json)。单例入口如下，完整六例汇总在服务器运行同模块`collect`；命令和运行账在同目录。
+21项不同相关测试通过。服务器规则及导出计量CPU1088.10秒（0.302单核小时），仅六个低优先级单核任务并行；两个快照恢复启动失败留档、未计时，不含恢复／准备、本地测试和控制器开销。此前累计1241.64秒由完成汇总的循环变量覆盖造成误计，已撤回；各规则独立计时未受影响，完整累计无法从旧文件恢复。历史单策略快照恢复已扩展到实际四策略联合块。约50MB全身份小边际留服务器；本地仅取最差独立规则记录o5/p207的1.68MB重放包和0.41MB参考结果，原合同未计值身份的权重／似然保留，其完整协方差仍在服务器。该包24项旧头／动作积分本地复现最大差2.22e−16，用时0.48 CPU秒。[重放验证](../paper_artifacts/historical_component_guarded_v1/small_joint_replay_validation.json)。单例入口如下，完整六例汇总在服务器运行同模块`collect`；命令和运行账在同目录。
 
 ```bash
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diagnose_historical_component_guarded run --name source_n1_o5_h1_p207
 ```
 
-局限与下一步：本轮确认连续积分覆盖仍是独立瓶颈；规则差不是误差界，未读独立确认块，未增加物理／拟合／验证调用，完整KG仍HOLD。下一步计划在这一小联合块上复用固定动作控制变量思想，计算高精度共享参考及各分量相对参考的差值，检验是否能降低连续求积成本；该接续尚未实现或派发。保持模型和合同，先验证局部效率，再决定是否扩展96条。
+局限与下一步：本轮确认连续积分覆盖仍是独立瓶颈；规则差不是误差界，未读独立确认块，未增加物理／拟合／验证调用，完整KG仍HOLD。本阶段的共享参考和积分坐标接续结果见下节；保持模型和合同，先验证局部效率，再决定是否扩展96条。
+
+## 共享参考与条件积分坐标接续（2026-10-10）
+
+最差独立规则记录o5/p207的两个guarded动作及复用的direct锚点通过局部检查。共享参考选原后验中的实际分量，使用GH32＋16384个连续节点；各正分量在共同坐标上积分与参考的差值，raw差值保留原重要性比率，最后仅做一次全局归一化。128点差值的独立规则最大动作差为raw2.23e−5／native5.42e−5，32→128、高参考4096→16384和独立高参考均通过1e−4检查。普通积分与旧缓存最大差1.22e−15。[控制变量结果](../paper_artifacts/historical_component_guarded_v1/shared_reference/summary.json)。
+
+复用历史可选均值条件积分，改为解析积分incumbent，而保留全部相关协方差和原验证分支：独立128点差降到raw7.38e−5／native1.95e−6，GH32→64变化2.63e−5／5.45e−6；与共享参考的128点及GH64结果交叉核对也通过。相同两个动作和计值身份的单套规则计时，incumbent约48.66 CPU秒，共享参考128点加一套高参考约111.83秒。[坐标结果](../paper_artifacts/historical_component_guarded_v1/shared_reference/coordinate_summary.json)。15项相关测试通过，包含分量重排／拆分、相同分量抵消、历史完整联合raw参考和direct独立参考；本轮成功计算计量502.92 CPU秒，首次8个作业因缺少输出目录保存失败、计时未保存，已修复重跑并留档。本地仅取约0.2MB结果／日志，联合包复用旧文件。
+
+局限与下一步：32点压缩不采用，native独立差1.35e−4，raw与另一积分次序最高差1.69e−4。128点局部通过不是完整365动作／96条记录的KG准入，未读独立确认块，也没有新增物理、拟合或验证调用。下一轮先用较便宜的incumbent128规则验证另外五个失败观测；未通过的局部动作再用共享参考128对照，随后才决定完整银行接续。来源meta-prior、全身份权重／似然、原计值身份的全部正分量、预算及负收益保持。重放入口为`python -m performance.diagnose_historical_shared_risk collect`及`collect-coordinate`，逐片命令、失败日志和计时见同目录的`scheduler_specs.jsonl`、`coordinate_specs.jsonl`及`execution_account.json`。

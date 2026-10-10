@@ -166,11 +166,14 @@
       "cwd": "/home/erzhu419/mine_code/KG_op_independent_kg_parallel_deploy/SC-OLH-KG"
     }
   ],
-  "measured_server_cpu_seconds": 1241.639603446,
   "unmeasured_failed_starts": 2,
   "new_physical_calls": 0,
   "new_source_fits": 0,
   "new_verifier_calls": 0,
   "independent_confirmation": false,
-  "scope": "Measured export and numerical record CPU includes successful old/new rules; excludes uninstrumented failed starts, scheduler/controller overhead and local checks."
+  "scope": "Sum of saved per-rule CPU timers and export timer; excludes per-invocation restore/setup, uninstrumented failed starts, scheduler/controller overhead and local checks.",
+  "previous_miscounted_server_cpu_seconds": 1241.639603446,
+  "measured_rule_and_export_cpu_seconds": 1088.1018364920003,
+  "total_server_cpu_seconds": null,
+  "correction": "The old completed-record timer used the penultimate rule as previous checkpoint after a loop variable shadowed previous. Its 1241.64-second cumulative total is withdrawn; per-rule timers are unaffected."
 }

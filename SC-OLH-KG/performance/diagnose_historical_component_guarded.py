@@ -191,10 +191,10 @@ def run(name,plan=PLAN):
             new_physical_calls=0,new_source_fits=0,new_verifier_calls=0))
         print('SCHEDULEURM_PROGRESS '+json.dumps(dict(current=len(rows),total=len(versions),unit='local_rules',name=name)),flush=True)
     summary=[]
-    for previous,current in zip(rows,rows[1:]):
-        summary.append(dict(low=previous['name'],high=current['name'],**{kind:float(np.max(abs(
+    for before,current in zip(rows,rows[1:]):
+        summary.append(dict(low=before['name'],high=current['name'],**{kind:float(np.max(abs(
             mixed_values(bundle,current['statistics'][kind],current['costs'][kind],kind)-
-            mixed_values(bundle,previous['statistics'][kind],previous['costs'][kind],kind)))) for kind in ('raw','projected')}))
+            mixed_values(bundle,before['statistics'][kind],before['costs'][kind],kind)))) for kind in ('raw','projected')}))
     by_name={r['name']:r for r in rows};local_checks=[]
     for low,high in [('E32_32','E32_128'),('F32_32','F32_128'),('E32_128','F32_128')]:
         if low not in by_name or high not in by_name:continue
@@ -219,7 +219,7 @@ def collect(plan=PLAN):
         records.append(dict(name=name,complete=result['complete'],comparisons=result.get('comparisons',[]),
             component_scramble_checks=result.get('component_scramble_checks',[]),
             selected_action_precision_passed=result.get('selected_action_precision_passed',False),
-            cpu_seconds=result['cpu_seconds'],rules=[dict(name=r['name'],cpu_seconds=r['cpu_seconds'],
+            cpu_seconds=sum(r['cpu_seconds'] for r in result['rows']),rules=[dict(name=r['name'],cpu_seconds=r['cpu_seconds'],
                 maximum_raw_log_evidence_error=max(abs(d['predictive_log_evidence_error']) for d in r['diagnostics']['raw']),
                 maximum_unrepresented_component_mass=max(d.get('unrepresented_component_mass',0.) for d in r['diagnostics']['raw']),
                 maximum_weighted_component_evidence_error=max(d.get('weighted_component_absolute_evidence_error',0.) for d in r['diagnostics']['raw']))
@@ -227,6 +227,7 @@ def collect(plan=PLAN):
     result=dict(complete=all(r['complete'] for r in records),records=records,
         all_selected_action_precision_passed=all(r['selected_action_precision_passed'] for r in records),
         cpu_seconds=sum(r['cpu_seconds'] for r in records)+read(str(out/'export_summary.json'))['cpu_seconds'],
+        cpu_measurement_scope='Saved rule and export timers; excludes invocation setup and failed starts.',
         new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
         full_predictive_integration_admitted=False)
     save(out/'summary.json',result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
