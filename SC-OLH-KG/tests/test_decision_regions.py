@@ -8,13 +8,34 @@ from unittest.mock import patch
 
 import numpy as np
 
-from performance.diagnose_historical_decision_regions import region_metrics, observed_query_matrix, overlay_direct
+from performance.diagnose_historical_decision_regions import region_metrics, observed_query_matrix, overlay_direct, objective_upper
 from performance.validate_historical_direct_body import prepare as prepare_direct, run as run_direct, PARENT, OUTPUT
 from performance.validate_historical_component_transfer import body_cdf
 from scipy.special import roots_legendre
 
 
 class DecisionRegionsTests(unittest.TestCase):
+    def test_objective_upper_keeps_missing_identity_mass_and_shared_weights(self):
+        f=np.zeros((2,8,3,4));f[:,4]=.2;f[:,5]=.8
+        posterior=np.zeros((2,3,8));posterior[:,:,4]=.25;posterior[:,:,5]=.5;posterior[:,:,0]=.25
+        upper=objective_upper(f,posterior,[4,5])
+        np.testing.assert_allclose(upper,.7)
+        posterior[:,:,4]=.5;posterior[:,:,5]=.25
+        np.testing.assert_allclose(objective_upper(f,posterior,[4,5]),.55)
+
+    def test_objective_upper_bounds_actual_verifier_branches(self):
+        from core.raw_likelihood_lookahead import risk_branch_statistics
+        rng=np.random.default_rng(43);f=rng.uniform(size=(2,8,3,4))
+        posterior=rng.dirichlet(np.ones(8),size=(2,3));g=np.zeros((3,8,3,4))
+        protocol=dict(comparison_budget=8)
+        for risk in range(3):
+            for h in range(8):
+                for a in range(3):
+                    branches,_=risk_branch_statistics(rng.uniform(size=(5,1,3)),np.ones((5,1)),1,[20,20,20],protocol)
+                    g[risk,h,a]=branches.mean(axis=0)
+        actual=np.einsum('fgk,fkab,gkab->fga',posterior,f,g)
+        self.assertTrue(np.all(actual<=objective_upper(f,posterior,list(range(8)))+1e-14))
+
     def test_completed_cached_worker_retains_its_measured_cost(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);out=root/OUTPUT;(out/'direct_tasks').mkdir(parents=True)
@@ -34,7 +55,8 @@ class DecisionRegionsTests(unittest.TestCase):
 
     def test_overlay_keeps_other_actions_identities_and_likelihood_scores(self):
         row=dict(head_log_scores=list(range(8)),raw={str(p):dict(statistics=np.zeros((8,5,4)).tolist(),
-            costs=np.zeros((8,5)).tolist()) for p in (12,24)})
+            costs=np.zeros((8,5)).tolist()) for p in (12,24)},projected={str(p):dict(statistics=np.zeros((8,5,4)).tolist(),
+            costs=np.zeros((8,5)).tolist()) for p in (10,12)})
         parts={4:dict(rows={r:dict(statistics=[[v]*4,[v]*4],costs=[128.,359.]) for r,v in [('G7',.2),('J8',.3)]})}
         overlay_direct(row,parts,[1,4])
         self.assertEqual(row['head_log_scores'],list(range(8)))
@@ -42,6 +64,10 @@ class DecisionRegionsTests(unittest.TestCase):
             expected=np.zeros((8,5,4));expected[4,[1,4]]=value
             np.testing.assert_array_equal(row['raw'][power]['statistics'],expected)
             self.assertEqual(row['raw'][power]['costs'][4],[0.,128.,0.,0.,359.])
+        overlay_direct(row,parts,[1,4],kind='projected',pair=('G7','J8'))
+        self.assertEqual(row['projected']['10']['statistics'][4][1],[.2]*4)
+        self.assertEqual(row['projected']['12']['statistics'][4][1],[.3]*4)
+        self.assertEqual(row['raw']['24']['statistics'][4][1],[.2]*4)
 
     def test_query_direct_pricing_uses_gh_cost_and_reuses_the_source_anchor(self):
         with tempfile.TemporaryDirectory() as directory:

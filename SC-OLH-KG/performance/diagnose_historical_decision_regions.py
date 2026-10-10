@@ -16,6 +16,19 @@ PLAN='performance/manifests/historical_predictive_positive_body_v7.json'
 OUTPUT='paper_artifacts/historical_decision_regions_v1'
 
 
+def objective_upper(statistics,identity_weights,utility_identities):
+    """Verifier branches form a subprobability vector; each quality is <=1.
+
+    The bound is conditional on the cached objective-head law. Keep the
+    posterior mass of identities without utility tables as worst-case1.
+    """
+    qualities=np.asarray(statistics).max(axis=-1)
+    selected=np.asarray(utility_identities)
+    upper=np.einsum('fgk,fka->fga',np.asarray(identity_weights)[:,:,selected],qualities[:,selected],optimize=True)
+    missing=np.ones(np.asarray(identity_weights).shape[-1],dtype=bool);missing[selected]=False
+    return upper+np.asarray(identity_weights)[:,:,missing].sum(axis=-1)[...,None]
+
+
 def region_metrics(raw,costs,native,native_costs,weights,fixed):
     raw=np.asarray(raw);native=np.asarray(native);weights=np.asarray(weights)
     optimal=np.lexsort((costs,-raw),axis=-1)[...,0]
@@ -42,9 +55,9 @@ def observed_query_matrix(rows):
     return result
 
 
-def overlay_direct(row,parts,indices):
-    for level,rule in ((1,'G7'),(0,'J8')):
-        value=row['raw'][str(rule_pair(row,'raw')[level])]
+def overlay_direct(row,parts,indices,*,kind='raw',pair=('J8','G7')):
+    for level,rule in enumerate(pair):
+        value=row[kind][str(rule_pair(row,kind)[level])]
         for h,part in parts.items():
             replacement=part['rows'][rule]
             for j,i in enumerate(indices):
@@ -63,9 +76,12 @@ def run(mode='cached'):
     stop=read(spec['stop_inputs'][case['state']])['rows'][-1]
     assert layout['actions']==debited['actions'] and len(layout['actions'])==365
     fixed=debited['best_action_index'];rules=read(spec['output']+'/risk_rules.json')
-    if mode=='direct':
+    if mode in ('direct','dominance'):
         direct=read(str(out/'direct_summary.json'));assert direct['complete'] and direct['all_references_admitted']
         direct_contexts=read(str(out/'direct_contexts.json'))
+    if mode=='dominance':
+        refs=read(str(out/'native_reference_summary.json'));assert refs['complete'] and refs['all_references_admitted']
+        native_names={r['record'] for r in refs['records']};native_contexts=read(str(out/'contexts.json'))
     tail_rules=read(spec['retained_tail_rule_input']);selection=head_rules(spec,rules,bank['origins'],32,32,32)
     group_of={a:g['group'] for g in layout['groups'] for a in g['action_indices']}
     edges=[0.,.9,.93,.96,.99,1.];regions={str((a,b)):[] for a,b in zip(edges[:-1],edges[1:])}
@@ -76,7 +92,7 @@ def run(mode='cached'):
             index={r['position']:r for r in heads[h,origin]}
             selected.append([index[p] for p in selection[h,origin]['positions']])
         f,g=selected
-        if mode=='direct':
+        if mode in ('direct','dominance'):
             for row in g[:32]:
                 name=f'source_n1_o{origin}_h1_p{row["position"]}'
                 context=direct_contexts[name]
@@ -84,11 +100,19 @@ def run(mode='cached'):
                 assert context['prior_weights']==bank['prior_weights']
                 part={h:read(str(out/'direct_parts'/name/f'{h}.json')) for h in bank['utility_identities']}
                 overlay_direct(row,part,layout['groups'][136]['action_indices'])
+                if mode=='dominance' and name in native_names:
+                    context=native_contexts[name]
+                    assert row['label']==context['label'] and row['head_log_scores']==context['head_log_scores'] and context['prior_weights']==bank['prior_weights']
+                    part={h:read(str(out/'parts'/name/f'063_{h}_projected.json')) for h in bank['utility_identities']}
+                    overlay_direct(row,part,layout['groups'][63]['action_indices'],kind='projected',pair=('F8','E8'))
         cdf=np.r_[.9*(roots_legendre(32)[0]+1)/2,.9+.1*(roots_legendre(32)[0]+1)/2]
         assert [r['label'] for r in g]==rules[str(origin)]['32']['labels']+tail_rules[str(origin)]['32']['labels']
-        values,costs,_,_=compose_records(f,g,prior,'raw',1)
+        values,costs,posterior,_=compose_records(f,g,prior,'raw',1)
         native,nc,_,_=compose_records(f,g,prior,'projected',1)
         low=compose_records(f,g,prior,'raw',0)[0];nl=compose_records(f,g,prior,'projected',0)[0]
+        if mode=='dominance':
+            uppers={kind:objective_upper([r[kind][str(rule_pair(r,kind)[1])]['statistics'] for r in f],posterior,bank['utility_identities'])
+                for kind in ('raw','projected')}
         weights=prior[origin]*np.outer(selection[0,origin]['weights'],selection[1,origin]['weights'])
         totals.append(region_metrics(values,costs,native,nc,weights,fixed))
         for j,row in enumerate(g):
@@ -111,6 +135,15 @@ def run(mode='cached'):
                 low_native_winners=sorted(map(int,np.unique(low_choice))),
                 low_native_winner_groups=sorted({group_of[int(a)] for a in np.unique(low_choice)}),
                 weighted_achieved_choice_change=float(np.sum(w*achieved_change)))
+            if mode=='dominance' and j<32:
+                for kind,high,difference in [('raw',raw,delta),('projected',nat,ndelta)]:
+                    dominated=uppers[kind][:,j]+2e-4<high[:,fixed,None]
+                    unresolved=(difference>1e-4)&~dominated
+                    record[kind+'_objective_bound_screen']=dict(dominated_action_head_pairs=int(dominated.sum()),
+                        imprecise_action_head_pairs=int((difference>1e-4).sum()),
+                        unresolved_action_head_pairs=int(unresolved.sum()),
+                        unresolved_action_indices=np.flatnonzero(unresolved.any(axis=0)).tolist(),
+                        unresolved_groups=sorted({group_of[int(a)] for a in np.flatnonzero(unresolved.any(axis=0))}))
             records.append(record)
             for a,b in zip(edges[:-1],edges[1:]):
                 if a<=cdf[j]<b:regions[str((a,b))].append(record);break
@@ -130,12 +163,13 @@ def run(mode='cached'):
         new_integrations=0,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
         full_predictive_integration_admitted=False,
         scope='Opened development caches only. Original positive body/tail weights and all identity likelihoods, no weight renormalization. Same-origin objective/risk pairs follow the existing joint mixture grid. Full365-action values use historical rules whose body precision remains unresolved; selected-action differences are diagnostics, not an alternative admission gate. Historical observed-query matrix has146 direct actions and is not a full365-action KG comparison. No truth scores or confirmation block read.',
-        direct_body_overlay=mode=='direct',
-        direct_overlay_scope='In direct mode only group136 body risk statistics/costs are replaced: GH64 for selected values,GH128 for reference comparison. Other actions, objective heads, native values and all scores remain as cached.')
-    save(out/('summary_with_direct.json' if mode=='direct' else 'summary.json'),result);signal.setitimer(signal.ITIMER_PROF,0.)
+        direct_body_overlay=mode in ('direct','dominance'),
+        direct_overlay_scope='Group136 body raw risk statistics/costs use GH64 selected values and GH128 references. Objective heads and all scores remain cached. Dominance mode also replaces native group63 at its two validated conflict records with E8/F8; other values remain cached.')
+    if mode=='dominance':result['objective_bound_scope']='Diagnostic conditional on cached objective heads and posterior identity weights. Verifier branch probabilities sum to at most1. Uncomputed identity utility contributes worst-case1; use a2e-4 separation margin. Two native group63 reference records are also overlaid E8/F8; other historical group references still require bank integration. No action is removed, no gate or algorithm is changed, and no rigorous quadrature error bound or full KG admission is asserted.'
+    save(out/('dominance_summary.json' if mode=='dominance' else 'summary_with_direct.json' if mode=='direct' else 'summary.json'),result);signal.setitimer(signal.ITIMER_PROF,0.)
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k not in ('records','actions','observed_query_matrix')}),flush=True)
     return result
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('mode',choices=['cached','direct'],nargs='?',default='cached');run(p.parse_args().mode)
+    p=argparse.ArgumentParser();p.add_argument('mode',choices=['cached','direct','dominance'],nargs='?',default='cached');run(p.parse_args().mode)

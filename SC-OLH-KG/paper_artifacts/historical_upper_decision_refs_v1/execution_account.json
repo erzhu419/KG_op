@@ -1,0 +1,82 @@
+{
+  "complete": true,
+  "scheduler_states": {
+    "t141491": "done",
+    "t141492": "done",
+    "t141493": "done",
+    "t141494": "done",
+    "t141495": "done",
+    "t141496": "done",
+    "t141497": "done",
+    "t141498": "done",
+    "t141499": "done",
+    "t141500": "done",
+    "t141501": "done",
+    "t141502": "done",
+    "t141503": "done",
+    "t141504": "done",
+    "t141505": "done",
+    "t141506": "done",
+    "t141508": "done"
+  },
+  "worker_count": 17,
+  "maximum_concurrent_workers": 8,
+  "priority": "low",
+  "cpus_per_worker": 1,
+  "cumulative_estimated_cpu_seconds": 3523.2629719005945,
+  "maximum_estimated_cpu_seconds": 3600,
+  "new_integral_cpu_seconds": 2332.784151507,
+  "successful_integral_worker_cpu_seconds": 2339.339870206,
+  "cache_worker_cpu_seconds": 36.209836404,
+  "successful_worker_cpu_seconds": 2375.5497066099997,
+  "measured_preparation_cpu_seconds": 12.51750001,
+  "measured_collection_cpu_seconds": 1.086371921,
+  "total_measured_worker_preparation_collection_cpu_seconds": 2389.1535785409997,
+  "maximum_integral_worker_peak_rss_mb": 210.83203125,
+  "maximum_cache_worker_peak_rss_mb": 4679.12890625,
+  "upper_risk_records": 46,
+  "raw_direct_groups": [
+    107,
+    144
+  ],
+  "action_record_checks_passed": 184,
+  "maximum_independent_rule_difference": 9.256945713909115e-06,
+  "maximum_gh_rule_difference": 2.833844270355712e-13,
+  "maximum_cached_high_rule_difference": 2.946037402723478e-05,
+  "model_net_preview": 0.013576416522586027,
+  "model_preview_change": 6.463210327107133e-07,
+  "body_objective_bound_totals": {
+    "raw": {
+      "dominated_action_head_pairs": 356030,
+      "imprecise_action_head_pairs": 424380,
+      "unresolved_action_head_pairs": 253518
+    },
+    "projected": {
+      "dominated_action_head_pairs": 377817,
+      "imprecise_action_head_pairs": 403416,
+      "unresolved_action_head_pairs": 248996
+    }
+  },
+  "remaining_cached_bound_groups": {
+    "raw": 97,
+    "projected": 72
+  },
+  "contract": "Original source prior,all8 identity scores/weights,all512/1024 positive utility components,full covariance,365 formal actions and359 remaining budget. Positive predictive weights kept without renormalization.",
+  "replay": {
+    "remote_prepare": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. REMOTE_PYTHON -m performance.validate_historical_upper_decisions prepare --phase pilot|full",
+    "local_dispatch_collect": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m performance.launch_historical_component_bank upper-decisions-pilot|upper-decisions-full",
+    "ordering": "Prepare pilot,dispatch and collect pilot; only after all references pass prepare full,dispatch and collect full. Plans include cumulative estimates; the launcher enforces at most8 live low-priority single-core jobs. Exact environments/resources/arguments are in *_specs.jsonl and *_preparation.log. Dominance scheduler spec records the extra240-second cache-worker cap.",
+    "server_inputs": "Existing component-bank marginals,upper-risk v6 registered one-record shards and v7 objective-head caches. No full posterior restored. Banks/contexts remain server-side; local pulls are small summaries/logs only."
+  },
+  "tests": {
+    "passed": 21,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m unittest tests.test_decision_regions tests.test_upper_decisions tests.test_component_bank"
+  },
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "limitations": "One opened development state and frozen query63. Upper365-action resolution reused; new independent/GH/high-rule checks cover two direct groups at46 switching-region labels. The body objective bound is conditional on cached objective heads and is not a rigorous quadrature bound. Other historical body group references still need integration before diagnosing remaining costs. Full KG and independent decision advantage remain unverified.",
+  "next_step": "Integrate already validated source-anchor365-action bank,nearby full-bank comparisons and selected-group references into the common body-grid assembly,retaining their different reference scopes. Then price the remaining guarded residuals; do not recompute already validated banks or expand physical experiments."
+}

@@ -1,0 +1,20 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_upper_decision_refs_v1",
+  "precision_plan": "performance/manifests/historical_predictive_upper_risk_precision_v6.json",
+  "objective_plan": "performance/manifests/historical_predictive_positive_body_precision_v7.json",
+  "previous_regions": "paper_artifacts/historical_decision_regions_v1/summary_with_direct.json",
+  "groups": [107, 144],
+  "comparison_groups": [107, 136, 144],
+  "pilot_positions": [155, 168],
+  "positions": [153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175],
+  "origins": [4, 5],
+  "rules": ["E7", "F7", "G7"],
+  "pairs": [["E7", "F7"], ["E7", "G7"]],
+  "selected_rule": "E7",
+  "maximum_action_difference": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "analysis_reserve_cpu_seconds": 120,
+  "maximum_job_cpu_seconds": 600,
+  "scope": "Opened development query63 only. Reuse the already passed365-action upper-tail resolution caches. Check raw direct groups107/144 (policies34/71,budgets128/359) against independent128,GH64/128 and the cached high rule. Pilot at first raw switch p155 and greatest weighted-gain p168,then only if passed extend to all p153..175 for both origins. Original source prior,all8 scores,all512/1024 positive components,covariance and formal365 actions remain. No physical/source-fit/verifier calls or confirmation block."
+}
