@@ -50,6 +50,12 @@ def priced_plan(selected, contexts, probe, output, previous=0.):
         cumulative_estimated_cpu_seconds=previous+estimate)
 
 
+def body_cdf(rules,position,label):
+    order,body=next((int(order),body) for order,body in rules.items() if position in body['positions'])
+    i=body['positions'].index(position);assert label==body['labels'][i]
+    return float(.9*(roots_legendre(order)[0][i]+1)/2)
+
+
 def prepare_contexts(spec):
     """Reuse the frozen joint bank with selected observations and action groups."""
     parent = read(spec['parent_plan']); base = ROOT/parent['output']
@@ -85,10 +91,7 @@ def prepare_contexts(spec):
             if name == original['name']:
                 for key in ('label','head_log_scores','opposite','prior_weights','utility_identities'):
                     assert bundle[key] == shared[key]
-        body = rules[str(origin)]['32']; i = body['positions'].index(row['position'])
-        assert row['label'] == body['labels'][i]
-        x, _ = roots_legendre(32)
-        context['predictive_cdf'] = float(.9*(x[i]+1)/2)
+        context['predictive_cdf'] = body_cdf(rules[str(origin)],row['position'],row['label'])
         contexts[name] = context
     contexts.pop(original['name'])
     return contexts, shared, original

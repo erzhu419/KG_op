@@ -250,3 +250,13 @@ native57／64／69组的独立差分对照产生近零负概率，最小−2.23e
 48片全部结束，最多8个低优先级单核。粗筛预计2080.60、实耗1695.01 CPU秒；小试连同竞争动作补算累计预计3227.34、实耗1697.85 CPU秒，分别遵守3600秒上限。45项相关测试通过；完整银行及边际留服务器。[运行账](../paper_artifacts/historical_cdf_bank_v1/execution_account.json)。服务器依次运行`performance.validate_historical_label_bank prepare --plan performance/manifests/historical_cdf_bank_v1.json`、`performance.validate_historical_cdf_bank prepare-pilot`、artifact目录内`compare_label_decisions.py`、`performance.validate_historical_cdf_bank prepare-decision`；各准备后本地分别调度`performance.launch_historical_component_bank cdf-bank-coarse|cdf-bank-pilot`，最后重跑缓存比较。模块均用`python -m`，逐片环境与完整命令见`*_specs.jsonl`。
 
 下一步先用已打开开发缓存检查其他查询／任务的动作竞争，再优先给会影响动作选择的组补参考；保留全部365正式动作。两条观测的剩余全量128点比较各预计3731／3733秒，均超过阶段上限，未派发。局限：当前是开发块的选定数值参考与条件推荐诊断，尚未覆盖完整CDF、外层KG或独立决策收益。原source meta-prior、全部8身份／512与1024正分量、联合协方差、359预算及验证器保持，无新增物理、source-fit或verifier调用，独立确认块未读取。
+
+## 完整CDF的决策区域与竞争冲突（2026-10-10）
+
+重放现有正权主体／上尾缓存：CDF<0.9区间未换策略，整个CDF的native换策略质量约6.99%；主要实现收益来自CDF>0.93，0.90–0.93区间仍有−2.12e−5局部收益。模型净预览为+0.0135758，已扣除一次查询的验证机会成本。此前三个主体位置推荐相同，不能据此判断查询没有价值。[分区结果](../paper_artifacts/historical_decision_regions_v1/summary_with_direct.json)。
+
+历史零维Sobol分支已覆盖全部96条主体观测的direct组136（策略63、预算128／359）：GH64／128最大动作差3.60e−12，新增积分42.82 CPU秒。随后对两处CDF约0.0678的native低／高规则推荐冲突补齐guarded组63的独立256点、GH64／256点及512点参考，全部通过，最大差8.95e−6；各32条目标头均由direct动作355胜出，最小优势5.95e−4，支持两处粗规则切换为数值伪影。[直接参考](../paper_artifacts/historical_decision_regions_v1/direct_summary.json)、[冲突参考](../paper_artifacts/historical_decision_regions_v1/native_reference_summary.json)。
+
+15个worker全部完成，最多4个低优先级单核。两批direct、三次缓存汇总上限及native参考累计预计1829.18 CPU秒，低于3600限制；新增积分488.62、成功worker总计591.34 CPU秒，已测成功准备另计34.07秒，未计时的元数据准备单列。51项相关测试通过，逐片命令与[运行账](../paper_artifacts/historical_decision_regions_v1/execution_account.json)保留。只拉小JSON／日志，完整银行、联合边际及后验留服务器。
+
+局限与下一步：仅一个已打开开发状态与冻结query63；其他动作-观测组合、完整外层KG及独立部署收益仍待验证，有限规则差非严格误差界，模型预览不作为独立收益证据。下一步复用既有上尾规则及各组参考，优先计价CDF>0.93的未验证竞争动作，再补完整终端／外层精度。原source prior、全部8身份分数／权重、512／1024正分量、联合协方差、365正式动作与359剩余预算保持，原正权不重归一化；无新增物理、source-fit或verifier调用，独立确认块未读取。

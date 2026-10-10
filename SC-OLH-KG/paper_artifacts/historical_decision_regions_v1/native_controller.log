@@ -1,0 +1,37 @@
+submitted t141484  cpu=1 ram=2000MB vram=0MB  prio=low  (vram=explicit,ram=explicit,cpu=explicit)  KG two native conflicts guard63 identity4 shard0
+  run `dispatch` to launch (resource-aware: respects 1/3 VRAM rule, CPU/RAM headroom).
+
+submitted t141485  cpu=1 ram=2000MB vram=0MB  prio=low  (vram=explicit,ram=explicit,cpu=explicit)  KG two native conflicts guard63 identity5 shard0
+  run `dispatch` to launch (resource-aware: respects 1/3 VRAM rule, CPU/RAM headroom).
+
+submitted t141486  cpu=1 ram=2000MB vram=0MB  prio=low  (vram=explicit,ram=explicit,cpu=explicit)  KG two native conflicts guard63 identity4 shard1
+  run `dispatch` to launch (resource-aware: respects 1/3 VRAM rule, CPU/RAM headroom).
+
+submitted t141487  cpu=1 ram=2000MB vram=0MB  prio=low  (vram=explicit,ram=explicit,cpu=explicit)  KG two native conflicts guard63 identity5 shard1
+  run `dispatch` to launch (resource-aware: respects 1/3 VRAM rule, CPU/RAM headroom).
+
+=== nodes ===
+  local       GPU0=1.20GB/8.00GB(free=6.57GB, mem:15%, util:0%)  cpu=13/16(wsl_load 2.4, host 21%)  ram_free=17.0GB(eff)
+  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1)  ram_free=491.9GB
+  jtl110gpu2  GPU0=0.17GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1)  ram_free=496.5GB
+  jtl311linux CPU-only  cpu=8/8(load 0.1)  ram_free=7.82GB
+  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:13%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:11%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:100%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:50%)  cpu=60/64(load 4.0)  ram_free=166.1GB
+  jtl110cpu   CPU-only  cpu=128/128(load 0.0, queue_cpu_live_ram)  ram_free=478.7GB
+  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, queue_cpu_live_ram)  ram_free=488.1GB
+  node001     CPU-only  cpu=47/96(load 49.0, reserve 1)  ram_free=168.1GB
+  node002     CPU-only  cpu=45/96(load 50.9, reserve 1)  ram_free=155.9GB
+  node003     CPU-only  cpu=0/96(load 101.3, reserve 1)  ram_free=147.0GB
+  node004     CPU-only  cpu=95/96(load 1.1, reserve 1)  ram_free=172.4GB
+  node005     CPU-only  cpu=95/96(load 1.1, reserve 1)  ram_free=179.3GB
+  node006     CPU-only  cpu=95/96(load 1.1, reserve 1)  ram_free=179.7GB
+=== dispatch === (4 queued)
+  [t141484] LAUNCH on node006:CPU  pid=356148  log=/tmp/sched_t141484.log
+  [t141485] LAUNCH on node005:CPU  pid=59738  log=/tmp/sched_t141485.log
+  [t141486] LAUNCH on node004:CPU  pid=546610  log=/tmp/sched_t141486.log
+  [t141487] LAUNCH on node006:CPU  pid=356140  log=/tmp/sched_t141487.log
+
+{"t141484": "running", "t141485": "running", "t141486": "running", "t141487": "running"}
+{"t141484": "running", "t141485": "running", "t141486": "done", "t141487": "running"}
+{"t141484": "done", "t141485": "running", "t141486": "done", "t141487": "running"}
+{"t141484": "done", "t141485": "done", "t141486": "done", "t141487": "done"}
+COMPLETE {"t141484": "done", "t141485": "done", "t141486": "done", "t141487": "done"}
