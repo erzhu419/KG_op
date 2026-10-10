@@ -6,10 +6,21 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from performance.validate_historical_risk_competition import select_competitors,prepare,PLAN
+from performance.validate_historical_risk_competition import select_competitors,selection_rows,prepare,PLAN
 
 
 class RiskCompetitionTests(unittest.TestCase):
+    def test_batch_reuses_the_frozen_order_and_records_without_reranking(self):
+        priced=dict(budgeted_batch_estimated_cpu_seconds=3284.,budgeted_batch=[
+            dict(record='b',group=63,kind='projected',minimum_gap=.002),
+            dict(record='a',group=63,kind='projected',minimum_gap=.001)])
+        with patch('performance.validate_historical_risk_competition.read',return_value=priced) as reader:
+            rows=selection_rows(dict(batch_plan='frozen.json',maximum_estimated_cpu_seconds=3600),Path('out'))
+        reader.assert_called_once_with('frozen.json')
+        self.assertEqual([r['record'] for r in rows],['b','a'])
+        self.assertEqual(rows[0]['selection_reasons'],['frozen_gap_ordered_batch'])
+        self.assertNotIn('selection_reasons',priced['budgeted_batch'][0])
+
     def test_repeated_preparation_preserves_completed_parts_and_the_original_cost_plan(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);out=root/'out';out.mkdir()

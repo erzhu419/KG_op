@@ -23,7 +23,8 @@ LABEL_MODES={'label-control':('label_control','resolution'),
     'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive'),
     'label-groups-direct':('label_groups','direct'),'cdf-bank-pilot':('cdf_bank','pilot'),
     'body-reference-pilot':('body_reference_pilot','resolution'),
-    'nearby-anchor':('nearby_anchor','resolution'),'risk-competition':('risk_competition','resolution')}
+    'nearby-anchor':('nearby_anchor','resolution'),'risk-competition':('risk_competition','resolution'),
+    'risk-competition-batch':('risk_competition_batch','resolution')}
 UPPER_MODES={'upper-decisions-pilot':'pilot','upper-decisions-full':'full'}
 
 
@@ -130,6 +131,8 @@ def collect_remote(stage,out):
     import scheduler
     worker=(['performance.validate_historical_label_groups','collect','--stage','resolution',
         '--plan','performance/manifests/historical_body_reference_pilot_v1.json'] if stage=='body-reference-pilot' else
+        ['performance.validate_historical_risk_competition','collect',
+            '--plan','performance/manifests/historical_risk_competition_batch_v1.json'] if stage=='risk-competition-batch' else
         ['performance.validate_historical_upper_decisions','collect','--phase',UPPER_MODES[stage]] if stage in UPPER_MODES else
         ['performance.probe_historical_label_gh','collect','--stage',BANK_STAGES[stage]] if stage in ('label-bank-gh-pilot','label-bank-gh-full') else
         ['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage],

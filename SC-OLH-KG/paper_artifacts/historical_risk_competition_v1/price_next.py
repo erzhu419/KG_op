@@ -1,5 +1,6 @@
 """Price the remaining closest guarded63 references, without dispatch."""
 import json
+import argparse
 import signal
 import time
 
@@ -7,7 +8,8 @@ from performance.complete_historical_source_heads import ROOT, read, save, cpu_t
 from performance.validate_historical_risk_competition import PLAN, RULES, CACHES, cached_rows, select_competitors
 
 tick=time.process_time();signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)
-spec=read(PLAN);out=ROOT/spec['output'];base=ROOT/read(spec['parent_plan'])['output']
+p=argparse.ArgumentParser();p.add_argument('--plan',default=PLAN);args=p.parse_args()
+spec=read(args.plan);out=ROOT/spec['output'];base=ROOT/read(spec['parent_plan'])['output']
 report=read('paper_artifacts/historical_body_reference_assembly_v1/competition_summary.json')
 assert report['complete']
 covered={(r['record'],r['kind'],r['group']) for r in

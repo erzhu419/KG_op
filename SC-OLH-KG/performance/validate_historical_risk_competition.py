@@ -14,7 +14,7 @@ RULES=['E5','E7','E8','F8','H8','E9']
 CACHES=('historical_component_transfer_v1','historical_label_control_v1',
     'historical_label_groups_v1','historical_cdf_bank_v1','historical_body_reference_pilot_v1',
     'historical_nearby_anchor_v1','historical_label_bank_v1','historical_decision_regions_v1',
-    'historical_risk_competition_v1')
+    'historical_risk_competition_v1','historical_risk_competition_batch_v1')
 
 
 def select_competitors(report):
@@ -50,14 +50,22 @@ def cached_rows(row,h):
     return result
 
 
-def prepare():
-    tick=time.process_time();spec=read(PLAN);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
+def selection_rows(spec,out):
+    if 'batch_plan' in spec:
+        priced=read(spec['batch_plan'])
+        assert priced['budgeted_batch_estimated_cpu_seconds']<=spec['maximum_estimated_cpu_seconds']
+        return [dict(row,selection_reasons=['frozen_gap_ordered_batch']) for row in priced['budgeted_batch']]
+    report=read(str(out/'competition_summary.json'));assert report['complete']
+    return select_competitors(report)
+
+
+def prepare(plan=PLAN):
+    tick=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
     if (out/'preparation.json').exists():
         result=read(str(out/'preparation.json'));assert result['complete']
         print('SCHEDULEURM_DONE '+json.dumps(result),flush=True)
         return result
-    report=read(str(out/'competition_summary.json'));assert report['complete']
-    selected=select_competitors(report)
+    selected=selection_rows(spec,out)
     contexts,shared,original=prepare_contexts(dict(spec,records=sorted({r['record'] for r in selected}),
         groups=sorted({r['group'] for r in selected})))
     base=ROOT/read(spec['parent_plan'])['output']
@@ -99,6 +107,7 @@ def prepare():
             row.setdefault('timer_unit_scope',{})[str(h)]=unit_scope
             path=part_path(out,row,h);path.parent.mkdir(parents=True,exist_ok=True)
             save(path,dict(record=row['record'],group=gid,kind=kind,identity=h,rows=cached))
+        row['estimated_new_cpu_seconds']=sum(row['estimated_identity_cpu_seconds'].values())
     cumulative=total+sum(spec['cpu_reserves'].values())
     work=dict(selected=selected,estimated_cpu_seconds=total,cumulative_estimated_cpu_seconds=cumulative,
         maximum_estimated_cpu_seconds=spec['maximum_estimated_cpu_seconds'],
@@ -115,8 +124,8 @@ def prepare():
     return result
 
 
-def collect():
-    tick=time.process_time();spec=read(PLAN);out=ROOT/spec['output'];work=read(str(out/'resolution_plan.json'))
+def collect(plan=PLAN):
+    tick=time.process_time();spec=read(plan);out=ROOT/spec['output'];work=read(str(out/'resolution_plan.json'))
     contexts=read(str(out/'contexts.json'));base=ROOT/read(spec['parent_plan'])['output'];groups=[];tasks=[];integral=0.
     for kind in ('raw','projected'):
         for shard,row in enumerate(r for r in work['selected'] if r['kind']==kind):
@@ -139,12 +148,13 @@ def collect():
         cumulative_estimated_cpu_seconds=work['cumulative_estimated_cpu_seconds'],cpu_seconds=time.process_time()-tick,
         new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
         full_predictive_integration_admitted=False,
-        limitations='Decision-selected development references at three opened labels. Finite direct/independent/GH comparisons are not rigorous error bounds or independent decision evidence. Remaining CDF groups and outer KG are open.')
+        unique_target_labels=len(contexts),selected_action_checks=sum(len(r['action_indices']) for r in groups),
+        limitations='Decision-selected references at opened development labels. Finite direct/independent/GH comparisons are not rigorous error bounds or independent decision evidence. Remaining CDF groups and outer KG are open.')
     save(out/'summary.json',result);print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
     return result
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('mode',choices=['prepare','collect']);args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('mode',choices=['prepare','collect']);p.add_argument('--plan',default=PLAN);args=p.parse_args()
     signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)
-    prepare() if args.mode=='prepare' else collect()
+    prepare(args.plan) if args.mode=='prepare' else collect(args.plan)
