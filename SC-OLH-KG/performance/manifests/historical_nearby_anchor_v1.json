@@ -1,0 +1,14 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_nearby_anchor_v1",
+  "records": ["source_n1_o4_h1_p197"],
+  "groups": [28, 32, 40, 66, 68],
+  "selection": "paper_artifacts/historical_component_bank_v1/failure_pilot/selection.json",
+  "anchor_output": "paper_artifacts/historical_body_reference_pilot_v1",
+  "anchor_record": "source_n1_o4_h1_p202",
+  "maximum_action_difference": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_job_cpu_seconds": 600,
+  "cpu_reserves": {"prepare":120,"collect":120,"cache_assembly":240,"post_analysis":120},
+  "scope": "Same opened p197 target and32 objective heads, five frozen hard pairs; compare original p207 and nearest validated p202 anchors against direct E8/F8/H8/E9. Retain original prior,all8 scores,all512/1024 components,covariance,365 actions,359 budget and verifier. No physical/source-fit/verifier calls or confirmation. At most8 low-priority single-core workers."
+}

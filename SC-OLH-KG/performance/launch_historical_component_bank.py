@@ -22,7 +22,8 @@ BANK_STAGES={'label-bank-coarse':'coarse','label-bank-fine':'fine','label-bank-i
 LABEL_MODES={'label-control':('label_control','resolution'),
     'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive'),
     'label-groups-direct':('label_groups','direct'),'cdf-bank-pilot':('cdf_bank','pilot'),
-    'body-reference-pilot':('body_reference_pilot','resolution')}
+    'body-reference-pilot':('body_reference_pilot','resolution'),
+    'nearby-anchor':('nearby_anchor','resolution')}
 UPPER_MODES={'upper-decisions-pilot':'pilot','upper-decisions-full':'full'}
 
 

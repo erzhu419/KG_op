@@ -25,8 +25,13 @@ for group in layout['groups']:
             target=read(str(part_path(near,dict(record='source_n1_o4_h1_p207',group=gid,kind=kind),h)))['rows']
             path=near/'anchor_parts'/f'{gid:03d}_{h}_{kind}.json'
             extra=read(str(path))['rows'] if path.exists() else {}
+            observed=[source,target,extra]
+            for directory,record in (('historical_body_reference_pilot_v1','source_n1_o4_h1_p202'),
+                    ('historical_nearby_anchor_v1','source_n1_o4_h1_p197')):
+                path=part_path(ROOT/'paper_artifacts'/directory,dict(record=record,group=gid,kind=kind),h)
+                if path.exists():observed.append(read(str(path))['rows'])
             for rule in rules:
-                times=[d[rule]['cpu_seconds'] for d in (source,target,extra) if rule in d and d[rule]['cpu_seconds']>0]
+                times=[d[rule]['cpu_seconds'] for d in observed if rule in d and d[rule]['cpu_seconds']>0]
                 if times:unit=max(times)
                 elif rule=='G5':
                     unit=ratios[f'{kind}_{group["kind"]}_{h}_target']*units[gid,kind,h,'E5']
@@ -37,7 +42,8 @@ for group in layout['groups']:
                 missing_anchor[gid,kind,h]=ratios[f'{kind}_{group["kind"]}_{h}_anchor']*source['E5']['cpu_seconds']
 
 cache_dirs=('historical_component_transfer_v1','historical_label_control_v1',
-    'historical_label_groups_v1','historical_cdf_bank_v1')
+    'historical_label_groups_v1','historical_cdf_bank_v1',
+    'historical_body_reference_pilot_v1','historical_nearby_anchor_v1')
 records=[];counts=Counter();used_anchor=set();total=defaultdict(float)
 for record in summary['records']:
     if record['cdf']>=.9:continue
@@ -64,16 +70,17 @@ for record in summary['records']:
         estimated_four_rule_comparison_cpu_seconds=1.2*(sum(costs[r] for r in rules)+8)))
 anchor=sum(v for key,v in missing_anchor.items() if key in used_anchor)
 estimate=1.2*(sum(total[r] for r in rules)+anchor+8)
-pilot_budget=read('paper_artifacts/historical_body_reference_pilot_v1/phase_budget.json')
-reserved_workers=pilot_budget['cumulative_estimated_cpu_seconds']-600
+phase=read('performance/manifests/historical_nearby_anchor_v1.json')
+phase_budget=read(phase['output']+'/preparation.json');reserve=sum(phase['cpu_reserves'].values())
+reserved_workers=phase_budget['cumulative_estimated_cpu_seconds']-reserve
 result=dict(complete=True,records=records,missing_group_kind_record_checks=dict(counts),
     missing_target_matching_timer_cpu_seconds=dict(total),missing_shared_anchor_G5_cpu_seconds=anchor,
     estimated_candidate32_cpu_seconds=1.2*(total['E5']+8),estimated_four_rule_comparison_cpu_seconds=estimate,
-    maximum_estimated_cpu_seconds=3600,full_matrix_cost_admitted=estimate+reserved_workers+600<=3600,
-    phase_workers_already_reserved_cpu_seconds=reserved_workers,preparation_pricing_collection_reassembly_reserve_cpu_seconds=600,
-    cumulative_estimated_cpu_seconds=estimate+reserved_workers+600,
+    maximum_estimated_cpu_seconds=3600,full_matrix_cost_admitted=estimate+reserved_workers+reserve<=3600,
+    phase_workers_already_reserved_cpu_seconds=reserved_workers,preparation_pricing_collection_reassembly_reserve_cpu_seconds=reserve,
+    cumulative_estimated_cpu_seconds=estimate+reserved_workers+reserve,
     pricing_fallbacks=fallbacks,cpu_seconds=time.process_time()-start,new_integrations=0,dispatched=False,
-    scope='Original64 fine body labels and365 actions. Exclude actual integrated references,native direct analytic entries,raw direct136 and the two native63 references. E5/E7/F7/G5 paired comparisons use maximum measured same-group,identity,rule source/nearest-label times; unavailable G5 uses the existing measured maximum G5/E5 ratio. Cached target rules and shared anchors are counted once. Eight worker CPU seconds and20 percent headroom. Cost projection only: broad-label controls can fail and require additional direct references; this is not a precision or speedup claim.')
+    scope='Original64 fine body labels and365 actions. Exclude actual integrated references,native direct analytic entries,raw direct136 and the two native63 references. E5/E7/F7/G5 paired comparisons use maximum measured same-group,identity,rule source/p207/p202/p197 times; unavailable G5 uses the existing measured maximum G5/E5 ratio. Cached target rules and shared anchors are counted once. Eight worker CPU seconds and20 percent headroom. Cost projection only: broad-label controls can fail and require additional direct references; this is not a precision or speedup claim.')
 save(out/'remaining_cost_plan.json',result)
 compact={k:v for k,v in summary.items() if k not in ('records','actions','observed_query_matrix')}
 compact['records']=[{k:v for k,v in r.items() if k in ('record','origin','position','cdf','label','raw_winners','native_winners','raw_adaptation','achieved_adaptation','raw_reference_coverage','projected_reference_coverage')} for r in summary['records']]

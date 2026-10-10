@@ -1,0 +1,116 @@
+{
+  "complete": true,
+  "scheduler_states": {
+    "t141535": "done",
+    "t141536": "done",
+    "t141537": "done",
+    "t141538": "done",
+    "t141539": "done",
+    "t141540": "done",
+    "t141541": "done",
+    "t141542": "done",
+    "t141546": "done",
+    "t141547": "done",
+    "t141549": "done"
+  },
+  "worker_count": 11,
+  "maximum_concurrent_workers": 8,
+  "priority": "low",
+  "cpus_per_worker": 1,
+  "maximum_estimated_cpu_seconds": 3600,
+  "cumulative_estimated_cpu_seconds": 2791.1908539972,
+  "new_integral_cpu_seconds": 1716.0823999130002,
+  "reported_successful_integral_worker_cpu_seconds": 1716.564329751,
+  "cache_process_cpu_seconds": 88.158483656,
+  "reported_successful_worker_cpu_seconds": 1804.722813407,
+  "measured_preparation_cpu_seconds": 4.2521735099999995,
+  "measured_collection_cpu_seconds": 0.35320387099999995,
+  "measured_initial_library_comparison_cpu_seconds": 0.412955176,
+  "measured_final_library_comparison_cpu_seconds": 0.449347896,
+  "measured_pricing_cpu_seconds": 2.8790518720000002,
+  "cpu_measurement_scope": "Integral workers report the existing evaluation-loop timer; cache CPU includes process startup. Preparation,collection,library and price timers exclude import/setup. Full120/120/240/120 CPU-second reserves remain in the phase estimate.",
+  "maximum_integral_worker_peak_rss_mb": 422.18359375,
+  "maximum_cache_peak_rss_mb": 4679.58203125,
+  "target": "source_n1_o4_h1_p197",
+  "target_label": -0.2478038865433076,
+  "original_anchor": "source_n1_o5_h1_p207",
+  "nearest_anchor": "source_n1_o4_h1_p202",
+  "anchor_label_distances": {
+    "source_n1_o4_h1_p192": 0.11309014740170198,
+    "source_n1_o4_h1_p207": 0.08817180891348816,
+    "source_n1_o5_h1_p223": 0.18327741967900768,
+    "source_n1_o5_h1_p207": 0.08824867210976503,
+    "source_n1_o4_h1_p202": 0.04916833577730684
+  },
+  "reference_metadata_replay_passed": true,
+  "all_target_references_admitted": true,
+  "selected_actions_by_anchor": {
+    "original": {
+      "control32": 6,
+      "control128": 0,
+      "direct256": 9,
+      "HOLD": 0
+    },
+    "nearest": {
+      "control32": 6,
+      "control128": 6,
+      "direct256": 3,
+      "HOLD": 0
+    }
+  },
+  "maximum_direct_action_errors": {
+    "original": {
+      "control32": 0.00033426233952914275,
+      "control128": 0.00011794917924252968
+    },
+    "nearest": {
+      "control32": 0.00019455868286682998,
+      "control128": 8.393118075047945e-05
+    }
+  },
+  "selected_target_rule_cpu_seconds": {
+    "original": 131.00557906100002,
+    "nearest": 91.32102745099999
+  },
+  "selected_target_rule_cpu_reduction": 0.3029226075289644,
+  "selected_rule_cpu_scope": "Matched target-rule timers only. Excludes cached anchor acquisition, independent/GH/refinement validation and composition; total new phase work is reported separately.",
+  "remaining_raw28_independent_control_difference": 0.0001027765443846751,
+  "remaining_raw28_finer_reference_differences": {
+    "E8": 4.3287631231847534e-05,
+    "F8": 2.320387949933389e-05,
+    "H8": 4.5557964519382654e-05,
+    "E9": 9.913081454704376e-06
+  },
+  "primary_admission_gate_changed": false,
+  "exploratory_library_comparisons": 15,
+  "exploratory_additional_integrations": 0,
+  "reference_group_entries": 858,
+  "model_net_preview": 0.01357641652258601,
+  "model_preview_change_from_baseline": 0.0,
+  "remaining_missing_group_kind_record_checks": {
+    "raw": 8970,
+    "projected": 4510
+  },
+  "remaining_four_rule_comparison_estimated_cpu_hours": 180.83738581068096,
+  "full_matrix_dispatched": false,
+  "tests": {
+    "passed": 43,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m unittest tests.test_nearby_anchor tests.test_risk_reference_assembly tests.test_decision_regions tests.test_upper_decisions tests.test_component_bank tests.test_label_groups tests.test_component_transfer"
+  },
+  "contract": "Original source prior,all8 identity scores/weights,all512/1024 positive utility components,full covariance,365 actions and359 budget. Positive body/tail weights and verifier unchanged.",
+  "replay": {
+    "prepare": "python -m performance.validate_historical_nearby_anchor prepare",
+    "dispatch": "python -m performance.launch_historical_component_bank nearby-anchor",
+    "library": "python -m performance.validate_historical_nearby_anchor compare-library",
+    "assembly": "python -m performance.diagnose_historical_decision_regions integrated",
+    "price": "python paper_artifacts/historical_body_reference_assembly_v1/price_remaining.py",
+    "commands": "Exact environments,scheduler resources and commands in *_command.json,nearby-anchor_specs.jsonl and cache_scheduler_spec.json. Large banks,contexts,marginals and posterior remain server-side."
+  },
+  "next_step": "Predefine an upgrade from failed paired-independent residual checks to candidate-versus-finer direct independent/GH comparisons; replay on opened caches before broader use. Keep the current failures and reference fallback unchanged in this phase. Continue by decision relevance under the phase cap,not a full181-hour dispatch.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "limitations": "One opened target, five frozen worst group-kind pairs, same32 objective heads. Both anchors reuse the same target integrals and direct references; these are finite numerical checks, not full outer KG, a rigorous error bound, measured end-to-end speedup or independent deployment evidence."
+}

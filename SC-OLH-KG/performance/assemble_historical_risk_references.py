@@ -71,7 +71,8 @@ def load_entries(layout):
             *bank_group_tables(contexts[row['record']], groups[row['group']], actual, kind, layout['actions']),
             scope, str(base/'gh_full_summary.json'), row['selected_method'])
 
-    for directory in ('historical_label_groups_v1', 'historical_body_reference_pilot_v1'):
+    for directory in ('historical_label_groups_v1', 'historical_body_reference_pilot_v1',
+            'historical_nearby_anchor_v1'):
         base = ROOT/'paper_artifacts'/directory
         result = read(str(base/'summary.json')); assert result['complete']
         contexts = read(str(base/'contexts.json'))
