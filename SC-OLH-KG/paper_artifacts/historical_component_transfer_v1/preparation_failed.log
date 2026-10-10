@@ -1,0 +1,18 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/validate_historical_component_transfer.py", line 92, in prepare
+    probe['resolution_units'] = read(str(base/'tail_cost_probe.json'))['units']
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/check_legacy_public_mean_risk_uncertainty.py", line 31, in read
+    return json.loads((ROOT/path).read_text())
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/pathlib.py", line 1134, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_component_bank_v1/tail_cost_probe.json'

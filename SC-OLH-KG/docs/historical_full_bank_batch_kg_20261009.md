@@ -183,3 +183,13 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 八组接续实耗2009.65 CPU秒，native全部通过，raw仅组52／53的256→512比较未过。四个补算任务保留选定E9及其独立F9、GH对照，只补E10确认；512→1024差分别1.47e−5／2.92e−5，均低于原1e−4门槛。最终raw／native均通过365／365动作，32条固定目标头下推荐未变。[最终汇总](../paper_artifacts/historical_component_bank_v1/bank_tail_resolution_summary.json)。两轮累计预计3523.16、实耗2365.61 CPU秒，峰值701MB；11项测试通过，包括只替换失败的分辨率比较、保留其他组和累计预算。入口为`python -m performance.validate_historical_component_bank prepare-tail-resolution`及`python -m performance.launch_historical_component_bank continue-bank-tail-resolution`。
 
 下一步先检验CDF主体低端、中部及0.9边界附近观测的适用性，共享现有联合边际，避免逐条重载2.64GB后验或复制75.5MB边际。当前单条银行计值缓存计时合计2.01单核小时，直接外推96条约193小时，尚不含精度检查；须先做小规模成本和精度检查。计时可在服务器运行artifact目录内`analyze_final_bank.py`重放，结果见`final_bank_cost.json`。局限：单条观测通过尚不代表其他95条、224个外层节点或完整KG通过；规则差不是严格误差界，稳定独立决策收益仍未验证。
+
+## 跨观测共享边际接续（2026-10-10）
+
+复用原积分器、缓存与调度器，检查o4/p192、o4/p207、o5/p223（CDF约0.0012／0.4283／0.8988）。组12包含历史低端失败动作，组52是连续积分难点；每组保留全部三种预算，覆盖每条观测6个动作。准备2.21 CPU秒，旧o5/p207的标签／全身份分数／目标头缓存逐项一致；零次完整后验恢复、零字节联合边际复制。24项不同测试通过；首次8片完成积分后保存任务目录失败，已修复并直接复用缓存，其完成规则计时纳入成本。入口为`python -m performance.validate_historical_component_transfer prepare`和`python -m performance.launch_historical_component_bank continue-transfer`。[计划与状态](../paper_artifacts/historical_component_transfer_v1)。
+
+24片初筛及16片256点接续均完成，最多8个低优先级单核；保存的积分计时合计2491.77 CPU秒（不含准备、任务启动和中断规则）。raw／native分别通过9／18、12／18个动作-观测检查，剩余5个组-观测-类型组合。GH检查全部通过；剩余失败来自连续分辨率或独立规则差。全补512点的累计预计4345.24秒超过3600秒限制，控制器已停止派发，当前无存活作业。[接续汇总](../paper_artifacts/historical_component_transfer_v1/adaptive_summary.json)。
+
+仅用缓存再检验跨标签控制变量：沿用历史未归一化分子差值方法，以已验证o5/p207高规则积分为锚，加入目标与锚点的配对低规则差，最后除以目标归一化质量。三条观测的raw组52均保留原分量、身份分数、目标头和三种预算；升阶／独立／GH规则最大动作差分别6.17e−5／8.80e−5／1.50e−9，概率和成本均在有效范围，无裁剪。[缓存诊断](../paper_artifacts/historical_component_transfer_v1/cross_label_anchor_diagnostic.json)；服务器重放：`OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python paper_artifacts/historical_component_transfer_v1/diagnose_nearby_anchor.py`。下一步先以目标标签的直接高规则积分交叉验证，再测实际节省；本轮未证明加速，未改动正式通过计数。
+
+局限：仅一个冻结开发任务的选定动作，规则差不是严格误差界；未新增物理、拟合或验证调用，未读独立确认块。原source meta-prior与旧60/60证据保留，完整365动作跨观测、96条主体观测、224个外层节点、完整KG及独立决策收益仍待验证。

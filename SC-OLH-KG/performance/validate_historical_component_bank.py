@@ -217,18 +217,24 @@ def run_group(group,identity,kind,rules,spec):
     pending=[n for n in rules if n not in result['rows']]
     if not pending:return
     b=compressed_read(out/'marginals'/f'{group:03d}.json.gz')
+    for name,row in evaluate_group_rules(b,identity,kind,pending):
+        result['rows'][name]=row
+        save(path,result)
+
+
+def evaluate_group_rules(b,identity,kind,rules):
+    """Evaluate the same joint marginal with record-specific labels and scores."""
     before=field_from_snapshot(b['fields'][identity]);after=copy.deepcopy(before)
     score=update_raw_observation(after,0,b['label'],None,1)
     assert abs(score-b['head_log_scores'][identity])<=1e-10
     _,rank=np.unique(before.means,axis=0,return_inverse=True)
-    for name in pending:
+    for name in rules:
         order,power,offset=RULES[name];tick=time.process_time()
         if b['kind']=='direct' and len(b['points'])==1:power=0
         s,c,d=component_risk_allocations(before,after,b['actions'],b['label'],score,b['protocol'],query=0,
             raw=kind=='raw',order=order,power=power,seed=b['seed']+offset+rank*104729,
             integrated_position=b['actions'][0]['incumbent_position'])
-        result['rows'][name]=dict(statistics=s.tolist(),costs=c.tolist(),diagnostics=d,cpu_seconds=time.process_time()-tick)
-        save(path,result)
+        yield name,dict(statistics=s.tolist(),costs=c.tolist(),diagnostics=d,cpu_seconds=time.process_time()-tick)
 
 
 def selected_groups(context,stage,out,kind,tolerance=1e-4):

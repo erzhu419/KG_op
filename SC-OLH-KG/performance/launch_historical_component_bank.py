@@ -16,13 +16,18 @@ PYTHON='/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python'
 QUEUE=Path('/home/erzhu419/.claude/scheduler/queue.json')
 REMOTE='/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG'
 PILOT_MODES={'pilot':'refine','pilot-resolution':'resolution','pilot-cheaper':'cheaper'}
+TRANSFER_STAGES={'transfer-screen':'screen','transfer-adaptive':'adaptive','transfer-resolution':'resolution'}
 
 
 def launch(stage):
-    spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text())
+    manifest='historical_component_transfer_v1.json' if stage in TRANSFER_STAGES else 'historical_component_bank_v1.json'
+    spec=json.loads((ROOT/'performance/manifests'/manifest).read_text())
     out=ROOT/spec['output'];prep=json.loads((out/'preparation.json').read_text());assert prep['complete']
     identities=sorted(map(int,prep['source_components']))
-    if stage in PILOT_MODES:
+    if stage in TRANSFER_STAGES:
+        plan=json.loads((out/(TRANSFER_STAGES[stage]+'_plan.json')).read_text());assert plan['estimated_cost_admitted']
+        counts={k:sum(r['kind']==k for r in plan['selected']) for k in ('raw','projected')}
+    elif stage in PILOT_MODES:
         out=out/'failure_pilot';pilot=json.loads((out/'selection.json').read_text());assert pilot['estimated_cost_admitted']
         selected=list(range(len(pilot['selected'])))
         if stage=='pilot-resolution':
@@ -49,7 +54,8 @@ def launch(stage):
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
     if stage not in PILOT_MODES:
-        pending=[dict(identity=h,kind=k,shard=s) for s in range(spec['shards_per_identity_kind'])
+        shards=max(counts.values()) if stage in TRANSFER_STAGES else spec['shards_per_identity_kind']
+        pending=[dict(identity=h,kind=k,shard=s) for s in range(shards)
             for h in identities for k in ('raw','projected') if s<counts[k]]
     jobs=[];specs=[];last=None
     jobs_path=out/(stage+'_jobs.json');specs_path=out/(stage+'_specs.jsonl')
@@ -68,11 +74,13 @@ def launch(stage):
             new_ids=[]
             for _ in range(min(slots,len(pending))):
                 job=pending.pop(0);h,k,s=job['identity'],job['kind'],job['shard']
-                worker=(['performance.diagnose_historical_bank_failures','run','--identity',str(h),'--selection',str(s),
+                worker=(['performance.validate_historical_component_transfer','run','--identity',str(h),'--kind',k,
+                    '--shard',str(s),'--stage',TRANSFER_STAGES[stage]] if stage in TRANSFER_STAGES else
+                    ['performance.diagnose_historical_bank_failures','run','--identity',str(h),'--selection',str(s),
                     '--stage',PILOT_MODES[stage]] if stage in PILOT_MODES
                     else ['performance.validate_historical_component_bank','run','--stage',stage,'--identity',str(h),'--kind',k,'--shard',str(s)])
                 cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-m']+worker)
-                args=[sys.executable,CLI,'submit','--description',f'KG one record bank {stage} H{h} {k} shard{s}',
+                args=[sys.executable,CLI,'submit','--description',f'KG risk integration {stage} H{h} {k} shard{s}',
                     '--cmd',cmd,'--cwd',DEPLOY,'--signature',f'KG_op/component_bank_v1/{stage}/{h}/{k}/{s}',
                     '--project','KG_op','--vram','0','--ram-mb','2000','--cpu','1','--priority','low',
                     '--skip-launch-staging','--env-spec','none']
@@ -100,7 +108,8 @@ def launch(stage):
 def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.diagnose_historical_bank_failures','collect','--stage',PILOT_MODES[stage]]
+    worker=(['performance.validate_historical_component_transfer','collect','--stage',TRANSFER_STAGES[stage]]
+        if stage in TRANSFER_STAGES else ['performance.diagnose_historical_bank_failures','collect','--stage',PILOT_MODES[stage]]
         if stage in PILOT_MODES
         else ['performance.validate_historical_component_bank','collect','--stage',stage])
     command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
@@ -108,23 +117,49 @@ def collect_remote(stage,out):
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name={'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
+    name=TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
+        'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
         'bank-coarse':'bank_coarse_summary.json',
         'bank-tail':'bank_tail_summary.json',
         'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
-    relative='paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name
+    relative=(str((out/name).relative_to(ROOT)) if stage in TRANSFER_STAGES else
+        'paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name)
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
     if rc:raise RuntimeError(err or body)
     result=json.loads(body);(out/name).write_text(json.dumps(result,indent=2)+'\n')
+    if stage in TRANSFER_STAGES and result['next_plan'] is not None:
+        stages=list(TRANSFER_STAGES);next_stage=TRANSFER_STAGES[stages[stages.index(stage)+1]]
+        (out/(next_stage+'_plan.json')).write_text(json.dumps(result['next_plan'],indent=2)+'\n')
     if stage in ('adaptive','bank-resolution','bank-coarse','bank-tail','bank-tail-resolution'):
         from performance.validate_historical_component_bank import save_progress
         save_progress(result,out)
     print('COLLECTED '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
     return result
+
+
+def continue_transfer():
+    spec=json.loads((ROOT/'performance/manifests/historical_component_transfer_v1.json').read_text())
+    out=ROOT/spec['output'];path=out/'status.json';measured={}
+    status=dict(state='running',maximum_live_workers=8,full_predictive_integration_admitted=False,independent_confirmation=False)
+    for stage,short in TRANSFER_STAGES.items():
+        plan=json.loads((out/(short+'_plan.json')).read_text())
+        if not plan['estimated_cost_admitted']:
+            status.update(state='cost_hold',cumulative_estimated_cpu_seconds=plan['cumulative_estimated_cpu_seconds']);break
+        status.update(state='running_'+short,cumulative_estimated_cpu_seconds=plan['cumulative_estimated_cpu_seconds'])
+        path.write_text(json.dumps(status,indent=2)+'\n')
+        launch(stage);summary=collect_remote(stage,out);measured[short]=summary['cpu_seconds']
+        status.update(last_stage=short,failed_groups=summary['failed_groups'],
+            selected_action_record_checks_passed=summary['selected_action_record_checks_passed'],
+            all_selected_action_precision_passed=summary['all_selected_action_precision_passed'])
+        if summary['all_selected_action_precision_passed']:
+            status['state']='selected_action_precision_passed';break
+        if summary['next_plan'] is None:status['state']='precision_hold';break
+    status.update(measured_cpu_seconds_by_stage=measured,measured_cpu_seconds=sum(measured.values()))
+    path.write_text(json.dumps(status,indent=2)+'\n');print('TRANSFER_DONE '+json.dumps(status),flush=True)
 
 
 def continue_adaptive():
@@ -265,7 +300,7 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
         'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
-        'bank-tail-resolution','continue-bank-tail-resolution']+list(PILOT_MODES))
+        'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer']+list(PILOT_MODES)+list(TRANSFER_STAGES))
     args=parser.parse_args()
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
@@ -273,4 +308,5 @@ if __name__=='__main__':
     elif args.stage=='continue-bank-coarse':continue_coarse_resolution()
     elif args.stage=='continue-bank-tail':continue_tail()
     elif args.stage=='continue-bank-tail-resolution':continue_tail('bank-tail-resolution')
+    elif args.stage=='continue-transfer':continue_transfer()
     else:launch(args.stage)

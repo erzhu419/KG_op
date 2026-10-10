@@ -1,0 +1,21 @@
+SUBMITTED {"identity": 4, "kind": "raw", "shard": 0, "id": "t141084"}
+SUBMITTED {"identity": 4, "kind": "projected", "shard": 0, "id": "t141085"}
+SUBMITTED {"identity": 5, "kind": "raw", "shard": 0, "id": "t141086"}
+SUBMITTED {"identity": 5, "kind": "projected", "shard": 0, "id": "t141087"}
+SUBMITTED {"identity": 4, "kind": "raw", "shard": 1, "id": "t141088"}
+SUBMITTED {"identity": 4, "kind": "projected", "shard": 1, "id": "t141089"}
+SUBMITTED {"identity": 5, "kind": "raw", "shard": 1, "id": "t141090"}
+SUBMITTED {"identity": 5, "kind": "projected", "shard": 1, "id": "t141091"}
+PROGRESS {"stage": "transfer-screen", "submitted": 8, "pending": 16, "live": 8, "done": 0}
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 311, in <module>
+    elif args.stage=='continue-transfer':continue_transfer()
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 154, in continue_transfer
+    launch(stage);summary=collect_remote(stage,out);measured[short]=summary['cpu_seconds']
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 71, in launch
+    if failures:raise RuntimeError('Scheduler tasks stopped: '+','.join(failures))
+RuntimeError: Scheduler tasks stopped: t141084,t141085

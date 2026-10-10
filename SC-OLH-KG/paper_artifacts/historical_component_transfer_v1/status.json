@@ -1,0 +1,45 @@
+{
+  "state": "cost_hold",
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "cumulative_estimated_cpu_seconds": 4345.244288479798,
+  "last_stage": "adaptive",
+  "failed_groups": [
+    {
+      "record": "source_n1_o4_h1_p192",
+      "group": 12,
+      "kind": "raw"
+    },
+    {
+      "record": "source_n1_o4_h1_p192",
+      "group": 52,
+      "kind": "raw"
+    },
+    {
+      "record": "source_n1_o4_h1_p207",
+      "group": 52,
+      "kind": "raw"
+    },
+    {
+      "record": "source_n1_o4_h1_p207",
+      "group": 52,
+      "kind": "projected"
+    },
+    {
+      "record": "source_n1_o5_h1_p223",
+      "group": 52,
+      "kind": "projected"
+    }
+  ],
+  "selected_action_record_checks_passed": {
+    "raw": 9,
+    "projected": 12
+  },
+  "all_selected_action_precision_passed": false,
+  "measured_cpu_seconds_by_stage": {
+    "screen": 1031.2935121510002,
+    "adaptive": 1460.478613929
+  },
+  "measured_cpu_seconds": 2491.77212608
+}
