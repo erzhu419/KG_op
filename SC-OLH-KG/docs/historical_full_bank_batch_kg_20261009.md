@@ -139,3 +139,10 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 54个低优先级单核任务完成，计量1.35单核小时，各轮最多20／14／14／6核，无新增物理、拟合或验证调用。只拉取1.99MB小结果／混合输入。两项新增汇总测试通过，五例四轮汇总重放差5.55e−17、准入状态一致。[运行账](../paper_artifacts/historical_incumbent_validation_v1/execution_account.json)、[重放](../paper_artifacts/historical_incumbent_validation_v1/replay_results.json)。入口：`OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.validate_historical_incumbent replay`；同目录四组`*_specs.jsonl`保存积分命令。
 
 局限与下一步：以上是一个开发案例内六条观测的选定动作检查，规则差不是严格误差界；完整365动作／96条记录及独立决策收益仍待验证。逐动作扩展的GH32／128成本粗估159单核小时，未计加密。下一阶段复用历史`raw_terminal_head`的shortlist缓存，让新分量积分共享三组验证预算；先核对一组的精度与成本，再决定完整银行接续。旧60/60前端证据保留。
+
+
+## 三组验证预算共享计算（2026-10-10）
+
+复用历史shortlist坐标／证书概率缓存，显式分量积分的三组原验证预算现在共享联合坐标和六个不同的策略／预算概率。最坏已打开记录的两个shortlist、两个计值身份、raw／native共8片，GH32／128和GH64／256分别提速1.96／1.91倍；三组分支值和成本与分开计算差0，原保存计值差0、成本差1.71e−13，全身份混合动作差0。29项相关测试通过。[计时与数值](../paper_artifacts/historical_risk_allocations_v1/summary.json)。
+
+8个低优先级单核任务计量0.374单核小时，峰值内存470MB；仅取39.7KB小JSON，联合边际继续留服务器。按两组实际计时粗估，96条记录的73组guarded动作需要约74／374单核小时，未含direct和目标积分，因此不据此派发完整银行。三组预算共享只证明计算等价，未证明新增预算变体的积分收敛；完整KG仍HOLD。局部剖析的条件均值坐标占约14%，接续复用历史紧凑协方差索引。重放入口为`python -m performance.benchmark_historical_risk_allocations collect`；逐片命令和运行账在同名artifact目录。

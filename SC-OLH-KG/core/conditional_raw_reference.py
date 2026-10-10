@@ -12,7 +12,7 @@ from scipy.stats import qmc
 
 from core.conditional_terminal_kg import (roots, paired_quality_from_moments,
     risk_coordinates_from_moments, guarded_risk_statistics, conditional_covariance_inverse,
-    condition_eta_components, guarded_risk_values)
+    condition_eta_components, guarded_risk_values, guarded_risk_allocation_values)
 from core.guarded_deployment_kg import _sd_quadrature, _tolerance_factor
 from core.legacy_joint_kg import clipped_objective_quality
 from core.positive_mixture_lookahead import raw_eta_proposal
@@ -128,12 +128,24 @@ def conditional_risk_action_statistics(eta, mean, covariance, position, nodes, a
 
 def component_risk_statistics(field, updated, action, label, score, protocol, *, query,
         raw, order, power, seed, block_size=16, integrated_position=0):
+    statistics,costs,diagnostics=component_risk_allocations(field,updated,[action],label,score,protocol,
+        query=query,raw=raw,order=order,power=power,seed=seed,block_size=block_size,
+        integrated_position=integrated_position)
+    return statistics[0],float(costs[0]),diagnostics
+
+
+def component_risk_allocations(field, updated, actions, label, score, protocol, *, query,
+        raw, order, power, seed, block_size=16, integrated_position=0):
     """Enumerate all positive components, GH one eta and conditionally QMC the rest.
 
     Blocks accumulate unnormalized integrals before the single final raw
     normalization. GH normals are passed directly, avoiding a lossy CDF/PPF
-    round trip at the actual high-order tail nodes.
+    round trip at the actual high-order tail nodes. Budget variants share
+    their joint coordinates and each policy/budget certificate power.
     """
+    action=actions[0]
+    assert all((a['kind'],a['shortlist'],a['incumbent_position'])==
+        (action['kind'],action['shortlist'],action['incumbent_position']) for a in actions)
     points=list(dict.fromkeys([query]+action['shortlist']));n=len(action['shortlist'])
     dimensions=(len(points)+n if raw else 2*n)
     z,gh_weights=roots_hermitenorm(order);gh_weights/=np.sqrt(2*np.pi)
@@ -143,7 +155,7 @@ def component_risk_statistics(field, updated, action, label, score, protocol, *,
     one=np.full((order*count,dimensions),.5)
     if dimensions>2:one[:,2:]=np.tile(rest[:,:dimensions-2],(order,1))
     normal=np.repeat(z,count);log_one=np.repeat(np.log(gh_weights),count)-np.log(count)
-    total_statistics=np.zeros(4);total_cost=0.;mass=0.;component_errors=[]
+    total_statistics=np.zeros((len(actions),4));total_cost=np.zeros(len(actions));mass=0.;component_errors=[]
     active=np.flatnonzero(np.isfinite(updated.log_weights))
     for start in range(0,len(active),block_size):
         selected=active[start:start+block_size]
@@ -166,15 +178,30 @@ def component_risk_statistics(field, updated, action, label, score, protocol, *,
                 components=components,eta_normals=eta_normals)
             node_weights=np.exp(updated.log_weights[components]+log_nodes)
             block_mass=float(node_weights.sum());weights=node_weights/block_mass
-        statistics,cost=conditional_risk_action_statistics(eta,mean,covariance,position,nodes,action,protocol,
-            weights,raw=raw,query_points=len(points),integrated_position=integrated_position)
-        total_statistics+=block_mass*statistics;total_cost+=block_mass*cost;mass+=block_mass
+        if action['kind']=='guarded':
+            coordinates=risk_coordinates_from_moments(eta,mean,covariance,position,nodes,
+                mean_normals=ndtri(nodes[:,len(points)+1:len(points)+n]) if raw else None,
+                integrated_position=integrated_position)
+            for a,(values,costs) in enumerate(guarded_risk_allocation_values(coordinates,
+                    action['incumbent_position'],[v['budgets'] for v in actions],protocol,
+                    integrated_position=integrated_position)):
+                cost=float(weights @ costs);i=action['incumbent_position']
+                if i:cost+=(1-float(np.sum(weights)))*(actions[a]['budgets'][0]+actions[a]['budgets'][i])
+                total_statistics[a]+=block_mass*(weights @ values);total_cost[a]+=block_mass*cost
+        else:
+            for a,variant in enumerate(actions):
+                statistics,cost=conditional_risk_action_statistics(eta,mean,covariance,position,nodes,variant,protocol,
+                    weights,raw=raw,query_points=len(points),integrated_position=integrated_position)
+                total_statistics[a]+=block_mass*statistics;total_cost[a]+=block_mass*cost
+        mass+=block_mass
     diagnostics=dict(predictive_log_evidence_error=float(np.log(mass)),
         components=len(active),continuous_points_per_component=len(one),
         total_points=len(active)*len(one),all_positive_components_retained=True,
         continuous_scramble_scope='component' if separate else 'shared',
         integrated_mean_position=int(integrated_position),
         distinct_continuous_scrambles=int(len(np.unique(seed[active]))) if separate else 1)
+    diagnostics.update(allocation_count=len(actions),joint_coordinate_blocks=int(np.ceil(len(active)/block_size)),
+        certificate_power_pairs=len({(i,b) for a in actions for i,b in enumerate(a['budgets'])}))
     if raw:
         errors=np.asarray([error for _,error in component_errors]);ids=np.asarray([i for i,_ in component_errors])
         contributions=np.exp(updated.log_weights[ids])*abs(np.expm1(errors))

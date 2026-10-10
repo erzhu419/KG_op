@@ -1,0 +1,215 @@
+{
+  "complete": true,
+  "record": "source_n1_o5_h1_p207",
+  "identity": 5,
+  "action": 0,
+  "kind": "raw",
+  "order": 32,
+  "power": 7,
+  "cpu_seconds": 12.163532909999999,
+  "profile": [
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_raw_reference.py",
+      "line": 137,
+      "name": "component_risk_allocations",
+      "calls": 1,
+      "self_seconds": 0.23211661100000003,
+      "cumulative_seconds": 12.691996623000001
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_terminal_kg.py",
+      "line": 128,
+      "name": "guarded_risk_allocation_values",
+      "calls": 256,
+      "self_seconds": 2.79564353,
+      "cumulative_seconds": 7.141466672000001
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/guarded_deployment_kg.py",
+      "line": 36,
+      "name": "conditional_safety_power",
+      "calls": 256,
+      "self_seconds": 4.005705757,
+      "cumulative_seconds": 4.009984090000001
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_raw_reference.py",
+      "line": 21,
+      "name": "conditional_raw_coordinates",
+      "calls": 64,
+      "self_seconds": 2.1096279510000002,
+      "cumulative_seconds": 2.996305292
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_terminal_kg.py",
+      "line": 100,
+      "name": "risk_coordinates_from_moments",
+      "calls": 64,
+      "self_seconds": 0.262635083,
+      "cumulative_seconds": 1.7954512500000002
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_terminal_kg.py",
+      "line": 31,
+      "name": "conditional_covariance_inverse",
+      "calls": 128,
+      "self_seconds": 0.010627101,
+      "cumulative_seconds": 1.181480668
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/linalg/_linalg.py",
+      "line": 320,
+      "name": "solve",
+      "calls": 128,
+      "self_seconds": 0.7919556520000001,
+      "cumulative_seconds": 0.796221817
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "name": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "calls": 7476,
+      "self_seconds": 0.49931254700000005,
+      "cumulative_seconds": 0.49931254700000005
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/_lib/_util.py",
+      "line": 366,
+      "name": "wrapper",
+      "calls": 1025,
+      "self_seconds": 0.004868414000000001,
+      "cumulative_seconds": 0.45277952600000004
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/stats/_qmc.py",
+      "line": 1756,
+      "name": "__init__",
+      "calls": 1025,
+      "self_seconds": 0.022255906000000002,
+      "cumulative_seconds": 0.44763493400000004
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/linalg/_linalg.py",
+      "line": 2575,
+      "name": "norm",
+      "calls": 256,
+      "self_seconds": 0.024653083000000003,
+      "cumulative_seconds": 0.363410029
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/_core/einsumfunc.py",
+      "line": 1057,
+      "name": "einsum",
+      "calls": 512,
+      "self_seconds": 0.001501322,
+      "cumulative_seconds": 0.29778334500000003
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "name": "<built-in method numpy._core._multiarray_umath.c_einsum>",
+      "calls": 512,
+      "self_seconds": 0.296282023,
+      "cumulative_seconds": 0.296282023
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/raw_likelihood_lookahead.py",
+      "line": 98,
+      "name": "risk_branch_statistics",
+      "calls": 192,
+      "self_seconds": 0.182794906,
+      "cumulative_seconds": 0.26687799700000003
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_terminal_kg.py",
+      "line": 24,
+      "name": "roots",
+      "calls": 128,
+      "self_seconds": 0.0014801500000000002,
+      "cumulative_seconds": 0.243644311
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/linalg/_linalg.py",
+      "line": 740,
+      "name": "cholesky",
+      "calls": 128,
+      "self_seconds": 0.235749602,
+      "cumulative_seconds": 0.242041888
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/stats/_qmc.py",
+      "line": 1808,
+      "name": "_scramble",
+      "calls": 1025,
+      "self_seconds": 0.165971226,
+      "cumulative_seconds": 0.23792221500000002
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_raw_reference.py",
+      "line": 69,
+      "name": "<listcomp>",
+      "calls": 64,
+      "self_seconds": 0.068786083,
+      "cumulative_seconds": 0.209405895
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/positive_mixture_lookahead.py",
+      "line": 183,
+      "name": "raw_eta_proposal",
+      "calls": 64,
+      "self_seconds": 0.205596138,
+      "cumulative_seconds": 0.205596138
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/stats/_qmc.py",
+      "line": 928,
+      "name": "_initialize",
+      "calls": 1025,
+      "self_seconds": 0.005810321,
+      "cumulative_seconds": 0.168100663
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/special/_logsumexp.py",
+      "line": 17,
+      "name": "logsumexp",
+      "calls": 1088,
+      "self_seconds": 0.011079742,
+      "cumulative_seconds": 0.164698431
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "name": "<method 'max' of 'numpy.ndarray' objects>",
+      "calls": 258,
+      "self_seconds": 0.0006625590000000001,
+      "cumulative_seconds": 0.145972085
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/_core/_methods.py",
+      "line": 42,
+      "name": "_amax",
+      "calls": 258,
+      "self_seconds": 0.000379714,
+      "cumulative_seconds": 0.14530952600000002
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/lib/_arraysetops_impl.py",
+      "line": 145,
+      "name": "unique",
+      "calls": 65,
+      "self_seconds": 0.000427516,
+      "cumulative_seconds": 0.12778667200000002
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/lib/_arraysetops_impl.py",
+      "line": 339,
+      "name": "_unique1d",
+      "calls": 65,
+      "self_seconds": 0.019506076,
+      "cumulative_seconds": 0.127247622
+    }
+  ],
+  "anchor_value_difference": 4.440892098500626e-16,
+  "anchor_cost_difference": 1.7053025658242404e-13,
+  "host": "local WSL; profile overhead included"
+}

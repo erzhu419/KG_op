@@ -1,0 +1,154 @@
+{
+  "complete": true,
+  "record": "source_n1_o5_h1_p207",
+  "identity": 5,
+  "action": 0,
+  "kind": "projected",
+  "original_allocation_position": 2,
+  "actions": [
+    {
+      "kind": "guarded",
+      "primary": 1,
+      "shortlist": [
+        1,
+        2,
+        3
+      ],
+      "incumbent_position": 1,
+      "budgets": [
+        81,
+        130,
+        132
+      ]
+    },
+    {
+      "kind": "guarded",
+      "primary": 1,
+      "shortlist": [
+        1,
+        2,
+        3
+      ],
+      "incumbent_position": 1,
+      "budgets": [
+        130,
+        81,
+        132
+      ]
+    },
+    {
+      "kind": "guarded",
+      "primary": 1,
+      "shortlist": [
+        1,
+        2,
+        3
+      ],
+      "incumbent_position": 1,
+      "budgets": [
+        130,
+        130,
+        83
+      ]
+    }
+  ],
+  "rows": {
+    "coarse": {
+      "statistics": [
+        [
+          0.5478145998259492,
+          0.005973154181696122,
+          0.0,
+          0.009667151000473693
+        ],
+        [
+          0.5638066001824125,
+          0.004742378394676755,
+          0.0,
+          0.008189268699210234
+        ],
+        [
+          0.5621207723387143,
+          0.005765208639261488,
+          0.0,
+          0.009875096542908333
+        ]
+      ],
+      "costs": [
+        268.7786269549352,
+        267.00157965871534,
+        295.20383211045277
+      ],
+      "diagnostics": {
+        "predictive_log_evidence_error": 0.0,
+        "components": 1024,
+        "continuous_points_per_component": 4096,
+        "total_points": 4194304,
+        "all_positive_components_retained": true,
+        "continuous_scramble_scope": "component",
+        "integrated_mean_position": 1,
+        "distinct_continuous_scrambles": 1024,
+        "allocation_count": 3,
+        "joint_coordinate_blocks": 64,
+        "certificate_power_pairs": 6
+      },
+      "separate_cpu_seconds": 19.153831476,
+      "shared_cpu_seconds": 11.187983847999998,
+      "cpu_speedup": 1.7120002796056955,
+      "maximum_value_difference": 0.0,
+      "maximum_cost_difference": 0.0,
+      "maximum_frozen_anchor_value_difference": 0.0,
+      "frozen_anchor_cost_difference": 5.684341886080802e-14
+    },
+    "candidate": {
+      "statistics": [
+        [
+          0.5477937026287301,
+          0.005973209022001173,
+          0.0,
+          0.009667610920168325
+        ],
+        [
+          0.5637832074677331,
+          0.0047424510780178265,
+          0.0,
+          0.008189707449577787
+        ],
+        [
+          0.5620974115229401,
+          0.005765316547799648,
+          0.0,
+          0.009875503394369873
+        ]
+      ],
+      "costs": [
+        268.78132479536237,
+        267.0046070078087,
+        295.2057348427041
+      ],
+      "diagnostics": {
+        "predictive_log_evidence_error": -1.1102230246251565e-16,
+        "components": 1024,
+        "continuous_points_per_component": 16384,
+        "total_points": 16777216,
+        "all_positive_components_retained": true,
+        "continuous_scramble_scope": "component",
+        "integrated_mean_position": 1,
+        "distinct_continuous_scrambles": 1024,
+        "allocation_count": 3,
+        "joint_coordinate_blocks": 64,
+        "certificate_power_pairs": 6
+      },
+      "separate_cpu_seconds": 103.260416597,
+      "shared_cpu_seconds": 54.04192197500001,
+      "cpu_speedup": 1.9107465616187493,
+      "maximum_value_difference": 0.0,
+      "maximum_cost_difference": 0.0
+    }
+  },
+  "cpu_seconds": 188.318670772,
+  "peak_rss_mb": 362.921875,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0
+}

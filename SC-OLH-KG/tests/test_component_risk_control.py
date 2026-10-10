@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from core.conditional_raw_reference import (component_control_risk_statistics,
-    component_risk_statistics, shared_risk_reference,conditional_risk_action_statistics)
+    component_risk_statistics, component_risk_allocations, shared_risk_reference,conditional_risk_action_statistics)
 from test_conditional_terminal_kg import correlated_fields
 from test_positive_source_mixture import terminal
 
@@ -18,6 +18,29 @@ class ComponentRiskControlTests(unittest.TestCase):
     def seeds(self,field):
         _,rank=np.unique(field.means,axis=0,return_inverse=True)
         return 202610077+rank*104729
+
+    def test_budget_group_retains_each_joint_value_and_cost(self):
+        from core.budgeted_guarded_kg import BudgetedTerminalActions
+        terminal=BudgetedTerminalActions([self.action['shortlist']],[1],self.protocol)
+        actions=[dict(self.action,budgets=b) for kind,_,_,b in terminal.allocations(359) if kind=='guarded']
+        for raw in (False,True):
+            kwargs=dict(query=0,raw=raw,order=16,power=4,seed=self.seeds(self.field),integrated_position=1)
+            values,costs,d=component_risk_allocations(self.field,self.future,actions,self.label,self.score,self.protocol,**kwargs)
+            singles=[component_risk_statistics(self.field,self.future,a,self.label,self.score,self.protocol,**kwargs) for a in actions]
+            np.testing.assert_allclose(values,[s[0] for s in singles],atol=1e-13,rtol=0.)
+            np.testing.assert_allclose(costs,[s[1] for s in singles],atol=1e-10,rtol=0.)
+            self.assertEqual(d['components'],len(self.field.means))
+            self.assertEqual(d['certificate_power_pairs'],6)
+            self.assertGreater(np.ptp(values[:,0]),1e-3)
+            self.assertTrue(np.all(costs<=359+1e-10))
+            split_before=copy.deepcopy(self.field);split_after=copy.deepcopy(self.future)
+            for field in (split_before,split_after):
+                indices=np.array([0,0,1]);field.means=field.means[indices];field.covariances=field.covariances[indices]
+                field.log_weights=field.log_weights[indices];field.log_weights[:2]-=np.log(2.)
+            new_values,new_costs,_=component_risk_allocations(split_before,split_after,actions,self.label,self.score,
+                self.protocol,**dict(kwargs,seed=self.seeds(split_before)))
+            np.testing.assert_allclose(new_values,values,atol=1e-13,rtol=0.)
+            np.testing.assert_allclose(new_costs,costs,atol=1e-10,rtol=0.)
 
     def test_ordinary_integral_matches_existing_rule_and_control_is_split_invariant(self):
         for raw in (False,True):

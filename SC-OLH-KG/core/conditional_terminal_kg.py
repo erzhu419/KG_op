@@ -121,19 +121,33 @@ def risk_coordinates_from_moments(eta, mean, covariance, position, nodes, mean_n
 def guarded_risk_values(coordinates, incumbent, budgets, protocol,
         integrated_position=None):
     """Pointwise values of the same correlated verifier branches."""
+    return next(guarded_risk_allocation_values(coordinates, incumbent, [budgets], protocol,
+        integrated_position=integrated_position))
+
+
+def guarded_risk_allocation_values(coordinates, incumbent, allocations, protocol,
+        integrated_position=None):
+    """Yield budget variants with shared policy/budget certificate powers."""
     draws, sigma, last_mean, last_variance = coordinates
-    n = len(budgets); delta = protocol['familywise_delta'] / n
+    n = len(allocations[0]); delta = protocol['familywise_delta'] / n
     integrated = n-1 if integrated_position is None else integrated_position
-    other = [i for i in range(n) if i != integrated]; powers = [None]*n
-    for column, i in enumerate(other):
-        powers[i] = conditional_safety_power(draws[:, column], sigma[:, i], budgets[i], protocol['chance_alpha'], delta)
-    sd, weights = _sd_quadrature(budgets[integrated])
-    threshold = _tolerance_factor(budgets[integrated], protocol['chance_alpha'], delta) * sd
-    total_sd = np.sqrt(last_variance + sigma[:, integrated]**2 / budgets[integrated])
-    powers[integrated] = ndtr(-(last_mean[:, None] + sigma[:, integrated, None] * threshold)/total_sd[:, None]) @ weights
-    branches, cost = risk_branch_statistics(np.stack(powers, axis=-1)[:, None], np.ones((len(draws), 1)),
-        incumbent, budgets, protocol)
-    return branches, cost
+    other = [i for i in range(n) if i != integrated]; cache = {}
+    for budgets in allocations:
+        powers = []
+        for i, budget in enumerate(budgets):
+            key = (i, budget)
+            if key not in cache:
+                if i != integrated:
+                    cache[key] = conditional_safety_power(draws[:, other.index(i)], sigma[:, i], budget,
+                        protocol['chance_alpha'], delta)
+                else:
+                    sd, weights = _sd_quadrature(budget)
+                    threshold = _tolerance_factor(budget, protocol['chance_alpha'], delta) * sd
+                    total_sd = np.sqrt(last_variance + sigma[:, i]**2 / budget)
+                    cache[key] = ndtr(-(last_mean[:, None] + sigma[:, i, None] * threshold)/total_sd[:, None]) @ weights
+            powers.append(cache[key])
+        yield risk_branch_statistics(np.stack(powers, axis=-1)[:, None], np.ones((len(draws), 1)),
+            incumbent, budgets, protocol)
 
 
 def guarded_risk_statistics(coordinates, incumbent, budgets, protocol, sample_weights=None,

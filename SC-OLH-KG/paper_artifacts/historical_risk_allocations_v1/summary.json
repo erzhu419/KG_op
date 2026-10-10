@@ -1,0 +1,48 @@
+{
+  "complete": true,
+  "record": "source_n1_o5_h1_p207",
+  "parts": 8,
+  "rules": {
+    "coarse": {
+      "order": 32,
+      "power": 7,
+      "separate_cpu_seconds": 148.31502978100002,
+      "shared_cpu_seconds": 75.783852308,
+      "cpu_speedup": 1.9570795791459574,
+      "minimum_part_speedup": 1.670523135655853,
+      "maximum_part_speedup": 2.1466113104536015,
+      "maximum_value_difference": 0.0,
+      "maximum_cost_difference": 0.0,
+      "mean_cpu_seconds_per_three_allocation_group": 37.891926154,
+      "estimated_73_groups_96_records_guarded_core_hours": 73.76294957978665
+    },
+    "candidate": {
+      "order": 64,
+      "power": 8,
+      "separate_cpu_seconds": 732.768559891,
+      "shared_cpu_seconds": 384.026695999,
+      "cpu_speedup": 1.9081188040450918,
+      "minimum_part_speedup": 1.6068286042366797,
+      "maximum_part_speedup": 2.2114465299046,
+      "maximum_value_difference": 0.0,
+      "maximum_cost_difference": 0.0,
+      "mean_cpu_seconds_per_three_allocation_group": 192.0133479995,
+      "estimated_73_groups_96_records_guarded_core_hours": 373.7859841056934
+    }
+  },
+  "maximum_frozen_anchor_value_difference": 0.0,
+  "maximum_frozen_anchor_cost_difference": 1.7053025658242404e-13,
+  "all_identity_mixed_action_differences": {
+    "raw": 0.0,
+    "projected": 0.0
+  },
+  "cpu_seconds": 1346.132248796,
+  "maximum_task_peak_rss_mb": 469.75390625,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "scope": "Cache equivalence and CPU cost on two opened guarded shortlists with all three original allocations. This does not establish convergence for all allocations or admit the full 365-action/96-record bank.",
+  "cost_estimate_scope": "Measured two opened shortlists; extrapolation excludes direct actions, objective integrals and controller overhead."
+}
