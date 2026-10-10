@@ -28,8 +28,8 @@ LABEL_MODES={'label-control':('label_control','resolution'),
 UPPER_MODES={'upper-decisions-pilot':'pilot','upper-decisions-full':'full'}
 
 
-def launch(stage):
-    manifest=('historical_upper_decision_refs_v1.json' if stage in UPPER_MODES else
+def launch(stage,plan=None):
+    manifest=Path(plan).name if plan else ('historical_upper_decision_refs_v1.json' if stage in UPPER_MODES else
         'historical_cdf_bank_v1.json' if stage=='cdf-bank-coarse' else 'historical_label_bank_v1.json' if stage in BANK_STAGES else
         'historical_'+LABEL_MODES[stage][0]+'_v1.json' if stage in LABEL_MODES else
         'historical_component_transfer_v1.json' if stage in TRANSFER_STAGES else 'historical_component_bank_v1.json')
@@ -126,13 +126,13 @@ def launch(stage):
     print('COMPLETE '+json.dumps(progress),flush=True)
 
 
-def collect_remote(stage,out):
+def collect_remote(stage,out,plan=None):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
     worker=(['performance.validate_historical_label_groups','collect','--stage','resolution',
         '--plan','performance/manifests/historical_body_reference_pilot_v1.json'] if stage=='body-reference-pilot' else
         ['performance.validate_historical_risk_competition','collect',
-            '--plan','performance/manifests/historical_risk_competition_batch_v1.json'] if stage=='risk-competition-batch' else
+            '--plan',plan or 'performance/manifests/historical_risk_competition_batch_v1.json'] if stage=='risk-competition-batch' else
         ['performance.validate_historical_upper_decisions','collect','--phase',UPPER_MODES[stage]] if stage in UPPER_MODES else
         ['performance.probe_historical_label_gh','collect','--stage',BANK_STAGES[stage]] if stage in ('label-bank-gh-pilot','label-bank-gh-full') else
         ['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage],
@@ -350,7 +350,9 @@ if __name__=='__main__':
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
         'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
         'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer','continue-label-bank']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
+    parser.add_argument('--plan',help='Manifest path for risk-competition-batch')
     args=parser.parse_args()
+    if args.plan and args.stage!='risk-competition-batch':parser.error('--plan requires risk-competition-batch')
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
     elif args.stage=='continue-bank-resolution':continue_resolution_pilot()
@@ -364,6 +366,7 @@ if __name__=='__main__':
     elif args.stage in BANK_STAGES:
         launch(args.stage);collect_remote(args.stage,ROOT/'paper_artifacts'/('historical_cdf_bank_v1' if args.stage=='cdf-bank-coarse' else 'historical_label_bank_v1'))
     elif args.stage in LABEL_MODES:
-        launch(args.stage)
-        collect_remote(args.stage,ROOT/'paper_artifacts'/('historical_'+LABEL_MODES[args.stage][0]+'_v1'))
+        launch(args.stage,args.plan)
+        out=ROOT/json.loads((ROOT/args.plan).read_text())['output'] if args.plan else ROOT/'paper_artifacts'/('historical_'+LABEL_MODES[args.stage][0]+'_v1')
+        collect_remote(args.stage,out,args.plan)
     else:launch(args.stage)

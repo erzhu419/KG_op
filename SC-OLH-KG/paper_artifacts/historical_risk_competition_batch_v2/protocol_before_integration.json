@@ -1,0 +1,573 @@
+{
+  "manifest": {
+    "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+    "output": "paper_artifacts/historical_risk_competition_batch_v2",
+    "batch_plan": "paper_artifacts/historical_risk_competition_batch_v2/batch_input.json",
+    "maximum_estimated_cpu_seconds": 3600,
+    "cpu_reserves": {
+      "cached_analysis_reserve": 240,
+      "preparation_collection": 120,
+      "updated_assembly": 240
+    },
+    "maximum_live_workers": 8,
+    "maximum_job_cpu_seconds": 600,
+    "maximum_action_difference": 0.0001,
+    "selection_rule": "Execute the frozen7-combination gap-ordered batch priced in historical_risk_competition_batch_v1/next_cost_plan.json,without reranking after observing its references. All14 identity shards reuse the existing integrator and original source anchor. Reprice only missing E5/E7/E8/F8/H8/E9 rules at matching measured maxima plus20percent and setup; preparation,collection and assembly share the cumulative3600 CPU-second phase cap.",
+    "scope": "Opened development state and frozen query63,365 actions,359 budget. Preserve source prior,all8 identity scores,all512/1024 positive utility components,covariance and verifier. No physical/source-fit/verifier calls or independent confirmation. Finite numerical comparisons do not establish fullCDF/outerKG or independent deployment advantage."
+  },
+  "resolution_plan": {
+    "selected": [
+      {
+        "record": "source_n1_o5_h1_p196",
+        "kind": "projected",
+        "group": 63,
+        "cdf": 0.04665547990527656,
+        "minimum_gap": 0.0008204185468609904,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 137.7988793496,
+          "5": 277.0184282136
+        },
+        "estimated_new_cpu_seconds": 414.81730756319996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.5363221329999999,
+            "E7": 6.795460741,
+            "E8": 15.178964051,
+            "F8": 14.902631567000004,
+            "H8": 37.190238152999996,
+            "E9": 38.22878281300001
+          },
+          "5": {
+            "E5": 3.1441553840000003,
+            "E7": 14.312797606999998,
+            "E8": 30.488004733,
+            "F8": 30.551856907999998,
+            "H8": 75.83489868699999,
+            "E9": 75.51697685900001
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      },
+      {
+        "record": "source_n1_o4_h1_p196",
+        "kind": "projected",
+        "group": 63,
+        "cdf": 0.04665547990527656,
+        "minimum_gap": 0.0008239221131469687,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 137.7988793496,
+          "5": 277.0184282136
+        },
+        "estimated_new_cpu_seconds": 414.81730756319996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.5363221329999999,
+            "E7": 6.795460741,
+            "E8": 15.178964051,
+            "F8": 14.902631567000004,
+            "H8": 37.190238152999996,
+            "E9": 38.22878281300001
+          },
+          "5": {
+            "E5": 3.1441553840000003,
+            "E7": 14.312797606999998,
+            "E8": 30.488004733,
+            "F8": 30.551856907999998,
+            "H8": 75.83489868699999,
+            "E9": 75.51697685900001
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      },
+      {
+        "record": "source_n1_o5_h1_p195",
+        "kind": "raw",
+        "group": 63,
+        "cdf": 0.02929226582801715,
+        "minimum_gap": 0.0009164055091740453,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 111.89913160799999,
+          "5": 196.55318689679996
+        },
+        "estimated_new_cpu_seconds": 308.45231850479996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.656099613000002,
+            "E7": 6.2482165850000015,
+            "E8": 12.35581029,
+            "F8": 12.462237371999997,
+            "H8": 28.574270882,
+            "E9": 30.952641597999992
+          },
+          "5": {
+            "E5": 3.347253170000002,
+            "E7": 12.030531731999986,
+            "E8": 26.469689423000002,
+            "F8": 23.834972009000005,
+            "H8": 48.374213235,
+            "E9": 48.73766284499999
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      },
+      {
+        "record": "source_n1_o5_h1_p196",
+        "kind": "raw",
+        "group": 63,
+        "cdf": 0.04665547990527656,
+        "minimum_gap": 0.0009233192924523737,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 111.89913160799999,
+          "5": 196.55318689679996
+        },
+        "estimated_new_cpu_seconds": 308.45231850479996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.656099613000002,
+            "E7": 6.2482165850000015,
+            "E8": 12.35581029,
+            "F8": 12.462237371999997,
+            "H8": 28.574270882,
+            "E9": 30.952641597999992
+          },
+          "5": {
+            "E5": 3.347253170000002,
+            "E7": 12.030531731999986,
+            "E8": 26.469689423000002,
+            "F8": 23.834972009000005,
+            "H8": 48.374213235,
+            "E9": 48.73766284499999
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      },
+      {
+        "record": "source_n1_o4_h1_p201",
+        "kind": "projected",
+        "group": 63,
+        "cdf": 0.18552790924165696,
+        "minimum_gap": 0.0009890521072716263,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 137.7988793496,
+          "5": 277.0184282136
+        },
+        "estimated_new_cpu_seconds": 414.81730756319996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.5363221329999999,
+            "E7": 6.795460741,
+            "E8": 15.178964051,
+            "F8": 14.902631567000004,
+            "H8": 37.190238152999996,
+            "E9": 38.22878281300001
+          },
+          "5": {
+            "E5": 3.1441553840000003,
+            "E7": 14.312797606999998,
+            "E8": 30.488004733,
+            "F8": 30.551856907999998,
+            "H8": 75.83489868699999,
+            "E9": 75.51697685900001
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      },
+      {
+        "record": "source_n1_o5_h1_p201",
+        "kind": "projected",
+        "group": 63,
+        "cdf": 0.18552790924165696,
+        "minimum_gap": 0.0010006934127351208,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 137.7988793496,
+          "5": 277.0184282136
+        },
+        "estimated_new_cpu_seconds": 414.81730756319996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.5363221329999999,
+            "E7": 6.795460741,
+            "E8": 15.178964051,
+            "F8": 14.902631567000004,
+            "H8": 37.190238152999996,
+            "E9": 38.22878281300001
+          },
+          "5": {
+            "E5": 3.1441553840000003,
+            "E7": 14.312797606999998,
+            "E8": 30.488004733,
+            "F8": 30.551856907999998,
+            "H8": 75.83489868699999,
+            "E9": 75.51697685900001
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      },
+      {
+        "record": "source_n1_o5_h1_p194",
+        "kind": "projected",
+        "group": 63,
+        "cdf": 0.015856984985622127,
+        "minimum_gap": 0.0010038805550842689,
+        "missing_rules": {
+          "4": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ],
+          "5": [
+            "E5",
+            "E7",
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        "estimated_identity_cpu_seconds": {
+          "4": 137.7988793496,
+          "5": 277.0184282136
+        },
+        "estimated_new_cpu_seconds": 414.81730756319996,
+        "selection_reasons": [
+          "frozen_gap_ordered_batch"
+        ],
+        "rules": [
+          "E5",
+          "E7",
+          "E8",
+          "F8",
+          "H8",
+          "E9"
+        ],
+        "anchor_rule": "G7",
+        "matching_timer_units": {
+          "4": {
+            "E5": 1.5363221329999999,
+            "E7": 6.795460741,
+            "E8": 15.178964051,
+            "F8": 14.902631567000004,
+            "H8": 37.190238152999996,
+            "E9": 38.22878281300001
+          },
+          "5": {
+            "E5": 3.1441553840000003,
+            "E7": 14.312797606999998,
+            "E8": 30.488004733,
+            "F8": 30.551856907999998,
+            "H8": 75.83489868699999,
+            "E9": 75.51697685900001
+          }
+        },
+        "timer_unit_scope": {
+          "4": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          },
+          "5": {
+            "E5": "same_group_identity_rule",
+            "E7": "same_group_identity_rule",
+            "E8": "same_group_identity_rule",
+            "F8": "same_group_identity_rule",
+            "H8": "same_group_identity_rule",
+            "E9": "same_group_identity_rule"
+          }
+        }
+      }
+    ],
+    "estimated_cpu_seconds": 2690.9911748256,
+    "cumulative_estimated_cpu_seconds": 3290.9911748256,
+    "maximum_estimated_cpu_seconds": 3600,
+    "maximum_estimated_worker_cpu_seconds": 277.0184282136,
+    "estimated_cost_admitted": true
+  }
+}

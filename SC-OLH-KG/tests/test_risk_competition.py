@@ -3,13 +3,29 @@ import contextlib
 import io
 import json
 import tempfile
+import types
 from pathlib import Path
 from unittest.mock import patch
 
 from performance.validate_historical_risk_competition import select_competitors,selection_rows,prepare,PLAN
+from performance import launch_historical_component_bank as launcher
 
 
 class RiskCompetitionTests(unittest.TestCase):
+    def test_batch_collection_uses_the_requested_manifest_and_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out=root/'paper_artifacts/batch_v2';out.mkdir(parents=True)
+            plan='performance/manifests/historical_risk_competition_batch_v2.json'
+            result=dict(complete=True,groups=[]);commands=[]
+            def run_on(node,command,**kwargs):
+                commands.append(command)
+                return (0,'collected','') if len(commands)==1 else (0,json.dumps(result),'')
+            with patch.object(launcher,'ROOT',root),patch.dict('sys.modules',scheduler=types.SimpleNamespace(run_on=run_on)),contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(launcher.collect_remote('risk-competition-batch',out,plan),result)
+            self.assertIn('--plan '+plan,commands[0])
+            self.assertIn('paper_artifacts/batch_v2/summary.json',commands[1])
+            self.assertEqual(json.loads((out/'summary.json').read_text()),result)
+
     def test_batch_reuses_the_frozen_order_and_records_without_reranking(self):
         priced=dict(budgeted_batch_estimated_cpu_seconds=3284.,budgeted_batch=[
             dict(record='b',group=63,kind='projected',minimum_gap=.002),

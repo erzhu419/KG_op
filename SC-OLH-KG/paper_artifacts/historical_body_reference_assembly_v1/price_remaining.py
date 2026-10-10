@@ -1,5 +1,6 @@
 """Price missing opened-body references from existing matching timers only."""
 import json
+import argparse
 import signal
 import time
 from collections import Counter, defaultdict
@@ -9,6 +10,7 @@ from performance.assemble_historical_risk_references import OUTPUT
 from performance.validate_historical_component_transfer import part_path
 
 start=time.process_time();signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)
+p=argparse.ArgumentParser();p.add_argument('--plan',default='performance/manifests/historical_risk_competition_batch_v1.json');args=p.parse_args()
 out=ROOT/OUTPUT;summary=read(str(out/'summary.json'));assert summary['complete']
 layout=read('paper_artifacts/historical_cdf_bank_v1/bank_layout.json')
 base=ROOT/'paper_artifacts/historical_component_bank_v1'
@@ -33,8 +35,9 @@ for group in layout['groups']:
                     ('historical_risk_competition_v1','source_n1_o5_h1_p193')):
                 path=part_path(ROOT/'paper_artifacts'/directory,dict(record=record,group=gid,kind=kind),h)
                 if path.exists():observed.append(read(str(path))['rows'])
-            observed.extend(read(str(path))['rows'] for path in
-                (ROOT/'paper_artifacts/historical_risk_competition_batch_v1/parts').glob(f'*/{gid:03d}_{h}_{kind}.json'))
+            for directory in ('historical_risk_competition_batch_v1','historical_risk_competition_batch_v2'):
+                observed.extend(read(str(path))['rows'] for path in
+                    (ROOT/'paper_artifacts'/directory/'parts').glob(f'*/{gid:03d}_{h}_{kind}.json'))
             for rule in rules:
                 times=[d[rule]['cpu_seconds'] for d in observed if rule in d and d[rule]['cpu_seconds']>0]
                 if times:unit=max(times)
@@ -49,7 +52,7 @@ for group in layout['groups']:
 cache_dirs=('historical_component_transfer_v1','historical_label_control_v1',
     'historical_label_groups_v1','historical_cdf_bank_v1',
     'historical_body_reference_pilot_v1','historical_nearby_anchor_v1','historical_risk_competition_v1',
-    'historical_risk_competition_batch_v1')
+    'historical_risk_competition_batch_v1','historical_risk_competition_batch_v2')
 records=[];counts=Counter();used_anchor=set();total=defaultdict(float)
 for record in summary['records']:
     if record['cdf']>=.9:continue
@@ -76,7 +79,7 @@ for record in summary['records']:
         estimated_four_rule_comparison_cpu_seconds=1.2*(sum(costs[r] for r in rules)+8)))
 anchor=sum(v for key,v in missing_anchor.items() if key in used_anchor)
 estimate=1.2*(sum(total[r] for r in rules)+anchor+8)
-phase=read('performance/manifests/historical_risk_competition_batch_v1.json')
+phase=read(args.plan)
 reserve=sum(phase['cpu_reserves'].values())
 reserved_workers=read(phase['output']+'/resolution_plan.json')['estimated_cpu_seconds']
 result=dict(complete=True,records=records,missing_group_kind_record_checks=dict(counts),
@@ -84,7 +87,7 @@ result=dict(complete=True,records=records,missing_group_kind_record_checks=dict(
     estimated_candidate32_cpu_seconds=1.2*(total['E5']+8),estimated_four_rule_comparison_cpu_seconds=estimate,
     maximum_estimated_cpu_seconds=3600,full_matrix_cost_admitted=estimate+reserved_workers+reserve<=3600,
     phase_workers_already_reserved_cpu_seconds=reserved_workers,preparation_pricing_collection_reassembly_reserve_cpu_seconds=reserve,
-    phase_plan='performance/manifests/historical_risk_competition_batch_v1.json',
+    phase_plan=args.plan,
     cumulative_estimated_cpu_seconds=estimate+reserved_workers+reserve,
     pricing_fallbacks=fallbacks,cpu_seconds=time.process_time()-start,new_integrations=0,dispatched=False,
     scope='Original64 fine body labels and365 actions. Exclude actual integrated references,native direct analytic entries,raw direct136 and the two native63 references. E5/E7/F7/G5 paired comparisons use maximum measured same-group,identity,rule source/p207/p202/p197 and decision-competitor times; unavailable G5 uses the existing measured maximum G5/E5 ratio. Cached target rules and shared anchors are counted once. Eight worker CPU seconds and20 percent headroom. Cost projection only: broad-label controls can fail and require additional direct references; this is not a precision or speedup claim.')
