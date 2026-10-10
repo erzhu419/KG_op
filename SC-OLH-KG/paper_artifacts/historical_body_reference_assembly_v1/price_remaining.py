@@ -35,10 +35,9 @@ for group in layout['groups']:
                     ('historical_risk_competition_v1','source_n1_o5_h1_p193')):
                 path=part_path(ROOT/'paper_artifacts'/directory,dict(record=record,group=gid,kind=kind),h)
                 if path.exists():observed.append(read(str(path))['rows'])
-            for directory in ('historical_risk_competition_batch_v1','historical_risk_competition_batch_v2',
-                    'historical_risk_competition_batch_v3','historical_risk_competition_batch_v4','historical_risk_competition_batch_v5','historical_risk_competition_batch_v6','historical_risk_competition_batch_v7','historical_risk_competition_batch_v8'):
+            for directory in (ROOT/'paper_artifacts').glob('historical_risk_competition_batch_v*'):
                 observed.extend(read(str(path))['rows'] for path in
-                    (ROOT/'paper_artifacts'/directory/'parts').glob(f'*/{gid:03d}_{h}_{kind}.json'))
+                    (directory/'parts').glob(f'*/{gid:03d}_{h}_{kind}.json'))
             for rule in rules:
                 times=[d[rule]['cpu_seconds'] for d in observed if rule in d and d[rule]['cpu_seconds']>0]
                 if times:unit=max(times)
@@ -54,6 +53,9 @@ cache_dirs=('historical_component_transfer_v1','historical_label_control_v1',
     'historical_label_groups_v1','historical_cdf_bank_v1',
     'historical_body_reference_pilot_v1','historical_nearby_anchor_v1','historical_risk_competition_v1',
     'historical_risk_competition_batch_v1','historical_risk_competition_batch_v2','historical_risk_competition_batch_v3','historical_risk_competition_batch_v4','historical_risk_competition_batch_v5','historical_risk_competition_batch_v6','historical_risk_competition_batch_v7','historical_risk_competition_batch_v8')
+cache_dirs+=tuple(p.name for p in sorted((ROOT/'paper_artifacts').glob('historical_risk_competition_batch_v*'))
+    if p.name not in cache_dirs)
+
 records=[];counts=Counter();used_anchor=set();total=defaultdict(float)
 for record in summary['records']:
     if record['cdf']>=.9:continue

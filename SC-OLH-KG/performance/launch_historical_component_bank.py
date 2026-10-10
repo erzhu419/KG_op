@@ -345,14 +345,140 @@ def continue_pipeline():
     status_path.write_text(json.dumps(status,indent=2)+'\n');print('PIPELINE_DONE '+json.dumps(status),flush=True)
 
 
+def assemble_risk_phase(out,phase_plan):
+    """Finish one campaign phase before allowing its next eight-worker window."""
+    sys.path.insert(0,str(Path(CLI).parent))
+    import scheduler
+    path=out/'assembly_scheduler_spec.json';spec=json.loads(path.read_text())
+    if 'task_id' not in spec:
+        p=subprocess.run(spec['args'],text=True,capture_output=True)
+        spec.update(stdout=p.stdout,stderr=p.stderr,returncode=p.returncode)
+        if p.returncode:raise RuntimeError(p.stderr or p.stdout)
+        spec['task_id']=re.search(r'submitted (t\d+)',p.stdout).group(1)
+        path.write_text(json.dumps(spec,indent=2)+'\n')
+        args=[sys.executable,CLI,'dispatch','--task-id',spec['task_id'],'--no-bulk-window','--lock-timeout','20']
+        p=subprocess.run(args,text=True,capture_output=True)
+        (out/'assembly_dispatch.json').write_text(json.dumps(dict(args=args,stdout=p.stdout,
+            stderr=p.stderr,returncode=p.returncode),indent=2)+'\n')
+        if p.returncode:raise RuntimeError(p.stderr or p.stdout)
+    while True:
+        state={t['id']:t for t in json.loads(QUEUE.read_text())['tasks']}
+        task=state[spec['task_id']]
+        if task['status']=='done':break
+        if task['status'] not in ('queued','launching','running'):
+            raise RuntimeError('Risk assembly stopped: '+task['id'])
+        time.sleep(20)
+    # Prior assemblies exposed DONE before the resource footer became readable.
+    # Wait for that footer on the same job; never resubmit a finished assembly.
+    for attempt in range(6):
+        rc,body,err=scheduler.run_on(task['node'],shlex.join(['tail','-n','12',task['log_path']]),timeout=35,check=False)
+        if rc:raise RuntimeError(err or body)
+        (out/'assembly.log').write_text(body.rstrip()+'\n')
+        resources=[json.loads(line.split(' ',1)[1]) for line in body.splitlines()
+            if line.startswith('SCHEDULEURM_RESOURCE ')]
+        if resources:break
+        if attempt<5:time.sleep(2)
+    assert resources,'Finished assembly has no CPU resource record'
+    (out/'assembly_resources.json').write_text(json.dumps(resources[-1],indent=2)+'\n')
+    jobs=json.loads((out/'risk-competition-batch_jobs.json').read_text())
+    ids=[j['id'] for j in jobs]+[spec['task_id']]
+    final={tid:{k:state[tid].get(k) for k in ('status','node','log_path','exit_code')} for tid in ids}
+    (out/'scheduler_final_states.json').write_text(json.dumps(final,indent=2)+'\n')
+    code="""from pathlib import Path
+import json
+b=Path(%r);out=b/%r
+s=json.loads((b/'paper_artifacts/historical_body_reference_assembly_v1/summary.json').read_text())
+assert s['complete']
+keys=['complete','reference_assembly','raw_model_net_preview','total','regions','prior_weights','action_count','fixed_action','computed_predictive_origins','omitted_predictive_origin_mass']
+a={k:s[k] for k in keys}
+a['records']=[{k:r[k] for k in ['record','raw_winners','native_winners']} for r in s['records']]
+rmap={r['record']:r for r in s['records']};a['selected_reference_decisions']=[]
+checked=json.loads((out/'summary.json').read_text())
+for v in checked['groups']:
+ row=dict(record=v['record'],kind=v['kind'],group=v['group'],admitted=v['hybrid_direct_admitted'])
+ if row['admitted']:
+  g=next(g for g in rmap[v['record']][v['kind']+'_referenced_competitors'] if g['group']==v['group'])
+  row.update(previous_minimum_gap=v['minimum_cached_gap'],**g)
+ a['selected_reference_decisions'].append(row)
+print(json.dumps(a))
+"""%(REMOTE,str(out.relative_to(ROOT)))
+    rc,body,err=scheduler.run_on('node005',shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
+    if rc:raise RuntimeError(err or body)
+    result=json.loads(body);(out/'assembly_after.json').write_text(json.dumps(result,indent=2)+'\n')
+    result['assembly_resources']=resources[-1]
+    return result
+
+
+def continue_risk_competition(plan):
+    """Drain the frozen remaining comparisons through the existing dispatcher."""
+    spec=json.loads((ROOT/plan).read_text());out=ROOT/spec['output'];path=out/'status.json'
+    status=json.loads(path.read_text()) if path.exists() else dict(state='ready',completed_phases=[],
+        completed_combinations=0,admitted_combinations=0,precision_holds=[],reported_worker_cpu_seconds=0.,
+        maximum_live_workers=8,independent_confirmation=False,full_predictive_integration_admitted=False)
+    if status['state'] in ('complete','complete_with_precision_holds'):return status
+    baseline=json.loads((out/'baseline_assembly.json').read_text())
+    original={r['record']:r for r in baseline['records']}
+    try:
+        for phase in spec['phases']:
+            if phase['plan'] in status['completed_phases']:continue
+            phase_out=ROOT/phase['output']
+            prepared=json.loads((phase_out/'resolution_plan.json').read_text())
+            assert prepared['estimated_cost_admitted'] and prepared['cumulative_estimated_cpu_seconds']<=3600
+            status.update(state='running',current_phase=phase['plan'])
+            path.write_text(json.dumps(status,indent=2)+'\n')
+            launch('risk-competition-batch',phase['plan'])
+            summary_path=phase_out/'summary.json'
+            summary=json.loads(summary_path.read_text()) if summary_path.exists() else collect_remote(
+                'risk-competition-batch',phase_out,phase['plan'])
+            assert summary['complete']
+            assembled=assemble_risk_phase(phase_out,phase['plan'])
+            for k in ('prior_weights','action_count','fixed_action','computed_predictive_origins','omitted_predictive_origin_mass'):
+                assert assembled[k]==baseline[k],k
+            held=[{k:r[k] for k in ('record','kind','group')} for r in summary['groups'] if not r['hybrid_direct_admitted']]
+            status['completed_phases'].append(phase['plan'])
+            status['completed_combinations']+=len(summary['groups'])
+            status['admitted_combinations']+=sum(r['hybrid_direct_admitted'] for r in summary['groups'])
+            status['precision_holds'].extend(held)
+            status['reported_worker_cpu_seconds']+=summary['successful_task_cpu_seconds']+assembled['assembly_resources']['process_cpu_seconds']
+            status.update(reference_groups=assembled['reference_assembly']['groups'],model_net_preview=assembled['raw_model_net_preview'],
+                changed_recommendation_records=[r['record'] for r in assembled['records'] if any(
+                    r[k]!=original[r['record']][k] for k in ('raw_winners','native_winners'))])
+            path.write_text(json.dumps(status,indent=2)+'\n')
+            print('RISK_CAMPAIGN_PHASE_DONE '+json.dumps(status),flush=True)
+        sys.path.insert(0,str(Path(CLI).parent))
+        import scheduler
+        command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
+            'PYTHONPATH=.',PYTHON,'paper_artifacts/historical_body_reference_assembly_v1/price_remaining.py',
+            '--plan',spec['phases'][-1]['plan']])
+        rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
+        (out/'remaining_pricing.log').write_text(body.rstrip()+'\n')
+        (out/'remaining_pricing_command.json').write_text(json.dumps(dict(command=command,returncode=rc),indent=2)+'\n')
+        if rc:raise RuntimeError(err or body)
+        code="from pathlib import Path;import json;p=Path(%r);print(json.dumps({n:json.loads((p/n).read_text()) for n in ['compact_summary.json','remaining_cost_plan.json']}))"%(REMOTE+'/paper_artifacts/historical_body_reference_assembly_v1')
+        rc,body,err=scheduler.run_on('node005',shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
+        if rc:raise RuntimeError(err or body)
+        final=json.loads(body)
+        for name,value in final.items():(ROOT/'paper_artifacts/historical_body_reference_assembly_v1'/name).write_text(json.dumps(value,indent=2)+'\n')
+        assert status['completed_combinations']==spec['combinations']
+        status.update(state='complete_with_precision_holds' if status['precision_holds'] else 'complete',
+            remaining_guarded63_checks=spec['combinations']-status['admitted_combinations'],
+            remaining_missing_group_kind_record_checks=final['remaining_cost_plan.json']['missing_group_kind_record_checks'])
+    except Exception as error:
+        status.update(state='failed',error=str(error));path.write_text(json.dumps(status,indent=2)+'\n');raise
+    path.write_text(json.dumps(status,indent=2)+'\n');print('RISK_CAMPAIGN_DONE '+json.dumps(status),flush=True)
+    return status
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
         'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
-        'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer','continue-label-bank']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
+        'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer','continue-label-bank',
+        'continue-risk-competition']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
     parser.add_argument('--plan',help='Manifest path for risk-competition-batch')
     args=parser.parse_args()
-    if args.plan and args.stage!='risk-competition-batch':parser.error('--plan requires risk-competition-batch')
+    if args.plan and args.stage not in ('risk-competition-batch','continue-risk-competition'):
+        parser.error('--plan requires risk-competition-batch or continue-risk-competition')
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
     elif args.stage=='continue-bank-resolution':continue_resolution_pilot()
@@ -361,6 +487,8 @@ if __name__=='__main__':
     elif args.stage=='continue-bank-tail-resolution':continue_tail('bank-tail-resolution')
     elif args.stage=='continue-transfer':continue_transfer()
     elif args.stage=='continue-label-bank':continue_label_bank()
+    elif args.stage=='continue-risk-competition':continue_risk_competition(
+        args.plan or 'performance/manifests/historical_risk_competition_remaining_v1.json')
     elif args.stage in UPPER_MODES:
         launch(args.stage);collect_remote(args.stage,ROOT/'paper_artifacts/historical_upper_decision_refs_v1')
     elif args.stage in BANK_STAGES:

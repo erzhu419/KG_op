@@ -1,0 +1,16 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_risk_competition_batch_v11",
+  "batch_plan": "paper_artifacts/historical_risk_competition_batch_v11/batch_input.json",
+  "maximum_estimated_cpu_seconds": 3600,
+  "cpu_reserves": {
+    "cached_analysis_reserve": 240,
+    "preparation_collection": 120,
+    "updated_assembly": 240
+  },
+  "maximum_live_workers": 8,
+  "maximum_job_cpu_seconds": 600,
+  "maximum_action_difference": 0.0001,
+  "selection_rule": "Frozen contiguous slice of all65 remaining guarded63 comparisons priced after batch_v8. Preserve the global gap order; no reranking after references. Reuse existing integrator and source anchor,matching measured maxima plus20percent and setup. Each separately reserved phase includes all600 CPU seconds of preparation/collection/analysis/assembly reserves within3600.",
+  "scope": "Opened development state and frozen query63,365 actions,359 budget. Preserve source prior,all8 identity scores,all512/1024 positive utility components,covariance and verifier. No physical/source-fit/verifier calls or independent confirmation. Finite numerical comparisons do not establish fullCDF/outerKG or independent deployment advantage."
+}

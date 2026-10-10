@@ -124,9 +124,12 @@ def load_entries(layout):
         data = tables(dict(context, actions=[layout['actions'][i] for i in group['action_indices']]),
             {h:read(str(base/'parts'/row['record']/f'{row["group"]}_{h}.json'))['rows']['E7'] for h in context['utility_identities']})
         add_entry(entries, context, group, 'raw', *data, 'direct_target', str(base/'full_summary.json'), 'E7')
-    for directory in ('historical_reference_upgrade_v1','historical_risk_competition_v1',
+    directories=('historical_reference_upgrade_v1','historical_risk_competition_v1',
             'historical_risk_competition_batch_v1','historical_risk_competition_batch_v2',
-            'historical_risk_competition_batch_v3','historical_risk_competition_batch_v4','historical_risk_competition_batch_v5','historical_risk_competition_batch_v6','historical_risk_competition_batch_v7','historical_risk_competition_batch_v8'):
+            'historical_risk_competition_batch_v3','historical_risk_competition_batch_v4','historical_risk_competition_batch_v5','historical_risk_competition_batch_v6','historical_risk_competition_batch_v7','historical_risk_competition_batch_v8')
+    directories+=tuple(p.parent.name for p in sorted((ROOT/'paper_artifacts').glob(
+        'historical_risk_competition_batch_v*/summary.json')) if p.parent.name not in directories)
+    for directory in directories:
         base = ROOT/'paper_artifacts'/directory
         result = read(str(base/'summary.json')); assert result['complete']
         contexts = read(str(base/'contexts.json'))

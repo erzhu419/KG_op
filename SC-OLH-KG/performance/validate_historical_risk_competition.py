@@ -16,6 +16,8 @@ CACHES=('historical_component_transfer_v1','historical_label_control_v1',
     'historical_nearby_anchor_v1','historical_label_bank_v1','historical_decision_regions_v1',
     'historical_risk_competition_v1','historical_risk_competition_batch_v1','historical_risk_competition_batch_v2',
     'historical_risk_competition_batch_v3','historical_risk_competition_batch_v4','historical_risk_competition_batch_v5','historical_risk_competition_batch_v6','historical_risk_competition_batch_v7','historical_risk_competition_batch_v8')
+CACHES+=tuple(p.name for p in sorted((ROOT/'paper_artifacts').glob('historical_risk_competition_batch_v*'))
+    if p.name not in CACHES)
 
 
 def select_competitors(report):

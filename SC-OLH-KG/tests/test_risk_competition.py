@@ -12,6 +12,82 @@ from performance import launch_historical_component_bank as launcher
 
 
 class RiskCompetitionTests(unittest.TestCase):
+    def test_campaign_waits_for_delayed_resource_footer_without_resubmitting(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out=root/'phase';out.mkdir()
+            (out/'assembly_scheduler_spec.json').write_text(json.dumps(dict(task_id='assembly')))
+            (out/'risk-competition-batch_jobs.json').write_text(json.dumps([dict(id='worker')]))
+            queue=root/'queue.json';queue.write_text(json.dumps(dict(tasks=[dict(id=tid,status='done',
+                node='node006',log_path='/tmp/log',exit_code=0) for tid in ('worker','assembly')])))
+            responses=iter(['SCHEDULEURM_DONE {}',
+                'SCHEDULEURM_RESOURCE {"process_cpu_seconds":70,"peak_rss_mb":4600}',
+                '{"complete":true}'])
+            with (patch.object(launcher,'ROOT',root),patch.object(launcher,'QUEUE',queue),
+                patch.dict('sys.modules',scheduler=types.SimpleNamespace(run_on=lambda *a,**kw:(0,next(responses),''))),
+                patch.object(launcher.time,'sleep') as sleep,patch.object(launcher.subprocess,'run') as submit):
+                result=launcher.assemble_risk_phase(out,'phase.json')
+            submit.assert_not_called();sleep.assert_called_once_with(2)
+            self.assertEqual(result['assembly_resources']['process_cpu_seconds'],70)
+
+    def campaign_fixture(self,root):
+        phases=[dict(plan=f'phase{i}.json',output=f'phase{i}') for i in (1,2)]
+        out=root/'campaign';out.mkdir()
+        (root/'campaign.json').write_text(json.dumps(dict(output='campaign',phases=phases,combinations=2)))
+        baseline=dict(records=[dict(record='a',raw_winners=[355],native_winners=[355])],
+            prior_weights=[.7,.3],action_count=365,fixed_action=355,computed_predictive_origins=[4,5],
+            omitted_predictive_origin_mass=0.)
+        (out/'baseline_assembly.json').write_text(json.dumps(baseline))
+        (root/'paper_artifacts/historical_body_reference_assembly_v1').mkdir(parents=True)
+        for p in phases:
+            d=root/p['output'];d.mkdir()
+            (d/'resolution_plan.json').write_text(json.dumps(dict(estimated_cost_admitted=True,
+                cumulative_estimated_cpu_seconds=3200)))
+        return out,baseline
+
+    def test_campaign_runs_phases_in_order_and_keeps_numerical_holds_visible(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out,baseline=self.campaign_fixture(root);events=[]
+            def collect(stage,phase_out,plan):
+                events.append(('collect',plan))
+                return dict(complete=True,groups=[dict(record=plan,kind='raw',group=63,
+                    hybrid_direct_admitted=plan=='phase2.json')],successful_task_cpu_seconds=100)
+            def assemble(phase_out,plan):
+                events.append(('assemble',plan))
+                return dict(baseline,reference_assembly=dict(groups=10),raw_model_net_preview=.01,
+                    assembly_resources=dict(process_cpu_seconds=10))
+            def run_on(node,command,**kwargs):
+                if 'price_remaining.py' in command:return 0,'priced',''
+                return 0,json.dumps({'compact_summary.json':{},'remaining_cost_plan.json':{
+                    'missing_group_kind_record_checks':{'raw':1}}}),''
+            with (patch.object(launcher,'ROOT',root),patch.object(launcher,'launch',side_effect=lambda s,p:events.append(('launch',p))),
+                patch.object(launcher,'collect_remote',side_effect=collect),patch.object(launcher,'assemble_risk_phase',side_effect=assemble),
+                patch.dict('sys.modules',scheduler=types.SimpleNamespace(run_on=run_on)),contextlib.redirect_stdout(io.StringIO())):
+                result=launcher.continue_risk_competition('campaign.json')
+            self.assertEqual(events,[(s,p) for p in ('phase1.json','phase2.json') for s in ('launch','collect','assemble')])
+            self.assertEqual(result['state'],'complete_with_precision_holds')
+            self.assertEqual(result['completed_combinations'],2)
+            self.assertEqual(result['remaining_guarded63_checks'],1)
+            self.assertEqual(result['precision_holds'],[dict(record='phase1.json',kind='raw',group=63)])
+            self.assertEqual(json.loads((out/'status.json').read_text()),result)
+
+    def test_campaign_stops_after_scheduler_failure_without_launching_next_phase(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out,_=self.campaign_fixture(root)
+            with (patch.object(launcher,'ROOT',root),patch.object(launcher,'launch',side_effect=RuntimeError('worker stopped')) as launch):
+                with self.assertRaisesRegex(RuntimeError,'worker stopped'):launcher.continue_risk_competition('campaign.json')
+            launch.assert_called_once_with('risk-competition-batch','phase1.json')
+            self.assertEqual(json.loads((out/'status.json').read_text())['state'],'failed')
+
+    def test_campaign_rejects_phase_over_budget_before_launch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out,_=self.campaign_fixture(root)
+            (root/'phase1/resolution_plan.json').write_text(json.dumps(dict(estimated_cost_admitted=True,
+                cumulative_estimated_cpu_seconds=3601)))
+            with patch.object(launcher,'ROOT',root),patch.object(launcher,'launch') as launch:
+                with self.assertRaises(AssertionError):launcher.continue_risk_competition('campaign.json')
+            launch.assert_not_called()
+            self.assertEqual(json.loads((out/'status.json').read_text())['state'],'failed')
+
     def test_batch_collection_uses_the_requested_manifest_and_output(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);out=root/'paper_artifacts/batch_v2';out.mkdir(parents=True)
