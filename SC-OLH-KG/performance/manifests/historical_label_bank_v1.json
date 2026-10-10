@@ -1,0 +1,14 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_label_bank_v1",
+  "records": ["source_n1_o4_h1_p207"],
+  "groups": [],
+  "cache_outputs": ["paper_artifacts/historical_component_transfer_v1", "paper_artifacts/historical_label_control_v1", "paper_artifacts/historical_label_groups_v1"],
+  "validated_groups": "paper_artifacts/historical_label_groups_v1/summary.json",
+  "validated_direct_groups": "paper_artifacts/historical_label_control_v1/summary.json",
+  "shards_per_identity_kind": 8,
+  "maximum_action_difference": 0.0001,
+  "maximum_estimated_cpu_seconds_per_stage": 3600,
+  "maximum_job_cpu_seconds": 600,
+  "scope": "Nearest existing development label, all original365 actions and both valuation kinds. Reuse per-group admitted G7/E8/E9 anchors, existing target rule caches and validated worst-group selections. Coarse32 and fine128 are separately priced stages, each limited to3600 estimated CPU seconds. Their comparison alone does not admit independent/GH precision or full KG. At most8 low-priority single-core workers, no new physical/source-fit/verifier calls or independent confirmation."
+}

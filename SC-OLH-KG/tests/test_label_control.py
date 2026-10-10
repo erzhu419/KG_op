@@ -58,7 +58,7 @@ class LabelControlTests(unittest.TestCase):
 
     def fixture(self):
         rng=np.random.default_rng(83)
-        bundle=dict(utility_identities=[4,5],prior_weights=[.125]*8,
+        bundle=dict(utility_identities=[4,5],prior_weights=[.125]*8,actions=[{},{},{}],
             head_log_scores=rng.normal(size=8).tolist(),
             opposite=[dict(raw=rng.uniform(size=(8,3,4)).tolist(),
                 head_log_scores=rng.normal(size=8).tolist()) for _ in range(4)])

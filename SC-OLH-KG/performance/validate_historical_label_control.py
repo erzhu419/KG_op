@@ -23,7 +23,8 @@ def controlled_row(high, target, anchor):
 
 
 def tables(bundle, rows):
-    s, c = np.zeros((8, 3, 4)), np.zeros((8, 3))
+    identities, actions = len(bundle['prior_weights']), len(bundle['actions'])
+    s, c = np.zeros((identities, actions, 4)), np.zeros((identities, actions))
     for h, row in rows.items():
         s[h], c[h] = row['statistics'], row['costs']
     return s, c

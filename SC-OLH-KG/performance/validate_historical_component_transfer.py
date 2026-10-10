@@ -69,13 +69,17 @@ def prepare_contexts(spec):
             **{k:row[k] for k in ('head','position','label','head_log_scores','utility_identities','replicates','eta_label')}, groups={})
         for gid in spec['groups']:
             group = original['groups'][gid]; indices = group['action_indices']
-            assert group['kind'] == 'guarded' and len(indices) == 3
+            assert len(indices) == {'guarded':3, 'direct':2}[group['kind']]
             context['groups'][str(gid)] = dict(action_indices=indices,
                 opposite=[dict(position=r['position'], head_log_scores=r['head_log_scores'],
                     **{k:np.asarray(r[k][str(max(map(int,r[k])))]['statistics'])[:,indices].tolist()
                         for k in ('raw','projected')}) for r in opposite[origin]['records']],
                 baseline={k:dict(statistics=np.asarray(row[k]['12']['statistics'])[:,indices].tolist(),
                     costs=np.asarray(row[k]['12']['costs'])[:,indices].tolist()) for k in ('raw','projected')})
+            if group['kind'] == 'direct':
+                context['groups'][str(gid)]['native_reference_difference'] = float(np.max(abs(
+                    np.asarray(row['projected']['10']['statistics'])[:,indices] -
+                    np.asarray(row['projected']['12']['statistics'])[:,indices])))
             shared = compressed_read(base/'marginals'/f'{gid:03d}.json.gz')
             bundle = record_bundle(shared, context)
             if name == original['name']:

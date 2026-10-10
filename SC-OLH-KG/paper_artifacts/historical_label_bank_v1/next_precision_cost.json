@@ -1,0 +1,33 @@
+{
+  "plans": {
+    "independent128": {
+      "missing_group_counts": {
+        "raw": 141,
+        "projected": 69
+      },
+      "estimated_missing_integral_cpu_seconds": {
+        "raw": 1895.3806221230009,
+        "projected": 1056.5147794140007
+      },
+      "estimated_cpu_seconds": 3580.674481844402,
+      "maximum_estimated_cpu_seconds": 3600,
+      "estimated_cost_admitted": true,
+      "dispatched": false
+    },
+    "gh64_128": {
+      "missing_group_counts": {
+        "raw": 141,
+        "projected": 69
+      },
+      "estimated_missing_integral_cpu_seconds": {
+        "raw": 4042.4153572259993,
+        "projected": 2244.827678473999
+      },
+      "estimated_cpu_seconds": 7583.091642839998,
+      "maximum_estimated_cpu_seconds": 3600,
+      "estimated_cost_admitted": false,
+      "dispatched": false
+    }
+  },
+  "scope": "Remaining unadmitted target groups only. Reuse historical matching rule timers, plus32 worker CPU seconds and20 percent headroom. Full GH check exceeding the phase cap must be redesigned before dispatch; no precision admission or new integration."
+}

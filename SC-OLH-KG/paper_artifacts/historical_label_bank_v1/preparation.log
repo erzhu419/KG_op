@@ -1,0 +1,31 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+Traceback (most recent call last):
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/validate_historical_label_bank.py", line 208, in <module>
+    if args.mode=='prepare':prepare(args.plan)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/validate_historical_label_bank.py", line 81, in prepare
+    save(path,dict(record=name,group=gid,kind=kind,identity=h,rows=cached))
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/run_legacy_related_inventory_source.py", line 29, in save
+    path.write_text(json.dumps(value, indent=2) + '\n')
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/pathlib.py", line 1154, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_label_bank_v1/parts/source_n1_o4_h1_p207/000_4_raw.json'
+SCHEDULEURM_DONE {"complete": true, "records": ["source_n1_o4_h1_p207"], "actions": 365, "source_components": {"4": 512, "5": 1024}, "anchor_rules": {"raw": {"G7": 112, "E8": 29, "E9": 5}, "projected": {"G7": 49, "E8": 19, "E9": 5}}, "reused_target_rule_rows": 36, "reused_validated_groups": 5, "stage_estimated_cpu_seconds": {"coarse": 1007.2500273192005, "fine": 3586.361955919198}, "stage_estimated_cost_admitted": {"coarse": true, "fine": true}, "cpu_seconds": 29.42275998, "full_posterior_restorations": 0, "copied_joint_marginal_bytes": 0, "new_physical_calls": 0, "new_source_fits": 0, "new_verifier_calls": 0, "independent_confirmation": false, "full_predictive_integration_admitted": false}
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)

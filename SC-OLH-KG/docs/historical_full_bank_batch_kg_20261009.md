@@ -221,3 +221,11 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 16片新增积分计时2203.51 CPU秒，低于本阶段预计2663.43秒；与前轮累计5580.87秒，全部结束，最多8个低优先级单核。28项测试通过，旧E8复用且不重复计费。首批8片在积分前因CLI参数退出，修复后重派，记录在`failed_direct_start`。选用32点的六个组合，原同worker的32／128点计时28.97／117.31秒，局部积分快4.05倍；不含锚点准备、混合计值和精度检查，[缓存计时分析](../paper_artifacts/historical_label_groups_v1/direct_cost_analysis.json)，未新增积分测速。重放入口：服务器`python -m performance.validate_historical_label_groups prepare-direct`、`collect --stage direct`，本地`python -m performance.launch_historical_component_bank label-groups-direct`。
 
 下一步按各组历史G7／E8／E9及其已通过对照接入完整银行，避免统一升阶，再测总成本。原source meta-prior、全部分量／身份权重、联合协方差和验证预算保持。本轮仍限选定开发动作的数值诊断；完整银行跨观测、完整KG和独立决策收益待验证。
+
+## 完整365动作的近邻标签复用（2026-10-10）
+
+o4/p207距锚点标签约7.69e−5。沿用各组G7／E8／E9，原365动作的raw／native均通过32→128点比较，最大动作值差6.63e−7／3.08e−7，低于1e−4；32条固定目标头下推荐均未变。复用全部相关缓存和9个已有目标精度证据的组，实际装入其选定计值。全身份权重、512／1024正分量、联合协方差及预算保持。[汇总](../paper_artifacts/historical_label_bank_v1/fine_summary.json)。
+
+两个单独受3600预计CPU秒限制的阶段分别预计1007.25／3586.36秒，新增积分实耗802.24／2936.48秒，成功worker总计3817.01秒，准备另计29.42秒。64片全部结束，最多8个低优先级单核，峰值228MB。完整银行／边际留服务器，本地仅274KB计划、日志与汇总。direct固定359预算曾因浮点运算变成359.0000000000001，已按解析固定成本修复、用缓存重汇总；原汇总留档。33项相关测试通过。[运行账](../paper_artifacts/historical_label_bank_v1/execution_account.json)。服务器入口`python -m performance.validate_historical_label_bank prepare`及`collect --stage coarse|fine`；本地`python -m performance.launch_historical_component_bank continue-label-bank`，逐片命令在同名artifact目录。
+
+局限与下一步：32→128比较未替代独立／GH检查，已有完整目标精度证据仍仅raw15／native158动作；近邻标签未解决整个CDF主体覆盖、完整KG或独立决策收益。其余raw350／native207动作的独立128点检查预计3580.67秒，可接续；统一GH64／128点预计7583.09秒，超过阶段限制，应先降低残差积分成本再派发。这两项均尚未派发。[定价与重放脚本](../paper_artifacts/historical_label_bank_v1/next_precision_cost.json)及同目录`price_next_precision.py`。无新增物理、拟合或验证调用，独立确认块未读取；旧60/60前端证据保持原边界。
