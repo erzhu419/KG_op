@@ -1,0 +1,1338 @@
+{
+  "complete": true,
+  "reference_assembly": {
+    "groups": 897,
+    "group_scopes": {
+      "direct_target": 395,
+      "native_analytic": 292,
+      "paired_residual": 210
+    },
+    "groups_by_source": {
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_component_bank_v1/bank_tail_resolution_summary.json": 292,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_label_bank_v1/gh_full_summary.json": 292,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_label_control_v1/summary.json": 12,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_label_groups_v1/summary.json": 15,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_reference_upgrade_v1/summary.json": 33,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_body_reference_pilot_v1/summary.json": 5,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_nearby_anchor_v1/summary.json": 5,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_cdf_bank_v1/summary.json": 154,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_upper_decision_refs_v1/full_summary.json": 92,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_risk_competition_v1/summary.json": 3,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_risk_competition_batch_v1/summary.json": 7,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_risk_competition_batch_v2/summary.json": 7,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_risk_competition_batch_v3/summary.json": 8,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_risk_competition_batch_v4/summary.json": 7,
+      "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/paper_artifacts/historical_risk_competition_batch_v5/summary.json": 7
+    },
+    "body_totals": {
+      "raw": {
+        "unreferenced_actions": 22397,
+        "unreferenced_imprecise_action_head_pairs": 407321,
+        "unreferenced_relevant_action_head_pairs": 244207,
+        "objective_axis_imprecise_action_head_pairs": 0
+      },
+      "projected": {
+        "unreferenced_actions": 13464,
+        "unreferenced_imprecise_action_head_pairs": 388533,
+        "unreferenced_relevant_action_head_pairs": 241206,
+        "objective_axis_imprecise_action_head_pairs": 0
+      }
+    }
+  },
+  "raw_model_net_preview": 0.01357641652258601,
+  "total": {
+    "probability_mass": 0.9999999999940986,
+    "raw_switch_mass": 0.06439727678454278,
+    "native_switch_mass": 0.06993700618291745,
+    "raw_adaptation": 0.01364520862076887,
+    "achieved_adaptation": 0.013590218804522908,
+    "choice_loss": 5.498981624595991e-05
+  },
+  "regions": {
+    "(0.0, 0.9)": {
+      "probability_mass": 0.8999999999946892,
+      "raw_switch_mass": 0.0,
+      "native_switch_mass": 0.0,
+      "raw_adaptation": 0.0,
+      "achieved_adaptation": 0.0,
+      "choice_loss": 0.0
+    },
+    "(0.9, 0.93)": {
+      "probability_mass": 0.031140145681287708,
+      "raw_switch_mass": 0.00028614381383811153,
+      "native_switch_mass": 0.0022307818130122086,
+      "raw_adaptation": 1.369447137550373e-06,
+      "achieved_adaptation": -2.113401800213808e-05,
+      "choice_loss": 2.2503465139688455e-05
+    },
+    "(0.93, 0.96)": {
+      "probability_mass": 0.028468794748060612,
+      "raw_switch_mass": 0.02372007340064314,
+      "native_switch_mass": 0.02731516479984373,
+      "raw_adaptation": 0.0013364038590910337,
+      "achieved_adaptation": 0.0013039202165961267,
+      "choice_loss": 3.2483642494906996e-05
+    },
+    "(0.96, 0.99)": {
+      "probability_mass": 0.031551415057750505,
+      "raw_switch_mass": 0.031551415057750505,
+      "native_switch_mass": 0.031551415057750505,
+      "raw_adaptation": 0.008324132320363086,
+      "achieved_adaptation": 0.008324129611751723,
+      "choice_loss": 2.708611364466028e-09
+    },
+    "(0.99, 1.0)": {
+      "probability_mass": 0.008839644512311019,
+      "raw_switch_mass": 0.008839644512311019,
+      "native_switch_mass": 0.008839644512311019,
+      "raw_adaptation": 0.003983302994177197,
+      "achieved_adaptation": 0.003983302994177197,
+      "choice_loss": 0.0
+    }
+  },
+  "prior_weights": [
+    8.247422641515386e-36,
+    8.147272405766678e-36,
+    8.699083104064694e-24,
+    7.776162150486291e-24,
+    0.6964353220376637,
+    0.30356467795643505,
+    3.78501689544287e-12,
+    2.1161940857733974e-12
+  ],
+  "action_count": 365,
+  "fixed_action": 355,
+  "computed_predictive_origins": [
+    4,
+    5
+  ],
+  "omitted_predictive_origin_mass": 5.901210981232743e-12,
+  "records": [
+    {
+      "record": "source_n1_o4_h1_p192",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p193",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p194",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p195",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p196",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p197",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p198",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p199",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p200",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p201",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p202",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p203",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p204",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p205",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p206",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p207",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p208",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p209",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p210",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p211",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p212",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p213",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p214",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p215",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p216",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p217",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p218",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p219",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p220",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p221",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p222",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p223",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p144",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p145",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p146",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p147",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p148",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p149",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p150",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p151",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p152",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p153",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        326,
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p154",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        326,
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p155",
+      "raw_winners": [
+        326,
+        355
+      ],
+      "native_winners": [
+        326,
+        355,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p156",
+      "raw_winners": [
+        326,
+        355
+      ],
+      "native_winners": [
+        326,
+        355,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p157",
+      "raw_winners": [
+        326,
+        355,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p158",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p159",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p160",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p161",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p162",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p163",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p164",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p165",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p166",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p167",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p168",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p169",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p170",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p171",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p172",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p173",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p174",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o4_h1_p175",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p192",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p193",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p194",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p195",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p196",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p197",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p198",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p199",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p200",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p201",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p202",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p203",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p204",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p205",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p206",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p207",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p208",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p209",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p210",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p211",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p212",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p213",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p214",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p215",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p216",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p217",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p218",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p219",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p220",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p221",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p222",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p223",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p144",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p145",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p146",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p147",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p148",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p149",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p150",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p151",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p152",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p153",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p154",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p155",
+      "raw_winners": [
+        355
+      ],
+      "native_winners": [
+        326,
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p156",
+      "raw_winners": [
+        326,
+        355
+      ],
+      "native_winners": [
+        326,
+        355
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p157",
+      "raw_winners": [
+        326,
+        355
+      ],
+      "native_winners": [
+        326,
+        355,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p158",
+      "raw_winners": [
+        326,
+        355,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p159",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p160",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p161",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p162",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p163",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p164",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p165",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p166",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p167",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p168",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p169",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p170",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p171",
+      "raw_winners": [
+        326,
+        363
+      ],
+      "native_winners": [
+        326,
+        363
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p172",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p173",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p174",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    },
+    {
+      "record": "source_n1_o5_h1_p175",
+      "raw_winners": [
+        326
+      ],
+      "native_winners": [
+        326
+      ]
+    }
+  ]
+}
