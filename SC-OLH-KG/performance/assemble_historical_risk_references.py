@@ -125,7 +125,8 @@ def load_entries(layout):
             {h:read(str(base/'parts'/row['record']/f'{row["group"]}_{h}.json'))['rows']['E7'] for h in context['utility_identities']})
         add_entry(entries, context, group, 'raw', *data, 'direct_target', str(base/'full_summary.json'), 'E7')
     for directory in ('historical_reference_upgrade_v1','historical_risk_competition_v1',
-            'historical_risk_competition_batch_v1','historical_risk_competition_batch_v2'):
+            'historical_risk_competition_batch_v1','historical_risk_competition_batch_v2',
+            'historical_risk_competition_batch_v3'):
         base = ROOT/'paper_artifacts'/directory
         result = read(str(base/'summary.json')); assert result['complete']
         contexts = read(str(base/'contexts.json'))

@@ -14,7 +14,8 @@ RULES=['E5','E7','E8','F8','H8','E9']
 CACHES=('historical_component_transfer_v1','historical_label_control_v1',
     'historical_label_groups_v1','historical_cdf_bank_v1','historical_body_reference_pilot_v1',
     'historical_nearby_anchor_v1','historical_label_bank_v1','historical_decision_regions_v1',
-    'historical_risk_competition_v1','historical_risk_competition_batch_v1','historical_risk_competition_batch_v2')
+    'historical_risk_competition_v1','historical_risk_competition_batch_v1','historical_risk_competition_batch_v2',
+    'historical_risk_competition_batch_v3')
 
 
 def select_competitors(report):
