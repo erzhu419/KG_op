@@ -1,0 +1,49 @@
+{
+  "parent_plan": "performance/manifests/historical_component_guarded_v1.json",
+  "output": "paper_artifacts/historical_incumbent_validation_v1",
+  "records": [
+    "source_n1_o4_h1_p192",
+    "source_n1_o4_h1_p198",
+    "source_n1_o4_h1_p193",
+    "source_n1_o5_h1_p197",
+    "source_n1_o5_h1_p176"
+  ],
+  "reused_record": "source_n1_o5_h1_p207",
+  "maximum_action_resolution_difference": 0.0001,
+  "scope": "Five remaining opened development records plus the reused worst-block result. Same original identities, all positive components, weights, covariance, budget359 and two selected guarded actions per record. Incumbent128 is followed by control128 only on failed action/kind pairs, then GH64/256 with independent seed and GH128 check on the same seven pairs. No full-bank admission or independent confirmation.",
+  "status": "Opened development diagnostic; adaptive local refinements follow recorded failures, not independent confirmation.",
+  "refined_rules": [
+    {
+      "name": "G7",
+      "order": 64,
+      "power": 7,
+      "seed_offset": 0
+    },
+    {
+      "name": "H8",
+      "order": 64,
+      "power": 8,
+      "seed_offset": 0
+    },
+    {
+      "name": "I8",
+      "order": 64,
+      "power": 8,
+      "seed_offset": 101
+    },
+    {
+      "name": "J8",
+      "order": 128,
+      "power": 8,
+      "seed_offset": 0
+    }
+  ],
+  "higher_control_rule": "Only the three action/kind pairs with GH64 cross-coordinate disagreement receive GH64, 16384-point shared reference plus 128-point per-component differences.",
+  "resolution_reference": {
+    "order": 64,
+    "power": 9,
+    "retained_candidate": "H8: GH64, 256 per-component points",
+    "trigger": "Only raw action0 of p192, p198 and p197 where the cached128-to256 difference exceeded1e-4",
+    "interpretation": "A rejected lower rule remains rejected. Check256-to512 before accepting the256 candidate; retain its independent256, GH128 and cross-coordinate checks."
+  }
+}

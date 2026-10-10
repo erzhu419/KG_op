@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "tests": 2,
+  "seconds": 0.936,
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_component_risk_control.ComponentRiskControlTests.test_multi_record_collector_replays_the_frozen_worst_block test_component_risk_control.ComponentRiskControlTests.test_partial_control_collector_preserves_unrepaired_failures -v",
+  "purpose": "Replay saved joint values and preserve unrepaired actions, higher-GH disagreements and missing higher-resolution checks. Numerical kernels are unchanged from the previously tested stage."
+}

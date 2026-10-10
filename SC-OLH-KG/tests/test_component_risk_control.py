@@ -100,5 +100,56 @@ class ComponentRiskControlTests(unittest.TestCase):
         initial=sum(self.action['budgets'][:2])
         self.assertAlmostEqual(partial_cost,initial+.9*(cost-initial),places=11)
 
+    def test_multi_record_collector_replays_the_frozen_worst_block(self):
+        from performance.complete_historical_source_heads import read
+        from performance.diagnose_historical_component_guarded import compressed_read
+        from performance.diagnose_historical_shared_risk import BASE,OUT,NAME
+        from performance.validate_historical_incumbent import coordinate_result
+        bundle=compressed_read(BASE/'marginals'/(NAME+'.json.gz'))
+        parts=[read(str(OUT/'coordinate_parts'/f'{h}_{a}_{kind}.json')) for h in bundle['utility_identities']
+            for a,b in enumerate(bundle['blocks']) if b['action']['kind']=='guarded' for kind in ('raw','projected')]
+        historical=read(str(BASE/'reference_results'/(NAME+'.json')))
+        baseline=next(r for r in historical['rows'] if r['name']=='E32_128')
+        result=coordinate_result(bundle,parts,baseline);expected=read(str(OUT/'coordinate_summary.json'))
+        for actual,reference in zip(result['comparisons'],expected['comparisons']):
+            self.assertEqual((actual['low'],actual['high']),(reference['low'],reference['high']))
+            np.testing.assert_allclose([actual['raw'],actual['projected']],
+                [reference['raw'],reference['projected']],atol=1e-15,rtol=0.)
+        self.assertEqual(result['selected_action_precision_passed'],expected['selected_action_precision_passed'])
+        changed=copy.deepcopy(parts)
+        changed[0]['rows']['E7']['statistics'][0]+=.01
+        self.assertFalse(coordinate_result(bundle,changed,baseline)['selected_action_precision_passed'])
+
+    def test_partial_control_collector_preserves_unrepaired_failures(self):
+        from performance.complete_historical_source_heads import read
+        from performance.diagnose_historical_component_guarded import compressed_read
+        from performance.diagnose_historical_shared_risk import BASE,OUT,NAME
+        from performance.validate_historical_incumbent import control_result,refined_result,resolution_result
+        bundle=compressed_read(BASE/'marginals'/(NAME+'.json.gz'))
+        coordinate=read(str(OUT/'coordinate_summary.json'))
+        coordinate['failed_action_checks']=[dict(action=0,kind='raw'),dict(action=1,kind='projected')]
+        coordinate['selected_action_precision_passed']=False
+        parts=[read(str(OUT/'parts'/f'{h}_{a}_{k}.json')) for h in bundle['utility_identities']
+            for a,b in enumerate(bundle['blocks']) if b['action']['kind']=='guarded' for k in ('raw','projected')]
+        result=control_result(bundle,coordinate,parts)
+        expected=read(str(OUT/'summary.json'))
+        for actual,reference in zip(result['comparisons'],expected['comparisons'][:4]):
+            np.testing.assert_allclose([actual['raw'],actual['projected']],
+                [reference['raw'],reference['projected']],atol=1e-15,rtol=0.)
+        self.assertTrue(result['selected_action_precision_passed'])
+        raw_only=[p for p in parts if p['action']==0 and p['kind']=='raw']
+        partial=control_result(bundle,coordinate,raw_only)
+        self.assertEqual(partial['remaining_incumbent_failures'],[dict(action=1,kind='projected')])
+        self.assertFalse(partial['selected_action_precision_passed'])
+        coordinate_parts=[read(str(OUT/'coordinate_parts'/f'{p["identity"]}_{p["action"]}_{p["kind"]}.json')) for p in parts]
+        refined=[dict(p,rows={n:copy.deepcopy(p['rows']['G7']) for n in ('H8','I8','J8')}) for p in coordinate_parts]
+        high=refined_result(bundle,coordinate,result,refined)
+        self.assertTrue(high['selected_action_precision_passed'])
+        self.assertTrue(resolution_result(bundle,high,[])['selected_action_precision_passed'])
+        required=copy.deepcopy(high);required['comparisons'][0]['actions'][0]['difference']=.01
+        self.assertFalse(resolution_result(bundle,required,[])['selected_action_precision_passed'])
+        altered=copy.deepcopy(refined);altered[0]['rows']['J8']['statistics'][0]+=.01
+        self.assertFalse(refined_result(bundle,coordinate,result,altered)['selected_action_precision_passed'])
+
 
 if __name__=='__main__':unittest.main()

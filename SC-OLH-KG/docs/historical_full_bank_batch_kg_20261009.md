@@ -130,3 +130,12 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 复用历史可选均值条件积分，改为解析积分incumbent，而保留全部相关协方差和原验证分支：独立128点差降到raw7.38e−5／native1.95e−6，GH32→64变化2.63e−5／5.45e−6；与共享参考的128点及GH64结果交叉核对也通过。相同两个动作和计值身份的单套规则计时，incumbent约48.66 CPU秒，共享参考128点加一套高参考约111.83秒。[坐标结果](../paper_artifacts/historical_component_guarded_v1/shared_reference/coordinate_summary.json)。15项相关测试通过，包含分量重排／拆分、相同分量抵消、历史完整联合raw参考和direct独立参考；本轮成功计算计量502.92 CPU秒，首次8个作业因缺少输出目录保存失败、计时未保存，已修复重跑并留档。本地仅取约0.2MB结果／日志，联合包复用旧文件。
 
 局限与下一步：32点压缩不采用，native独立差1.35e−4，raw与另一积分次序最高差1.69e−4。128点局部通过不是完整365动作／96条记录的KG准入，未读独立确认块，也没有新增物理、拟合或验证调用。下一轮先用较便宜的incumbent128规则验证另外五个失败观测；未通过的局部动作再用共享参考128对照，随后才决定完整银行接续。来源meta-prior、全身份权重／似然、原计值身份的全部正分量、预算及负收益保持。重放入口为`python -m performance.diagnose_historical_shared_risk collect`及`collect-coordinate`，逐片命令、失败日志和计时见同目录的`scheduler_specs.jsonl`、`coordinate_specs.jsonl`及`execution_account.json`。
+
+
+## 另外五条失败观测接续（2026-10-10）
+
+六条选定失败记录均通过局部动作精度检查。新增五例中，七个失败动作／类型采用GH64＋每正分量256点：独立规则raw／native差最高3.41e−5／5.98e−6，GH64→128差6.06e−6／2.67e−6，跨方法差4.71e−5。三条raw记录再检查256→512，最大差1.70e−5，均低于原1e−4门槛；此前128点的失败结果保留。来源先验、权重／似然、全部正分量、联合协方差与预算保持。[最终局部结果](../paper_artifacts/historical_incumbent_validation_v1/admitted_summary.json)。
+
+54个低优先级单核任务完成，计量1.35单核小时，各轮最多20／14／14／6核，无新增物理、拟合或验证调用。只拉取1.99MB小结果／混合输入。两项新增汇总测试通过，五例四轮汇总重放差5.55e−17、准入状态一致。[运行账](../paper_artifacts/historical_incumbent_validation_v1/execution_account.json)、[重放](../paper_artifacts/historical_incumbent_validation_v1/replay_results.json)。入口：`OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.validate_historical_incumbent replay`；同目录四组`*_specs.jsonl`保存积分命令。
+
+局限与下一步：以上是一个开发案例内六条观测的选定动作检查，规则差不是严格误差界；完整365动作／96条记录及独立决策收益仍待验证。逐动作扩展的GH32／128成本粗估159单核小时，未计加密。下一阶段复用历史`raw_terminal_head`的shortlist缓存，让新分量积分共享三组验证预算；先核对一组的精度与成本，再决定完整银行接续。旧60/60前端证据保留。

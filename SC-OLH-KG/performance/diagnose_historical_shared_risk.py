@@ -18,11 +18,11 @@ OUT=BASE/'shared_reference'
 NAME='source_n1_o5_h1_p207'
 
 
-def run(identity,action_index,kind):
-    path=OUT/'parts'/f'{identity}_{action_index}_{kind}.json'
+def run(identity,action_index,kind,*,record=NAME,output=OUT):
+    path=output/'parts'/f'{identity}_{action_index}_{kind}.json'
     path.parent.mkdir(parents=True,exist_ok=True)
     if path.exists() and read(str(path)).get('complete'):return read(str(path))
-    started=time.process_time();bundle=compressed_read(BASE/'marginals'/(NAME+'.json.gz'))
+    started=time.process_time();bundle=compressed_read(BASE/'marginals'/(record+'.json.gz'))
     assert identity in bundle['utility_identities'] and bundle['replicates']==1
     block=bundle['blocks'][action_index];assert block['action']['kind']=='guarded'
     prior=field_from_snapshot(block['fields'][identity]);future=copy.deepcopy(prior)
@@ -35,7 +35,7 @@ def run(identity,action_index,kind):
             power=power,seed=bundle['seed']+7000001+offset,**kwargs)
         refs[name]['cpu_seconds']=time.process_time()-tick
     _,rank=np.unique(prior.means,axis=0,return_inverse=True)
-    historical=read(str(BASE/'results'/(NAME+'.json'))) if (BASE/'results'/(NAME+'.json')).exists() else read(str(BASE/'reference_results'/(NAME+'.json')))
+    historical=read(str(BASE/'results'/(record+'.json'))) if (BASE/'results'/(record+'.json')).exists() else read(str(BASE/'reference_results'/(record+'.json')))
     old={r['name']:r for r in historical['rows']}
     for name,power,offset in [('E5',5,0),('E7',7,0),('F7',7,101)]:
         tick=time.process_time()
@@ -52,7 +52,7 @@ def run(identity,action_index,kind):
         row=rows['E7'];mass=np.exp(row['diagnostics']['predictive_log_evidence_error'])
         correction=(np.asarray(refs[name]['numerator'])-np.asarray(refs['R14']['numerator']))/mass
         rows[name]=dict(statistics=(np.asarray(row['statistics'])+correction[:4]).tolist(),cost=float(row['cost']+correction[4]))
-    result=dict(complete=True,name=NAME,identity=identity,action=action_index,kind=kind,references=refs,rows=rows,
+    result=dict(complete=True,name=record,identity=identity,action=action_index,kind=kind,references=refs,rows=rows,
         cpu_seconds=time.process_time()-started,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0)
     save(path,result);print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k not in ('rows','references')}),flush=True)
     return result
@@ -129,10 +129,10 @@ def extend_low():
     save(path,result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
 
 
-def coordinate(identity,action_index,kind):
-    path=OUT/'coordinate_parts'/f'{identity}_{action_index}_{kind}.json';path.parent.mkdir(parents=True,exist_ok=True)
+def coordinate(identity,action_index,kind,*,record=NAME,output=OUT):
+    path=output/'coordinate_parts'/f'{identity}_{action_index}_{kind}.json';path.parent.mkdir(parents=True,exist_ok=True)
     if path.exists() and read(str(path)).get('complete'):return read(str(path))
-    started=time.process_time();bundle=compressed_read(BASE/'marginals'/(NAME+'.json.gz'))
+    started=time.process_time();bundle=compressed_read(BASE/'marginals'/(record+'.json.gz'))
     assert identity in bundle['utility_identities'] and bundle['replicates']==1
     block=bundle['blocks'][action_index];assert block['action']['kind']=='guarded'
     prior=field_from_snapshot(block['fields'][identity]);future=copy.deepcopy(prior)
@@ -145,9 +145,9 @@ def coordinate(identity,action_index,kind):
             query=0,raw=kind=='raw',order=order,power=power,seed=bundle['seed']+offset+rank*104729,
             integrated_position=block['action']['incumbent_position'])
         rows[name]=dict(statistics=s.tolist(),cost=c,diagnostics=d,cpu_seconds=time.process_time()-tick)
-    result=dict(complete=True,name=NAME,identity=identity,action=action_index,kind=kind,rows=rows,
+    result=dict(complete=True,name=record,identity=identity,action=action_index,kind=kind,rows=rows,
         cpu_seconds=time.process_time()-started,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0)
-    save(path,result);print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True);return result
+    save(path,result);return result
 
 
 def collect_coordinate():
@@ -196,5 +196,7 @@ if __name__=='__main__':
     if args.mode=='run':run(args.identity,args.action,args.kind)
     elif args.mode=='collect':collect()
     elif args.mode=='extend-low':extend_low()
-    elif args.mode=='coordinate':coordinate(args.identity,args.action,args.kind)
+    elif args.mode=='coordinate':
+        result=coordinate(args.identity,args.action,args.kind)
+        print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True)
     else:collect_coordinate()
