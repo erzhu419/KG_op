@@ -70,14 +70,14 @@ for record in summary['records']:
         estimated_four_rule_comparison_cpu_seconds=1.2*(sum(costs[r] for r in rules)+8)))
 anchor=sum(v for key,v in missing_anchor.items() if key in used_anchor)
 estimate=1.2*(sum(total[r] for r in rules)+anchor+8)
-phase=read('performance/manifests/historical_nearby_anchor_v1.json')
-phase_budget=read(phase['output']+'/preparation.json');reserve=sum(phase['cpu_reserves'].values())
-reserved_workers=phase_budget['cumulative_estimated_cpu_seconds']-reserve
+phase=read('performance/manifests/historical_reference_upgrade_v1.json')
+reserve=sum(phase['cpu_reserves'].values());reserved_workers=0.
 result=dict(complete=True,records=records,missing_group_kind_record_checks=dict(counts),
     missing_target_matching_timer_cpu_seconds=dict(total),missing_shared_anchor_G5_cpu_seconds=anchor,
     estimated_candidate32_cpu_seconds=1.2*(total['E5']+8),estimated_four_rule_comparison_cpu_seconds=estimate,
     maximum_estimated_cpu_seconds=3600,full_matrix_cost_admitted=estimate+reserved_workers+reserve<=3600,
     phase_workers_already_reserved_cpu_seconds=reserved_workers,preparation_pricing_collection_reassembly_reserve_cpu_seconds=reserve,
+    phase_plan='performance/manifests/historical_reference_upgrade_v1.json',
     cumulative_estimated_cpu_seconds=estimate+reserved_workers+reserve,
     pricing_fallbacks=fallbacks,cpu_seconds=time.process_time()-start,new_integrations=0,dispatched=False,
     scope='Original64 fine body labels and365 actions. Exclude actual integrated references,native direct analytic entries,raw direct136 and the two native63 references. E5/E7/F7/G5 paired comparisons use maximum measured same-group,identity,rule source/p207/p202/p197 times; unavailable G5 uses the existing measured maximum G5/E5 ratio. Cached target rules and shared anchors are counted once. Eight worker CPU seconds and20 percent headroom. Cost projection only: broad-label controls can fail and require additional direct references; this is not a precision or speedup claim.')

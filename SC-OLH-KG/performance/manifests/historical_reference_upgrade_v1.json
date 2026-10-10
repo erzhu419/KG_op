@@ -1,0 +1,18 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_reference_upgrade_v1",
+  "maximum_action_difference": 0.0001,
+  "direct_reference_rules": ["E8", "F8", "H8", "E9"],
+  "candidate_rules": ["E5", "E7"],
+  "cohorts": [
+    {"directory":"historical_label_groups_v1","anchor":"original","format":"label_groups"},
+    {"directory":"historical_body_reference_pilot_v1","anchor":"original","format":"label_groups"},
+    {"directory":"historical_nearby_anchor_v1","anchor":"source_n1_o4_h1_p202","format":"label_groups"},
+    {"directory":"historical_cdf_bank_v1","anchor":"original","format":"cdf"}
+  ],
+  "nearest_anchor_output": "paper_artifacts/historical_body_reference_pilot_v1",
+  "maximum_estimated_cpu_seconds": 3600,
+  "cpu_reserves": {"cache_replay":240,"cache_assembly":240,"pricing_collection":120},
+  "selection_rule": "Choose the first valid E5/E7 control whose mixed action values differ by at most1e-4 from EACH valid E8/F8/H8/E9 direct target reference. The four-reference bank must itself pass E8-F8,E8-H8,E8-E9 comparisons and normalization/range checks. Otherwise retain validated direct E8 fallback or HOLD. Compare the candidate itself to the independent and GH references; do not infer agreement through E8. Preserve all legacy checks separately.",
+  "scope": "Development-only cache replay across all33 already referenced group/label/kind cases in the four cohorts,plus the five original-anchor p197 comparisons. Protocol recorded before this replay; p197 motivated its design. Original source prior,all8 identity scores,all512/1024 positive utility components,covariance,365 actions,359 budget and verifier retained. No new integrals,physical/source-fit/verifier calls or confirmation. Finer-reference costs cannot be omitted from end-to-end claims."
+}

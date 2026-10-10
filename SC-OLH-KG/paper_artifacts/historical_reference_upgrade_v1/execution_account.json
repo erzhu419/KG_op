@@ -1,0 +1,120 @@
+{
+  "complete": true,
+  "scheduler_states": {
+    "t141571": "done",
+    "t141572": "done"
+  },
+  "worker_count": 2,
+  "maximum_concurrent_workers": 1,
+  "priority": "low",
+  "cpus_per_worker": 1,
+  "cumulative_estimated_cpu_seconds": 600,
+  "maximum_estimated_cpu_seconds": 3600,
+  "new_integrations": 0,
+  "new_integral_cpu_seconds": 0.0,
+  "replay_process_cpu_seconds": 8.378721647,
+  "assembly_process_cpu_seconds": 87.168353399,
+  "reported_successful_worker_cpu_seconds": 95.547075046,
+  "measured_pricing_cpu_seconds": 2.8813436020000003,
+  "cpu_measurement_scope": "Both scheduler workers report process CPU including imports. Pricing reports its existing work timer; metadata reads,transfer and local tests are outside these timers. Full240/240/120 CPU-second phase reserves remain in the estimate.",
+  "replay_peak_rss_mb": 582.0703125,
+  "assembly_peak_rss_mb": 4679.46875,
+  "unique_opened_target_labels": 6,
+  "primary_group_kind_record_checks": 33,
+  "original_anchor_counterfactual_checks": 5,
+  "primary_action_checks": 95,
+  "all_target_references_admitted": true,
+  "legacy_selected_actions": {
+    "control32": 41,
+    "control128": 33,
+    "direct256": 21,
+    "HOLD": 0
+  },
+  "selected_actions": {
+    "control32": 47,
+    "control128": 33,
+    "direct256": 15,
+    "HOLD": 0
+  },
+  "legacy_target_rule_cpu_seconds": 576.602185347,
+  "selected_target_rule_cpu_seconds": 498.6862927419999,
+  "selected_target_rule_cpu_reduction": 0.13512937443709172,
+  "selected_rule_cpu_scope": "Matched saved target-rule timers only; excludes cached anchor acquisition,finer independent/GH/direct reference acquisition,validation and composition. No end-to-end speedup claim.",
+  "resolved_prior_fallback": {
+    "record": "source_n1_o4_h1_p197",
+    "group": 28,
+    "legacy_method": "direct256",
+    "selected_method": "control32",
+    "legacy_independent_residual_difference": 0.0001027765443846751,
+    "maximum_candidate_direct_difference": 3.291508133695942e-05
+  },
+  "actual_legacy_omission": {
+    "record": "source_n1_o5_h1_p223",
+    "group": 66,
+    "kind": "projected",
+    "legacy_method": "control32",
+    "coarse_candidate_F8_difference": 0.00011262472943893154,
+    "selected_method": "control128",
+    "maximum_selected_direct_difference": 6.733438262231106e-05
+  },
+  "retained_finer_disagreement": {
+    "record": "source_n1_o4_h1_p202",
+    "group": 32,
+    "control128_E9_difference": 0.0001003186881687046,
+    "selected_method": "direct256"
+  },
+  "nonmonotone_rule_difference": {
+    "record": "source_n1_o4_h1_p192",
+    "group": 28,
+    "control32_maximum_direct_difference": 4.735962114107983e-05,
+    "control128_maximum_direct_difference": 0.00023962829285617548,
+    "selected_method": "control32"
+  },
+  "p197_same_upgraded_validator_original_vs_near": {
+    "original_target_rule_cpu_seconds": 87.942710785,
+    "nearest_target_rule_cpu_seconds": 53.074507053,
+    "reduction": 0.39648770683501966
+  },
+  "validation_comparisons_changed": true,
+  "validation_tolerance": 0.0001,
+  "direct_reference_rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "legacy_summaries_unchanged": true,
+  "reference_group_entries": 858,
+  "upgraded_reference_entries": 33,
+  "model_net_preview": 0.01357641652258601,
+  "model_preview_change_from_baseline": 0.0,
+  "changed_recommendation_records": [],
+  "maximum_body_objective_axis_difference": {
+    "raw": 1.303850607681234e-05,
+    "projected": 6.774847749468904e-07
+  },
+  "remaining_missing_group_kind_record_checks": {
+    "raw": 8970,
+    "projected": 4510
+  },
+  "remaining_four_rule_comparison_estimated_cpu_hours": 180.83738581068096,
+  "full_matrix_dispatched": false,
+  "tests": {
+    "passed": 49,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m unittest tests.test_reference_upgrade tests.test_nearby_anchor tests.test_risk_reference_assembly tests.test_decision_regions tests.test_upper_decisions tests.test_component_bank tests.test_label_groups tests.test_component_transfer"
+  },
+  "contract": "Original source prior,all8 identity scores/weights,all512/1024 positive utility components,full covariance,365 actions and359 budget. Positive body/tail weights and verifier unchanged.",
+  "replay": {
+    "cache": "python -m performance.validate_historical_reference_upgrade",
+    "assembly": "python -m performance.diagnose_historical_decision_regions integrated",
+    "price": "python paper_artifacts/historical_body_reference_assembly_v1/price_remaining.py",
+    "commands": "Exact scheduler commands and resources in replay_scheduler_spec.json,assembly_scheduler_spec.json and price_command.json. Large contexts,banks,marginals and posterior remain server-side."
+  },
+  "next_step": "Use the upgraded validator for the next decision-relevant reference pilot. Price missing finer target references explicitly; cached admission savings cannot remove their acquisition cost. Expand only within the phase budget,without dispatching the full181-hour matrix.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "limitations": "Opened development caches; p197 motivated this numerical protocol. Same fixed32 objective heads and all identity weights/components. Finite comparisons are not rigorous error bounds or independent decision evidence. Selected-rule timers exclude anchor/reference acquisition and validation; the upgrade requires available direct target references and does not close missing CDF coverage."
+}
