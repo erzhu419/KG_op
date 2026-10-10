@@ -1,0 +1,151 @@
+{
+  "complete": true,
+  "scheduler_states": {
+    "t141576": "done",
+    "t141579": "done",
+    "t141580": "done",
+    "t141581": "done",
+    "t141582": "done",
+    "t141583": "done",
+    "t141584": "done",
+    "t141586": "done"
+  },
+  "worker_count": 8,
+  "maximum_concurrent_workers": 6,
+  "priority": "low",
+  "cpus_per_worker": 1,
+  "allowed_nodes": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "actual_integral_nodes": [
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "cumulative_estimated_cpu_seconds": 1611.5874087492,
+  "maximum_estimated_cpu_seconds": 3600,
+  "new_integral_cpu_seconds": 819.3876159509999,
+  "integral_worker_cpu_seconds": 819.642619649,
+  "cache_process_cpu_seconds": 175.117570871,
+  "reported_successful_worker_cpu_seconds": 994.76019052,
+  "measured_successful_preparation_cpu_seconds": 2.1705833770000003,
+  "measured_collection_cpu_seconds": 0.7522119049999999,
+  "measured_remaining_pricing_cpu_seconds": 3.463439115,
+  "measured_next_pricing_cpu_seconds": 0.04870667899999992,
+  "cpu_measurement_scope": "Cache workers report process CPU including imports; integral workers use their existing work timers after loading joint marginals. Preparation,collection and pricing use work timers. Failed initial pricing,small metadata transfers and local tests are not fully timed; all remain within the fixed120 CPU-second preparation/collection reserve. Selected32-point timers exclude source-anchor acquisition and fine-reference validation.",
+  "peak_cache_rss_mb": 4679.55859375,
+  "peak_integral_rss_mb": 366.80859375,
+  "unique_opened_body_labels": 64,
+  "selected_group_kind_record_checks": 3,
+  "selected_action_checks": 9,
+  "all_target_references_admitted": true,
+  "selected_method": "control32",
+  "maximum_candidate_direct_difference": 1.814739574323987e-05,
+  "selected_target_rule_cpu_seconds": 13.603351635,
+  "selected_reference_decisions": [
+    {
+      "record": "source_n1_o4_h1_p196",
+      "kind": "raw",
+      "group": 63,
+      "previous_minimum_gap": 0.0008879265291791283,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0010582058303624242,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 3.078898533459551e-05,
+      "maximum_risk_rule_difference": 9.717798556507784e-05,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o4_h1_p199",
+      "kind": "projected",
+      "group": 63,
+      "previous_minimum_gap": 0.0005359309264243439,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0006673040364063576,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.0004187818218118755,
+      "maximum_risk_rule_difference": 0.0006854053433500429,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o5_h1_p193",
+      "kind": "projected",
+      "group": 63,
+      "previous_minimum_gap": 0.0011729373593046821,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.001376022855415937,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.0013359109078556752,
+      "maximum_risk_rule_difference": 0.001761936079151094,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 1
+    }
+  ],
+  "reference_group_entries": 861,
+  "changed_recommendation_records": [],
+  "model_net_preview": 0.01357641652258601,
+  "model_preview_change_from_baseline": 0.0,
+  "remaining_unreferenced_empirical_overlap_action_head_pairs": {
+    "raw": 0,
+    "projected": 0
+  },
+  "remaining_missing_group_kind_record_checks": {
+    "raw": 8969,
+    "projected": 4508
+  },
+  "closest_other_unreferenced_group_gap": {
+    "raw": 0.05695236260072978,
+    "projected": 0.056409610154234624
+  },
+  "remaining_guarded63_group_kind_record_checks": 119,
+  "full_guarded63_reference_estimated_cpu_hours": 11.56413249780666,
+  "full_matrix_comparison_estimated_cpu_hours": 180.86400507548925,
+  "next_phase_budgeted_combinations": 7,
+  "next_phase_budgeted_workers": 14,
+  "next_phase_estimated_cpu_seconds": 3283.90524591,
+  "next_phase_dispatched": false,
+  "tests": {
+    "passed": 53,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m unittest tests.test_risk_competition tests.test_reference_upgrade tests.test_nearby_anchor tests.test_risk_reference_assembly tests.test_decision_regions tests.test_upper_decisions tests.test_component_bank tests.test_label_groups tests.test_component_transfer"
+  },
+  "contract": "Original source prior,all8 identity scores/weights,all512/1024 positive utility components,full covariance,365 actions and359 budget. Positive body/tail weights and verifier unchanged.",
+  "replay": {
+    "cache": "python -m performance.diagnose_historical_decision_regions integrated",
+    "prepare": "python -m performance.validate_historical_risk_competition prepare",
+    "launch": "python -m performance.launch_historical_component_bank risk-competition",
+    "collect": "python -m performance.validate_historical_risk_competition collect",
+    "price": "python paper_artifacts/historical_risk_competition_v1/price_next.py",
+    "commands": "Exact scheduler commands/resources in competition_scheduler_spec.json,risk-competition_specs.jsonl and assembly_scheduler_spec.json. The frozen competition_summary.json drives preparation; repeated preparation preserves its original cost plan and completed parts. Large contexts,banks,marginals and posterior stay server-side."
+  },
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "limitations": "One development state,frozen query63,conditional32 objective heads and finite numerical comparisons. Newly validated competitors still lose to355; old low-rule differences remain separate. Empirical separation of other groups is not a rigorous bound. FullCDF/outerKG and stable independent deployment advantage remain open. The119 remaining guarded63 comparisons and full matrix have different validation scopes; neither was dispatched."
+}

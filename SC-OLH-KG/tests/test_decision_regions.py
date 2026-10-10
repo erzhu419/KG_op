@@ -8,13 +8,32 @@ from unittest.mock import patch
 
 import numpy as np
 
-from performance.diagnose_historical_decision_regions import region_metrics, observed_query_matrix, overlay_direct, objective_upper
+from performance.diagnose_historical_decision_regions import region_metrics, observed_query_matrix, overlay_direct, objective_upper, risk_competitors
 from performance.validate_historical_direct_body import prepare as prepare_direct, run as run_direct, PARENT, OUTPUT
 from performance.validate_historical_component_transfer import body_cdf
 from scipy.special import roots_legendre
 
 
 class DecisionRegionsTests(unittest.TestCase):
+    def test_competitors_keep_close_agreeing_groups_and_exclude_only_existing_coverage_or_bound(self):
+        high=np.array([[.7,.699,.68,.6999,.9],[.8,.79,.799,.7999,.9]])
+        low=high.copy();low[0,2]-=.03
+        masks=dict(direct_target=np.array([False,False,False,True,True]))
+        dominated=np.zeros_like(high,dtype=bool);dominated[:,0]=True
+        groups=[dict(group=i,action_indices=[i]) for i in range(5)]
+        rows=risk_competitors(high,np.zeros_like(high),low,dominated,masks,groups,[10,11])
+        self.assertEqual([r['group'] for r in rows],[2,1])
+        self.assertAlmostEqual(rows[0]['minimum_gap'],.101)
+        self.assertEqual(rows[0]['objective_position'],11)
+        self.assertEqual(rows[0]['winner_at_minimum_gap'],4)
+        self.assertEqual(rows[0]['empirical_overlap_action_head_pairs'],0)
+        self.assertEqual(rows[1]['maximum_risk_rule_difference'],0.)
+        # A close competitor is reported even if its two old rules agree.
+        high[:,0]=.6;high[:,2:4]=.6;high[:,4]=high[:,1]+.00005;low=high.copy()
+        rows=risk_competitors(high,np.zeros_like(high),low,dominated,masks,groups,[10,11])
+        self.assertEqual(rows[0]['group'],1)
+        self.assertEqual(rows[0]['empirical_overlap_action_head_pairs'],2)
+
     def test_objective_upper_keeps_missing_identity_mass_and_shared_weights(self):
         f=np.zeros((2,8,3,4));f[:,4]=.2;f[:,5]=.8
         posterior=np.zeros((2,3,8));posterior[:,:,4]=.25;posterior[:,:,5]=.5;posterior[:,:,0]=.25

@@ -57,6 +57,29 @@ def observed_query_matrix(rows):
     return result
 
 
+def risk_competitors(high,costs,risk_low,dominated,masks,groups,positions,tolerance=1e-4):
+    """Rank uncovered competitors by their actual gap; rule differences are diagnostic."""
+    high=np.asarray(high);difference=abs(high-np.asarray(risk_low))
+    winners=np.lexsort((costs,-high),axis=-1)[:,0]
+    gaps=high[np.arange(len(high)),winners,None]-high
+    covered=np.logical_or.reduce(list(masks.values()))
+    eligible=~np.asarray(dominated)&~covered[None,:]
+    rows=[]
+    for group in groups:
+        ix=np.asarray(group['action_indices']);active=eligible[:,ix]
+        if not active.any():continue
+        local=np.where(active,gaps[:,ix],np.inf)
+        head,action=np.unravel_index(np.argmin(local),local.shape)
+        rows.append(dict(group=group['group'],action_indices=ix.tolist(),
+            minimum_gap=float(local[head,action]),action_at_minimum_gap=int(ix[action]),
+            objective_position=positions[head],winner_at_minimum_gap=int(winners[head]),
+            risk_rule_difference_at_minimum_gap=float(difference[head,ix[action]]),
+            maximum_risk_rule_difference=float(difference[:,ix][active].max()),
+            eligible_action_head_pairs=int(active.sum()),
+            empirical_overlap_action_head_pairs=int((active&(gaps[:,ix]<=difference[:,ix]+tolerance)).sum())))
+    return sorted(rows,key=lambda r:(r['minimum_gap'],r['group']))
+
+
 def overlay_direct(row,parts,indices,*,kind='raw',pair=('J8','G7')):
     for level,rule in enumerate(pair):
         value=row[kind][str(rule_pair(row,kind)[level])]
@@ -173,6 +196,17 @@ def run(mode='cached'):
                         remaining['maximum_objective_axis_difference']=float(abs(high-objective_low[kind][:,j]).max())
                         remaining['objective_axis_imprecise_action_head_pairs']=int((abs(high-objective_low[kind][:,j])>1e-4).sum())
                         record[kind+'_reference_coverage']=remaining
+                        competitors=risk_competitors(high,costs[:,j] if kind=='raw' else nc[:,j],
+                            risk_low[kind][:,j],dominated,masks,layout['groups'],[r['position'] for r in f])
+                        record[kind+'_competitors']=dict(groups=len(competitors),
+                            empirical_overlap_groups=sum(r['empirical_overlap_action_head_pairs']>0 for r in competitors),
+                            empirical_overlap_action_head_pairs=sum(r['empirical_overlap_action_head_pairs'] for r in competitors),
+                            closest_groups=competitors[:5])
+                        record[kind+'_referenced_competitors']=risk_competitors(high,
+                            costs[:,j] if kind=='raw' else nc[:,j],risk_low[kind][:,j],
+                            np.zeros_like(dominated),dict(covered=np.zeros(len(layout['actions']),dtype=bool)),
+                            [entry['group'] for entry in applied[record['record'],kind]],
+                            [r['position'] for r in f])
             records.append(record)
             for a,b in zip(edges[:-1],edges[1:]):
                 if a<=cdf[j]<b:regions[str((a,b))].append(record);break
@@ -204,6 +238,11 @@ def run(mode='cached'):
         target=ROOT/ASSEMBLY_OUTPUT;target.mkdir(parents=True,exist_ok=True)
         save(target/'reference_sources.json',[dict(record=n,kind=k,group=gid,scope=e['scope'],sources=e['sources'],method=e['method'],action_indices=e['group']['action_indices']) for (n,k,gid),e in sorted(entries.items())])
         save(target/'summary.json',result)
+        save(target/'competition_summary.json',dict(complete=True,action_count=365,fixed_action=fixed,
+            records=[{k:v for k,v in r.items() if k in ('record','origin','position','cdf','label','probability_mass',
+                'raw_winners','native_winners','raw_competitors','projected_competitors')} for r in records if r['cdf']<.9],
+            new_integrations=0,independent_confirmation=False,
+            limitations='Uncovered competitors ranked on the current development grid. The gap versus low/high rule difference is empirical, not an error bound or an admission gate. Conditional objective bounds and all365 actions are retained.'))
     else:save(out/('dominance_summary.json' if mode=='dominance' else 'summary_with_direct.json' if mode=='direct' else 'summary.json'),result)
     signal.setitimer(signal.ITIMER_PROF,0.)
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k not in ('records','actions','observed_query_matrix')}),flush=True)

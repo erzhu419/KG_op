@@ -27,7 +27,10 @@ for group in layout['groups']:
             extra=read(str(path))['rows'] if path.exists() else {}
             observed=[source,target,extra]
             for directory,record in (('historical_body_reference_pilot_v1','source_n1_o4_h1_p202'),
-                    ('historical_nearby_anchor_v1','source_n1_o4_h1_p197')):
+                    ('historical_nearby_anchor_v1','source_n1_o4_h1_p197'),
+                    ('historical_risk_competition_v1','source_n1_o4_h1_p196'),
+                    ('historical_risk_competition_v1','source_n1_o4_h1_p199'),
+                    ('historical_risk_competition_v1','source_n1_o5_h1_p193')):
                 path=part_path(ROOT/'paper_artifacts'/directory,dict(record=record,group=gid,kind=kind),h)
                 if path.exists():observed.append(read(str(path))['rows'])
             for rule in rules:
@@ -43,7 +46,7 @@ for group in layout['groups']:
 
 cache_dirs=('historical_component_transfer_v1','historical_label_control_v1',
     'historical_label_groups_v1','historical_cdf_bank_v1',
-    'historical_body_reference_pilot_v1','historical_nearby_anchor_v1')
+    'historical_body_reference_pilot_v1','historical_nearby_anchor_v1','historical_risk_competition_v1')
 records=[];counts=Counter();used_anchor=set();total=defaultdict(float)
 for record in summary['records']:
     if record['cdf']>=.9:continue
@@ -70,17 +73,18 @@ for record in summary['records']:
         estimated_four_rule_comparison_cpu_seconds=1.2*(sum(costs[r] for r in rules)+8)))
 anchor=sum(v for key,v in missing_anchor.items() if key in used_anchor)
 estimate=1.2*(sum(total[r] for r in rules)+anchor+8)
-phase=read('performance/manifests/historical_reference_upgrade_v1.json')
-reserve=sum(phase['cpu_reserves'].values());reserved_workers=0.
+phase=read('performance/manifests/historical_risk_competition_v1.json')
+reserve=sum(phase['cpu_reserves'].values())
+reserved_workers=read(phase['output']+'/resolution_plan.json')['estimated_cpu_seconds']
 result=dict(complete=True,records=records,missing_group_kind_record_checks=dict(counts),
     missing_target_matching_timer_cpu_seconds=dict(total),missing_shared_anchor_G5_cpu_seconds=anchor,
     estimated_candidate32_cpu_seconds=1.2*(total['E5']+8),estimated_four_rule_comparison_cpu_seconds=estimate,
     maximum_estimated_cpu_seconds=3600,full_matrix_cost_admitted=estimate+reserved_workers+reserve<=3600,
     phase_workers_already_reserved_cpu_seconds=reserved_workers,preparation_pricing_collection_reassembly_reserve_cpu_seconds=reserve,
-    phase_plan='performance/manifests/historical_reference_upgrade_v1.json',
+    phase_plan='performance/manifests/historical_risk_competition_v1.json',
     cumulative_estimated_cpu_seconds=estimate+reserved_workers+reserve,
     pricing_fallbacks=fallbacks,cpu_seconds=time.process_time()-start,new_integrations=0,dispatched=False,
-    scope='Original64 fine body labels and365 actions. Exclude actual integrated references,native direct analytic entries,raw direct136 and the two native63 references. E5/E7/F7/G5 paired comparisons use maximum measured same-group,identity,rule source/p207/p202/p197 times; unavailable G5 uses the existing measured maximum G5/E5 ratio. Cached target rules and shared anchors are counted once. Eight worker CPU seconds and20 percent headroom. Cost projection only: broad-label controls can fail and require additional direct references; this is not a precision or speedup claim.')
+    scope='Original64 fine body labels and365 actions. Exclude actual integrated references,native direct analytic entries,raw direct136 and the two native63 references. E5/E7/F7/G5 paired comparisons use maximum measured same-group,identity,rule source/p207/p202/p197 and decision-competitor times; unavailable G5 uses the existing measured maximum G5/E5 ratio. Cached target rules and shared anchors are counted once. Eight worker CPU seconds and20 percent headroom. Cost projection only: broad-label controls can fail and require additional direct references; this is not a precision or speedup claim.')
 save(out/'remaining_cost_plan.json',result)
 compact={k:v for k,v in summary.items() if k not in ('records','actions','observed_query_matrix')}
 compact['records']=[{k:v for k,v in r.items() if k in ('record','origin','position','cdf','label','raw_winners','native_winners','raw_adaptation','achieved_adaptation','raw_reference_coverage','projected_reference_coverage')} for r in summary['records']]

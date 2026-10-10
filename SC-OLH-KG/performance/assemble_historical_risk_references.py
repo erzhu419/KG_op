@@ -124,15 +124,16 @@ def load_entries(layout):
         data = tables(dict(context, actions=[layout['actions'][i] for i in group['action_indices']]),
             {h:read(str(base/'parts'/row['record']/f'{row["group"]}_{h}.json'))['rows']['E7'] for h in context['utility_identities']})
         add_entry(entries, context, group, 'raw', *data, 'direct_target', str(base/'full_summary.json'), 'E7')
-    base = ROOT/'paper_artifacts/historical_reference_upgrade_v1'
-    result = read(str(base/'summary.json')); assert result['complete']
-    contexts = read(str(base/'contexts.json'))
-    for row in result['groups']:
-        if not row['hybrid_direct_admitted']: continue
-        assert row['direct_reference_checks']['passed']
-        add_entry(entries, contexts[row['record']], groups[row['group']], row['kind'],
-            row['selected_statistics'], row['selected_costs'], 'direct_target',
-            str(base/'summary.json'), row['selected_method']+'_'+row['validation_route'])
+    for directory in ('historical_reference_upgrade_v1','historical_risk_competition_v1'):
+        base = ROOT/'paper_artifacts'/directory
+        result = read(str(base/'summary.json')); assert result['complete']
+        contexts = read(str(base/'contexts.json'))
+        for row in result['groups']:
+            if not row['hybrid_direct_admitted']: continue
+            assert row['direct_reference_checks']['passed']
+            add_entry(entries, contexts[row['record']], groups[row['group']], row['kind'],
+                row['selected_statistics'], row['selected_costs'], 'direct_target',
+                str(base/'summary.json'), row['selected_method']+'_'+row['validation_route'])
     return entries
 
 
