@@ -21,12 +21,13 @@ from representation.vectorized_joint_function_risk import update_raw_observation
 PLAN = 'performance/manifests/historical_component_bank_v1.json'
 RULES = {'E5': (32,5,0), 'E7': (32,7,0), 'F7': (32,7,101), 'G7': (64,7,0),
     'E8': (32,8,0), 'F8': (32,8,101),
-    'E9': (32,9,0), 'F9': (32,9,101),
+    'E9': (32,9,0), 'F9': (32,9,101), 'L9': (16,9,0), 'E10': (32,10,0),
     'H8': (64,8,0), 'I8': (64,8,101), 'J8': (128,8,0), 'K9': (64,9,0)}
 SUMMARY_NAMES = {'screen':'screen_summary.json', 'refine':'refined_summary.json',
     'resolution':'admitted_summary.json', 'adaptive':'adaptive_summary.json',
     'adaptive-resolution':'adaptive_resolution_summary.json', 'bank-resolution':'bank_resolution_summary.json',
-    'bank-coarse':'bank_coarse_summary.json'}
+    'bank-coarse':'bank_coarse_summary.json','bank-tail':'bank_tail_summary.json',
+    'bank-tail-resolution':'bank_tail_resolution_summary.json'}
 
 
 def save_progress(summary,out):
@@ -41,7 +42,8 @@ def previous_summary(stage,out):
     if stage=='screen':return None
     name={'refine':'screen_summary.json','resolution':'refined_summary.json',
         'adaptive':'screen_summary.json','adaptive-resolution':'adaptive_summary.json',
-        'bank-resolution':'adaptive_summary.json','bank-coarse':'bank_resolution_summary.json'}[stage]
+        'bank-resolution':'adaptive_summary.json','bank-coarse':'bank_resolution_summary.json',
+        'bank-tail':'bank_coarse_summary.json','bank-tail-resolution':'bank_tail_summary.json'}[stage]
     previous=read(str(out/name))
     assert previous['complete']
     if stage=='adaptive':
@@ -82,6 +84,57 @@ def prepare_resolution_pilot(plan=PLAN):
         independent_confirmation=False,
         scope='Current worst group of each failed comparison and kind; continuous 512-point rules replace redundant GH escalation. Other failed groups remain unadmitted.')
     save(out/'bank_resolution_plan.json',result);print(json.dumps(result),flush=True);return result
+
+
+def prepare_tail(plan=PLAN):
+    spec=read(plan);out=ROOT/spec['output'];summary=read(str(out/'bank_coarse_summary.json'))
+    assert summary['complete']
+    probe=read(str(out/'tail_cost_probe.json'));selected=[]
+    assert {(r['kind'],r['group']) for r in probe['selected']}=={
+        (k,g) for k,ids in summary['failed_groups'].items() for g in ids}
+    for old in probe['selected']:
+        check=summary['groups'][old['group']]['checks'][old['kind']]
+        finer=any(c['low']=='E8' and c['high']=='E9' and c['maximum_difference']>spec['maximum_action_difference']
+            for c in check['comparisons'])
+        rules=['E9','F9','L9']+(['E10'] if finer else [])
+        cost=0.
+        for h,missing in old['missing'].items():
+            unit=probe['units'][old['kind']+'_'+h]
+            pending=set(missing)-{'K9'};pending.add('L9')
+            cost+=sum(.75*unit['E9'] if n=='L9' else 2.5*unit['E9'] if n=='E10' else unit[n] for n in pending)
+        selected.append(dict(group=old['group'],kind=old['kind'],rules=rules,
+            continuous_reference='E10' if finer else 'E8',estimated_cpu_seconds=1.2*cost))
+    estimate=sum(r['estimated_cpu_seconds'] for r in selected)
+    result=dict(record=spec['record'],selected=selected,estimated_cpu_seconds=estimate,
+        maximum_estimated_cpu_seconds=spec['maximum_estimated_adaptive_cpu_seconds'],
+        estimated_cost_admitted=estimate<=spec['maximum_estimated_adaptive_cpu_seconds'],
+        maximum_live_workers=8,priority='low',new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
+        independent_confirmation=False,
+        scope='Only the remaining failed groups. GH32 stays the selected rule; GH16 is a same-512-point comparison, with previous GH64/256 checks preserved. Continuous and independent checks retain tolerance 1e-4. Cost uses slowest matched cached timers with 20 percent headroom.')
+    save(out/'bank_tail_plan.json',result);print(json.dumps(result),flush=True);return result
+
+
+def prepare_tail_resolution(plan=PLAN):
+    spec=read(plan);out=ROOT/spec['output'];summary=read(str(out/'bank_tail_summary.json'))
+    assert summary['complete']
+    previous=read(str(out/'bank_tail_plan.json'));probe=read(str(out/'tail_cost_probe.json'))
+    selected=[]
+    for kind,ids in summary['failed_groups'].items():
+        for gid in ids:
+            check=summary['groups'][gid]['checks'][kind]
+            assert check['maximum_log_evidence_error']<=spec['maximum_action_difference']
+            assert all(c['maximum_difference']<=spec['maximum_action_difference']
+                for c in check['comparisons'] if (c['low'],c['high'])!=('E8','E9'))
+            estimate=1.2*2.5*sum(probe['units'][kind+'_'+str(h)]['E9'] for h in (4,5))
+            selected.append(dict(group=gid,kind=kind,rules=['E10'],estimated_cpu_seconds=estimate))
+    estimate=sum(r['estimated_cpu_seconds'] for r in selected)
+    total=previous['estimated_cpu_seconds']+estimate
+    result=dict(record=spec['record'],selected=selected,estimated_cpu_seconds=estimate,
+        cumulative_estimated_cpu_seconds=total,maximum_estimated_cpu_seconds=previous['maximum_estimated_cpu_seconds'],
+        estimated_cost_admitted=total<=previous['maximum_estimated_cpu_seconds'],maximum_live_workers=8,
+        priority='low',new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
+        scope='Only remaining coarse failures: add 1024-point E10 reference for selected 512-point E9. Keep its passed independent F9 and GH L9 checks. Cumulative estimate includes the preceding tail stage.')
+    save(out/'bank_tail_resolution_plan.json',result);print(json.dumps(result),flush=True);return result
 
 
 def action_groups(actions):
@@ -180,8 +233,9 @@ def run_group(group,identity,kind,rules,spec):
 
 def selected_groups(context,stage,out,kind,tolerance=1e-4):
     if stage=='screen':return [g['group'] for g in context['groups'] if kind=='raw' or g['kind']=='guarded']
-    if stage=='bank-resolution':
-        plan=read(str(out/'bank_resolution_plan.json'));assert plan['estimated_cost_admitted']
+    if stage in ('bank-resolution','bank-tail','bank-tail-resolution'):
+        plan=read(str(out/(stage.replace('-','_')+'_plan.json')))
+        assert plan['estimated_cost_admitted']
         return [r['group'] for r in plan['selected'] if r['kind']==kind]
     previous=previous_summary(stage,out)
     if stage=='bank-coarse':
@@ -195,8 +249,10 @@ def run(identity,kind,shard,stage,plan=PLAN):
     (out/'tasks'/stage).mkdir(parents=True,exist_ok=True)
     groups=selected_groups(context,stage,out,kind,spec['maximum_action_difference'])[shard::spec['shards_per_identity_kind']]
     rules={'screen':['E5','E7','F7','G7'],'refine':['H8','I8','J8'],'resolution':['K9'],
-        'adaptive':['E8','F8','H8'],'adaptive-resolution':[],'bank-resolution':[],'bank-coarse':['E9']}[stage]
+        'adaptive':['E8','F8','H8'],'adaptive-resolution':[],'bank-resolution':[],'bank-coarse':['E9'],
+        'bank-tail':[],'bank-tail-resolution':['E10']}[stage]
     previous=previous_summary(stage,out) if stage in ('adaptive-resolution','bank-resolution') else None
+    tail=read(str(out/'bank_tail_plan.json')) if stage=='bank-tail' else None
     started=time.process_time();handler=signal.signal(signal.SIGPROF,cpu_timeout)
     signal.setitimer(signal.ITIMER_PROF,spec['maximum_job_cpu_seconds'])
     complete=0;result=dict(identity=identity,kind=kind,shard=shard,stage=stage,groups=groups,complete=False)
@@ -204,6 +260,7 @@ def run(identity,kind,shard,stage,plan=PLAN):
         for group in groups:
             group_rules=adaptive_resolution_rules(previous['groups'][group]['checks'][kind],
                 spec['maximum_action_difference']) if previous else rules
+            if tail:group_rules=next(r['rules'] for r in tail['selected'] if r['group']==group and r['kind']==kind)
             run_group(group,identity,kind,group_rules,spec);complete+=1
             print('SCHEDULEURM_PROGRESS '+json.dumps(dict(current=complete,total=len(groups),unit='joint_policy_groups',
                 identity=identity,kind=kind,shard=shard,stage=stage)),flush=True)
@@ -245,7 +302,7 @@ def collect(stage,plan=PLAN):
                 checks[kind]=dict(passed=True,native_analytic_reference_reused=True);chosen[kind]='native_reference';continue
             old=previous['groups'][gid]['checks'][kind] if previous else None
             active=stage=='screen' or not old['passed']
-            if stage in ('bank-resolution','bank-coarse'):
+            if stage in ('bank-resolution','bank-coarse','bank-tail','bank-tail-resolution'):
                 active=gid in selected_groups(context,stage,out,kind,spec['maximum_action_difference'])
             if not active:
                 checks[kind]=old;chosen[kind]=previous['groups'][gid]['selected_rules'][kind]
@@ -256,9 +313,15 @@ def collect(stage,plan=PLAN):
                     'adaptive':[('E7','E8'),('E8','F8'),('E8','H8')],
                     'adaptive-resolution':[('E8','E9'),('E9','F9'),('E9','K9')],
                     'bank-resolution':[('E8','E9'),('E9','F9'),('E9','K9')],
-                    'bank-coarse':[('E8','F8'),('E8','H8'),('E8','E9')]}[stage]
+                    'bank-coarse':[('E8','F8'),('E8','H8'),('E8','E9')],
+                    'bank-tail':[('E8','E9'),('E9','F9'),('L9','E9')],
+                    'bank-tail-resolution':[('E9','E10'),('E9','F9'),('L9','E9')]}[stage]
                 selected={'screen':'G7','refine':'H8','resolution':'H8','adaptive':'E8',
-                    'adaptive-resolution':'E9','bank-resolution':'E9','bank-coarse':'E8'}[stage]
+                    'adaptive-resolution':'E9','bank-resolution':'E9','bank-coarse':'E8','bank-tail':'E9',
+                    'bank-tail-resolution':'E9'}[stage]
+                if stage=='bank-tail':
+                    row=next(r for r in read(str(out/'bank_tail_plan.json'))['selected'] if r['group']==gid and r['kind']==kind)
+                    if row['continuous_reference']=='E10':pairs[0]=('E9','E10')
                 if stage in ('adaptive-resolution','bank-resolution') and adaptive_resolution_rules(old,spec['maximum_action_difference'])==['K9']:
                     pairs=[('E8','F8'),('E8','H8'),('E8','K9')];selected='E8'
                 parts=[read(str(out/'parts'/f'{gid:03d}_{h}_{kind}.json')) for h in context['utility_identities']]
@@ -312,17 +375,20 @@ def collect(stage,plan=PLAN):
         scope='One opened development risk observation, all 365 actions, fixed cached opposite head. Rule differences are diagnostics, not strict error bounds.')
     save(out/SUMMARY_NAMES[stage],summary)
     save(out/(stage+'_risk_bank.json'),dict(statistics={k:v.tolist() for k,v in tables.items()},costs={k:v.tolist() for k,v in costs.items()}))
-    if stage in ('adaptive','bank-resolution','bank-coarse'):
+    if stage in ('adaptive','bank-resolution','bank-coarse','bank-tail','bank-tail-resolution'):
         save_progress(summary,out)
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in summary.items() if k!='groups'}),flush=True);return summary
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','prepare-bank-resolution','run','collect'])
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','prepare-bank-resolution',
+        'prepare-tail','prepare-tail-resolution','run','collect'])
     parser.add_argument('--stage',choices=list(SUMMARY_NAMES),default='screen')
     parser.add_argument('--identity',type=int);parser.add_argument('--kind',choices=['raw','projected'])
     parser.add_argument('--shard',type=int);parser.add_argument('--plan',default=PLAN);args=parser.parse_args()
     if args.mode=='prepare':prepare(args.plan)
     elif args.mode=='prepare-bank-resolution':prepare_resolution_pilot(args.plan)
+    elif args.mode=='prepare-tail':prepare_tail(args.plan)
+    elif args.mode=='prepare-tail-resolution':prepare_tail_resolution(args.plan)
     elif args.mode=='run':run(args.identity,args.kind,args.shard,args.stage,args.plan)
     else:collect(args.stage,args.plan)

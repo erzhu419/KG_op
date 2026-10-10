@@ -1,0 +1,104 @@
+{
+  "record": "source_n1_o5_h1_p207",
+  "selected": [
+    {
+      "group": 6,
+      "kind": "raw",
+      "rules": [
+        "E9",
+        "F9",
+        "L9",
+        "E10"
+      ],
+      "continuous_reference": "E10",
+      "estimated_cpu_seconds": 517.6162244312999
+    },
+    {
+      "group": 14,
+      "kind": "raw",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 321.1062944066999
+    },
+    {
+      "group": 52,
+      "kind": "raw",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 321.1062944066999
+    },
+    {
+      "group": 53,
+      "kind": "raw",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 321.1062944066999
+    },
+    {
+      "group": 20,
+      "kind": "projected",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 346.79776334879995
+    },
+    {
+      "group": 23,
+      "kind": "projected",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 346.79776334879995
+    },
+    {
+      "group": 52,
+      "kind": "projected",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 346.79776334879995
+    },
+    {
+      "group": 59,
+      "kind": "projected",
+      "rules": [
+        "E9",
+        "F9",
+        "L9"
+      ],
+      "continuous_reference": "E8",
+      "estimated_cpu_seconds": 346.79776334879995
+    }
+  ],
+  "estimated_cpu_seconds": 2868.126161046599,
+  "maximum_estimated_cpu_seconds": 3600,
+  "estimated_cost_admitted": true,
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "scope": "Only the remaining failed groups. GH32 stays the selected rule; GH16 is a same-512-point comparison, with previous GH64/256 checks preserved. Continuous and independent checks retain tolerance 1e-4. Cost uses slowest matched cached timers with 20 percent headroom."
+}

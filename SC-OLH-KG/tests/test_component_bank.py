@@ -12,7 +12,7 @@ import numpy as np
 from core.budgeted_guarded_kg import BudgetedTerminalActions
 from core.raw_terminal_head_grid import compose_head_grid
 from performance.validate_historical_component_bank import (action_groups, group_checks, collect,
-    adaptive_resolution_rules, prepare_resolution_pilot, RULES)
+    adaptive_resolution_rules, prepare_resolution_pilot, prepare_tail, prepare_tail_resolution, RULES)
 from performance.diagnose_historical_component_guarded import compressed_write
 from performance import launch_historical_component_bank as launcher
 from performance.diagnose_historical_bank_failures import select_failures
@@ -197,6 +197,97 @@ class ComponentBankTests(unittest.TestCase):
             progress=json.loads((out/'partial_bank_progress.json').read_text())
             self.assertEqual(progress['stage'],'bank-coarse')
             self.assertEqual(progress['remaining_failed_groups'],dict(raw=[0],projected=[]))
+
+            tail=copy.deepcopy(partial);tail['groups'][1]['checks']['raw']['passed']=False
+            (out/'bank_coarse_summary.json').write_text(json.dumps(tail))
+            (out/'bank_tail_plan.json').write_text(json.dumps(dict(estimated_cost_admitted=True,selected=[
+                dict(group=gid,kind='raw',continuous_reference='E8' if gid==0 else 'E10') for gid in (0,1)])))
+            for gid in (0,1):
+                for h in range(3):
+                    path=out/f'parts/{gid:03d}_{h}_raw.json';part=json.loads(path.read_text())
+                    part['rows'].update({n:copy.deepcopy(part['rows']['H8']) for n in ('E9','F9','L9','E10')})
+                    if gid==1 and h==2:part['rows']['E8']['statistics'][1][0]+=.01
+                    path.write_text(json.dumps(part))
+            (out/'tasks/bank-tail').mkdir()
+            for h in range(3):
+                for shard in (0,1):
+                    (out/f'tasks/bank-tail/{h}_raw_{shard}.json').write_text(json.dumps(dict(complete=True,cpu_seconds=1.,peak_rss_mb=0.)))
+            with contextlib.redirect_stdout(io.StringIO()):admitted=collect('bank-tail',str(plan))
+            self.assertTrue(admitted['single_record_risk_bank_precision_passed'])
+            self.assertEqual(admitted['actions_checked'],dict(raw=10,projected=10))
+            self.assertEqual(admitted['groups'][1]['checks']['raw']['comparisons'][0]['high'],'E10')
+            table=json.loads((out/'bank-tail_risk_bank.json').read_text())
+            for kind in ('raw','projected'):np.testing.assert_array_equal(table['statistics'][kind],g)
+            for gid,name in [(0,'L9'),(1,'E10')]:
+                path=out/f'parts/{gid:03d}_2_raw.json';part=json.loads(path.read_text())
+                part['rows'][name]['statistics'][1][0]+=.01;path.write_text(json.dumps(part))
+                with contextlib.redirect_stdout(io.StringIO()):failed=collect('bank-tail',str(plan))
+                self.assertEqual(failed['failed_groups']['raw'],[gid])
+                part['rows'][name]['statistics'][1][0]-=.01;path.write_text(json.dumps(part))
+
+            # Replace only the failed coarse comparison, retain the independently
+            # checked selected rule and all other admitted groups.
+            held=copy.deepcopy(admitted);held['groups'][0]['checks']['raw']['passed']=False
+            (out/'bank_tail_summary.json').write_text(json.dumps(held))
+            (out/'bank_tail_resolution_plan.json').write_text(json.dumps(dict(estimated_cost_admitted=True,
+                selected=[dict(group=0,kind='raw')])))
+            (out/'tasks/bank-tail-resolution').mkdir()
+            for h in range(3):
+                path=out/f'parts/000_{h}_raw.json';part=json.loads(path.read_text())
+                part['rows']['E10']=copy.deepcopy(part['rows']['E9']);path.write_text(json.dumps(part))
+                (out/f'tasks/bank-tail-resolution/{h}_raw_0.json').write_text(json.dumps(dict(complete=True,cpu_seconds=1.,peak_rss_mb=0.)))
+            with contextlib.redirect_stdout(io.StringIO()):resolved=collect('bank-tail-resolution',str(plan))
+            self.assertTrue(resolved['single_record_risk_bank_precision_passed'])
+            self.assertEqual(resolved['groups'][0]['selected_rules']['raw'],'E9')
+            self.assertEqual(resolved['groups'][1],held['groups'][1])
+            self.assertFalse(resolved['full_predictive_integration_admitted'])
+            path=out/'parts/000_2_raw.json';part=json.loads(path.read_text())
+            part['rows']['E10']['statistics'][1][0]+=.01;path.write_text(json.dumps(part))
+            with contextlib.redirect_stdout(io.StringIO()):failed=collect('bank-tail-resolution',str(plan))
+            self.assertEqual(failed['failed_groups']['raw'],[0])
+
+    def test_tail_resolution_counts_previous_estimate_and_rejects_independent_failures(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out=Path(tmp);plan=out/'plan.json'
+            plan.write_text(json.dumps(dict(output=str(out),record='toy',maximum_action_difference=1e-4)))
+            check=dict(maximum_log_evidence_error=0.,comparisons=[dict(low=a,high=b,maximum_difference=d)
+                for a,b,d in [('E8','E9',2e-4),('E9','F9',2e-5),('L9','E9',1e-9)]])
+            summary=dict(complete=True,failed_groups=dict(raw=[0],projected=[]),
+                groups=[dict(group=0,checks=dict(raw=check))])
+            (out/'bank_tail_summary.json').write_text(json.dumps(summary))
+            (out/'tail_cost_probe.json').write_text(json.dumps(dict(units={f'raw_{h}':dict(E9=10.) for h in (4,5)})))
+            for limit in (100.,90.):
+                (out/'bank_tail_plan.json').write_text(json.dumps(dict(estimated_cpu_seconds=40.,maximum_estimated_cpu_seconds=limit)))
+                with contextlib.redirect_stdout(io.StringIO()):selected=prepare_tail_resolution(str(plan))
+                self.assertEqual(selected['estimated_cpu_seconds'],60.)
+                self.assertEqual(selected['cumulative_estimated_cpu_seconds'],100.)
+                self.assertEqual(selected['estimated_cost_admitted'],limit>=100.)
+                self.assertEqual(selected['selected'][0]['rules'],['E10'])
+            check['comparisons'][1]['maximum_difference']=2e-4
+            (out/'bank_tail_summary.json').write_text(json.dumps(summary))
+            with self.assertRaises(AssertionError):prepare_tail_resolution(str(plan))
+
+    def test_tail_plan_keeps_just_over_threshold_failure_and_accounts_for_cached_rules(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out=Path(tmp);plan=out/'plan.json'
+            checks=[dict(comparisons=[dict(low='E8',high='F8',maximum_difference=2e-4)]),
+                dict(comparisons=[dict(low='E8',high='E9',maximum_difference=1.00245e-4)])]
+            summary=dict(complete=True,failed_groups=dict(raw=[0,1],projected=[]),
+                groups=[dict(group=gid,checks=dict(raw=check)) for gid,check in enumerate(checks)])
+            (out/'bank_coarse_summary.json').write_text(json.dumps(summary))
+            probe=dict(selected=[dict(group=gid,kind='raw',missing={str(h):rules for h in (4,5)}) for gid,rules in
+                [(0,['E9','F9','K9']),(1,['F9','K9','E10'])]],
+                units={f'raw_{h}':dict(E9=10.,F9=10.,K9=20.) for h in (4,5)})
+            (out/'tail_cost_probe.json').write_text(json.dumps(probe))
+            for limit in (200.,150.):
+                plan.write_text(json.dumps(dict(output=str(out),record='toy',maximum_action_difference=1e-4,
+                    maximum_estimated_adaptive_cpu_seconds=limit)))
+                with contextlib.redirect_stdout(io.StringIO()):selected=prepare_tail(str(plan))
+                self.assertAlmostEqual(selected['estimated_cpu_seconds'],168.)
+                self.assertEqual(selected['estimated_cost_admitted'],limit>=168.)
+                self.assertEqual(selected['selected'][1]['continuous_reference'],'E10')
+                self.assertIn('E10',selected['selected'][1]['rules'])
+                self.assertEqual(selected['selected'][0]['rules'],['E9','F9','L9'])
 
     def test_resolution_keeps_failed_independent_and_gh_checks(self):
         checks=dict(maximum_log_evidence_error=0.,comparisons=[dict(low=a,high=b,maximum_difference=d)

@@ -174,3 +174,12 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 16片完整完成，实耗2.410单核小时，raw／native覆盖314／344个动作，推荐未变，归一化误差最高8.88e−16。剩余15组只差分辨率确认、9组为独立规则差异，GH检查均通过。原后续方案仍选256点规则H8，提高GH阶数未针对连续误差；已改为独立512点E9／F9和GH64／512点K9对照。当前四个最差组全部通过，实耗1108.61 CPU秒，覆盖320／350个动作。[归因与结果](../paper_artifacts/historical_component_bank_v1/adaptive_diagnosis.json)、同目录`bank_resolution_summary.json`。
 
 下一步13个仅分辨率失败组只补E9，保留候选E8的独立F8和GH64的H8检查；两轮累计预计3304秒，仍在3600秒限制内，最多8个低优先级单核。9项测试通过，命令及自动汇总在`bank_coarse_*`和`bank-coarse_*`文件。另用缓存核对已通过组的较低GH规则，动作差最高1.22e−5／2.80e−5，推荐未变；匹配guarded规则计算快2.12／2.13倍，非完整KG加速。[诊断](../paper_artifacts/historical_component_bank_v1/cheaper_rule_diagnostic.json)。仍限一条开发观测，规则差非严格误差界；完整银行、96条外层KG及独立决策收益待验证，来源先验、全部身份／分量、协方差与预算保持，无新增物理、拟合或验证调用。
+
+
+## 剩余八组接续（2026-10-10）
+
+13个仅分辨率失败组合中12个通过，实耗1263.54 CPU秒；raw／native均覆盖353／365动作，推荐未变。raw6的256→512差1.002452e−4，保留失败并补1024点确认；其余七组补512点独立对照。GH32保持为计值规则，同512点GH16仅作阶数对照，原GH64检查留档。按最慢匹配计时和20%余量，八组预计2868秒，低于本轮3600秒限制；16片最多8个低优先级单核滚动、自动汇总。[计划](../paper_artifacts/historical_component_bank_v1/bank_tail_plan.json)。10项测试通过，包含略超门槛仍失败、1024点对照、预算索引和缓存计时。原先验、全部分量／协方差和预算保持，无新增物理、拟合或验证调用；仍只涉及一条开发风险观测，完整KG与独立部署证据待验证。
+
+八组接续实耗2009.65 CPU秒，native全部通过，raw仅组52／53的256→512比较未过。四个补算任务保留选定E9及其独立F9、GH对照，只补E10确认；512→1024差分别1.47e−5／2.92e−5，均低于原1e−4门槛。最终raw／native均通过365／365动作，32条固定目标头下推荐未变。[最终汇总](../paper_artifacts/historical_component_bank_v1/bank_tail_resolution_summary.json)。两轮累计预计3523.16、实耗2365.61 CPU秒，峰值701MB；11项测试通过，包括只替换失败的分辨率比较、保留其他组和累计预算。入口为`python -m performance.validate_historical_component_bank prepare-tail-resolution`及`python -m performance.launch_historical_component_bank continue-bank-tail-resolution`。
+
+下一步先检验CDF主体低端、中部及0.9边界附近观测的适用性，共享现有联合边际，避免逐条重载2.64GB后验或复制75.5MB边际。当前单条银行计值缓存计时合计2.01单核小时，直接外推96条约193小时，尚不含精度检查；须先做小规模成本和精度检查。计时可在服务器运行artifact目录内`analyze_final_bank.py`重放，结果见`final_bank_cost.json`。局限：单条观测通过尚不代表其他95条、224个外层节点或完整KG通过；规则差不是严格误差界，稳定独立决策收益仍未验证。

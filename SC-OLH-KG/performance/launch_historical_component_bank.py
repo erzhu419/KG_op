@@ -42,6 +42,9 @@ def launch(stage):
     elif stage=='bank-coarse':
         plan=json.loads((out/'bank_coarse_plan.json').read_text());assert plan['estimated_cost_admitted']
         counts={k:len(v) for k,v in plan['selected_groups'].items()}
+    elif stage in ('bank-tail','bank-tail-resolution'):
+        plan=json.loads((out/(stage.replace('-','_')+'_plan.json')).read_text());assert plan['estimated_cost_admitted']
+        counts={k:sum(r['kind']==k for r in plan['selected']) for k in ('raw','projected')}
     else:
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
@@ -109,13 +112,15 @@ def collect_remote(stage,out):
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
         'bank-coarse':'bank_coarse_summary.json',
+        'bank-tail':'bank_tail_summary.json',
+        'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
     relative='paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
     if rc:raise RuntimeError(err or body)
     result=json.loads(body);(out/name).write_text(json.dumps(result,indent=2)+'\n')
-    if stage in ('adaptive','bank-resolution','bank-coarse'):
+    if stage in ('adaptive','bank-resolution','bank-coarse','bank-tail','bank-tail-resolution'):
         from performance.validate_historical_component_bank import save_progress
         save_progress(result,out)
     print('COLLECTED '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
@@ -197,6 +202,24 @@ def continue_coarse_resolution():
     print('BANK_COARSE_DONE '+json.dumps(status),flush=True)
 
 
+def continue_tail(stage='bank-tail'):
+    spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text());out=ROOT/spec['output']
+    prefix=stage.replace('-','_')
+    plan=json.loads((out/(prefix+'_plan.json')).read_text());assert plan['estimated_cost_admitted']
+    path=out/(prefix+'_status.json')
+    status=dict(state='running',estimated_cpu_seconds=plan['estimated_cpu_seconds'],maximum_live_workers=8,
+        full_predictive_integration_admitted=False,independent_confirmation=False)
+    path.write_text(json.dumps(status,indent=2)+'\n')
+    launch(stage);summary=collect_remote(stage,out)
+    if stage=='bank-tail-resolution':
+        status.update(cumulative_estimated_cpu_seconds=plan['cumulative_estimated_cpu_seconds'],
+            cumulative_measured_cpu_seconds=json.loads((out/'bank_tail_summary.json').read_text())['cpu_seconds']+summary['cpu_seconds'])
+    status.update(state='single_record_risk_precision_passed' if summary['single_record_risk_bank_precision_passed'] else 'precision_hold',
+        actions_checked=summary['actions_checked'],failed_groups=summary['failed_groups'],measured_cpu_seconds=summary['cpu_seconds'],
+        single_record_risk_bank_precision_passed=summary['single_record_risk_bank_precision_passed'])
+    path.write_text(json.dumps(status,indent=2)+'\n');print('BANK_TAIL_DONE '+json.dumps(status),flush=True)
+
+
 def continue_pipeline():
     spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text());out=ROOT/spec['output']
     prep=json.loads((out/'preparation.json').read_text())
@@ -241,10 +264,13 @@ def continue_pipeline():
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
-        'bank-coarse','continue-bank-coarse']+list(PILOT_MODES))
+        'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
+        'bank-tail-resolution','continue-bank-tail-resolution']+list(PILOT_MODES))
     args=parser.parse_args()
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
     elif args.stage=='continue-bank-resolution':continue_resolution_pilot()
     elif args.stage=='continue-bank-coarse':continue_coarse_resolution()
+    elif args.stage=='continue-bank-tail':continue_tail()
+    elif args.stage=='continue-bank-tail-resolution':continue_tail('bank-tail-resolution')
     else:launch(args.stage)
