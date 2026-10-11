@@ -1,0 +1,16 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_risk_competition_batch_v29",
+  "batch_plan": "paper_artifacts/historical_risk_competition_batch_v29/batch_input.json",
+  "maximum_estimated_cpu_seconds": 3600,
+  "cpu_reserves": {
+    "cached_analysis_reserve": 240,
+    "preparation_collection": 120,
+    "updated_assembly": 240
+  },
+  "maximum_live_workers": 8,
+  "maximum_job_cpu_seconds": 600,
+  "maximum_action_difference": 0.0001,
+  "selection_rule": "Frozen actual body16 marginal-bound overlaps,groups34/63/71. Original6 reference rules and1e-4 gates. Allcomponents,identity scores,covariance,365 actions and359 budget retained. Matching maximum timers plus20percent;600 phase reserves included.",
+  "scope": "Opened development state/query63 only. No physical/source-fit/verifier calls or independent confirmation. Conditional bounds and finite reference checks do not establish continuous outerKG or independent deployment advantage."
+}

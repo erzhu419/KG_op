@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/usr/bin/python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--task-id",
+    "t142088",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20"
+  ],
+  "stdout": "=== nodes ===\n  local       GPU0=1.24GB/8.00GB(free=6.53GB, mem:15%, util:0%)  cpu=16/16(wsl_load 0.2, host 0%, stale_node_probe_cache)  ram_free=18.0GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.2, stale_node_probe_cache)  ram_free=491.8GB\n  jtl110gpu2  GPU0=0.17GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1, stale_node_probe_cache)  ram_free=496.5GB\n  jtl311linux CPU-only  cpu=7/8(load 1.0, stale_node_probe_cache)  ram_free=3.88GB\n  node007     GPU0=9.30GB/11.0GB(free=1.45GB, mem:85%, util:64%), GPU1=9.30GB/11.0GB(free=1.45GB, mem:85%, util:40%), GPU2=9.30GB/11.0GB(free=1.45GB, mem:85%, util:63%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:79%)  cpu=57/64(load 6.8, stale_node_probe_cache)  ram_free=160.1GB\n  jtl110cpu   DOWN (Command '['ssh', '-o', 'ConnectTimeout=15', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '-o', 'BatchMode=yes', '-o', 'ControlMaster=auto', '-o', 'ControlPath=~/.s | Windows probe timed out; check SSH reachability, PowerShell startup, and host CPU pressure.)\n  jtl110cpu2  DOWN (Command '['ssh', '-o', 'ConnectTimeout=15', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '-o', 'BatchMode=yes', '-o', 'ControlMaster=auto', '-o', 'ControlPath=~/.s | Windows probe timed out; check SSH reachability, PowerShell startup, and host CPU pressure.)\n  node001     CPU-only  cpu=65/96(load 30.8, stale_node_probe_cache, reserve 1)  ram_free=179.2GB\n  node002     CPU-only  cpu=0/96(load 106.8, stale_node_probe_cache, reserve 1)  ram_free=149.0GB\n  node003     CPU-only  cpu=0/96(load 129.3, stale_node_probe_cache, reserve 1)  ram_free=141.8GB\n  node004     CPU-only  cpu=48/96(load 48.1, stale_node_probe_cache, reserve 1)  ram_free=176.2GB\n  node005     CPU-only  cpu=64/96(load 32.5, stale_node_probe_cache, reserve 1)  ram_free=171.7GB\n  node006     CPU-only  cpu=41/96(load 55.2, stale_node_probe_cache, reserve 1)  ram_free=174.0GB\n=== dispatch === (1 queued)\n  [t142088] LAUNCH on node001:CPU  pid=97240  log=/tmp/sched_t142088.log\n",
+  "stderr": "",
+  "returncode": 0
+}

@@ -1,0 +1,43 @@
+{
+  "complete": true,
+  "completed_phases": 5,
+  "completed_integral_workers": 62,
+  "completed_assembly_workers": 5,
+  "admitted_combinations": 31,
+  "selected_action_checks": 93,
+  "precision_holds": [],
+  "selected_methods": {
+    "control128": 15,
+    "control32": 16
+  },
+  "maximum_selected_candidate_direct_difference": 7.68763660633498e-05,
+  "maximum_original_control32_direct_difference": 0.0003479112736498591,
+  "maximum_fine_reference_difference": 4.281015221541118e-05,
+  "estimated_campaign_cpu_seconds": 14656.645050382798,
+  "measured_integral_cpu_seconds": 9762.452387928999,
+  "reported_successful_worker_cpu_seconds": 9765.438880233,
+  "measured_assembly_process_cpu_seconds": 470.14795732799996,
+  "reported_worker_and_assembly_cpu_seconds": 10235.586837560999,
+  "reported_preparation_cpu_seconds": 19.074953646,
+  "reported_collection_cpu_seconds": 12.621339513,
+  "maximum_concurrent_scheduler_tasks": 8,
+  "scheduler_job_span_seconds": 3273.369210243225,
+  "reference_entries_before": 980,
+  "reference_entries_after": 1011,
+  "changed_recommendation_records": [],
+  "model_net_preview": 0.01357641652258601,
+  "remaining_bound_competitor_checks": 0,
+  "conditional_unreferenced_body32_uplift_envelope": {
+    "raw": 0.0,
+    "projected": 0.0
+  },
+  "minimum_validated_selected_competitor_gap": 0.05644973968379907,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "full_matrix_dispatched": false,
+  "replay": "python -m performance.launch_historical_component_bank continue-risk-competition --plan performance/manifests/historical_risk_bound_remaining_v2.json",
+  "limitations": "All365 actions covered by admitted references or conditional marginal-bound exclusion at64 body32 labels and32 cached objective heads. This does not establish continuous CDF/outerKG or independent deployment advantage. Reported task CPU excludes loading before the worker timer;integral CPU is not end-to-end time. Body16 and true body/tail outer axes are handled in the followup."
+}

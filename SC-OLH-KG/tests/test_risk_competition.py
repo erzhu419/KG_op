@@ -12,6 +12,21 @@ from performance import launch_historical_component_bank as launcher
 
 
 class RiskCompetitionTests(unittest.TestCase):
+    def test_body16_reference_does_not_claim_a_gap_from_the_body32_grid(self):
+        result=launcher.selected_reference_decisions([], [dict(record='source_n1_o4_h1_p191',kind='raw',group=63,
+            hybrid_direct_admitted=True,minimum_cached_gap=None)])
+        self.assertTrue(result[0]['admitted'])
+        self.assertEqual(result[0]['outer_body_order'],16)
+        self.assertNotIn('minimum_gap',result[0])
+
+    def test_body32_reference_keeps_its_actual_fine_grid_gap(self):
+        group=dict(group=71,minimum_gap=.05)
+        records=[dict(record='source_n1_o5_h1_p223',projected_referenced_competitors=[group])]
+        result=launcher.selected_reference_decisions(records,[dict(record=records[0]['record'],kind='projected',group=71,
+            hybrid_direct_admitted=True,minimum_cached_gap=None)])
+        self.assertEqual(result[0]['minimum_gap'],.05)
+        self.assertNotIn('outer_body_order',result[0])
+
     def test_campaign_waits_for_delayed_resource_footer_without_resubmitting(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);out=root/'phase';out.mkdir()

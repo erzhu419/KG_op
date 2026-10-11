@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/usr/bin/python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--task-id",
+    "t142056",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20"
+  ],
+  "stdout": "=== nodes ===\n  local       GPU0=1.23GB/8.00GB(free=6.54GB, mem:15%, util:8%)  cpu=11/16(wsl_load 1.4, host 34%)  ram_free=16.4GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1)  ram_free=491.8GB\n  jtl110gpu2  GPU0=0.16GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.3)  ram_free=496.4GB\n  jtl311linux CPU-only  cpu=7/8(load 1.1)  ram_free=3.97GB\n  node007     GPU0=9.30GB/11.0GB(free=1.45GB, mem:85%, util:47%), GPU1=9.30GB/11.0GB(free=1.45GB, mem:85%, util:16%), GPU2=9.30GB/11.0GB(free=1.45GB, mem:85%, util:19%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%)  cpu=57/64(load 6.6)  ram_free=160.6GB\n  jtl110cpu   DOWN (Command '['ssh', '-o', 'ConnectTimeout=15', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '-o', 'BatchMode=yes', '-o', 'ControlMaster=auto', '-o', 'ControlPath=~/.s | Windows probe timed out; check SSH reachability, PowerShell startup, and host CPU pressure.)\n  jtl110cpu2  DOWN (Command '['ssh', '-o', 'ConnectTimeout=15', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '-o', 'BatchMode=yes', '-o', 'ControlMaster=auto', '-o', 'ControlPath=~/.s | Windows probe timed out; check SSH reachability, PowerShell startup, and host CPU pressure.)\n  node001     CPU-only  cpu=47/96(load 49.2, reserve 1)  ram_free=173.5GB\n  node002     CPU-only  cpu=4/96(load 92.1, reserve 1)  ram_free=150.5GB\n  node003     CPU-only  cpu=0/96(load 144.7, reserve 1)  ram_free=142.8GB\n  node004     CPU-only  cpu=48/96(load 47.8, reserve 1)  ram_free=173.0GB\n  node005     CPU-only  cpu=56/96(load 40.5, reserve 1)  ram_free=165.5GB\n  node006     CPU-only  cpu=54/96(load 42.0, reserve 1)  ram_free=173.6GB\n=== dispatch === (nothing queued)\n",
+  "stderr": "",
+  "returncode": 0
+}

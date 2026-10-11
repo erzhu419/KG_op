@@ -1,12 +1,25 @@
 import unittest
 import json
+from unittest.mock import patch
 
 import numpy as np
 
-from performance.diagnose_historical_outer_bridge import competition_envelope, outer_diagnostics
+from performance.diagnose_historical_outer_bridge import competition_envelope, outer_diagnostics, outer_selections
 
 
 class OuterBridgeTests(unittest.TestCase):
+    def test_body_and_tail_axes_use_their_actual_saved_rules(self):
+        body={'4':{str(n):dict(positions=list(range(176 if n==16 else 192,(176 if n==16 else 192)+n)),weights=[.9/n]*n) for n in (16,32)}}
+        tail={'4':{str(n):dict(positions=list(range(128,128+n)),weights=[.1/n]*n) for n in (16,32)}}
+        with patch('performance.extend_historical_upper_risk.read',return_value=tail):
+            selections=outer_selections(dict(retained_tail_rule_input='tail.json'),body,[4])
+        coarse_body=selections[32,16,32][1,4]
+        coarse_tail=selections[32,32,16][1,4]
+        self.assertEqual(coarse_body['positions'],list(range(176,192))+list(range(128,160)))
+        self.assertEqual(coarse_tail['positions'],list(range(192,224))+list(range(128,144)))
+        self.assertAlmostEqual(sum(coarse_body['weights'][:16]),.9)
+        self.assertAlmostEqual(sum(coarse_tail['weights'][32:]),.1)
+
     def test_flat_net_does_not_hide_failed_tower_and_result_is_serializable(self):
         rows = [dict(raw_net_reward_of_projected_choice_control_variate=np.float64(.1),
             raw_fixed_action_tower_residual=np.float64(.001)) for _ in range(4)]

@@ -158,11 +158,13 @@ def collect(plan=PLAN):
                         maximum_upper_minus_fixed=float((upper-fixed[:,None]).max()),
                         maximum_upper_reduction=float((old_upper-upper).max()),
                         all_candidates_excluded=bool(not overlap.any())))
-    from scipy.special import roots_legendre
-    weights = dict(zip(range(192,224),.9*roots_legendre(32)[1]/2))
-    envelope = {kind:sum(contexts[name]['prior_weights'][int(name.split('_o')[1].split('_')[0])]*weights[int(name.rsplit('_p',1)[1])]*float(value.mean())
+    body_order = spec.get('body_order',32)
+    rules = read('paper_artifacts/historical_predictive_positive_body_v7/risk_rules.json')
+    weights = {(origin,p):w for origin in spec['origins']
+        for p,w in zip(rules[str(origin)][str(body_order)]['positions'],rules[str(origin)][str(body_order)]['weights'])}
+    envelope = {kind:sum(contexts[name]['prior_weights'][int(name.split('_o')[1].split('_')[0])]*weights[int(name.split('_o')[1].split('_')[0]),int(name.rsplit('_p',1)[1])]*float(value.mean())
         for (name,k),value in potential.items() if k==kind) for kind in ('raw','projected')}
-    result = dict(complete=True,raw_marginal_numerical_gate_passed=admitted,
+    result = dict(complete=True,body_order=body_order,raw_marginal_numerical_gate_passed=admitted,
         cached_reference_containment_passed=max(maximum_reference_excess,maximum_anchor_excess)<=spec['maximum_numerical_difference'],
         maximum_validated_query_certificate_above_bound=float(maximum_reference_excess),
         maximum_validated_anchor_action_above_bound=float(maximum_anchor_excess),
@@ -177,7 +179,7 @@ def collect(plan=PLAN):
         reused_pilot_rows=sum(t.get('reused_pilot_rows',0) for t in tasks),collection_cpu_seconds=time.process_time()-start,
         new_joint_terminal_integrations=0,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         independent_confirmation=False,full_predictive_integration_admitted=False,
-        scope='Opened body32 labels and the manifest action groups. Gaussian tangent and verifier branch relaxations are analytic upper bounds; '
+        scope=f'Opened body{body_order} labels and the manifest action groups. Gaussian tangent and verifier branch relaxations are analytic upper bounds; '
             'raw query-eta expectation uses all positive components and64/128 numerical checks. Projection uses the original paid moments. '
             'Original prior,all8 identity likelihoods,365-action contract and359 budget remain unchanged. '
             'Exclusion is conditional on matched cached objective tables and numerical fixed-action references,with the historical2e-4 margin. '

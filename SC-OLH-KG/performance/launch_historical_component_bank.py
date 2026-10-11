@@ -345,6 +345,22 @@ def continue_pipeline():
     status_path.write_text(json.dumps(status,indent=2)+'\n');print('PIPELINE_DONE '+json.dumps(status),flush=True)
 
 
+def selected_reference_decisions(records, groups):
+    rmap = {r['record']:r for r in records}; decisions = []
+    for value in groups:
+        row = {k:value[k] for k in ('record','kind','group')}
+        row['admitted'] = value['hybrid_direct_admitted']
+        if value['record'] not in rmap:
+            # The final32-point grid does not contain the distinct16-point nodes.
+            assert 176 <= int(value['record'].rsplit('_p',1)[1]) < 192
+            row['outer_body_order'] = 16
+        elif row['admitted']:
+            group = next(g for g in rmap[value['record']][value['kind']+'_referenced_competitors'] if g['group']==value['group'])
+            row.update(previous_minimum_gap=value['minimum_cached_gap'],**group)
+        decisions.append(row)
+    return decisions
+
+
 def assemble_risk_phase(out,phase_plan):
     """Finish one campaign phase before allowing its next eight-worker window."""
     sys.path.insert(0,str(Path(CLI).parent))
@@ -386,23 +402,20 @@ def assemble_risk_phase(out,phase_plan):
     (out/'scheduler_final_states.json').write_text(json.dumps(final,indent=2)+'\n')
     code="""from pathlib import Path
 import json
+from performance.launch_historical_component_bank import selected_reference_decisions
 b=Path(%r);out=b/%r
 s=json.loads((b/'paper_artifacts/historical_body_reference_assembly_v1/summary.json').read_text())
 assert s['complete']
 keys=['complete','reference_assembly','raw_model_net_preview','total','regions','prior_weights','action_count','fixed_action','computed_predictive_origins','omitted_predictive_origin_mass']
 a={k:s[k] for k in keys}
 a['records']=[{k:r[k] for k in ['record','raw_winners','native_winners']} for r in s['records']]
-rmap={r['record']:r for r in s['records']};a['selected_reference_decisions']=[]
 checked=json.loads((out/'summary.json').read_text())
-for v in checked['groups']:
- row=dict(record=v['record'],kind=v['kind'],group=v['group'],admitted=v['hybrid_direct_admitted'])
- if row['admitted']:
-  g=next(g for g in rmap[v['record']][v['kind']+'_referenced_competitors'] if g['group']==v['group'])
-  row.update(previous_minimum_gap=v['minimum_cached_gap'],**g)
- a['selected_reference_decisions'].append(row)
+a['selected_reference_decisions']=selected_reference_decisions(s['records'],checked['groups'])
 print(json.dumps(a))
 """%(REMOTE,str(out.relative_to(ROOT)))
-    rc,body,err=scheduler.run_on('node005',shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
+    command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
+        'PYTHONPATH=.',PYTHON,'-c',code])
+    rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     if rc:raise RuntimeError(err or body)
     result=json.loads(body);(out/'assembly_after.json').write_text(json.dumps(result,indent=2)+'\n')
     result['assembly_resources']=resources[-1]

@@ -1,0 +1,23 @@
+{
+  "complete": true,
+  "task_id": "t142095",
+  "measured_process_cpu_seconds": 81.327721483,
+  "maximum_cpu_seconds": 240,
+  "charged_to_body16_phase_cached_analysis_reserve": true,
+  "original_bridge_issue": "The historical head_rules API takes objective,retained tail,body. The old bridge passed objective,body,tail:body/tail differences were mislabeled and body16 missing-action coverage used the first16 body32 labels. The32/32 final rule was correct.",
+  "outer_changes": {
+    "objective16_32": 4.202079189496999e-06,
+    "body16_32": 0.0,
+    "tail16_32": 3.6854651707385333e-06
+  },
+  "finite_outer_diagnostics_passed": true,
+  "original_assembly_net_difference": 8.326672684688674e-17,
+  "original_128_recommendations_unchanged": true,
+  "reference_entries": 1011,
+  "new_integrations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "replay": "python -m performance.diagnose_historical_outer_bridge --plan performance/manifests/historical_outer_bridge_v2.json"
+}

@@ -1,4 +1,5 @@
 """Reuse corrected risk references in historical outer rules and action bounds."""
+import argparse
 import json
 import resource
 import signal
@@ -17,6 +18,12 @@ from performance.assemble_historical_risk_references import (
 
 OUTPUT = 'paper_artifacts/historical_outer_bridge_v1'
 CONFIGURATIONS = [(16, 32, 32), (32, 16, 32), (32, 32, 16), (32, 32, 32)]
+
+
+def outer_selections(spec, rules, origins):
+    # The historical API takes objective, retained tail, then body order.
+    return {(objective,body,tail):head_rules(spec, rules, origins, objective, tail, body)
+        for objective,body,tail in CONFIGURATIONS}
 
 
 def outer_diagnostics(rows, tolerance):
@@ -49,11 +56,11 @@ def competition_envelope(values, upper, covered, weights, groups, margin=2e-4):
         overlapping_action_head_pairs=int(overlap.sum()), groups=priority)
 
 
-def run():
+def run(plan='performance/manifests/historical_outer_bridge_v1.json'):
     started = time.process_time()
     signal.signal(signal.SIGPROF, cpu_timeout)
     signal.setitimer(signal.ITIMER_PROF, 240.)
-    out = ROOT/OUTPUT
+    out = ROOT/read(plan)['output']
     out.mkdir(parents=True, exist_ok=True)
     spec = read(PLAN); precision = read(spec['precision_plan']); case = precision['cases'][0]
     heads, bank, _ = assemble_case(precision, case, read(precision['output']+'/registered_jobs.json')['jobs'])
@@ -74,7 +81,7 @@ def run():
     entries = load_entries(layout); by_record = defaultdict(list)
     for (name, kind, _), entry in entries.items():
         by_record[name, kind].append(entry)
-    selections = {cfg:head_rules(spec, rules, bank['origins'], *cfg) for cfg in CONFIGURATIONS}
+    selections = outer_selections(spec, rules, bank['origins'])
     totals = defaultdict(list); coverage = []; priorities = defaultdict(float)
     expected_decisions = {}; maximum_upper_violation = 0.
     for origin in bank['origins']:
@@ -180,8 +187,10 @@ def run():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser();parser.add_argument('--plan',default='performance/manifests/historical_outer_bridge_v1.json')
+    args = parser.parse_args()
     try:
-        run()
+        run(args.plan)
     finally:
         print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
             peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)
