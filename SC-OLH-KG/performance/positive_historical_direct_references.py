@@ -57,38 +57,52 @@ def prepare_incumbents(plan):
 
 def prepare_next(plan):
     """Start a new phase only after the previous frozen comparisons passed."""
-    from performance.screen_historical_observed_batch_risk import collect as screen, next_plan
+    from performance.screen_historical_observed_batch_risk import next_plan
 
     current=read(plan);closed=read(current['output']+'/compact_summary.json')
     previous=current['joint_reference_plans'][-1];risk=read(previous)
     comparisons=read(risk['output']+'/compact_summary.json')
     assert closed['numerical_containment_passed'] and comparisons['local_risk_candidate_passed']
-    number=int((ROOT/previous).stem.rsplit('_v',1)[1])+1
-    pricing_path=f'performance/manifests/historical_positive_risk_pricing_v{number}.json'
+    full_grid='risk_mean_order' in current
+    prefix='historical_positive_risk_full_grid' if full_grid else 'historical_positive_risk'
+    stem=(ROOT/current['phase_completion']).parent.name if full_grid else (ROOT/previous).stem
+    number=1 if full_grid and not stem.startswith(prefix+'_competition_v') else int(stem.rsplit('_v',1)[1])+1
+    completion=read(current['phase_completion']) if 'phase_completion' in current else None
+    if completion:assert completion['state']=='phase_complete' and completion['all_reference_precision_passed']
+    pricing_path=f'performance/manifests/{prefix}_pricing_v{number}.json'
     pricing=copy.deepcopy(current)
-    pricing.update(output=f'paper_artifacts/historical_positive_risk_pricing_v{number}',
+    pricing.update(output=f'paper_artifacts/{prefix}_pricing_v{number}',
         closed_previous_phase_plan=previous,
         pricing='New,previously unchecked competitive groups after the prior phase passed. New600reserve;all prior phase costs remain in the campaign ledger. No failed comparison is moved to this phase.')
     pricing.pop('continued_phase_cost_plan',None)
-    save(ROOT/pricing_path,pricing);screen(pricing_path);priced=next_plan(pricing_path)
+    save(ROOT/pricing_path,pricing)
+    pricing_out=ROOT/pricing['output'];pricing_out.mkdir(parents=True,exist_ok=True)
+    for name in ('summary.json','compact_summary.json'):
+        (pricing_out/name).write_bytes((ROOT/current['output']/name).read_bytes())
+    priced=next_plan(pricing_path)
+    if completion:
+        priced.update(previous_closed_phase_completion=current['phase_completion'],
+            previous_phase_estimated_cpu_seconds=completion['estimated_phase_cpu_seconds'])
+        save(pricing_out/'next_cost_plan.json',priced)
     if not priced['cost_admitted']:
         result=dict(complete=True,prepared=False,pricing_plan=pricing_path,pricing_manifest=pricing,
             priced=priced,state='conditional_actions_closed' if not any(priced['remaining_groups'].values()) else 'cost_hold')
     else:
-        risk_path=f'performance/manifests/historical_positive_risk_competition_v{number}.json'
-        bound_path=f'performance/manifests/historical_positive_risk_screen_competition_v{number}.json'
-        risk.update(output=f'paper_artifacts/historical_positive_risk_competition_v{number}',
+        risk_path=f'performance/manifests/{prefix}_competition_v{number}.json'
+        bound_path=f'performance/manifests/{prefix}_screen_competition_v{number}.json'
+        risk.update(output=f'paper_artifacts/{prefix}_competition_v{number}',
             frozen_cost_plan=pricing['output']+'/next_cost_plan.json',followup_bound_plan=bound_path,
             previous_closed_phase_plan=previous,
             refined_cases=[dict(record=r['record'],kind=r['kind'],candidate=r['candidate'],rules=r['rules'])
                 for r in priced['next_joint_cases']],
             pricing=pricing['pricing'])
         bound=copy.deepcopy(current)
-        bound.update(output=f'paper_artifacts/historical_positive_risk_screen_competition_v{number}',
+        bound.update(output=f'paper_artifacts/{prefix}_screen_competition_v{number}',
             joint_reference_plans=current['joint_reference_plans']+[risk_path],
             pricing_reference_plans=current['pricing_reference_plans']+[risk_path],
             reference_phase_cost_plan=risk['output']+'/preparation.json',
             continued_phase_cost_plan=risk['output']+'/preparation.json')
+        if completion:bound['phase_completion']=risk['output']+'/completion.json'
         save(ROOT/risk_path,risk);save(ROOT/bound_path,bound);prepared=prepare_frozen(risk_path)
         result=dict(complete=True,prepared=True,pricing_plan=pricing_path,pricing_manifest=pricing,priced=priced,
             risk_plan=risk_path,risk_manifest=risk,bound_plan=bound_path,bound_manifest=bound,preparation=prepared)
@@ -228,10 +242,12 @@ def collect(plan=PLAN):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','prepare-frozen','prepare-next','prepare-incumbents','collect']);p.add_argument('--plan',default=PLAN)
     a=p.parse_args()
-    if a.stage=='prepare':prepare(a.plan)
-    elif a.stage=='prepare-frozen':prepare_frozen(a.plan)
-    elif a.stage=='prepare-next':prepare_next(a.plan)
-    elif a.stage=='prepare-incumbents':prepare_incumbents(a.plan)
-    else:collect(a.plan)
-    print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
-        peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)
+    try:
+        if a.stage=='prepare':prepare(a.plan)
+        elif a.stage=='prepare-frozen':prepare_frozen(a.plan)
+        elif a.stage=='prepare-next':prepare_next(a.plan)
+        elif a.stage=='prepare-incumbents':prepare_incumbents(a.plan)
+        else:collect(a.plan)
+    finally:
+        print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
+            peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)

@@ -1,0 +1,68 @@
+{
+  "complete": true,
+  "state": "phase_complete",
+  "initial_reference_workers": 12,
+  "additional_reference_workers": 2,
+  "estimated_phase_cpu_seconds": 3263.5297163344003,
+  "shared_reserve_cpu_seconds": 600,
+  "previous_closed_phase_completion": "paper_artifacts/historical_positive_risk_full_grid_incumbents_v1/completion.json",
+  "previous_phase_estimated_cpu_seconds": 3365.1253592096,
+  "scientific_work_cpu_seconds": 1803.957067974,
+  "worker_process_cpu_seconds": 1816.677674174,
+  "preparation_process_cpu_seconds": 7.531851186,
+  "collection_process_cpu_seconds": 17.780205619,
+  "total_recorded_process_cpu_seconds": 1841.9897309790001,
+  "peak_worker_rss_mb": 394.4296875,
+  "reference_group_checks": 7,
+  "allocation_checks": 21,
+  "all_reference_precision_passed": true,
+  "maximum_reference_rule_difference": 3.5857069907274663e-05,
+  "maximum_live_workers": 8,
+  "native_incumbents_all_raw_referenced": true,
+  "raw_reward_of_native_incumbent_contrast": 0.0053580654013006095,
+  "raw_best_admitted_contrast": 0.0053580654013006095,
+  "projected_incumbent_contrast": 0.005331364206018881,
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 0.9999999999999997,
+      "5": 0.9999999999999997
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.0053580654013006095,
+        "unresolved_upper_gap": 0.0027821262462098427
+      },
+      "projected": {
+        "best_reference_contrast": 0.005331364206018881,
+        "unresolved_upper_gap": 0.0029742618081236303
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  },
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 2518,
+      "record_action_candidates": 166,
+      "record_group_candidates": 58
+    },
+    "projected": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 2610,
+      "record_action_candidates": 180,
+      "record_group_candidates": 60
+    }
+  },
+  "next_cost_admitted": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "weighted_unresolved_gap_reduction": {
+    "raw": 0.6352791852938641,
+    "projected": 0.6637783774649691
+  }
+}
