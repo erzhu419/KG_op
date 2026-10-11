@@ -1,0 +1,54 @@
+{
+  "output": "paper_artifacts/historical_observed_batch_risk71_v2",
+  "parent_plan": "performance/manifests/historical_predictive_extension_v1.json",
+  "marginal_plan": "performance/manifests/historical_component_bank_v1.json",
+  "query": 63,
+  "replicates": 4,
+  "remaining_calls": 356,
+  "fixed_action": 355,
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "maximum_estimated_cpu_seconds": 3600,
+  "cpu_reserves": {
+    "cached_analysis": 240,
+    "preparation_collection": 120,
+    "followup_assembly": 240
+  },
+  "maximum_worker_cpu_seconds": 480,
+  "maximum_live_workers": 8,
+  "selection": "All three remaining group71 risk observations from the admitted full n4 upper-bound screen;both raw and projected kinds. Frozen before new integrals.",
+  "purpose": "Reuse the admitted group71 joint marginals and16 objective-head tables on the remaining observed mean/sample-variance coordinates. Candidate256 checked against independent256,GH64 and512continuous rules.",
+  "scope": "Original source prior,all8 identity scores,512/1024 positive components andcovariance,365 actions and356 remaining calls. Three opened risk observations only;full n4 outer integration,query/batch selection andindependent deployment gain remain open.",
+  "refined_cases": [
+    {
+      "record": "source_n4_o4_h1_p3",
+      "kind": "raw"
+    },
+    {
+      "record": "source_n4_o4_h1_p3",
+      "kind": "projected"
+    },
+    {
+      "record": "source_n4_o4_h1_p8",
+      "kind": "raw"
+    },
+    {
+      "record": "source_n4_o4_h1_p8",
+      "kind": "projected"
+    },
+    {
+      "record": "source_n4_o5_h1_p3",
+      "kind": "raw"
+    },
+    {
+      "record": "source_n4_o5_h1_p3",
+      "kind": "projected"
+    }
+  ],
+  "pilot_plan": "performance/manifests/historical_observed_batch_risk_v1_resolution.json",
+  "frozen_cost_plan": "paper_artifacts/historical_observed_batch_bound_v1/next_cost_plan.json"
+}

@@ -84,6 +84,57 @@ def prepare(plan=PLAN):
     print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
 
 
+def prepare_frozen(plan):
+    start=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
+    signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)
+    frozen=read(spec['frozen_cost_plan']);assert frozen['cost_admitted']
+    pilot=read(spec['pilot_plan']);parent=read(pilot['parent_plan']);precision=read(parent['precision_plan'])
+    case=next(c for c in precision['cases'] if c['name']=='source_n4')
+    heads,bank,_=assemble_case(precision,case,read(precision['output']+'/registered_jobs.json')['jobs'])
+    selected=[];maximum_score_error=0.
+    actions_by_origin={o:original_heads(precision,case,o)[0]['actions'] for o in bank['origins']}
+    marginal_base=ROOT/read(spec['marginal_plan'])['output']
+    for record in dict.fromkeys(r['record'] for r in frozen['next_joint_cases']):
+        origin=int(record.split('_o')[1].split('_')[0]);position=int(record.rsplit('_p',1)[1])
+        template=compressed_read(ROOT/pilot['output']/'marginals'/f'source_n4_o{origin}_h1_p13.json.gz')
+        gids={r['group'] for r in frozen['next_joint_cases'] if r['record']==record};assert len(gids)==1
+        gid=gids.pop();actions=actions_by_origin[origin];group=action_groups(actions)[gid]
+        assert group['kind']=='guarded' and template['prior_weights']==bank['prior_weights']
+        assert [r['head_log_scores'] for r in template['opposite']]==[r['head_log_scores'] for r in heads[0,origin]]
+        row=next(r for r in heads[1,origin] if r['position']==position)
+        assert row['replicates']==4 and row['eta_label'] is not None
+        ix=group['action_indices'];shared=compressed_read(marginal_base/'marginals'/f'{gid:03d}.json.gz')
+        assert shared['prior_weights']==bank['prior_weights'] and shared['points'][0]==template['query']
+        points=shared['points'];bundle=copy.deepcopy(template)
+        bundle.update(group=gid,points=points,fields=shared['fields'],action_indices=ix,
+            actions=[dict(actions[i],primary=points.index(actions[i]['primary']),
+                shortlist=[points.index(p) for p in actions[i]['shortlist']]) for i in ix],
+            opposite=[dict(position=r['position'],head_log_scores=r['head_log_scores'],
+                **{k:np.asarray(r[k][str(max(map(int,r[k])))]['statistics'])[:,ix].tolist() for k in ('raw','projected')}) for r in heads[0,origin]])
+        bundle.update(name=record,label=row['label'],eta_label=row['eta_label'],head_log_scores=row['head_log_scores'],
+            baseline={k:dict(statistics=np.asarray(row[k][str(max(map(int,row[k])))]['statistics'])[:,ix].tolist(),
+                costs=np.asarray(row[k][str(max(map(int,row[k])))]['costs'])[:,ix].tolist()) for k in ('raw','projected')})
+        assert all(sum(a['budgets'])<=356 for a in bundle['actions'])
+        for h in (4,5):
+            field=field_from_snapshot(bundle['fields'][h]);score=update_raw_observation(field,0,row['label'],row['eta_label'],4)
+            maximum_score_error=max(maximum_score_error,abs(score-row['head_log_scores'][h]))
+        assert maximum_score_error<=1e-10
+        compressed_write(out/'marginals'/(record+'.json.gz'),bundle)
+        selected.append(dict(record=record,origin=origin,position=position,group=gid,action_indices=ix,
+            label=row['label'],eta_label=row['eta_label'],marginal_source=str((marginal_base/'marginals'/f'{gid:03d}.json.gz').relative_to(ROOT))))
+    jobs=[dict(r,shard=next(i for i,s in enumerate(selected) if s['record']==r['record'])) for r in frozen['next_joint_jobs']]
+    total=600.+sum(r['estimated_cpu_seconds'] for r in jobs)
+    assert abs(total-frozen['expected_cpu_seconds_including600reserves'])<=1e-8
+    result=dict(complete=True,selected=selected,jobs=jobs,action_count=365,remaining_calls=356,
+        source_components={str(h):len(template['fields'][h]['means']) for h in (4,5)},
+        maximum_head_score_error=maximum_score_error,
+        estimated_cpu_seconds_including_reserves=total,estimated_cost_admitted=total<=spec['maximum_estimated_cpu_seconds'],
+        cpu_seconds=time.process_time()-start,full_posterior_restorations=0,new_physical_calls=0,
+        new_source_fits=0,new_verifier_calls=0,independent_confirmation=False)
+    save(out/'preparation.json',result);signal.setitimer(signal.ITIMER_PROF,0.)
+    print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
+
+
 def run(record,identity,kind,plan=PLAN):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];prep=read(spec['output']+'/preparation.json')
     assert prep['estimated_cost_admitted']
@@ -160,15 +211,16 @@ def collect(plan=PLAN):
         estimated_cpu_seconds_including_reserves=prep['estimated_cpu_seconds_including_reserves'],
         action_count=365,remaining_calls=356,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False,
-        scope='Two frozen decision-relevant risk observations from the saved n4 bank, all three allocations of one guarded group per origin. All8 identity scores and512/1024 positive components retained. Candidates are conditional on16 cached objective heads; no full batch outer convergence or query ranking.')
+        scope='Frozen decision-relevant risk observations from the saved n4 bank,all three allocations of their guarded groups. All8 identity scores and512/1024 positive components retained. Candidates are conditional on16 cached objective heads; no full batch outer convergence or query ranking.')
     save(out/'compact_summary.json',result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','run','collect']);p.add_argument('--record')
+    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','prepare-frozen','run','collect']);p.add_argument('--record')
     p.add_argument('--identity',type=int);p.add_argument('--kind',choices=['raw','projected']);p.add_argument('--plan',default=PLAN);a=p.parse_args()
     try:
         if a.stage=='prepare':prepare(a.plan)
+        elif a.stage=='prepare-frozen':prepare_frozen(a.plan)
         elif a.stage=='collect':collect(a.plan)
         else:run(a.record,a.identity,a.kind,a.plan)
     finally:

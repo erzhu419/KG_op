@@ -1,0 +1,85 @@
+{
+  "snapshot_unix_time": 1791708303.777321,
+  "state": "running",
+  "plan": "performance/manifests/historical_observed_batch_risk63_v3.json",
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -u -m performance.launch_historical_component_bank observed-batch-risk --plan performance/manifests/historical_observed_batch_risk63_v3.json",
+  "jobs_at_snapshot": [
+    {
+      "id": "t142450",
+      "record": "source_n4_o4_h1_p8",
+      "identity": 4,
+      "kind": "projected",
+      "status": "running",
+      "node": "node005"
+    },
+    {
+      "id": "t142451",
+      "record": "source_n4_o4_h1_p8",
+      "identity": 5,
+      "kind": "projected",
+      "status": "running",
+      "node": "node001"
+    },
+    {
+      "id": "t142452",
+      "record": "source_n4_o4_h1_p8",
+      "identity": 4,
+      "kind": "raw",
+      "status": "running",
+      "node": "node004"
+    },
+    {
+      "id": "t142453",
+      "record": "source_n4_o4_h1_p8",
+      "identity": 5,
+      "kind": "raw",
+      "status": "running",
+      "node": "node006"
+    },
+    {
+      "id": "t142454",
+      "record": "source_n4_o5_h1_p8",
+      "identity": 4,
+      "kind": "projected",
+      "status": "running",
+      "node": "node006"
+    },
+    {
+      "id": "t142455",
+      "record": "source_n4_o5_h1_p8",
+      "identity": 5,
+      "kind": "projected",
+      "status": "running",
+      "node": "node001"
+    },
+    {
+      "id": "t142456",
+      "record": "source_n4_o5_h1_p8",
+      "identity": 4,
+      "kind": "raw",
+      "status": "running",
+      "node": "node004"
+    },
+    {
+      "id": "t142457",
+      "record": "source_n4_o5_h1_p8",
+      "identity": 5,
+      "kind": "raw",
+      "status": "running",
+      "node": "node005"
+    }
+  ],
+  "total_frozen_jobs": 12,
+  "submitted": 8,
+  "pending": 4,
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "cpu_per_worker": 1,
+  "estimated_cpu_seconds_including600reserves": 2633.2531424796002,
+  "followup": "Automatic admitted-reference assembly and full365-action bound collect through the frozen bound63 manifest;large banks remain server-side.",
+  "source_prior_preserved": true,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

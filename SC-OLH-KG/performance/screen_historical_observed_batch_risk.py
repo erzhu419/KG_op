@@ -100,10 +100,36 @@ def run(identity,shard,plan=PLAN):
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True)
 
 
+def native_direct_references(spec,context,out):
+    base=ROOT/read(spec['native_reference_plan'])['output'] if 'native_reference_plan' in spec else out
+    path=base/'native_direct_references.json'
+    if path.exists():return read(str(path))
+    start=time.process_time();rows=[]
+    groups=action_groups(context['actions']);coordinates={r['record']:r for o in context['origins'].values() for r in o['risk']}
+    for selected in read(spec['native_direct_cost_plan'])['native_direct_cases']:
+        r=coordinates[selected['record']]
+        for gid in selected['groups']:
+            group=groups[gid];assert group['kind']=='direct'
+            shared=compressed_read(ROOT/'paper_artifacts/historical_component_bank_v1/marginals'/f'{gid:03d}.json.gz')
+            assert shared['prior_weights']==context['prior_weights'] and shared['points'][0]==63
+            ix=group['action_indices'];actions=[context['actions'][i] for i in ix]
+            position=shared['points'].index(actions[0]['primary'])
+            for h in (4,5):
+                field=field_from_snapshot(shared['fields'][h]);score=update_raw_observation(field,0,r['label'],r['eta_label'],4)
+                assert abs(score-r['head_log_scores'][h])<=1e-10
+                values,d=fast_expected_certificates(field,[position]*len(ix),[a['budgets'][0] for a in actions],context['protocol'])
+                error=max(d['maximum_accepted_nested_difference'],d['adaptive_absolute_error_bound'])
+                rows.extend(dict(identity=h,record=r['record'],action=a,projected=float(v),numerical_error=error) for a,v in zip(ix,values))
+    result=dict(complete=True,rows=rows,cpu_seconds=time.process_time()-start,new_joint_terminal_integrations=0)
+    save(path,result);return result
+
+
 def collect(plan=PLAN):
-    start=time.process_time();spec=read(plan);out=ROOT/spec['output'];context=compressed_read(out/'context.json.gz')
+    start=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
+    base=ROOT/read(spec['bank_plan'])['output'] if 'bank_plan' in spec else out
+    context=compressed_read(base/'context.json.gz')
     signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,240.)
-    tasks=[read(str(out/'tasks'/f'{h}_{s}.json')) for h in (4,5) for s in range(len(spec['policy_shards']))]
+    tasks=[read(str(base/'tasks'/f'{h}_{s}.json')) for h in (4,5) for s in range(len(spec['policy_shards']))]
     assert all(t['complete'] for t in tasks)
     parts={(t['identity'],r['record'],r['policy']):r for t in tasks for r in t['rows']}
     difference=max(abs(r['raw']['128']['feasible_upper']-r['raw']['64']['feasible_upper']) for r in parts.values())
@@ -111,7 +137,7 @@ def collect(plan=PLAN):
     fixed_error=max(max(r['fixed']['raw64_128_difference'],r['fixed']['raw_evidence_error'],
         r['fixed']['projected_diagnostics']['maximum_accepted_nested_difference'],
         r['fixed']['projected_diagnostics']['adaptive_absolute_error_bound']) for r in parts.values() if 'fixed' in r)
-    query_path=out/'query_references.json'
+    query_path=base/'query_references.json'
     if query_path.exists():query_references=read(str(query_path))
     else:
         tick=time.process_time();query_rows=[]
@@ -137,9 +163,16 @@ def collect(plan=PLAN):
     assert query_references['complete']
     query_parts={(r['identity'],r['record'],r['action']):r for r in query_references['rows']}
     fixed_error=max(fixed_error,max(r['numerical_error'] for r in query_references['rows']))
-    pilot=read(spec['pilot_plan']);pilot_preparation=read(pilot['output']+'/preparation.json')
-    pilot_checks={(r['record'],r['kind']):r for r in read(pilot['output']+'/compact_summary.json')['groups']}
-    pilot_indices={r['record']:r['action_indices'] for r in pilot_preparation['selected']}
+    joint={}
+    for source in spec.get('joint_reference_plans',[spec['pilot_plan']]):
+        pilot=read(source);preparation=read(pilot['output']+'/preparation.json')
+        indices={r['record']:r['action_indices'] for r in preparation['selected']}
+        for check in read(pilot['output']+'/compact_summary.json')['groups']:
+            if check['candidate_passed']:
+                joint.setdefault((check['record'],check['kind']),[]).append(dict(check=check,indices=indices[check['record']],output=pilot['output']))
+    native=native_direct_references(spec,context,out) if 'native_direct_cost_plan' in spec else dict(rows=[],cpu_seconds=0.)
+    native_parts={(r['identity'],r['record'],r['action']):r for r in native['rows']}
+    if native['rows']:fixed_error=max(fixed_error,max(r['numerical_error'] for r in native['rows']))
     containment=0.;records=[];prior=np.asarray(context['prior_weights']);actions=context['actions'];groups=action_groups(actions)
     for origin in context['origins'].values():
         for r in origin['risk']:
@@ -164,11 +197,15 @@ def collect(plan=PLAN):
                     value=sum(posterior[:,h]*objective[:,h,a,0]*query_parts[h,r['record'],a][kind] for h in (4,5))
                     references[a]=value;containment=max(containment,float(np.max(value-upper[:,a])))
                     fixed=np.maximum(fixed,value)
-                if (r['record'],kind) in pilot_checks:
-                    check=pilot_checks[r['record'],kind];assert check['candidate_passed']
-                    ix=pilot_indices[r['record']];value=np.zeros((16,len(ix)))
+                if kind=='projected':
+                    for a in sorted({v['action'] for v in native['rows'] if v['record']==r['record']}):
+                        value=sum(posterior[:,h]*objective[:,h,a,0]*native_parts[h,r['record'],a]['projected'] for h in (4,5))
+                        references[a]=value;containment=max(containment,float(np.max(value-upper[:,a])))
+                        fixed=np.maximum(fixed,value)
+                for reference in joint.get((r['record'],kind),[]):
+                    check=reference['check'];ix=reference['indices'];value=np.zeros((16,len(ix)))
                     for h in (4,5):
-                        part=read(pilot['output']+'/parts/'+r['record']+'/'+str(h)+'_'+kind+'.json')
+                        part=read(reference['output']+'/parts/'+r['record']+'/'+str(h)+'_'+kind+'.json')
                         stats=np.asarray(part['rows'][check['selected_candidate']]['statistics'])
                         value+=posterior[:,h,None]*np.sum(objective[:,h][:,ix]*stats,axis=-1)
                     for j,a in enumerate(ix):
@@ -180,6 +217,7 @@ def collect(plan=PLAN):
                 records.append(dict(record=r['record'],kind=kind,overlapping_action_head_pairs=int(overlap.sum()),
                     validated_reference_actions=list(references),
                     candidate_actions=np.flatnonzero(action_overlap).tolist(),
+                    candidate_upper_minus_reference={str(a):float(gap[a]) for a in np.flatnonzero(action_overlap)},
                     candidate_groups=[g['group'] for g in groups if action_overlap[g['action_indices']].any()],
                     maximum_upper_minus_fixed=float(gap.max()),
                     closest=[dict(action=int(a),upper_minus_fixed=float(gap[a])) for a in np.argsort(-gap)[:6] if a!=355]))
@@ -193,10 +231,16 @@ def collect(plan=PLAN):
             record_group_candidates=sum(len(r['candidate_groups']) for r in records if r['kind']==k)) for k in ('raw','projected')},
         successful_worker_cpu_seconds=sum(t['cpu_seconds'] for t in tasks),collection_cpu_seconds=time.process_time()-start,
         query_reference_cpu_seconds=query_references['cpu_seconds'],
-        cumulative_estimated_cpu_seconds=read(spec['output']+'/preparation.json')['cumulative_estimated_cpu_seconds'],
+        native_direct_reference_cpu_seconds=0. if 'native_reference_plan' in spec else native['cpu_seconds'],
+        native_direct_reference_reused='native_reference_plan' in spec,
+        cumulative_estimated_cpu_seconds=read(str(base/'preparation.json'))['cumulative_estimated_cpu_seconds'],
+        reused_marginal_bank=str(base.relative_to(ROOT)),new_marginal_workers=0 if base!=out else len(tasks),
         components={str(t['identity']):t['components'] for t in tasks},new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False,
-        scope='All365 n4 actions screened against independently integrated query and admitted pilot action references,conditional on the32 saved risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.')
+        scope='All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the32 saved risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.')
+    if 'native_direct_cost_plan' in spec:
+        result['joint_reference_phase_estimated_cpu_seconds']=read(spec.get('reference_phase_cost_plan',spec['native_direct_cost_plan']))['expected_cpu_seconds_including600reserves']
+        result['cached_collection_charged_to_joint_reference_phase_reserves']=True
     save(out/'summary.json',result);compact={k:v for k,v in result.items() if k!='records'}
     compact['closest_records']=sorted(records,key=lambda r:-r['maximum_upper_minus_fixed'])[:8]
     save(out/'compact_summary.json',compact);signal.setitimer(signal.ITIMER_PROF,0.)

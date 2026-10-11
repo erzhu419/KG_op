@@ -432,3 +432,11 @@ native57／64／69组的独立差分对照产生近零负概率，最小−2.23e
 全部32条风险观测、每个来源16条目标头及365动作的上界筛查通过：64／128最大差6.36772e−6，已验证动作均被包含。接入联合动作参考及廉价查询积分后，待补raw／native组—观测组合363／364→47／48，仍集中在63／34／71及少量直接组。8个低优先级单核分片成功，本阶段成功worker共1613.37 CPU秒、累计预计3314.42／3600秒，含共同600秒预留及首批目录错误的失败估计；错误已修复，失败记录保留。[筛查与运行账](../paper_artifacts/historical_observed_batch_bound_v1/execution_account.json)。大银行留服务器，仅拉小JSON／日志。
 
 局限与下一步：仅限开发状态query63及有限n4银行，自适应外层积分、批次／查询选择和独立部署收益仍开放；历史n4的2048点CDF／固定动作塔检查应复用，旧16点自适应KG仍未准入。剩余三个71组观测已计价为6组合／12分片，含预留预计2624.65秒，尚未派发；native直接动作复用Gaussian解析证书。[下一批定价](../paper_artifacts/historical_observed_batch_bound_v1/next_cost_plan.json)。原prior、8身份、512／1024正分量、协方差、365动作和验证器保持，无新物理／拟合／验证调用，确认块未读取。
+
+## 剩余71组参考完成与63组接续（2026-10-11）
+
+三条剩余71组观测的6个raw／native组合、18个动作检查全部通过原1e−4门，256点候选最大规则差5.62875e−5，与旧缓存动作值最大差4.22421e−5。另5个native直接组—观测组合复用Gaussian解析证书，仅耗0.723 CPU秒。接回原32条风险观测、16条目标头及365动作的上界银行后，未验证组合raw／native由47／48降至44／40；71组与native直接动作缺口全部闭合，剩余为各30个63组、各10个34组及4个raw直接组组合。包含检查通过，无新增边际worker。[参考运行账](../paper_artifacts/historical_observed_batch_risk71_v2/execution_account.json)、[筛查与下一批定价](../paper_artifacts/historical_observed_batch_bound71_v2/execution_account.json)。
+
+12个积分worker全部成功，报告的准备、积分及两次汇总进程合计1545.13 CPU秒；阶段冻结估计含共同600秒预留2624.65／3600秒，并发最高8个低优先级单核。下一批按尚未排除动作的最大收益上界选择6个63组组合，复用原联合边际与完整n4动作／目标头表，准备似然误差为0，预计含预留2633.25秒。现已进入同一限并发调度入口，12个分片逐次补位，完成后自动回填通过精度门的参考并重算全动作筛查。[冻结计划](../performance/manifests/historical_observed_batch_risk63_v3.json)、[启动记录](../paper_artifacts/historical_observed_batch_risk63_v3/launch_snapshot.json)。
+
+局限：当前仍是开发状态query63的有限n4条件数值证据，完整自适应外层KG、查询／批次选择及独立部署收益尚未完成。原source prior、8身份分数、512／1024正分量、协方差、356预算及SD16验证器保持；无新增物理、拟合或验证调用，确认块未读取，大银行仍留服务器。

@@ -1,0 +1,70 @@
+{
+  "summary": "compact_summary.json",
+  "contract": {
+    "query": 63,
+    "replicates": 4,
+    "remaining_calls": 356,
+    "n1_remaining_calls": 359,
+    "actions": 365,
+    "objective_heads_per_origin": 16,
+    "all_identity_scores": 8,
+    "positive_components": [
+      512,
+      1024
+    ],
+    "source_prior_preserved": true,
+    "joint_covariance_preserved": true,
+    "verifier": "original SD16"
+  },
+  "result": {
+    "local_risk_candidate_passed": true,
+    "record_kind_groups": 6,
+    "action_checks": 18,
+    "maximum_selected_rule_difference": 5.6287463905180246e-05,
+    "maximum_cached_action_value_change": 4.2242114772550465e-05,
+    "native_direct_group_observation_checks": 5,
+    "threshold": 0.0001
+  },
+  "resources": {
+    "estimated_cpu_seconds_including600reserves": 2624.6453196,
+    "maximum_estimated_cpu_seconds": 3600,
+    "successful_worker_cpu_seconds": 1522.2043618260002,
+    "successful_worker_process_cpu_seconds": 1532.9789732130002,
+    "preparation_process_cpu_seconds": 6.009354312,
+    "risk_collection_process_cpu_seconds": 0.975191129,
+    "bound_collection_process_cpu_seconds": 5.168861922,
+    "reported_compute_process_cpu_seconds": 1545.132380576,
+    "maximum_scheduled_concurrency": 8,
+    "scheduler_recorded_span_minutes": 6.370097613334655,
+    "failed_workers": 0,
+    "priority": "low",
+    "cpu_per_worker": 1
+  },
+  "replay": [
+    {
+      "stage": "prepare",
+      "command": "python -m performance.check_historical_observed_batch_risk prepare-frozen --plan performance/manifests/historical_observed_batch_risk71_v2.json"
+    },
+    {
+      "stage": "workers_and_collection",
+      "command": "python -m performance.launch_historical_component_bank observed-batch-risk --plan performance/manifests/historical_observed_batch_risk71_v2.json",
+      "scheduler_commands": "observed-batch-risk_specs.jsonl"
+    },
+    {
+      "stage": "bound_assembly",
+      "command": "python -m performance.screen_historical_observed_batch_risk collect --plan performance/manifests/historical_observed_batch_bound71_v2.json"
+    }
+  ],
+  "verification": {
+    "py_compile_passed": true,
+    "actual_worker_likelihood_parity_passed": true,
+    "actual_rule_comparisons_passed": true,
+    "full_bound_reference_containment_passed": true,
+    "next_group63_preparation_score_error": 0.0
+  },
+  "scope": "Frozen decision-relevant risk observations from the saved n4 bank,all three allocations of their guarded groups. All8 identity scores and512/1024 positive components retained. Candidates are conditional on16 cached objective heads; no full batch outer convergence or query ranking.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

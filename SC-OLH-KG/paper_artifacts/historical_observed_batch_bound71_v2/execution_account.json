@@ -1,0 +1,75 @@
+{
+  "result": {
+    "numerical_containment_passed": true,
+    "previous_totals": {
+      "raw": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1754,
+        "record_action_candidates": 137,
+        "record_group_candidates": 47
+      },
+      "projected": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1789,
+        "record_action_candidates": 139,
+        "record_group_candidates": 48
+      }
+    },
+    "final_totals": {
+      "raw": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1724,
+        "record_action_candidates": 128,
+        "record_group_candidates": 44
+      },
+      "projected": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1605,
+        "record_action_candidates": 120,
+        "record_group_candidates": 40
+      }
+    },
+    "remaining_groups": {
+      "raw": {
+        "63": 30,
+        "34": 10,
+        "107": 2,
+        "144": 2
+      },
+      "projected": {
+        "63": 30,
+        "34": 10
+      }
+    },
+    "maximum_validated_reference_above_bound": 0.0,
+    "maximum_raw_bound_difference": 6.367724132400054e-06
+  },
+  "resources": {
+    "reused_prior_bank_estimate_seconds": 3314.418529436811,
+    "current_joint_reference_phase_estimate_including600reserves_seconds": 2624.6453196,
+    "current_collection_cpu_seconds": 4.409078517,
+    "current_collection_process_cpu_seconds": 5.168861922,
+    "native_direct_reference_cpu_seconds": 0.722765597,
+    "new_marginal_workers": 0,
+    "reported_compute_phase_cpu_seconds": 1545.132380576,
+    "maximum_scheduled_concurrency": 8
+  },
+  "replay": [
+    {
+      "stage": "prerequisite",
+      "artifact": "../historical_observed_batch_risk71_v2/execution_account.json"
+    },
+    {
+      "stage": "collect",
+      "command": "python -m performance.screen_historical_observed_batch_risk collect --plan performance/manifests/historical_observed_batch_bound71_v2.json"
+    }
+  ],
+  "next_plan": "next_cost_plan.json",
+  "next_expected_cpu_seconds_including600reserves": 2633.2531424796002,
+  "next_cost_admitted": true,
+  "scope": "All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the32 saved risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

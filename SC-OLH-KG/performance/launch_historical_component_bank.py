@@ -36,7 +36,10 @@ def launch(stage,plan=None):
     spec=json.loads((ROOT/'performance/manifests'/manifest).read_text())
     out=ROOT/spec['output'];prep=json.loads((out/'preparation.json').read_text());assert prep['complete']
     identities=sorted(map(int,prep['source_components']))
-    if stage in UPPER_MODES:
+    if stage=='observed-batch-risk':
+        assert prep['estimated_cost_admitted']
+        pending=prep['jobs'].copy()
+    elif stage in UPPER_MODES:
         short=UPPER_MODES[stage];plan=json.loads((out/(short+'_plan.json')).read_text());assert plan['estimated_cost_admitted']
         pending=[dict(identity=j['identity'],kind='raw',shard=i) for i,j in enumerate(plan['jobs'])]
     elif stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES:
@@ -70,7 +73,7 @@ def launch(stage,plan=None):
     else:
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
-    if stage not in PILOT_MODES and stage not in UPPER_MODES:
+    if stage not in PILOT_MODES and stage not in UPPER_MODES and stage!='observed-batch-risk':
         shards=max(counts.values()) if stage in TRANSFER_STAGES or stage in LABEL_MODES else spec['shards_per_identity_kind']
         pending=[dict(identity=h,kind=k,shard=s) for s in range(shards)
             for h in identities for k in ('raw','projected') if s<counts[k]]
@@ -91,7 +94,9 @@ def launch(stage,plan=None):
             new_ids=[]
             for _ in range(min(slots,len(pending))):
                 job=pending.pop(0);h,k,s=job['identity'],job['kind'],job['shard']
-                worker=(['performance.validate_historical_upper_decisions','run','--phase',short,'--job',str(s)] if stage in UPPER_MODES else
+                worker=(['performance.check_historical_observed_batch_risk','run','--record',job['record'],
+                    '--identity',str(h),'--kind',k,'--plan','performance/manifests/'+manifest] if stage=='observed-batch-risk' else
+                    ['performance.validate_historical_upper_decisions','run','--phase',short,'--job',str(s)] if stage in UPPER_MODES else
                     ['performance.validate_historical_label_bank','run','--identity',str(h),'--kind',k,
                     '--shard',str(s),'--stage',short,'--plan','performance/manifests/'+manifest] if stage in BANK_STAGES else
                     ['performance.validate_historical_component_transfer','run','--identity',str(h),'--kind',k,
@@ -127,9 +132,12 @@ def launch(stage,plan=None):
 
 
 def collect_remote(stage,out,plan=None):
+    out.mkdir(parents=True,exist_ok=True)
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.validate_historical_label_groups','collect','--stage','resolution',
+    worker=(['performance.screen_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-bound' else
+        ['performance.check_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-risk' else
+        ['performance.validate_historical_label_groups','collect','--stage','resolution',
         '--plan','performance/manifests/historical_body_reference_pilot_v1.json'] if stage=='body-reference-pilot' else
         ['performance.validate_historical_risk_competition','collect',
             '--plan',plan or 'performance/manifests/historical_risk_competition_batch_v1.json'] if stage=='risk-competition-batch' else
@@ -149,7 +157,7 @@ def collect_remote(stage,out,plan=None):
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name=UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
+    name='compact_summary.json' if stage in ('observed-batch-risk','observed-batch-bound') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
         'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
@@ -157,7 +165,7 @@ def collect_remote(stage,out,plan=None):
         'bank-tail':'bank_tail_summary.json',
         'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
-    relative=(str((out/name).relative_to(ROOT)) if stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
+    relative=(str((out/name).relative_to(ROOT)) if stage in ('observed-batch-risk','observed-batch-bound') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
         'paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name)
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
@@ -503,11 +511,11 @@ if __name__=='__main__':
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
         'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
         'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer','continue-label-bank',
-        'continue-risk-competition']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
+        'continue-risk-competition','observed-batch-risk']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
     parser.add_argument('--plan',help='Manifest path for risk-competition-batch')
     args=parser.parse_args()
-    if args.plan and args.stage not in ('risk-competition-batch','continue-risk-competition'):
-        parser.error('--plan requires risk-competition-batch or continue-risk-competition')
+    if args.plan and args.stage not in ('risk-competition-batch','continue-risk-competition','observed-batch-risk'):
+        parser.error('--plan requires risk-competition-batch,continue-risk-competition or observed-batch-risk')
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
     elif args.stage=='continue-bank-resolution':continue_resolution_pilot()
@@ -518,6 +526,14 @@ if __name__=='__main__':
     elif args.stage=='continue-label-bank':continue_label_bank()
     elif args.stage=='continue-risk-competition':continue_risk_competition(
         args.plan or 'performance/manifests/historical_risk_competition_remaining_v1.json')
+    elif args.stage=='observed-batch-risk':
+        if not args.plan:parser.error('observed-batch-risk requires --plan')
+        spec=json.loads((ROOT/args.plan).read_text())
+        launch(args.stage,args.plan)
+        collect_remote(args.stage,ROOT/spec['output'],args.plan)
+        if 'followup_bound_plan' in spec:
+            bound=spec['followup_bound_plan']
+            collect_remote('observed-batch-bound',ROOT/json.loads((ROOT/bound).read_text())['output'],bound)
     elif args.stage in UPPER_MODES:
         launch(args.stage);collect_remote(args.stage,ROOT/'paper_artifacts/historical_upper_decision_refs_v1')
     elif args.stage in BANK_STAGES:
