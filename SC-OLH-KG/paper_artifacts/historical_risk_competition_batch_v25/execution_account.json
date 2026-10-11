@@ -1,0 +1,88 @@
+{
+  "recorded_at_utc": "2026-10-11T05:02:47.131321+00:00",
+  "state": "first_phase_complete_campaign_running",
+  "phase": "v25",
+  "completed_phase_combinations": 6,
+  "campaign_total_combinations": 79,
+  "remaining_combinations_after_this_phase": 73,
+  "selected_action_checks": 18,
+  "all_target_references_admitted": true,
+  "control32_failed_combinations": 5,
+  "maximum_selected_reference_difference": 9.127370155892489e-05,
+  "maximum_direct_reference_difference": 2.0559422698185337e-05,
+  "groups": [
+    {
+      "record": "source_n1_o4_h1_p191",
+      "kind": "raw",
+      "group": 63,
+      "selected_method": "control128",
+      "admitted": true,
+      "control32_passed": false,
+      "selected_maximum_reference_difference": 9.703682312567352e-06,
+      "direct_reference_maximum_difference": 9.596087394814212e-06
+    },
+    {
+      "record": "source_n1_o5_h1_p191",
+      "kind": "raw",
+      "group": 63,
+      "selected_method": "control32",
+      "admitted": true,
+      "control32_passed": true,
+      "selected_maximum_reference_difference": 9.127370155892489e-05,
+      "direct_reference_maximum_difference": 9.874902353490533e-06
+    },
+    {
+      "record": "source_n1_o4_h1_p191",
+      "kind": "projected",
+      "group": 63,
+      "selected_method": "control128",
+      "admitted": true,
+      "control32_passed": false,
+      "selected_maximum_reference_difference": 4.0699837301261255e-05,
+      "direct_reference_maximum_difference": 1.9921213703755214e-05
+    },
+    {
+      "record": "source_n1_o5_h1_p191",
+      "kind": "projected",
+      "group": 63,
+      "selected_method": "control128",
+      "admitted": true,
+      "control32_passed": false,
+      "selected_maximum_reference_difference": 4.3147830609990834e-05,
+      "direct_reference_maximum_difference": 2.0559422698185337e-05
+    },
+    {
+      "record": "source_n1_o4_h1_p190",
+      "kind": "projected",
+      "group": 63,
+      "selected_method": "control128",
+      "admitted": true,
+      "control32_passed": false,
+      "selected_maximum_reference_difference": 3.173527366273632e-05,
+      "direct_reference_maximum_difference": 1.8024404871974653e-05
+    },
+    {
+      "record": "source_n1_o5_h1_p190",
+      "kind": "projected",
+      "group": 63,
+      "selected_method": "control128",
+      "admitted": true,
+      "control32_passed": false,
+      "selected_maximum_reference_difference": 2.6675697816447297e-05,
+      "direct_reference_maximum_difference": 1.9642800384911396e-05
+    }
+  ],
+  "reported_integral_cpu_seconds": 2093.048345055,
+  "reported_worker_cpu_seconds": 2093.685493883,
+  "assembly_process_cpu_seconds": 106.746533744,
+  "reported_worker_plus_assembly_cpu_seconds": 2200.432027627,
+  "frozen_phase_estimated_cpu_seconds_including_reserves": 3269.2649407728,
+  "reference_groups_before": 1011,
+  "reference_groups_after": 1017,
+  "fine_body32_changed_recommendation_records": [],
+  "fine_body32_model_net_preview": 0.01357641652258601,
+  "maximum_live_workers": 8,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "scope": "Six references at distinct body16 nodes, conditional on the original saved objective heads. Fine body32 recommendations do not use these body16 nodes; unchanged fine recommendations are a consistency check. The body16 recommendation and outer comparison require the replay after all 79 references. No independent decision result. Queue completion was synchronized through scheduler status; no numerical worker was rerun."
+}
