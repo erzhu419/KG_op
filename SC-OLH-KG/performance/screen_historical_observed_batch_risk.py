@@ -305,6 +305,43 @@ def collect(plan=PLAN):
     print('SCHEDULEURM_DONE '+json.dumps(compact),flush=True)
 
 
+def reference_rule_timers(spec):
+    measured=[];fine_groups=set()
+    for source in spec.get('pricing_reference_plans',spec.get('joint_reference_plans',[spec['pilot_plan']])):
+        prior=read(source);preparation=read(prior['output']+'/preparation.json')
+        for check in read(prior['output']+'/compact_summary.json')['groups']:
+            if check['candidate_passed'] and check['selected_candidate']=='E9':fine_groups.add((check['group'],check['kind']))
+        for row in preparation['selected']:
+            for h in (4,5):
+                for kind in ('raw','projected'):
+                    path=ROOT/prior['output']/'parts'/row['record']/f'{h}_{kind}.json'
+                    if path.exists():measured.append(dict(group=row['group'],identity=h,kind=kind,rows=read(str(path))['rows']))
+    return measured,fine_groups
+
+
+def price_reference_group(row, groups, measured, fine_groups):
+    gid,kind=row['group'],row['kind'];candidate='E9' if (gid,kind) in fine_groups else 'E8'
+    rule_names=['E8','E9','F9','K9'] if candidate=='E9' else ['E8','F8','H8','E9']
+    priced=[]
+    for h in (4,5):
+        historical=read(str(ROOT/'paper_artifacts/historical_component_bank_v1/parts'/f'{gid:03d}_{h}_{kind}.json'))['rows']
+        same=[r for r in measured if r['identity']==h and r['kind']==kind and r['group']==gid]
+        cohort=same or [r for r in measured if r['identity']==h and r['kind']==kind
+            and groups[r['group']]['kind']==groups[gid]['kind']]
+        units={}
+        for rule in rule_names:
+            order,power,_=RULES[rule]
+            actual=[v['cpu_seconds'] for r in cohort for name,v in r['rows'].items()
+                if name in RULES and RULES[name][:2]==(order,power)]
+            scaled=[v['cpu_seconds']*2**(power-RULES[name][1]) for name,v in historical.items()
+                if name in RULES and RULES[name][0]==order and RULES[name][1]<=power]
+            units[rule]=dict(cpu=max(actual+scaled),basis=('Maximum measured n4 same group' if same else
+                'Maximum measured n4 same action kind' if cohort else 'Measured n1 same group scaled to required point count'),
+                compared_with='Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker')
+        priced.append(dict(**row,identity=h,candidate=candidate,rules=units,estimated_cpu_seconds=1.2*sum(v['cpu'] for v in units.values())+2.))
+    return dict(row,candidate=candidate,rules=rule_names),priced
+
+
 def next_plan(plan=PLAN):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];summary=read(str(out/'summary.json'))
     assert summary['numerical_containment_passed']
@@ -318,40 +355,14 @@ def next_plan(plan=PLAN):
             remaining.append(dict(record=row['record'],kind=row['kind'],group=gid,
                 maximum_unresolved_upper_gap=max(gaps),weighted_unresolved_upper_gap=priority))
     remaining.sort(key=lambda r:(-r['weighted_unresolved_upper_gap'],r['record'],r['kind'],r['group']))
-    for source in spec.get('pricing_reference_plans',spec.get('joint_reference_plans',[spec['pilot_plan']])):
-        prior=read(source);preparation=read(prior['output']+'/preparation.json')
-        for check in read(prior['output']+'/compact_summary.json')['groups']:
-            if check['candidate_passed'] and check['selected_candidate']=='E9':fine_groups.add((check['group'],check['kind']))
-        for row in preparation['selected']:
-            for h in (4,5):
-                for kind in ('raw','projected'):
-                    path=ROOT/prior['output']/'parts'/row['record']/f'{h}_{kind}.json'
-                    if path.exists():measured.append(dict(group=row['group'],identity=h,kind=kind,rows=read(str(path))['rows']))
+    measured,fine_groups=reference_rule_timers(spec)
     selected=[];jobs=[];record_groups={}
     total=read(spec['continued_phase_cost_plan'])['estimated_cpu_seconds_including_reserves'] if 'continued_phase_cost_plan' in spec else 600.
     phase_base=total
     for row in remaining:
         gid,kind=row['group'],row['kind']
         if row['record'] in record_groups and record_groups[row['record']]!=gid:continue
-        candidate='E9' if (gid,kind) in fine_groups else 'E8'
-        rule_names=['E8','E9','F9','K9'] if candidate=='E9' else ['E8','F8','H8','E9']
-        planned=dict(row,candidate=candidate,rules=rule_names);priced=[]
-        for h in (4,5):
-            historical=read(str(ROOT/'paper_artifacts/historical_component_bank_v1/parts'/f'{gid:03d}_{h}_{kind}.json'))['rows']
-            same=[r for r in measured if r['identity']==h and r['kind']==kind and r['group']==gid]
-            cohort=same or [r for r in measured if r['identity']==h and r['kind']==kind
-                and groups[r['group']]['kind']==groups[gid]['kind']]
-            units={}
-            for rule in rule_names:
-                order,power,_=RULES[rule]
-                actual=[v['cpu_seconds'] for r in cohort for name,v in r['rows'].items()
-                    if name in RULES and RULES[name][:2]==(order,power)]
-                scaled=[v['cpu_seconds']*2**(power-RULES[name][1]) for name,v in historical.items()
-                    if name in RULES and RULES[name][0]==order and RULES[name][1]<=power]
-                units[rule]=dict(cpu=max(actual+scaled),basis=('Maximum measured n4 same group' if same else
-                    'Maximum measured n4 same action kind' if cohort else 'Measured n1 same group scaled to required point count'),
-                    compared_with='Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker')
-            priced.append(dict(**row,identity=h,candidate=candidate,rules=units,estimated_cpu_seconds=1.2*sum(v['cpu'] for v in units.values())+2.))
+        planned,priced=price_reference_group(row,groups,measured,fine_groups)
         estimate=sum(j['estimated_cpu_seconds'] for j in priced)
         if total+estimate>spec['maximum_estimated_cpu_seconds']:break
         selected.append(planned);jobs.extend(priced);record_groups[row['record']]=gid;total+=estimate

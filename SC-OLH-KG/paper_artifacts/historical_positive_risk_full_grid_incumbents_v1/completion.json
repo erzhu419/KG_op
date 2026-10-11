@@ -1,0 +1,70 @@
+{
+  "complete": true,
+  "state": "phase_complete",
+  "initial_reference_workers": 32,
+  "additional_reference_workers": 2,
+  "estimated_phase_cpu_seconds": 3365.1253592096,
+  "shared_reserve_cpu_seconds": 600,
+  "previous_closed_phase_completion": "paper_artifacts/historical_positive_risk_full_grid_v1/completion.json",
+  "initial_execution_account": "paper_artifacts/historical_positive_risk_full_grid_incumbents_v1/execution_account.json",
+  "additional_account": {
+    "workers": 2,
+    "scientific_work_cpu_seconds": 266.987877618,
+    "worker_process_cpu_seconds": 268.550384523,
+    "preparation_process_cpu_seconds": 2.101703099,
+    "collection_process_cpu_seconds": 8.892421104,
+    "metadata_correction_process_cpu_seconds": 0.07665427
+  },
+  "worker_process_cpu_seconds": 1840.926795977,
+  "total_recorded_process_cpu_seconds": 1875.7694348969999,
+  "peak_worker_rss_mb": 362.71484375,
+  "reference_group_checks": 17,
+  "allocation_checks": 35,
+  "all_reference_precision_passed": true,
+  "maximum_reference_rule_difference": 2.110063675420104e-05,
+  "maximum_live_workers": 8,
+  "native_incumbents_all_raw_referenced": true,
+  "raw_reward_of_native_incumbent_contrast": 0.0053580654013006095,
+  "raw_best_admitted_contrast": 0.0053580654013006095,
+  "projected_incumbent_contrast": 0.005331364206018881,
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 0.9999999999999997,
+      "5": 0.9999999999999997
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.0053580654013006095,
+        "unresolved_upper_gap": 0.007628098353672155
+      },
+      "projected": {
+        "best_reference_contrast": 0.005331364206018881,
+        "unresolved_upper_gap": 0.008846134837189844
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  },
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 2662,
+      "record_action_candidates": 175,
+      "record_group_candidates": 61
+    },
+    "projected": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 2763,
+      "record_action_candidates": 192,
+      "record_group_candidates": 64
+    }
+  },
+  "next_cost_admitted": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "next_step": "New weighted competitor phase after this passed phase,then independent mean andvariance outer-axis refinement. Retain all completed costs;no exhaustive unweighted action-group expansion."
+}

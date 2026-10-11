@@ -1,0 +1,54 @@
+{
+  "state": "phase_complete",
+  "registered_workers": 32,
+  "maximum_live_workers": 8,
+  "estimated_phase_cpu_seconds": 3365.1253592096,
+  "previous_phase_completion": "paper_artifacts/historical_positive_risk_full_grid_v1/completion.json",
+  "shared_reserve_cpu_seconds": 600,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "reference_precision_passed": true,
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 2662,
+      "record_action_candidates": 175,
+      "record_group_candidates": 61
+    },
+    "projected": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 2763,
+      "record_action_candidates": 192,
+      "record_group_candidates": 64
+    }
+  },
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 0.9999999999999997,
+      "5": 0.9999999999999997
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.0053580654013006095,
+        "unresolved_upper_gap": 0.007628098353672155
+      },
+      "projected": {
+        "best_reference_contrast": 0.005331364206018881,
+        "unresolved_upper_gap": 0.008846134837189844
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  },
+  "next_cost_admitted": false,
+  "next_estimated_phase_cpu_seconds": 3365.1253592096,
+  "native_incumbents_all_raw_referenced": true,
+  "raw_reward_of_native_incumbent_contrast": 0.0053580654013006095,
+  "raw_best_admitted_contrast": 0.0053580654013006095,
+  "projected_incumbent_contrast": 0.005331364206018881,
+  "initial_reference_stage_estimated_cpu_seconds": 3016.318698616,
+  "additional_reference_workers": 2,
+  "final_bound_plan": "performance/manifests/historical_positive_risk_full_grid_bound_incumbent_refs_v1.json",
+  "completion": "paper_artifacts/historical_positive_risk_full_grid_incumbents_v1/completion.json"
+}

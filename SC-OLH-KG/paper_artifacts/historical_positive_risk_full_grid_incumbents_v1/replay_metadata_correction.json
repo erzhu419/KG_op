@@ -1,0 +1,22 @@
+{
+  "corrections": [
+    {
+      "file": "paper_artifacts/historical_positive_risk_full_grid_incumbents_v1/incumbent_replay.json",
+      "before": "performance/manifests/historical_positive_risk_full_grid_refs_v1.json",
+      "after": "performance/manifests/historical_positive_risk_full_grid_bound_refs_v1.json"
+    },
+    {
+      "file": "paper_artifacts/historical_positive_risk_full_grid_incumbents_v1/raw_incumbent_replay.json",
+      "before": "performance/manifests/historical_positive_risk_full_grid_incumbents_v1.json",
+      "after": "performance/manifests/historical_positive_risk_full_grid_bound_incumbents_v1.json"
+    },
+    {
+      "file": "paper_artifacts/historical_positive_risk_continuation_v3/subset_replay.json",
+      "before": "performance/manifests/historical_positive_risk_competition_v8.json",
+      "after": "performance/manifests/historical_positive_risk_screen_competition_v8.json"
+    }
+  ],
+  "numerical_values_changed": false,
+  "reason": "Replay loop variable had overwritten the reported input bound plan;input tables and calculations were correct.",
+  "process_cpu_seconds": 0.07665427
+}

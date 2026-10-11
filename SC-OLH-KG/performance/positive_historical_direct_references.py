@@ -16,6 +16,45 @@ from performance.validate_historical_component_bank import action_groups, group_
 PLAN='performance/manifests/historical_positive_direct_references_v1.json'
 
 
+def prepare_incumbents(plan):
+    """Price only raw references missing from the admitted native choices."""
+    from performance.replay_historical_positive_risk_subset import run as replay
+    from performance.screen_historical_observed_batch_risk import reference_rule_timers,price_reference_group
+
+    started=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
+    previous=read(spec['previous_phase_completion']);assert previous['state']=='phase_complete'
+    bound=read(spec['incumbent_bound_plan'])
+    assert all(read(read(p)['output']+'/compact_summary.json')['local_risk_candidate_passed'] for p in bound['joint_reference_plans'])
+    diagnostic=replay(spec['incumbent_bound_plan'],spec['output']+'/incumbent_replay.json',emit=False)
+    context=compressed_read(ROOT/read(bound['bank_plan'])['output']/'context.json.gz')
+    groups=action_groups(context['actions']);measured,fine=reference_rule_timers(bound)
+    candidates=sorted(diagnostic['missing_raw_references'],key=lambda r:(-r['weighted_projected_choice_contrast'],r['record']))
+    cases=[];jobs=[];total=600.
+    for row in candidates:
+        assert len(row['missing_raw_groups'])==1
+        case,priced=price_reference_group(dict(record=row['record'],kind='raw',group=row['missing_raw_groups'][0],
+            missing_raw_actions=row['actions'],weighted_projected_choice_contrast=row['weighted_projected_choice_contrast']),groups,measured,fine)
+        assert all(j['estimated_cpu_seconds']<=spec['maximum_worker_cpu_seconds'] for j in priced)
+        estimate=sum(j['estimated_cpu_seconds'] for j in priced)
+        if total+estimate>spec['maximum_estimated_cpu_seconds']:break
+        cases.append(case);jobs.extend(priced);total+=estimate
+    frozen=dict(complete=True,source=spec['output']+'/incumbent_replay.json',next_joint_cases=cases,next_joint_jobs=jobs,
+        phase_base_estimated_cpu_seconds=600.,expected_cpu_seconds_including600reserves=total,
+        cost_admitted=bool(jobs) and total<=spec['maximum_estimated_cpu_seconds'],
+        missing_native_incumbent_observations=len(candidates),selected_observations=len(cases),
+        remaining_missing_observations=[r['record'] for r in candidates[len(cases):]],
+        previous_closed_phase_completion=spec['previous_phase_completion'],
+        previous_phase_estimated_cpu_seconds=previous['estimated_phase_cpu_seconds'],
+        maximum_live_workers=8,priority='low',cpu_seconds=time.process_time()-started,
+        scope='New raw references for previously unchecked native incumbents on the registered32-point grid. All prior completed costs remain in the campaign ledger;this phase has one600CPU second shared reserve. No failed reference is moved to a new phase.')
+    save(ROOT/spec['frozen_cost_plan'],frozen)
+    assert frozen['cost_admitted']
+    spec['refined_cases']=[dict(record=r['record'],kind=r['kind'],candidate=r['candidate'],rules=r['rules']) for r in cases]
+    save(ROOT/plan,spec);prep=prepare_frozen(plan)
+    result=dict(complete=True,plan=plan,manifest=spec,frozen_cost_plan=frozen,preparation=prep)
+    print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
+
+
 def prepare_next(plan):
     """Start a new phase only after the previous frozen comparisons passed."""
     from performance.screen_historical_observed_batch_risk import collect as screen, next_plan
@@ -187,11 +226,12 @@ def collect(plan=PLAN):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','prepare-frozen','prepare-next','collect']);p.add_argument('--plan',default=PLAN)
+    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','prepare-frozen','prepare-next','prepare-incumbents','collect']);p.add_argument('--plan',default=PLAN)
     a=p.parse_args()
     if a.stage=='prepare':prepare(a.plan)
     elif a.stage=='prepare-frozen':prepare_frozen(a.plan)
     elif a.stage=='prepare-next':prepare_next(a.plan)
+    elif a.stage=='prepare-incumbents':prepare_incumbents(a.plan)
     else:collect(a.plan)
     print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
         peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)
