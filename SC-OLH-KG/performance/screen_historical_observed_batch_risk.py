@@ -366,7 +366,6 @@ def next_plan(plan=PLAN):
         estimate=sum(j['estimated_cpu_seconds'] for j in priced)
         if total+estimate>spec['maximum_estimated_cpu_seconds']:break
         selected.append(planned);jobs.extend(priced);record_groups[row['record']]=gid;total+=estimate
-        if len(selected)==6:break
     result=dict(complete=True,source=spec['output']+'/summary.json',remaining_groups={k:dict(Counter(r['group'] for r in remaining if r['kind']==k)) for k in ('raw','projected')},
         next_joint_cases=selected,next_joint_jobs=jobs,expected_cpu_seconds_including600reserves=total,cost_admitted=bool(jobs) and total<=spec['maximum_estimated_cpu_seconds'],
         phase_base_estimated_cpu_seconds=phase_base,

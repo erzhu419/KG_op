@@ -90,6 +90,8 @@ def prepare_next(plan):
     else:
         risk_path=f'performance/manifests/{prefix}_competition_v{number}.json'
         bound_path=f'performance/manifests/{prefix}_screen_competition_v{number}.json'
+        risk.pop('failed_preparation_account',None)
+        risk.pop('worker_limit_adjustment',None)
         risk.update(output=f'paper_artifacts/{prefix}_competition_v{number}',
             frozen_cost_plan=pricing['output']+'/next_cost_plan.json',followup_bound_plan=bound_path,
             previous_closed_phase_plan=previous,
