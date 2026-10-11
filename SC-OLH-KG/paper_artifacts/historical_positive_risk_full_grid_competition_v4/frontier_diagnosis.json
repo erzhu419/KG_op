@@ -1,0 +1,50 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_full_grid_screen_competition_v4.json",
+  "source_server_summary": "paper_artifacts/historical_positive_risk_full_grid_screen_competition_v4/summary.json",
+  "body_mean_cdf_interval": [
+    0.0,
+    0.99
+  ],
+  "tail_mean_cdf_interval": [
+    0.99,
+    1.0
+  ],
+  "raw": {
+    "body_weighted_unresolved_upper_gap": 0.0,
+    "tail_weighted_unresolved_upper_gap": 0.0009700404830510742
+  },
+  "projected": {
+    "body_weighted_unresolved_upper_gap": 5.6985473189715e-05,
+    "tail_weighted_unresolved_upper_gap": 0.0010138962646639045
+  },
+  "leading_tail_guarded_groups": [
+    71,
+    34
+  ],
+  "native_recommendation_changes": [
+    {
+      "record": "positive_full_n4_m2_v4_o5_h1_p1",
+      "before": {
+        "355": 16
+      },
+      "after": {
+        "209": 5,
+        "355": 11
+      },
+      "all_new_choices_raw_referenced": true
+    },
+    {
+      "record": "positive_full_n4_m2_v4_o5_h1_p2",
+      "before": {
+        "355": 16
+      },
+      "after": {
+        "209": 4,
+        "355": 12
+      },
+      "all_new_choices_raw_referenced": true
+    }
+  ],
+  "additional_integrations": 0,
+  "scope": "Cached finite-grid upper envelopes partitioned by the registered mean CDF intervals;not continuous outer quadrature error."
+}
