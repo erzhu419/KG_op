@@ -135,7 +135,8 @@ def collect_remote(stage,out,plan=None):
     out.mkdir(parents=True,exist_ok=True)
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.assemble_historical_observed_batch_references','--plan',plan] if stage=='observed-batch-assembly' else
+    worker=(['performance.check_historical_observed_batch_outer','collect','--plan',plan] if stage=='observed-batch-outer' else
+        ['performance.assemble_historical_observed_batch_references','--plan',plan] if stage=='observed-batch-assembly' else
         ['performance.screen_historical_observed_batch_risk','next-plan','--plan',plan] if stage=='observed-batch-next-plan' else
         ['performance.screen_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-bound' else
         ['performance.check_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-risk' else
@@ -159,7 +160,7 @@ def collect_remote(stage,out,plan=None):
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name='next_cost_plan.json' if stage=='observed-batch-next-plan' else 'compact_summary.json' if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-assembly') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
+    name='next_cost_plan.json' if stage=='observed-batch-next-plan' else 'compact_summary.json' if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-assembly','observed-batch-outer') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
         'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
@@ -167,7 +168,7 @@ def collect_remote(stage,out,plan=None):
         'bank-tail':'bank_tail_summary.json',
         'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
-    relative=(str((out/name).relative_to(ROOT)) if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-next-plan','observed-batch-assembly') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
+    relative=(str((out/name).relative_to(ROOT)) if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-next-plan','observed-batch-assembly','observed-batch-outer') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
         'paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name)
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
@@ -557,7 +558,7 @@ def continue_observed_batch_risk(plan):
     if status['state']=='conditional_actions_closed' and spec.get('assembly_plan'):
         assembly_plan=spec['assembly_plan'];assembly=json.loads((ROOT/assembly_plan).read_text())
         # The server needs the completed local controller state,not a bank download.
-        code='from pathlib import Path;Path('+repr(REMOTE+'/'+spec['output']+'/status.json')+').write_text('+repr(json.dumps(status,indent=2)+'\n')+')'
+        code='from pathlib import Path;p=Path('+repr(REMOTE+'/'+spec['output']+'/status.json')+');p.parent.mkdir(parents=True,exist_ok=True);p.write_text('+repr(json.dumps(status,indent=2)+'\n')+')'
         rc,body,err=scheduler.run_on('node005',shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
         if rc:raise RuntimeError(err or body)
         assembled=collect_remote('observed-batch-assembly',ROOT/assembly['output'],assembly_plan)

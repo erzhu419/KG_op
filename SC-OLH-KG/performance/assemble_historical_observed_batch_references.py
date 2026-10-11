@@ -6,6 +6,7 @@ import signal
 import time
 
 import numpy as np
+from scipy.stats import qmc
 
 from core.raw_terminal_head_grid import compose_head_grid, summarize_achievable_grid
 from performance.complete_historical_source_heads import ROOT, read, save, cpu_timeout
@@ -66,7 +67,22 @@ def run(plan=PLAN):
                 row=read(registered['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows'][check['selected_candidate']]
                 tables[origin,kind][i,h,ix]=row['statistics'];costs[origin,kind][i,h,ix]=row['costs']
             reference_groups+=1
-    totals={(8,16):[],(16,8):[],(16,16):[]};missing=[];recommendations=[]
+    totals={(8,16):[],(16,8):[],(16,16):[]};missing=[];recommendations=[];attribution=[]
+    fixed_plan=read('performance/manifests/historical_observed_prediction_v3.json')
+    fixed_state=read(fixed_plan['output']+'/state.json')
+    coordinates=qmc.Sobol(4,scramble=True,seed=parent['predictive_seed']).random_base2(4)[:,2:4]
+    cached_fixed={};fixed_parity=0.
+    for origin in bank['origins']:
+        for head in (0,1):
+            directory=fixed_plan['output']+'/n4/'+str(origin)+'/'+str(head)
+            cached=read(directory+'/results.json');observations=read(directory+'/bank.json')
+            assert cached['complete'] and cached['all_inner_rules_passed'] and cached['predictive_cdf_passed']
+            assert len(cached['values'])==2048
+            cached_fixed[origin,head]=cached
+            for i,row in enumerate(heads[head,origin]):
+                fixed_parity=max(fixed_parity,abs(row['label']-observations['labels'][i]),
+                    abs(row['eta_label']-observations['etas'][i]))
+    assert fixed_state['prior_weights']==prior.tolist() and fixed_parity<=1e-8
     for origin in bank['origins']:
         f,g=heads[0,origin],heads[1,origin];assert len(f)==len(g)==16
         masks={kind:np.zeros((16,365),dtype=bool) for kind in ('raw','projected')}
@@ -81,11 +97,21 @@ def run(plan=PLAN):
             grids[kind]=(np.where(masks[kind][None],values,-np.inf),c,posterior)
         raw,rc,posterior=grids['raw'];native,nc,np_=grids['projected'];np.testing.assert_array_equal(posterior,np_)
         choices=np.lexsort((nc,-native),axis=-1)[:,:,0]
+        achieved=np.take_along_axis(raw,choices[:,:,None],axis=2)[:,:,0]
         for j,row in enumerate(g):
             absent=sorted(set(map(int,choices[:,j]))-set(coverage[f'source_n4_o{origin}_h1_p{row["position"]}','raw']))
             if absent:missing.append(dict(origin=origin,risk_position=row['position'],native_choices_missing_raw_references=absent))
             recommendations.append(dict(origin=origin,risk_position=row['position'],native_actions=sorted(set(map(int,choices[:,j]))),
                 raw_actions=sorted(set(map(int,np.lexsort((rc,-raw),axis=-1)[:,j,0])))))
+            if not absent:
+                gain=float(np.mean(achieved[:,j]-raw[:,j,fixed]))
+                attribution.append(dict(origin=origin,risk_position=row['position'],
+                    mean_cdf=float(coordinates[j,0]),variance_cdf=float(coordinates[j,1]),
+                    label=row['label'],eta_label=row['eta_label'],mean_achieved_contrast=gain,
+                    weighted_achieved_contrast=float(prior[origin]*gain/16),
+                    mean_fixed_reward=float(np.mean(raw[:,j,fixed])),
+                    cached_origin_fixed_risk=cached_fixed[origin,1]['values'][j],
+                    native_actions=sorted(set(map(int,choices[:,j])))))
         if missing:continue
         for cfg in totals:
             nf,ng=cfg;weights=np.full(cfg,prior[origin]/(nf*ng));ix=np.s_[:nf,:ng]
@@ -107,16 +133,25 @@ def run(plan=PLAN):
     field='raw_net_reward_of_projected_choice_control_variate';changes={axis:abs(rows[-1][field]-r[field])
         for axis,r in zip(('objective8_16','risk8_16'),rows[:-1])} if rows else {}
     passed=bool(rows and max(changes.values())<=1e-4 and abs(rows[-1]['raw_fixed_action_tower_residual'])<=1e-4)
+    fixed_prefixes=[]
+    for p in (8,16,64,512,1024,2048):
+        reward=sum(prior[o]*np.mean(cached_fixed[o,0]['values'][:p])*np.mean(cached_fixed[o,1]['values'][:p])
+            for o in bank['origins'])
+        fixed_prefixes.append(dict(prefix=p,expected_reward=float(reward),tower_residual=float(reward-debited['best_reward'])))
     result=dict(complete=True,source_bound_plan=status['source_bound_plan'],rows=rows,outer_changes=changes,
         finite_outer_diagnostics_passed=passed,native_choices_all_raw_referenced=not missing,missing_achieved_references=missing,
-        recommendations=recommendations,reference_groups=reference_groups,action_count=365,query=63,replicates=4,remaining_calls=356,
+        recommendations=recommendations,risk_outer_attribution=attribution,
+        cached_fixed_action_diagnostic=dict(plan='performance/manifests/historical_observed_prediction_v3.json',
+            matched_observation_maximum_difference=fixed_parity,prefixes=fixed_prefixes,
+            fixed_action_only=True,adaptive_outer_integral_admitted=False),
+        reference_groups=reference_groups,action_count=365,query=63,replicates=4,remaining_calls=356,
         omitted_predictive_origin_mass=rare,stop_reward=stop['best_reward'],debited_reward=debited['best_reward'],
         cpu_seconds=time.process_time()-started,estimated_cpu_seconds_including600reserves=600,
         new_integrations=0,full_posterior_restorations=0,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False,
         scope='Finite8/16 n4 outer replay at query63 using admitted references and marginal exclusions. Native choices are priced only if raw references exist;original8 identity scores and512/1024 components retained. Continuous outer convergence,query/batch ranking andindependent deployment gain remain open.')
     save(out/'compact_summary.json',result);signal.setitimer(signal.ITIMER_PROF,0.)
-    print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='recommendations'}),flush=True);return result
+    print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k not in ('recommendations','risk_outer_attribution')}),flush=True);return result
 
 
 if __name__=='__main__':

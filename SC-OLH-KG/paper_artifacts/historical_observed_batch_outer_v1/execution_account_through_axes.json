@@ -1,0 +1,29 @@
+{
+  "completed_workers": 8,
+  "completed_coordinate_count": 2304,
+  "worker_cpu_seconds": 505.328446784,
+  "worker_process_cpu_seconds": 512.051522127,
+  "all_inner_and_cdf_rules_passed": true,
+  "maximum_inverse_cdf_error": 1.724176357242868e-13,
+  "fixed_action_pilot_passed": false,
+  "outer_axis_changes": {
+    "risk_mean8_16": 3.7040908871244227e-06,
+    "risk_variance8_16": 0.0003670001897251307
+  },
+  "fine16_16_tower_residual": 0.00013468789690807004,
+  "original_estimated_cpu_seconds_including600reserves": 997.31568208925,
+  "estimated_cpu_seconds_through_axes_including600reserves": 1316.76822776065,
+  "cumulative_estimated_cpu_seconds_with_variance32": 2259.12586477485,
+  "maximum_estimated_cpu_seconds": 3600,
+  "shared_reserve_cpu_seconds": 600,
+  "variance32_workers": 4,
+  "priority": "low",
+  "maximum_live_workers": 8,
+  "full_posterior_restorations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "replay": "python -m performance.check_historical_observed_batch_outer collect --plan performance/manifests/historical_observed_batch_outer_v1.json",
+  "scheduler_commands": "scheduler_specs.jsonl"
+}

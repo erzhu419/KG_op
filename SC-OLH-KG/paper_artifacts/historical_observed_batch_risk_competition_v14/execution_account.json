@@ -1,0 +1,32 @@
+{
+  "summary": "compact_summary.json",
+  "phase": 14,
+  "record_kind_groups": 6,
+  "action_checks": 18,
+  "all_precision_checks_passed": true,
+  "maximum_selected_rule_difference": 3.2241273347777266e-06,
+  "threshold": 0.0001,
+  "resources": {
+    "worker_cpu_seconds": 1572.2287179150003,
+    "worker_process_cpu_seconds": 1582.638757384,
+    "estimated_cpu_seconds_including600reserves": 2861.2815422664,
+    "maximum_estimated_cpu_seconds": 3600,
+    "workers": 12,
+    "failed_workers": 0,
+    "maximum_live_workers": 8,
+    "priority": "low"
+  },
+  "source_prior_preserved": true,
+  "all_identity_scores": 8,
+  "positive_components": [
+    512,
+    1024
+  ],
+  "joint_covariance_preserved": true,
+  "action_count": 365,
+  "remaining_calls": 356,
+  "replay": "python -m performance.launch_historical_component_bank observed-batch-risk --plan performance/manifests/historical_observed_batch_risk_competition_v14.json",
+  "scheduler_commands": "observed-batch-risk_specs.jsonl",
+  "scope": "Frozen decision-relevant risk observations from the saved n4 bank,all original allocations of selected guarded or direct groups. All8 identity scores and512/1024 positive components retained. Candidates are conditional on16 cached objective heads; no full batch outer convergence or query ranking.",
+  "independent_confirmation": false
+}
