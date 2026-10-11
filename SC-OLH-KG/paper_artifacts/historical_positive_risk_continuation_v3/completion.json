@@ -1,0 +1,116 @@
+{
+  "complete": true,
+  "state": "conditional_actions_closed",
+  "phases": [
+    {
+      "phase": 2,
+      "workers": 8,
+      "group_checks": 4,
+      "allocation_checks": 12,
+      "maximum_rule_difference": 1.1333517850209418e-05,
+      "worker_work_cpu_seconds": 1036.206240797,
+      "estimated_phase_cpu_seconds_including600reserve": 3576.2550023248023,
+      "passed": true
+    },
+    {
+      "phase": 3,
+      "workers": 12,
+      "group_checks": 6,
+      "allocation_checks": 18,
+      "maximum_rule_difference": 4.296123613956038e-05,
+      "worker_work_cpu_seconds": 1521.74754622,
+      "estimated_phase_cpu_seconds_including600reserve": 2707.860376823999,
+      "passed": true
+    },
+    {
+      "phase": 4,
+      "workers": 12,
+      "group_checks": 6,
+      "allocation_checks": 18,
+      "maximum_rule_difference": 4.787521226545799e-05,
+      "worker_work_cpu_seconds": 1554.8430861489996,
+      "estimated_phase_cpu_seconds_including600reserve": 2684.2488985488,
+      "passed": true
+    },
+    {
+      "phase": 5,
+      "workers": 12,
+      "group_checks": 6,
+      "allocation_checks": 18,
+      "maximum_rule_difference": 5.949964655904694e-05,
+      "worker_work_cpu_seconds": 1890.663960604,
+      "estimated_phase_cpu_seconds_including600reserve": 3351.2037499968005,
+      "passed": true
+    },
+    {
+      "phase": 6,
+      "workers": 12,
+      "group_checks": 6,
+      "allocation_checks": 18,
+      "maximum_rule_difference": 5.8836598534783846e-05,
+      "worker_work_cpu_seconds": 2141.242274798,
+      "estimated_phase_cpu_seconds_including600reserve": 3539.9646905016,
+      "passed": true
+    },
+    {
+      "phase": 7,
+      "workers": 12,
+      "group_checks": 6,
+      "allocation_checks": 16,
+      "maximum_rule_difference": 3.388525491831995e-05,
+      "worker_work_cpu_seconds": 1773.496424707,
+      "estimated_phase_cpu_seconds_including600reserve": 3072.00030381,
+      "passed": true
+    },
+    {
+      "phase": 8,
+      "workers": 6,
+      "group_checks": 3,
+      "allocation_checks": 6,
+      "maximum_rule_difference": 4.9825965955374585e-06,
+      "worker_work_cpu_seconds": 278.09653702699995,
+      "estimated_phase_cpu_seconds_including600reserve": 1027.0867874724,
+      "passed": true
+    }
+  ],
+  "worker_count": 74,
+  "group_checks": 37,
+  "allocation_checks": 106,
+  "maximum_rule_difference": 5.949964655904694e-05,
+  "worker_work_cpu_seconds": 10196.296070302,
+  "worker_process_cpu_seconds": 10260.468895794,
+  "peak_worker_rss_mb": 670.765625,
+  "cost_ledger": {
+    "total_phase_estimated_cpu_seconds": 19958.6198094784,
+    "first_phase_includes_previous_screen_native_direct_and_raw_direct": true,
+    "each_phase_has_600reserve": true,
+    "process_cpu_scope": "74 scientific reference workers v2-v8 only; excludes preceding screen, direct reference workers, phase preparations and cached collections."
+  },
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 46720,
+      "overlapping_action_head_pairs": 0,
+      "record_action_candidates": 0,
+      "record_group_candidates": 0
+    },
+    "projected": {
+      "compared_action_head_pairs": 46720,
+      "overlapping_action_head_pairs": 0,
+      "record_action_candidates": 0,
+      "record_group_candidates": 0
+    }
+  },
+  "subset_replay": "paper_artifacts/historical_positive_risk_continuation_v3/subset_replay.json",
+  "conditional_native_and_raw_action": 363,
+  "conditional_choices": 128,
+  "subset_grid_weight": 0.00021740500812340518,
+  "subset_grid_weight_is_continuous_event_probability": false,
+  "weighted_subset_native_choice_contrast": 0.0001159180059546643,
+  "maximum_subset_selection_loss": 0.0,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "conclusion": "Conditional action switching is supported at the eight registered positive-grid observations. Their weighted contribution is a subset sum, not total KG. Whole-distribution adaptive integration and independent deployment remain open."
+}
