@@ -1,0 +1,103 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_full_grid_screen_competition_v5.json",
+  "body_mean_cdf_interval": [
+    0.0,
+    0.99
+  ],
+  "tail_mean_cdf_interval": [
+    0.99,
+    1.0
+  ],
+  "additional_integrations": 0,
+  "kinds": {
+    "raw": {
+      "body_weighted_unresolved_upper_gap": 0.0,
+      "tail_weighted_unresolved_upper_gap": 0.0008912247183670688,
+      "leading_tail": [
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p10",
+          "weighted_gap": 0.00010931474005659645,
+          "groups": [
+            34,
+            71,
+            107
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p14",
+          "weighted_gap": 0.00010905499910024351,
+          "groups": [
+            34,
+            71,
+            107
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p9",
+          "weighted_gap": 7.700734082001514e-05,
+          "groups": [
+            34
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p13",
+          "weighted_gap": 6.902001626692146e-05,
+          "groups": [
+            34
+          ]
+        }
+      ]
+    },
+    "projected": {
+      "body_weighted_unresolved_upper_gap": 4.036416400169928e-06,
+      "tail_weighted_unresolved_upper_gap": 0.0008745735365111227,
+      "leading_tail": [
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p10",
+          "weighted_gap": 9.212217997040389e-05,
+          "groups": [
+            34
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p14",
+          "weighted_gap": 8.5724486907677e-05,
+          "groups": [
+            34
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p9",
+          "weighted_gap": 7.845586207765861e-05,
+          "groups": [
+            4,
+            34
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p13",
+          "weighted_gap": 7.055133822224052e-05,
+          "groups": [
+            4,
+            34
+          ]
+        }
+      ]
+    }
+  },
+  "cpu_seconds": 0.006030869000000008,
+  "scope": "Cached finite-grid upper envelopes partitioned at mean CDF0.99;continuous outer quadrature error remains separate.",
+  "native_recommendation_changes": [
+    {
+      "record": "positive_full_n4_m2_v4_o5_h1_p0",
+      "before": {
+        "355": 16
+      },
+      "after": {
+        "209": 6,
+        "355": 10
+      },
+      "all_new_choices_raw_referenced": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/usr/bin/python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t143918"
+  ],
+  "returncode": 0,
+  "stdout": "=== nodes ===\n  local       GPU0=1.14GB/8.00GB(free=6.63GB, mem:14%, util:0%)  cpu=13/16(wsl_load 2.0, host 20%, stale_node_probe_cache)  ram_free=16.4GB(eff)\n  jtl110gpu   GPU0=0.45GB/12.0GB(free=11.6GB, mem:4%, util:0%), GPU1=0.45GB/12.0GB(free=11.6GB, mem:4%, util:0%)  cpu=10/12(load 1.8, stale_node_probe_cache)  ram_free=491.8GB  claims(active_claims=2)\n  jtl110gpu2  GPU0=0.61GB/12.0GB(free=11.1GB, mem:5%, util:13%), GPU1=0.46GB/12.0GB(free=11.3GB, mem:4%, util:13%)  cpu=10/12(load 2.1, stale_node_probe_cache)  ram_free=492.4GB  claims(active_claims=2)\n  jtl311linux CPU-only  cpu=0/8(load 96.1, stale_node_probe_cache)  ram_free=2.15GB\n  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:7%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:58%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:55%)  cpu=60/64(load 4.0, stale_node_probe_cache)  ram_free=162.7GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=472.9GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.8GB\n  node001     CPU-only  cpu=95/96(load 0.6, stale_node_probe_cache, reserve 1)  ram_free=179.2GB\n  node002     CPU-only  cpu=0/96(load 102.0, stale_node_probe_cache, reserve 1)  ram_free=147.5GB\n  node003     CPU-only  cpu=0/96(load 100.5, stale_node_probe_cache, reserve 1)  ram_free=145.8GB\n  node004     CPU-only  cpu=95/96(load 0.5, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n  node005     CPU-only  cpu=95/96(load 0.5, stale_node_probe_cache, reserve 1)  ram_free=179.5GB\n  node006     CPU-only  cpu=95/96(load 0.7, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n=== dispatch === (1 queued)\n  [t143918] LAUNCH on node005:CPU  pid=39516  log=/tmp/sched_t143918.log\n",
+  "stderr": ""
+}
