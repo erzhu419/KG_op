@@ -104,14 +104,14 @@ def prepare_frozen(plan):
         template=compressed_read(ROOT/pilot['output']/'marginals'/f'source_n4_o{origin}_h1_p13.json.gz')
         gids={r['group'] for r in frozen['next_joint_cases'] if r['record']==record};assert len(gids)==1
         gid=gids.pop();actions=actions_by_origin[origin];group=action_groups(actions)[gid]
-        assert group['kind']=='guarded' and template['prior_weights']==bank['prior_weights']
+        assert template['prior_weights']==bank['prior_weights']
         assert [r['head_log_scores'] for r in template['opposite']]==[r['head_log_scores'] for r in heads[0,origin]]
         row=next(r for r in heads[1,origin] if r['position']==position)
         assert row['replicates']==4 and row['eta_label'] is not None
         ix=group['action_indices'];shared=compressed_read(marginal_base/'marginals'/f'{gid:03d}.json.gz')
         assert shared['prior_weights']==bank['prior_weights'] and shared['points'][0]==template['query']
         points=shared['points'];bundle=copy.deepcopy(template)
-        bundle.update(group=gid,points=points,fields=shared['fields'],action_indices=ix,
+        bundle.update(group=gid,kind=group['kind'],points=points,fields=shared['fields'],action_indices=ix,
             actions=[dict(actions[i],primary=points.index(actions[i]['primary']),
                 shortlist=[points.index(p) for p in actions[i]['shortlist']]) for i in ix],
             opposite=[dict(position=r['position'],head_log_scores=r['head_log_scores'],
@@ -184,7 +184,8 @@ def run(record,identity,kind,plan=PLAN):
     candidate=selected_rule(spec,record,kind)
     for action,values in zip(b['actions'],rows[candidate]['statistics']):
         caps=np.asarray([certificate_upper(m['feasibility_upper'],n,len(action['shortlist']),b['protocol']) for m,n in zip(marginals,action['budgets'])])
-        caps=np.r_[caps,min(caps[0],caps[action['incumbent_position']])]
+        caps=(np.r_[caps,min(caps[0],caps[action['incumbent_position']])] if action['kind']=='guarded'
+            else np.r_[caps[0],0.,0.,0.])
         violation=max(violation,float(np.max(np.asarray(values)-caps)))
     result=dict(complete=True,record=record,identity=identity,kind=kind,rows=rows,head_score_error=score_error,
         marginal_bounds=marginals,maximum_branch_above_marginal_bound=violation,cpu_seconds=time.process_time()-start,
@@ -224,7 +225,7 @@ def collect(plan=PLAN):
         estimated_cpu_seconds_including_reserves=prep['estimated_cpu_seconds_including_reserves'],
         action_count=365,remaining_calls=356,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False,
-        scope='Frozen decision-relevant risk observations from the saved n4 bank,all three allocations of their guarded groups. All8 identity scores and512/1024 positive components retained. Candidates are conditional on16 cached objective heads; no full batch outer convergence or query ranking.')
+        scope='Frozen decision-relevant risk observations from the saved n4 bank,all original allocations of selected guarded or direct groups. All8 identity scores and512/1024 positive components retained. Candidates are conditional on16 cached objective heads; no full batch outer convergence or query ranking.')
     save(out/'compact_summary.json',result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
 
 

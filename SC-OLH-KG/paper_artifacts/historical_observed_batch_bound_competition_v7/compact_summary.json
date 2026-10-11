@@ -1,0 +1,370 @@
+{
+  "complete": true,
+  "numerical_containment_passed": true,
+  "maximum_raw64_128_bound_difference": 6.367724132400054e-06,
+  "maximum_raw_log_evidence_error": 1.7763568394002505e-15,
+  "maximum_fixed_reference_error": 5.930367308337736e-12,
+  "maximum_validated_reference_above_bound": 0.0,
+  "risk_observations": 32,
+  "objective_heads_per_origin": 16,
+  "action_count": 365,
+  "remaining_calls": 356,
+  "totals": {
+    "raw": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 1100,
+      "record_action_candidates": 80,
+      "record_group_candidates": 28
+    },
+    "projected": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 1068,
+      "record_action_candidates": 78,
+      "record_group_candidates": 26
+    }
+  },
+  "successful_worker_cpu_seconds": 842.600583028,
+  "collection_cpu_seconds": 3.69292512,
+  "query_reference_cpu_seconds": 12.772156322,
+  "native_direct_reference_cpu_seconds": 0.0,
+  "native_direct_reference_reused": true,
+  "cumulative_estimated_cpu_seconds": 3314.418529436811,
+  "reused_marginal_bank": "paper_artifacts/historical_observed_batch_bound_v1",
+  "new_marginal_workers": 0,
+  "components": {
+    "4": 512,
+    "5": 1024
+  },
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "scope": "All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the32 saved risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.",
+  "joint_reference_phase_estimated_cpu_seconds": 3193.3193031636,
+  "cached_collection_charged_to_joint_reference_phase_reserves": true,
+  "closest_records": [
+    {
+      "record": "source_n4_o4_h1_p13",
+      "kind": "raw",
+      "overlapping_action_head_pairs": 64,
+      "validated_reference_actions": [
+        355,
+        282,
+        71,
+        144,
+        217,
+        34,
+        107,
+        180
+      ],
+      "candidate_actions": [
+        253,
+        290,
+        326,
+        363
+      ],
+      "candidate_upper_minus_reference": {
+        "253": 0.015664986698325112,
+        "290": 0.04057556313106603,
+        "326": 0.015664919069113215,
+        "363": 0.04057550650676012
+      },
+      "candidate_groups": [
+        107,
+        144
+      ],
+      "maximum_upper_minus_fixed": 0.04057556313106603,
+      "closest": [
+        {
+          "action": 290,
+          "upper_minus_fixed": 0.04057556313106603
+        },
+        {
+          "action": 363,
+          "upper_minus_fixed": 0.04057550650676012
+        },
+        {
+          "action": 253,
+          "upper_minus_fixed": 0.015664986698325112
+        },
+        {
+          "action": 326,
+          "upper_minus_fixed": 0.015664919069113215
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o5_h1_p13",
+      "kind": "raw",
+      "overlapping_action_head_pairs": 64,
+      "validated_reference_actions": [
+        355,
+        282,
+        71,
+        144,
+        217,
+        34,
+        107,
+        180
+      ],
+      "candidate_actions": [
+        253,
+        290,
+        326,
+        363
+      ],
+      "candidate_upper_minus_reference": {
+        "253": 0.014188782085915785,
+        "290": 0.03966130825611769,
+        "326": 0.014188715010401864,
+        "363": 0.039661252404820435
+      },
+      "candidate_groups": [
+        107,
+        144
+      ],
+      "maximum_upper_minus_fixed": 0.03966130825611769,
+      "closest": [
+        {
+          "action": 290,
+          "upper_minus_fixed": 0.03966130825611769
+        },
+        {
+          "action": 363,
+          "upper_minus_fixed": 0.039661252404820435
+        },
+        {
+          "action": 253,
+          "upper_minus_fixed": 0.014188782085915785
+        },
+        {
+          "action": 326,
+          "upper_minus_fixed": 0.014188715010401864
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o4_h1_p6",
+      "kind": "projected",
+      "overlapping_action_head_pairs": 48,
+      "validated_reference_actions": [
+        355,
+        282
+      ],
+      "candidate_actions": [
+        63,
+        136,
+        209
+      ],
+      "candidate_upper_minus_reference": {
+        "63": 0.011303957177682622,
+        "136": 0.011304053072782705,
+        "209": 0.011303957177682622
+      },
+      "candidate_groups": [
+        63
+      ],
+      "maximum_upper_minus_fixed": 0.011304053072782705,
+      "closest": [
+        {
+          "action": 136,
+          "upper_minus_fixed": 0.011304053072782705
+        },
+        {
+          "action": 63,
+          "upper_minus_fixed": 0.011303957177682622
+        },
+        {
+          "action": 209,
+          "upper_minus_fixed": 0.011303957177682622
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o5_h1_p6",
+      "kind": "projected",
+      "overlapping_action_head_pairs": 48,
+      "validated_reference_actions": [
+        355,
+        282
+      ],
+      "candidate_actions": [
+        63,
+        136,
+        209
+      ],
+      "candidate_upper_minus_reference": {
+        "63": 0.010991843820308045,
+        "136": 0.010991940103091458,
+        "209": 0.010991843820307934
+      },
+      "candidate_groups": [
+        63
+      ],
+      "maximum_upper_minus_fixed": 0.010991940103091458,
+      "closest": [
+        {
+          "action": 136,
+          "upper_minus_fixed": 0.010991940103091458
+        },
+        {
+          "action": 63,
+          "upper_minus_fixed": 0.010991843820308045
+        },
+        {
+          "action": 209,
+          "upper_minus_fixed": 0.010991843820307934
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o4_h1_p10",
+      "kind": "raw",
+      "overlapping_action_head_pairs": 48,
+      "validated_reference_actions": [
+        355,
+        282
+      ],
+      "candidate_actions": [
+        63,
+        136,
+        209
+      ],
+      "candidate_upper_minus_reference": {
+        "63": 0.010411876647301144,
+        "136": 0.010411973030157062,
+        "209": 0.010411876647301144
+      },
+      "candidate_groups": [
+        63
+      ],
+      "maximum_upper_minus_fixed": 0.010411973030157062,
+      "closest": [
+        {
+          "action": 136,
+          "upper_minus_fixed": 0.010411973030157062
+        },
+        {
+          "action": 63,
+          "upper_minus_fixed": 0.010411876647301144
+        },
+        {
+          "action": 209,
+          "upper_minus_fixed": 0.010411876647301144
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o5_h1_p10",
+      "kind": "raw",
+      "overlapping_action_head_pairs": 48,
+      "validated_reference_actions": [
+        355,
+        282
+      ],
+      "candidate_actions": [
+        63,
+        136,
+        209
+      ],
+      "candidate_upper_minus_reference": {
+        "63": 0.00946536686320465,
+        "136": 0.009465463578541167,
+        "209": 0.009465366863204538
+      },
+      "candidate_groups": [
+        63
+      ],
+      "maximum_upper_minus_fixed": 0.009465463578541167,
+      "closest": [
+        {
+          "action": 136,
+          "upper_minus_fixed": 0.009465463578541167
+        },
+        {
+          "action": 63,
+          "upper_minus_fixed": 0.00946536686320465
+        },
+        {
+          "action": 209,
+          "upper_minus_fixed": 0.009465366863204538
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o4_h1_p1",
+      "kind": "raw",
+      "overlapping_action_head_pairs": 48,
+      "validated_reference_actions": [
+        355,
+        282
+      ],
+      "candidate_actions": [
+        63,
+        136,
+        209
+      ],
+      "candidate_upper_minus_reference": {
+        "63": 0.008695587042098052,
+        "136": 0.008695682979792285,
+        "209": 0.008695587042098052
+      },
+      "candidate_groups": [
+        63
+      ],
+      "maximum_upper_minus_fixed": 0.008695682979792285,
+      "closest": [
+        {
+          "action": 136,
+          "upper_minus_fixed": 0.008695682979792285
+        },
+        {
+          "action": 63,
+          "upper_minus_fixed": 0.008695587042098052
+        },
+        {
+          "action": 209,
+          "upper_minus_fixed": 0.008695587042098052
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o5_h1_p1",
+      "kind": "raw",
+      "overlapping_action_head_pairs": 48,
+      "validated_reference_actions": [
+        355,
+        282
+      ],
+      "candidate_actions": [
+        63,
+        136,
+        209
+      ],
+      "candidate_upper_minus_reference": {
+        "63": 0.008578484029283517,
+        "136": 0.008578580351943144,
+        "209": 0.008578484029283406
+      },
+      "candidate_groups": [
+        63
+      ],
+      "maximum_upper_minus_fixed": 0.008578580351943144,
+      "closest": [
+        {
+          "action": 136,
+          "upper_minus_fixed": 0.008578580351943144
+        },
+        {
+          "action": 63,
+          "upper_minus_fixed": 0.008578484029283517
+        },
+        {
+          "action": 209,
+          "upper_minus_fixed": 0.008578484029283406
+        }
+      ]
+    }
+  ]
+}

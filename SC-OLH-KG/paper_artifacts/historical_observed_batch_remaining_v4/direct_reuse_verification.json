@@ -1,0 +1,15 @@
+{
+  "verification": "Existing raw four-replicate conditional reference,Gaussian feasibility bound,and independent complete-field raw transport tests",
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_conditional_raw_reference test_marginal_certificate_bound test_positive_batch_lookahead.PositiveBatchLookaheadTests.test_batch_conditional_terminal_matches_independent_full_raw_transport",
+  "tests": 13,
+  "passed": true,
+  "duration_seconds": 5.963,
+  "initial_test_invocation": "PYTHONPATH=. lacked the repository tests directory and produced an import error;corrected PYTHONPATH=.:tests without code change.",
+  "original_direct_kernel": "core.conditional_raw_reference.component_risk_allocations",
+  "direct_allocations_per_group": 2,
+  "guarded_allocations_per_group": 3,
+  "shared_maximum_live_workers": 8,
+  "cost_gate_unchanged": 3600,
+  "precision_gate_unchanged": 0.0001,
+  "scope": "Kernel and matched contract verification;selected n4 direct references still require production precision checks."
+}

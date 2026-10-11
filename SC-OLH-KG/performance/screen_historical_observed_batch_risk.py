@@ -272,14 +272,15 @@ def next_plan(plan=PLAN):
     selected=[];jobs=[];record_groups={};total=600.
     for row in remaining:
         gid,kind=row['group'],row['kind']
-        if groups[gid]['kind']!='guarded' or row['record'] in record_groups and record_groups[row['record']]!=gid:continue
+        if row['record'] in record_groups and record_groups[row['record']]!=gid:continue
         candidate='E9' if (gid,kind) in fine_groups else 'E8'
         rule_names=['E8','E9','F9','K9'] if candidate=='E9' else ['E8','F8','H8','E9']
         planned=dict(row,candidate=candidate,rules=rule_names);priced=[]
         for h in (4,5):
             historical=read(str(ROOT/'paper_artifacts/historical_component_bank_v1/parts'/f'{gid:03d}_{h}_{kind}.json'))['rows']
             same=[r for r in measured if r['identity']==h and r['kind']==kind and r['group']==gid]
-            cohort=same or [r for r in measured if r['identity']==h and r['kind']==kind]
+            cohort=same or [r for r in measured if r['identity']==h and r['kind']==kind
+                and groups[r['group']]['kind']==groups[gid]['kind']]
             units={}
             for rule in rule_names:
                 order,power,_=RULES[rule]
@@ -287,7 +288,8 @@ def next_plan(plan=PLAN):
                     if name in RULES and RULES[name][:2]==(order,power)]
                 scaled=[v['cpu_seconds']*2**(power-RULES[name][1]) for name,v in historical.items()
                     if name in RULES and RULES[name][0]==order and RULES[name][1]<=power]
-                units[rule]=dict(cpu=max(actual+scaled),basis='Maximum measured n4 same group' if same else 'Maximum measured n4 same guarded action kind',
+                units[rule]=dict(cpu=max(actual+scaled),basis=('Maximum measured n4 same group' if same else
+                    'Maximum measured n4 same action kind' if cohort else 'Measured n1 same group scaled to required point count'),
                     compared_with='Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker')
             priced.append(dict(**row,identity=h,candidate=candidate,rules=units,estimated_cpu_seconds=1.2*sum(v['cpu'] for v in units.values())+2.))
         estimate=sum(j['estimated_cpu_seconds'] for j in priced)
@@ -297,7 +299,7 @@ def next_plan(plan=PLAN):
     result=dict(complete=True,source=spec['output']+'/summary.json',remaining_groups={k:dict(Counter(r['group'] for r in remaining if r['kind']==k)) for k in ('raw','projected')},
         next_joint_cases=selected,next_joint_jobs=jobs,expected_cpu_seconds_including600reserves=total,cost_admitted=bool(jobs) and total<=spec['maximum_estimated_cpu_seconds'],
         maximum_live_workers=8,priority='low',dispatched=False,cpu_seconds=time.process_time()-start,
-        preparation_required='Reuse prepare-frozen with the saved n4 heads,full365-action table and original joint marginals;one guarded group per observation in this phase.',
+        preparation_required='Reuse prepare-frozen with the saved n4 heads,full365-action table and original joint marginals;one guarded or direct group per observation in this phase.',
         native_direct_cases=[],remaining_direct_cases=[r for r in remaining if groups[r['group']]['kind']=='direct'],
         remaining='Finite n4 conditional references,adaptive outer convergence,query/batch choice and independent deployment gain remain open.')
     save(out/'next_cost_plan.json',result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
@@ -316,7 +318,7 @@ def prepare_next(plan):
         rules=['E8','F8','H8','E9'],
         refined_cases=[dict(record=r['record'],kind=r['kind'],candidate=r.get('candidate','E8'),
             rules=r.get('rules',['E8','F8','H8','E9'])) for r in priced['next_joint_cases']],
-        selection='Largest unresolved guarded action upper gaps,one group per observation within this frozen phase.',
+        selection='Largest unresolved action upper gaps,one guarded or direct group per observation within this frozen phase.',
         purpose='Reuse original n4 observations and complete action/objective-head tables on the saved joint marginals;E8 compared against F8,H8,E9,or E9 against E8,F9,K9 when this group/kind already required512points.',
         scope='Original source prior,all8 identity scores,512/1024 positive components andcovariance,365 actions and356 remaining calls. Selected finite n4 risk observations;full adaptive outer integration,query/batch choice andindependent gain remain open.')
     bound=copy.deepcopy(current);bound['joint_reference_plans'].append(risk_path)
