@@ -52,7 +52,7 @@ def launch(stage,plan=None):
     spec=json.loads((ROOT/'performance/manifests'/manifest).read_text())
     out=ROOT/spec['output'];prep=json.loads((out/'preparation.json').read_text());assert prep['complete']
     identities=sorted(map(int,prep['source_components']))
-    if stage=='observed-batch-risk':
+    if stage in ('observed-batch-risk','positive-risk-grid'):
         assert prep['estimated_cost_admitted']
         pending=prep['jobs'].copy()
     elif stage in UPPER_MODES:
@@ -89,7 +89,7 @@ def launch(stage,plan=None):
     else:
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
-    if stage not in PILOT_MODES and stage not in UPPER_MODES and stage!='observed-batch-risk':
+    if stage not in PILOT_MODES and stage not in UPPER_MODES and stage not in ('observed-batch-risk','positive-risk-grid'):
         shards=max(counts.values()) if stage in TRANSFER_STAGES or stage in LABEL_MODES else spec['shards_per_identity_kind']
         pending=[dict(identity=h,kind=k,shard=s) for s in range(shards)
             for h in identities for k in ('raw','projected') if s<counts[k]]
@@ -101,7 +101,7 @@ def launch(stage,plan=None):
         specs=[json.loads(line) for line in specs_path.read_text().splitlines()]
     while True:
         ids={j['id'] for j in jobs}
-        if stage=='observed-batch-risk' and ids:refresh_jobs(ids)
+        if stage in ('observed-batch-risk','positive-risk-grid') and ids:refresh_jobs(ids)
         state={t['id']:t for t in json.loads(QUEUE.read_text())['tasks'] if t.get('id') in ids}
         active=sum(t['status'] in ('queued','launching','running') for t in state.values())
         failures=[t['id'] for t in state.values() if t['status'] not in ('queued','launching','running','done')]
@@ -111,7 +111,11 @@ def launch(stage,plan=None):
             new_ids=[]
             for _ in range(min(slots,len(pending))):
                 job=pending.pop(0);h,k,s=job['identity'],job['kind'],job['shard']
-                worker=(['performance.check_historical_observed_batch_risk','run','--record',job['record'],
+                worker=((['performance.screen_historical_observed_batch_risk','run','--identity',str(h),'--shard',str(s),
+                    '--plan','performance/manifests/'+manifest] if k=='screen' else
+                    ['performance.screen_historical_observed_batch_risk','native-direct','--shard',str(s),
+                    '--plan','performance/manifests/'+manifest]) if stage=='positive-risk-grid' else
+                    ['performance.check_historical_observed_batch_risk','run','--record',job['record'],
                     '--identity',str(h),'--kind',k,'--plan','performance/manifests/'+manifest] if stage=='observed-batch-risk' else
                     ['performance.validate_historical_upper_decisions','run','--phase',short,'--job',str(s)] if stage in UPPER_MODES else
                     ['performance.validate_historical_label_bank','run','--identity',str(h),'--kind',k,
@@ -125,7 +129,7 @@ def launch(stage,plan=None):
                 cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-m']+worker)
                 args=[sys.executable,CLI,'submit','--description',f'KG risk integration {stage} H{h} {k} shard{s}',
                     '--cmd',cmd,'--cwd',DEPLOY,'--signature',
-                    (f'KG_op/{Path(manifest).stem}/{stage}/{h}/{k}/{s}' if stage=='observed-batch-risk'
+                    (f'KG_op/{Path(manifest).stem}/{stage}/{h}/{k}/{s}' if stage in ('observed-batch-risk','positive-risk-grid')
                         else f'KG_op/component_bank_v1/{stage}/{h}/{k}/{s}'),
                     '--project','KG_op','--vram','0','--ram-mb','2000','--cpu','1','--priority','low',
                     '--skip-launch-staging','--env-spec','none']

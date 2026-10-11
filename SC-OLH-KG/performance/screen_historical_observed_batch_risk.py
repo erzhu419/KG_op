@@ -113,13 +113,28 @@ def run(identity,shard,plan=PLAN):
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True)
 
 
-def native_direct_references(spec,context,out):
+def native_direct_references(spec,context,out,shard=None):
     base=ROOT/read(spec['native_reference_plan'])['output'] if 'native_reference_plan' in spec else out
-    path=base/'native_direct_references.json'
+    path=base/('native_direct_references.json' if shard is None else f'native_parts/{shard}.json')
+    path.parent.mkdir(parents=True,exist_ok=True)
     if path.exists():return read(str(path))
+    if shard is None and 'native_direct_jobs' in spec:
+        chunks=[read(str(base/f'native_parts/{j["shard"]}.json')) for j in spec['native_direct_jobs']]
+        assert all(c['complete'] for c in chunks)
+        rows=[r for c in chunks for r in c['rows']]
+        expected={r['record'] for o in context['origins'].values() for r in o['risk']}
+        assert {r['record'] for r in rows}==expected
+        assert len(rows)==spec['native_direct_pricing']['rows']==len({(r['record'],r['identity'],r['action']) for r in rows})
+        result=dict(complete=True,rows=rows,cpu_seconds=sum(c['cpu_seconds'] for c in chunks),new_joint_terminal_integrations=0)
+        save(path,result);return result
     start=time.process_time();rows=[]
     groups=action_groups(context['actions']);coordinates={r['record']:r for o in context['origins'].values() for r in o['risk']}
-    for selected in read(spec['native_direct_cost_plan'])['native_direct_cases']:
+    cases=read(spec['native_direct_cost_plan'])['native_direct_cases']
+    if shard is not None:
+        job=next(j for j in read(spec['output']+'/preparation.json')['jobs'] if j['kind']=='native-direct' and j['shard']==shard)
+        cases=[r for r in cases if r['record'] in job['records']]
+        assert len(cases)==job['observation_count']
+    for selected in cases:
         r=coordinates[selected['record']]
         for gid in selected['groups']:
             group=groups[gid];assert group['kind']=='direct'
@@ -135,6 +150,15 @@ def native_direct_references(spec,context,out):
                 rows.extend(dict(identity=h,record=r['record'],action=a,projected=float(v),numerical_error=error) for a,v in zip(ix,values))
     result=dict(complete=True,rows=rows,cpu_seconds=time.process_time()-start,new_joint_terminal_integrations=0)
     save(path,result);return result
+
+
+def native_direct_worker(plan,shard):
+    spec=read(plan);out=ROOT/spec['output'];context=compressed_read(out/'context.json.gz')
+    assert read(str(out/'preparation.json'))['estimated_cost_admitted']
+    signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,240.)
+    result=native_direct_references(spec,context,out,shard);signal.setitimer(signal.ITIMER_PROF,0.)
+    print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True)
+    return result
 
 
 def collect(plan=PLAN):
@@ -187,7 +211,7 @@ def collect(plan=PLAN):
     native_parts={(r['identity'],r['record'],r['action']):r for r in native['rows']}
     if native['rows']:fixed_error=max(fixed_error,max(r['numerical_error'] for r in native['rows']))
     containment=0.;records=[];prior=np.asarray(context['prior_weights']);actions=context['actions'];groups=action_groups(actions)
-    for origin in context['origins'].values():
+    for origin_id,origin in context['origins'].items():
         for r in origin['risk']:
             scores=np.log(prior)+np.asarray(origin['objective_scores'])+r['head_log_scores']
             posterior=np.exp(scores-logsumexp(scores,axis=-1)[:,None]);missing=posterior[:,[0,1,2,3,6,7]].sum(axis=-1)
@@ -205,7 +229,7 @@ def collect(plan=PLAN):
                         bounded=quality[:,0]*caps[0] if len(caps)==1 else branch_quality_upper(quality,np.asarray(caps),action['incumbent_position'])
                         upper[:,a]+=posterior[:,h]*bounded
                 upper+=missing[:,None];containment=max(containment,float(np.max(fixed-upper[:,355])))
-                references={355:fixed.copy()}
+                fixed_action=fixed.copy();references={355:fixed.copy()}
                 for a in sorted({v['action'] for v in query_references['rows']}):
                     value=sum(posterior[:,h]*objective[:,h,a,0]*query_parts[h,r['record'],a][kind] for h in (4,5))
                     references[a]=value;containment=max(containment,float(np.max(value-upper[:,a])))
@@ -228,12 +252,19 @@ def collect(plan=PLAN):
                 overlap=upper+2e-4>=fixed[:,None];overlap[:,list(references)]=False
                 action_overlap=overlap.any(axis=0);gap=np.max(upper-fixed[:,None],axis=0)
                 candidates=np.flatnonzero(action_overlap)
+                unknown=upper.copy();unknown[:,list(references)]=-np.inf
+                unresolved=np.maximum(unknown.max(axis=-1)-fixed,0.)
+                weight=float(prior[int(origin_id)]*r['outer_weight']) if 'outer_weight' in r else None
                 records.append(dict(record=r['record'],kind=kind,overlapping_action_head_pairs=int(overlap.sum()),
                     validated_reference_actions=list(references),
                     candidate_actions=candidates.tolist(),
                     candidate_upper_minus_reference={str(a):float(gap[a]) for a in candidates},
                     candidate_groups=[g['group'] for g in groups if action_overlap[g['action_indices']].any()],
                     maximum_upper_minus_fixed=float(gap[candidates].max()) if len(candidates) else 0.,
+                    outer_grid_weight=weight,mean_fixed_action_reward=float(fixed_action.mean()),
+                    mean_best_validated_reward=float(fixed.mean()),mean_unresolved_upper_gap=float(unresolved.mean()),
+                    weighted_reference_contrast=None if weight is None else float(weight*np.mean(fixed-fixed_action)),
+                    weighted_unresolved_upper_gap=None if weight is None else float(weight*unresolved.mean()),
                     closest=[dict(action=int(a),upper_minus_fixed=float(gap[a])) for a in sorted(candidates,key=lambda a:-gap[a])[:6]]))
     observation_count=sum(len(o['risk']) for o in context['origins'].values())
     result=dict(complete=True,numerical_containment_passed=max(difference,evidence,fixed_error,containment)<=1e-4,
@@ -253,6 +284,14 @@ def collect(plan=PLAN):
         components={str(t['identity']):t['components'] for t in tasks},new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False,
         scope=f'All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the{observation_count} registered risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.')
+    if all(r['outer_grid_weight'] is not None for r in records):
+        sums={o:sum(r['outer_weight'] for r in v['risk']) for o,v in context['origins'].items()}
+        result['weighted_bank_envelope']=dict(positive_weight_sums_per_origin=sums,
+            normalized_per_origin=all(abs(w-1.)<=1e-14 for w in sums.values()),
+            unrepresented_origin_prior_mass=float(max(0.,1.-sum(prior[int(o)] for o in sums))),
+            kinds={k:dict(best_reference_contrast=sum(r['weighted_reference_contrast'] for r in records if r['kind']==k),
+                unresolved_upper_gap=sum(r['weighted_unresolved_upper_gap'] for r in records if r['kind']==k)) for k in ('raw','projected')},
+            scope='Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate.')
     if 'native_direct_cost_plan' in spec:
         result['joint_reference_phase_estimated_cpu_seconds']=read(spec.get('reference_phase_cost_plan',spec['native_direct_cost_plan']))['expected_cpu_seconds_including600reserves']
         result['cached_collection_charged_to_joint_reference_phase_reserves']=True
@@ -275,8 +314,10 @@ def next_plan(plan=PLAN):
         for gid in row['candidate_groups']:
             gaps=[row['candidate_upper_minus_reference'][str(a)] for a in groups[gid]['action_indices']
                 if str(a) in row['candidate_upper_minus_reference']]
-            remaining.append(dict(record=row['record'],kind=row['kind'],group=gid,maximum_unresolved_upper_gap=max(gaps)))
-    remaining.sort(key=lambda r:(-r['maximum_unresolved_upper_gap'],r['record'],r['kind'],r['group']))
+            weight=row.get('outer_grid_weight');priority=max(gaps)*(1. if weight is None else weight)
+            remaining.append(dict(record=row['record'],kind=row['kind'],group=gid,
+                maximum_unresolved_upper_gap=max(gaps),weighted_unresolved_upper_gap=priority))
+    remaining.sort(key=lambda r:(-r['weighted_unresolved_upper_gap'],r['record'],r['kind'],r['group']))
     for source in spec.get('pricing_reference_plans',spec.get('joint_reference_plans',[spec['pilot_plan']])):
         prior=read(source);preparation=read(prior['output']+'/preparation.json')
         for check in read(prior['output']+'/compact_summary.json')['groups']:
@@ -352,12 +393,13 @@ def prepare_next(plan):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','run','collect','next-plan','prepare-next']);p.add_argument('--plan',default=PLAN)
+    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','run','native-direct','collect','next-plan','prepare-next']);p.add_argument('--plan',default=PLAN)
     p.add_argument('--identity',type=int,choices=(4,5));p.add_argument('--shard',type=int);a=p.parse_args()
     try:
         if a.stage=='prepare':prepare(a.plan)
         elif a.stage=='collect':collect(a.plan)
         elif a.stage=='next-plan':next_plan(a.plan)
         elif a.stage=='prepare-next':prepare_next(a.plan)
+        elif a.stage=='native-direct':native_direct_worker(a.plan,a.shard)
         else:run(a.identity,a.shard,a.plan)
     finally:print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)

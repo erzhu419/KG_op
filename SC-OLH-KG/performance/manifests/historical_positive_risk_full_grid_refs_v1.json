@@ -1,0 +1,42 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_full_grid_refs_v1",
+  "screen_plan": "performance/manifests/historical_positive_risk_full_grid_v1.json",
+  "frozen_cost_plan": "paper_artifacts/historical_positive_risk_full_grid_v1/next_cost_plan.json",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_full_grid_bound_refs_v1.json",
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "seed": 202610077,
+  "maximum_worker_cpu_seconds": 420,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_live_workers": 8,
+  "refined_cases": [
+    {
+      "record": "positive_full_n4_m2_v4_o4_h1_p7",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    },
+    {
+      "record": "positive_full_n4_m2_v4_o4_h1_p7",
+      "kind": "raw",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    }
+  ],
+  "pricing": "Same phase as the normalized32-observation screen andnative direct references. Retain their2794.03estimate andsingle600reserve;four weighted-priority workers bring this phase to3547.79/3600.",
+  "scope": "Highest weighted unresolved bulk high-variance observation,raw andnative guarded63 references;original joint marginal,all8 scores,16objective heads,365actions and356budget. No outer convergence or independent deployment claim."
+}
