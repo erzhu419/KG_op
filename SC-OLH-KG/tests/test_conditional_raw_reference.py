@@ -12,6 +12,39 @@ from test_positive_source_mixture import terminal
 
 
 class ConditionalRawReferenceTests(unittest.TestCase):
+    def test_four_replicate_component_direct_matches_batch_reference(self):
+        from performance.diagnose_historical_predictive_tower import query_direct_value
+        from representation.vectorized_joint_function_risk import update_raw_observation
+        field=correlated_fields()[1];future=copy.deepcopy(field);label=-.28;eta_label=-3.7
+        score=update_raw_observation(future,0,label,eta_label,4)
+        action=dict(kind='direct',primary=0,shortlist=[0],incumbent_position=0,budgets=[356])
+        actual,cost,d=component_risk_statistics(field,future,action,label,score,terminal().protocol,
+            query=0,raw=True,order=64,power=0,seed=202610077,replicates=4,eta_label=eta_label)
+        expected,error=query_direct_value(field,future,label,score,1,356,terminal().protocol,4,eta_label,128)
+        self.assertAlmostEqual(actual[0],expected,places=10)
+        self.assertEqual(cost,356.)
+        self.assertLess(abs(d['predictive_log_evidence_error']),1e-8)
+        self.assertLess(error,1e-8)
+        self.assertEqual(field.paid_episodes,0)
+
+    def test_four_replicate_guarded_allocations_match_raw_joint_draws(self):
+        from core.conditional_raw_reference import component_risk_allocations
+        from representation.vectorized_joint_function_risk import update_raw_observation
+        field=correlated_fields()[1];future=copy.deepcopy(field);label=-.28;eta_label=-3.7
+        score=update_raw_observation(future,0,label,eta_label,4)
+        action=dict(kind='guarded',primary=0,shortlist=[0,1,2],incumbent_position=1,budgets=[128,128,83])
+        actual,cost,d=component_risk_allocations(field,future,[action],label,score,terminal().protocol,
+            query=0,raw=True,order=64,power=12,seed=202610077,integrated_position=1,
+            replicates=4,eta_label=eta_label)
+        nodes=qmc.Sobol(7,scramble=True,seed=202610089).random_base2(19)
+        draws,weights,_=condition_positive_raw(field,future,0,[0,1,2],nodes,label,score,
+            replicates=4,eta_label=eta_label)
+        draws=draws.reshape(1,len(nodes),3,2)
+        expected,expected_cost=risk_terminal_statistics(draws,weights[None],1,action['budgets'],terminal().protocol)
+        np.testing.assert_allclose(actual[0],expected[0],atol=3e-4,rtol=0.)
+        self.assertLess(abs(cost[0]-expected_cost[0]),.05)
+        self.assertLess(abs(d['predictive_log_evidence_error']),1e-8)
+
     def test_exported_joint_snapshot_restores_all_policies_and_covariances(self):
         from performance.refine_historical_observed_prediction import field_from_snapshot
         original=correlated_fields()[1]

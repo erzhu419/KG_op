@@ -1,0 +1,31 @@
+{
+  "output": "paper_artifacts/historical_observed_batch_risk_v1",
+  "parent_plan": "performance/manifests/historical_predictive_extension_v1.json",
+  "marginal_plan": "performance/manifests/historical_component_bank_v1.json",
+  "query": 63,
+  "replicates": 4,
+  "remaining_calls": 356,
+  "fixed_action": 355,
+  "rules": [
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "maximum_estimated_cpu_seconds": 3600,
+  "cpu_reserves": {
+    "cached_analysis": 240,
+    "preparation_collection": 120,
+    "followup_assembly": 240
+  },
+  "maximum_worker_cpu_seconds": 480,
+  "maximum_live_workers": 8,
+  "selection": "One saved risk observation per predictive origin with maximum cached guarded gain over the fixed action,then its guarded action group. Frozen before new component integrals.",
+  "purpose": "Only the observed raw128-point resolution failure: reuse all initial rules and add256 independent/GH and512 continuous checks. Same phase budget including the initial failed-save work.",
+  "scope": "Original source prior,all8 identity scores,512/1024 positive components,covariance and365 actions. Four new paid samples deduct4 from360 leaving356; the completed n1 contract still has359. Two selected risk heads and their16 cached objective heads only; no full batch-KG or independent deployment claim.",
+  "refined_cases": [
+    {
+      "record": "source_n4_o4_h1_p13",
+      "kind": "raw"
+    }
+  ]
+}

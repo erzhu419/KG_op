@@ -1,0 +1,89 @@
+{
+  "result": {
+    "numerical_containment_passed": true,
+    "risk_observations": 32,
+    "objective_heads_per_origin": 16,
+    "actions": 365,
+    "remaining_calls": 356,
+    "initial_fixed_reference_totals": {
+      "raw": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 13658,
+        "record_action_candidates": 881,
+        "record_group_candidates": 363
+      },
+      "projected": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 13693,
+        "record_action_candidates": 883,
+        "record_group_candidates": 364
+      }
+    },
+    "final_totals": {
+      "raw": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1754,
+        "record_action_candidates": 137,
+        "record_group_candidates": 47
+      },
+      "projected": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1789,
+        "record_action_candidates": 139,
+        "record_group_candidates": 48
+      }
+    },
+    "maximum_raw_bound_difference": 6.367724132400054e-06,
+    "maximum_validated_reference_above_bound": 0.0
+  },
+  "resources": {
+    "screen_worker_cpu_seconds": 842.600583028,
+    "screen_worker_process_cpu_seconds": 849.2913638250001,
+    "query_reference_cpu_seconds": 12.772156322,
+    "final_collection_including_query_cpu_seconds": 16.477724813,
+    "successful_phase_process_cpu_seconds": 1613.368048966,
+    "maximum_scheduled_concurrency": 8,
+    "maximum_estimated_cpu_seconds": 3600,
+    "cumulative_estimated_cpu_seconds": 3314.418529436811,
+    "shared_reserves": 600,
+    "failed_initial_worker_count": 8,
+    "failed_initial_cpu_seconds": null,
+    "failed_initial_estimated_cost_seconds": 101.84389825119987
+  },
+  "replay": [
+    {
+      "stage": "pilot prerequisite",
+      "artifact": "../historical_observed_batch_risk_v1/execution_account.json"
+    },
+    {
+      "stage": "prepare",
+      "command": "python -m performance.screen_historical_observed_batch_risk prepare"
+    },
+    {
+      "stage": "workers",
+      "command": "python -m performance.screen_historical_observed_batch_risk run --identity IDENTITY --shard SHARD",
+      "identities": [
+        4,
+        5
+      ],
+      "shards": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "scheduler_commands": "worker_specs.jsonl"
+    },
+    {
+      "stage": "collect",
+      "command": "python -m performance.screen_historical_observed_batch_risk collect"
+    }
+  ],
+  "replay_environment": "Server source root with saved original n4 head and same-state joint-marginal banks;single-thread BLAS/OMP/PYTHONPATH=.;prepare cost gate precedes dispatch. Collection reuses admitted pilot references and caches the remaining direct-query budget references.",
+  "scope": "All365 n4 actions screened against independently integrated query and admitted pilot action references,conditional on the32 saved risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.",
+  "next_plan": "next_cost_plan.json",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

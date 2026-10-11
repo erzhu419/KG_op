@@ -26,7 +26,7 @@ def gaussian_feasibility_upper(mean, covariance, z):
     return probability.min(axis=-1)
 
 
-def condition_pair(mean, covariance, query, policy, eta, label):
+def condition_pair(mean, covariance, query, policy, eta, label, *, replicates=1):
     """Gaussian (g_policy,eta_policy) given query eta and the raw label."""
     mean, covariance = np.asarray(mean), np.asarray(covariance)
     q, e = 2*query, 2*query+1; target = [2*policy,2*policy+1]
@@ -35,19 +35,22 @@ def condition_pair(mean, covariance, query, policy, eta, label):
     before_mean = mean[...,target]+cross/variance[...,None]*(eta-mean[...,e])[...,None]
     before_covariance = covariance[...,target,:][...,target]-cross[..., :,None]*cross[...,None,:]/variance[...,None,None]
     query_mean = mean[...,q]+covariance[...,q,e]/variance*(eta-mean[...,e])
-    total = covariance[...,q,q]-covariance[...,q,e]**2/variance+np.exp(eta)
+    total = covariance[...,q,q]-covariance[...,q,e]**2/variance+np.exp(eta)/replicates
     observation_cross = covariance[...,target,q]-cross*covariance[...,e,q,None]/variance[...,None]
     after_mean = before_mean+observation_cross/total[...,None]*(label-query_mean)[...,None]
     after_covariance = before_covariance-observation_cross[..., :,None]*observation_cross[...,None,:]/total[...,None,None]
     return after_mean,after_covariance
 
 
-def raw_feasibility_upper(field, updated, query, policy, label, score, alpha, order):
+def raw_feasibility_upper(field, updated, query, policy, label, score, alpha, order,
+        *, replicates=1, eta_label=None):
     z, gh = roots_hermitenorm(order); gh /= np.sqrt(2*np.pi)
     active = np.flatnonzero(np.isfinite(updated.log_weights))
     components = np.repeat(active,order)
-    eta, logs = raw_eta_proposal(field,updated,query,components,np.tile(z,len(active)),label,score)
-    mean,covariance = condition_pair(field.means[components],field.covariances[components],query,policy,eta,label)
+    eta, logs = raw_eta_proposal(field,updated,query,components,np.tile(z,len(active)),label,score,
+        replicates=replicates,eta_label=eta_label)
+    mean,covariance = condition_pair(field.means[components],field.covariances[components],query,policy,eta,label,
+        replicates=replicates)
     log_weights = updated.log_weights[components]+np.tile(np.log(gh),len(active))+logs
     mass = logsumexp(log_weights)
     upper = np.exp(log_weights-mass) @ gaussian_feasibility_upper(mean,covariance,ndtri(1-alpha))

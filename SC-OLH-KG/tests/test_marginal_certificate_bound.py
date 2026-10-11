@@ -44,6 +44,17 @@ class MarginalCertificateBoundTests(unittest.TestCase):
             actual = conditional_safety_power(g,np.ones(3),budget,.1,.05/size)
             self.assertTrue(np.all(actual<=upper+1e-14))
 
+    def test_four_replicate_conditioning_matches_joint_gaussian_mean_noise(self):
+        mean = np.array([[.1,-2.,-.2,-1.]])
+        root = np.array([[.4,0,0,0],[.1,.5,0,0],[.2,-.1,.3,0],[.05,.2,-.1,.4]])
+        C = root@root.T;eta = np.array([-1.7]);label = -.3
+        m,c = condition_pair(mean,C[None],0,1,eta,label,replicates=4)
+        observed,target = [1,0],[2,3]
+        gain = C[np.ix_(target,observed)]@np.linalg.inv(C[np.ix_(observed,observed)]+
+            np.diag([0.,np.exp(eta[0])/4]))
+        np.testing.assert_allclose(m[0],mean[0,target]+gain@(np.array([eta[0],label])-mean[0,observed]),atol=1e-14)
+        np.testing.assert_allclose(c[0],C[np.ix_(target,target)]-gain@C[np.ix_(observed,target)],atol=1e-14)
+
     def test_branch_bound_contains_correlated_verifier_and_tightens_quality_only(self):
         rng = np.random.default_rng(19);powers = rng.uniform(size=(200,1,3))
         branches,_ = risk_branch_statistics(powers,np.ones((200,1)),1,[81,130,132],dict(comparison_budget=8))

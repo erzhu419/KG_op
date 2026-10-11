@@ -1,0 +1,29 @@
+{
+  "args": [
+    "python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t142403",
+    "--task-id",
+    "t142404",
+    "--task-id",
+    "t142405",
+    "--task-id",
+    "t142406",
+    "--task-id",
+    "t142407",
+    "--task-id",
+    "t142408",
+    "--task-id",
+    "t142409",
+    "--task-id",
+    "t142410"
+  ],
+  "stdout": "=== nodes ===\n  local       GPU0=1.26GB/8.00GB(free=6.51GB, mem:16%, util:0%)  cpu=11/16(wsl_load 2.3, host 32%, stale_node_probe_cache)  ram_free=16.3GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.3, stale_node_probe_cache)  ram_free=491.8GB\n  jtl110gpu2  GPU0=0.16GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1, stale_node_probe_cache)  ram_free=496.4GB\n  jtl311linux CPU-only  cpu=8/8(load 0.1, stale_node_probe_cache)  ram_free=3.02GB\n  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:5%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:46%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:39%)  cpu=59/64(load 5.0, stale_node_probe_cache)  ram_free=164.2GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=479.6GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.1GB\n  node001     CPU-only  cpu=94/96(load 1.9, stale_node_probe_cache, reserve 1)  ram_free=178.5GB\n  node002     CPU-only  cpu=46/96(load 49.6, stale_node_probe_cache, reserve 1)  ram_free=155.7GB\n  node003     CPU-only  cpu=0/96(load 100.4, stale_node_probe_cache, reserve 1)  ram_free=146.4GB\n  node004     CPU-only  cpu=93/96(load 3.0, stale_node_probe_cache, reserve 1)  ram_free=179.0GB\n  node005     CPU-only  cpu=93/96(load 2.9, stale_node_probe_cache, reserve 1)  ram_free=170.9GB\n  node006     CPU-only  cpu=93/96(load 2.9, stale_node_probe_cache, reserve 1)  ram_free=178.9GB\n=== dispatch === (1 queued)\n  [t142410] LAUNCH on node001:CPU  pid=193999  log=/tmp/sched_t142410.log\n",
+  "stderr": "",
+  "returncode": 0
+}

@@ -1,0 +1,86 @@
+{
+  "summary": "compact_summary.json",
+  "initial_summary": "compact_summary_initial.json",
+  "preparation": "preparation.json",
+  "refinement": "refinement_plan.json",
+  "tests": "test_results.json",
+  "contract": {
+    "query": 63,
+    "replicates": 4,
+    "initial_calls": 360,
+    "remaining_calls": 356,
+    "n1_remaining_calls_preserved": 359,
+    "action_count": 365,
+    "all_identity_scores": 8,
+    "positive_components": [
+      512,
+      1024
+    ],
+    "joint_covariance_preserved": true,
+    "source_prior_preserved": true,
+    "verifier": "original SD16"
+  },
+  "result": {
+    "local_risk_candidate_passed": true,
+    "record_kind_groups": 4,
+    "action_checks": 12,
+    "maximum_selected_comparison": 9.992178082729453e-05,
+    "initial_raw_resolution_failure": 0.00010047995194439885,
+    "refined_case": "source_n4_o4_h1_p13/raw",
+    "threshold": 0.0001
+  },
+  "resources": {
+    "successful_worker_cpu_seconds": 755.0513698049999,
+    "successful_process_cpu_seconds": 764.0766851410001,
+    "failed_initial_worker_count": 8,
+    "failed_initial_cpu_seconds": null,
+    "failed_initial_estimated_cpu_seconds": 101.84389825119987,
+    "failed_initial_resource_footer_missing": true,
+    "pilot_estimated_cpu_seconds_including_reserves": 1528.0531319712,
+    "same_phase_extended_estimated_cpu_seconds": 3314.418529436811,
+    "shared_reserves": 600,
+    "maximum_live_workers": 8,
+    "priority": "low",
+    "cpu_per_worker": 1
+  },
+  "replay": [
+    {
+      "stage": "prepare",
+      "command": "python -m performance.check_historical_observed_batch_risk prepare"
+    },
+    {
+      "stage": "initial workers",
+      "command": "python -m performance.check_historical_observed_batch_risk run --record RECORD --identity IDENTITY --kind KIND",
+      "records": [
+        "source_n4_o4_h1_p13",
+        "source_n4_o5_h1_p13"
+      ],
+      "identities": [
+        4,
+        5
+      ],
+      "kinds": [
+        "raw",
+        "projected"
+      ]
+    },
+    {
+      "stage": "refinement",
+      "command": "python -m performance.check_historical_observed_batch_risk run --record source_n4_o4_h1_p13 --identity IDENTITY --kind raw --plan performance/manifests/historical_observed_batch_risk_v1_resolution.json",
+      "identities": [
+        4,
+        5
+      ]
+    },
+    {
+      "stage": "collect",
+      "command": "python -m performance.check_historical_observed_batch_risk collect --plan performance/manifests/historical_observed_batch_risk_v1_resolution.json"
+    }
+  ],
+  "replay_environment": "Original saved head/marginal banks on server;source-root PYTHONPATH=.;OPENBLAS_NUM_THREADS=OMP_NUM_THREADS=1;prepare-cost admission required. Original and refinement scheduler commands in worker_specs.jsonl and refinement_worker_specs.jsonl. Historical failed saves are recorded,not intentionally reproduced.",
+  "remaining": "Full n4 adaptive outer convergence,batch/query choice,and independent decision gain. Fixed-action n4 observed-CDF/tower checks already passed at2048 observations and must be reused.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

@@ -127,15 +127,17 @@ def conditional_risk_action_statistics(eta, mean, covariance, position, nodes, a
 
 
 def component_risk_statistics(field, updated, action, label, score, protocol, *, query,
-        raw, order, power, seed, block_size=16, integrated_position=0):
+        raw, order, power, seed, block_size=16, integrated_position=0,
+        replicates=1, eta_label=None):
     statistics,costs,diagnostics=component_risk_allocations(field,updated,[action],label,score,protocol,
         query=query,raw=raw,order=order,power=power,seed=seed,block_size=block_size,
-        integrated_position=integrated_position)
+        integrated_position=integrated_position,replicates=replicates,eta_label=eta_label)
     return statistics[0],float(costs[0]),diagnostics
 
 
 def component_risk_allocations(field, updated, actions, label, score, protocol, *, query,
-        raw, order, power, seed, block_size=16, integrated_position=0):
+        raw, order, power, seed, block_size=16, integrated_position=0,
+        replicates=1, eta_label=None):
     """Enumerate all positive components, GH one eta and conditionally QMC the rest.
 
     Blocks accumulate unnormalized integrals before the single final raw
@@ -168,7 +170,8 @@ def component_risk_allocations(field, updated, actions, label, score, protocol, 
         if raw:
             eta,mean,covariance,weights,diagnostics=conditional_raw_coordinates(field,updated,
                 action['shortlist'],nodes,label,score,query=query,components=components,
-                log_node_weights=log_nodes,query_eta_normals=normals)
+                log_node_weights=log_nodes,query_eta_normals=normals,
+                replicates=replicates,eta_label=eta_label)
             block_mass=float(np.exp(diagnostics['predictive_log_evidence_error']))
             component_errors.extend(zip(diagnostics['component_indices'],diagnostics['component_log_evidence_errors']))
             position=np.arange(len(nodes))

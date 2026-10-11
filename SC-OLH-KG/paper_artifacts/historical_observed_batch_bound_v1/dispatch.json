@@ -1,0 +1,29 @@
+{
+  "args": [
+    "python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--task-id",
+    "t142419",
+    "--task-id",
+    "t142420",
+    "--task-id",
+    "t142421",
+    "--task-id",
+    "t142422",
+    "--task-id",
+    "t142423",
+    "--task-id",
+    "t142424",
+    "--task-id",
+    "t142425",
+    "--task-id",
+    "t142426",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20"
+  ],
+  "stdout": "=== nodes ===\n  local       GPU0=1.23GB/8.00GB(free=6.54GB, mem:15%, util:0%)  cpu=15/16(wsl_load 0.1, host 6%, stale_node_probe_cache)  ram_free=17.9GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.0, stale_node_probe_cache)  ram_free=491.8GB\n  jtl110gpu2  GPU0=0.16GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1, stale_node_probe_cache)  ram_free=496.4GB\n  jtl311linux CPU-only  cpu=8/8(load 0.2, stale_node_probe_cache)  ram_free=2.96GB\n  node007     GPU0=8.97GB/11.0GB(free=1.78GB, mem:82%, util:83%), GPU1=8.98GB/11.0GB(free=1.78GB, mem:82%, util:83%), GPU2=8.64GB/11.0GB(free=2.11GB, mem:79%, util:13%), GPU3=8.64GB/11.0GB(free=2.11GB, mem:79%, util:16%)  cpu=54/64(load 9.6, stale_node_probe_cache)  ram_free=151.2GB\n  jtl110cpu   DOWN (Command '['ssh', '-o', 'ConnectTimeout=15', '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=3', '-o', 'BatchMode=yes', '-o', 'ControlMaster=auto', '-o', 'ControlPath=~/.s | Windows probe timed out; check SSH reachability, PowerShell startup, and host CPU pressure.)\n  jtl110cpu2  DOWN (kex_exchange_identification: read: Connection reset by peer\nConnection reset by 1.14.255.221 port 23565)\n  node001     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=179.3GB\n  node002     CPU-only  cpu=43/96(load 53.4, stale_node_probe_cache, reserve 1)  ram_free=155.7GB\n  node003     CPU-only  cpu=0/96(load 98.7, stale_node_probe_cache, reserve 1)  ram_free=146.5GB\n  node004     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=180.1GB\n  node005     CPU-only  cpu=96/96(load 0.2, stale_node_probe_cache, reserve 1)  ram_free=179.6GB\n  node006     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=180.1GB\n=== dispatch === (8 queued)\n  [t142419] LAUNCH on node004:CPU  pid=200608  log=/tmp/sched_t142419.log\n  [t142420] LAUNCH on node006:CPU  pid=29636  log=/tmp/sched_t142420.log\n  [t142421] LAUNCH on node005:CPU  pid=380065  log=/tmp/sched_t142421.log\n  [t142422] LAUNCH on node001:CPU  pid=197939  log=/tmp/sched_t142422.log\n  [t142423] LAUNCH on node004:CPU  pid=200523  log=/tmp/sched_t142423.log\n  [t142424] LAUNCH on node006:CPU  pid=29730  log=/tmp/sched_t142424.log\n  [t142425] LAUNCH on node005:CPU  pid=380073  log=/tmp/sched_t142425.log\n  [t142426] LAUNCH on node001:CPU  pid=197988  log=/tmp/sched_t142426.log\n",
+  "stderr": "",
+  "returncode": 0
+}
