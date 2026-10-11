@@ -207,16 +207,19 @@ def collect(plan=PLAN):
                 'E8':[('E8','F8'),('E8','H8'),('E8','E9')],
                 'E9':[('E8','E9'),('E9','F9'),('E9','K9')]}[candidate]
             check=group_checks(b,parts,kind,pairs,1e-4)
-            stats=np.zeros_like(np.asarray(b['baseline'][kind]['statistics']));costs=np.zeros_like(np.asarray(b['baseline'][kind]['costs']))
-            for h,p in zip((4,5),parts):stats[h]=p['rows'][candidate]['statistics'];costs[h]=p['rows'][candidate]['costs']
-            baseline=mixed_values(b,np.asarray(b['baseline'][kind]['statistics']),np.asarray(b['baseline'][kind]['costs']),kind)
-            current=mixed_values(b,stats,costs,kind)
+            baseline_difference=None
+            if 'baseline' in b:
+                stats=np.zeros_like(np.asarray(b['baseline'][kind]['statistics']));costs=np.zeros_like(np.asarray(b['baseline'][kind]['costs']))
+                for h,p in zip((4,5),parts):stats[h]=p['rows'][candidate]['statistics'];costs[h]=p['rows'][candidate]['costs']
+                baseline=mixed_values(b,np.asarray(b['baseline'][kind]['statistics']),np.asarray(b['baseline'][kind]['costs']),kind)
+                current=mixed_values(b,stats,costs,kind)
+                baseline_difference=float(np.max(abs(current-baseline)))
             marginal_difference=max(m['raw64_128_difference'] for p in parts for m in p['marginal_bounds'])
             marginal_evidence=max(m['maximum_log_evidence_error'] for p in parts for m in p['marginal_bounds'])
             containment=max(p['maximum_branch_above_marginal_bound'] for p in parts)
             marginal_passed=max(marginal_difference,marginal_evidence,containment)<=1e-4
             groups.append(dict(record=row['record'],kind=kind,group=row['group'],checks=check,
-                cached_mixed_action_maximum_difference=float(np.max(abs(current-baseline))),
+                cached_mixed_action_maximum_difference=baseline_difference,
                 marginal_numerical_containment_passed=marginal_passed,maximum_raw64_128_bound_difference=marginal_difference,
                 maximum_branch_above_bound=containment,selected_candidate=candidate,
                 candidate_passed=check['passed'] and marginal_passed))

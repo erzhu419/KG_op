@@ -28,6 +28,22 @@ LABEL_MODES={'label-control':('label_control','resolution'),
 UPPER_MODES={'upper-decisions-pilot':'pilot','upper-decisions-full':'full'}
 
 
+def refresh_jobs(ids):
+    """Refresh these workers without waiting for a whole-cluster status scan."""
+    sys.path.insert(0,str(Path(CLI).parent))
+    import scheduler
+    snapshot=json.loads(QUEUE.read_text())
+    snapshot['tasks']=[t for t in snapshot['tasks'] if t['id'] in ids and t['status']=='running']
+    if not snapshot['tasks']:return
+    owned={t['id'] for t in snapshot['tasks']}
+    results=scheduler._running_probe_snapshot_deps().backend_batch_probe(snapshot)
+    diagnostics=scheduler._terminal_diagnostics_snapshot_outside_lock(results,owned,'KG:task-health')
+    with scheduler.state_lock(timeout_s=20,purpose='KG:task-health'):
+        state=scheduler.load_state()
+        scheduler._batch_check_running(state,probe_results=results,probed_task_ids=owned,terminal_diagnostics=diagnostics)
+        scheduler.save_state(state)
+
+
 def launch(stage,plan=None):
     manifest=Path(plan).name if plan else ('historical_upper_decision_refs_v1.json' if stage in UPPER_MODES else
         'historical_cdf_bank_v1.json' if stage=='cdf-bank-coarse' else 'historical_label_bank_v1.json' if stage in BANK_STAGES else
@@ -85,6 +101,7 @@ def launch(stage,plan=None):
         specs=[json.loads(line) for line in specs_path.read_text().splitlines()]
     while True:
         ids={j['id'] for j in jobs}
+        if stage=='observed-batch-risk' and ids:refresh_jobs(ids)
         state={t['id']:t for t in json.loads(QUEUE.read_text())['tasks'] if t.get('id') in ids}
         active=sum(t['status'] in ('queued','launching','running') for t in state.values())
         failures=[t['id'] for t in state.values() if t['status'] not in ('queued','launching','running','done')]

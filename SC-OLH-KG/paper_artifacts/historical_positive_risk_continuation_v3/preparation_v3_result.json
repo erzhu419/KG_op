@@ -1,0 +1,1371 @@
+{
+  "result": {
+    "complete": true,
+    "prepared": true,
+    "pricing_plan": "performance/manifests/historical_positive_risk_pricing_v3.json",
+    "pricing_manifest": {
+      "output": "paper_artifacts/historical_positive_risk_pricing_v3",
+      "outer_plan": "performance/manifests/historical_observed_batch_outer_v1.json",
+      "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json",
+      "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+      "pilot_plan": "performance/manifests/historical_observed_batch_risk_v1_resolution.json",
+      "joint_reference_plans": [
+        "performance/manifests/historical_positive_direct_references_v1.json",
+        "performance/manifests/historical_positive_risk_competition_v2.json"
+      ],
+      "policy_shards": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        [
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56
+        ],
+        [
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72
+        ]
+      ],
+      "switch_cdf": [
+        0.99871763214,
+        0.52914136648
+      ],
+      "maximum_estimated_cpu_seconds": 3600,
+      "maximum_worker_cpu_seconds": 420,
+      "maximum_live_workers": 8,
+      "pricing": "New,previously unchecked competitive groups after the prior phase passed. New600reserve;all prior phase costs remain in the campaign ledger. No failed comparison is moved to this phase.",
+      "scope": "All365 actions at the8 positive n4 observations,16objective heads. Add only passed joint references at these same observations;no full outer KG or independent gain claim.",
+      "native_direct_cost_plan": "paper_artifacts/historical_positive_risk_screen_v1/native_direct_cost_plan.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+      "native_reference_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+      "reference_phase_cost_plan": "paper_artifacts/historical_positive_risk_competition_v2/preparation.json",
+      "pricing_reference_plans": [
+        "performance/manifests/historical_observed_batch_risk_v1_resolution.json",
+        "performance/manifests/historical_observed_batch_risk71_v2.json",
+        "performance/manifests/historical_observed_batch_risk63_v3.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v4.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v5.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v6.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v7.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v8.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v9.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v10.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v11.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v12.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v13.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v14.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v15.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v16.json",
+        "performance/manifests/historical_positive_direct_references_v1.json",
+        "performance/manifests/historical_positive_risk_competition_v2.json"
+      ],
+      "closed_previous_phase_plan": "performance/manifests/historical_positive_risk_competition_v2.json"
+    },
+    "priced": {
+      "complete": true,
+      "source": "paper_artifacts/historical_positive_risk_pricing_v3/summary.json",
+      "remaining_groups": {
+        "raw": {
+          "71": 8,
+          "34": 8,
+          "107": 5
+        },
+        "projected": {
+          "71": 4,
+          "34": 8
+        }
+      },
+      "next_joint_cases": [
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10316437994544758,
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10308873916775341,
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10306498782421492,
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10293635383633859,
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09809422601111062,
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09792766925602348,
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        }
+      ],
+      "next_joint_jobs": [
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10316437994544758,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286
+        },
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10316437994544758,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10308873916775341,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10308873916775341,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10306498782421492,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10306498782421492,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10293635383633859,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10293635383633859,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09809422601111062,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 35.652587284999996,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 36.83092408699999,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.3948378984
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09809422601111062,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 57.91810186400001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 56.34105150399955,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 217.19068527679948
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09792766925602348,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 35.652587284999996,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 36.83092408699999,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.3948378984
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09792766925602348,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 57.91810186400001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 56.34105150399955,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 217.19068527679948
+        }
+      ],
+      "expected_cpu_seconds_including600reserves": 2707.8603768239986,
+      "cost_admitted": true,
+      "phase_base_estimated_cpu_seconds": 600.0,
+      "maximum_live_workers": 8,
+      "priority": "low",
+      "dispatched": false,
+      "cpu_seconds": 0.42760064200000025,
+      "preparation_required": "Use the registered n4 observation coordinates,complete365-action/objective-head tables and original joint marginals;one guarded or direct group per observation in this phase.",
+      "native_direct_cases": [],
+      "remaining_direct_cases": [
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "raw",
+          "group": 107,
+          "maximum_unresolved_upper_gap": 0.005319812892016218
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "group": 107,
+          "maximum_unresolved_upper_gap": 0.004261593558714694
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "raw",
+          "group": 107,
+          "maximum_unresolved_upper_gap": 0.0038975323537698836
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "group": 107,
+          "maximum_unresolved_upper_gap": 0.003038142046583703
+        },
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "raw",
+          "group": 107,
+          "maximum_unresolved_upper_gap": 0.000379396353824224
+        }
+      ],
+      "remaining": "Finite n4 conditional references,adaptive outer convergence,query/batch choice and independent deployment gain remain open."
+    },
+    "risk_plan": "performance/manifests/historical_positive_risk_competition_v3.json",
+    "risk_manifest": {
+      "output": "paper_artifacts/historical_positive_risk_competition_v3",
+      "screen_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+      "frozen_cost_plan": "paper_artifacts/historical_positive_risk_pricing_v3/next_cost_plan.json",
+      "followup_bound_plan": "performance/manifests/historical_positive_risk_screen_competition_v3.json",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ],
+      "seed": 202610077,
+      "maximum_worker_cpu_seconds": 420,
+      "maximum_estimated_cpu_seconds": 3600,
+      "maximum_live_workers": 8,
+      "refined_cases": [
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "projected",
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "projected",
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "projected",
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "projected",
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "candidate": "E8",
+          "rules": [
+            "E8",
+            "F8",
+            "H8",
+            "E9"
+          ]
+        }
+      ],
+      "pricing": "New,previously unchecked competitive groups after the prior phase passed. New600reserve;all prior phase costs remain in the campaign ledger. No failed comparison is moved to this phase.",
+      "scope": "Four competitive guarded groups at registered positive n4 observations;reuse original all8 scores,512/1024 components,joint covariance,365 actions,356remainingcalls andSD16. No adaptive outer KG estimate or independent confirmation.",
+      "previous_closed_phase_plan": "performance/manifests/historical_positive_risk_competition_v2.json"
+    },
+    "bound_plan": "performance/manifests/historical_positive_risk_screen_competition_v3.json",
+    "bound_manifest": {
+      "output": "paper_artifacts/historical_positive_risk_screen_competition_v3",
+      "outer_plan": "performance/manifests/historical_observed_batch_outer_v1.json",
+      "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json",
+      "full_bank_plan": "performance/manifests/historical_full_bank_development_v1.json",
+      "pilot_plan": "performance/manifests/historical_observed_batch_risk_v1_resolution.json",
+      "joint_reference_plans": [
+        "performance/manifests/historical_positive_direct_references_v1.json",
+        "performance/manifests/historical_positive_risk_competition_v2.json",
+        "performance/manifests/historical_positive_risk_competition_v3.json"
+      ],
+      "policy_shards": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        [
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56
+        ],
+        [
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72
+        ]
+      ],
+      "switch_cdf": [
+        0.99871763214,
+        0.52914136648
+      ],
+      "maximum_estimated_cpu_seconds": 3600,
+      "maximum_worker_cpu_seconds": 420,
+      "maximum_live_workers": 8,
+      "pricing": "Reuse completed all-action screen,query/native direct andraw direct references;add passed positive-grid guarded references. Collection and next pricing use the same phase600reserve.",
+      "scope": "All365 actions at the8 positive n4 observations,16objective heads. Add only passed joint references at these same observations;no full outer KG or independent gain claim.",
+      "native_direct_cost_plan": "paper_artifacts/historical_positive_risk_screen_v1/native_direct_cost_plan.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+      "native_reference_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+      "reference_phase_cost_plan": "paper_artifacts/historical_positive_risk_competition_v3/preparation.json",
+      "pricing_reference_plans": [
+        "performance/manifests/historical_observed_batch_risk_v1_resolution.json",
+        "performance/manifests/historical_observed_batch_risk71_v2.json",
+        "performance/manifests/historical_observed_batch_risk63_v3.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v4.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v5.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v6.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v7.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v8.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v9.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v10.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v11.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v12.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v13.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v14.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v15.json",
+        "performance/manifests/historical_observed_batch_risk_competition_v16.json",
+        "performance/manifests/historical_positive_direct_references_v1.json",
+        "performance/manifests/historical_positive_risk_competition_v2.json",
+        "performance/manifests/historical_positive_risk_competition_v3.json"
+      ],
+      "continued_phase_cost_plan": "paper_artifacts/historical_positive_risk_competition_v3/preparation.json"
+    },
+    "preparation": {
+      "complete": true,
+      "selected": [
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "origin": 4,
+          "position": 2017,
+          "group": 71,
+          "action_indices": [
+            71,
+            144,
+            217
+          ],
+          "label": 0.04955562990530734,
+          "eta_label": -6.838367605504644,
+          "cdf": [
+            0.9994700467495825,
+            0.5364965608938995
+          ],
+          "outer_weight": 3.297358520281295e-05
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "origin": 4,
+          "position": 1984,
+          "group": 71,
+          "action_indices": [
+            71,
+            144,
+            217
+          ],
+          "label": 0.0190462145092861,
+          "eta_label": -6.91120111804969,
+          "cdf": [
+            0.9972287511536616,
+            0.5121751463317122
+          ],
+          "outer_weight": 7.577959144410339e-05
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "origin": 5,
+          "position": 1985,
+          "group": 71,
+          "action_indices": [
+            71,
+            144,
+            217
+          ],
+          "label": 0.017263782314728412,
+          "eta_label": -6.910168407087224,
+          "cdf": [
+            0.9972287511536616,
+            0.5364965608938995
+          ],
+          "outer_weight": 7.559985063001573e-05
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "origin": 4,
+          "position": 1985,
+          "group": 71,
+          "action_indices": [
+            71,
+            144,
+            217
+          ],
+          "label": 0.019239076310195807,
+          "eta_label": -6.838367605504644,
+          "cdf": [
+            0.9972287511536616,
+            0.5364965608938995
+          ],
+          "outer_weight": 7.559985063001573e-05
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "origin": 5,
+          "position": 1984,
+          "group": 71,
+          "action_indices": [
+            71,
+            144,
+            217
+          ],
+          "label": 0.01715079171150561,
+          "eta_label": -6.975816336774211,
+          "cdf": [
+            0.9972287511536616,
+            0.5121751463317122
+          ],
+          "outer_weight": 7.577959144410339e-05
+        }
+      ],
+      "jobs": [
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10316437994544758,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286,
+          "shard": 0
+        },
+        {
+          "record": "positive_n4_o4_h1_p2017",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10316437994544758,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002,
+          "shard": 0
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10308873916775341,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286,
+          "shard": 1
+        },
+        {
+          "record": "positive_n4_o4_h1_p1984",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10308873916775341,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002,
+          "shard": 1
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10306498782421492,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286,
+          "shard": 2
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10306498782421492,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002,
+          "shard": 2
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10293635383633859,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 15.747339226000001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 36.497507156,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 37.734661297,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.872216286,
+          "shard": 3
+        },
+        {
+          "record": "positive_n4_o4_h1_p1985",
+          "kind": "projected",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.10293635383633859,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 31.519335325,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 62.247180385,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 60.79757924200001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 225.30011633240002,
+          "shard": 3
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09809422601111062,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 35.652587284999996,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 36.83092408699999,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.3948378984,
+          "shard": 4
+        },
+        {
+          "record": "positive_n4_o5_h1_p1984",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09809422601111062,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 57.91810186400001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 56.34105150399955,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 217.19068527679948,
+          "shard": 4
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09792766925602348,
+          "identity": 4,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 16.422760105000002,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 35.652587284999996,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 36.83092408699999,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 128.3948378984,
+          "shard": 2
+        },
+        {
+          "record": "positive_n4_o5_h1_p1985",
+          "kind": "raw",
+          "group": 71,
+          "maximum_unresolved_upper_gap": 0.09792766925602348,
+          "identity": 5,
+          "candidate": "E8",
+          "rules": {
+            "E8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "F8": {
+              "cpu": 32.533208848,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "H8": {
+              "cpu": 57.91810186400001,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            },
+            "E9": {
+              "cpu": 56.34105150399955,
+              "basis": "Maximum measured n4 same group",
+              "compared_with": "Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker"
+            }
+          },
+          "estimated_cpu_seconds": 217.19068527679948,
+          "shard": 2
+        }
+      ],
+      "action_count": 365,
+      "remaining_calls": 356,
+      "source_components": {
+        "4": 512,
+        "5": 1024
+      },
+      "maximum_head_score_error": 0.0,
+      "all_identity_likelihoods": 8,
+      "estimated_cpu_seconds_including_reserves": 2707.860376823999,
+      "expected_cpu_seconds_including600reserves": 2707.860376823999,
+      "parent_screen_phase_estimated_cpu_seconds": 600.0,
+      "original_screen600reserve_retained": true,
+      "estimated_cost_admitted": true,
+      "cpu_seconds": 4.5637753000000005,
+      "new_physical_calls": 0,
+      "new_source_fits": 0,
+      "new_verifier_calls": 0,
+      "full_posterior_restorations": 0,
+      "independent_confirmation": false
+    }
+  },
+  "resource": {
+    "process_cpu_seconds": 6.887687886,
+    "peak_rss_mb": 151.7109375
+  },
+  "id": "t143137",
+  "node": "node006"
+}

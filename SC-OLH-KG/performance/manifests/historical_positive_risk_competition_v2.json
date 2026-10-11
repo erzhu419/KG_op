@@ -1,0 +1,64 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_competition_v2",
+  "screen_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+  "frozen_cost_plan": "paper_artifacts/historical_positive_risk_screen_with_direct_v1/next_cost_plan.json",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_screen_competition_v2.json",
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "seed": 202610077,
+  "maximum_worker_cpu_seconds": 420,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_live_workers": 8,
+  "refined_cases": [
+    {
+      "record": "positive_n4_o5_h1_p2016",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    },
+    {
+      "record": "positive_n4_o4_h1_p2016",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    },
+    {
+      "record": "positive_n4_o5_h1_p2017",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    },
+    {
+      "record": "positive_n4_o5_h1_p1984",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    }
+  ],
+  "pricing": "Continue the original screen and direct-reference phase. Retain all previous estimates and its shared600reserve;matched n4/n1 timers,20percent margin and2setup seconds perworker.",
+  "scope": "Four competitive guarded groups at registered positive n4 observations;reuse original all8 scores,512/1024 components,joint covariance,365 actions,356remainingcalls andSD16. No adaptive outer KG estimate or independent confirmation."
+}
