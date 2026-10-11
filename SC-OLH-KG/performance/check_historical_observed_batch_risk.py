@@ -21,6 +21,11 @@ from representation.vectorized_joint_function_risk import update_raw_observation
 PLAN = 'performance/manifests/historical_observed_batch_risk_v1.json'
 
 
+def selected_rule(spec,record,kind):
+    case=next((r for r in spec.get('refined_cases',[]) if r['record']==record and r['kind']==kind),None)
+    return case.get('candidate','E8') if case else 'E7'
+
+
 def prepare(plan=PLAN):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
     signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)
@@ -122,7 +127,11 @@ def prepare_frozen(plan):
         compressed_write(out/'marginals'/(record+'.json.gz'),bundle)
         selected.append(dict(record=record,origin=origin,position=position,group=gid,action_indices=ix,
             label=row['label'],eta_label=row['eta_label'],marginal_source=str((marginal_base/'marginals'/f'{gid:03d}.json.gz').relative_to(ROOT))))
-    jobs=[dict(r,shard=next(i for i,s in enumerate(selected) if s['record']==r['record'])) for r in frozen['next_joint_jobs']]
+    jobs=[];occurrences={}
+    for r in frozen['next_joint_jobs']:
+        key=(r['record'],r['identity'],r['kind']);occurrence=occurrences.get(key,0)
+        shard=next(i for i,s in enumerate(selected) if s['record']==r['record'])+occurrence*len(selected)
+        jobs.append(dict(r,shard=shard));occurrences[key]=occurrence+1
     total=600.+sum(r['estimated_cpu_seconds'] for r in jobs)
     assert abs(total-frozen['expected_cpu_seconds_including600reserves'])<=1e-8
     result=dict(complete=True,selected=selected,jobs=jobs,action_count=365,remaining_calls=356,
@@ -147,9 +156,11 @@ def run(record,identity,kind,plan=PLAN):
     path.parent.mkdir(parents=True,exist_ok=True)
     previous=read(str(path)) if path.exists() else {}
     rows.update(previous.get('rows',{}))
-    if dict(record=record,kind=kind) in spec.get('refined_cases',[]) and previous.get('complete') and not set(spec['rules']).issubset(rows):
+    case=next((r for r in spec.get('refined_cases',[]) if r['record']==record and r['kind']==kind),{})
+    rules=case.get('rules',spec['rules'])
+    if selected_rule(spec,record,kind)!='E7' and previous.get('complete') and not set(rules).issubset(rows):
         save(path.with_name(path.stem+'_before_resolution.json'),previous)
-    for rule in spec['rules']:
+    for rule in rules:
         if rule in rows:continue
         order,power,offset=RULES[rule];tick=time.process_time()
         s,c,d=component_risk_allocations(before,after,b['actions'],b['label'],score,b['protocol'],query=0,
@@ -170,7 +181,7 @@ def run(record,identity,kind,plan=PLAN):
         marginals.append(dict(policy=policy,feasibility_upper=upper,raw64_128_difference=abs(upper-low),
             maximum_log_evidence_error=max(abs(ld['log_evidence_error']),abs(d['log_evidence_error']))))
     violation=0.
-    candidate='E8' if dict(record=record,kind=kind) in spec.get('refined_cases',[]) else 'E7'
+    candidate=selected_rule(spec,record,kind)
     for action,values in zip(b['actions'],rows[candidate]['statistics']):
         caps=np.asarray([certificate_upper(m['feasibility_upper'],n,len(action['shortlist']),b['protocol']) for m,n in zip(marginals,action['budgets'])])
         caps=np.r_[caps,min(caps[0],caps[action['incumbent_position']])]
@@ -190,8 +201,10 @@ def collect(plan=PLAN):
         for kind in dict.fromkeys(j['kind'] for j in prep['jobs'] if j['record']==row['record']):
             parts=[read(str(out/'parts'/row['record']/f'{h}_{kind}.json')) for h in (4,5)]
             assert all(p['complete'] for p in parts);cpu+=sum(p.get('cumulative_cpu_seconds',p['cpu_seconds']) for p in parts)
-            candidate='E8' if dict(record=row['record'],kind=kind) in spec.get('refined_cases',[]) else 'E7'
-            pairs=[('E8','F8'),('E8','H8'),('E8','E9')] if candidate=='E8' else [('E7','E8'),('E7','F7'),('E7','G7')]
+            candidate=selected_rule(spec,row['record'],kind)
+            pairs={'E7':[('E7','E8'),('E7','F7'),('E7','G7')],
+                'E8':[('E8','F8'),('E8','H8'),('E8','E9')],
+                'E9':[('E8','E9'),('E9','F9'),('E9','K9')]}[candidate]
             check=group_checks(b,parts,kind,pairs,1e-4)
             stats=np.zeros_like(np.asarray(b['baseline'][kind]['statistics']));costs=np.zeros_like(np.asarray(b['baseline'][kind]['costs']))
             for h,p in zip((4,5),parts):stats[h]=p['rows'][candidate]['statistics'];costs[h]=p['rows'][candidate]['costs']

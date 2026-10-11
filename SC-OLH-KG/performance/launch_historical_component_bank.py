@@ -538,6 +538,8 @@ def continue_observed_batch_risk(plan):
                         target=root/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(json.dumps(data,indent=2)+'\n')
                 status['current_phase']=prepared['risk_plan'];status['state']='running';path.write_text(json.dumps(status,indent=2)+'\n')
             current=status['current_phase'];phase=json.loads((ROOT/current).read_text());phase_out=ROOT/phase['output']
+            status.update(state='running',current_phase_expected_cpu_seconds=json.loads((phase_out/'preparation.json').read_text())['estimated_cpu_seconds_including_reserves'])
+            path.write_text(json.dumps(status,indent=2)+'\n')
             launch('observed-batch-risk',current)
             summary=collect_remote('observed-batch-risk',phase_out,current)
             bound=phase['followup_bound_plan'];bound_out=ROOT/json.loads((ROOT/bound).read_text())['output']

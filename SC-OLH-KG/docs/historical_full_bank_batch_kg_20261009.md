@@ -448,3 +448,7 @@ native57／64／69组的独立差分对照产生近零负概率，最小−2.23e
 剩余74个guarded组—观测检查已接入连续调度入口：每批从真实未排除上界选取至多6个组合，复用历史n4联合边际与完整动作／目标头表，完成后自动回填、重新筛查和按实测计价；每阶段含600秒预留预计须不超过3600秒，精度或成本门失败时保留当前阶段并停止派发后续新积分。首批2个63组／4个34组组合、12分片已启动，准备似然误差0，冻结估计2859.06秒；全过程最多8个低优先级单核，允许node001–node006。只回拉小JSON／日志，大银行留服务器。[接续计划](../performance/manifests/historical_observed_batch_remaining_v4.json)、[启动记录](../paper_artifacts/historical_observed_batch_remaining_v4/launch_snapshot.json)。
 
 局限：此接续限于原32条n4风险观测及每来源16条目标头；4个raw直接组检查、完整自适应外层KG、查询／批次选择及独立部署收益仍开放。原source prior、全部身份分数／正分量、协方差、动作、预算及验证器保持，无新增物理、拟合或验证调用，确认块未读取。
+
+首批v4初始6组合中4个通过，两个raw34组合的256点独立序列差为1.12587e−4／1.13980e−4；提高GH阶数差仅2.96e−10／2.24e−10，256→512点差2.73986e−5／2.93484e−5。控制器按原门停止后续派发，问题集中在连续随机序列分辨率。沿用历史bank-resolution的比较组合，把这两个候选升为E9，保留E8/E9并补F9/K9；其他四个组合不重算。四个新增worker与原12个worker共用本阶段600秒预留，累计预计3486.51／3600 CPU秒。[诊断](../paper_artifacts/historical_observed_batch_risk_competition_v4/refinement_diagnosis.json)、[同阶段定价](../paper_artifacts/historical_observed_batch_risk_competition_v4/refinement_cost_plan.json)。后续同组、同模型定价沿用已通过的分辨率，每条新观测仍须通过原1e−4门。
+
+细化已完成，6组合／18动作检查全部通过，最大规则差3.69802e−5；两条512点候选分别为3.03252e−5／3.69802e−5。16个worker均成功，累计工作计时2157.08 CPU秒，包含原比较与细化工作。全动作回填的包含检查通过，待补raw／native组合41／37→38／34，其中guarded剩68个、raw直接组剩4个。[运行账](../paper_artifacts/historical_observed_batch_risk_competition_v4/execution_account.json)。v5已自动启动6组合，raw34沿用512点；估计含预留2948.39秒，继续最多8个低优先级单核。[下一批定价](../paper_artifacts/historical_observed_batch_bound_competition_v4/next_cost_plan.json)。下一步完成有限n4参考后，接续历史自适应外层与查询／批次选择；此处的精度通过仍是固定开发状态的数值证据。

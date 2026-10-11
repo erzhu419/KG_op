@@ -10,7 +10,9 @@
     "E8",
     "F8",
     "H8",
-    "E9"
+    "E9",
+    "F9",
+    "K9"
   ],
   "maximum_estimated_cpu_seconds": 3600,
   "cpu_reserves": {
@@ -21,7 +23,7 @@
   "maximum_worker_cpu_seconds": 480,
   "maximum_live_workers": 8,
   "selection": "Largest unresolved guarded action upper gaps,one group per observation within this frozen phase.",
-  "purpose": "Reuse original n4 observations and complete action/objective-head tables on the saved joint marginals;E8 compared against F8,H8,E9.",
+  "purpose": "Preserve initial E8 reference checks;only two raw group34 independent-sequence failures promote to E9 checked against E8,F9,K9 at unchanged1e-4. Original and refinement jobs share the same3600CPU phase and600reserves.",
   "scope": "Original source prior,all8 identity scores,512/1024 positive components andcovariance,365 actions and356 remaining calls. Selected finite n4 risk observations;full adaptive outer integration,query/batch choice andindependent gain remain open.",
   "refined_cases": [
     {
@@ -34,11 +36,13 @@
     },
     {
       "record": "source_n4_o4_h1_p13",
-      "kind": "raw"
+      "kind": "raw",
+      "candidate": "E9"
     },
     {
       "record": "source_n4_o5_h1_p13",
-      "kind": "raw"
+      "kind": "raw",
+      "candidate": "E9"
     },
     {
       "record": "source_n4_o4_h1_p13",
@@ -50,6 +54,6 @@
     }
   ],
   "pilot_plan": "performance/manifests/historical_observed_batch_risk_v1_resolution.json",
-  "frozen_cost_plan": "paper_artifacts/historical_observed_batch_bound63_v3/next_cost_plan.json",
+  "frozen_cost_plan": "paper_artifacts/historical_observed_batch_risk_competition_v4/refinement_cost_plan.json",
   "followup_bound_plan": "performance/manifests/historical_observed_batch_bound_competition_v4.json"
 }

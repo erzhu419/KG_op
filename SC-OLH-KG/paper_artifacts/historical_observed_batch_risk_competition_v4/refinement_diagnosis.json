@@ -1,0 +1,97 @@
+{
+  "complete": true,
+  "initial_worker_combinations": 6,
+  "initial_passed": 4,
+  "failed": [
+    {
+      "record": "source_n4_o4_h1_p13",
+      "kind": "raw",
+      "group": 34,
+      "selected_candidate": "E8",
+      "comparisons": [
+        {
+          "low": "E8",
+          "high": "F8",
+          "maximum_difference": 0.00011258725548890514,
+          "action_differences": [
+            8.52634116252915e-05,
+            0.00011258725548890514,
+            0.00011184771142702665
+          ]
+        },
+        {
+          "low": "E8",
+          "high": "H8",
+          "maximum_difference": 2.956416222943403e-10,
+          "action_differences": [
+            2.956416222943403e-10,
+            1.991676268353615e-10,
+            1.9825047159471865e-10
+          ]
+        },
+        {
+          "low": "E8",
+          "high": "E9",
+          "maximum_difference": 2.739860037392905e-05,
+          "action_differences": [
+            1.5418170320580238e-05,
+            2.739860037392905e-05,
+            2.715273833842069e-05
+          ]
+        }
+      ]
+    },
+    {
+      "record": "source_n4_o5_h1_p13",
+      "kind": "raw",
+      "group": 34,
+      "selected_candidate": "E8",
+      "comparisons": [
+        {
+          "low": "E8",
+          "high": "F8",
+          "maximum_difference": 0.00011397997817358396,
+          "action_differences": [
+            8.992642043187393e-05,
+            0.00011397997817358396,
+            0.00011319580432334053
+          ]
+        },
+        {
+          "low": "E8",
+          "high": "H8",
+          "maximum_difference": 2.242074859104548e-10,
+          "action_differences": [
+            8.513217908401316e-11,
+            2.242074859104548e-10,
+            2.2332852234185907e-10
+          ]
+        },
+        {
+          "low": "E8",
+          "high": "E9",
+          "maximum_difference": 2.9348442249332862e-05,
+          "action_differences": [
+            1.7858524095581974e-05,
+            2.9348442249332862e-05,
+            2.9068995100856032e-05
+          ]
+        }
+      ]
+    }
+  ],
+  "diagnosis": "Only the independent E8/F8 continuous sequence comparison failed. GH doubling and E8/E9 continuous resolution already passed. Original coarse failures remain recorded;the two raw candidates promote to E9 with E8/F9/K9 checks.",
+  "maximum_action_difference": 0.0001,
+  "original_estimated_cpu_seconds_including_reserves": 2859.0636338915997,
+  "refined_estimated_cpu_seconds_including_reserves": 3486.5077797859994,
+  "maximum_estimated_cpu_seconds": 3600,
+  "shared_reserves": 600,
+  "added_workers": 4,
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "scope": "Finite n4 risk observations and16 cached objective heads;no adaptive outer admission,query/batch ranking or independent deployment gain."
+}
