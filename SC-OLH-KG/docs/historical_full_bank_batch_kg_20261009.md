@@ -508,4 +508,8 @@ v4已完成16个worker／8组／24个动作检查，全部通过原1e−4门，�
 
 v5的16个worker／8组／24个动作检查全部通过原1e−4门，最大规则差3.50377e−5；记录进程2548.89 CPU秒、峰值RSS420.23 MB，原定价3539.76／3600秒。o5p0新增6次推荐由355改为209，均有raw参考；实际原生推荐raw改善0.00538570，已计值raw最优保持0.00539052，投影改善0.00537743。raw／native加权未决范围降至0.00089122／0.00087861，较v4缩小8.12%／17.95%，剩42／44个组合。[完成账](../paper_artifacts/historical_positive_risk_full_grid_competition_v5/completion.json)。raw主体仍为0，native主体降至4.03642e−6，主要缺口仍在尾部；o4p9／p13排除71后，上界由34接替，因此本批收益范围收缩有限。[定位结果](../paper_artifacts/historical_positive_risk_full_grid_competition_v5/frontier_diagnosis.json)。
 
-已适配历史8点的连续调度脚本，接续当前32点粗网格：每阶段保留一次600秒预留、最多3600秒估计及8个低优先级单核，原参考通过并归账后才开启新阶段，完成账同步服务器供下一次准备读取；如当前预算仍容纳追加参考，则停在同阶段准备入口。首批v6已准备5组／10片，预计3039.72／3600秒，使用已有E8和raw34的E9／F9／K9规则。[接续入口](../paper_artifacts/historical_positive_risk_full_grid_continuation_v1/continue_when_ready.py)。下一步由该入口连续缩小有限粗网格的动作范围，闭合后再检验外层两轴。局限：连续接续只覆盖已登记粗网格；完整外层KG、查询／批次选择与独立部署收益仍待验证，确认块未读取。
+已适配历史8点的连续调度脚本，接续当前32点粗网格：每阶段保留一次600秒预留、最多3600秒估计及8个低优先级单核，原参考通过并归账后才开启新阶段，完成账同步服务器供下一次准备读取；当前预算仍容纳参考时沿用历史refs编号继续同阶段追加。首批v6已准备5组／10片，预计3039.72／3600秒，使用已有E8和raw34的E9／F9／K9规则。[接续入口](../paper_artifacts/historical_positive_risk_full_grid_continuation_v1/continue_when_ready.py)。下一步由该入口连续缩小有限粗网格的动作范围，闭合后再检验外层两轴。局限：连续接续只覆盖已登记粗网格；完整外层KG、查询／批次选择与独立部署收益仍待验证，确认块未读取。
+
+v6首批10片及同阶段native34两片全部完成，6组／18个动作检查通过原1e−4门，最大规则差5.06867e−5；记录进程1747.86 CPU秒、峰值RSS656.94 MB。追加沿用原600秒预留，累计预计3039.72→3441.96／3600秒，阶段估计只更新一次。实际原生推荐raw改善保持0.00538570，全部有raw参考；raw／native加权未决范围降至0.00077101／0.00064437，较v5缩小13.49%／26.66%，剩39／41个组合。[完成账](../paper_artifacts/historical_positive_risk_full_grid_competition_v6/completion.json)。
+
+同阶段追加、归账及下一阶段准备已完整执行，v7自动进入调度，预计3358.97／3600 CPU秒。新增prepare-continued只组装既有冻结计划和原联合边际，沿用历史refs目录与prepare_frozen；后续重复追加归入所属阶段，保留全部已完成阶段账。下一步继续排除尾部34／71竞争动作，再做两条外层轴的收敛检查；原meta-prior、身份似然、协方差、预算、动作和验证器保持。[v7定价](../paper_artifacts/historical_positive_risk_full_grid_pricing_v7/next_cost_plan.json)。

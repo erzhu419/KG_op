@@ -111,6 +111,36 @@ def prepare_next(plan):
     print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
 
 
+def prepare_continued(plan):
+    """Reuse the historical refs layout inside the current phase budget."""
+    current=read(plan);screen=read(current['output']+'/compact_summary.json')
+    previous=current['joint_reference_plans'][-1];risk=copy.deepcopy(read(previous))
+    assert screen['numerical_containment_passed']
+    assert read(risk['output']+'/compact_summary.json')['local_risk_candidate_passed']
+    frozen=read(current['output']+'/next_cost_plan.json');assert frozen['cost_admitted']
+    assert frozen['phase_base_estimated_cpu_seconds']==read(current['continued_phase_cost_plan'])['estimated_cpu_seconds_including_reserves']
+    initial=(ROOT/current['phase_completion']).parent.name
+    initial_plan='performance/manifests/'+initial+'.json'
+    number=len(current['joint_reference_plans'])-current['joint_reference_plans'].index(initial_plan)
+    risk_path=f'performance/manifests/{initial}_refs_v{number}.json'
+    bound_name=initial.replace('_competition_','_screen_competition_')+f'_refs_v{number}'
+    bound_path=f'performance/manifests/{bound_name}.json'
+    risk.update(output=f'paper_artifacts/{initial}_refs_v{number}',
+        frozen_cost_plan=current['output']+'/next_cost_plan.json',followup_bound_plan=bound_path,
+        refined_cases=[dict(record=r['record'],kind=r['kind'],candidate=r['candidate'],rules=r['rules'])
+            for r in frozen['next_joint_cases']])
+    bound=copy.deepcopy(current)
+    bound.update(output=f'paper_artifacts/{bound_name}',
+        joint_reference_plans=current['joint_reference_plans']+[risk_path],
+        pricing_reference_plans=current['pricing_reference_plans']+[risk_path],
+        reference_phase_cost_plan=risk['output']+'/preparation.json',
+        continued_phase_cost_plan=risk['output']+'/preparation.json')
+    save(ROOT/risk_path,risk);save(ROOT/bound_path,bound);prepared=prepare_frozen(risk_path)
+    result=dict(complete=True,prepared=True,pricing_plan=plan,pricing_manifest=current,priced=frozen,
+        risk_plan=risk_path,risk_manifest=risk,bound_plan=bound_path,bound_manifest=bound,preparation=prepared)
+    print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
+
+
 def prepare_frozen(plan):
     """Reuse registered positive-grid observations for frozen joint references."""
     from performance.refine_historical_observed_prediction import field_from_snapshot
@@ -242,12 +272,13 @@ def collect(plan=PLAN):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','prepare-frozen','prepare-next','prepare-incumbents','collect']);p.add_argument('--plan',default=PLAN)
+    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','prepare-frozen','prepare-next','prepare-continued','prepare-incumbents','collect']);p.add_argument('--plan',default=PLAN)
     a=p.parse_args()
     try:
         if a.stage=='prepare':prepare(a.plan)
         elif a.stage=='prepare-frozen':prepare_frozen(a.plan)
         elif a.stage=='prepare-next':prepare_next(a.plan)
+        elif a.stage=='prepare-continued':prepare_continued(a.plan)
         elif a.stage=='prepare-incumbents':prepare_incumbents(a.plan)
         else:collect(a.plan)
     finally:

@@ -32,6 +32,7 @@ status=dict(state='running',source_bound_plan=source,completed_phases=[closed],
 if (out/'status.json').exists():
     status=json.loads((out/'status.json').read_text())
     source=status['source_bound_plan']
+    if status['state']=='same_phase_references_ready':status.pop('current_phase',None)
 
 
 def save_status():
@@ -55,8 +56,8 @@ try:
     status.pop('error',None)
     while True:
         if 'current_phase' in status:
-            number=int(Path(status['current_phase']).stem.rsplit('_v',1)[1])
-            result=json.loads((out/f'preparation_v{number}_result.json').read_text())['result']
+            tag=Path(status['current_phase']).stem.split('_competition_',1)[1]
+            result=json.loads((out/f'preparation_{tag}_result.json').read_text())['result']
         else:
             previous=json.loads((ROOT/source).read_text())
             screened=json.loads((ROOT/previous['output']/'compact_summary.json').read_text())
@@ -64,25 +65,32 @@ try:
             status['remaining_totals']=screened['totals'];save_status()
             if not any(r['record_group_candidates'] for r in screened['totals'].values()):
                 status['state']='conditional_actions_closed';break
-            number=int(Path(previous['joint_reference_plans'][-1]).stem.rsplit('_v',1)[1])+1
+            initial_name=Path(previous['phase_completion']).parent.name
+            initial_plan='performance/manifests/'+initial_name+'.json'
+            continuing='same_phase_cost_plan' in status
+            if continuing:
+                suffix=len(previous['joint_reference_plans'])-previous['joint_reference_plans'].index(initial_plan)
+                tag=initial_name.split('_competition_',1)[1]+f'_refs_v{suffix}'
+            else:tag='v'+str(int(initial_name.rsplit('_v',1)[1])+1)
+            mode='prepare-continued' if continuing else 'prepare-next'
             if status.get('state')=='preparing':
                 tid=status['preparation_id']
             else:
                 cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,
-                    '-u','-m','performance.positive_historical_direct_references','prepare-next','--plan',source])
-                args=[sys.executable,CLI,'submit','--description',f'KG full-grid n4 phase{number} matched preparation',
-                    '--cmd',cmd,'--cwd',DEPLOY,'--signature',f'KG_op/positive_risk_full_grid_competition_v{number}/prepare',
+                    '-u','-m','performance.positive_historical_direct_references',mode,'--plan',source])
+                args=[sys.executable,CLI,'submit','--description',f'KG full-grid n4 {tag} matched preparation',
+                    '--cmd',cmd,'--cwd',DEPLOY,'--signature',f'KG_op/positive_risk_full_grid_competition_{tag}/prepare',
                     '--cpu','1','--ram-mb','2000','--vram','0','--priority','low','--project','KG_op',
                     '--skip-launch-staging','--env-spec','none']
                 for node in range(1,7):args+=['--allowed-node',f'node{node:03d}']
                 p=subprocess.run(args,text=True,capture_output=True)
-                (out/f'preparation_v{number}_spec.json').write_text(json.dumps(dict(args=args,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),indent=2)+'\n')
+                (out/f'preparation_{tag}_spec.json').write_text(json.dumps(dict(args=args,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),indent=2)+'\n')
                 if p.returncode:raise RuntimeError(p.stderr or p.stdout)
                 tid=re.search(r'submitted (t\d+)',p.stdout).group(1)
                 status.update(state='preparing',preparation_id=tid);save_status()
                 args=[sys.executable,CLI,'dispatch','--no-bulk-window','--lock-timeout','20','--task-id',tid]
                 p=subprocess.run(args,text=True,capture_output=True)
-                (out/f'preparation_v{number}_dispatch.json').write_text(json.dumps(dict(args=args,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),indent=2)+'\n')
+                (out/f'preparation_{tag}_dispatch.json').write_text(json.dumps(dict(args=args,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr),indent=2)+'\n')
                 if p.returncode:raise RuntimeError(p.stderr or p.stdout)
             while True:
                 refresh_jobs({tid})
@@ -94,7 +102,7 @@ try:
             rc,body,err=scheduler.run_on(task['node'],shlex.join([PYTHON,'-c',code]),timeout=25,check=False)
             if rc:raise RuntimeError(err or body)
             prepared=json.loads(body);prepared.update(id=tid,node=task['node']);result=prepared['result']
-            (out/f'preparation_v{number}_result.json').write_text(json.dumps(prepared,indent=2)+'\n')
+            (out/f'preparation_{tag}_result.json').write_text(json.dumps(prepared,indent=2)+'\n')
             files={result['pricing_plan']:result['pricing_manifest'],result['pricing_manifest']['output']+'/next_cost_plan.json':result['priced']}
             if result['prepared']:
                 files.update({result['risk_plan']:result['risk_manifest'],result['bound_plan']:result['bound_manifest'],
@@ -103,6 +111,8 @@ try:
                 for root in (ROOT,Path(DEPLOY)):
                     target=root/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(json.dumps(data,indent=2)+'\n')
             if not result['prepared']:status['state']=result['state'];break
+            if continuing:
+                (ROOT/result['risk_manifest']['output']/'preparation_resources.json').write_text(json.dumps(prepared['resource'],indent=2)+'\n')
         plan=result['risk_plan'];phase=result['risk_manifest'];phase_out=ROOT/phase['output']
         phase_status=dict(state='running',registered_workers=len(result['preparation']['jobs']),maximum_live_workers=8,
             cumulative_phase_estimated_cpu_seconds=result['preparation']['estimated_cpu_seconds_including_reserves'],
@@ -110,7 +120,9 @@ try:
         phase_status_path=phase_out/'status.json'
         phase_status_path.write_text(json.dumps(phase_status,indent=2)+'\n')
         status.update(state='running',current_phase=plan)
-        status['phase_estimates'][plan]=result['preparation']['estimated_cpu_seconds_including_reserves'];save_status()
+        initial_name=Path(result['bound_manifest']['phase_completion']).parent.name
+        initial_plan='performance/manifests/'+initial_name+'.json'
+        status['phase_estimates'][initial_plan]=result['preparation']['estimated_cpu_seconds_including_reserves'];save_status()
         launch('observed-batch-risk',plan)
         summary=collect_remote('observed-batch-risk',phase_out,plan)
         status['continuation_worker_cpu_seconds']+=summary['successful_worker_cpu_seconds']
@@ -129,13 +141,15 @@ try:
         if priced['cost_admitted']:
             status.update(state='same_phase_references_ready',source_bound_plan=source,
                 remaining_totals=screened['totals'],same_phase_cost_plan=result['bound_manifest']['output']+'/next_cost_plan.json')
-            break
+            status.pop('current_phase');save_status();continue
         subprocess.run([sys.executable,str(out/'close_phase.py'),'--plan',source],cwd=ROOT,check=True)
-        completed=json.loads((phase_out/'completion.json').read_text())
+        initial_phase=json.loads((ROOT/initial_plan).read_text())
+        completed=json.loads((ROOT/initial_phase['output']/'completion.json').read_text())
         assert completed['state']=='phase_complete'
-        publish_completion(phase)
+        publish_completion(initial_phase)
         status['recorded_process_cpu_seconds']+=completed['total_recorded_process_cpu_seconds']
-        status['completed_phases'].append(plan);status.update(source_bound_plan=source,remaining_totals=screened['totals'])
+        status['completed_phases'].append(initial_plan);status.update(source_bound_plan=source,remaining_totals=screened['totals'])
+        status.pop('same_phase_cost_plan',None)
         status.pop('current_phase');save_status()
         print('POSITIVE_PHASE_DONE '+json.dumps(status),flush=True)
 except Exception as error:

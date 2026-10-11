@@ -1,0 +1,37 @@
+{
+  "state": "running",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_full_grid_screen_competition_v6_refs_v1.json",
+  "completed_phases": [
+    "performance/manifests/historical_positive_risk_full_grid_competition_v5.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v6.json"
+  ],
+  "phase_estimates": {
+    "performance/manifests/historical_positive_risk_full_grid_competition_v5.json": 3539.7597990439995,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v6.json": 3441.963333042,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v7.json": 3358.9732843988
+  },
+  "continuation_worker_cpu_seconds": 4223.969384359,
+  "recorded_process_cpu_seconds": 4296.7559462300005,
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "historical_controller_source": "paper_artifacts/historical_positive_risk_continuation_v3/continue_when_ready.py",
+  "scope": "Continuation from closed full-grid v5. Earlier phase costs remain linked in its completion ledger;outer-axis refinement is separate.",
+  "total_phase_estimated_cpu_seconds": 10340.6964164848,
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 1738,
+      "record_action_candidates": 109,
+      "record_group_candidates": 39
+    },
+    "projected": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 1698,
+      "record_action_candidates": 123,
+      "record_group_candidates": 41
+    }
+  },
+  "preparation_id": "t143935",
+  "current_phase": "performance/manifests/historical_positive_risk_full_grid_competition_v7.json"
+}
