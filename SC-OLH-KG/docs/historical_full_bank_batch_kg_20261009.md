@@ -440,3 +440,11 @@ native57／64／69组的独立差分对照产生近零负概率，最小−2.23e
 12个积分worker全部成功，报告的准备、积分及两次汇总进程合计1545.13 CPU秒；阶段冻结估计含共同600秒预留2624.65／3600秒，并发最高8个低优先级单核。下一批按尚未排除动作的最大收益上界选择6个63组组合，复用原联合边际与完整n4动作／目标头表，准备似然误差为0，预计含预留2633.25秒。现已进入同一限并发调度入口，12个分片逐次补位，完成后自动回填通过精度门的参考并重算全动作筛查。[冻结计划](../performance/manifests/historical_observed_batch_risk63_v3.json)、[启动记录](../paper_artifacts/historical_observed_batch_risk63_v3/launch_snapshot.json)。
 
 局限：当前仍是开发状态query63的有限n4条件数值证据，完整自适应外层KG、查询／批次选择及独立部署收益尚未完成。原source prior、8身份分数、512／1024正分量、协方差、356预算及SD16验证器保持；无新增物理、拟合或验证调用，确认块未读取，大银行仍留服务器。
+
+## 63组首批完成与剩余guarded参考连续接续（2026-10-11）
+
+63组首批6组合／18个动作检查全部通过原1e−4门，最大规则差1.25616e−5；12个worker成功，报告的积分、准备及缓存汇总进程合计1668.53 CPU秒，原阶段估计含600秒预留2633.25／3600秒。自动回填后，raw／native待补组合44／40→41／37，包含检查通过，未新增边际worker或重算已验证native直接参考。[运行账](../paper_artifacts/historical_observed_batch_risk63_v3/execution_account.json)、[筛查与定价](../paper_artifacts/historical_observed_batch_bound63_v3/execution_account.json)。摘要排序曾包含已验证动作，现改为仅按实际未验证动作排序；64条记录的排名检查通过，候选总数及既有定价选择未变。配置中的策略／坐标数量文字也已更正为3；数值边际和动作表正确。预算340个guarded证书调用加16个比较预留、direct最多356个调用符合原合同。
+
+剩余74个guarded组—观测检查已接入连续调度入口：每批从真实未排除上界选取至多6个组合，复用历史n4联合边际与完整动作／目标头表，完成后自动回填、重新筛查和按实测计价；每阶段含600秒预留预计须不超过3600秒，精度或成本门失败时保留当前阶段并停止派发后续新积分。首批2个63组／4个34组组合、12分片已启动，准备似然误差0，冻结估计2859.06秒；全过程最多8个低优先级单核，允许node001–node006。只回拉小JSON／日志，大银行留服务器。[接续计划](../performance/manifests/historical_observed_batch_remaining_v4.json)、[启动记录](../paper_artifacts/historical_observed_batch_remaining_v4/launch_snapshot.json)。
+
+局限：此接续限于原32条n4风险观测及每来源16条目标头；4个raw直接组检查、完整自适应外层KG、查询／批次选择及独立部署收益仍开放。原source prior、全部身份分数／正分量、协方差、动作、预算及验证器保持，无新增物理、拟合或验证调用，确认块未读取。

@@ -1,0 +1,129 @@
+{
+  "snapshot_unix_time": 1791712845.2817156,
+  "state": "running",
+  "campaign_plan": "performance/manifests/historical_observed_batch_remaining_v4.json",
+  "first_phase": "performance/manifests/historical_observed_batch_risk_competition_v4.json",
+  "first_phase_expected_cpu_seconds_including600reserves": 2859.0636338915997,
+  "first_phase_head_score_error": 0.0,
+  "jobs_at_snapshot": [
+    {
+      "id": "t142724",
+      "record": "source_n4_o5_h1_p3",
+      "group": 63,
+      "identity": 4,
+      "kind": "projected",
+      "status": "done",
+      "node": "node005"
+    },
+    {
+      "id": "t142725",
+      "record": "source_n4_o5_h1_p3",
+      "group": 63,
+      "identity": 5,
+      "kind": "projected",
+      "status": "done",
+      "node": "node001"
+    },
+    {
+      "id": "t142726",
+      "record": "source_n4_o5_h1_p3",
+      "group": 63,
+      "identity": 4,
+      "kind": "raw",
+      "status": "done",
+      "node": "node004"
+    },
+    {
+      "id": "t142727",
+      "record": "source_n4_o5_h1_p3",
+      "group": 63,
+      "identity": 5,
+      "kind": "raw",
+      "status": "done",
+      "node": "node006"
+    },
+    {
+      "id": "t142728",
+      "record": "source_n4_o4_h1_p13",
+      "group": 34,
+      "identity": 4,
+      "kind": "raw",
+      "status": "done",
+      "node": "node004"
+    },
+    {
+      "id": "t142729",
+      "record": "source_n4_o4_h1_p13",
+      "group": 34,
+      "identity": 5,
+      "kind": "raw",
+      "status": "done",
+      "node": "node005"
+    },
+    {
+      "id": "t142730",
+      "record": "source_n4_o5_h1_p13",
+      "group": 34,
+      "identity": 4,
+      "kind": "raw",
+      "status": "done",
+      "node": "node001"
+    },
+    {
+      "id": "t142731",
+      "record": "source_n4_o5_h1_p13",
+      "group": 34,
+      "identity": 5,
+      "kind": "raw",
+      "status": "done",
+      "node": "node006"
+    },
+    {
+      "id": "t142732",
+      "record": "source_n4_o4_h1_p13",
+      "group": 34,
+      "identity": 4,
+      "kind": "projected",
+      "status": "done",
+      "node": "node004"
+    },
+    {
+      "id": "t142733",
+      "record": "source_n4_o4_h1_p13",
+      "group": 34,
+      "identity": 5,
+      "kind": "projected",
+      "status": "running",
+      "node": "node001"
+    },
+    {
+      "id": "t142734",
+      "record": "source_n4_o5_h1_p13",
+      "group": 34,
+      "identity": 4,
+      "kind": "projected",
+      "status": "done",
+      "node": "node005"
+    },
+    {
+      "id": "t142758",
+      "record": "source_n4_o5_h1_p13",
+      "group": 34,
+      "identity": 5,
+      "kind": "projected",
+      "status": "running",
+      "node": "node004"
+    }
+  ],
+  "frozen_first_phase_jobs": 12,
+  "submitted": 12,
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "cpu_per_worker": 1,
+  "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -u -m performance.launch_historical_component_bank continue-observed-batch-risk --plan performance/manifests/historical_observed_batch_remaining_v4.json",
+  "continuation": "Reassemble,price andprepare subsequent decision-relevant guarded phases automatically. Precision and cost holds stop new integrals within the current phase;remaining direct/outer/query/independent gaps stay open.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

@@ -1,0 +1,78 @@
+{
+  "result": {
+    "numerical_containment_passed": true,
+    "previous_totals": {
+      "raw": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1724,
+        "record_action_candidates": 128,
+        "record_group_candidates": 44
+      },
+      "projected": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1605,
+        "record_action_candidates": 120,
+        "record_group_candidates": 40
+      }
+    },
+    "final_totals": {
+      "raw": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1580,
+        "record_action_candidates": 119,
+        "record_group_candidates": 41
+      },
+      "projected": {
+        "compared_action_head_pairs": 186880,
+        "overlapping_action_head_pairs": 1461,
+        "record_action_candidates": 111,
+        "record_group_candidates": 37
+      }
+    },
+    "remaining_groups": {
+      "raw": {
+        "63": 27,
+        "34": 10,
+        "144": 2,
+        "107": 2
+      },
+      "projected": {
+        "63": 27,
+        "34": 10
+      }
+    },
+    "maximum_validated_reference_above_bound": 0.0,
+    "ranking_fix_preserved_totals": true,
+    "maximum_unresolved_upper_gap": 0.10213949114307685
+  },
+  "resources": {
+    "new_marginal_workers": 0,
+    "native_direct_reference_cpu_seconds": 0.0,
+    "native_direct_reference_reused": true,
+    "current_phase_estimated_cpu_seconds_including600reserves": 2633.2531424796002,
+    "reported_compute_phase_cpu_seconds": 1668.531872412,
+    "all_cached_replays_charged_to_same_phase_reserves": true
+  },
+  "corrections": {
+    "closest_records": "Only unresolved actions participate in maximum-gap and closest ranking;prior displayed ranking retained in compact_summary_before_ranking_fix.json. Frozen job selection was already based on unresolved candidate_upper_minus_reference.",
+    "coordinate_description": "The original group63 shortlist has three policies and three distinct joint coordinates;the saved numerical fields and action tables were correct. Corrected descriptive text in the manifest and copied pricing metadata."
+  },
+  "replay": [
+    {
+      "stage": "collect",
+      "command": "python -m performance.screen_historical_observed_batch_risk collect --plan performance/manifests/historical_observed_batch_bound63_v3.json"
+    },
+    {
+      "stage": "price",
+      "command": "python -m performance.screen_historical_observed_batch_risk next-plan --plan performance/manifests/historical_observed_batch_bound63_v3.json"
+    }
+  ],
+  "next_plan": "next_cost_plan.json",
+  "next_expected_cpu_seconds_including600reserves": 2859.0636338915997,
+  "continuation_manifest": "performance/manifests/historical_observed_batch_remaining_v4.json",
+  "scope": "All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the32 saved risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

@@ -135,7 +135,8 @@ def collect_remote(stage,out,plan=None):
     out.mkdir(parents=True,exist_ok=True)
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.screen_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-bound' else
+    worker=(['performance.screen_historical_observed_batch_risk','next-plan','--plan',plan] if stage=='observed-batch-next-plan' else
+        ['performance.screen_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-bound' else
         ['performance.check_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-risk' else
         ['performance.validate_historical_label_groups','collect','--stage','resolution',
         '--plan','performance/manifests/historical_body_reference_pilot_v1.json'] if stage=='body-reference-pilot' else
@@ -157,7 +158,7 @@ def collect_remote(stage,out,plan=None):
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name='compact_summary.json' if stage in ('observed-batch-risk','observed-batch-bound') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
+    name='next_cost_plan.json' if stage=='observed-batch-next-plan' else 'compact_summary.json' if stage in ('observed-batch-risk','observed-batch-bound') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
         'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
@@ -165,7 +166,7 @@ def collect_remote(stage,out,plan=None):
         'bank-tail':'bank_tail_summary.json',
         'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
-    relative=(str((out/name).relative_to(ROOT)) if stage in ('observed-batch-risk','observed-batch-bound') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
+    relative=(str((out/name).relative_to(ROOT)) if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-next-plan') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
         'paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name)
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
@@ -506,16 +507,64 @@ def continue_risk_competition(plan):
     return status
 
 
+def continue_observed_batch_risk(plan):
+    """Continue the finite n4 guarded overlaps after each admitted assembly."""
+    sys.path.insert(0,str(Path(CLI).parent))
+    import scheduler
+    spec=json.loads((ROOT/plan).read_text());out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True);path=out/'status.json'
+    status=json.loads(path.read_text()) if path.exists() else dict(state='ready',completed_phases=[],
+        source_bound_plan=spec['initial_bound_plan'],reported_worker_cpu_seconds=0.,maximum_live_workers=8,
+        full_predictive_integration_admitted=False,independent_confirmation=False)
+    if status['state'] in ('conditional_actions_closed','guarded_complete_with_direct_pending'):return status
+    try:
+        while True:
+            if 'current_phase' not in status:
+                source=status['source_bound_plan'];source_spec=json.loads((ROOT/source).read_text())
+                priced=json.loads((ROOT/source_spec['output']/'next_cost_plan.json').read_text())
+                if not priced['next_joint_jobs'] or not priced['cost_admitted']:
+                    guarded=sum(sum(v for k,v in groups.items() if int(k)<73) for groups in priced['remaining_groups'].values())
+                    status['state']='cost_hold' if guarded else 'guarded_complete_with_direct_pending' if priced['remaining_direct_cases'] else 'conditional_actions_closed'
+                    break
+                command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
+                    'PYTHONPATH=.',PYTHON,'-u','-m','performance.screen_historical_observed_batch_risk','prepare-next','--plan',source])
+                rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
+                (out/'preparation_latest.log').write_text(body+err)
+                if rc:raise RuntimeError(err or body)
+                prepared=json.loads([line[len('SCHEDULEURM_DONE '):] for line in body.splitlines() if line.startswith('SCHEDULEURM_DONE ')][-1])
+                files={prepared['risk_plan']:prepared['risk_manifest'],prepared['bound_plan']:prepared['bound_manifest'],
+                    prepared['risk_manifest']['output']+'/preparation.json':prepared['preparation']}
+                for name,data in files.items():
+                    for root in (ROOT,Path(DEPLOY)):
+                        target=root/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(json.dumps(data,indent=2)+'\n')
+                status['current_phase']=prepared['risk_plan'];status['state']='running';path.write_text(json.dumps(status,indent=2)+'\n')
+            current=status['current_phase'];phase=json.loads((ROOT/current).read_text());phase_out=ROOT/phase['output']
+            launch('observed-batch-risk',current)
+            summary=collect_remote('observed-batch-risk',phase_out,current)
+            bound=phase['followup_bound_plan'];bound_out=ROOT/json.loads((ROOT/bound).read_text())['output']
+            screened=collect_remote('observed-batch-bound',bound_out,bound)
+            status.update(remaining_totals=screened['totals'],current_phase_expected_cpu_seconds=summary['estimated_cpu_seconds_including_reserves'])
+            if not summary['local_risk_candidate_passed'] or not screened['numerical_containment_passed']:
+                status['state']='precision_hold';break
+            collect_remote('observed-batch-next-plan',bound_out,bound)
+            status['completed_phases'].append(current);status['reported_worker_cpu_seconds']+=summary['successful_worker_cpu_seconds']
+            status.update(source_bound_plan=bound);status.pop('current_phase')
+            path.write_text(json.dumps(status,indent=2)+'\n');print('OBSERVED_BATCH_PHASE_DONE '+json.dumps(status),flush=True)
+    except Exception as error:
+        status.update(state='failed',error=str(error));path.write_text(json.dumps(status,indent=2)+'\n');raise
+    path.write_text(json.dumps(status,indent=2)+'\n');print('OBSERVED_BATCH_CAMPAIGN_DONE '+json.dumps(status),flush=True)
+    return status
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
         'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
         'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer','continue-label-bank',
-        'continue-risk-competition','observed-batch-risk']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
-    parser.add_argument('--plan',help='Manifest path for risk-competition-batch')
+        'continue-risk-competition','observed-batch-risk','continue-observed-batch-risk']+list(PILOT_MODES)+list(TRANSFER_STAGES)+list(BANK_STAGES)+sorted(LABEL_MODES)+list(UPPER_MODES))
+    parser.add_argument('--plan',help='Manifest path for finite risk phases or campaigns')
     args=parser.parse_args()
-    if args.plan and args.stage not in ('risk-competition-batch','continue-risk-competition','observed-batch-risk'):
-        parser.error('--plan requires risk-competition-batch,continue-risk-competition or observed-batch-risk')
+    if args.plan and args.stage not in ('risk-competition-batch','continue-risk-competition','observed-batch-risk','continue-observed-batch-risk'):
+        parser.error('--plan requires a finite risk phase or campaign stage')
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
     elif args.stage=='continue-bank-resolution':continue_resolution_pilot()
@@ -526,6 +575,9 @@ if __name__=='__main__':
     elif args.stage=='continue-label-bank':continue_label_bank()
     elif args.stage=='continue-risk-competition':continue_risk_competition(
         args.plan or 'performance/manifests/historical_risk_competition_remaining_v1.json')
+    elif args.stage=='continue-observed-batch-risk':
+        if not args.plan:parser.error('continue-observed-batch-risk requires --plan')
+        continue_observed_batch_risk(args.plan)
     elif args.stage=='observed-batch-risk':
         if not args.plan:parser.error('observed-batch-risk requires --plan')
         spec=json.loads((ROOT/args.plan).read_text())

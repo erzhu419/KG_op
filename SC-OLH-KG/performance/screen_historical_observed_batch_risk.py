@@ -5,6 +5,7 @@ import json
 import resource
 import signal
 import time
+from collections import Counter
 
 import numpy as np
 from scipy.special import logsumexp
@@ -16,7 +17,7 @@ from performance.diagnose_historical_component_guarded import compressed_read, c
 from performance.diagnose_historical_predictive_tower import query_direct_value
 from performance.refine_historical_achievable_precision import assemble_case, original_heads
 from performance.refine_historical_observed_prediction import field_from_snapshot
-from performance.validate_historical_component_bank import action_groups
+from performance.validate_historical_component_bank import RULES, action_groups
 from representation.vectorized_joint_function_risk import update_raw_observation
 
 PLAN = 'performance/manifests/historical_observed_batch_bound_v1.json'
@@ -214,13 +215,14 @@ def collect(plan=PLAN):
                     fixed=np.maximum(fixed,value.max(axis=-1))
                 overlap=upper+2e-4>=fixed[:,None];overlap[:,list(references)]=False
                 action_overlap=overlap.any(axis=0);gap=np.max(upper-fixed[:,None],axis=0)
+                candidates=np.flatnonzero(action_overlap)
                 records.append(dict(record=r['record'],kind=kind,overlapping_action_head_pairs=int(overlap.sum()),
                     validated_reference_actions=list(references),
-                    candidate_actions=np.flatnonzero(action_overlap).tolist(),
-                    candidate_upper_minus_reference={str(a):float(gap[a]) for a in np.flatnonzero(action_overlap)},
+                    candidate_actions=candidates.tolist(),
+                    candidate_upper_minus_reference={str(a):float(gap[a]) for a in candidates},
                     candidate_groups=[g['group'] for g in groups if action_overlap[g['action_indices']].any()],
-                    maximum_upper_minus_fixed=float(gap.max()),
-                    closest=[dict(action=int(a),upper_minus_fixed=float(gap[a])) for a in np.argsort(-gap)[:6] if a!=355]))
+                    maximum_upper_minus_fixed=float(gap[candidates].max()) if len(candidates) else 0.,
+                    closest=[dict(action=int(a),upper_minus_fixed=float(gap[a])) for a in sorted(candidates,key=lambda a:-gap[a])[:6]]))
     result=dict(complete=True,numerical_containment_passed=max(difference,evidence,fixed_error,containment)<=1e-4,
         maximum_raw64_128_bound_difference=difference,maximum_raw_log_evidence_error=evidence,
         maximum_fixed_reference_error=fixed_error,maximum_validated_reference_above_bound=containment,
@@ -247,11 +249,87 @@ def collect(plan=PLAN):
     print('SCHEDULEURM_DONE '+json.dumps(compact),flush=True)
 
 
+def next_plan(plan=PLAN):
+    start=time.process_time();spec=read(plan);out=ROOT/spec['output'];summary=read(str(out/'summary.json'))
+    assert summary['numerical_containment_passed']
+    base=ROOT/read(spec['bank_plan'])['output'] if 'bank_plan' in spec else out
+    groups=action_groups(compressed_read(base/'context.json.gz')['actions']);remaining=[];measured=[]
+    for row in summary['records']:
+        for gid in row['candidate_groups']:
+            gaps=[row['candidate_upper_minus_reference'][str(a)] for a in groups[gid]['action_indices']
+                if str(a) in row['candidate_upper_minus_reference']]
+            remaining.append(dict(record=row['record'],kind=row['kind'],group=gid,maximum_unresolved_upper_gap=max(gaps)))
+    remaining.sort(key=lambda r:(-r['maximum_unresolved_upper_gap'],r['record'],r['kind'],r['group']))
+    for source in spec.get('joint_reference_plans',[spec['pilot_plan']]):
+        prior=read(source);preparation=read(prior['output']+'/preparation.json')
+        for row in preparation['selected']:
+            for h in (4,5):
+                for kind in ('raw','projected'):
+                    path=ROOT/prior['output']/'parts'/row['record']/f'{h}_{kind}.json'
+                    if path.exists():measured.append(dict(group=row['group'],identity=h,kind=kind,rows=read(str(path))['rows']))
+    selected=[];jobs=[];record_groups={};total=600.
+    for row in remaining:
+        gid,kind=row['group'],row['kind']
+        if groups[gid]['kind']!='guarded' or row['record'] in record_groups and record_groups[row['record']]!=gid:continue
+        priced=[]
+        for h in (4,5):
+            historical=read(str(ROOT/'paper_artifacts/historical_component_bank_v1/parts'/f'{gid:03d}_{h}_{kind}.json'))['rows']
+            same=[r for r in measured if r['identity']==h and r['kind']==kind and r['group']==gid]
+            cohort=same or [r for r in measured if r['identity']==h and r['kind']==kind]
+            units={}
+            for rule in ('E8','F8','H8','E9'):
+                order,power,_=RULES[rule]
+                actual=[v['cpu_seconds'] for r in cohort for name,v in r['rows'].items()
+                    if name in RULES and RULES[name][:2]==(order,power)]
+                scaled=[v['cpu_seconds']*2**(power-RULES[name][1]) for name,v in historical.items()
+                    if name in RULES and RULES[name][0]==order and RULES[name][1]<=power]
+                units[rule]=dict(cpu=max(actual+scaled),basis='Maximum measured n4 same group' if same else 'Maximum measured n4 same guarded action kind',
+                    compared_with='Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker')
+            priced.append(dict(**row,identity=h,rules=units,estimated_cpu_seconds=1.2*sum(v['cpu'] for v in units.values())+2.))
+        estimate=sum(j['estimated_cpu_seconds'] for j in priced)
+        if total+estimate>spec['maximum_estimated_cpu_seconds']:break
+        selected.append(row);jobs.extend(priced);record_groups[row['record']]=gid;total+=estimate
+        if len(selected)==6:break
+    result=dict(complete=True,source=spec['output']+'/summary.json',remaining_groups={k:dict(Counter(r['group'] for r in remaining if r['kind']==k)) for k in ('raw','projected')},
+        next_joint_cases=selected,next_joint_jobs=jobs,expected_cpu_seconds_including600reserves=total,cost_admitted=bool(jobs) and total<=spec['maximum_estimated_cpu_seconds'],
+        maximum_live_workers=8,priority='low',dispatched=False,cpu_seconds=time.process_time()-start,
+        preparation_required='Reuse prepare-frozen with the saved n4 heads,full365-action table and original joint marginals;one guarded group per observation in this phase.',
+        native_direct_cases=[],remaining_direct_cases=[r for r in remaining if groups[r['group']]['kind']=='direct'],
+        remaining='Finite n4 conditional references,adaptive outer convergence,query/batch choice and independent deployment gain remain open.')
+    save(out/'next_cost_plan.json',result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
+
+
+def prepare_next(plan):
+    from performance.check_historical_observed_batch_risk import prepare_frozen
+    current=read(plan);cost_path=current['output']+'/next_cost_plan.json';priced=read(cost_path)
+    assert priced['cost_admitted']
+    previous=current['joint_reference_plans'][-1];risk=read(previous)
+    number=int((ROOT/previous).stem.rsplit('_v',1)[1])+1
+    risk_path=f'performance/manifests/historical_observed_batch_risk_competition_v{number}.json'
+    bound_path=f'performance/manifests/historical_observed_batch_bound_competition_v{number}.json'
+    risk.update(output=f'paper_artifacts/historical_observed_batch_risk_competition_v{number}',
+        frozen_cost_plan=cost_path,followup_bound_plan=bound_path,
+        refined_cases=[dict(record=r['record'],kind=r['kind']) for r in priced['next_joint_cases']],
+        selection='Largest unresolved guarded action upper gaps,one group per observation within this frozen phase.',
+        purpose='Reuse original n4 observations and complete action/objective-head tables on the saved joint marginals;E8 compared against F8,H8,E9.',
+        scope='Original source prior,all8 identity scores,512/1024 positive components andcovariance,365 actions and356 remaining calls. Selected finite n4 risk observations;full adaptive outer integration,query/batch choice andindependent gain remain open.')
+    bound=copy.deepcopy(current);bound['joint_reference_plans'].append(risk_path)
+    bound.update(output=f'paper_artifacts/historical_observed_batch_bound_competition_v{number}',
+        reference_phase_cost_plan=cost_path,
+        scope='Reuse the completed n4 bound bank and admitted direct references;add passed frozen joint references. All365 actions and356remainingcalls;no new marginal workers or physical calls.',
+        pricing='Assembly and next pricing consume this joint-reference phase600 CPU second reserves;reuse admitted query and native direct references.')
+    save(ROOT/risk_path,risk);save(ROOT/bound_path,bound);prepared=prepare_frozen(risk_path)
+    result=dict(complete=True,risk_plan=risk_path,risk_manifest=risk,bound_plan=bound_path,bound_manifest=bound,preparation=prepared)
+    print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
+
+
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','run','collect']);p.add_argument('--plan',default=PLAN)
+    p=argparse.ArgumentParser();p.add_argument('stage',choices=['prepare','run','collect','next-plan','prepare-next']);p.add_argument('--plan',default=PLAN)
     p.add_argument('--identity',type=int,choices=(4,5));p.add_argument('--shard',type=int);a=p.parse_args()
     try:
         if a.stage=='prepare':prepare(a.plan)
         elif a.stage=='collect':collect(a.plan)
+        elif a.stage=='next-plan':next_plan(a.plan)
+        elif a.stage=='prepare-next':prepare_next(a.plan)
         else:run(a.identity,a.shard,a.plan)
     finally:print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)

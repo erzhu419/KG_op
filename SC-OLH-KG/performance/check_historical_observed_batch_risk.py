@@ -187,7 +187,7 @@ def collect(plan=PLAN):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];prep=read(spec['output']+'/preparation.json');groups=[];cpu=0.
     for row in prep['selected']:
         b=compressed_read(out/'marginals'/(row['record']+'.json.gz'))
-        for kind in ('raw','projected'):
+        for kind in dict.fromkeys(j['kind'] for j in prep['jobs'] if j['record']==row['record']):
             parts=[read(str(out/'parts'/row['record']/f'{h}_{kind}.json')) for h in (4,5)]
             assert all(p['complete'] for p in parts);cpu+=sum(p.get('cumulative_cpu_seconds',p['cpu_seconds']) for p in parts)
             candidate='E8' if dict(record=row['record'],kind=kind) in spec.get('refined_cases',[]) else 'E7'
