@@ -1,0 +1,19 @@
+{
+  "complete": true,
+  "estimated_phase_cpu_seconds": 1080,
+  "maximum_estimated_phase_cpu_seconds": 3600,
+  "measured_worker_and_collection_process_cpu_seconds": 19.842715292999998,
+  "new_marginal_rule_evaluations": 240,
+  "new_joint_terminal_integrations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "downloaded_summary_bytes": 25222,
+  "maximum_live_workers": 2,
+  "scope": "8 opened body labels and5 policy marginals;all512/1024 components and source identity likelihoods retained. Raw query-eta64/128 checks and containment against validated query and anchor references passed. Conditional pilot exclusion only. Large tables stayed remote.",
+  "replay": [
+    "python -m performance.probe_historical_certificate_bound run --identity 4",
+    "python -m performance.probe_historical_certificate_bound run --identity 5",
+    "python -m performance.probe_historical_certificate_bound collect"
+  ]
+}

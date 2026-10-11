@@ -461,8 +461,24 @@ def continue_risk_competition(plan):
         for name,value in final.items():(ROOT/'paper_artifacts/historical_body_reference_assembly_v1'/name).write_text(json.dumps(value,indent=2)+'\n')
         assert status['completed_combinations']==spec['combinations']
         status.update(state='complete_with_precision_holds' if status['precision_holds'] else 'complete',
-            remaining_guarded63_checks=spec['combinations']-status['admitted_combinations'],
+            remaining_selected_reference_checks=spec['combinations']-status['admitted_combinations'],
             remaining_missing_group_kind_record_checks=final['remaining_cost_plan.json']['missing_group_kind_record_checks'])
+        if 'certificate_bound_plan' in spec:
+            bound=json.loads((ROOT/spec['certificate_bound_plan']).read_text())
+            command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
+                'PYTHONPATH=.',PYTHON,'-m','performance.probe_historical_certificate_bound','collect',
+                '--plan',spec['certificate_bound_plan']])
+            rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
+            (out/'bound_reassembly.log').write_text(body+err)
+            if rc:raise RuntimeError(err or body)
+            code='from pathlib import Path;print(Path('+repr(REMOTE+'/'+bound['output']+'/compact_summary.json')+').read_text())'
+            rc,body,err=scheduler.run_on('node005',shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
+            if rc:raise RuntimeError(err or body)
+            refreshed=json.loads(body)
+            (ROOT/bound['output']/'compact_summary.json').write_text(json.dumps(refreshed,indent=2)+'\n')
+            status.update(remaining_bound_competitor_checks=refreshed['unreferenced_group_record_checks_remaining'],
+                bound_numerical_gate_passed=refreshed['raw_marginal_numerical_gate_passed'],
+                bound_reference_containment_passed=refreshed['cached_reference_containment_passed'])
     except Exception as error:
         status.update(state='failed',error=str(error));path.write_text(json.dumps(status,indent=2)+'\n');raise
     path.write_text(json.dumps(status,indent=2)+'\n');print('RISK_CAMPAIGN_DONE '+json.dumps(status),flush=True)

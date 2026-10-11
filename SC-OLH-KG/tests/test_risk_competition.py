@@ -49,7 +49,7 @@ class RiskCompetitionTests(unittest.TestCase):
             root=Path(directory);out,baseline=self.campaign_fixture(root);events=[]
             def collect(stage,phase_out,plan):
                 events.append(('collect',plan))
-                return dict(complete=True,groups=[dict(record=plan,kind='raw',group=63,
+                return dict(complete=True,groups=[dict(record=plan,kind='raw',group=34,
                     hybrid_direct_admitted=plan=='phase2.json')],successful_task_cpu_seconds=100)
             def assemble(phase_out,plan):
                 events.append(('assemble',plan))
@@ -66,9 +66,33 @@ class RiskCompetitionTests(unittest.TestCase):
             self.assertEqual(events,[(s,p) for p in ('phase1.json','phase2.json') for s in ('launch','collect','assemble')])
             self.assertEqual(result['state'],'complete_with_precision_holds')
             self.assertEqual(result['completed_combinations'],2)
-            self.assertEqual(result['remaining_guarded63_checks'],1)
-            self.assertEqual(result['precision_holds'],[dict(record='phase1.json',kind='raw',group=63)])
+            self.assertEqual(result['remaining_selected_reference_checks'],1)
+            self.assertEqual(result['precision_holds'],[dict(record='phase1.json',kind='raw',group=34)])
             self.assertEqual(json.loads((out/'status.json').read_text()),result)
+
+    def test_bound_campaign_refreshes_coverage_after_actual_reference_assembly(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out,baseline=self.campaign_fixture(root)
+            campaign=json.loads((root/'campaign.json').read_text());campaign['certificate_bound_plan']='bound.json'
+            (root/'campaign.json').write_text(json.dumps(campaign));(root/'bound.json').write_text(json.dumps(dict(output='bound')))
+            (root/'bound').mkdir();calls=[]
+            compact=dict(unreferenced_group_record_checks_remaining=0,raw_marginal_numerical_gate_passed=True,cached_reference_containment_passed=True)
+            def run_on(node,command,**kwargs):
+                calls.append(command)
+                if 'probe_historical_certificate_bound' in command:return 0,'reassembled',''
+                if '/bound/compact_summary.json' in command:return 0,json.dumps(compact),''
+                if 'price_remaining.py' in command:return 0,'priced',''
+                return 0,json.dumps({'compact_summary.json':{},'remaining_cost_plan.json':{'missing_group_kind_record_checks':{}}}),''
+            assembled=dict(baseline,reference_assembly=dict(groups=10),raw_model_net_preview=.01,assembly_resources=dict(process_cpu_seconds=10))
+            summary=dict(complete=True,groups=[dict(record='r',kind='projected',group=71,hybrid_direct_admitted=True)],successful_task_cpu_seconds=100)
+            with (patch.object(launcher,'ROOT',root),patch.object(launcher,'launch'),
+                patch.object(launcher,'collect_remote',return_value=summary),patch.object(launcher,'assemble_risk_phase',return_value=assembled),
+                patch.dict('sys.modules',scheduler=types.SimpleNamespace(run_on=run_on)),contextlib.redirect_stdout(io.StringIO())):
+                result=launcher.continue_risk_competition('campaign.json')
+            self.assertEqual(result['remaining_bound_competitor_checks'],0)
+            self.assertTrue(result['bound_numerical_gate_passed'])
+            self.assertEqual(json.loads((root/'bound/compact_summary.json').read_text()),compact)
+            self.assertIn('--plan bound.json',calls[-2])
 
     def test_campaign_stops_after_scheduler_failure_without_launching_next_phase(self):
         with tempfile.TemporaryDirectory() as directory:

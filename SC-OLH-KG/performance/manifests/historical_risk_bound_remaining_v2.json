@@ -1,0 +1,49 @@
+{
+  "output": "paper_artifacts/historical_risk_bound_remaining_v2",
+  "source_cost_plan": "paper_artifacts/historical_certificate_bound_full_v2/remaining_reference_cost_plan.json",
+  "phases": [
+    {
+      "plan": "performance/manifests/historical_risk_competition_batch_v20.json",
+      "output": "paper_artifacts/historical_risk_competition_batch_v20",
+      "combinations": 8,
+      "workers": 16,
+      "cumulative_estimated_cpu_seconds": 3591.8772856704
+    },
+    {
+      "plan": "performance/manifests/historical_risk_competition_batch_v21.json",
+      "output": "paper_artifacts/historical_risk_competition_batch_v21",
+      "combinations": 7,
+      "workers": 14,
+      "cumulative_estimated_cpu_seconds": 3237.9128636627997
+    },
+    {
+      "plan": "performance/manifests/historical_risk_competition_batch_v22.json",
+      "output": "paper_artifacts/historical_risk_competition_batch_v22",
+      "combinations": 7,
+      "workers": 14,
+      "cumulative_estimated_cpu_seconds": 3230.1976335419995
+    },
+    {
+      "plan": "performance/manifests/historical_risk_competition_batch_v23.json",
+      "output": "paper_artifacts/historical_risk_competition_batch_v23",
+      "combinations": 7,
+      "workers": 14,
+      "cumulative_estimated_cpu_seconds": 3237.9128636627997
+    },
+    {
+      "plan": "performance/manifests/historical_risk_competition_batch_v24.json",
+      "output": "paper_artifacts/historical_risk_competition_batch_v24",
+      "combinations": 2,
+      "workers": 4,
+      "cumulative_estimated_cpu_seconds": 1358.7444038447998
+    }
+  ],
+  "combinations": 31,
+  "integral_workers": 62,
+  "maximum_live_workers": 8,
+  "maximum_estimated_cpu_seconds_per_phase": 3600,
+  "campaign_estimated_cpu_seconds": 14656.645050382798,
+  "certificate_bound_plan": "performance/manifests/historical_certificate_bound_full_v2.json",
+  "full_matrix_dispatched": false,
+  "scope": "31 conditional upper-bound overlaps,15raw/16native,groups34/71 only. Frozen before reference outcomes. Original source prior,all8 identities,positive components,covariance,365 actions and359 budget preserved. Same original1e-4 finite gates;failed checks stay visible. Automatic sequential phase continuation and final bound-coverage refresh,no independent confirmation."
+}

@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "estimated_phase_cpu_seconds": 600,
+  "maximum_estimated_phase_cpu_seconds": 3600,
+  "measured_worker_process_cpu_seconds": 174.04335627400002,
+  "successful_worker_process_cpu_seconds": 88.884213034,
+  "failed_worker_process_cpu_seconds": 85.15914324,
+  "maximum_live_workers": 1,
+  "new_integrations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "downloaded_summary_bytes": 64736,
+  "replay": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diagnose_historical_outer_bridge",
+  "scope": "Run at the remote development deployment where the referenced banks live. The first run completed numerical calculations but failed to serialize a NumPy bool; the corrected retry and failed CPU cost are both retained. No bank or posterior was downloaded. Numerical and conditional-bound diagnostics do not admit full predictive KG."
+}
