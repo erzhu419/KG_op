@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/usr/bin/python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--task-id",
+    "t142234",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20"
+  ],
+  "stdout": "=== nodes ===\n  local       GPU0=1.30GB/8.00GB(free=6.47GB, mem:16%, util:0%)  cpu=13/16(wsl_load 2.3, host 18%, stale_node_probe_cache)  ram_free=17.7GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.2, stale_node_probe_cache)  ram_free=491.8GB\n  jtl110gpu2  GPU0=0.17GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1, stale_node_probe_cache)  ram_free=496.4GB\n  jtl311linux CPU-only  cpu=8/8(load 0.1, stale_node_probe_cache)  ram_free=3.59GB\n  node007     GPU0=8.97GB/11.0GB(free=1.78GB, mem:82%, util:85%), GPU1=8.97GB/11.0GB(free=1.78GB, mem:82%, util:84%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:44%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:14%)  cpu=56/64(load 7.9, stale_node_probe_cache)  ram_free=155.5GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=479.4GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.8GB\n  node001     CPU-only  cpu=71/96(load 25.2, stale_node_probe_cache, reserve 1)  ram_free=177.3GB\n  node002     CPU-only  cpu=7/96(load 89.3, stale_node_probe_cache, reserve 1)  ram_free=154.4GB\n  node003     CPU-only  cpu=0/96(load 149.2, stale_node_probe_cache, reserve 1)  ram_free=140.8GB\n  node004     CPU-only  cpu=79/96(load 16.7, stale_node_probe_cache, reserve 1)  ram_free=180.1GB\n  node005     CPU-only  cpu=76/96(load 20.1, stale_node_probe_cache, reserve 1)  ram_free=171.3GB\n  node006     CPU-only  cpu=78/96(load 17.9, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n=== dispatch === (1 queued)\n  [t142234] LAUNCH on node004:CPU  pid=160836  log=/tmp/sched_t142234.log\n",
+  "stderr": "",
+  "returncode": 0
+}

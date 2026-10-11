@@ -1,0 +1,95 @@
+{
+  "tasks": [
+    {
+      "id": "t142128",
+      "status": "done",
+      "description": "KG risk integration risk-competition-batch H5 projected shard2",
+      "project": "KG_op",
+      "signature": "KG_op/component_bank_v1/risk-competition-batch/5/projected/2",
+      "node": "node004",
+      "gpu_idx": null,
+      "remote_pids": [
+        133869
+      ],
+      "log_path": "/tmp/sched_t142128.log",
+      "submitted_at": 1791694409.4751837,
+      "started_at": 1791694423.0749156,
+      "finished_at": 1791694682.2289639,
+      "est_vram_mb": 0,
+      "current_vram_mb": 0,
+      "peak_vram_mb": 0,
+      "ram_mb": 512,
+      "current_ram_mb": 0,
+      "peak_ram_mb": 258,
+      "cpu_cores": 1,
+      "current_pcpu": 0.0,
+      "eta_seconds": 1800,
+      "eta_source": "runtime_history_overrun",
+      "eta_confidence": "low",
+      "placement_algorithm": "legacy",
+      "placement_algorithm_config": {
+        "name": "legacy",
+        "sweet_spot_tasks_per_gpu": null,
+        "max_tasks_per_gpu": null,
+        "max_post_vram_frac": null,
+        "max_gpu_util_pct": null,
+        "hard_rule_override": {
+          "mode": "none",
+          "active_rules": [],
+          "scope_prefixes": [
+            "ScheduleurmBench"
+          ],
+          "task_in_scope": null
+        }
+      },
+      "require_node": null
+    },
+    {
+      "id": "t142130",
+      "status": "done",
+      "description": "KG risk integration risk-competition-batch H5 projected shard3",
+      "project": "KG_op",
+      "signature": "KG_op/component_bank_v1/risk-competition-batch/5/projected/3",
+      "node": "node001",
+      "gpu_idx": null,
+      "remote_pids": [
+        130268
+      ],
+      "log_path": "/tmp/sched_t142130.log",
+      "submitted_at": 1791694412.5337267,
+      "started_at": 1791694423.0546935,
+      "finished_at": 1791694682.2292483,
+      "est_vram_mb": 0,
+      "current_vram_mb": 0,
+      "peak_vram_mb": 0,
+      "ram_mb": 512,
+      "current_ram_mb": 0,
+      "peak_ram_mb": 272,
+      "cpu_cores": 1,
+      "current_pcpu": 0.0,
+      "eta_seconds": 0,
+      "eta_source": "progress_window",
+      "eta_confidence": "medium",
+      "runtime_current_unit": 6,
+      "runtime_total_units": 6,
+      "last_progress_line": "component_rules=6/6; future_phases=0s",
+      "placement_algorithm": "legacy",
+      "placement_algorithm_config": {
+        "name": "legacy",
+        "sweet_spot_tasks_per_gpu": null,
+        "max_tasks_per_gpu": null,
+        "max_post_vram_frac": null,
+        "max_gpu_util_pct": null,
+        "hard_rule_override": {
+          "mode": "none",
+          "active_rules": [],
+          "scope_prefixes": [
+            "ScheduleurmBench"
+          ],
+          "task_in_scope": null
+        }
+      },
+      "require_node": null
+    }
+  ]
+}

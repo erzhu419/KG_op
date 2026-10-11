@@ -1,0 +1,41 @@
+{
+  "output": "paper_artifacts/historical_outer_bridge_v3",
+  "parent_plan": "performance/manifests/historical_predictive_positive_body_v7.json",
+  "reference_state": "Completed79 body16 competitors and31 body32 competitors,1090 assembled entries",
+  "configurations_objective_body_tail": [
+    [
+      16,
+      32,
+      32
+    ],
+    [
+      32,
+      16,
+      32
+    ],
+    [
+      32,
+      32,
+      16
+    ],
+    [
+      32,
+      32,
+      32
+    ]
+  ],
+  "maximum_estimated_cpu_seconds": 3600,
+  "cpu_reserves": {
+    "cached_analysis": 240,
+    "preparation_collection": 120,
+    "followup_assembly": 240
+  },
+  "estimated_cpu_seconds": 600,
+  "maximum_live_workers": 1,
+  "maximum_worker_cpu_seconds": 240,
+  "new_integrations": 0,
+  "purpose": "Replay the original objective/body/tail16/32 rules after all79 body16 references. Both body16 and body32 marginal screens have zero unreferenced overlap under the cached32 objective heads. Compare actual coarse/fine choices and axis changes; no new terminal integration.",
+  "scope": "Opened development state,query63,365 actions and359 remaining budget. Preserve source prior,all8 identity scores,all512/1024 positive utility components,covariance and positive body/tail weights. No physical/source-fit/verifier calls and no independent confirmation. Bounds are conditional on the cached objective heads and numerical references.",
+  "estimation": "The prior matching cached replay used81.3277 CPU seconds;20percent plus setup fits the240-second cached-analysis reserve. One separately frozen phase contains240 analysis,120 preparation/collection and240 followup assembly reserves.",
+  "reference_campaign": "performance/manifests/historical_risk_bound_body16_remaining_v3.json"
+}

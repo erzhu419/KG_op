@@ -1,0 +1,56 @@
+{
+  "complete": true,
+  "recorded_at_utc": "2026-10-11T07:25:09.903271+00:00",
+  "task_id": "t142382",
+  "node": "node004",
+  "frozen_phase_estimated_cpu_seconds_including_reserves": 600,
+  "maximum_phase_cpu_seconds": 3600,
+  "maximum_worker_cpu_seconds": 240,
+  "measured_process_cpu_seconds": 91.35403841,
+  "peak_rss_mb": 4679.52734375,
+  "reference_entries": 1090,
+  "outer_changes": {
+    "objective16_32": 4.202079189496999e-06,
+    "body16_32": 0.0,
+    "tail16_32": 3.6854651707385333e-06
+  },
+  "fine_fixed_action_tower_residual": 6.899923901404481e-07,
+  "finite_outer_diagnostics_passed": true,
+  "body_marginal_screens": [
+    {
+      "body_order": 16,
+      "artifact": "paper_artifacts/historical_certificate_bound_body16_v3/compact_summary.json",
+      "marginal_numerical_gate_passed": true,
+      "reference_containment_passed": true,
+      "remaining_group_record_checks": 0,
+      "conditional_uplift_envelope": {
+        "raw": 0.0,
+        "projected": 0.0
+      }
+    },
+    {
+      "body_order": 32,
+      "artifact": "paper_artifacts/historical_certificate_bound_full_v2/compact_summary.json",
+      "marginal_numerical_gate_passed": true,
+      "reference_containment_passed": true,
+      "remaining_group_record_checks": 0,
+      "conditional_uplift_envelope": {
+        "raw": 0.0,
+        "projected": 0.0
+      }
+    }
+  ],
+  "fixed_query_decision_screen_passed": true,
+  "fine_model_net_preview": 0.013576416522586093,
+  "fine_grid_recommendations_unchanged": true,
+  "body16_32_net_difference": 0.0,
+  "new_integrations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "scope": "Opened development task02/layout6/query63/n1; decision-relevant numerical screen under32 cached objective heads and the original16/32 positive body/tail rules. Unreferenced body competitors are excluded by matched marginal certificate bounds with the historical2e-4 margin. The outer probe also emits a weaker quality-only envelope; its positive values are superseded for this screen by the marginal certificate bounds, not new unresolved competitors. Finite convergence checks are not a rigorous continuous quadrature bound or independent deployment evidence.",
+  "next_work": "Reuse historical query-ranking and achievable batch-KG paths under the original full365-action contract; compare STOP and query/batch alternatives. Existing24-query replay has a different action contract and cannot be inserted as matched evidence. Four-replicate source outer integration remains open. Then assess actual decision value on matched development trajectories before opening independent confirmation.",
+  "replay": "python -m performance.diagnose_historical_outer_bridge --plan performance/manifests/historical_outer_bridge_v3.json"
+}

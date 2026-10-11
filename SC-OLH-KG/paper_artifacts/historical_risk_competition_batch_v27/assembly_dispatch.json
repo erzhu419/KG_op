@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/usr/bin/python3",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--task-id",
+    "t142184",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20"
+  ],
+  "stdout": "=== nodes ===\n  local       GPU0=1.20GB/8.00GB(free=6.57GB, mem:15%, util:6%)  cpu=11/16(wsl_load 4.8, host 24%, stale_node_probe_cache)  ram_free=15.6GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.2, stale_node_probe_cache)  ram_free=491.8GB\n  jtl110gpu2  GPU0=0.17GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1, stale_node_probe_cache)  ram_free=496.4GB\n  jtl311linux CPU-only  cpu=8/8(load 0.1, stale_node_probe_cache)  ram_free=3.71GB\n  node007     GPU0=8.97GB/11.0GB(free=1.78GB, mem:82%, util:91%), GPU1=8.97GB/11.0GB(free=1.78GB, mem:82%, util:87%), GPU2=8.64GB/11.0GB(free=2.11GB, mem:79%, util:64%), GPU3=8.64GB/11.0GB(free=2.11GB, mem:79%, util:95%)  cpu=55/64(load 9.3, stale_node_probe_cache)  ram_free=151.8GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=479.5GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.5GB\n  node001     CPU-only  cpu=82/96(load 13.7, stale_node_probe_cache, reserve 1)  ram_free=174.6GB\n  node002     CPU-only  cpu=33/96(load 63.2, stale_node_probe_cache, reserve 1)  ram_free=151.3GB\n  node003     CPU-only  cpu=0/96(load 122.2, stale_node_probe_cache, reserve 1)  ram_free=142.1GB\n  node004     CPU-only  cpu=81/96(load 15.5, stale_node_probe_cache, reserve 1)  ram_free=175.6GB\n  node005     CPU-only  cpu=78/96(load 18.1, stale_node_probe_cache, reserve 1)  ram_free=167.0GB\n  node006     CPU-only  cpu=83/96(load 12.6, stale_node_probe_cache, reserve 1)  ram_free=175.4GB\n=== dispatch === (1 queued)\n  [t142184] LAUNCH on node006:CPU  pid=628216  log=/tmp/sched_t142184.log\n",
+  "stderr": "",
+  "returncode": 0
+}
