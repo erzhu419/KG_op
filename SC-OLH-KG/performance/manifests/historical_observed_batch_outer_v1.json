@@ -22,7 +22,7 @@
   "maximum_worker_cpu_seconds": 420,
   "maximum_live_workers": 8,
   "maximum_estimated_cpu_seconds": 3600,
-  "estimated_cpu_seconds_including600reserves": 2259.12586477485,
+  "estimated_cpu_seconds_including600reserves": 3581.4887480680504,
   "jobs": [
     {
       "origin": 4,
@@ -115,9 +115,69 @@
       "node_count": 1024,
       "matched_cpu_per_node": 0.33821629421875005,
       "estimated_cpu_seconds": 417.60018233600005
+    },
+    {
+      "origin": 4,
+      "order": 8,
+      "variance_order": 64,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 209.30490900680002
+    },
+    {
+      "origin": 5,
+      "order": 8,
+      "variance_order": 64,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 417.60018233600005
+    },
+    {
+      "origin": 4,
+      "order": 16,
+      "variance_order": 64,
+      "variance_shard": 0,
+      "variance_shards": 2,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.09740372262109374,
+      "estimated_cpu_seconds": 121.68969435679999,
+      "pricing_basis": "Optimized original-component o4 mean8 variance64 measured worker;20percent margin+2setup seconds;no change to earlier frozen estimates"
+    },
+    {
+      "origin": 4,
+      "order": 16,
+      "variance_order": 64,
+      "variance_shard": 1,
+      "variance_shards": 2,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.09740372262109374,
+      "estimated_cpu_seconds": 121.68969435679999,
+      "pricing_basis": "Optimized original-component o4 mean8 variance64 measured worker;20percent margin+2setup seconds;no change to earlier frozen estimates"
+    },
+    {
+      "origin": 5,
+      "order": 16,
+      "variance_order": 64,
+      "variance_shard": 0,
+      "variance_shards": 2,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.18232356902539062,
+      "estimated_cpu_seconds": 226.0392016184,
+      "pricing_basis": "Optimized original-component o5 mean8 variance64 measured worker;20percent margin+2setup seconds;no change to earlier frozen estimates"
+    },
+    {
+      "origin": 5,
+      "order": 16,
+      "variance_order": 64,
+      "variance_shard": 1,
+      "variance_shards": 2,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.18232356902539062,
+      "estimated_cpu_seconds": 226.0392016184,
+      "pricing_basis": "Optimized original-component o5 mean8 variance64 measured worker;20percent margin+2setup seconds;no change to earlier frozen estimates"
     }
   ],
   "pricing": "Same-origin measured n4 risk fixed-action CPU per node,maximum of cumulative and latest1024 extension;20percent margin,2setup seconds perworker,shared600reserve.",
   "scope": "Fixed-action outer pilot only;original source prior,positive512/1024 components andSD16. No adaptive decision claims,full-posterior restoration or physical calls.",
-  "refinement_basis": "Mean8/16 change3.7e-6 passes;variance8/16 change3.67e-4 and fine tower1.35e-4 fail. Refine onlyvariance to32 formean8/16 in the same phase includingall8 earlier workers andthe original600reserve."
+  "refinement_basis": "Retain all12 variance8/16/32 workers andboth conservative mean8 variance64 estimates. Pricefour mean16 variance64 half-axis shards from actual optimized matching workers;weights remain unnormalized andsum overboth shards. The2cached512-node inverse profiles consume130.13 CPU seconds from theoriginal240cached-analysis reserve inshared600. Bothaxis changes andtower must pass1e-4."
 }

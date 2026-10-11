@@ -1,0 +1,59 @@
+{
+  "output": "paper_artifacts/historical_positive_direct_references_v1",
+  "screen_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+  "pricing_library_plan": "performance/manifests/historical_observed_batch_bound_competition_v16.json",
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "seed": 202610077,
+  "maximum_worker_cpu_seconds": 420,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_live_workers": 8,
+  "pricing": "Maximum actual n4 same-group rule timings compared with n1 same-group timers scaled to node count;20percent margin+2setup perworker. Add to existing screen phase;retain its original600reserve.",
+  "scope": "Select best native direct group by mean across16 cached objective heads at each of8 positive risk observations. Price both original allocations under raw n4 law;all8 likelihoods,512/1024 components,original covariance andSD16;no outer KG or independent gain claim.",
+  "refined_cases": [
+    {
+      "record": "positive_n4_o4_h1_p1984",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o4_h1_p1985",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o4_h1_p2016",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o4_h1_p2017",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o5_h1_p1984",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o5_h1_p1985",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o5_h1_p2016",
+      "kind": "raw",
+      "candidate": "E8"
+    },
+    {
+      "record": "positive_n4_o5_h1_p2017",
+      "kind": "raw",
+      "candidate": "E8"
+    }
+  ]
+}

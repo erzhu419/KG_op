@@ -36,6 +36,18 @@ class ObservedBatchPredictiveTests(unittest.TestCase):
             score=update_raw_observation(copy.deepcopy(field),0,values[i],eta[i],4)
             self.assertAlmostEqual(logs[i],score,places=10)
 
+    def test_tensor_rule_keeps_repeated_variance_coordinates_in_order(self):
+        field=self.field();rule=ObservedBatchPredictive(field,0,4,128)
+        probabilities=np.array([(m,v) for m in (.03,.4,.95) for v in (.8,.15,.55,.15)])
+        values,eta=rule.inverse(probabilities)
+        vcdf,mcdf,bound=rule.adaptive_coordinates(values,eta)
+        np.testing.assert_allclose(vcdf,probabilities[:,1],atol=1e-8,rtol=0.)
+        np.testing.assert_allclose(mcdf,probabilities[:,0],atol=1e-8,rtol=0.)
+        self.assertLess(bound,1e-8)
+        for y,t,score in zip(values,eta,rule.log_density(values,eta)):
+            paid=update_raw_observation(copy.deepcopy(field),0,y,t,4)
+            self.assertAlmostEqual(paid,score,places=10)
+
     def test_observed_coordinates_retain_batch_mean_variance_dependence(self):
         field=self.field();rule=ObservedBatchPredictive(field,0,4,128)
         probabilities=qmc.Sobol(2,scramble=True,seed=80647).random_base2(10)

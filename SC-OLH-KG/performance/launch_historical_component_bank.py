@@ -107,7 +107,9 @@ def launch(stage,plan=None):
                     else ['performance.validate_historical_component_bank','run','--stage',stage,'--identity',str(h),'--kind',k,'--shard',str(s)])
                 cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-m']+worker)
                 args=[sys.executable,CLI,'submit','--description',f'KG risk integration {stage} H{h} {k} shard{s}',
-                    '--cmd',cmd,'--cwd',DEPLOY,'--signature',f'KG_op/component_bank_v1/{stage}/{h}/{k}/{s}',
+                    '--cmd',cmd,'--cwd',DEPLOY,'--signature',
+                    (f'KG_op/{Path(manifest).stem}/{stage}/{h}/{k}/{s}' if stage=='observed-batch-risk'
+                        else f'KG_op/component_bank_v1/{stage}/{h}/{k}/{s}'),
                     '--project','KG_op','--vram','0','--ram-mb','2000','--cpu','1','--priority','low',
                     '--skip-launch-staging','--env-spec','none']
                 for node in range(1,7):args+=['--allowed-node',f'node{node:03d}']
@@ -135,7 +137,8 @@ def collect_remote(stage,out,plan=None):
     out.mkdir(parents=True,exist_ok=True)
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.check_historical_observed_batch_outer','collect','--plan',plan] if stage=='observed-batch-outer' else
+    worker=(['performance.positive_historical_direct_references','collect','--plan',plan] if stage=='positive-direct-reference' else
+        ['performance.check_historical_observed_batch_outer','collect','--plan',plan] if stage=='observed-batch-outer' else
         ['performance.assemble_historical_observed_batch_references','--plan',plan] if stage=='observed-batch-assembly' else
         ['performance.screen_historical_observed_batch_risk','next-plan','--plan',plan] if stage=='observed-batch-next-plan' else
         ['performance.screen_historical_observed_batch_risk','collect','--plan',plan] if stage=='observed-batch-bound' else
@@ -160,7 +163,7 @@ def collect_remote(stage,out,plan=None):
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name='next_cost_plan.json' if stage=='observed-batch-next-plan' else 'compact_summary.json' if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-assembly','observed-batch-outer') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
+    name='next_cost_plan.json' if stage=='observed-batch-next-plan' else 'compact_summary.json' if stage in ('positive-direct-reference','observed-batch-risk','observed-batch-bound','observed-batch-assembly','observed-batch-outer') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
         'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
@@ -168,7 +171,7 @@ def collect_remote(stage,out,plan=None):
         'bank-tail':'bank_tail_summary.json',
         'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
-    relative=(str((out/name).relative_to(ROOT)) if stage in ('observed-batch-risk','observed-batch-bound','observed-batch-next-plan','observed-batch-assembly','observed-batch-outer') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
+    relative=(str((out/name).relative_to(ROOT)) if stage in ('positive-direct-reference','observed-batch-risk','observed-batch-bound','observed-batch-next-plan','observed-batch-assembly','observed-batch-outer') or stage in UPPER_MODES or stage in TRANSFER_STAGES or stage in LABEL_MODES or stage in BANK_STAGES else
         'paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name)
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)

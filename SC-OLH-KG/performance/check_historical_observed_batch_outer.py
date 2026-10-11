@@ -15,25 +15,40 @@ from performance.refine_historical_observed_prediction import field_from_snapsho
 PLAN='performance/manifests/historical_observed_batch_outer_v1.json'
 
 
-def run(origin,order,plan=PLAN,variance_order=None):
-    variance_order=order if variance_order is None else variance_order
+def job_slug(origin,order,variance_order,variance_shard=None):
     suffix='' if variance_order==order else f'_v{variance_order}'
-    spec=read(plan);out=ROOT/spec['output']/(f'o{origin}_r{order}'+suffix);out.mkdir(parents=True,exist_ok=True)
+    return f'o{origin}_r{order}'+suffix+('' if variance_shard is None else f'_s{variance_shard}')
+
+
+def outer_rule(order,variance_order,mean_intervals,variance_shard=None,variance_shards=1):
+    x,w=roots_legendre(order);vx,vw=roots_legendre(variance_order)
+    variance=(vx+1)/2;variance_weights=vw/2
+    if variance_shard is not None:
+        selected=np.array_split(np.arange(variance_order),variance_shards)[variance_shard]
+        variance=variance[selected];variance_weights=variance_weights[selected]
+    points=[];weights=[]
+    for low,high in mean_intervals:
+        means=low+(high-low)*(x+1)/2;mean_weights=(high-low)*w/2
+        points.extend((m,v) for m in means for v in variance)
+        weights.extend(mw*vw for mw in mean_weights for vw in variance_weights)
+    points=np.asarray(points);weights=np.asarray(weights)
+    assert np.all(weights>0) and abs(weights.sum()-variance_weights.sum())<=1e-14
+    return points,weights
+
+
+def run(origin,order,plan=PLAN,variance_order=None,variance_shard=None):
+    variance_order=order if variance_order is None else variance_order
+    spec=read(plan);out=ROOT/spec['output']/job_slug(origin,order,variance_order,variance_shard);out.mkdir(parents=True,exist_ok=True)
     started=time.process_time();signal.signal(signal.SIGPROF,cpu_timeout)
     signal.setitimer(signal.ITIMER_PROF,spec['maximum_worker_cpu_seconds'])
-    result=dict(complete=False,origin=origin,order=order,variance_order=variance_order)
+    result=dict(complete=False,origin=origin,order=order,variance_order=variance_order,variance_shard=variance_shard)
     try:
-        assert any(j['origin']==origin and j['order']==order and j.get('variance_order',j['order'])==variance_order for j in spec['jobs'])
+        descriptor=next(j for j in spec['jobs'] if j['origin']==origin and j['order']==order
+            and j.get('variance_order',j['order'])==variance_order and j.get('variance_shard')==variance_shard)
         previous=read(spec['cached_prediction_plan']);state=read(previous['output']+'/state.json')
         field=field_from_snapshot(state['fields'][str(origin)][1])
-        x,w=roots_legendre(order);vx,vw=roots_legendre(variance_order);variance=(vx+1)/2;variance_weights=vw/2
-        points=[];weights=[]
-        for low,high in spec['mean_cdf_intervals']:
-            means=low+(high-low)*(x+1)/2;mean_weights=(high-low)*w/2
-            points.extend((m,v) for m in means for v in variance)
-            weights.extend(mw*vw for mw in mean_weights for vw in variance_weights)
-        points=np.asarray(points);weights=np.asarray(weights)
-        assert np.all(weights>0) and abs(weights.sum()-1.)<=1e-14
+        points,weights=outer_rule(order,variance_order,spec['mean_cdf_intervals'],variance_shard,
+            descriptor.get('variance_shards',1))
         for cdf_order in previous['batch_cdf_orders']:
             cdf=ObservedBatchPredictive(field,0,4,cdf_order);labels,etas=cdf.inverse(points)
             vcdf,mcdf,bound=cdf.adaptive_coordinates(labels,etas)
@@ -53,6 +68,7 @@ def run(origin,order,plan=PLAN,variance_order=None):
         save(out/'bank.json',dict(probabilities=points.tolist(),weights=weights.tolist(),labels=labels.tolist(),
             etas=etas.tolist(),values=values,inner_orders=orders))
         result.update(complete=True,mean_risk=float(weights@values),all_inner_rules_passed=all(admissions),
+            variance_shards=descriptor.get('variance_shards',1),
             inner_failed_count=sum(not p for p in admissions),maximum_evidence_error=max(errors),
             source_components=len(field.log_weights),query=state['query'],replicates=4,remaining_calls=356,
             source_prior_preserved=True,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
@@ -69,8 +85,8 @@ def run(origin,order,plan=PLAN,variance_order=None):
 
 def collect(plan=PLAN):
     spec=read(plan);previous=read(spec['cached_prediction_plan']);state=read(previous['output']+'/state.json')
-    parts=[read(spec['output']+f'/o{j["origin"]}_r{j["order"]}'+
-        ('' if j.get('variance_order',j['order'])==j['order'] else f'_v{j["variance_order"]}')+'/compact_summary.json') for j in spec['jobs']]
+    parts=[read(spec['output']+'/'+job_slug(j['origin'],j['order'],j.get('variance_order',j['order']),
+        j.get('variance_shard'))+'/compact_summary.json') for j in spec['jobs']]
     admitted=all(p['complete'] and p['predictive_cdf_passed'] and p['all_inner_rules_passed'] for p in parts)
     rows=[]
     if admitted:
@@ -80,19 +96,25 @@ def collect(plan=PLAN):
             for origin in spec['origins']:
                 quality=read(previous['output']+f'/n4/{origin}/0/results.json')
                 assert quality['complete'] and quality['all_inner_rules_passed'] and quality['predictive_cdf_passed']
-                f=float(np.mean(quality['values'][:2048]));g=next(p['mean_risk'] for p in parts if
-                    (p['origin'],p['order'],p.get('variance_order',p['order']))==(origin,order,variance_order))
+                f=float(np.mean(quality['values'][:2048]));matched=[p for p in parts if
+                    (p['origin'],p['order'],p.get('variance_order',p['order']))==(origin,order,variance_order)]
+                assert abs(sum(p['positive_weight_sum'] for p in matched)-1.)<=1e-14
+                if matched[0].get('variance_shard') is not None:
+                    assert {p['variance_shard'] for p in matched}==set(range(matched[0]['variance_shards']))
+                g=sum(p['mean_risk'] for p in matched)
                 contribution=state['prior_weights'][origin]*f*g;reward+=contribution
                 origins.append(dict(origin=origin,mean_quality=f,mean_risk=g,weighted_fixed_reward=contribution))
             rows.append(dict(order=order,variance_order=variance_order,expected_fixed_reward=reward,
                 tower_residual=reward-state['baseline']['4']['reward'],origins=origins))
     by={(r['order'],r['variance_order']):r for r in rows};changes={}
     if admitted:
-        mean_orders=sorted({r['order'] for r in rows});variance_orders=sorted({r['variance_order'] for r in rows})
-        fine_cfg=(mean_orders[-1],variance_orders[-1]);fine=by[fine_cfg]['expected_fixed_reward']
-        for key,cfg in ((f'risk_mean{mean_orders[-2]}_{mean_orders[-1]}',(mean_orders[-2],variance_orders[-1])),
-                (f'risk_variance{variance_orders[-2]}_{variance_orders[-1]}',(mean_orders[-1],variance_orders[-2]))):
-            if cfg in by:changes[key]=abs(fine-by[cfg]['expected_fixed_reward'])
+        fine_cfg=max(by,key=lambda cfg:(cfg[1],cfg[0]));fine=by[fine_cfg]['expected_fixed_reward']
+        mean_orders=sorted({m for m,v in by if v==fine_cfg[1] and m<fine_cfg[0]})
+        variance_orders=sorted({v for m,v in by if m==fine_cfg[0] and v<fine_cfg[1]})
+        if mean_orders:
+            changes[f'risk_mean{mean_orders[-1]}_{fine_cfg[0]}']=abs(fine-by[mean_orders[-1],fine_cfg[1]]['expected_fixed_reward'])
+        if variance_orders:
+            changes[f'risk_variance{variance_orders[-1]}_{fine_cfg[1]}']=abs(fine-by[fine_cfg[0],variance_orders[-1]]['expected_fixed_reward'])
     change=abs(by[16,16]['expected_fixed_reward']-by[8,8]['expected_fixed_reward']) if rows else None
     result=dict(complete=all(p['complete'] for p in parts),all_inner_and_cdf_rules_passed=admitted,rows=rows,
         synchronous_resolution_difference=change,outer_axis_changes=changes,fixed_action_pilot_passed=bool(admitted and
@@ -101,13 +123,14 @@ def collect(plan=PLAN):
         worker_cpu_seconds=sum(p['cpu_seconds'] for p in parts),estimated_cpu_seconds_including600reserves=spec['estimated_cpu_seconds_including600reserves'],
         full_posterior_restorations=0,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         adaptive_outer_integral_admitted=False,independent_confirmation=False,
-        scope='Fixed-action n4 risk-mean/variance positive cubature pilot;reuse all positive components and cached2048 objective values. Separate axis convergence and adaptive365-action KG remain open.')
+        scope='Fixed-action n4 risk-mean/variance positive cubature pilot;reuse all positive components and cached2048 objective values. Axis changes andtower reported above;adaptive365-action KG remains open.')
     save(ROOT/spec['output']/'compact_summary.json',result);print('SCHEDULEURM_DONE '+json.dumps(result),flush=True)
     return result
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('mode',choices=['run','collect']);p.add_argument('--plan',default=PLAN)
-    p.add_argument('--origin',type=int);p.add_argument('--order',type=int);p.add_argument('--variance-order',type=int);a=p.parse_args()
-    if a.mode=='run':run(a.origin,a.order,a.plan,a.variance_order)
+    p.add_argument('--origin',type=int);p.add_argument('--order',type=int);p.add_argument('--variance-order',type=int)
+    p.add_argument('--variance-shard',type=int);a=p.parse_args()
+    if a.mode=='run':run(a.origin,a.order,a.plan,a.variance_order,a.variance_shard)
     else:collect(a.plan)

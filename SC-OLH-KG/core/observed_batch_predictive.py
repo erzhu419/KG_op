@@ -57,7 +57,9 @@ class ObservedBatchPredictive:
     def variance_inverse(self,probabilities):
         mean=float(self.weights@self.means[:,1])
         variance=float(self.weights@(self.covariance[:,1,1]+(self.means[:,1]-mean)**2)+polygamma(1,self.k))
-        return inverse_observed_cdf(probabilities,self.variance_coordinates,mean,variance)
+        # Tensor rules repeat each variance coordinate across the mean axis.
+        unique,positions=np.unique(np.asarray(probabilities),return_inverse=True)
+        return inverse_observed_cdf(unique,self.variance_coordinates,mean,variance)[positions]
 
     def conditional_coordinates(self,values,eta_labels):
         values=np.asarray(values).reshape(-1);eta_labels=np.asarray(eta_labels).reshape(-1)

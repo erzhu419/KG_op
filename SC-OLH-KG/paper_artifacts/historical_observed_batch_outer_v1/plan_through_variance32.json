@@ -1,0 +1,123 @@
+{
+  "output": "paper_artifacts/historical_observed_batch_outer_v1",
+  "cached_prediction_plan": "performance/manifests/historical_observed_prediction_v3.json",
+  "origins": [
+    4,
+    5
+  ],
+  "orders": [
+    8,
+    16
+  ],
+  "mean_cdf_intervals": [
+    [
+      0.0,
+      0.9
+    ],
+    [
+      0.9,
+      1.0
+    ]
+  ],
+  "maximum_worker_cpu_seconds": 420,
+  "maximum_live_workers": 8,
+  "maximum_estimated_cpu_seconds": 3600,
+  "estimated_cpu_seconds_including600reserves": 2259.12586477485,
+  "jobs": [
+    {
+      "origin": 4,
+      "order": 8,
+      "node_count": 128,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 27.913113625850002
+    },
+    {
+      "origin": 4,
+      "order": 16,
+      "node_count": 512,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 105.65245450340001
+    },
+    {
+      "origin": 5,
+      "order": 8,
+      "node_count": 128,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 53.950022792000006
+    },
+    {
+      "origin": 5,
+      "order": 16,
+      "node_count": 512,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 209.80009116800002
+    },
+    {
+      "origin": 4,
+      "order": 8,
+      "variance_order": 16,
+      "node_count": 256,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 53.826227251700004
+    },
+    {
+      "origin": 4,
+      "order": 16,
+      "variance_order": 8,
+      "node_count": 256,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 53.826227251700004
+    },
+    {
+      "origin": 5,
+      "order": 8,
+      "variance_order": 16,
+      "node_count": 256,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 105.90004558400001
+    },
+    {
+      "origin": 5,
+      "order": 16,
+      "variance_order": 8,
+      "node_count": 256,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 105.90004558400001
+    },
+    {
+      "origin": 4,
+      "order": 8,
+      "variance_order": 32,
+      "node_count": 512,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 105.65245450340001
+    },
+    {
+      "origin": 4,
+      "order": 16,
+      "variance_order": 32,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.16870516683496095,
+      "estimated_cpu_seconds": 209.30490900680002
+    },
+    {
+      "origin": 5,
+      "order": 8,
+      "variance_order": 32,
+      "node_count": 512,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 209.80009116800002
+    },
+    {
+      "origin": 5,
+      "order": 16,
+      "variance_order": 32,
+      "node_count": 1024,
+      "matched_cpu_per_node": 0.33821629421875005,
+      "estimated_cpu_seconds": 417.60018233600005
+    }
+  ],
+  "pricing": "Same-origin measured n4 risk fixed-action CPU per node,maximum of cumulative and latest1024 extension;20percent margin,2setup seconds perworker,shared600reserve.",
+  "scope": "Fixed-action outer pilot only;original source prior,positive512/1024 components andSD16. No adaptive decision claims,full-posterior restoration or physical calls.",
+  "refinement_basis": "Frozen throughvariance32;mean andtower pass,variance16/32 narrowlyfails. Retainedbefore anyvariance64 extension."
+}
