@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2]
 def read(path):
     return json.loads((ROOT/path).read_text())
 
-parser=argparse.ArgumentParser();parser.add_argument('--axes',nargs='+',choices=('mean','variance','body'),default=['mean','variance'])
+parser=argparse.ArgumentParser();parser.add_argument('--axes',nargs='+',choices=('mean','variance','body','shoulder'),default=['mean','variance'])
 args=parser.parse_args()
 for axis in args.axes:
     base=f'paper_artifacts/historical_positive_risk_{axis}_axis_v1'

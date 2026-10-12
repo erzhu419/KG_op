@@ -1,0 +1,85 @@
+{
+  "state": "body_refinement_not_converged_raw_recommendation_checked",
+  "rows": [
+    {
+      "grid": "mean",
+      "raw_native_contrast": 0.011277674119471847,
+      "raw_best_admitted_contrast": 0.011508576702068781,
+      "body": 0.005926835271145932,
+      "tail": 0.005350838848325913,
+      "upper_body95_99": 0,
+      "recommendation": {
+        "projected": {
+          "selection_contrast": 0.011277674119471847,
+          "validation_contrast": 0.011277620615125916,
+          "changed_heads": 0,
+          "validation_negative_mass_below1e4": 0.018172342652777493
+        },
+        "raw": {
+          "selection_contrast": 0.011508576702068781,
+          "validation_contrast": 0.011508529688417294,
+          "changed_heads": 9,
+          "validation_negative_mass_below1e4": 0.0
+        },
+        "raw_quality_projected_risk": {
+          "selection_contrast": 0.011277674119471847,
+          "validation_contrast": 0.011277620615125916,
+          "changed_heads": 0,
+          "validation_negative_mass_below1e4": 0.018172342652777493
+        },
+        "projected_quality_raw_risk": {
+          "selection_contrast": 0.011508576702068781,
+          "validation_contrast": 0.011508529688417294,
+          "changed_heads": 9,
+          "validation_negative_mass_below1e4": 0.0
+        }
+      }
+    },
+    {
+      "grid": "body",
+      "raw_native_contrast": 0.021453638832985317,
+      "raw_best_admitted_contrast": 0.021511277978424042,
+      "body": 0.016102799984659397,
+      "tail": 0.005350838848325913,
+      "upper_body95_99": 0.01327687865916126,
+      "recommendation": {
+        "projected": {
+          "selection_contrast": 0.021453638832985317,
+          "validation_contrast": 0.021453600317802825,
+          "changed_heads": 0,
+          "validation_negative_mass_below1e4": 0.005498310859364738
+        },
+        "raw": {
+          "selection_contrast": 0.021511277978424042,
+          "validation_contrast": 0.0215112413664122,
+          "changed_heads": 12,
+          "validation_negative_mass_below1e4": 0.0
+        },
+        "raw_quality_projected_risk": {
+          "selection_contrast": 0.021453638832985317,
+          "validation_contrast": 0.021453600317802825,
+          "changed_heads": 0,
+          "validation_negative_mass_below1e4": 0.005498310859364738
+        },
+        "projected_quality_raw_risk": {
+          "selection_contrast": 0.021511277978424042,
+          "validation_contrast": 0.0215112413664122,
+          "changed_heads": 12,
+          "validation_negative_mass_below1e4": 0.0
+        }
+      }
+    }
+  ],
+  "native_axis_difference": 0.01017596471351347,
+  "aligned_axis_difference": 0.010002711677994906,
+  "outer_axis_tolerance": 0.0001,
+  "converged": false,
+  "completed_body_workers": 48,
+  "body_recorded_process_cpu_seconds": 3552.9355818980002,
+  "conservative_failed_preparation_cpu_seconds": 122.0,
+  "cached_alignment_process_cpu_seconds": 6.825969543,
+  "cause": "The [.95,.99] mean-CDF band was unsampled by the original unsplit order4 body rule. Correcting the risk terminal scoring changes9/12 heads on the two banks and reproduces the full raw policy gains; correcting only objective quality leaves the projected recommendations unchanged.",
+  "scope": "Same admitted candidate pool, original prior/covariance/budgets andmatched F heads. G E9 checks numerical selection fidelity;continuous quadrature,all-action optimality andindependent deployment remain open.",
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false
+}

@@ -307,8 +307,16 @@ def summarize_proposal_head_grid(f_records, g_records, f_weights, g_weights, pri
     return result
 
 
+def select_raw_terminal_actions(values, costs):
+    """Maximize raw terminal reward, breaking ties by its expected cost.
+
+    Partially evaluated banks supply -inf for actions without admitted values.
+    """
+    return np.lexsort((costs, -values), axis=-1)[..., 0]
+
+
 def summarize_joint_actions(values, costs, posterior, weights, baseline, power, head_count):
-    choices = np.lexsort((costs, -values), axis=2)[:, :, 0]
+    choices = select_raw_terminal_actions(values, costs)
     best = np.take_along_axis(values, choices[:, :, None], axis=2)[:, :, 0]
     stop, debited, fixed = baseline; contrast = best-values[:, :, fixed]
     adaptation = float(np.sum(weights*contrast))
@@ -320,6 +328,7 @@ def summarize_joint_actions(values, costs, posterior, weights, baseline, power, 
         'quadrature_joint_probability_mass': float(weights.sum()),
         'expected_identity_weights': np.einsum('fg,fgk->k', weights, posterior).tolist(),
         'joint_fantasy_count': int(weights.size), 'distinct_head_state_count': head_count,
+        'raw_action_indices': choices.tolist(),
         'selected_action_probabilities': [float(weights[choices == i].sum()) for i in range(values.shape[2])],
         'weighted_adaptive_contrasts': contrast.tolist(), 'joint_quadrature_weights': weights.tolist()}
 

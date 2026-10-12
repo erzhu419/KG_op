@@ -1,0 +1,20 @@
+{
+  "plans": [
+    "performance/manifests/historical_positive_risk_body_axis_incumbents_v2.json"
+  ],
+  "rows": [
+    {
+      "axis": "body",
+      "plan": "performance/manifests/historical_positive_risk_body_axis_incumbents_v2.json",
+      "registered_workers": 20,
+      "estimated_phase_cpu_seconds": 2114.7282320439995,
+      "selected_observations": 10,
+      "remaining_missing_observations": 2
+    }
+  ],
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "shared_phase_reserve_cpu_seconds": 600,
+  "maximum_estimated_phase_cpu_seconds": 3600,
+  "scope": "Sequential axis phases reuse cached observations and condition only missing raw recommendation values. Previous phases passed and retain their recorded costs. Outer convergence and independent deployment remain separate."
+}

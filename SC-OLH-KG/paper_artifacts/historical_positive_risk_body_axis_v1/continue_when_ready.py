@@ -1,4 +1,5 @@
 """Refine the body grid, then complete its native raw values using existing runners."""
+import argparse
 import json
 import shlex
 import subprocess
@@ -11,12 +12,14 @@ from performance.launch_historical_component_bank import CLI,DEPLOY,PYTHON,REMOT
 sys.path.insert(0,str(Path(CLI).parent))
 import scheduler
 
-out=Path(__file__).resolve().parent
+parser=argparse.ArgumentParser();parser.add_argument('--plan',default='performance/manifests/historical_positive_risk_body_axis_v1.json')
+args=parser.parse_args();plan=args.plan;spec=json.loads((ROOT/plan).read_text())
+axis=Path(plan).stem.removeprefix('historical_positive_risk_').removesuffix('_axis_v1')
+out=ROOT/spec['output']
 helper=ROOT/'paper_artifacts/historical_positive_risk_outer_axes_v1'
 status=dict(state='running',maximum_live_workers=8,priority='low',
     full_predictive_integration_admitted=False,independent_confirmation=False)
 try:
-    plan='performance/manifests/historical_positive_risk_body_axis_v1.json'
     subprocess.run([sys.executable,'-u',str(ROOT/'paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py'),
         '--plan',plan],cwd=ROOT,check=True)
     screened=json.loads((out/'status.json').read_text());assert screened['state']=='screened_coarse_grid',screened
@@ -36,13 +39,13 @@ try:
             target=root/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(json.dumps(data,indent=2)+'\n')
     subprocess.run([sys.executable,str(helper/'validate_incumbents.py'),'--frozen-plan',str(out/'incumbent_frozen_plan.json')],cwd=ROOT,check=True)
     result=json.loads((out/'incumbent_status.json').read_text());assert result['state']=='incumbent_probes_complete',result
-    subprocess.run([sys.executable,str(helper/'close_initial_phases.py'),'--axes','body'],cwd=ROOT,check=True)
+    subprocess.run([sys.executable,str(helper/'close_initial_phases.py'),'--axes',axis],cwd=ROOT,check=True)
     completion=json.loads((folder/'completion.json').read_text())
     if completion['native_choices_all_raw_referenced']:
         status.update(state='native_raw_coverage_complete',last_reference_plan=risk_plan)
     else:
-        next_folder='paper_artifacts/historical_positive_risk_body_axis_followthrough_v2'
-        subprocess.run([sys.executable,str(helper/'prepare_next_incumbents.py'),'--phase','2','--axes','body',
+        next_folder=f'paper_artifacts/historical_positive_risk_{axis}_axis_followthrough_v2'
+        subprocess.run([sys.executable,str(helper/'prepare_next_incumbents.py'),'--phase','2','--axes',axis,
             '--frozen-output',next_folder],cwd=ROOT,check=True)
         runner=ROOT/'paper_artifacts/historical_positive_risk_outer_axes_incumbents_v2/finish_coverage.py'
         subprocess.run([sys.executable,str(runner),'--frozen-plan',str(ROOT/next_folder/'incumbent_frozen_plan.json')],cwd=ROOT,check=True)

@@ -1,0 +1,76 @@
+{
+  "plan": "performance/manifests/historical_positive_risk_mean_axis_bound_incumbents_v3.json",
+  "replay": "paper_artifacts/historical_raw_recommendation_alignment_v1/mean_replay.json",
+  "phase_completion": "paper_artifacts/historical_positive_risk_mean_axis_incumbents_v3/completion.json",
+  "policies": {
+    "projected": {
+      "selection_contrast": 0.011277674119471847,
+      "validation_contrast": 0.011277620615125916,
+      "changed_heads": 0,
+      "validation_negative_mass_below1e4": 0.018172342652777493
+    },
+    "raw": {
+      "selection_contrast": 0.011508576702068781,
+      "validation_contrast": 0.011508529688417294,
+      "changed_heads": 9,
+      "validation_negative_mass_below1e4": 0.0
+    },
+    "raw_quality_projected_risk": {
+      "selection_contrast": 0.011277674119471847,
+      "validation_contrast": 0.011277620615125916,
+      "changed_heads": 0,
+      "validation_negative_mass_below1e4": 0.018172342652777493
+    },
+    "projected_quality_raw_risk": {
+      "selection_contrast": 0.011508576702068781,
+      "validation_contrast": 0.011508529688417294,
+      "changed_heads": 9,
+      "validation_negative_mass_below1e4": 0.0
+    }
+  },
+  "negative_nodes": {
+    "projected": [
+      {
+        "record": "positive_full_n4_m4_v4_o4_h1_p14",
+        "cdf": [
+          0.9212624742390559,
+          0.6699905217924281
+        ],
+        "mean_validation_contrast": -0.004150244819168418
+      },
+      {
+        "record": "positive_full_n4_m4_v4_o5_h1_p14",
+        "cdf": [
+          0.9212624742390559,
+          0.6699905217924281
+        ],
+        "mean_validation_contrast": -0.00030552971480119623
+      }
+    ],
+    "raw": [],
+    "raw_quality_projected_risk": [
+      {
+        "record": "positive_full_n4_m4_v4_o4_h1_p14",
+        "cdf": [
+          0.9212624742390559,
+          0.6699905217924281
+        ],
+        "mean_validation_contrast": -0.004150244819168418
+      },
+      {
+        "record": "positive_full_n4_m4_v4_o5_h1_p14",
+        "cdf": [
+          0.9212624742390559,
+          0.6699905217924281
+        ],
+        "mean_validation_contrast": -0.00030552971480119623
+      }
+    ],
+    "projected_quality_raw_risk": []
+  },
+  "resource": {
+    "process_cpu_seconds": 3.089633946,
+    "peak_rss_mb": 224.609375
+  },
+  "independent_confirmation": false
+}

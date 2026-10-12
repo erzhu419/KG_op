@@ -6,7 +6,7 @@ import time
 
 import numpy as np
 
-from core.raw_terminal_head_grid import compose_head_grid
+from core.raw_terminal_head_grid import compose_head_grid,select_raw_terminal_actions
 from performance.complete_historical_source_heads import ROOT,read,save
 from performance.diagnose_historical_component_guarded import compressed_read
 from performance.validate_historical_component_bank import action_groups
@@ -47,6 +47,8 @@ def run(plan=None, output=None, emit=True):
         for kind in ('raw','projected'):scalar(row['record'],row['identity'],row['action'],kind,row[kind])
     for row in read(read(bound['native_reference_plan'])['output']+'/native_direct_references.json')['rows']:
         scalar(row['record'],row['identity'],row['action'],'projected',row['projected'])
+    validation_tables={int(o):tables[int(o),'raw'].copy() for o in context['origins']}
+    validation_costs={int(o):costs[int(o),'raw'].copy() for o in context['origins']}
     references=0
     for reference_plan in bound['joint_reference_plans']:
         spec=read(reference_plan);prep=read(spec['output']+'/preparation.json');selected={r['record']:r for r in prep['selected']}
@@ -62,8 +64,15 @@ def run(plan=None, output=None, emit=True):
             for h in (4,5):
                 part=read(spec['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows'][check['selected_candidate']]
                 tables[origin,kind][i,h,ix]=part['statistics'];costs[origin,kind][i,h,ix]=part['costs']
+                if kind=='raw':
+                    high=read(spec['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows']['E9']
+                    validation_tables[origin][i,h,ix]=high['statistics'];validation_costs[origin][i,h,ix]=high['costs']
             references+=1
     rows=[];missing=[];incumbents=[];maximum_omitted=0.;weighted_raw_best=0.
+    alignment=[]
+    policy_names=('projected','raw','raw_quality_projected_risk','projected_quality_raw_risk')
+    policy_totals={p:dict(selection_contrast=0.,validation_contrast=0.,changed_heads=0,
+        validation_negative_mass_below1e4=0.) for p in policy_names}
     for o,data in context['origins'].items():
         origin=int(o);grids={}
         for kind in ('raw','projected'):
@@ -74,13 +83,36 @@ def run(plan=None, output=None, emit=True):
             grids[kind]=(np.where(mask[None],values,-np.inf),c,posterior)
         raw,rc,posterior=grids['raw'];native,nc,np_=grids['projected'];np.testing.assert_array_equal(posterior,np_)
         maximum_omitted=max(maximum_omitted,float(posterior[:,:,[0,1,2,3,6,7]].sum(axis=-1).max()))
-        choices=np.lexsort((nc,-native),axis=-1)[:,:,0];raw_choices=np.lexsort((rc,-raw),axis=-1)[:,:,0]
+        choices=np.lexsort((nc,-native),axis=-1)[:,:,0];raw_choices=select_raw_terminal_actions(raw,rc)
+        common=np.isfinite(raw)&np.isfinite(native)
+        validation,_,vp,_=compose_head_grid(np.asarray(data['objective']['raw']),validation_tables[origin],validation_costs[origin],
+            data['objective_scores'],[r['head_log_scores'] for r in data['risk']],prior)
+        np.testing.assert_array_equal(posterior,vp)
+        selected={'projected':np.lexsort((nc,-np.where(common,native,-np.inf)),axis=-1)[:,:,0],
+            'raw':select_raw_terminal_actions(np.where(common,raw,-np.inf),rc)}
+        for name,fkind,gkind in (('raw_quality_projected_risk','raw','projected'),('projected_quality_raw_risk','projected','raw')):
+            value,c,_,_=compose_head_grid(np.asarray(data['objective'][fkind]),tables[origin,gkind],costs[origin,gkind],
+                data['objective_scores'],[r['head_log_scores'] for r in data['risk']],prior)
+            selected[name]=np.lexsort((c,-np.where(common,value,-np.inf)),axis=-1)[:,:,0]
         achieved=np.take_along_axis(raw,choices[:,:,None],axis=2)[:,:,0]
         optimum=raw.max(axis=-1)
         for i,r in enumerate(data['risk']):
             absent=sorted(set(map(int,choices[:,i]))-set(coverage[r['record'],'raw']))
             unique,counts=np.unique(choices[:,i],return_counts=True)
             weight=float(prior[origin]*r['outer_weight'])
+            policy_row=dict(record=r['record'],origin=origin,cdf=r['cdf'],mixture_weight=weight,
+                common_admitted_actions=np.flatnonzero(common[0,i]).tolist(),policies={})
+            for name,actions in selected.items():
+                chosen=actions[:,i];heads=np.arange(len(chosen))
+                select_gain=raw[heads,i,chosen]-raw[:,i,355]
+                check_gain=validation[heads,i,chosen]-validation[:,i,355]
+                policy_row['policies'][name]=dict(actions=chosen.tolist(),selection_raw_contrasts=select_gain.tolist(),
+                    validation_raw_contrasts=check_gain.tolist())
+                total=policy_totals[name];total['selection_contrast']+=weight*float(select_gain.mean())
+                total['validation_contrast']+=weight*float(check_gain.mean())
+                total['changed_heads']+=int(np.count_nonzero(chosen!=selected['projected'][:,i]))
+                total['validation_negative_mass_below1e4']+=weight*float(np.mean(check_gain < -1e-4))
+            alignment.append(policy_row)
             native_gain=float(np.mean(native[np.arange(native.shape[0]),i,choices[:,i]]-native[:,i,355]))
             best=float(np.mean(optimum[:,i]-raw[:,i,355]));weighted_raw_best+=weight*best
             incumbent=dict(record=r['record'],origin=origin,cdf=r['cdf'],mixture_weight=weight,
@@ -114,6 +146,12 @@ def run(plan=None, output=None, emit=True):
         raw_covered_grid_weight=sum(r['mixture_weight'] for r in rows),
         weighted_subset_native_choice_contrast=sum(r['weighted_subset_contrast'] for r in rows) if not missing else None,
         weighted_raw_reward_of_native_incumbent_contrast=sum(r['weighted_subset_contrast'] for r in rows) if not missing else None,
+        raw_recommendation=dict(selector='core.raw_terminal_head_grid.select_raw_terminal_actions',
+            candidate_pool='Intersection of admitted raw and projected actions, identical for all four policies.',
+            scoring='Admitted raw conditional terminal reward; expected raw cost breaks ties.',
+            validation='Cached joint G E9 statistics; original matched F heads and query128 references remain fixed. This is numerical rule validation, not held-out deployment.',
+            policy_totals=policy_totals,rows=alignment,
+            full_action_optimality=closed,independent_confirmation=False),
         maximum_omitted_utility_identity_mass=maximum_omitted,source_components={'4':512,'5':1024},
         action_count=365,objective_heads_per_origin=16,cpu_seconds=time.process_time()-started,
         charged_to_final_phase_cached_analysis_reserve=True,new_integrations=0,new_physical_calls=0,new_source_fits=0,
