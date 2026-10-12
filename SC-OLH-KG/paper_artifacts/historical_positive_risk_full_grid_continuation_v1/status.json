@@ -1,0 +1,80 @@
+{
+  "state": "conditional_actions_closed",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_full_grid_screen_competition_v19_refs_v1.json",
+  "completed_phases": [
+    "performance/manifests/historical_positive_risk_full_grid_competition_v5.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v6.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v7.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v8.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v9.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v10.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v11.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v12.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v13.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v14.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v15.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v16.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v17.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v18.json",
+    "performance/manifests/historical_positive_risk_full_grid_competition_v19.json"
+  ],
+  "phase_estimates": {
+    "performance/manifests/historical_positive_risk_full_grid_competition_v5.json": 3539.7597990439995,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v6.json": 3441.963333042,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v7.json": 3358.9732843988,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v8.json": 3527.7378004212,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v9.json": 3577.5979407095997,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v10.json": 3094.5222647095998,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v11.json": 3549.3916831524,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v12.json": 3283.8141553892006,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v13.json": 3146.1351994183997,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v14.json": 3582.5449061567997,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v15.json": 3289.035855888,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v16.json": 3491.9309887404006,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v17.json": 3474.2665669476,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v18.json": 3542.9894336200005,
+    "performance/manifests/historical_positive_risk_full_grid_competition_v19.json": 2373.8079870583997
+  },
+  "continuation_worker_cpu_seconds": 26220.550788046,
+  "recorded_process_cpu_seconds": 26703.579891778998,
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "historical_controller_source": "paper_artifacts/historical_positive_risk_continuation_v3/continue_when_ready.py",
+  "scope": "Continuation from closed full-grid v5. Earlier phase costs remain linked in its completion ledger;outer-axis refinement is separate.",
+  "total_phase_estimated_cpu_seconds": 50274.4711986964,
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 0,
+      "record_action_candidates": 0,
+      "record_group_candidates": 0
+    },
+    "projected": {
+      "compared_action_head_pairs": 186880,
+      "overlapping_action_head_pairs": 0,
+      "record_action_candidates": 0,
+      "record_group_candidates": 0
+    }
+  },
+  "preparation_id": "t144359",
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 0.9999999999999997,
+      "5": 0.9999999999999997
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.0053905159212230755,
+        "unresolved_upper_gap": 0.0
+      },
+      "projected": {
+        "best_reference_contrast": 0.005377426387867541,
+        "unresolved_upper_gap": 0.0
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  }
+}

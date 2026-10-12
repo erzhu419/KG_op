@@ -85,12 +85,16 @@ def prepare(plan=PLAN):
         origins[str(origin)]=dict(context['origins'][str(origin)],risk=rows)
     context.update(origins=origins,risk_local_moments=moments,
         risk_query_fields={str(h):query['fields'][h] for h in (4,5)})
-    count=len(selected);historical=read(old['output']+'/preparation.json');jobs=[]
-    for h in (4,5):
-        rate=max(j['maximum_measured_nonrule_cpu_per_policy'] for j in historical['jobs'] if j['identity']==h)
-        for shard,policies in enumerate(spec['policy_shards']):
-            jobs.append(dict(identity=h,shard=shard,policies=policies,
-                matched_cpu_per_observation_policy=rate,estimated_cpu_seconds=1.2*rate*count*len(policies)+2))
+    count=len(selected);jobs=[]
+    if 'risk_mean_order' in spec:
+        jobs=[dict(j) for j in spec['screen_jobs']]
+    else:
+        historical=read(old['output']+'/preparation.json')
+        for h in (4,5):
+            rate=max(j['maximum_measured_nonrule_cpu_per_policy'] for j in historical['jobs'] if j['identity']==h)
+            for shard,policies in enumerate(spec['policy_shards']):
+                jobs.append(dict(identity=h,shard=shard,policies=policies,
+                    matched_cpu_per_observation_policy=rate,estimated_cpu_seconds=1.2*rate*count*len(policies)+2))
     if 'risk_mean_order' in spec:
         from performance.validate_historical_component_bank import action_groups
         groups=[g['group'] for g in action_groups(context['actions']) if g['kind']=='direct' and context['actions'][g['action_indices'][0]]['primary']!=63]

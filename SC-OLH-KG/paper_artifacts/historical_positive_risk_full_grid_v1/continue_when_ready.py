@@ -1,4 +1,5 @@
 """Prepare and screen the frozen full-CDF rule with eight shared worker slots."""
+import argparse
 import json
 import re
 import shlex
@@ -13,7 +14,9 @@ from performance.launch_historical_component_bank import ROOT,CLI,DEPLOY,PYTHON,
 sys.path.insert(0,str(Path(CLI).parent))
 import scheduler
 
-plan='performance/manifests/historical_positive_risk_full_grid_v1.json'
+parser=argparse.ArgumentParser()
+parser.add_argument('--plan',default='performance/manifests/historical_positive_risk_full_grid_v1.json')
+plan=parser.parse_args().plan
 spec=json.loads((ROOT/plan).read_text());out=ROOT/spec['output']
 status=dict(state='preparing',estimated_phase_cpu_seconds=spec['estimated_cpu_seconds_including600reserves'],
     maximum_live_workers=8,full_predictive_integration_admitted=False,independent_confirmation=False)
@@ -29,8 +32,8 @@ try:
     else:
         cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,
             '-u','-m','performance.prepare_historical_positive_risk_screen','--plan',plan])
-        args=[sys.executable,CLI,'submit','--description','KG positive n4 normalized grid preparation',
-            '--cmd',cmd,'--cwd',DEPLOY,'--signature','KG_op/positive_risk_full_grid_v1/prepare',
+        args=[sys.executable,CLI,'submit','--description',f'KG n4 normalized grid {Path(plan).stem}',
+            '--cmd',cmd,'--cwd',DEPLOY,'--signature',f'KG_op/{Path(plan).stem}/prepare',
             '--cpu','1','--ram-mb','2000','--vram','0','--priority','low','--project','KG_op',
             '--skip-launch-staging','--env-spec','none']
         for node in range(1,7):args+=['--allowed-node',f'node{node:03d}']
@@ -54,7 +57,7 @@ try:
     rc,body,err=scheduler.run_on(task['node'],shlex.join([PYTHON,'-c',code]),timeout=25,check=False)
     if rc:raise RuntimeError(err or body)
     prepared=json.loads(body);prep=prepared['result']
-    assert prep['complete'] and prep['estimated_cost_admitted'] and prep['risk_observations']==32
+    assert prep['complete'] and prep['estimated_cost_admitted'] and prep['risk_observations']==spec['risk_observations']
     for root in (ROOT,Path(DEPLOY)):
         target=root/spec['output']/'preparation.json';target.parent.mkdir(parents=True,exist_ok=True)
         target.write_text(json.dumps(prep,indent=2)+'\n')

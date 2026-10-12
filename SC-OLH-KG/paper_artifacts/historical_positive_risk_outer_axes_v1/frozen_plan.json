@@ -1,0 +1,11 @@
+{
+  "plans": [
+    "performance/manifests/historical_positive_risk_mean_axis_v1.json",
+    "performance/manifests/historical_positive_risk_variance_axis_v1.json"
+  ],
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "shared_reserve_per_axis_cpu_seconds": 600,
+  "maximum_estimated_phase_cpu_seconds": 3600,
+  "scope": "Run the two registered axis screens sequentially,with up to8 workers within each. Joint action references andouter convergence remain to be admitted."
+}

@@ -46,6 +46,7 @@ def close(plan):
     assert replay['source_bound_plan']==plan and replay['native_choices_all_raw_referenced']
     (ROOT/destination).write_text(json.dumps(replay,indent=2)+'\n');logs.append(log)
     if (out/'incumbent_replay_initial.log').exists():logs.append(out/'incumbent_replay_initial.log')
+    if (out/'incumbent_replay_failed_close.log').exists():logs.append(out/'incumbent_replay_failed_close.log')
     collection=sum(json.loads(s[21:])['process_cpu_seconds'] for p in logs for s in p.read_text().splitlines() if s.startswith('SCHEDULEURM_RESOURCE '))
     first=json.loads((ROOT/initial).read_text());frozen=json.loads((ROOT/first['frozen_cost_plan']).read_text())
     previous=json.loads((ROOT/frozen['previous_closed_phase_completion']).read_text())
@@ -75,7 +76,10 @@ def close(plan):
         weighted_bank_envelope=envelope['weighted_bank_envelope'],remaining_totals=envelope['totals'],
         next_cost_admitted=price['cost_admitted'],new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False)
-    result['weighted_unresolved_gap_reduction']={k:1-envelope['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap']/previous['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap'] for k in ('raw','projected')}
+    result['weighted_unresolved_gap_reduction']={k:
+        1-envelope['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap']/previous['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap']
+        if previous['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap'] else None
+        for k in ('raw','projected')}
     (out/'completion.json').write_text(json.dumps(result,indent=2)+'\n')
     status=json.loads((out/'status.json').read_text());status.update(state='phase_complete',
         cumulative_phase_estimated_cpu_seconds=result['estimated_phase_cpu_seconds'],
