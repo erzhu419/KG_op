@@ -1,0 +1,26 @@
+{
+  "state": "failed",
+  "estimated_phase_cpu_seconds": 2887.2213092591865,
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "preparation_id": "t145029",
+  "cdf_checks": [
+    {
+      "origin": 4,
+      "order": 64,
+      "maximum_inverse_cdf_error": 4.3298697960381105e-15,
+      "adaptive_cdf_error_bound": 2.7486967993350564e-13,
+      "positive_weight_sum": 0.9999999999999998
+    },
+    {
+      "origin": 5,
+      "order": 64,
+      "maximum_inverse_cdf_error": 1.5787371410169726e-13,
+      "adaptive_cdf_error_bound": 1.8005861970825158e-13,
+      "positive_weight_sum": 0.9999999999999998
+    }
+  ],
+  "worker_count": 16,
+  "error": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nTraceback (most recent call last):\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)\n  File \"/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py\", line 424, in <module>\n    elif a.stage=='collect':collect(a.plan)\n  File \"/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py\", line 310, in collect\n    result['joint_reference_phase_estimated_cpu_seconds']=read(spec.get('reference_phase_cost_plan',spec['native_direct_cost_plan']))['expected_cpu_seconds_including600reserves']\nKeyError: 'expected_cpu_seconds_including600reserves'\n"
+}

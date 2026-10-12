@@ -1,5 +1,5 @@
 {
-  "controller_pid": 3635575,
+  "controller_pid": 3640074,
   "initial_registered_workers": 16,
   "risk_observations": 96,
   "reused_risk_observations": 32,
@@ -32,5 +32,13 @@
   "recorded_failed_native_cpu_seconds": 25.717148186000003,
   "repair": "Native chunk admission now checks its explicit records rather than a redundant observation_count field. The completed preparation and screen workers are reused.",
   "recovered_existing_successful_workers": 12,
-  "scheduler_retried_tasks_reconciled": true
+  "scheduler_retried_tasks_reconciled": true,
+  "collection_failure_resource": [
+    {
+      "process_cpu_seconds": 12.408611913,
+      "peak_rss_mb": 256.62109375
+    }
+  ],
+  "collection_repair": "Initial base collection reads its native_direct_cost_plan; joint reference cost plans are attached only after preparation of joint references.",
+  "reused_completed_scientific_workers": 16
 }

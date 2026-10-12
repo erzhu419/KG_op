@@ -23,7 +23,7 @@ for axis in args.axes:
     initial_replay_cpu=sum(json.loads(line[21:])['process_cpu_seconds'] for line in
         (initial_log.read_text().splitlines() if initial_log.exists() else [])
         if line.startswith('SCHEDULEURM_RESOURCE '))
-    support=screen['preparation_process_cpu_seconds']+screen['collection_process_cpu_seconds']+account['additional_support_cpu_seconds']+initial_replay_cpu+screen.get('recorded_failed_worker_cpu_seconds',0.)
+    support=screen['preparation_process_cpu_seconds']+screen['collection_process_cpu_seconds']+account['additional_support_cpu_seconds']+initial_replay_cpu+screen.get('recorded_failed_attempt_cpu_seconds',0.)
     total=screen['worker_process_cpu_seconds']+support+account['additional_recorded_process_cpu_seconds']-account['additional_support_cpu_seconds']
     failed_charge=screen.get('conservative_failed_preparation_cpu_seconds',0.)
     assert support+failed_charge<=600 and total+failed_charge<=account['estimated_phase_cpu_seconds']<=3600

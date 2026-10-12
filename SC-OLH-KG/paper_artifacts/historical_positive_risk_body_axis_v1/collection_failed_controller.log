@@ -1,0 +1,38 @@
+SUBMITTED {"shard": 6, "matched_cpu_per_row": 0.031949173064236114, "rows": 2304, "reused": false, "estimated_cpu_seconds": 90.333073688, "identity": "4+5", "kind": "native-direct", "records": ["positive_body_v1_n4_m4_v4_o5_h1_p0", "positive_body_v1_n4_m4_v4_o5_h1_p1", "positive_body_v1_n4_m4_v4_o5_h1_p2", "positive_body_v1_n4_m4_v4_o5_h1_p3", "positive_body_v1_n4_m4_v4_o5_h1_p4", "positive_body_v1_n4_m4_v4_o5_h1_p5", "positive_body_v1_n4_m4_v4_o5_h1_p6", "positive_body_v1_n4_m4_v4_o5_h1_p7"], "id": "t145054"}
+SUBMITTED {"shard": 7, "matched_cpu_per_row": 0.031949173064236114, "rows": 2304, "reused": false, "estimated_cpu_seconds": 90.333073688, "identity": "4+5", "kind": "native-direct", "records": ["positive_body_v1_n4_m4_v4_o5_h1_p8", "positive_body_v1_n4_m4_v4_o5_h1_p9", "positive_body_v1_n4_m4_v4_o5_h1_p10", "positive_body_v1_n4_m4_v4_o5_h1_p11", "positive_body_v1_n4_m4_v4_o5_h1_p12", "positive_body_v1_n4_m4_v4_o5_h1_p13", "positive_body_v1_n4_m4_v4_o5_h1_p14", "positive_body_v1_n4_m4_v4_o5_h1_p15"], "id": "t145055"}
+SUBMITTED {"shard": 8, "matched_cpu_per_row": 0.031949173064236114, "rows": 2304, "reused": false, "estimated_cpu_seconds": 90.333073688, "identity": "4+5", "kind": "native-direct", "records": ["positive_body_v1_n4_m4_v4_o5_h1_p16", "positive_body_v1_n4_m4_v4_o5_h1_p17", "positive_body_v1_n4_m4_v4_o5_h1_p18", "positive_body_v1_n4_m4_v4_o5_h1_p19", "positive_body_v1_n4_m4_v4_o5_h1_p20", "positive_body_v1_n4_m4_v4_o5_h1_p21", "positive_body_v1_n4_m4_v4_o5_h1_p22", "positive_body_v1_n4_m4_v4_o5_h1_p23"], "id": "t145056"}
+SUBMITTED {"shard": 9, "matched_cpu_per_row": 0.031949173064236114, "rows": 2304, "reused": false, "estimated_cpu_seconds": 90.333073688, "identity": "4+5", "kind": "native-direct", "records": ["positive_body_v1_n4_m4_v4_o5_h1_p24", "positive_body_v1_n4_m4_v4_o5_h1_p25", "positive_body_v1_n4_m4_v4_o5_h1_p26", "positive_body_v1_n4_m4_v4_o5_h1_p27", "positive_body_v1_n4_m4_v4_o5_h1_p28", "positive_body_v1_n4_m4_v4_o5_h1_p29", "positive_body_v1_n4_m4_v4_o5_h1_p30", "positive_body_v1_n4_m4_v4_o5_h1_p31"], "id": "t145057"}
+PROGRESS {"stage": "positive-risk-grid", "submitted": 16, "pending": 0, "live": 4, "done": 12}
+PROGRESS {"stage": "positive-risk-grid", "submitted": 16, "pending": 0, "live": 1, "done": 15}
+PROGRESS {"stage": "positive-risk-grid", "submitted": 16, "pending": 0, "live": 0, "done": 16}
+COMPLETE {"stage": "positive-risk-grid", "submitted": 16, "pending": 0, "live": 0, "done": 16}
+Traceback (most recent call last):
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py", line 67, in <module>
+    summary=collect_remote('observed-batch-bound',out,plan)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 186, in collect_remote
+    if rc:raise RuntimeError(err or body)
+RuntimeError: bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+Traceback (most recent call last):
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py", line 424, in <module>
+    elif a.stage=='collect':collect(a.plan)
+  File "/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py", line 310, in collect
+    result['joint_reference_phase_estimated_cpu_seconds']=read(spec.get('reference_phase_cost_plan',spec['native_direct_cost_plan']))['expected_cpu_seconds_including600reserves']
+KeyError: 'expected_cpu_seconds_including600reserves'
+
+BODY_GRID_DONE {"state": "failed", "maximum_live_workers": 8, "priority": "low", "full_predictive_integration_admitted": false, "independent_confirmation": false, "error": "Command '['/usr/bin/python3', '-u', '/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py', '--plan', 'performance/manifests/historical_positive_risk_body_axis_v1.json']' returned non-zero exit status 1."}
+Traceback (most recent call last):
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_body_axis_v1/continue_when_ready.py", line 20, in <module>
+    subprocess.run([sys.executable,'-u',str(ROOT/'paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py'),
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '-u', '/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py', '--plan', 'performance/manifests/historical_positive_risk_body_axis_v1.json']' returned non-zero exit status 1.

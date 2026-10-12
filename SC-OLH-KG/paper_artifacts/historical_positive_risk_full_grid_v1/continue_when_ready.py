@@ -99,8 +99,8 @@ try:
     failed_workers=out/'failed_worker_resources.json'
     if failed_workers.exists():
         failed=json.loads(failed_workers.read_text())
-        account['recorded_failed_worker_cpu_seconds']=sum(r['resource']['process_cpu_seconds'] for r in failed)
-        account['failed_worker_count']=len(failed)
+        account['recorded_failed_attempt_cpu_seconds']=sum(r['resource']['process_cpu_seconds'] for r in failed)
+        account['failed_attempt_count']=len(failed)
     (out/'execution_account.json').write_text(json.dumps(account,indent=2)+'\n')
 except Exception as error:
     status.update(state='failed',error=str(error));raise
