@@ -85,6 +85,11 @@ def run(plan=None, output=None, emit=True):
                 native_action_counts={str(a):int(n) for a,n in zip(unique,counts)},missing_raw_actions=absent,
                 missing_raw_groups=sorted({action_group[a] for a in absent}),
                 mean_projected_choice_contrast=native_gain,weighted_projected_choice_contrast=weight*native_gain)
+            incumbent['missing_raw_group_projected_contrasts']={}
+            for gid in incumbent['missing_raw_groups']:
+                ix=np.flatnonzero(np.isin(choices[:,i],groups[gid]['action_indices']))
+                incumbent['missing_raw_group_projected_contrasts'][str(gid)]=float(weight*np.sum(
+                    native[ix,i,choices[ix,i]]-native[ix,i,355])/native.shape[0])
             incumbents.append(incumbent)
             if absent:
                 missing.append(dict(incumbent,actions=absent));continue

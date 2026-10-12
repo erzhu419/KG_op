@@ -28,25 +28,33 @@ def prepare_incumbents(plan):
     diagnostic=replay(spec['incumbent_bound_plan'],spec['output']+'/incumbent_replay.json',emit=False)
     context=compressed_read(ROOT/read(bound['bank_plan'])['output']/'context.json.gz')
     groups=action_groups(context['actions']);measured,fine=reference_rule_timers(bound)
-    candidates=sorted(diagnostic['missing_raw_references'],key=lambda r:(-r['weighted_projected_choice_contrast'],r['record']))
-    cases=[];jobs=[];total=600.
+    candidates=[dict(record=row['record'],group=gid,
+        actions=[a for a in row['actions'] if a in groups[gid]['action_indices']],
+        weighted_projected_choice_contrast=row['missing_raw_group_projected_contrasts'][str(gid)])
+        for row in diagnostic['missing_raw_references'] for gid in row['missing_raw_groups']]
+    candidates.sort(key=lambda r:(-r['weighted_projected_choice_contrast'],r['record'],r['group']))
+    cases=[];jobs=[]
+    phase_base=read(spec['continued_phase_cost_plan'])['estimated_cpu_seconds_including_reserves'] if 'continued_phase_cost_plan' in spec else 600.
+    total=phase_base
+    selected_records=set()
     for row in candidates:
-        assert len(row['missing_raw_groups'])==1
-        case,priced=price_reference_group(dict(record=row['record'],kind='raw',group=row['missing_raw_groups'][0],
+        if row['record'] in selected_records:continue
+        case,priced=price_reference_group(dict(record=row['record'],kind='raw',group=row['group'],
             missing_raw_actions=row['actions'],weighted_projected_choice_contrast=row['weighted_projected_choice_contrast']),groups,measured,fine)
         assert all(j['estimated_cpu_seconds']<=spec['maximum_worker_cpu_seconds'] for j in priced)
         estimate=sum(j['estimated_cpu_seconds'] for j in priced)
         if total+estimate>spec['maximum_estimated_cpu_seconds']:break
-        cases.append(case);jobs.extend(priced);total+=estimate
+        cases.append(case);jobs.extend(priced);total+=estimate;selected_records.add(row['record'])
     frozen=dict(complete=True,source=spec['output']+'/incumbent_replay.json',next_joint_cases=cases,next_joint_jobs=jobs,
-        phase_base_estimated_cpu_seconds=600.,expected_cpu_seconds_including600reserves=total,
+        phase_base_estimated_cpu_seconds=phase_base,expected_cpu_seconds_including600reserves=total,
         cost_admitted=bool(jobs) and total<=spec['maximum_estimated_cpu_seconds'],
-        missing_native_incumbent_observations=len(candidates),selected_observations=len(cases),
-        remaining_missing_observations=[r['record'] for r in candidates[len(cases):]],
+        missing_native_incumbent_observations=len(diagnostic['missing_raw_references']),selected_observations=len(cases),
+        remaining_missing_observations=sorted({r['record'] for r in candidates
+            if (r['record'],r['group']) not in {(c['record'],c['group']) for c in cases}}),
         previous_closed_phase_completion=spec['previous_phase_completion'],
         previous_phase_estimated_cpu_seconds=previous['estimated_phase_cpu_seconds'],
         maximum_live_workers=8,priority='low',cpu_seconds=time.process_time()-started,
-        scope='New raw references for previously unchecked native incumbents on the registered32-point grid. All prior completed costs remain in the campaign ledger;this phase has one600CPU second shared reserve. No failed reference is moved to a new phase.')
+        scope='Raw references for previously unchecked native incumbents on the registered positive grid. The registered phase base andits one600CPU second reserve are retained;all prior completed costs remain in the campaign ledger. No failed reference is moved to a new phase.')
     save(ROOT/spec['frozen_cost_plan'],frozen)
     assert frozen['cost_admitted']
     spec['refined_cases']=[dict(record=r['record'],kind=r['kind'],candidate=r['candidate'],rules=r['rules']) for r in cases]
