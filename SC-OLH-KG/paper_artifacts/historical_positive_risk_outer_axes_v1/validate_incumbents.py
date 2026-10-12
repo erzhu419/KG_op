@@ -1,4 +1,5 @@
-"""Admit the frozen raw probes within each existing axis phase."""
+"""Admit the registered raw references on the existing axis grids."""
+import argparse
 import json
 import shlex
 import sys
@@ -10,8 +11,12 @@ from performance.launch_historical_component_bank import CLI,PYTHON,REMOTE,QUEUE
 sys.path.insert(0,str(Path(CLI).parent))
 import scheduler
 
-out=Path(__file__).resolve().parent
-frozen=json.loads((out/'incumbent_frozen_plan.json').read_text())
+parser=argparse.ArgumentParser()
+parser.add_argument('--frozen-plan',default=str(Path(__file__).resolve().parent/'incumbent_frozen_plan.json'))
+args=parser.parse_args()
+frozen_path=Path(args.frozen_plan).resolve()
+out=frozen_path.parent
+frozen=json.loads(frozen_path.read_text())
 status=dict(state='running',completed_plans=[],maximum_live_workers=8,
     full_predictive_integration_admitted=False,independent_confirmation=False)
 try:
@@ -54,7 +59,21 @@ try:
             raw_covered_grid_weight=replay['raw_covered_grid_weight'],missing_raw_observations=len(replay['missing_raw_references']),
             weighted_bank_envelope=screened['weighted_bank_envelope'],remaining_totals=screened['totals'],
             full_predictive_integration_admitted=False,independent_confirmation=False)
-        (folder/'execution_account.json').write_text(json.dumps(account,indent=2)+'\n');status['completed_plans'].append(plan)
+        (folder/'execution_account.json').write_text(json.dumps(account,indent=2)+'\n')
+        cost=json.loads((ROOT/spec['frozen_cost_plan']).read_text())
+        if cost['phase_base_estimated_cpu_seconds']==600:
+            assert support<=600 and account['additional_recorded_process_cpu_seconds']<=account['estimated_phase_cpu_seconds']<=3600
+            completion=dict(state='phase_complete',registered_workers=len(resources),
+                all_reference_precision_passed=True,numerical_containment_passed=True,
+                estimated_phase_cpu_seconds=account['estimated_phase_cpu_seconds'],shared_phase_reserve_cpu_seconds=600,
+                recorded_process_cpu_seconds=account['additional_recorded_process_cpu_seconds'],recorded_support_cpu_seconds=support,
+                previous_phase_completion=spec['previous_phase_completion'],
+                native_choices_all_raw_referenced=replay['native_choices_all_raw_referenced'],
+                missing_raw_observations=len(replay['missing_raw_references']),raw_covered_grid_weight=replay['raw_covered_grid_weight'],
+                full_predictive_integration_admitted=False,independent_confirmation=False,
+                scope='All registered raw reference workers passed and this budget is closed. Remaining recommendation coverage and outer convergence are separate unfinished work.')
+            (folder/'completion.json').write_text(json.dumps(completion,indent=2)+'\n')
+        status['completed_plans'].append(plan)
     else:
         status.update(state='incumbent_probes_complete');status.pop('current_plan')
 except Exception as error:

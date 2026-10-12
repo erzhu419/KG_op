@@ -1,0 +1,29 @@
+{
+  "plans": [
+    "performance/manifests/historical_positive_risk_mean_axis_incumbents_v2.json",
+    "performance/manifests/historical_positive_risk_variance_axis_incumbents_v2.json"
+  ],
+  "rows": [
+    {
+      "axis": "mean",
+      "plan": "performance/manifests/historical_positive_risk_mean_axis_incumbents_v2.json",
+      "registered_workers": 38,
+      "estimated_phase_cpu_seconds": 3512.9580132676006,
+      "selected_observations": 19,
+      "remaining_missing_observations": 13
+    },
+    {
+      "axis": "variance",
+      "plan": "performance/manifests/historical_positive_risk_variance_axis_incumbents_v2.json",
+      "registered_workers": 38,
+      "estimated_phase_cpu_seconds": 3524.2790691603996,
+      "selected_observations": 19,
+      "remaining_missing_observations": 10
+    }
+  ],
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "shared_phase_reserve_cpu_seconds": 600,
+  "maximum_estimated_phase_cpu_seconds": 3600,
+  "scope": "Sequential axis phases reuse cached observations and condition only missing raw recommendation values. Previous phases passed and retain their recorded costs. Outer convergence and independent deployment remain separate."
+}

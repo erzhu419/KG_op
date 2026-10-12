@@ -523,3 +523,7 @@ v7–v19连续接续已完成160个worker／80组／232个动作检查，全部�
 先复用历史原生推荐raw计值入口，在两轴原阶段余额内各补5个组合／10分片，累计预计3581.71／3593.37 CPU秒，保留各轴原600秒预留，最多8个并行。新网格实际出现1条均值观测、2条方差观测的目标头选择跨107／144两组；已按逐组真实加权native贡献排序，每阶段保留每条观测一个组，余组继续登记。下一步先检验主体预测增益是否得到raw支持，再补齐轴差需要的参考覆盖。[raw探针计划](../paper_artifacts/historical_positive_risk_outer_axes_v1/incumbent_frozen_plan.json)。
 
 20个raw探针／20个分配动作检查全部通过，两轴累计记录进程4655.59 CPU秒，原阶段预留及估计不变。均值四阶规则的raw已计值最优下界0.00730863，超过已闭合二阶粗规则0.00539052至少0.00191811，远大于原1e−4轴差门；因此二阶主体均值规则尚未收敛。四阶／八阶原生推荐仍分别缺31／28条观测的完整raw覆盖，实际原生收益保持未给出；方差轴raw参考下界0.00165474也不足以判断轴差。下一步补齐剩余推荐的raw覆盖，并细化发现增益的主体均值区间，不再为已闭合32点粗规则追加参考。[探针完成汇总](../paper_artifacts/historical_positive_risk_outer_axes_v1/incumbent_completion.json)。
+
+两轴各26个登记worker全部完成后，已合并初筛与同阶段探针的完成账，并补计此前未进入汇总的两次初始缓存重放3.51 CPU秒，累计4659.10秒；各轴准备／分析仅86.42／86.96秒，均归入原600秒预留。完成账关闭的是登记工作预算，仍明确保留31／28条缺失raw观测。[均值完成账](../paper_artifacts/historical_positive_risk_mean_axis_incumbents_v1/completion.json)、[方差完成账](../paper_artifacts/historical_positive_risk_variance_axis_incumbents_v1/completion.json)。
+
+接续v2每轴登记19个观测—动作组、38个单核worker，预计3512.96／3524.28 CPU秒，各自新600秒预留只在上一登记阶段通过归账后启用。共76片先均值后方差、阶段内最多8个低优先级并行；通过后自动按剩余raw推荐覆盖准备v3，必要时仅补混合组观测的v4，每阶段仍不超过3600秒。复用原raw参考、筛查、缓存重放与调度入口，全部大组件留服务器。下一步取得两轴完整原生推荐raw值，再局部细化均值主体收益峰。局限：新网格全动作最优性、连续外层收敛、查询／批次选择及独立部署收益仍待完成；原source prior与协方差保持，确认块未读取。[顺序接续入口](../paper_artifacts/historical_positive_risk_outer_axes_incumbents_v2/finish_coverage.py)、[v2定价](../paper_artifacts/historical_positive_risk_outer_axes_incumbents_v2/incumbent_frozen_plan.json)。
