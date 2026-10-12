@@ -1,0 +1,72 @@
+{
+  "state": "incumbent_probes_complete",
+  "rows": [
+    {
+      "axis": "mean",
+      "reference_workers": 10,
+      "allocation_checks": 10,
+      "all_reference_precision_passed": true,
+      "maximum_reference_rule_difference": 8.959712814671228e-06,
+      "estimated_phase_cpu_seconds": 3581.7149496340076,
+      "total_recorded_process_cpu_seconds": 2326.7431184960005,
+      "native_choices_all_raw_referenced": false,
+      "missing_raw_observations": 31,
+      "weighted_bank_envelope": {
+        "positive_weight_sums_per_origin": {
+          "4": 1.0000000000000007,
+          "5": 1.0000000000000007
+        },
+        "normalized_per_origin": true,
+        "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+        "kinds": {
+          "raw": {
+            "best_reference_contrast": 0.007308628901780531,
+            "unresolved_upper_gap": 0.02877747461031111
+          },
+          "projected": {
+            "best_reference_contrast": 0.012202769325876254,
+            "unresolved_upper_gap": 0.024322431990142664
+          }
+        },
+        "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+      }
+    },
+    {
+      "axis": "variance",
+      "reference_workers": 10,
+      "allocation_checks": 10,
+      "all_reference_precision_passed": true,
+      "maximum_reference_rule_difference": 8.534625719480715e-06,
+      "estimated_phase_cpu_seconds": 3593.3689512784076,
+      "total_recorded_process_cpu_seconds": 2328.8512385559998,
+      "native_choices_all_raw_referenced": false,
+      "missing_raw_observations": 28,
+      "weighted_bank_envelope": {
+        "positive_weight_sums_per_origin": {
+          "4": 1.0,
+          "5": 1.0
+        },
+        "normalized_per_origin": true,
+        "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+        "kinds": {
+          "raw": {
+            "best_reference_contrast": 0.0016547448635960025,
+            "unresolved_upper_gap": 0.021418128718940152
+          },
+          "projected": {
+            "best_reference_contrast": 0.0059151826509719774,
+            "unresolved_upper_gap": 0.01534427736436942
+          }
+        },
+        "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+      }
+    }
+  ],
+  "coarse_raw_optimal_reference": 0.00539051592122307,
+  "mean_axis_raw_admitted_lower_difference": 0.0019181129805574603,
+  "mean_axis_raw_optimal_value_converged": false,
+  "native_raw_axis_values_complete": false,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "scope": "The registered64-point mean-axis raw admitted maximum already exceeds the closed32-point raw maximum. Complete native-policy axis values andcontinuous convergence remain open."
+}
