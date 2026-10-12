@@ -1,0 +1,47 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_shoulder_axis_bound_incumbents_v4.json",
+  "risk_observations": 128,
+  "native_choices_all_raw_referenced": true,
+  "all_reference_precision_passed": true,
+  "policies": {
+    "projected": {
+      "selection_contrast": 0.021171684049352584,
+      "validation_contrast": 0.021171648730618227,
+      "changed_heads": 0,
+      "validation_negative_mass_below1e4": 0.0037784622418800397
+    },
+    "raw": {
+      "selection_contrast": 0.021208817001008455,
+      "validation_contrast": 0.02120878611908884,
+      "changed_heads": 12,
+      "validation_negative_mass_below1e4": 0.0
+    },
+    "raw_quality_projected_risk": {
+      "selection_contrast": 0.021171684049352584,
+      "validation_contrast": 0.021171648730618227,
+      "changed_heads": 0,
+      "validation_negative_mass_below1e4": 0.0037784622418800397
+    },
+    "projected_quality_raw_risk": {
+      "selection_contrast": 0.021208817001008455,
+      "validation_contrast": 0.02120878611908884,
+      "changed_heads": 12,
+      "validation_negative_mass_below1e4": 0.0
+    }
+  },
+  "raw_G_E9_interval_contributions": {
+    "[0,.8]": 0.0,
+    "[.8,.95]": 0.003001055576586197,
+    "[.95,.99]": 0.012856894583750533,
+    "[.99,1]": 0.005350835958752112
+  },
+  "previous_body_raw_validation_contrast": 0.0215112413664122,
+  "raw_validation_axis_difference": -0.0003024552473233598,
+  "outer_axis_tolerance": 0.0001,
+  "outer_axis_difference_passed": false,
+  "registered_workers": 106,
+  "recorded_process_cpu_seconds": 6478.751874439,
+  "independent_confirmation": false,
+  "full_action_optimality": false,
+  "scope": "Intervals are now separately integrated. Same F16 and admitted raw candidate pools;cached G E9 numerical check."
+}

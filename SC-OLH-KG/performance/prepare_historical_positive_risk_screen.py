@@ -62,7 +62,8 @@ def prepare(plan=PLAN):
     origins={};moments={};selected=[];cdf_checks=[]
     for origin in outer['origins']:
         if 'risk_mean_order' in spec:
-            points,weights=outer_rule(spec['risk_mean_order'],spec['risk_variance_order'],spec['mean_cdf_intervals'])
+            points,weights=outer_rule(spec['risk_mean_order'],spec['risk_variance_order'],spec['mean_cdf_intervals'],
+                variance_orders=spec.get('risk_variance_orders'))
             np.testing.assert_allclose(points,spec['probability_nodes_per_origin'],atol=1e-14,rtol=0.)
             np.testing.assert_allclose(weights,spec['positive_weights_per_origin'],atol=1e-14,rtol=0.)
             points=np.asarray(spec['probability_nodes_per_origin']);weights=np.asarray(spec['positive_weights_per_origin'])
@@ -141,7 +142,7 @@ def prepare(plan=PLAN):
         save(ROOT/spec['native_direct_cost_plan'],dict(native_direct_cases=[dict(record=r['record'],groups=groups) for r in selected],
             expected_cpu_seconds_including600reserves=spec['estimated_cpu_seconds_including600reserves']))
         context['risk_grid_rule']=dict(mean_order=spec['risk_mean_order'],variance_order=spec['risk_variance_order'],
-            mean_cdf_intervals=spec['mean_cdf_intervals'],cdf_checks=cdf_checks)
+            variance_orders=spec.get('risk_variance_orders'),mean_cdf_intervals=spec['mean_cdf_intervals'],cdf_checks=cdf_checks)
     compressed_write(out/'context.json.gz',context)
     total=600+sum(j['estimated_cpu_seconds'] for j in jobs)
     assert all(j['estimated_cpu_seconds']<=spec['maximum_worker_cpu_seconds'] for j in jobs)

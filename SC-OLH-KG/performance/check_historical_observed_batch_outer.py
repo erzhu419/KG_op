@@ -20,19 +20,24 @@ def job_slug(origin,order,variance_order,variance_shard=None):
     return f'o{origin}_r{order}'+suffix+('' if variance_shard is None else f'_s{variance_shard}')
 
 
-def outer_rule(order,variance_order,mean_intervals,variance_shard=None,variance_shards=1):
-    x,w=roots_legendre(order);vx,vw=roots_legendre(variance_order)
-    variance=(vx+1)/2;variance_weights=vw/2
-    if variance_shard is not None:
-        selected=np.array_split(np.arange(variance_order),variance_shards)[variance_shard]
-        variance=variance[selected];variance_weights=variance_weights[selected]
-    points=[];weights=[]
-    for low,high in mean_intervals:
+def outer_rule(order,variance_order,mean_intervals,variance_shard=None,variance_shards=1,
+        *,variance_orders=None):
+    """Positive CDF rule; refine variance only in the requested mean intervals."""
+    x,w=roots_legendre(order)
+    orders=variance_orders if variance_orders is not None else [variance_order]*len(mean_intervals)
+    points=[];weights=[];expected_mass=0.
+    assert abs(sum(high-low for low,high in mean_intervals)-1.)<=1e-14
+    for (low,high),vorder in zip(mean_intervals,orders,strict=True):
+        vx,vw=roots_legendre(vorder);variance=(vx+1)/2;variance_weights=vw/2
+        if variance_shard is not None:
+            selected=np.array_split(np.arange(vorder),variance_shards)[variance_shard]
+            variance=variance[selected];variance_weights=variance_weights[selected]
         means=low+(high-low)*(x+1)/2;mean_weights=(high-low)*w/2
         points.extend((m,v) for m in means for v in variance)
         weights.extend(mw*vw for mw in mean_weights for vw in variance_weights)
+        expected_mass+=(high-low)*variance_weights.sum()
     points=np.asarray(points);weights=np.asarray(weights)
-    assert np.all(weights>0) and abs(weights.sum()-variance_weights.sum())<=1e-14
+    assert np.all(weights>0) and abs(weights.sum()-expected_mass)<=1e-14
     return points,weights
 
 
