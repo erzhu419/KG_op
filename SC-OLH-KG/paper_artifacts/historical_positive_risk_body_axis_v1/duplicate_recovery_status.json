@@ -1,0 +1,26 @@
+{
+  "state": "failed",
+  "estimated_phase_cpu_seconds": 2887.2213092591865,
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "preparation_id": "t145029",
+  "cdf_checks": [
+    {
+      "origin": 4,
+      "order": 64,
+      "maximum_inverse_cdf_error": 4.3298697960381105e-15,
+      "adaptive_cdf_error_bound": 2.7486967993350564e-13,
+      "positive_weight_sum": 0.9999999999999998
+    },
+    {
+      "origin": 5,
+      "order": 64,
+      "maximum_inverse_cdf_error": 1.5787371410169726e-13,
+      "adaptive_cdf_error_bound": 1.8005861970825158e-13,
+      "positive_weight_sum": 0.9999999999999998
+    }
+  ],
+  "worker_count": 16,
+  "error": "DUPLICATE: t145046 (running) has identical run identity\n  signature: KG_op/historical_positive_risk_body_axis_v1/positive-risk-grid/4+5/native-direct/0\n  cmd: env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. /home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin\n  cwd: /home/erzhu419/mine_code/KG_op_independent_kg_parallel_deploy/SC-OLH-KG\n  pass --allow-duplicate to override\n"
+}

@@ -1,0 +1,222 @@
+{
+  "state": "native_raw_axes_valued",
+  "rows": [
+    {
+      "grid": "coarse",
+      "source": "paper_artifacts/historical_positive_risk_full_grid_competition_v19/incumbent_replay_final.json",
+      "raw_native_contrast": 0.005385695804615859,
+      "raw_best_admitted_contrast": 0.00539051592122307,
+      "raw_native_selection_loss": 4.820116607210864e-06,
+      "difference_from_coarse": 0.0,
+      "relative_change_from_coarse": 0.0,
+      "body_contrast": 2.7630403315249716e-05,
+      "tail_contrast": 0.0053580654013006095,
+      "net_model_preview": 0.005330109043536663,
+      "native_choices_all_raw_referenced": true,
+      "all_conditional_actions_closed": true,
+      "largest_selection_losses": [
+        {
+          "record": "positive_full_n4_m2_v4_o4_h1_p2",
+          "cdf": [
+            0.20921161675113525,
+            0.6699905217924281
+          ],
+          "weighted_loss": 3.0918513919597336e-06,
+          "native_action_counts": {
+            "209": 4,
+            "355": 12
+          },
+          "raw_actions": [
+            209,
+            355
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v4_o5_h1_p2",
+          "cdf": [
+            0.20921161675113525,
+            0.6699905217924281
+          ],
+          "weighted_loss": 8.09909342873427e-07,
+          "native_action_counts": {
+            "209": 4,
+            "355": 12
+          },
+          "raw_actions": [
+            209,
+            355
+          ]
+        }
+      ],
+      "raw_best_admitted_difference_from_closed_coarse_optimum": 0.0
+    },
+    {
+      "grid": "mean",
+      "source": "paper_artifacts/historical_positive_risk_mean_axis_incumbents_v3/incumbent_replay_final.json",
+      "raw_native_contrast": 0.011277674119471847,
+      "raw_best_admitted_contrast": 0.011508576702068781,
+      "raw_native_selection_loss": 0.00023090258259693408,
+      "difference_from_coarse": 0.005891978314855988,
+      "relative_change_from_coarse": 1.094005032702778,
+      "body_contrast": 0.005926835271145932,
+      "tail_contrast": 0.005350838848325913,
+      "net_model_preview": 0.011222087358392651,
+      "native_choices_all_raw_referenced": true,
+      "all_conditional_actions_closed": false,
+      "largest_selection_losses": [
+        {
+          "record": "positive_full_n4_m4_v4_o4_h1_p14",
+          "cdf": [
+            0.9212624742390559,
+            0.6699905217924281
+          ],
+          "weighted_loss": 0.00022569548331234697,
+          "native_action_counts": {
+            "326": 5,
+            "355": 6,
+            "363": 5
+          },
+          "raw_actions": [
+            326,
+            355
+          ]
+        },
+        {
+          "record": "positive_full_n4_m4_v4_o5_h1_p14",
+          "cdf": [
+            0.9212624742390559,
+            0.6699905217924281
+          ],
+          "weighted_loss": 5.207099284586867e-06,
+          "native_action_counts": {
+            "326": 1,
+            "355": 15
+          },
+          "raw_actions": [
+            355
+          ]
+        }
+      ],
+      "dominant_selection_loss_fraction": 0.9774489344119781,
+      "raw_best_admitted_difference_from_closed_coarse_optimum": 0.006118060780845711
+    },
+    {
+      "grid": "variance",
+      "source": "paper_artifacts/historical_positive_risk_variance_axis_incumbents_v4/incumbent_replay_final.json",
+      "raw_native_contrast": 0.005618446529256134,
+      "raw_best_admitted_contrast": 0.0056426147302751145,
+      "raw_native_selection_loss": 2.4168201018980734e-05,
+      "difference_from_coarse": 0.00023275072464027432,
+      "relative_change_from_coarse": 0.04321646321739769,
+      "body_contrast": 0.0002657555786865523,
+      "tail_contrast": 0.005352690950569582,
+      "net_model_preview": 0.005562859768176938,
+      "native_choices_all_raw_referenced": true,
+      "all_conditional_actions_closed": false,
+      "largest_selection_losses": [
+        {
+          "record": "positive_full_n4_m2_v8_o4_h1_p15",
+          "cdf": [
+            0.7807883832488647,
+            0.9801449282487682
+          ],
+          "weighted_loss": 2.416820101898027e-05,
+          "native_action_counts": {
+            "326": 16
+          },
+          "raw_actions": [
+            326,
+            355
+          ]
+        },
+        {
+          "record": "positive_full_n4_m2_v8_o4_h1_p0",
+          "cdf": [
+            0.20921161675113525,
+            0.019855071751231856
+          ],
+          "weighted_loss": 0.0,
+          "native_action_counts": {
+            "355": 16
+          },
+          "raw_actions": [
+            355
+          ]
+        }
+      ],
+      "raw_best_admitted_difference_from_closed_coarse_optimum": 0.0002520988090520442
+    }
+  ],
+  "completed_new_phases": [
+    {
+      "axis": "mean",
+      "phase": 2,
+      "completion": "paper_artifacts/historical_positive_risk_mean_axis_incumbents_v2/completion.json",
+      "workers": 38,
+      "groups": 19,
+      "all_reference_precision_passed": true,
+      "maximum_reference_difference": 9.134590659987118e-06,
+      "recorded_process_cpu_seconds": 1897.899451219,
+      "estimated_phase_cpu_seconds": 3512.9580132676006
+    },
+    {
+      "axis": "mean",
+      "phase": 3,
+      "completion": "paper_artifacts/historical_positive_risk_mean_axis_incumbents_v3/completion.json",
+      "workers": 26,
+      "groups": 13,
+      "all_reference_precision_passed": true,
+      "maximum_reference_difference": 8.878599466966008e-06,
+      "recorded_process_cpu_seconds": 1295.0263013359997,
+      "estimated_phase_cpu_seconds": 2561.9283940587998
+    },
+    {
+      "axis": "variance",
+      "phase": 2,
+      "completion": "paper_artifacts/historical_positive_risk_variance_axis_incumbents_v2/completion.json",
+      "workers": 38,
+      "groups": 19,
+      "all_reference_precision_passed": true,
+      "maximum_reference_difference": 9.788329804916174e-06,
+      "recorded_process_cpu_seconds": 1938.451291271,
+      "estimated_phase_cpu_seconds": 3524.2790691603996
+    },
+    {
+      "axis": "variance",
+      "phase": 3,
+      "completion": "paper_artifacts/historical_positive_risk_variance_axis_incumbents_v3/completion.json",
+      "workers": 20,
+      "groups": 10,
+      "all_reference_precision_passed": true,
+      "maximum_reference_difference": 8.745509778362859e-06,
+      "recorded_process_cpu_seconds": 967.572383649,
+      "estimated_phase_cpu_seconds": 2073.1475638912007
+    },
+    {
+      "axis": "variance",
+      "phase": 4,
+      "completion": "paper_artifacts/historical_positive_risk_variance_axis_incumbents_v4/completion.json",
+      "workers": 2,
+      "groups": 1,
+      "all_reference_precision_passed": true,
+      "maximum_reference_difference": 1.0753561970944236e-05,
+      "recorded_process_cpu_seconds": 109.876019324,
+      "estimated_phase_cpu_seconds": 755.9314796415999
+    }
+  ],
+  "new_workers": 124,
+  "recorded_new_process_cpu_seconds": 6208.825446798999,
+  "maximum_reference_difference": 1.0753561970944236e-05,
+  "outer_axis_tolerance": 0.0001,
+  "mean_axis_converged": false,
+  "variance_axis_converged": false,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "conclusion": "The mean-axis change is primarily body quadrature. The variance-axis change also exceeds the original gate. The raw valuation of native choices is complete on both finite grids; all-action optimality and continuous convergence remain open.",
+  "next_step": "Refine mean CDF [0,.99] into [0,.8] and [.8,.99] at unchanged order4/variance4, reusing the32 identical admitted tail observations, raw/native references and upper rows.",
+  "post_completion_cached_diagnosis": {
+    "resource_source": "paper_artifacts/historical_positive_risk_outer_axes_incumbents_v2/raw_choice_diagnosis.json",
+    "process_cpu_seconds": 3.10422095,
+    "charged_to": "original mean-axis v3 shared600reserve"
+  }
+}

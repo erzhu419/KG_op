@@ -47,6 +47,18 @@ def prepare(plan=PLAN):
         np.testing.assert_allclose(query_fields[h].log_weights,query['fields'][h]['log_weights'],rtol=0.,atol=1e-10)
         # Use the exact historical snapshot for cached policy conditioning.
         query_fields[h]=field_from_snapshot(query['fields'][h])
+    reused_context=None;reused_rows={};reused_records=[]
+    if 'reused_bank_plan' in spec:
+        reused_bound=read(spec['reused_bank_plan'])
+        assert read(reused_bound['output']+'/compact_summary.json')['numerical_containment_passed']
+        reused_base=ROOT/read(reused_bound['bank_plan'])['output']
+        reused_context=compressed_read(reused_base/'context.json.gz')
+        assert reused_context['prior_weights']==context['prior_weights'] and reused_context['query']==context['query']
+        for o,data in reused_context['origins'].items():
+            assert data['objective']==context['origins'][o]['objective'] and data['objective_scores']==context['origins'][o]['objective_scores']
+            for row in data['risk']:
+                if row['cdf'][0]>=spec['reused_mean_cdf_minimum']:
+                    reused_rows[int(o),tuple(row['cdf'])]=row
     origins={};moments={};selected=[];cdf_checks=[]
     for origin in outer['origins']:
         if 'risk_mean_order' in spec:
@@ -62,7 +74,7 @@ def prepare(plan=PLAN):
             assert error<=fixed['maximum_inverse_cdf_error'] and bound<=fixed['maximum_adaptive_cdf_error_bound']
             cdf_checks.append(dict(origin=origin,order=order,maximum_inverse_cdf_error=error,
                 adaptive_cdf_error_bound=bound,positive_weight_sum=float(weights.sum())))
-            indices=range(len(points));prefix=f'positive_full_n4_m{spec["risk_mean_order"]}_v{spec["risk_variance_order"]}_o{origin}_h1'
+            indices=range(len(points));prefix=f'{spec.get("risk_record_prefix", "positive_full_n4_m"+str(spec["risk_mean_order"])+"_v"+str(spec["risk_variance_order"]))}_o{origin}_h1'
         else:
             banks=[read(outer['output']+f'/o{origin}_r16_v64_s{s}/bank.json') for s in range(2)]
             points=np.concatenate([b['probabilities'] for b in banks])
@@ -74,6 +86,12 @@ def prepare(plan=PLAN):
             prefix=f'positive_n4_o{origin}_h1'
         rows=[]
         for index in indices:
+            reused=reused_rows.get((origin,tuple(points[index])))
+            if reused is not None:
+                assert reused['outer_weight']==float(weights[index])
+                row=dict(reused,position=index);record=row['record']
+                moments[record]=reused_context['risk_local_moments'][record]
+                reused_records.append(record);rows.append(row);selected.append(dict(origin=origin,**row));continue
             record=f'{prefix}_p{index}';scores=[];saved={}
             for h,field in enumerate(query_fields):
                 local=local_raw_moments(field.means,field.covariances,float(labels[index]),float(etas[index]),4)
@@ -85,6 +103,24 @@ def prepare(plan=PLAN):
         origins[str(origin)]=dict(context['origins'][str(origin)],risk=rows)
     context.update(origins=origins,risk_local_moments=moments,
         risk_query_fields={str(h):query['fields'][h] for h in (4,5)})
+    if reused_context is not None:
+        (out/'reused_screen_rows').mkdir(parents=True,exist_ok=True)
+        (out/'native_parts').mkdir(parents=True,exist_ok=True)
+        assert len(reused_records)==spec['reused_risk_observations']
+        context['reused_risk_records']=reused_records
+        reused_set=set(reused_records)
+        for h in (4,5):
+            for shard in range(len(spec['policy_shards'])):
+                task=read(str(reused_base/'tasks'/f'{h}_{shard}.json'));assert task['complete']
+                save(out/'reused_screen_rows'/f'{h}_{shard}.json',dict(rows=[r for r in task['rows'] if r['record'] in reused_set],
+                    maximum_score_error=task['maximum_score_error']))
+        native=read(str(reused_base/'native_direct_references.json'))
+        for job in spec['native_direct_jobs']:
+            if job.get('reused'):
+                names={r['record'] for r in selected[8*job['shard']:8*(job['shard']+1)]}
+                assert names<=reused_set
+                save(out/'native_parts'/f'{job["shard"]}.json',dict(complete=True,cpu_seconds=0.,
+                    rows=[r for r in native['rows'] if r['record'] in names],reused_from=str(reused_base/'native_direct_references.json')))
     count=len(selected);jobs=[]
     if 'risk_mean_order' in spec:
         jobs=[dict(j) for j in spec['screen_jobs']]
@@ -99,7 +135,7 @@ def prepare(plan=PLAN):
         from performance.validate_historical_component_bank import action_groups
         groups=[g['group'] for g in action_groups(context['actions']) if g['kind']=='direct' and context['actions'][g['action_indices'][0]]['primary']!=63]
         native_jobs=[dict(j,identity='4+5',kind='native-direct',records=[r['record'] for r in selected[8*j['shard']:8*(j['shard']+1)]])
-            for j in spec['native_direct_jobs']]
+            for j in spec['native_direct_jobs'] if not j.get('reused')]
         for j in jobs:j['kind']='screen'
         jobs+=native_jobs
         save(ROOT/spec['native_direct_cost_plan'],dict(native_direct_cases=[dict(record=r['record'],groups=groups) for r in selected],
@@ -113,6 +149,7 @@ def prepare(plan=PLAN):
     result=dict(complete=True,jobs=jobs,selected=selected,risk_observations=count,objective_heads_per_origin=16,
         action_count=365,cumulative_estimated_cpu_seconds=total,estimated_cost_admitted=total<=spec['maximum_estimated_cpu_seconds'],
         source_components={str(h):len(query['fields'][h]['means']) for h in (4,5)},
+        reused_risk_observations=len(reused_records),new_risk_observations=count-len(reused_records),
         cpu_seconds=time.process_time()-started,full_posterior_restorations=0,new_physical_calls=0,
         native_replayed_sites=sites,native_paid_records_replayed=2,all_identity_likelihoods=8,
         new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
@@ -120,10 +157,12 @@ def prepare(plan=PLAN):
         scope=spec['scope'])
     save(out/'preparation.json',result);signal.setitimer(signal.ITIMER_PROF,0.)
     print('SCHEDULEURM_DONE '+json.dumps(result),flush=True)
-    print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
-        peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)
     return result
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--plan',default=PLAN);prepare(p.parse_args().plan)
+    p=argparse.ArgumentParser();p.add_argument('--plan',default=PLAN)
+    try:prepare(p.parse_args().plan)
+    finally:
+        print('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=time.process_time(),
+            peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)

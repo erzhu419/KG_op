@@ -52,7 +52,9 @@ def run(plan=None, output=None, emit=True):
         spec=read(reference_plan);prep=read(spec['output']+'/preparation.json');selected={r['record']:r for r in prep['selected']}
         for check in read(spec['output']+'/compact_summary.json')['groups']:
             assert check['candidate_passed']
-            name,kind=check['record'],check['kind'];origin,i,actual=observations[name]
+            name,kind=check['record'],check['kind']
+            if name not in observations:continue
+            origin,i,actual=observations[name]
             bundle=compressed_read(ROOT/spec['output']/'marginals'/(name+'.json.gz'))
             assert all(actual[k]==bundle[k] for k in ('label','eta_label','head_log_scores'))
             assert bundle['prior_weights']==prior.tolist() and bundle['replicates']==4
@@ -94,8 +96,10 @@ def run(plan=None, output=None, emit=True):
             if absent:
                 missing.append(dict(incumbent,actions=absent));continue
             gain=float(np.mean(achieved[:,i]-raw[:,i,355]))
+            raw_unique,raw_counts=np.unique(raw_choices[:,i],return_counts=True)
             rows.append(dict(record=r['record'],origin=origin,cdf=r['cdf'],outer_weight=r['outer_weight'],mixture_weight=weight,
                 native_action_counts={str(a):int(n) for a,n in zip(unique,counts)},raw_actions=sorted(set(map(int,raw_choices[:,i]))),
+                raw_action_counts={str(a):int(n) for a,n in zip(raw_unique,raw_counts)},
                 mean_fixed_reward=float(raw[:,i,355].mean()),mean_raw_reward_of_native_choice=float(achieved[:,i].mean()),
                 mean_native_choice_contrast=gain,mean_raw_optimal_contrast=best,
                 mean_action_selection_loss=float(np.mean(optimum[:,i]-achieved[:,i])),weighted_subset_contrast=weight*gain))

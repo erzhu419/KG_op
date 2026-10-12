@@ -1,0 +1,22 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_body_axis_incumbents_v1",
+  "screen_plan": "performance/manifests/historical_positive_risk_body_axis_v1.json",
+  "incumbent_bound_plan": "performance/manifests/historical_positive_risk_body_axis_v1.json",
+  "previous_phase_completion": "paper_artifacts/historical_positive_risk_mean_axis_incumbents_v3/completion.json",
+  "frozen_cost_plan": "paper_artifacts/historical_positive_risk_body_axis_incumbents_v1/next_cost_plan.json",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_body_axis_bound_incumbents_v1.json",
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "seed": 202610077,
+  "maximum_worker_cpu_seconds": 421,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_live_workers": 8,
+  "refined_cases": [],
+  "pricing": "Maximum actual same-group n4 and scaled same-group n1 rule timers,20percent margin,2setup perworker andone600shared reserve after the prior phase passed.",
+  "scope": "Raw references for native recommendations on the body-refined grid; retain the initial shared600 reserve and all reused tail results.",
+  "continued_phase_cost_plan": "paper_artifacts/historical_positive_risk_body_axis_v1/preparation.json"
+}

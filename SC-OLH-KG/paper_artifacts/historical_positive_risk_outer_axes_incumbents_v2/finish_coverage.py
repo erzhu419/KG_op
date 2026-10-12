@@ -1,20 +1,26 @@
 """Finish existing native recommendation coverage in successive bounded phases."""
+import argparse
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
-out=Path(__file__).resolve().parent
+parser=argparse.ArgumentParser()
+parser.add_argument('--frozen-plan',default=str(Path(__file__).resolve().parent/'incumbent_frozen_plan.json'))
+args=parser.parse_args();initial_frozen=Path(args.frozen_plan).resolve()
+out=initial_frozen.parent
+folder_prefix=out.name.rsplit('_v',1)[0]
 helper=ROOT/'paper_artifacts/historical_positive_risk_outer_axes_v1'
 status=dict(state='running',completed_phases=[],maximum_live_workers=8,priority='low',
     full_predictive_integration_admitted=False,independent_confirmation=False)
-active=['mean','variance'];latest={}
+active=[r['axis'] for r in json.loads(initial_frozen.read_text())['rows']];latest={}
 try:
     for phase in range(2,5):
+        folder=ROOT/'paper_artifacts'/f'{folder_prefix}_v{phase}'
         if phase>2:
-            subprocess.run([sys.executable,str(helper/'prepare_next_incumbents.py'),'--phase',str(phase),'--axes',*active],cwd=ROOT,check=True)
-        folder=ROOT/f'paper_artifacts/historical_positive_risk_outer_axes_incumbents_v{phase}'
+            subprocess.run([sys.executable,str(helper/'prepare_next_incumbents.py'),'--phase',str(phase),'--axes',*active,
+                '--frozen-output',str(folder.relative_to(ROOT))],cwd=ROOT,check=True)
         frozen_path=folder/'incumbent_frozen_plan.json';frozen=json.loads(frozen_path.read_text())
         status.update(current_phase=phase)
         (out/'coverage_status.json').write_text(json.dumps(status,indent=2)+'\n')

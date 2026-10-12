@@ -29,7 +29,8 @@ def upload(path):
         if rc:raise RuntimeError(err or body)
 
 parser=argparse.ArgumentParser();parser.add_argument('--phase',type=int,required=True)
-parser.add_argument('--axes',nargs='+',choices=('mean','variance'),default=['mean','variance'])
+parser.add_argument('--axes',nargs='+',choices=('mean','variance','body'),default=['mean','variance'])
+parser.add_argument('--frozen-output')
 args=parser.parse_args();assert args.phase>=2
 plans=[];rows=[]
 for axis in args.axes:
@@ -71,7 +72,7 @@ for axis in args.axes:
         selected_observations=result['frozen_cost_plan']['selected_observations'],
         remaining_missing_observations=len(result['frozen_cost_plan']['remaining_missing_observations']))
     rows.append(row);plans.append(risk_plan);print(json.dumps(row),flush=True)
-folder=f'paper_artifacts/historical_positive_risk_outer_axes_incumbents_v{args.phase}'
+folder=args.frozen_output or f'paper_artifacts/historical_positive_risk_outer_axes_incumbents_v{args.phase}'
 save(folder+'/incumbent_frozen_plan.json',dict(plans=plans,rows=rows,maximum_live_workers=8,priority='low',
     shared_phase_reserve_cpu_seconds=600,maximum_estimated_phase_cpu_seconds=3600,
     scope='Sequential axis phases reuse cached observations and condition only missing raw recommendation values. Previous phases passed and retain their recorded costs. Outer convergence and independent deployment remain separate.'))

@@ -84,12 +84,17 @@ def run(identity,shard,plan=PLAN):
     signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,spec['maximum_worker_cpu_seconds'])
     context=compressed_read(out/'context.json.gz');base=ROOT/'paper_artifacts/historical_component_bank_v1/marginals'
     rows=[];maximum_score_error=0.
+    if 'reused_bank_plan' in spec:
+        cached=read(spec['output']+f'/reused_screen_rows/{identity}_{shard}.json')
+        rows=cached['rows'];maximum_score_error=cached['maximum_score_error']
+    reused=set(context.get('reused_risk_records',[]));cached_count=len(rows)
     for policy in spec['policy_shards'][shard]:
         shared=compressed_read(base/f'{73+policy:03d}.json.gz');field=field_from_snapshot(shared['fields'][identity])
         assert shared['prior_weights']==context['prior_weights'] and shared['points'][0]==context['query']
         position=shared['points'].index(policy)
         for origin in context['origins'].values():
             for r in origin['risk']:
+                if r['record'] in reused:continue
                 future=copy.deepcopy(field);score=condition_risk(future,r,identity,context)
                 error=abs(score-r['head_log_scores'][identity]);assert error<=1e-10
                 maximum_score_error=max(maximum_score_error,error);raw={}
@@ -108,6 +113,7 @@ def run(identity,shard,plan=PLAN):
                 rows.append(row)
         print('SCHEDULEURM_PROGRESS '+json.dumps(dict(identity=identity,shard=shard,policy=policy,cpu_seconds=time.process_time()-start)),flush=True)
     result=dict(complete=True,identity=identity,shard=shard,rows=rows,components=len(field.means),
+        reused_observation_policy_rows=cached_count,new_observation_policy_rows=len(rows)-cached_count,
         maximum_score_error=maximum_score_error,cpu_seconds=time.process_time()-start)
     save(out/'tasks'/f'{identity}_{shard}.json',result);signal.setitimer(signal.ITIMER_PROF,0.)
     print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True)
@@ -133,7 +139,7 @@ def native_direct_references(spec,context,out,shard=None):
     if shard is not None:
         job=next(j for j in read(spec['output']+'/preparation.json')['jobs'] if j['kind']=='native-direct' and j['shard']==shard)
         cases=[r for r in cases if r['record'] in job['records']]
-        assert len(cases)==job['observation_count']
+        assert len(cases)==len(job['records'])
     for selected in cases:
         r=coordinates[selected['record']]
         for gid in selected['groups']:
@@ -178,6 +184,12 @@ def collect(plan=PLAN):
     if query_path.exists():query_references=read(str(query_path))
     else:
         tick=time.process_time();query_rows=[]
+        reused_queries={}
+        if 'reused_bank_plan' in spec:
+            source=ROOT/read(read(spec['reused_bank_plan'])['bank_plan'])['output']
+            reused=set(context['reused_risk_records'])
+            for row in read(str(source/'query_references.json'))['rows']:
+                if row['record'] in reused:reused_queries.setdefault((row['identity'],row['record']),[]).append(row)
         ix=[a for a,action in enumerate(context['actions']) if action['kind']=='direct' and action['primary']==63 and a!=355]
         shared=compressed_read(ROOT/'paper_artifacts/historical_component_bank_v1/marginals/136.json.gz')
         assert shared['points']==[63] and shared['prior_weights']==context['prior_weights']
@@ -185,6 +197,8 @@ def collect(plan=PLAN):
             before=field_from_snapshot(shared['fields'][h])
             for origin in context['origins'].values():
                 for r in origin['risk']:
+                    if (h,r['record']) in reused_queries:
+                        query_rows.extend(reused_queries[h,r['record']]);continue
                     future=copy.deepcopy(before);score=condition_risk(future,r,h,context)
                     assert abs(score-r['head_log_scores'][h])<=1e-10
                     budgets=[context['actions'][a]['budgets'][0] for a in ix]

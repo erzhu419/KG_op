@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py", line 66, in <module>
+    launch('positive-risk-grid',plan)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 140, in launch
+    if p.returncode:raise RuntimeError(p.stderr or p.stdout)
+RuntimeError: DUPLICATE: t145046 (running) has identical run identity
+  signature: KG_op/historical_positive_risk_body_axis_v1/positive-risk-grid/4+5/native-direct/0
+  cmd: env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. /home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin
+  cwd: /home/erzhu419/mine_code/KG_op_independent_kg_parallel_deploy/SC-OLH-KG
+  pass --allow-duplicate to override
+
+BODY_GRID_DONE {"state": "failed", "maximum_live_workers": 8, "priority": "low", "full_predictive_integration_admitted": false, "independent_confirmation": false, "error": "Command '['/usr/bin/python3', '-u', '/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py', '--plan', 'performance/manifests/historical_positive_risk_body_axis_v1.json']' returned non-zero exit status 1."}
+Traceback (most recent call last):
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_body_axis_v1/continue_when_ready.py", line 20, in <module>
+    subprocess.run([sys.executable,'-u',str(ROOT/'paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py'),
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '-u', '/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_v1/continue_when_ready.py', '--plan', 'performance/manifests/historical_positive_risk_body_axis_v1.json']' returned non-zero exit status 1.

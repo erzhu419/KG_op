@@ -93,6 +93,14 @@ try:
         peak_worker_rss_mb=max(r['resource']['peak_rss_mb'] for r in resources),
         maximum_live_workers=8,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False)
+    failure_cost=out/'preparation_failure_cost.json'
+    if failure_cost.exists():
+        account['conservative_failed_preparation_cpu_seconds']=json.loads(failure_cost.read_text())['charged_cpu_seconds']
+    failed_workers=out/'failed_worker_resources.json'
+    if failed_workers.exists():
+        failed=json.loads(failed_workers.read_text())
+        account['recorded_failed_worker_cpu_seconds']=sum(r['resource']['process_cpu_seconds'] for r in failed)
+        account['failed_worker_count']=len(failed)
     (out/'execution_account.json').write_text(json.dumps(account,indent=2)+'\n')
 except Exception as error:
     status.update(state='failed',error=str(error));raise
