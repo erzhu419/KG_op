@@ -1,0 +1,38 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_body_axis_bound_incumbents_v3.json",
+  "source_replay": "paper_artifacts/historical_raw_recommendation_alignment_v1/body_replay.json",
+  "record": "positive_body_v1_n4_m4_v4_o5_h1_p26",
+  "cdf": [0.9272981991405613, 0.6699905217924281],
+  "objective_head": 8,
+  "actions": {
+    "326": {"primary": 34, "kind": "direct", "verification_budget": 356},
+    "355": {"primary": 63, "kind": "direct", "verification_budget": 356},
+    "363": {"primary": 71, "kind": "direct", "verification_budget": 356}
+  },
+  "action_order": [326, 355, 363],
+  "shared_identity_weights": [1.2314727919758638e-36, 1.2015494124344201e-36, 1.9068130353585547e-24, 3.328194738956923e-24, 0.6754477457591074, 0.3245522542384126, 1.5214829679923207e-12, 9.58528038017739e-13],
+  "raw_rewards": [0.5529670170226726, 0.5756806612346961, 0.5576237188468623],
+  "projected_rewards": [0.5529778072486242, 0.556985001538384, 0.5577562198574735],
+  "raw_minus_fixed": [-0.022713644212023487, 0.0, -0.01805694238783373],
+  "projected_minus_fixed": [-0.004007194289759819, 0.0, 0.0007712183190894395],
+  "cached_G_E9_contrast_of_projected_choice": -0.01805710052144016,
+  "weighted_risk_certificate": {
+    "raw": [0.7132344488722613, 0.7145708320591673, 0.7376588153330765],
+    "projected": [0.7132483663488283, 0.6913646430714916, 0.7378340953091553]
+  },
+  "risk_certificate_scope": "Joint posterior identity weights; terminal risk statistics evaluated for identities 4 and 5. Other identities retain their likelihoods and joint weights; their unevaluated utility mass at this head is below 2.5e-12.",
+  "attribution": "The projected rule primarily understates the fixed query policy 63 certificate probability. Its projected reward ranking favors policy 71, while admitted raw rewards favor policy 63. All three actions have the same direct verifier and budget.",
+  "body_region_attribution": {
+    "parent_mean_interval": [0.8, 0.99],
+    "order": 4,
+    "upper_mean_node": 0.976807949601435,
+    "upper_mean_node_weight": 0.033046210288058105,
+    "raw_native_contribution_at_nodes_with_mean_cdf95_99": 0.01327687865916126,
+    "scope": "Node contributions from an unsplit [0.8,0.99] Gauss-Legendre rule; this is not a separately integrated [0.95,0.99] interval. The running shoulder grid splits at 0.95."
+  },
+  "new_integrations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false
+}

@@ -78,6 +78,7 @@
   "body_recorded_process_cpu_seconds": 3552.9355818980002,
   "conservative_failed_preparation_cpu_seconds": 122.0,
   "cached_alignment_process_cpu_seconds": 6.825969543,
+  "region_attribution_scope": "The upper_body95_99 fields sum contributions of nodes with mean CDF in [.95,.99]. The body rule integrates [.8,.99] without a split at .95, so these fields are not separate [.95,.99] interval integrals. See node_attribution.json for the exact node weight and the action-ranking counterexample.",
   "cause": "The [.95,.99] mean-CDF band was unsampled by the original unsplit order4 body rule. Correcting the risk terminal scoring changes9/12 heads on the two banks and reproduces the full raw policy gains; correcting only objective quality leaves the projected recommendations unchanged.",
   "scope": "Same admitted candidate pool, original prior/covariance/budgets andmatched F heads. G E9 checks numerical selection fidelity;continuous quadrature,all-action optimality andindependent deployment remain open.",
   "independent_confirmation": false,
