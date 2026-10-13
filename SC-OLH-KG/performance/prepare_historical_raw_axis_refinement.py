@@ -16,12 +16,15 @@ def prepare(mode, source_bound):
     assert closed['state']=='phase_complete' and closed['all_reference_precision_passed']
     assert closed['native_choices_all_raw_referenced']
     intervals=source['mean_cdf_intervals'];orders=source.get('risk_variance_orders',[source['risk_variance_order']]*len(intervals))
-    if mode=='midmean':
+    if mode in ('midmean','uppermidmean'):
+        target=[.8,.95] if mode=='midmean' else [.875,.95]
+        intervals.index(target)
+        midpoint=sum(target)/2
         new_intervals=[];new_orders=[]
         for interval,vorder in zip(intervals,orders,strict=True):
-            pieces=[[.8,.875],[.875,.95]] if interval==[.8,.95] else [interval]
+            pieces=[[target[0],midpoint],[midpoint,target[1]]] if interval==target else [interval]
             new_intervals.extend(pieces);new_orders.extend([vorder]*len(pieces))
-        comparison='Split [.8,.95] at .875; all other mean and variance rules unchanged.'
+        comparison=f'Split {target} at {midpoint}; all other mean and variance rules unchanged.'
     else:
         assert mode=='uppervariance'
         new_intervals=copy.deepcopy(intervals);new_orders=list(orders)
@@ -75,7 +78,10 @@ def prepare(mode, source_bound):
         native_direct_cost_plan=output+'/native_direct_cost_plan.json',continued_phase_cost_plan=output+'/preparation.json',
         joint_reference_plans=bound['joint_reference_plans'],pricing_reference_plans=bound['pricing_reference_plans'],
         previous_conditional_completion=completion,estimated_cpu_seconds_including600reserves=total,
+        estimated_screen_cpu_seconds=sum(j['estimated_cpu_seconds'] for j in jobs),
+        estimated_native_direct_cpu_seconds=sum(j['estimated_cpu_seconds'] for j in native),
         outer_axis=mode,scope='Local CDF refinement with exact cached-coordinate reuse. Original prior,8 likelihoods,512/1024 components,full covariance,F16,365 actions,356 calls and SD16 retained;confirmation unopened.')
+    spec['native_direct_pricing'].update(rows=sum(j['rows'] for j in native),matched_cpu_per_row=native_rate)
     spec.pop('reference_phase_cost_plan',None)
     spec['accuracy_contract']['local_axis_comparison']=comparison
     spec['pricing']='Maximum recorded same-identity screen/native row rates,20percent margin,2setup perworker,one shared600reserve; prior phases remain charged.'
@@ -104,6 +110,6 @@ def prepare(mode, source_bound):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--mode',choices=('midmean','uppervariance'),required=True)
+    parser=argparse.ArgumentParser();parser.add_argument('--mode',choices=('midmean','uppermidmean','uppervariance'),required=True)
     parser.add_argument('--source-bound',required=True);args=parser.parse_args()
     print(json.dumps(prepare(args.mode,args.source_bound)))

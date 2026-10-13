@@ -9,7 +9,7 @@ import numpy as np
 from core.raw_terminal_head_grid import compose_head_grid,select_raw_terminal_actions
 from performance.complete_historical_source_heads import ROOT,read,save
 from performance.diagnose_historical_component_guarded import compressed_read
-from performance.validate_historical_component_bank import action_groups
+from performance.validate_historical_component_bank import action_groups,selected_reference_rule
 
 
 def run(plan=None, output=None, emit=True):
@@ -62,10 +62,10 @@ def run(plan=None, output=None, emit=True):
             assert bundle['prior_weights']==prior.tolist() and bundle['replicates']==4
             ix=selected[name]['action_indices']
             for h in (4,5):
-                part=read(spec['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows'][check['selected_candidate']]
+                part=read(spec['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows'][selected_reference_rule(check,h)]
                 tables[origin,kind][i,h,ix]=part['statistics'];costs[origin,kind][i,h,ix]=part['costs']
                 if kind=='raw':
-                    high=read(spec['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows']['E9']
+                    high=read(spec['output']+'/parts/'+name+'/'+str(h)+'_'+kind+'.json')['rows'][check.get('validation_rule','E9')]
                     validation_tables[origin][i,h,ix]=high['statistics'];validation_costs[origin][i,h,ix]=high['costs']
             references+=1
     rows=[];missing=[];incumbents=[];maximum_omitted=0.;weighted_raw_best=0.
@@ -149,7 +149,7 @@ def run(plan=None, output=None, emit=True):
         raw_recommendation=dict(selector='core.raw_terminal_head_grid.select_raw_terminal_actions',
             candidate_pool='Intersection of admitted raw and projected actions, identical for all four policies.',
             scoring='Admitted raw conditional terminal reward; expected raw cost breaks ties.',
-            validation='Cached joint G E9 statistics; original matched F heads and query128 references remain fixed. This is numerical rule validation, not held-out deployment.',
+            validation='Recorded joint risk validation rules; original matched objective heads and query128 references remain fixed. This is numerical rule validation, not held-out deployment.',
             policy_totals=policy_totals,rows=alignment,
             full_action_optimality=closed,independent_confirmation=False),
         maximum_omitted_utility_identity_mass=maximum_omitted,source_components={'4':512,'5':1024},

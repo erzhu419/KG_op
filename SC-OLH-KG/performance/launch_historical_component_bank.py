@@ -38,10 +38,13 @@ def refresh_jobs(ids):
     owned={t['id'] for t in snapshot['tasks']}
     results=scheduler._running_probe_snapshot_deps().backend_batch_probe(snapshot)
     diagnostics=scheduler._terminal_diagnostics_snapshot_outside_lock(results,owned,'KG:task-health')
-    with scheduler.state_lock(timeout_s=20,purpose='KG:task-health'):
-        state=scheduler.load_state()
-        scheduler._batch_check_running(state,probe_results=results,probed_task_ids=owned,terminal_diagnostics=diagnostics)
-        scheduler.save_state(state)
+    try:
+        with scheduler.state_lock(timeout_s=20,purpose='KG:task-health'):
+            state=scheduler.load_state()
+            scheduler._batch_check_running(state,probe_results=results,probed_task_ids=owned,terminal_diagnostics=diagnostics)
+            scheduler.save_state(state)
+    except scheduler.SchedulerLockTimeout:
+        print('TASK_HEALTH_DEFERRED scheduler state lock busy; retaining recorded worker states',flush=True)
 
 
 def launch(stage,plan=None):
@@ -181,7 +184,10 @@ def collect_remote(stage,out,plan=None):
         else ['performance.validate_historical_component_bank','collect','--stage',stage])
     command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
         'PYTHONPATH=.',PYTHON,'-u','-m']+worker)
-    rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
+    # The 224-point all-action collection takes about34 CPU seconds before
+    # interpreter startup and transport; its CPU limit remains240 seconds.
+    rc,body,err=scheduler.run_on('node005',command,
+        timeout=60 if stage=='observed-batch-bound' else 35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
     name='next_cost_plan.json' if stage=='observed-batch-next-plan' else 'compact_summary.json' if stage in ('positive-direct-reference','observed-batch-risk','observed-batch-bound','observed-batch-assembly','observed-batch-outer') else UPPER_MODES[stage]+'_summary.json' if stage in UPPER_MODES else BANK_STAGES[stage]+'_summary.json' if stage in BANK_STAGES else 'summary.json' if stage in LABEL_MODES else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {

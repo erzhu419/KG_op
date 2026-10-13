@@ -1,0 +1,20 @@
+{
+  "plans": [
+    "performance/manifests/historical_positive_risk_uppervariance_axis_incumbents_v3.json"
+  ],
+  "rows": [
+    {
+      "axis": "uppervariance",
+      "plan": "performance/manifests/historical_positive_risk_uppervariance_axis_incumbents_v3.json",
+      "registered_workers": 32,
+      "estimated_phase_cpu_seconds": 3503.5201181164,
+      "selected_observations": 16,
+      "remaining_missing_observations": 33
+    }
+  ],
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "shared_phase_reserve_cpu_seconds": 600,
+  "maximum_estimated_phase_cpu_seconds": 3600,
+  "scope": "Sequential axis phases reuse cached observations and condition only missing raw recommendation values. Previous phases passed and retain their recorded costs. Outer convergence and independent deployment remain separate."
+}

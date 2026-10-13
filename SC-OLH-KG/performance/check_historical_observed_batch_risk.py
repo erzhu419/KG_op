@@ -26,6 +26,29 @@ def selected_rule(spec,record,kind):
     return case.get('candidate','E8') if case else 'E7'
 
 
+def selected_identity_rule(spec,record,kind,identity):
+    case=next((r for r in spec.get('refined_cases',[]) if r['record']==record and r['kind']==kind),{})
+    return case.get('identity_candidates',{}).get(str(identity),selected_rule(spec,record,kind))
+
+
+def reference_comparisons(spec,record,kind):
+    candidate=selected_rule(spec,record,kind)
+    pairs={'E7':[('E7','E8'),('E7','F7'),('E7','G7')],
+        'E8':[('E8','F8'),('E8','H8'),('E8','E9')],
+        'E9':[('E8','E9'),('E9','F9'),('E9','K9')]}[candidate]
+    case=next((r for r in spec.get('refined_cases',[]) if r['record']==record and r['kind']==kind),{})
+    lower,higher={'E8':('L8','H8'),'E9':('L9','K9')}.get(candidate,(None,None))
+    if lower in case.get('rules',[]):
+        if higher in case['rules']:pairs.append((lower,candidate))
+        else:pairs=[(lower,candidate) if high==higher else (low,high) for low,high in pairs]
+    if 'independent_reference' in case:
+        assert candidate=='E9' and case['independent_reference']=='F10'
+        pairs=[(low,'F10' if high=='F9' else high) for low,high in pairs]+[('F9','F10')]
+    if 'identity_candidates' in case:
+        pairs=[('E8','E9'),('E9','selected'),('selected','F10'),('selected','K9'),('F9','F10')]
+    return pairs
+
+
 def prepare(plan=PLAN):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
     signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,120.)
@@ -157,7 +180,7 @@ def run(record,identity,kind,plan=PLAN):
     previous=read(str(path)) if path.exists() else {}
     rows.update(previous.get('rows',{}))
     case=next((r for r in spec.get('refined_cases',[]) if r['record']==record and r['kind']==kind),{})
-    rules=case.get('rules',spec['rules'])
+    rules=case.get('rules_by_identity',{}).get(str(identity),case.get('rules',spec['rules']))
     if selected_rule(spec,record,kind)!='E7' and previous.get('complete') and not set(rules).issubset(rows):
         save(path.with_name(path.stem+'_before_resolution.json'),previous)
     for rule in rules:
@@ -181,7 +204,7 @@ def run(record,identity,kind,plan=PLAN):
         marginals.append(dict(policy=policy,feasibility_upper=upper,raw64_128_difference=abs(upper-low),
             maximum_log_evidence_error=max(abs(ld['log_evidence_error']),abs(d['log_evidence_error']))))
     violation=0.
-    candidate=selected_rule(spec,record,kind)
+    candidate=selected_identity_rule(spec,record,kind,identity)
     for action,values in zip(b['actions'],rows[candidate]['statistics']):
         caps=np.asarray([certificate_upper(m['feasibility_upper'],n,len(action['shortlist']),b['protocol']) for m,n in zip(marginals,action['budgets'])])
         caps=(np.r_[caps,min(caps[0],caps[action['incumbent_position']])] if action['kind']=='guarded'
@@ -203,14 +226,14 @@ def collect(plan=PLAN):
             parts=[read(str(out/'parts'/row['record']/f'{h}_{kind}.json')) for h in (4,5)]
             assert all(p['complete'] for p in parts);cpu+=sum(p.get('cumulative_cpu_seconds',p['cpu_seconds']) for p in parts)
             candidate=selected_rule(spec,row['record'],kind)
-            pairs={'E7':[('E7','E8'),('E7','F7'),('E7','G7')],
-                'E8':[('E8','F8'),('E8','H8'),('E8','E9')],
-                'E9':[('E8','E9'),('E9','F9'),('E9','K9')]}[candidate]
-            check=group_checks(b,parts,kind,pairs,1e-4)
+            chosen={str(h):selected_identity_rule(spec,row['record'],kind,h) for h in (4,5)}
+            pairs=reference_comparisons(spec,row['record'],kind)
+            comparison_parts=[dict(p,rows={**p['rows'],'selected':p['rows'][chosen[str(p['identity'])]]}) for p in parts]
+            check=group_checks(b,comparison_parts,kind,pairs,1e-4)
             baseline_difference=None
             if 'baseline' in b:
                 stats=np.zeros_like(np.asarray(b['baseline'][kind]['statistics']));costs=np.zeros_like(np.asarray(b['baseline'][kind]['costs']))
-                for h,p in zip((4,5),parts):stats[h]=p['rows'][candidate]['statistics'];costs[h]=p['rows'][candidate]['costs']
+                for h,p in zip((4,5),parts):stats[h]=p['rows'][chosen[str(h)]]['statistics'];costs[h]=p['rows'][chosen[str(h)]]['costs']
                 baseline=mixed_values(b,np.asarray(b['baseline'][kind]['statistics']),np.asarray(b['baseline'][kind]['costs']),kind)
                 current=mixed_values(b,stats,costs,kind)
                 baseline_difference=float(np.max(abs(current-baseline)))
@@ -222,6 +245,8 @@ def collect(plan=PLAN):
                 cached_mixed_action_maximum_difference=baseline_difference,
                 marginal_numerical_containment_passed=marginal_passed,maximum_raw64_128_bound_difference=marginal_difference,
                 maximum_branch_above_bound=containment,selected_candidate=candidate,
+                selected_rules_by_identity=chosen,
+                validation_rule=('F10' if any(high=='F10' for low,high in pairs) else 'E9'),
                 candidate_passed=check['passed'] and marginal_passed))
     result=dict(complete=True,groups=groups,local_risk_candidate_passed=all(r['candidate_passed'] for r in groups),
         successful_worker_cpu_seconds=cpu,collection_cpu_seconds=time.process_time()-start,

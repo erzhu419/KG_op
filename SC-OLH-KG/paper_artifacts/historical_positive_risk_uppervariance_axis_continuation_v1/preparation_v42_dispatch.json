@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/home/erzhu419/anaconda3/bin/python",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t151371"
+  ],
+  "returncode": 0,
+  "stdout": "=== nodes ===\n  local       GPU0=0.70GB/8.00GB(free=7.07GB, mem:9%, util:0%)  cpu=12/16(wsl_load 1.8, host 27%)  ram_free=22.5GB(eff)\n  jtl110gpu   GPU0=2.39GB/12.0GB(free=9.37GB, mem:20%, util:77%), GPU1=2.39GB/12.0GB(free=9.37GB, mem:20%, util:77%)  cpu=8/12(load 4.3)  ram_free=476.3GB  claims(active_claims=4)\n  jtl110gpu2  GPU0=1.17GB/12.0GB(free=10.6GB, mem:10%, util:7%), GPU1=1.01GB/12.0GB(free=10.7GB, mem:8%, util:7%)  cpu=10/12(load 2.2)  ram_free=494.6GB  claims(active_claims=2)\n  jtl311linux GPU0=0.06GB/8.00GB(free=7.55GB, mem:1%, util:0%), GPU1=0.01GB/8.00GB(free=7.60GB, mem:0%, util:0%)  cpu=8/8(load 0.0)  ram_free=60.7GB\n  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:19%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:68%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:53%)  cpu=60/64(load 4.0)  ram_free=164.8GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, queue_cpu_live_ram)  ram_free=461.3GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, queue_cpu_live_ram)  ram_free=487.6GB\n  node001     CPU-only  cpu=33/96(load 63.2, reserve 1)  ram_free=151.0GB\n  node002     CPU-only  cpu=17/96(load 78.6, reserve 1)  ram_free=140.6GB\n  node003     CPU-only  cpu=0/96(load 98.7, reserve 1)  ram_free=143.8GB\n  node004     CPU-only  cpu=51/96(load 44.9, reserve 1)  ram_free=162.1GB\n  node005     CPU-only  cpu=40/96(load 55.9, reserve 1)  ram_free=144.8GB\n  node006     CPU-only  cpu=38/96(load 57.6, reserve 1)  ram_free=157.3GB\n=== dispatch === (1 queued)\n  [t151371] LAUNCH on node002:CPU  pid=455929  log=/tmp/sched_t151371.log\n",
+  "stderr": ""
+}

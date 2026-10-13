@@ -8,15 +8,22 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 parser=argparse.ArgumentParser()
 parser.add_argument('--frozen-plan',default=str(Path(__file__).resolve().parent/'incumbent_frozen_plan.json'))
+parser.add_argument('--start-phase',type=int,default=2)
+parser.add_argument('--last-phase',type=int,default=4)
 args=parser.parse_args();initial_frozen=Path(args.frozen_plan).resolve()
+assert 2<=args.start_phase<=args.last_phase
 out=initial_frozen.parent
 folder_prefix=out.name.rsplit('_v',1)[0]
 helper=ROOT/'paper_artifacts/historical_positive_risk_outer_axes_v1'
 status=dict(state='running',completed_phases=[],maximum_live_workers=8,priority='low',
     full_predictive_integration_admitted=False,independent_confirmation=False)
 active=[r['axis'] for r in json.loads(initial_frozen.read_text())['rows']];latest={}
+if args.start_phase>2:
+    previous=json.loads((out/'coverage_status.json').read_text())
+    status['completed_phases']=previous['completed_phases']
+    latest=previous.get('latest_axes',{})
 try:
-    for phase in range(2,5):
+    for phase in range(args.start_phase,args.last_phase+1):
         folder=ROOT/'paper_artifacts'/f'{folder_prefix}_v{phase}'
         if phase>2:
             subprocess.run([sys.executable,str(helper/'prepare_next_incumbents.py'),'--phase',str(phase),'--axes',*active,

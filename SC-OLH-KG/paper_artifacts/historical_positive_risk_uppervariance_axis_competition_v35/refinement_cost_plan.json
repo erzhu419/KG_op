@@ -1,0 +1,82 @@
+{
+  "original_estimated_phase_cpu_seconds": 3118.9389949352,
+  "new_jobs": [
+    {
+      "record": "positive_uppervariance_v1_n4_m4_localv_o4_h1_p86",
+      "kind": "raw",
+      "group": 34,
+      "identity": 4,
+      "shard": 5,
+      "candidate": "E9",
+      "rules": {
+        "F10": {
+          "cpu": 96.1397714175,
+          "basis": "Historical1024-point refinement factor times maximum matched512-point timer"
+        }
+      },
+      "estimated_cpu_seconds": 117.36772570100001
+    },
+    {
+      "record": "positive_uppervariance_v1_n4_m4_localv_o4_h1_p86",
+      "kind": "raw",
+      "group": 34,
+      "identity": 5,
+      "shard": 5,
+      "candidate": "E9",
+      "rules": {
+        "F10": {
+          "cpu": 184.12722619250002,
+          "basis": "Historical1024-point refinement factor times maximum matched512-point timer"
+        }
+      },
+      "estimated_cpu_seconds": 222.952671431
+    },
+    {
+      "record": "positive_uppervariance_v1_n4_m4_localv_o4_h1_p86",
+      "kind": "raw",
+      "group": 34,
+      "identity": 4,
+      "shard": 6,
+      "candidate": "E9",
+      "rules": {
+        "E10": {
+          "cpu": 96.1397714175,
+          "basis": "Historical1024-point refinement factor times maximum matched512-point timer"
+        }
+      },
+      "estimated_cpu_seconds": 117.36772570100001
+    }
+  ],
+  "cumulative_estimated_phase_cpu_seconds": 3576.6271177681997,
+  "maximum_estimated_cpu_seconds": 3600,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "new_reserve_added": false,
+  "selected_rule": "E9",
+  "comparisons": [
+    [
+      "E8",
+      "E9"
+    ],
+    [
+      "E9",
+      "selected"
+    ],
+    [
+      "selected",
+      "F10"
+    ],
+    [
+      "selected",
+      "K9"
+    ],
+    [
+      "F9",
+      "F10"
+    ]
+  ],
+  "scope": "Only identity4 primary sequence is further refined; identity5 retainsE9. IndependentF10 is the recorded numerical validation, with original likelihoods, allocations and1e-4 gates.",
+  "selected_rules_by_identity": {
+    "4": "E10",
+    "5": "E9"
+  }
+}

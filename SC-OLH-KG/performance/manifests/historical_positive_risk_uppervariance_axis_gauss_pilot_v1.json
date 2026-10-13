@@ -1,0 +1,350 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_gauss_pilot_v1",
+  "seed": 202610077,
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "refined_cases": [
+    {
+      "record": "positive_uppervariance_v1_n4_m4_localv_o4_h1_p90",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ]
+    },
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o4_h1_p52",
+      "kind": "raw",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ]
+    },
+    {
+      "record": "positive_body_v1_n4_m4_v4_o5_h1_p14",
+      "kind": "raw",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ]
+    },
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o5_h1_p54",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ]
+    },
+    {
+      "record": "positive_body_v1_n4_m4_v4_o4_h1_p0",
+      "kind": "raw",
+      "candidate": "E9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9",
+        "L9"
+      ]
+    },
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o5_h1_p58",
+      "kind": "raw",
+      "candidate": "E9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9",
+        "L9"
+      ]
+    }
+  ],
+  "registered_cases": [
+    {
+      "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v40.json",
+      "record": "positive_uppervariance_v1_n4_m4_localv_o4_h1_p90",
+      "kind": "projected",
+      "candidate": "E8",
+      "origin": 4,
+      "group": 71,
+      "cdf": [
+        0.987222726231881,
+        0.2372337950418355
+      ],
+      "original_gauss_difference": 8.684961924076973e-07,
+      "gauss_reference": "L8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ],
+      "jobs": [
+        {
+          "identity": 4,
+          "rules": {
+            "L8": {
+              "cpu": 16.126865117999998,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 21.352238141599997
+        },
+        {
+          "identity": 5,
+          "rules": {
+            "L8": {
+              "cpu": 32.26988303024999,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 40.72385963629999
+        }
+      ]
+    },
+    {
+      "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v32.json",
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o4_h1_p52",
+      "kind": "raw",
+      "candidate": "E8",
+      "origin": 4,
+      "group": 63,
+      "cdf": [
+        0.9248753554327839,
+        0.06943184420297371
+      ],
+      "original_gauss_difference": 4.573950383113257e-06,
+      "gauss_reference": "L8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ],
+      "jobs": [
+        {
+          "identity": 4,
+          "rules": {
+            "L8": {
+              "cpu": 11.3838872385,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 15.660664686199999
+        },
+        {
+          "identity": 5,
+          "rules": {
+            "L8": {
+              "cpu": 22.693534116000002,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 29.232240939199997
+        }
+      ]
+    },
+    {
+      "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v6.json",
+      "record": "positive_body_v1_n4_m4_v4_o5_h1_p14",
+      "kind": "raw",
+      "candidate": "E8",
+      "origin": 5,
+      "group": 63,
+      "cdf": [
+        0.7444545246376211,
+        0.6699905217924281
+      ],
+      "original_gauss_difference": 1.596155345007233e-06,
+      "gauss_reference": "L8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ],
+      "jobs": [
+        {
+          "identity": 4,
+          "rules": {
+            "L8": {
+              "cpu": 11.3838872385,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 15.660664686199999
+        },
+        {
+          "identity": 5,
+          "rules": {
+            "L8": {
+              "cpu": 22.330862295000003,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 28.797034754
+        }
+      ]
+    },
+    {
+      "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v29.json",
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o5_h1_p54",
+      "kind": "projected",
+      "candidate": "E8",
+      "origin": 5,
+      "group": 71,
+      "cdf": [
+        0.9248753554327839,
+        0.6699905217924281
+      ],
+      "original_gauss_difference": 1.6069510422322963e-07,
+      "gauss_reference": "L8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9",
+        "L8"
+      ],
+      "jobs": [
+        {
+          "identity": 4,
+          "rules": {
+            "L8": {
+              "cpu": 16.126865117999998,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 21.352238141599997
+        },
+        {
+          "identity": 5,
+          "rules": {
+            "L8": {
+              "cpu": 32.26988303024999,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 40.72385963629999
+        }
+      ]
+    },
+    {
+      "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v5.json",
+      "record": "positive_body_v1_n4_m4_v4_o4_h1_p0",
+      "kind": "raw",
+      "candidate": "E9",
+      "origin": 4,
+      "group": 34,
+      "cdf": [
+        0.05554547536237897,
+        0.06943184420297371
+      ],
+      "original_gauss_difference": 2.725632941569245e-09,
+      "gauss_reference": "L9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9",
+        "L9"
+      ],
+      "jobs": [
+        {
+          "identity": 4,
+          "rules": {
+            "L9": {
+              "cpu": 28.739393625750004,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 36.4872723509
+        },
+        {
+          "identity": 5,
+          "rules": {
+            "L9": {
+              "cpu": 54.89806892025,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 67.87768270429999
+        }
+      ]
+    },
+    {
+      "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v29.json",
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o5_h1_p58",
+      "kind": "raw",
+      "candidate": "E9",
+      "origin": 5,
+      "group": 34,
+      "cdf": [
+        0.9376246445672161,
+        0.6699905217924281
+      ],
+      "original_gauss_difference": 9.748757356931037e-11,
+      "gauss_reference": "L9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9",
+        "L9"
+      ],
+      "jobs": [
+        {
+          "identity": 4,
+          "rules": {
+            "L9": {
+              "cpu": 28.841931425250003,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 36.610317710299995
+        },
+        {
+          "identity": 5,
+          "rules": {
+            "L9": {
+              "cpu": 55.23816785775,
+              "basis": "Historical GH16 factor times matched GH32 n4 timer"
+            }
+          },
+          "estimated_cpu_seconds": 68.2858014293
+        }
+      ]
+    }
+  ],
+  "maximum_worker_cpu_seconds": 422,
+  "maximum_estimated_cpu_seconds": 3600,
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v41.json",
+  "previous_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_competition_v41/completion.json",
+  "historical_source": "performance.validate_historical_component_bank.prepare_tail",
+  "scope": "Worst recorded GH comparison in each ordinarily admitted primary-rule/kind/origin stratum. Existing primary, independent and finer-resolution checks are retained. Only GH16 references are new; frozen224 grid, original prior andF16 are unchanged."
+}

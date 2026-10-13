@@ -17,10 +17,20 @@ from performance.diagnose_historical_component_guarded import compressed_read, c
 from performance.diagnose_historical_predictive_tower import query_direct_value
 from performance.refine_historical_achievable_precision import assemble_case, original_heads
 from performance.refine_historical_observed_prediction import field_from_snapshot
-from performance.validate_historical_component_bank import RULES, action_groups
+from performance.validate_historical_component_bank import RULES, action_groups, selected_reference_rule
 from representation.vectorized_joint_function_risk import update_raw_observation, apply_raw_moments
 
 PLAN = 'performance/manifests/historical_observed_batch_bound_v1.json'
+
+
+def expected_group_upper_gaps(upper,fixed,groups,candidates):
+    """Average each unreferenced group's positive upper gap over objective heads."""
+    eligible=set(map(int,candidates));result={}
+    for group in groups:
+        indices=[a for a in group['action_indices'] if a in eligible]
+        if indices:
+            result[group['group']]=float(np.maximum(upper[:,indices].max(axis=-1)-fixed,0.).mean())
+    return result
 
 
 def condition_risk(field,row,identity,context):
@@ -257,7 +267,7 @@ def collect(plan=PLAN):
                     check=reference['check'];ix=reference['indices'];value=np.zeros((16,len(ix)))
                     for h in (4,5):
                         part=read(reference['output']+'/parts/'+r['record']+'/'+str(h)+'_'+kind+'.json')
-                        stats=np.asarray(part['rows'][check['selected_candidate']]['statistics'])
+                        stats=np.asarray(part['rows'][selected_reference_rule(check,h)]['statistics'])
                         value+=posterior[:,h,None]*np.sum(objective[:,h][:,ix]*stats,axis=-1)
                     for j,a in enumerate(ix):
                         references[a]=value[:,j]
@@ -269,11 +279,13 @@ def collect(plan=PLAN):
                 unknown=upper.copy();unknown[:,list(references)]=-np.inf
                 unresolved=np.maximum(unknown.max(axis=-1)-fixed,0.)
                 weight=float(prior[int(origin_id)]*r['outer_weight']) if 'outer_weight' in r else None
+                group_gaps=expected_group_upper_gaps(upper,fixed,groups,candidates)
                 records.append(dict(record=r['record'],kind=kind,overlapping_action_head_pairs=int(overlap.sum()),
                     validated_reference_actions=list(references),
                     candidate_actions=candidates.tolist(),
                     candidate_upper_minus_reference={str(a):float(gap[a]) for a in candidates},
-                    candidate_groups=[g['group'] for g in groups if action_overlap[g['action_indices']].any()],
+                    candidate_groups=list(group_gaps),
+                    candidate_group_expected_positive_gap={str(g):v for g,v in group_gaps.items()},
                     maximum_upper_minus_fixed=float(gap[candidates].max()) if len(candidates) else 0.,
                     outer_grid_weight=weight,mean_fixed_action_reward=float(fixed_action.mean()),
                     mean_best_validated_reward=float(fixed.mean()),mean_unresolved_upper_gap=float(unresolved.mean()),
@@ -333,9 +345,10 @@ def reference_rule_timers(spec):
     return measured,fine_groups
 
 
-def price_reference_group(row, groups, measured, fine_groups):
+def price_reference_group(row, groups, measured, fine_groups,reference_rules=None):
     gid,kind=row['group'],row['kind'];candidate='E9' if (gid,kind) in fine_groups else 'E8'
-    rule_names=['E8','E9','F9','K9'] if candidate=='E9' else ['E8','F8','H8','E9']
+    rule_names=(reference_rules[candidate] if reference_rules else
+        ['E8','E9','F9','K9'] if candidate=='E9' else ['E8','F8','H8','E9'])
     priced=[]
     for h in (4,5):
         historical=read(str(ROOT/'paper_artifacts/historical_component_bank_v1/parts'/f'{gid:03d}_{h}_{kind}.json'))['rows']
@@ -349,6 +362,7 @@ def price_reference_group(row, groups, measured, fine_groups):
                 if name in RULES and RULES[name][:2]==(order,power)]
             scaled=[v['cpu_seconds']*2**(power-RULES[name][1]) for name,v in historical.items()
                 if name in RULES and RULES[name][0]==order and RULES[name][1]<=power]
+            if rule in ('L8','L9'):scaled.append(.75*units['E8' if rule=='L8' else 'E9']['cpu'])
             units[rule]=dict(cpu=max(actual+scaled),basis=('Maximum measured n4 same group' if same else
                 'Maximum measured n4 same action kind' if cohort else 'Measured n1 same group scaled to required point count'),
                 compared_with='Actual same-group n1 rule timers scaled by continuous point ratio;20percent margin and2setup seconds perworker')
@@ -359,16 +373,25 @@ def price_reference_group(row, groups, measured, fine_groups):
 def next_plan(plan=PLAN):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];summary=read(str(out/'summary.json'))
     assert summary['numerical_containment_passed']
+    reference_rules=spec.get('reference_rules')
+    if reference_rules:
+        proof=read(spec['gauss_reference_completion'])
+        assert proof['state']=='phase_complete' and proof['all_reference_precision_passed'] and proof['cached_selected_statistics_preserved']
+    if any('candidate_group_expected_positive_gap' not in row for row in summary['records']):
+        collect(plan)
+        summary=read(str(out/'summary.json'))
     base=ROOT/read(spec['bank_plan'])['output'] if 'bank_plan' in spec else out
     groups=action_groups(compressed_read(base/'context.json.gz')['actions']);remaining=[];measured=[];fine_groups=set()
     for row in summary['records']:
         for gid in row['candidate_groups']:
             gaps=[row['candidate_upper_minus_reference'][str(a)] for a in groups[gid]['action_indices']
                 if str(a) in row['candidate_upper_minus_reference']]
-            weight=row.get('outer_grid_weight');priority=max(gaps)*(1. if weight is None else weight)
+            weight=row.get('outer_grid_weight');scale=1. if weight is None else weight
+            expected=row['candidate_group_expected_positive_gap'][str(gid)]
             remaining.append(dict(record=row['record'],kind=row['kind'],group=gid,
-                maximum_unresolved_upper_gap=max(gaps),weighted_unresolved_upper_gap=priority))
-    remaining.sort(key=lambda r:(-r['weighted_unresolved_upper_gap'],r['record'],r['kind'],r['group']))
+                maximum_unresolved_upper_gap=max(gaps),weighted_unresolved_upper_gap=max(gaps)*scale,
+                expected_group_upper_gap=expected,weighted_expected_group_upper_gap=expected*scale))
+    remaining.sort(key=lambda r:(-r['weighted_expected_group_upper_gap'],r['record'],r['kind'],r['group']))
     measured,fine_groups=reference_rule_timers(spec)
     selected=[];jobs=[];record_groups={}
     total=read(spec['continued_phase_cost_plan'])['estimated_cpu_seconds_including_reserves'] if 'continued_phase_cost_plan' in spec else 600.
@@ -376,7 +399,7 @@ def next_plan(plan=PLAN):
     for row in remaining:
         gid,kind=row['group'],row['kind']
         if row['record'] in record_groups and record_groups[row['record']]!=gid:continue
-        planned,priced=price_reference_group(row,groups,measured,fine_groups)
+        planned,priced=price_reference_group(row,groups,measured,fine_groups,reference_rules)
         estimate=sum(j['estimated_cpu_seconds'] for j in priced)
         if total+estimate>spec['maximum_estimated_cpu_seconds']:break
         selected.append(planned);jobs.extend(priced);record_groups[row['record']]=gid;total+=estimate
@@ -384,6 +407,8 @@ def next_plan(plan=PLAN):
         next_joint_cases=selected,next_joint_jobs=jobs,expected_cpu_seconds_including600reserves=total,cost_admitted=bool(jobs) and total<=spec['maximum_estimated_cpu_seconds'],
         phase_base_estimated_cpu_seconds=phase_base,
         maximum_live_workers=8,priority='low',dispatched=False,cpu_seconds=time.process_time()-start,
+        reference_selection='Risk-probability-weighted mean positive group upper gap across the original objective heads.',
+        reference_rules=reference_rules,
         preparation_required='Use the registered n4 observation coordinates,complete365-action/objective-head tables and original joint marginals;one guarded or direct group per observation in this phase.',
         native_direct_cases=[],remaining_direct_cases=[r for r in remaining if groups[r['group']]['kind']=='direct'],
         remaining='Finite n4 conditional references,adaptive outer convergence,query/batch choice and independent deployment gain remain open.')

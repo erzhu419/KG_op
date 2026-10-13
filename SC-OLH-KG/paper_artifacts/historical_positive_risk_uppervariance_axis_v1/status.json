@@ -1,0 +1,61 @@
+{
+  "state": "screened_coarse_grid",
+  "estimated_phase_cpu_seconds": 3229.826517299825,
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "preparation_id": "t147114",
+  "cdf_checks": [
+    {
+      "origin": 4,
+      "order": 64,
+      "maximum_inverse_cdf_error": 4.141131881851834e-14,
+      "adaptive_cdf_error_bound": 2.795668913074377e-13,
+      "positive_weight_sum": 0.9999999999999999
+    },
+    {
+      "origin": 5,
+      "order": 64,
+      "maximum_inverse_cdf_error": 1.5787371410169726e-13,
+      "adaptive_cdf_error_bound": 2.154645044305549e-13,
+      "positive_weight_sum": 0.9999999999999999
+    }
+  ],
+  "worker_count": 16,
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 1.0000000000000002,
+      "5": 1.0000000000000002
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.008277289076199424,
+        "unresolved_upper_gap": 0.03438358451457934
+      },
+      "projected": {
+        "best_reference_contrast": 0.02173531442300892,
+        "unresolved_upper_gap": 0.020693376699063154
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  },
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 1308160,
+      "overlapping_action_head_pairs": 170078,
+      "record_action_candidates": 11208,
+      "record_group_candidates": 4311
+    },
+    "projected": {
+      "compared_action_head_pairs": 1308160,
+      "overlapping_action_head_pairs": 23143,
+      "record_action_candidates": 1659,
+      "record_group_candidates": 553
+    }
+  },
+  "next_reference_cost_admitted": false,
+  "next_reference_worker_count": 0,
+  "next_estimated_phase_cpu_seconds": 3229.8265172998235
+}

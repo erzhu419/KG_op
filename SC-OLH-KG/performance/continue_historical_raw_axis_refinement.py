@@ -30,22 +30,45 @@ def replay_for(bound):
     return read(ref['output']+'/incumbent_replay_final.json')
 
 
-def run(source_bound):
-    out=ROOT/'paper_artifacts/historical_raw_axis_followthrough_v1';out.mkdir(parents=True,exist_ok=True)
-    status=dict(state='running',source_bound_plan=source_bound,completed_axes=[],maximum_live_workers=8,
+def run(source_bound,mean_axis='midmean'):
+    name='historical_raw_axis_followthrough_v1' if mean_axis=='midmean' else f'historical_raw_axis_{mean_axis}_followthrough_v1'
+    out=ROOT/'paper_artifacts'/name;out.mkdir(parents=True,exist_ok=True)
+    previous=read(out/'status.json') if (out/'status.json').exists() else {}
+    completed=[r for r in previous.get('completed_axes',[]) if r['local_axis_difference_passed']]
+    status=dict(state='running',source_bound_plan=source_bound,completed_axes=completed,maximum_live_workers=8,
         priority='low',outer_axis_tolerance=1e-4,full_predictive_integration_admitted=False,independent_confirmation=False)
     try:
         current=replay_for(source_bound)
         baseline=current['raw_recommendation']['policy_totals']['raw']['validation_contrast']
         sync(['performance/check_historical_observed_batch_outer.py','performance/prepare_historical_positive_risk_screen.py',
             'performance/prepare_historical_raw_axis_refinement.py'])
-        for mode in ('midmean','uppervariance'):
-            prepared=prepare(mode,source_bound);sync(prepared['files'])
+        for mode in (mean_axis,'uppervariance'):
+            cached=next((r for r in completed if r['axis']==mode),None)
+            if cached:
+                source_bound=cached['final_bound_plan'];baseline=cached['raw_validation_contrast']
+                continue
+            folder=ROOT/'paper_artifacts'/f'historical_positive_risk_{mode}_axis_v1'
+            if (folder/'preparation_job.json').exists():
+                prepared=read(folder/'refinement_plan.json')
+            else:
+                prepared=prepare(mode,source_bound);sync(prepared['files'])
             status.update(current_axis=mode,current_plan=prepared['plan'],current_initial_estimated_cpu_seconds=prepared['estimated_initial_phase_cpu_seconds'])
             save(out/'status.json',status);print('LOCAL_AXIS_STARTED '+json.dumps(prepared),flush=True)
-            runner=ROOT/'paper_artifacts/historical_positive_risk_body_axis_v1/continue_when_ready.py'
-            subprocess.run([sys.executable,'-u',str(runner),'--plan',prepared['plan']],cwd=ROOT,check=True)
-            spec=read(prepared['plan']);done=read(spec['output']+'/body_status.json')
+            frozen=ROOT/'paper_artifacts'/f'historical_positive_risk_{mode}_axis_followthrough_v2/incumbent_frozen_plan.json'
+            if frozen.exists():
+                coverage_path=frozen.parent/'coverage_status.json'
+                done=read(coverage_path) if coverage_path.exists() else {}
+                if done.get('state')!='native_raw_coverage_complete':
+                    start=max(done.get('completed_phases',[])+[1])+1
+                    runner=ROOT/'paper_artifacts/historical_positive_risk_outer_axes_incumbents_v2/finish_coverage.py'
+                    subprocess.run([sys.executable,'-u',str(runner),'--frozen-plan',str(frozen),
+                        '--start-phase',str(start),'--last-phase',str(max(4,start+1))],cwd=ROOT,check=True)
+                    done=read(coverage_path)
+                save(folder/'body_status.json',done)
+            else:
+                runner=ROOT/'paper_artifacts/historical_positive_risk_body_axis_v1/continue_when_ready.py'
+                subprocess.run([sys.executable,'-u',str(runner),'--plan',prepared['plan']],cwd=ROOT,check=True)
+                done=read(folder/'body_status.json')
             if done['state']!='native_raw_coverage_complete':
                 status.update(state='coverage_hold',coverage=done);break
             ref_plan=done.get('last_reference_plan') or done['latest_axes'][mode]['plan']
@@ -75,4 +98,5 @@ def run(source_bound):
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--source-bound',default='performance/manifests/historical_positive_risk_shoulder_axis_bound_incumbents_v4.json')
-    run(parser.parse_args().source_bound)
+    parser.add_argument('--mean-axis',choices=('midmean','uppermidmean'),default='midmean')
+    args=parser.parse_args();run(args.source_bound,args.mean_axis)

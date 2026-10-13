@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/home/erzhu419/anaconda3/bin/python",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t147570"
+  ],
+  "returncode": 0,
+  "stdout": "=== nodes ===\n  local       GPU0=0.71GB/8.00GB(free=7.06GB, mem:9%, util:0%)  cpu=16/16(wsl_load 0.4, host 0%, stale_node_probe_cache)  ram_free=20.2GB(eff)\n  jtl110gpu   GPU0=0.89GB/12.0GB(free=10.9GB, mem:7%, util:76%), GPU1=0.89GB/12.0GB(free=10.9GB, mem:7%, util:76%)  cpu=8/12(load 4.0, stale_node_probe_cache)  ram_free=487.0GB  claims(active_claims=4)\n  jtl110gpu2  GPU0=0.62GB/12.0GB(free=11.1GB, mem:5%, util:12%), GPU1=0.46GB/12.0GB(free=11.3GB, mem:4%, util:13%)  cpu=9/12(load 2.7, stale_node_probe_cache)  ram_free=493.7GB  claims(active_claims=2)\n  jtl311linux CPU-only  cpu=7/8(load 1.2, stale_node_probe_cache)  ram_free=1.73GB\n  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:69%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:78%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:15%)  cpu=60/64(load 4.0, stale_node_probe_cache)  ram_free=165.6GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=472.1GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.7GB\n  node001     CPU-only  cpu=96/96(load 0.5, stale_node_probe_cache, reserve 1)  ram_free=179.3GB\n  node002     CPU-only  cpu=46/96(load 50.3, stale_node_probe_cache, reserve 1)  ram_free=154.4GB\n  node003     CPU-only  cpu=0/96(load 101.5, stale_node_probe_cache, reserve 1)  ram_free=144.0GB\n  node004     CPU-only  cpu=96/96(load 0.1, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n  node005     CPU-only  cpu=96/96(load 0.5, stale_node_probe_cache, reserve 1)  ram_free=179.4GB\n  node006     CPU-only  cpu=96/96(load 0.2, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n=== dispatch === (1 queued)\n  [t147570] LAUNCH on node004:CPU  pid=542690  log=/tmp/sched_t147570.log\n",
+  "stderr": ""
+}

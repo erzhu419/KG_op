@@ -20,14 +20,18 @@ from representation.vectorized_joint_function_risk import update_raw_observation
 
 PLAN = 'performance/manifests/historical_component_bank_v1.json'
 RULES = {'E5': (32,5,0), 'G5': (64,5,0), 'E7': (32,7,0), 'F7': (32,7,101), 'G7': (64,7,0),
-    'E8': (32,8,0), 'F8': (32,8,101),
-    'E9': (32,9,0), 'F9': (32,9,101), 'L9': (16,9,0), 'E10': (32,10,0),
+    'E8': (32,8,0), 'F8': (32,8,101), 'L8': (16,8,0),
+    'E9': (32,9,0), 'F9': (32,9,101), 'L9': (16,9,0), 'E10': (32,10,0), 'F10': (32,10,101),
     'H8': (64,8,0), 'I8': (64,8,101), 'J8': (128,8,0), 'K9': (64,9,0)}
 SUMMARY_NAMES = {'screen':'screen_summary.json', 'refine':'refined_summary.json',
     'resolution':'admitted_summary.json', 'adaptive':'adaptive_summary.json',
     'adaptive-resolution':'adaptive_resolution_summary.json', 'bank-resolution':'bank_resolution_summary.json',
     'bank-coarse':'bank_coarse_summary.json','bank-tail':'bank_tail_summary.json',
     'bank-tail-resolution':'bank_tail_resolution_summary.json'}
+
+
+def selected_reference_rule(check,identity):
+    return check.get('selected_rules_by_identity',{}).get(str(identity),check['selected_candidate'])
 
 
 def save_progress(summary,out):

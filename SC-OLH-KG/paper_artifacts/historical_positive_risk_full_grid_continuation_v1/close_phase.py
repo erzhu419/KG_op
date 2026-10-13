@@ -11,7 +11,7 @@ sys.path.insert(0,str(Path(CLI).parent))
 import scheduler
 
 
-def close(plan):
+def close(plan,controller_output='paper_artifacts/historical_positive_risk_full_grid_continuation_v1'):
     bound=json.loads((ROOT/plan).read_text());out=ROOT/Path(bound['phase_completion']).parent
     initial='performance/manifests/'+out.name+'.json';number=int(out.name.rsplit('_v',1)[1])
     phase_plans=bound['joint_reference_plans'][bound['joint_reference_plans'].index(initial):]
@@ -23,19 +23,23 @@ def close(plan):
         assert len(tasks)==len(jobs) and all(t['status']=='done' for t in tasks)
         local=[]
         for node in sorted({t['node'] for t in tasks}):
-            paths={t['id']:t['log_path'] for t in tasks if t['node']==node}
+            # Exit-sentinel recovery can omit log_path; Linux launches still
+            # write the scheduler's standard task log on the assigned node.
+            paths={t['id']:t.get('log_path') or f"/tmp/sched_{t['id']}.log" for t in tasks if t['node']==node}
             code='import json;from pathlib import Path;paths='+repr(paths)+';print(json.dumps({k:json.loads([s[21:] for s in Path(v).read_text().splitlines() if s.startswith("SCHEDULEURM_RESOURCE ")][-1]) for k,v in paths.items()}))'
             rc,body,err=scheduler.run_on(node,shlex.join([PYTHON,'-c',code]),timeout=25,check=False)
             if rc:raise RuntimeError(err or body)
-            rows=json.loads(body);local.extend(dict(id=t['id'],node=node,status=t['status'],resource=rows[t['id']]) for t in tasks if t['node']==node)
+            rows=json.loads(body);local.extend(dict(id=t['id'],node=node,status=t['status'],log_path=paths[t['id']],resource=rows[t['id']]) for t in tasks if t['node']==node)
         (folder/'worker_resources.json').write_text(json.dumps(local,indent=2)+'\n');resources.extend(local)
         summary=json.loads((folder/'compact_summary.json').read_text());prep=json.loads((folder/'preparation.json').read_text())
         assert summary['local_risk_candidate_passed']
         sizes={r['record']:len(r['action_indices']) for r in prep['selected']}
         allocations+=sum(sizes[r['record']] for r in summary['groups']);checks.extend(summary['groups']);scientific+=summary['successful_worker_cpu_seconds']
-        resource=(ROOT/'paper_artifacts/historical_positive_risk_full_grid_continuation_v1'/f'preparation_v{number}_result.json') if i==0 else folder/'preparation_resources.json'
+        resource=(ROOT/controller_output/f'preparation_v{number}_result.json') if i==0 else folder/'preparation_resources.json'
         recorded=json.loads(resource.read_text());prep_cpu+=(recorded['resource'] if i==0 else recorded)['process_cpu_seconds']
         logs.append(folder/'observed-batch-risk_collection.log')
+        for name in ('observed-batch-risk_collection_before_refinement.log','refinement_preparation.log'):
+            if (folder/name).exists():logs.append(folder/name)
         following=json.loads((ROOT/spec['followup_bound_plan']).read_text())
         logs.extend(ROOT/following['output']/(stage+'_collection.log') for stage in ('observed-batch-bound','observed-batch-next-plan'))
     destination=str((out/'incumbent_replay_final.json').relative_to(ROOT))
@@ -52,7 +56,12 @@ def close(plan):
     previous=json.loads((ROOT/frozen['previous_closed_phase_completion']).read_text())
     failure=json.loads((ROOT/first['failed_preparation_account']).read_text()) if 'failed_preparation_account' in first else None
     failure_charge=0. if failure is None else failure['conservative_reserve_charge_seconds']
-    reserve_charge=prep_cpu+collection+failure_charge;assert reserve_charge<=600
+    failure_recorded=0. if failure is None else (failure.get('actual_process_cpu_seconds') or 0.)
+    collection_failure_path=out/'collection_failure_account.json'
+    collection_failure=json.loads(collection_failure_path.read_text()) if collection_failure_path.exists() else None
+    collection_failure_charge=0. if collection_failure is None else collection_failure['conservative_reserve_charge_seconds']
+    collection_failure_recorded=0. if collection_failure is None else (collection_failure.get('actual_process_cpu_seconds') or 0.)
+    reserve_charge=prep_cpu+collection+failure_charge+collection_failure_charge;assert reserve_charge<=600
     envelope=json.loads((ROOT/bound['output']/'compact_summary.json').read_text());price=json.loads((ROOT/bound['output']/'next_cost_plan.json').read_text())
     assert envelope['numerical_containment_passed']
     worker=sum(r['resource']['process_cpu_seconds'] for r in resources)
@@ -62,8 +71,11 @@ def close(plan):
         previous_phase_estimated_cpu_seconds=previous['estimated_phase_cpu_seconds'],
         scientific_work_cpu_seconds=scientific,worker_process_cpu_seconds=worker,
         preparation_process_cpu_seconds=prep_cpu,collection_process_cpu_seconds=collection,
-        total_recorded_process_cpu_seconds=worker+prep_cpu+collection,
-        unmeasured_failed_preparation_conservative_charge_seconds=failure_charge,
+        total_recorded_process_cpu_seconds=worker+prep_cpu+collection+failure_recorded+collection_failure_recorded,
+        failed_preparation_recorded_cpu_seconds=failure_recorded,
+        unmeasured_failed_preparation_conservative_charge_seconds=max(0.,failure_charge-failure_recorded),
+        failed_collection_recorded_cpu_seconds=collection_failure_recorded,
+        unmeasured_failed_collection_conservative_charge_seconds=max(0.,collection_failure_charge-collection_failure_recorded),
         recorded_cpu_plus_conservative_failed_charge_seconds=worker+reserve_charge,
         shared_reserve_charged_cpu_seconds=reserve_charge,
         peak_worker_rss_mb=max(r['resource']['peak_rss_mb'] for r in resources),
@@ -76,9 +88,12 @@ def close(plan):
         weighted_bank_envelope=envelope['weighted_bank_envelope'],remaining_totals=envelope['totals'],
         next_cost_admitted=price['cost_admitted'],new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False)
+    previous_envelope=previous.get('weighted_bank_envelope')
+    if previous_envelope is None:
+        previous_envelope=json.loads((ROOT/frozen['previous_closed_phase_completion']).with_name('execution_account.json').read_text())['weighted_bank_envelope']
     result['weighted_unresolved_gap_reduction']={k:
-        1-envelope['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap']/previous['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap']
-        if previous['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap'] else None
+        1-envelope['weighted_bank_envelope']['kinds'][k]['unresolved_upper_gap']/previous_envelope['kinds'][k]['unresolved_upper_gap']
+        if previous_envelope['kinds'][k]['unresolved_upper_gap'] else None
         for k in ('raw','projected')}
     (out/'completion.json').write_text(json.dumps(result,indent=2)+'\n')
     status=json.loads((out/'status.json').read_text());status.update(state='phase_complete',
@@ -89,4 +104,6 @@ def close(plan):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--plan',required=True);close(p.parse_args().plan)
+    p=argparse.ArgumentParser();p.add_argument('--plan',required=True)
+    p.add_argument('--controller-output',default='paper_artifacts/historical_positive_risk_full_grid_continuation_v1')
+    args=p.parse_args();close(args.plan,args.controller_output)

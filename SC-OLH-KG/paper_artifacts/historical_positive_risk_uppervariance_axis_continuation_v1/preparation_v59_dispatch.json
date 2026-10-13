@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/home/erzhu419/anaconda3/bin/python",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t151779"
+  ],
+  "returncode": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler_state/locks.py\", line 96, in file_lock\n    fcntl.flock(f, op | fcntl.LOCK_NB)\nBlockingIOError: [Errno 11] Resource temporarily unavailable\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py\", line 130, in <module>\n    main()\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py\", line 120, in main\n    return _run_scheduler_cli(_scheduler_cli_deps(), argv=argv)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler_commands/cli.py\", line 512, in run_scheduler_cli\n    args.func(args)\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler_dispatch/command_runtime.py\", line 18, in cmd_dispatch\n    return _ns(namespace, \"_cmd_dispatch_impl\")(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler_dispatch/command_runtime.py\", line 24, in _cmd_dispatch_impl\n    return _ns(namespace, \"_run_dispatch_command\")(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler_dispatch/command.py\", line 214, in run_dispatch_command\n    with deps.state_lock(timeout_s=lock_timeout, purpose=\"dispatch:main\"):\n  File \"/home/erzhu419/anaconda3/lib/python3.12/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/home/erzhu419/mine_code/scheduleurm/skill/scheduler_state/locks.py\", line 101, in file_lock\n    raise SchedulerLockTimeout(\nscheduler_state.locks.SchedulerLockTimeout: timed out after 20.0s waiting for scheduler state lock (dispatch:main)\n"
+}

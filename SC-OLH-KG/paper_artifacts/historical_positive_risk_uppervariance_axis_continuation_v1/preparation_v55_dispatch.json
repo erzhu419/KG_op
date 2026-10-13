@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/home/erzhu419/anaconda3/bin/python",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t151706"
+  ],
+  "returncode": 0,
+  "stdout": "=== nodes ===\n  local       GPU0=0.72GB/8.00GB(free=7.05GB, mem:9%, util:0%)  cpu=8/16(wsl_load 8.1, host 26%, stale_node_probe_cache)  ram_free=18.6GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=11/12(load 1.0, stale_node_probe_cache)  ram_free=491.5GB  claims(claims_error=empty output)\n  jtl110gpu2  GPU0=1.17GB/12.0GB(free=10.6GB, mem:10%, util:7%), GPU1=2.45GB/12.0GB(free=9.31GB, mem:20%, util:69%)  cpu=9/12(load 3.0, stale_node_probe_cache)  ram_free=488.9GB  claims(active_claims=3)\n  jtl311linux GPU0=0.06GB/8.00GB(free=7.55GB, mem:1%, util:0%), GPU1=0.01GB/8.00GB(free=7.60GB, mem:0%, util:0%)  cpu=5/8(load 2.9, stale_node_probe_cache)  ram_free=58.7GB\n  node007     GPU0=9.74GB/11.0GB(free=1.02GB, mem:89%, util:60%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:38%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:34%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:1%)  cpu=59/64(load 5.0, stale_node_probe_cache)  ram_free=163.4GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=479.7GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.1GB\n  node001     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=179.2GB\n  node002     CPU-only  cpu=0/96(load 97.6, stale_node_probe_cache, reserve 1)  ram_free=147.1GB\n  node003     CPU-only  cpu=0/96(load 99.8, stale_node_probe_cache, reserve 1)  ram_free=142.9GB\n  node004     CPU-only  cpu=96/96(load 0.2, stale_node_probe_cache, reserve 1)  ram_free=180.1GB\n  node005     CPU-only  cpu=95/96(load 0.8, stale_node_probe_cache, reserve 1)  ram_free=179.1GB\n  node006     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n=== dispatch === (1 queued)\n  [t151706] LAUNCH on node004:CPU  pid=254892  log=/tmp/sched_t151706.log\n",
+  "stderr": ""
+}

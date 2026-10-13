@@ -1,0 +1,78 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_competition_v8",
+  "screen_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_v1.json",
+  "incumbent_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_bound_incumbents_v5.json",
+  "previous_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_competition_v7/completion.json",
+  "frozen_cost_plan": "paper_artifacts/historical_positive_risk_uppervariance_axis_pricing_v8/next_cost_plan.json",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v8.json",
+  "rules": [
+    "E8",
+    "F8",
+    "H8",
+    "E9"
+  ],
+  "seed": 202610077,
+  "maximum_worker_cpu_seconds": 421,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_live_workers": 8,
+  "refined_cases": [
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o4_h1_p54",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    },
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o4_h1_p58",
+      "kind": "projected",
+      "candidate": "E8",
+      "rules": [
+        "E8",
+        "F8",
+        "H8",
+        "E9"
+      ]
+    },
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o4_h1_p54",
+      "kind": "raw",
+      "candidate": "E9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9"
+      ]
+    },
+    {
+      "record": "positive_uppermidmean_v1_n4_m4_localv_o4_h1_p58",
+      "kind": "raw",
+      "candidate": "E9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9"
+      ]
+    },
+    {
+      "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p27",
+      "kind": "raw",
+      "candidate": "E9",
+      "rules": [
+        "E8",
+        "E9",
+        "F9",
+        "K9"
+      ]
+    }
+  ],
+  "pricing": "New,previously unchecked competitive groups after the prior phase passed. New600reserve;all prior phase costs remain in the campaign ledger. No failed comparison is moved to this phase.",
+  "scope": "Complete missing raw values of the existing native recommendations on the registered axis grid. Original source prior,all8 likelihoods,512/1024 components,covariance,365 actions and SD16 retained.",
+  "previous_closed_phase_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v7.json"
+}

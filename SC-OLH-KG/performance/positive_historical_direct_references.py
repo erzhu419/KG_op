@@ -2,6 +2,7 @@
 import argparse
 import copy
 import json
+import math
 import resource
 import signal
 import time
@@ -14,6 +15,18 @@ from performance.diagnose_historical_component_guarded import compressed_read, c
 from performance.validate_historical_component_bank import action_groups, group_checks, RULES
 
 PLAN='performance/manifests/historical_positive_direct_references_v1.json'
+
+
+def set_frozen_worker_ceiling(spec,frozen):
+    """Use the integer ceiling of already admitted matched worker estimates."""
+    assert frozen['cost_admitted'] and frozen['expected_cpu_seconds_including600reserves']<=spec['maximum_estimated_cpu_seconds']
+    estimate=max(j['estimated_cpu_seconds'] for j in frozen['next_joint_jobs'])
+    ceiling=math.ceil(estimate)
+    if ceiling>spec['maximum_worker_cpu_seconds']:
+        spec['worker_limit_adjustment']=dict(previous=spec['maximum_worker_cpu_seconds'],current=ceiling,
+            maximum_matched_rule_estimate=estimate,
+            reason='Integer execution ceiling for the frozen matched estimate; phase budget and precision rules unchanged.')
+        spec['maximum_worker_cpu_seconds']=ceiling
 
 
 def prepare_incumbents(plan):
@@ -72,7 +85,7 @@ def prepare_next(plan):
     comparisons=read(risk['output']+'/compact_summary.json')
     assert closed['numerical_containment_passed'] and comparisons['local_risk_candidate_passed']
     full_grid='risk_mean_order' in current
-    prefix='historical_positive_risk_full_grid' if full_grid else 'historical_positive_risk'
+    prefix=current.get('competition_prefix','historical_positive_risk_full_grid' if full_grid else 'historical_positive_risk')
     stem=(ROOT/current['phase_completion']).parent.name if full_grid else (ROOT/previous).stem
     number=1 if full_grid and not stem.startswith(prefix+'_competition_v') else int(stem.rsplit('_v',1)[1])+1
     completion=read(current['phase_completion']) if 'phase_completion' in current else None
@@ -106,13 +119,20 @@ def prepare_next(plan):
             refined_cases=[dict(record=r['record'],kind=r['kind'],candidate=r['candidate'],rules=r['rules'])
                 for r in priced['next_joint_cases']],
             pricing=pricing['pricing'])
+        if completion:risk['previous_phase_completion']=current['phase_completion']
+        set_frozen_worker_ceiling(risk,priced)
         bound=copy.deepcopy(current)
         bound.update(output=f'paper_artifacts/{prefix}_screen_competition_v{number}',
+            maximum_worker_cpu_seconds=risk['maximum_worker_cpu_seconds'],
             joint_reference_plans=current['joint_reference_plans']+[risk_path],
             pricing_reference_plans=current['pricing_reference_plans']+[risk_path],
             reference_phase_cost_plan=risk['output']+'/preparation.json',
             continued_phase_cost_plan=risk['output']+'/preparation.json')
         if completion:bound['phase_completion']=risk['output']+'/completion.json'
+        if (ROOT/risk_path).exists():
+            attempted=read(risk_path)
+            if 'failed_preparation_account' in attempted:
+                risk['failed_preparation_account']=attempted['failed_preparation_account']
         save(ROOT/risk_path,risk);save(ROOT/bound_path,bound);prepared=prepare_frozen(risk_path)
         result=dict(complete=True,prepared=True,pricing_plan=pricing_path,pricing_manifest=pricing,priced=priced,
             risk_plan=risk_path,risk_manifest=risk,bound_plan=bound_path,bound_manifest=bound,preparation=prepared)
@@ -137,8 +157,10 @@ def prepare_continued(plan):
         frozen_cost_plan=current['output']+'/next_cost_plan.json',followup_bound_plan=bound_path,
         refined_cases=[dict(record=r['record'],kind=r['kind'],candidate=r['candidate'],rules=r['rules'])
             for r in frozen['next_joint_cases']])
+    set_frozen_worker_ceiling(risk,frozen)
     bound=copy.deepcopy(current)
     bound.update(output=f'paper_artifacts/{bound_name}',
+        maximum_worker_cpu_seconds=risk['maximum_worker_cpu_seconds'],
         joint_reference_plans=current['joint_reference_plans']+[risk_path],
         pricing_reference_plans=current['pricing_reference_plans']+[risk_path],
         reference_phase_cost_plan=risk['output']+'/preparation.json',

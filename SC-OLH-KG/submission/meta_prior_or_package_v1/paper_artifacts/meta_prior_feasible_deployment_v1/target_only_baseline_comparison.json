@@ -1,0 +1,286 @@
+{
+  "artifact_id": "meta_prior_same_contract_baseline_comparison_v2",
+  "source": {
+    "development_source": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_arm.json",
+    "development_target_only": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_development.json",
+    "independent_source": "paper_artifacts/meta_prior_feasible_deployment_v1/source_structure_confirmation_v2.json",
+    "independent_target_only": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_confirmation_v2.json",
+    "development_rbf": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_rbf_development.json",
+    "independent_rbf": "paper_artifacts/meta_prior_feasible_deployment_v1/target_only_rbf_confirmation_v2.json"
+  },
+  "blocks": {
+    "development": {
+      "seed_block": [
+        95425,
+        95426,
+        95427,
+        95428,
+        95430,
+        95431,
+        95432,
+        95434
+      ],
+      "summary": {
+        "source_selected_structure": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.8612665823884258,
+          "verified": 8,
+          "false_certificates": 0
+        },
+        "same_source_full_dictionary": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.8558172257780698,
+          "verified": 8,
+          "false_certificates": 0
+        },
+        "target_only_full_dictionary": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.7619874039202171,
+          "verified": 7,
+          "false_certificates": 0
+        },
+        "target_only_rbf_kg": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.8623865074109202,
+          "verified": 8,
+          "false_certificates": 0
+        }
+      },
+      "comparisons": {
+        "source_selected_structure_minus_same_source_full_dictionary": {
+          "deltas": [
+            0.0,
+            0.0012785954282170664,
+            0.0,
+            -0.0012526008670953326,
+            0.0,
+            0.043322197972165855,
+            0.00024666034956077887,
+            0.0
+          ],
+          "mean": 0.005449356610356046,
+          "positive": 3,
+          "negative": 1,
+          "ties": 4
+        },
+        "source_selected_structure_minus_target_only_full_dictionary": {
+          "deltas": [
+            0.0,
+            0.0,
+            0.0,
+            -0.0012526008670953326,
+            0.0,
+            0.7952393682632046,
+            0.00024666034956077887,
+            0.0
+          ],
+          "mean": 0.09927917846820876,
+          "positive": 2,
+          "negative": 1,
+          "ties": 5
+        },
+        "same_source_full_dictionary_minus_target_only_full_dictionary": {
+          "deltas": [
+            0.0,
+            -0.0012785954282170664,
+            0.0,
+            0.0,
+            0.0,
+            0.7519171702910388,
+            0.0,
+            0.0
+          ],
+          "mean": 0.09382982185785271,
+          "positive": 1,
+          "negative": 1,
+          "ties": 6
+        },
+        "source_selected_structure_minus_target_only_rbf_kg": {
+          "deltas": [
+            0.0,
+            0.0004373370962680312,
+            0.0010386754813491716,
+            -0.0012526008670953326,
+            0.003477665772149696,
+            -0.01290713801218657,
+            0.00024666034956077887,
+            0.0
+          ],
+          "mean": -0.001119925022494278,
+          "positive": 4,
+          "negative": 2,
+          "ties": 2
+        },
+        "same_source_full_dictionary_minus_target_only_rbf_kg": {
+          "deltas": [
+            0.0,
+            -0.0008412583319490352,
+            0.0010386754813491716,
+            0.0,
+            0.003477665772149696,
+            -0.056229335984352424,
+            0.0,
+            0.0
+          ],
+          "mean": -0.006569281632850324,
+          "positive": 2,
+          "negative": 2,
+          "ties": 4
+        },
+        "target_only_full_dictionary_minus_target_only_rbf_kg": {
+          "deltas": [
+            0.0,
+            0.0004373370962680312,
+            0.0010386754813491716,
+            0.0,
+            0.003477665772149696,
+            -0.8081465062753912,
+            0.0,
+            0.0
+          ],
+          "mean": -0.10039910349070304,
+          "positive": 3,
+          "negative": 1,
+          "ties": 4
+        }
+      }
+    },
+    "independent_v2": {
+      "seed_block": [
+        95800,
+        95801,
+        95802,
+        95803,
+        95804,
+        95805,
+        95806,
+        95807
+      ],
+      "summary": {
+        "source_selected_structure": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.44274311654122145,
+          "verified": 5,
+          "false_certificates": 0
+        },
+        "same_source_full_dictionary": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.45159935619696046,
+          "verified": 4,
+          "false_certificates": 0
+        },
+        "target_only_full_dictionary": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.45147546261902716,
+          "verified": 4,
+          "false_certificates": 0
+        },
+        "target_only_rbf_kg": {
+          "tasks": 8,
+          "mean_final_true_reward": 0.4591211382065655,
+          "verified": 4,
+          "false_certificates": 0
+        }
+      },
+      "comparisons": {
+        "source_selected_structure_minus_same_source_full_dictionary": {
+          "deltas": [
+            -0.07777960716013019,
+            0.0030960726177617914,
+            -7.395834786849687e-05,
+            0.0,
+            0.003907575644324313,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean": -0.008856239655739073,
+          "positive": 2,
+          "negative": 2,
+          "ties": 4
+        },
+        "source_selected_structure_minus_target_only_full_dictionary": {
+          "deltas": [
+            -0.07777960716013019,
+            0.0030960726177617914,
+            0.0009683726621606548,
+            -5.132052820955467e-05,
+            0.003907575644324313,
+            0.0,
+            0.0,
+            1.3814164747444667e-07
+          ],
+          "mean": -0.00873234607780569,
+          "positive": 4,
+          "negative": 2,
+          "ties": 2
+        },
+        "same_source_full_dictionary_minus_target_only_full_dictionary": {
+          "deltas": [
+            0.0,
+            0.0,
+            0.0010423310100291516,
+            -5.132052820955467e-05,
+            0.0,
+            0.0,
+            0.0,
+            1.3814164747444667e-07
+          ],
+          "mean": 0.0001238935779333839,
+          "positive": 2,
+          "negative": 1,
+          "ties": 5
+        },
+        "source_selected_structure_minus_target_only_rbf_kg": {
+          "deltas": [
+            -0.07777960716013019,
+            0.0,
+            -0.0015717820645938518,
+            -0.06160054353976982,
+            0.040744703776893765,
+            -0.030817082476786394,
+            0.0,
+            1.381416330687829e-07
+          ],
+          "mean": -0.016378021665344175,
+          "positive": 2,
+          "negative": 4,
+          "ties": 2
+        },
+        "same_source_full_dictionary_minus_target_only_rbf_kg": {
+          "deltas": [
+            0.0,
+            -0.0030960726177617914,
+            -0.001497823716725355,
+            -0.06160054353976982,
+            0.03683712813256945,
+            -0.030817082476786394,
+            0.0,
+            1.381416330687829e-07
+          ],
+          "mean": -0.007521782009605105,
+          "positive": 2,
+          "negative": 4,
+          "ties": 2
+        },
+        "target_only_full_dictionary_minus_target_only_rbf_kg": {
+          "deltas": [
+            0.0,
+            -0.0030960726177617914,
+            -0.0025401547267545066,
+            -0.06154922301156027,
+            0.03683712813256945,
+            -0.030817082476786394,
+            0.0,
+            -1.4405663782753046e-14
+          ],
+          "mean": -0.007645675587538489,
+          "positive": 1,
+          "negative": 5,
+          "ties": 2
+        }
+      }
+    }
+  },
+  "interpretation": "same-contract baseline comparison; no deployment promotion"
+}

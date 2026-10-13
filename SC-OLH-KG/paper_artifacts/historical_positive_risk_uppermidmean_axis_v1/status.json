@@ -1,0 +1,61 @@
+{
+  "state": "screened_coarse_grid",
+  "estimated_phase_cpu_seconds": 3229.826517299825,
+  "maximum_live_workers": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "preparation_id": "t145334",
+  "cdf_checks": [
+    {
+      "origin": 4,
+      "order": 64,
+      "maximum_inverse_cdf_error": 3.8191672047105385e-14,
+      "adaptive_cdf_error_bound": 2.748732035905662e-13,
+      "positive_weight_sum": 1.0
+    },
+    {
+      "origin": 5,
+      "order": 64,
+      "maximum_inverse_cdf_error": 1.5787371410169726e-13,
+      "adaptive_cdf_error_bound": 1.800586200948737e-13,
+      "positive_weight_sum": 1.0
+    }
+  ],
+  "worker_count": 16,
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 1.0000000000000007,
+      "5": 1.0000000000000007
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.018277241265153645,
+        "unresolved_upper_gap": 0.024391015643566317
+      },
+      "projected": {
+        "best_reference_contrast": 0.021754086953215086,
+        "unresolved_upper_gap": 0.02067875832772228
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  },
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 1121280,
+      "overlapping_action_head_pairs": 22724,
+      "record_action_candidates": 1658,
+      "record_group_candidates": 593
+    },
+    "projected": {
+      "compared_action_head_pairs": 1121280,
+      "overlapping_action_head_pairs": 18480,
+      "record_action_candidates": 1320,
+      "record_group_candidates": 440
+    }
+  },
+  "next_reference_cost_admitted": false,
+  "next_reference_worker_count": 0,
+  "next_estimated_phase_cpu_seconds": 3229.8265172998235
+}

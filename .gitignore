@@ -18,3 +18,34 @@ SC-OLH-KG/manuscript/*.fdb_latexmk
 SC-OLH-KG/manuscript/*.fls
 SC-OLH-KG/manuscript/*.log
 SC-OLH-KG/manuscript/*.out
+
+# Generated posterior banks and integration arrays stay in the artifact store.
+# Keep code, plans, compact evidence and resource accounts in Git.
+SC-OLH-KG/paper_artifacts/**/*.npz
+SC-OLH-KG/paper_artifacts/**/*.gz
+SC-OLH-KG/paper_artifacts/**/*.json
+SC-OLH-KG/paper_artifacts/**/*.jsonl
+SC-OLH-KG/paper_artifacts/**/*.log
+SC-OLH-KG/paper_artifacts/**/*.txt
+!SC-OLH-KG/paper_artifacts/**/compact_summary.json
+!SC-OLH-KG/paper_artifacts/**/*_summary.json
+!SC-OLH-KG/paper_artifacts/**/completion.json
+!SC-OLH-KG/paper_artifacts/**/*_completion.json
+!SC-OLH-KG/paper_artifacts/**/status.json
+!SC-OLH-KG/paper_artifacts/**/*_status.json
+!SC-OLH-KG/paper_artifacts/**/controller_launch.json
+!SC-OLH-KG/paper_artifacts/**/*_analysis.json
+!SC-OLH-KG/paper_artifacts/**/*_plan.json
+!SC-OLH-KG/paper_artifacts/**/preparation.json
+!SC-OLH-KG/paper_artifacts/**/worker_resources.json
+!SC-OLH-KG/paper_artifacts/**/*_resources.json
+!SC-OLH-KG/paper_artifacts/**/execution_account.json
+!SC-OLH-KG/paper_artifacts/**/*_account.json
+!SC-OLH-KG/paper_artifacts/**/matched_timing.json
+!SC-OLH-KG/paper_artifacts/**/*_spec.json
+!SC-OLH-KG/paper_artifacts/**/*_specs.jsonl
+!SC-OLH-KG/paper_artifacts/**/*_dispatch.json
+!SC-OLH-KG/paper_artifacts/**/*_dispatch.jsonl
+!SC-OLH-KG/paper_artifacts/**/*_jobs.json
+!SC-OLH-KG/paper_artifacts/**/*_result.json
+!SC-OLH-KG/paper_artifacts/**/unit_tests.json

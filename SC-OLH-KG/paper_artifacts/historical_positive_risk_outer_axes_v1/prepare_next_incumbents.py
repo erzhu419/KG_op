@@ -29,7 +29,7 @@ def upload(path):
         if rc:raise RuntimeError(err or body)
 
 parser=argparse.ArgumentParser();parser.add_argument('--phase',type=int,required=True)
-parser.add_argument('--axes',nargs='+',choices=('mean','variance','body','shoulder','midmean','uppervariance'),default=['mean','variance'])
+parser.add_argument('--axes',nargs='+',choices=('mean','variance','body','shoulder','midmean','uppermidmean','uppervariance'),default=['mean','variance'])
 parser.add_argument('--frozen-output')
 args=parser.parse_args();assert args.phase>=2
 plans=[];rows=[]

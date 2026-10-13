@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/home/erzhu419/anaconda3/bin/python",
+    "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+    "dispatch",
+    "--no-bulk-window",
+    "--lock-timeout",
+    "20",
+    "--task-id",
+    "t147368"
+  ],
+  "returncode": 0,
+  "stdout": "=== nodes ===\n  local       GPU0=0.70GB/8.00GB(free=7.07GB, mem:9%, util:0%)  cpu=14/16(wsl_load 0.5, host 12%, stale_node_probe_cache)  ram_free=23.4GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=12/12(load 0.1, stale_node_probe_cache)  ram_free=491.8GB\n  jtl110gpu2  GPU0=3.18GB/12.0GB(free=8.58GB, mem:26%, util:97%), GPU1=1.01GB/12.0GB(free=10.7GB, mem:8%, util:13%)  cpu=8/12(load 4.1, stale_node_probe_cache)  ram_free=487.3GB  claims(active_claims=4)\n  jtl311linux CPU-only  cpu=7/8(load 0.7, stale_node_probe_cache)  ram_free=3.38GB\n  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:4%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:14%)  cpu=60/64(load 4.1, stale_node_probe_cache)  ram_free=166.1GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=462.8GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=488.7GB\n  node001     CPU-only  cpu=96/96(load 0.1, stale_node_probe_cache, reserve 1)  ram_free=179.3GB\n  node002     CPU-only  cpu=44/96(load 51.8, stale_node_probe_cache, reserve 1)  ram_free=153.7GB\n  node003     CPU-only  cpu=0/96(load 100.6, stale_node_probe_cache, reserve 1)  ram_free=145.2GB\n  node004     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n  node005     CPU-only  cpu=96/96(load 0.0, stale_node_probe_cache, reserve 1)  ram_free=179.5GB\n  node006     CPU-only  cpu=96/96(load 0.1, stale_node_probe_cache, reserve 1)  ram_free=180.0GB\n=== dispatch === (1 queued)\n  [t147368] LAUNCH on node004:CPU  pid=465277  log=/tmp/sched_t147368.log\n",
+  "stderr": ""
+}
