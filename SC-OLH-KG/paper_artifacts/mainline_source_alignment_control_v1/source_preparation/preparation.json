@@ -1,0 +1,445 @@
+{
+  "status": "prepared_not_started",
+  "jobs": [
+    {
+      "job_id": "InventorySupplyChain/structural",
+      "family": "InventorySupplyChain",
+      "kind": "structural",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/permutation.json",
+      "permutation_seed": 2026190001,
+      "nominal_sigma": 0.04,
+      "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/source_models.pkl",
+      "directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain",
+      "receipt_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/fit_structural",
+      "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/structural_source_diagnostics.json",
+      "dependencies": [],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "new_source_simulations": 0,
+      "recipe": {
+        "structural_settings": {
+          "quadrature_power": 10,
+          "seed": 1622,
+          "minimum_source_ess": 8.0,
+          "spectral": {
+            "active_dim": 6,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "pilot_cv_size": 10,
+            "pilot_cv_repeats": 3,
+            "orthogonalization": "symmetric"
+          },
+          "additive": {
+            "max_groups": 8,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "strong_heredity": true,
+            "max_interactions": 2
+          },
+          "optimizer": {
+            "method": "L-BFGS-B",
+            "max_iterations": 512,
+            "ftol": 1e-09,
+            "gtol": 1e-05
+          },
+          "risk_max_iterations": 80
+        },
+        "identities": 8,
+        "quadrature_nodes": 1024,
+        "native_heldout_family": "InventorySupplyChain",
+        "native_seed": 80,
+        "native_N": 13,
+        "native_decomposition": "latent_shared"
+      },
+      "source_provider": {
+        "dimension": "archive task X width",
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "outcome_access": "forbidden by no_outcomes"
+      }
+    },
+    {
+      "job_id": "InventorySupplyChain/native",
+      "family": "InventorySupplyChain",
+      "kind": "native",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/permutation.json",
+      "permutation_seed": 2026190001,
+      "nominal_sigma": 0.04,
+      "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_prior.pkl",
+      "directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain",
+      "receipt_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/fit_native",
+      "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_diagnostics.json",
+      "dependencies": [
+        "InventorySupplyChain/structural"
+      ],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "new_source_simulations": 0,
+      "recipe": {
+        "structural_settings": {
+          "quadrature_power": 10,
+          "seed": 1622,
+          "minimum_source_ess": 8.0,
+          "spectral": {
+            "active_dim": 6,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "pilot_cv_size": 10,
+            "pilot_cv_repeats": 3,
+            "orthogonalization": "symmetric"
+          },
+          "additive": {
+            "max_groups": 8,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "strong_heredity": true,
+            "max_interactions": 2
+          },
+          "optimizer": {
+            "method": "L-BFGS-B",
+            "max_iterations": 512,
+            "ftol": 1e-09,
+            "gtol": 1e-05
+          },
+          "risk_max_iterations": 80
+        },
+        "identities": 8,
+        "quadrature_nodes": 1024,
+        "native_heldout_family": "InventorySupplyChain",
+        "native_seed": 80,
+        "native_N": 13,
+        "native_decomposition": "latent_shared"
+      },
+      "source_provider": {
+        "dimension": "archive task X width",
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "outcome_access": "forbidden by no_outcomes"
+      }
+    },
+    {
+      "job_id": "QueueResourceControl/structural",
+      "family": "QueueResourceControl",
+      "kind": "structural",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/permutation.json",
+      "permutation_seed": 2026190002,
+      "nominal_sigma": 0.04,
+      "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/source_models.pkl",
+      "directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl",
+      "receipt_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/fit_structural",
+      "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/structural_source_diagnostics.json",
+      "dependencies": [],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "new_source_simulations": 0,
+      "recipe": {
+        "structural_settings": {
+          "quadrature_power": 10,
+          "seed": 1622,
+          "minimum_source_ess": 8.0,
+          "spectral": {
+            "active_dim": 6,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "pilot_cv_size": 10,
+            "pilot_cv_repeats": 3,
+            "orthogonalization": "symmetric"
+          },
+          "additive": {
+            "max_groups": 8,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "strong_heredity": true,
+            "max_interactions": 2
+          },
+          "optimizer": {
+            "method": "L-BFGS-B",
+            "max_iterations": 512,
+            "ftol": 1e-09,
+            "gtol": 1e-05
+          },
+          "risk_max_iterations": 80
+        },
+        "identities": 8,
+        "quadrature_nodes": 1024,
+        "native_heldout_family": "QueueResourceControl",
+        "native_seed": 80,
+        "native_N": 13,
+        "native_decomposition": "latent_shared"
+      },
+      "source_provider": {
+        "dimension": "archive task X width",
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "outcome_access": "forbidden by no_outcomes"
+      }
+    },
+    {
+      "job_id": "QueueResourceControl/native",
+      "family": "QueueResourceControl",
+      "kind": "native",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/permutation.json",
+      "permutation_seed": 2026190002,
+      "nominal_sigma": 0.04,
+      "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_prior.pkl",
+      "directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl",
+      "receipt_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/fit_native",
+      "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_diagnostics.json",
+      "dependencies": [
+        "QueueResourceControl/structural"
+      ],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "new_source_simulations": 0,
+      "recipe": {
+        "structural_settings": {
+          "quadrature_power": 10,
+          "seed": 1622,
+          "minimum_source_ess": 8.0,
+          "spectral": {
+            "active_dim": 6,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "pilot_cv_size": 10,
+            "pilot_cv_repeats": 3,
+            "orthogonalization": "symmetric"
+          },
+          "additive": {
+            "max_groups": 8,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "strong_heredity": true,
+            "max_interactions": 2
+          },
+          "optimizer": {
+            "method": "L-BFGS-B",
+            "max_iterations": 512,
+            "ftol": 1e-09,
+            "gtol": 1e-05
+          },
+          "risk_max_iterations": 80
+        },
+        "identities": 8,
+        "quadrature_nodes": 1024,
+        "native_heldout_family": "QueueResourceControl",
+        "native_seed": 80,
+        "native_N": 13,
+        "native_decomposition": "latent_shared"
+      },
+      "source_provider": {
+        "dimension": "archive task X width",
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "outcome_access": "forbidden by no_outcomes"
+      }
+    },
+    {
+      "job_id": "FactorShockStatePolicyRZDT1/structural",
+      "family": "FactorShockStatePolicyRZDT1",
+      "kind": "structural",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/permutation.json",
+      "permutation_seed": 2026190003,
+      "nominal_sigma": 0.04,
+      "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+      "directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1",
+      "receipt_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/fit_structural",
+      "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/structural_source_diagnostics.json",
+      "dependencies": [],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "new_source_simulations": 0,
+      "recipe": {
+        "structural_settings": {
+          "quadrature_power": 10,
+          "seed": 1622,
+          "minimum_source_ess": 8.0,
+          "spectral": {
+            "active_dim": 6,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "pilot_cv_size": 10,
+            "pilot_cv_repeats": 3,
+            "orthogonalization": "symmetric"
+          },
+          "additive": {
+            "max_groups": 8,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "strong_heredity": true,
+            "max_interactions": 2
+          },
+          "optimizer": {
+            "method": "L-BFGS-B",
+            "max_iterations": 512,
+            "ftol": 1e-09,
+            "gtol": 1e-05
+          },
+          "risk_max_iterations": 80
+        },
+        "identities": 8,
+        "quadrature_nodes": 1024,
+        "native_heldout_family": "FactorShockStatePolicyRZDT1",
+        "native_seed": 80,
+        "native_N": 13,
+        "native_decomposition": "latent_shared"
+      },
+      "source_provider": {
+        "dimension": "archive task X width",
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "outcome_access": "forbidden by no_outcomes"
+      }
+    },
+    {
+      "job_id": "FactorShockStatePolicyRZDT1/native",
+      "family": "FactorShockStatePolicyRZDT1",
+      "kind": "native",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/permutation.json",
+      "permutation_seed": 2026190003,
+      "nominal_sigma": 0.04,
+      "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+      "directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1",
+      "receipt_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/fit_native",
+      "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_diagnostics.json",
+      "dependencies": [
+        "FactorShockStatePolicyRZDT1/structural"
+      ],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "new_source_simulations": 0,
+      "recipe": {
+        "structural_settings": {
+          "quadrature_power": 10,
+          "seed": 1622,
+          "minimum_source_ess": 8.0,
+          "spectral": {
+            "active_dim": 6,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "pilot_cv_size": 10,
+            "pilot_cv_repeats": 3,
+            "orthogonalization": "symmetric"
+          },
+          "additive": {
+            "max_groups": 8,
+            "max_library_size": 64,
+            "low_frequency_components": 8,
+            "n_neighbors": 10,
+            "strong_heredity": true,
+            "max_interactions": 2
+          },
+          "optimizer": {
+            "method": "L-BFGS-B",
+            "max_iterations": 512,
+            "ftol": 1e-09,
+            "gtol": 1e-05
+          },
+          "risk_max_iterations": 80
+        },
+        "identities": 8,
+        "quadrature_nodes": 1024,
+        "native_heldout_family": "FactorShockStatePolicyRZDT1",
+        "native_seed": 80,
+        "native_N": 13,
+        "native_decomposition": "latent_shared"
+      },
+      "source_provider": {
+        "dimension": "archive task X width",
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "outcome_access": "forbidden by no_outcomes"
+      }
+    }
+  ],
+  "fit_pipeline_count": 6,
+  "source_fitting_started": false,
+  "permutations_materialized": false,
+  "scientific_execution_started": false,
+  "target_execution_allowed": false,
+  "entrypoint": "performance.prepare_mainline_source_alignment_sources --action fit",
+  "execution": "Future explicit scheduler jobs only; node001-node006, vram0, BLAS threads1.",
+  "accounting": "Preparation metadata is separate from source fitting and historical source simulation.",
+  "cost": {
+    "stage": "describe-source-alignment-fits",
+    "family": null,
+    "arm": null,
+    "started_utc": "2026-10-18T09:06:19.062813+00:00",
+    "status": "completed",
+    "new_source_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "source_model_restorations": 0,
+    "new_target_initial_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "new_source_fits": 0,
+    "current_bundle_fits": 0,
+    "native_prior_fits": 0,
+    "source_permutations_generated": 0,
+    "simulation_rng_draws": 0,
+    "cpu_seconds": 8.462300000000589e-05,
+    "wall_seconds": 8.248630911111832e-05,
+    "finished_utc": "2026-10-18T09:06:19.062879+00:00"
+  }
+}

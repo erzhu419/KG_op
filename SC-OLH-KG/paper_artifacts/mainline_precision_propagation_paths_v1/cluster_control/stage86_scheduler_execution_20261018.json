@@ -1,0 +1,199 @@
+{
+  "status": "complete",
+  "recorded_utc": "2026-10-18T07:17:07.073261+00:00",
+  "manifest": "performance/manifests/mainline_precision_propagation_paths_v1.json",
+  "completed_utc": "2026-10-18T07:09:26.805369+00:00",
+  "completed_geometries": 144,
+  "completed_task_streams": 288,
+  "registered_terminal_outcomes": 2592,
+  "analysis_failures": [],
+  "failed_attempts": [],
+  "closed_attempts": 146,
+  "stage_attempt_counts": {
+    "register-precision-propagation-paths": 1,
+    "analyze-precision-propagation-paths": 144,
+    "aggregate-precision-propagation-paths": 1
+  },
+  "repeated_ledger_stage": [],
+  "new_scientific_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "new_candidate_scores": 0,
+    "truth_problem_constructions": 0
+  },
+  "validation": {
+    "task_ids": [
+      "t183463"
+    ],
+    "test_counts": {
+      "passed": 15
+    },
+    "cpu_seconds": 2.24375,
+    "wall_seconds": 2.547781905159354
+  },
+  "scheduler": {
+    "tasks": [
+      {
+        "id": "t183463",
+        "status": "done",
+        "node": "node004",
+        "signature": "KG_op/mainline_precision_propagation_paths_v1/stage86/validation/stage86_attempt1/0-1",
+        "exit_code": 0,
+        "retry_count": 0,
+        "dispatch_attempt_count": 1,
+        "last_block_reason": null,
+        "started_at": 1792307129.6229587,
+        "finished_at": 1792307117.0
+      },
+      {
+        "id": "t183464",
+        "status": "done",
+        "node": "node004",
+        "signature": "KG_op/mainline_precision_propagation_paths_v1/stage86/audit/tasks/0-37",
+        "exit_code": 0,
+        "retry_count": 0,
+        "dispatch_attempt_count": 1,
+        "last_block_reason": null,
+        "started_at": 1792307219.4776978,
+        "finished_at": 1792307275.0
+      },
+      {
+        "id": "t183465",
+        "status": "done",
+        "node": "node002",
+        "signature": "KG_op/mainline_precision_propagation_paths_v1/stage86/audit/tasks/37-77",
+        "exit_code": 0,
+        "retry_count": 0,
+        "dispatch_attempt_count": 1,
+        "last_block_reason": null,
+        "started_at": 1792307218.4908445,
+        "finished_at": 1792307239.0
+      },
+      {
+        "id": "t183466",
+        "status": "done",
+        "node": "node005",
+        "signature": "KG_op/mainline_precision_propagation_paths_v1/stage86/audit/tasks/77-109",
+        "exit_code": 0,
+        "retry_count": 0,
+        "dispatch_attempt_count": 1,
+        "last_block_reason": null,
+        "started_at": 1792307218.5433173,
+        "finished_at": 1792307271.0
+      },
+      {
+        "id": "t183467",
+        "status": "done",
+        "node": "node006",
+        "signature": "KG_op/mainline_precision_propagation_paths_v1/stage86/audit/tasks/109-144",
+        "exit_code": 0,
+        "retry_count": 0,
+        "dispatch_attempt_count": 1,
+        "last_block_reason": null,
+        "started_at": 1792307218.6300848,
+        "finished_at": 1792307258.0
+      },
+      {
+        "id": "t183469",
+        "status": "running",
+        "node": "node004",
+        "signature": "KG_op/mainline_precision_propagation_paths_v1/stage86/audit/collect/0-1",
+        "exit_code": 0,
+        "retry_count": 0,
+        "dispatch_attempt_count": 1,
+        "last_block_reason": "process exited; terminal log/result diagnosis pending outside state lock",
+        "started_at": 1792307360.2993279,
+        "finished_at": null
+      }
+    ],
+    "actual_status_counts": {
+      "done": 5,
+      "running": 1
+    },
+    "retry_count": 0,
+    "missing": [],
+    "extra_signature_ids": [],
+    "wrapper_records": 6,
+    "all_wrappers_complete_child0": true,
+    "pending_bookkeeping": [
+      "t183469"
+    ],
+    "queue_projection_reference": "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_final_queue_followup_20261018.json",
+    "queue_modified": false,
+    "status_refresh_called": false,
+    "queue_snapshot_reads": [
+      {
+        "path": "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_final_queue_20261018.json",
+        "cpu_seconds": 3.3343761759999997
+      },
+      {
+        "path": "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_final_queue_followup_20261018.json",
+        "cpu_seconds": 3.40110907
+      }
+    ]
+  },
+  "cpu_seconds": {
+    "analysis_attempts": 292.024749927,
+    "analysis_shard_coordinators": 0.35624372999999987,
+    "validation_checks": 2.24375,
+    "wrapper_total_overlaps_children": 330.11756900000006,
+    "manual_dispatch_controls": 129.276831,
+    "controller_remote_wrapper_metadata": 0.005274643999999974,
+    "preflight_local_queue": 3.789402811,
+    "final_local_queue": 6.735485246,
+    "read_only_remote_preflight_probes_projections": 0.5514367269999999,
+    "initial_source_upload_remote": 0.014212959999999969,
+    "unclosed_analysis_attempt": 0.0
+  },
+  "transfer": {
+    "upload_listed_bytes": 338940,
+    "upload_compressed_bytes": 94194,
+    "read_only_probe_projection_payload_bytes": 1279542,
+    "controller_metadata_payload_bytes": 8206,
+    "total_recorded_small_pull_payload_bytes": 1287748,
+    "transfer_accounts": [
+      "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_source_preflight_20261018.json",
+      "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_validation_probe_20261018.json",
+      "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_analysis_probe_20261018.json",
+      "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_completion_probe_20261018.json",
+      "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_result_transfer_20261018.json",
+      "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_focus_transfer_20261018.json"
+    ],
+    "large_summary_downloaded": false,
+    "raw_or_models_downloaded": false
+  },
+  "artifacts": {
+    "headline_compact": "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_headline_compact_20261018.json",
+    "completion_compact": "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_completion_compact_20261018.json",
+    "focus_paths": "SC-OLH-KG/paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_focus_paths_20261018.json",
+    "full_summary_server": "paper_artifacts/mainline_precision_propagation_paths_v1/summary.json"
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_pathway_replication_v1/completion.json",
+    "paper_artifacts/mainline_precision_confirmation_preparation_v1/completion.json",
+    "paper_artifacts/mainline_precision_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_precision_confirmation_v1/cluster_control/stage85_completion_audit_20261018.json"
+  ],
+  "accounting": "Analysis attempts, shard coordinator CPU, validation, and controls are separately recorded. Wrapper total overlaps child CPU and is not added. Source Stage85 scientific costs are historical. Scheduler timestamps are bookkeeping snapshots; actual wrapper timings govern durations."
+}

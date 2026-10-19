@@ -1,0 +1,135 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_screen_v4.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v4/completion.json",
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v6",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v6.json",
+  "rules": [
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ],
+    [
+      "F9",
+      32,
+      9,
+      101
+    ],
+    [
+      "L9",
+      16,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "selected_records": [
+    "positive_midmean_v1_n4_m4_localv_o5_h1_p28"
+  ],
+  "selected_kinds": [
+    "raw"
+  ],
+  "shards": 1,
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p28"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 80.7387289076,
+      "maximum_worker_cpu_seconds": 81
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p28"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 129.790443608,
+      "maximum_worker_cpu_seconds": 130
+    }
+  ],
+  "estimated_cost_admitted": true,
+  "estimated_worker_cpu_seconds": 210.5291725156,
+  "estimated_phase_cpu_seconds": 3596.6082265886002,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "inherited_shared_reserve_charged_cpu_seconds": 436.547554236,
+  "new_phase_reserve_cpu_seconds": 0,
+  "previous_cap_refinement_recorded_cpu_seconds": 7130.757658124,
+  "matched_measured_raw_cpu_rates": {
+    "4": 65.615607423,
+    "5": 106.49203634
+  },
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "scope": "Only63raw midmean_o5p28,using currently surviving two budgets[129,80]/[129,129] from latest source screen. Reuse incumbent-mean analytic E9 controls,pair backend E8/E9/F9/L9,seed202610147,all accepted63/71/query/anchor/multilevel caps and frozen original bank,all8likelihoods,512/1024components,full covariance and SD16/F16/224. Original zero-candidate and overall-error gates unchanged. Preserve all prior failed/recovery worker fees and precision holds;carry original600support reserve,newreserve0. Source fee fields use exact71_component_v4 completion; full settled cost plus210.5291725156 admitted within3600.",
+  "primary_policy": 63,
+  "integration_backend": "pair",
+  "source_phase_estimated_cpu_seconds": 3386.0790540730004,
+  "source_phase_registered_estimated_cpu_seconds": 3422.5881575876,
+  "settled_source_worker_rows": [
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v2/completion.json",
+      "worker_process_cpu_seconds": 627.023444678
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_pilot_v1/completion.json",
+      "worker_process_cpu_seconds": 196.392364724
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v1/completion.json",
+      "worker_process_cpu_seconds": 192.08914189799998
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v3/completion.json",
+      "worker_process_cpu_seconds": 512.248573933
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v2/completion.json",
+      "worker_process_cpu_seconds": 195.17550887699997
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/completion.json",
+      "worker_process_cpu_seconds": 380.207746587
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v3/completion.json",
+      "worker_process_cpu_seconds": 205.8334523
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v5/completion.json",
+      "worker_process_cpu_seconds": 241.870900059
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v4/completion.json",
+      "worker_process_cpu_seconds": 235.23792101700002
+    }
+  ],
+  "settled_source_worker_cpu_seconds": 2786.0790540730004,
+  "pricing_basis": "Exact settled same-backend two-budget63 raw worker maximum from caps_v3/v4 receipts,including precision HOLD receipts,20percent margin+2setup perworker; no proportional scaling from three-budget costs. Source71_component_v4 actual settled worker base and original600 reserve retained; all prior admissions preserved."
+}

@@ -1,0 +1,127 @@
+{
+  "name": "observation_replica_1_FactorShockStatePolicyRZDT1_terminal",
+  "status": "registered",
+  "source_manifest": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search_plan.json",
+  "source_output_dir": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search",
+  "output_dir": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/terminal",
+  "target_seeds": [
+    2026103017,
+    2026103018,
+    2026103019,
+    2026103020,
+    2026103021,
+    2026103022,
+    2026103023,
+    2026103024
+  ],
+  "verification_seed_by_task": {
+    "2026103017": 2026103217,
+    "2026103018": 2026103218,
+    "2026103019": 2026103219,
+    "2026103020": 2026103220,
+    "2026103021": 2026103221,
+    "2026103022": 2026103222,
+    "2026103023": 2026103223,
+    "2026103024": 2026103224
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "same_policy_distinct_challenger": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Original-terminal paired control for the common frozen modified-terminal primary after-init-minus-source0-point comparison.",
+    "Preserve full-afterinit, original/native terminal crossing and all references; compare each unchanged original input to its frozen same-policy challenger transform."
+  ],
+  "statistical_unit": "24 independent registered task geometries,8per known family; one observation and one independent verification stream each.",
+  "truth_barrier": "Complete all available registered verifications before reading cached truth or evaluating uncached deployment truth; record any failures before scoring.",
+  "scope": "Confirm whether frozen initialization cross-policy propagation produces certification and decision-quality benefits on24unseen task geometries; no model or terminal selection.",
+  "registered_utc": "2026-10-16T12:50:27.136035+00:00",
+  "inherited_replay_check_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/terminal/replay_check.json",
+  "execution_failures": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "status": "search_failed",
+      "logical_search_calls": 11,
+      "new_search_calls": 1,
+      "reason": "RuntimeError('Batched raw moment error exceeds frozen tolerance: 2.5773155986877152e-08')",
+      "failed_raw_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_raw_1792157276809918126.json",
+      "failed_state_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_engine.pkl"
+    }
+  ],
+  "failure_resolution": {
+    "recorded_utc": "2026-10-16T13:43:19.599672+00:00",
+    "before_any_verification": true,
+    "action": "Retain the observed POINT search failure as missing with its paid prefix; resume only unfinished stages. No resampling, model/tolerance change, raw replay or posterior recovery. Full24 AFTER-POINT means and intervals remain null."
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "name": "mainline_factorshock_diagnosis_v1",
+  "status": "complete",
+  "role": "Post hoc diagnosis of the already opened FactorShock seed80 development case; no new optimizer, target geometry, source fit or independent confirmation.",
+  "output_dir": "paper_artifacts/mainline_factorshock_diagnosis_v1",
+  "inputs_file": "paper_artifacts/mainline_factorshock_diagnosis_v1/inputs.json",
+  "entrypoint": "performance/run_mainline_factorshock_diagnosis.py",
+  "parent_manifest": "performance/manifests/mainline_legacy_backend_bridge_v1.json",
+  "domain": "FactorShockStatePolicyRZDT1",
+  "target_seed": 80,
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "arms": [
+    "legacy_native_v69",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "checkpoints": [
+    0,
+    10,
+    11,
+    12,
+    13
+  ],
+  "common_pool": {
+    "construction": "Stable unique union of the three frozen 13-observation histories: common initial ten first, then each arm online points in arm order. Never select by truth.",
+    "size": 18,
+    "initial_size": 10,
+    "stores_points_once": true,
+    "terminal_actions": "For each checkpoint and arm, use only that arm observed indices; zero-paid checkpoint provides prediction diagnostics only."
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+    "historical_source_calls": 384,
+    "initialization": "Ten identical paid raw rows in saved order, exactly equal to the original design and cached baseline.",
+    "online_trajectory": "Three saved observations per backend in original order; no new adaptive selection.",
+    "frontends": "Original V69 complete frontend remains frozen; no new candidate generation this diagnosis."
+  },
+  "posterior_replay": {
+    "full": "Each backend starts from its saved zero-paid source prior and replays only its own available raw; verification samples are excluded.",
+    "point_only": "Both A/B retain the existing local raw likelihood and mixture updates at the observed strategy; local identity reweighting is allowed for that strategy only. Neither may mutate shared global identity weights or other strategy marginals.",
+    "scope": "Retain native response/noise semantics; GP/current use the existing four-head raw posterior and positive-mixture E[exp(eta)]. Report any native marginal-replay difference explicitly.",
+    "moments": [
+      "objective mean and epistemic variance",
+      "centered risk mean and epistemic variance",
+      "objective and constraint observation-noise variance",
+      "chance-margin components and posterior violation probability"
+    ],
+    "replay_conditions": "No source fit, model patch, prior calibration, representation change or truth-conditioned repair.",
+    "point_only_from_zero": "A: For each strategy start from its unchanged zero-paid source-prior marginal; replay only that strategy own raw among all13, leaving all other strategies and their prior global identity weights unchanged. This isolates initialization plus online cross-strategy propagation.",
+    "point_only_after_initial10": "B: Start from the same full joint posterior after the common ten initialization rows; process only the three new raw observations with independent per-strategy marginals, leaving other strategies and their initialized identity weights unchanged. This isolates online cross-strategy updates.",
+    "implementation_scope": "GP/current compare full with A and B using the existing native mixture likelihood and PointOnlyResponseMixture. Native saved posterior snapshots provide the fixed anchor; any unavailable native checkpoint or exact local marginal replay must be identified rather than replaced by an invented model."
+  },
+  "decision_rule": {
+    "backend": "constrained_ts history fixed; no new acquisition",
+    "terminal_rule": "feasible_first",
+    "maximum_violation_probability": 0.5,
+    "chance_constraint_alpha": 0.05,
+    "candidate_scope": "observed points of the same arm and checkpoint",
+    "verification": "No new independent verification. Historical frozen primary and deployed results retained separately.",
+    "analysis": "Compare full and point-only on common pool predictions, observed-only fixed-path terminal ranking and unsampled strategy changes; separate mean, noise and epistemic contributions.",
+    "truth_decomposition": "Retrospective truth substitutions apply only to objective/risk means and episode noise. Epistemic interventions use a common observed median or saved native variance, never a claimed epistemic truth. CDF saturation is recorded; these are not optimizer performance."
+  },
+  "truth_access": {
+    "permitted": true,
+    "reason": "Truth was already opened after the previous complete verification barrier; this turn is retrospective diagnosis.",
+    "timing": "Freeze this pool and protocol before scoring; truth only for scoring and decomposition, never posterior updates or case selection.",
+    "calls": "At most one common-pool truth evaluation per unique strategy; record actual helper/function invocation counts separately if more than one primitive is needed.",
+    "expected_scored_unique_policies": 18
+  },
+  "cost": {
+    "new_source_simulator_calls": 0,
+    "new_target_search_calls": 0,
+    "new_target_verification_calls": 0,
+    "new_source_or_encoder_fits": 0,
+    "remote_downloads": 0,
+    "cached_initial_raw_unique": 10,
+    "cached_online_raw_total": 9,
+    "logical_raw_rows_across_arms": 39,
+    "new_truth_scoring_unique_policies_max": 18,
+    "numerical_replay": "Record completed and failed CPU/wall attempts; no target calls may be hidden in replay."
+  },
+  "limitations": [
+    "One already opened development task and three endogenous saved query paths; no independent superiority or causal adaptive-policy gain claim.",
+    "Native and newer backends keep their existing different representations/noise machinery; common task and pool align predictions, not model architecture.",
+    "FactorShock shared_shock_scale1 matches reused raw; old V69 scheduler default0 is not used.",
+    "Current structural source integration retains fixed1024 nodes without numerical precision certification; diagnosis must not quietly tune source models."
+  ],
+  "comparisons": [
+    "Full posterior across all backends on exactly the same eighteen policies and available paid checkpoints.",
+    "GP/current full versus source-zero point-only A, and initialized10 point-only B, on each backend own fixed thirteen-raw path.",
+    "Separate final observed-only ordering, first-paid versus unsampled predictions, native reference, and historical verified deployment."
+  ],
+  "replay_trace_checkpoints": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+  ],
+  "native_view_scope": "Frozen native final posterior on each saved arm history, plus saved initialization parity. No fabricated native intermediate checkpoints.",
+  "post_hoc_extensions": [
+    "Record all paid checkpoints0..13 to isolate first local observation and later cross-policy effects.",
+    "Score the fixed set of five policies never observed by each new arm at paid10..13.",
+    "After mean/noise diagnosis, replace only terminal constraint noise by saved point-only A/B noise, retaining full risk mean and epistemic variance. Fixed-path decision ablation only; no posterior or source changes."
+  ],
+  "completion_file": "paper_artifacts/mainline_factorshock_diagnosis_v1/completion.json",
+  "report": "docs/mainline_factorshock_diagnosis_results_20261015.md"
+}

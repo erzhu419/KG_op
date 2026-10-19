@@ -1,0 +1,118 @@
+{
+  "name": "mainline_terminal_confirmation_cells_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T01:32:29.547370+00:00",
+  "source_manifest": "performance/manifests/mainline_terminal_confirmation_search_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_terminal_confirmation_v1/search",
+  "output_dir": "paper_artifacts/mainline_terminal_confirmation_v1/terminal",
+  "target_seeds": [
+    2026101901,
+    2026101902,
+    2026101903,
+    2026101904,
+    2026101905,
+    2026101906,
+    2026101907,
+    2026101908,
+    2026101909,
+    2026101910,
+    2026101911,
+    2026101912
+  ],
+  "verification_seed_by_task": {
+    "2026101901": 2026101921,
+    "2026101902": 2026101922,
+    "2026101903": 2026101923,
+    "2026101904": 2026101924,
+    "2026101905": 2026101925,
+    "2026101906": 2026101926,
+    "2026101907": 2026101927,
+    "2026101908": 2026101928,
+    "2026101909": 2026101929,
+    "2026101910": 2026101930,
+    "2026101911": 2026101931,
+    "2026101912": 2026101932
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "original": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Primary: full minus after-initialization point-only under the common old native terminal, task-equal certified true-feasible quality gain relative to initial.",
+    "Secondary: original-role terminal propagation contrast; native-minus-role within each history;2x2 interaction.",
+    "Retain old native, same-source GP, source0 point-only, structural and STOP references; separate certification baseline from quality."
+  ],
+  "statistical_unit": "12 fresh paired task geometries, one search-observation stream and one independent verification stream per task; W/T/L tolerance1e-12.",
+  "truth_barrier": "All108 registered verifications complete.",
+  "scope": "Fresh geometry confirmation; both terminals use each identical paid history. Preserve all tasks and five references. No pooling with earlier opened cohorts.",
+  "completed_utc": "2026-10-16T01:51:10.777947+00:00"
+}

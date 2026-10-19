@@ -288,8 +288,13 @@ def verify_paired_objective_dominance(
     seed,
     comparison_budget,
     delta,
+    comparison_block_index=0,
 ):
-    """Test objective improvement on an independent paired-CRN stream."""
+    """Test objective improvement on an independent paired-CRN stream.
+
+    Block zero preserves the historical seed mapping. A nonzero block appends
+    its index, separating a later comparison from the data selecting its pair.
+    """
 
     budget = int(comparison_budget)
     if budget < 2:
@@ -298,6 +303,9 @@ def verify_paired_objective_dominance(
     delta = float(delta)
     if not 0.0 < delta < 1.0:
         raise ValueError("objective comparison delta must lie in (0, 1)")
+    block_index = int(comparison_block_index)
+    if block_index < 0:
+        raise ValueError("objective comparison block index must be nonnegative")
     challenger = tuple(int(value) for value in challenger)
     incumbent = tuple(int(value) for value in incumbent)
     if challenger == incumbent:
@@ -326,6 +334,8 @@ def verify_paired_objective_dominance(
             int(replication),
             TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG,
         ]
+        if block_index:
+            seed_components.append(block_index)
         challenger_rng = np.random.default_rng(
             np.random.SeedSequence(seed_components))
         incumbent_rng = np.random.default_rng(

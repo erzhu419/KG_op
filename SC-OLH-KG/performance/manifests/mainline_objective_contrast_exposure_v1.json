@@ -1,0 +1,54 @@
+{
+  "name": "mainline_objective_contrast_exposure_v1",
+  "status": "complete",
+  "started": true,
+  "registered_utc": "2026-10-16T15:33:06.870303+00:00",
+  "parent_manifest": "performance/manifests/mainline_target_terminal_risk_reconstruction_v1.json",
+  "output_dir": "paper_artifacts/mainline_objective_contrast_exposure_v1",
+  "objective": "Use frozen source forecasts and target histories to locate objective-difference misranking and its terminal exposure, without using conservative risk errors as an objective repair.",
+  "inputs": {
+    "source_manifest": "performance/manifests/mainline_source_observed_ranking_v1.json",
+    "source_risk_manifest": "performance/manifests/mainline_source_risk_channel_attribution_v1.json",
+    "target_summary": "paper_artifacts/mainline_target_terminal_risk_reconstruction_v1/summary.json",
+    "target_outcomes": "paper_artifacts/mainline_target_terminal_risk_reconstruction_v1",
+    "existing_terminal_references": "paper_artifacts/mainline_unseen_geometry_terminal_attribution_v1/terminal.json"
+  },
+  "scope": [
+    "Retain all24 overlapping source cases with native/FULL/AFTER/POINT and their frozen initial10/final13 forecasts. Use the original unused-raw scoring labels and response scales.",
+    "Compare objective-difference error and ordering across the registered held policies, reporting observed-observed, observed-unobserved and unobserved-unobserved pairs separately. Aggregate within a source case before family summaries; pairs and overlapping folds are not independent tasks.",
+    "Keep all24 d1000 geometries,72 role registrations,71 completed posterior records,48 saved same-history native views and all9 terminal references. Preserve POINT3018 failure and Queue3009 undefined quality baseline.",
+    "For each existing history, compare saved objective forecasts, actually observed raw objective differences, observation counts and saved episode-noise predictions. Join only existing cached truth for retrospective scoring, not model selection.",
+    "Connect objective order to original risk eligibility, actual transformed shortlist, paired objective comparisons, safety attempts and certified deployment. Count a changed unverified/fallback record separately from changed certified deployment.",
+    "Keep Queue3016 as a focal negative alongside all cases and role/native positives and negatives. FULL/AFTER/native all prefer18 over53 in objective mean there; native and AFTER exclude truly feasible18, so their success does not validate their objective ranking.",
+    "Only identical ordered raw histories support terminal mechanism attribution. Later divergent-history differences remain descriptive. No cross-history posterior replay.",
+    "Use only saved uncertainty information. Missing cross-policy objective covariance remains unknown; never substitute the sum of marginal variances for posterior difference variance. Low source repeat counts do not support exact pairwise confidence claims."
+  ],
+  "frozen": {
+    "model": true,
+    "source_recipe": true,
+    "query_rules": true,
+    "terminal": true,
+    "budgets": true,
+    "numerical_precision": true
+  },
+  "budget": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "decision": "Do not adopt a risk or terminal patch. First determine whether source-supported objective-difference errors or comparison exposure supply a common minimal correction; opened target cases are diagnostic evidence, not independent validation.",
+  "cost": "Record read-only analysis CPU, all attempts and prior paid-account references. No rerun of already validated terminal reconstruction.",
+  "started_utc": "2026-10-16T15:44:21.815469+00:00",
+  "completed_utc": "2026-10-16T16:00:39.449441+00:00",
+  "summary": "paper_artifacts/mainline_objective_contrast_exposure_v1/summary.json",
+  "completion": "paper_artifacts/mainline_objective_contrast_exposure_v1/completion.json",
+  "result_document": "docs/mainline_objective_contrast_exposure_results_20261016.md",
+  "next_manifest": "performance/manifests/mainline_terminal_two_comparison_preparation_v1.json"
+}

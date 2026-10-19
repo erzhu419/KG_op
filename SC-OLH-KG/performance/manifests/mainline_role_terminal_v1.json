@@ -1,0 +1,41 @@
+{
+  "name": "mainline_role_terminal_v1",
+  "registered_utc": "2026-10-15T16:13:56.432656+00:00",
+  "status": "complete",
+  "parent_manifest": "performance/manifests/mainline_role_fresh_v1.json",
+  "input_dir": "paper_artifacts/mainline_role_fresh_v1",
+  "output_dir": "paper_artifacts/mainline_role_terminal_v1",
+  "report": "docs/mainline_role_terminal_results_20261016.md",
+  "scope": "Reuse all18 saved searches, verifications and per-task truth. No posterior restoration, new truth, simulator calls, source fits or downloads.",
+  "audit": [
+    "Replay all existing safety certificates and objective comparisons from paid raw.",
+    "Map unique improving queries to terminal ranks, safety and objective outcomes.",
+    "On each actually attempted safety stream compare only available80/112/128 prefixes; never combine positions or simulate missing raw.",
+    "Calculate Gaussian certificate power at fixed80/112/128 from already-cached truth for diagnostic use only."
+  ],
+  "single_candidate_change": {
+    "candidate_budgets": [
+      112,
+      112,
+      112
+    ],
+    "rationale": "Divide unchanged336 safety-call cap equally among3 frozen candidates; not selected by truth or replay outcomes.",
+    "unchanged": [
+      "shortlist",
+      "stopping_branches",
+      "candidate_delta",
+      "objective_guard",
+      "search",
+      "prior"
+    ]
+  },
+  "budget": {
+    "new_target_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_calls": 0,
+    "downloads": 0
+  },
+  "decision_boundary": "Incomplete prefix replay and truth-based power are diagnostics, never new deployments. Register one fresh-stream matched original/equal terminal comparison after audit, keeping old results separate.",
+  "completion_file": "paper_artifacts/mainline_role_terminal_v1/completion.json"
+}

@@ -1,0 +1,278 @@
+{
+  "streams": [
+    {
+      "name": "observation_1",
+      "replicate": 1,
+      "manifest": "performance/manifests/mainline_terminal_recording_seed_replication_stream_1_v1.json",
+      "terminal_recording_file": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/observation_1/revision_1/details.json"
+    },
+    {
+      "name": "observation_2",
+      "replicate": 2,
+      "manifest": "performance/manifests/mainline_terminal_recording_seed_replication_stream_2_v1.json",
+      "terminal_recording_file": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/observation_2/revision_1/details.json"
+    }
+  ],
+  "tasks": [
+    {
+      "seed": 2026107001,
+      "geometry_task_seed": 2026107001,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107002,
+      "geometry_task_seed": 2026107002,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107003,
+      "geometry_task_seed": 2026107003,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107004,
+      "geometry_task_seed": 2026107004,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107005,
+      "geometry_task_seed": 2026107005,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107006,
+      "geometry_task_seed": 2026107006,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107007,
+      "geometry_task_seed": 2026107007,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107008,
+      "geometry_task_seed": 2026107008,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107009,
+      "geometry_task_seed": 2026107009,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107010,
+      "geometry_task_seed": 2026107010,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107011,
+      "geometry_task_seed": 2026107011,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107012,
+      "geometry_task_seed": 2026107012,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107013,
+      "geometry_task_seed": 2026107013,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107014,
+      "geometry_task_seed": 2026107014,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107015,
+      "geometry_task_seed": 2026107015,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107016,
+      "geometry_task_seed": 2026107016,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107017,
+      "geometry_task_seed": 2026107017,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107018,
+      "geometry_task_seed": 2026107018,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107019,
+      "geometry_task_seed": 2026107019,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107020,
+      "geometry_task_seed": 2026107020,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107021,
+      "geometry_task_seed": 2026107021,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107022,
+      "geometry_task_seed": 2026107022,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107023,
+      "geometry_task_seed": 2026107023,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107024,
+      "geometry_task_seed": 2026107024,
+      "domain": "FactorShockStatePolicyRZDT1"
+    }
+  ],
+  "target_seeds": [
+    2026107001,
+    2026107002,
+    2026107003,
+    2026107004,
+    2026107005,
+    2026107006,
+    2026107007,
+    2026107008,
+    2026107009,
+    2026107010,
+    2026107011,
+    2026107012,
+    2026107013,
+    2026107014,
+    2026107015,
+    2026107016,
+    2026107017,
+    2026107018,
+    2026107019,
+    2026107020,
+    2026107021,
+    2026107022,
+    2026107023,
+    2026107024
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "expected": {
+    "geometries": 24,
+    "streams": 2,
+    "task_streams": 48,
+    "arms": 9,
+    "terminal_pairs": 432,
+    "terminal_outcomes": 864
+  },
+  "frozen": {
+    "model": true,
+    "AFTER": true,
+    "search": true,
+    "terminal": true,
+    "thresholds": true,
+    "seeds": true,
+    "source_fits": 0,
+    "posterior_restorations": 0,
+    "new_simulations": 0,
+    "new_truth_calls": 0,
+    "new_candidate_scores": 0
+  },
+  "statistical_unit": "24 fixed geometries; average both registered streams within geometry before statistical summaries. All48 task-streams remain descriptive rows, not48 independent geometries.",
+  "name": "mainline_reference_retention_v1",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_reference_retention_v1",
+  "protocol_document": "docs/mainline_reference_retention_protocol_20261017.md",
+  "reference_manifest": "performance/manifests/mainline_decision_path_attribution_v1.json",
+  "reference_output_dir": "paper_artifacts/mainline_decision_path_attribution_v1",
+  "scientific_manifest": "performance/manifests/mainline_terminal_recording_seed_replication_v1.json",
+  "scientific_output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1",
+  "primary": "Diagnostic contrast AFTER native minus role under the old/default terminal, on the same paid search history. Original old AFTER minus POINT remains the scientific primary, unchanged.",
+  "secondary": "Same-history FULL native minus role and both history crosses under the saved new terminal; all nine arms retained.",
+  "reference_definition": "All distinct physical policies in the first10 observations. Label every existing empirical incumbent, STOP primary, STOP safe fallback and all three STOP frozen input slots. Overlapping labels never duplicate the physical policy. Freeze from STOP input only, before Stage77 truth or terminal outcomes are read.",
+  "references_use_target_truth": false,
+  "references_use_verification_winners": false,
+  "attribution": "Report each fixed reference membership before/after incumbent insertion, actual frozen slot, safety attempt/pass, actual comparison and deployment, plus all new-policy displacements. Whole-native terminal differences are observed contrasts, not a shortlist-only counterfactual.",
+  "costs": "Inherit all864 scientific outcome costs and all previous failure ledgers; new analysis and validation CPU are separate and wrapper CPU overlaps.",
+  "decision": "Assess whether a query-before definable reference-retention mechanism merits a separately registered shortlist-only confirmation. No adoption or experiment is implied by a positive whole-backend difference; losses, no-certificate cases and budget/sample/selection changes enter the judgment.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json"
+  ],
+  "limits": [
+    "No new calls, model fitting, posterior restoration, candidate predictions, thresholds or terminal changes.",
+    "Do not select a reference by true quality, final STOP certificate or whichever role wins this analysis.",
+    "All48 streams and all9 controls stay registered, including failures and undefined7012 baseline.",
+    "Verification in different arms cannot be transferred to unexecuted policies or sample positions.",
+    "No missing quality or missing stream is imputed to zero. No automatic rerun of completed scientific work."
+  ],
+  "registered_utc": "2026-10-17T13:55:09.631870+00:00",
+  "completed_utc": "2026-10-17T14:00:51.314137+00:00",
+  "summary_file": "paper_artifacts/mainline_reference_retention_v1/summary.json",
+  "completion_file": "paper_artifacts/mainline_reference_retention_v1/completion.json"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "mainline_role_source_holdout_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T03:10:39.930459+00:00",
+  "archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+  "partition_manifest": "performance/manifests/mainline_source_policy_holdout_v1.json",
+  "output_dir": "paper_artifacts/mainline_role_source_holdout_v1",
+  "report": "docs/mainline_role_source_holdout_results_20261016.md",
+  "entrypoint": "performance/run_mainline_role_source_holdout.py",
+  "fold_seed": 2026101680,
+  "folds": 4,
+  "arms": [
+    "full",
+    "point_from_source0",
+    "point_after_first"
+  ],
+  "source_protocol": "Reuse Stage36 fixed4 whole-physical-policy folds, shared across2 source families.48training+16held per family; all response-dependent current and native source fitting sees only48. Frozen source fit recipes,1024nodes,8identities and latent_shared role g split. Refit per fold because Stage36 saved only forecasts, not model objects.",
+  "operator": "Use deployed role_inputs/role_trajectory unchanged at actual source d50; source0 projection uses independent task uncertainty just as deployed. This is familiar-source-family held-policy validation of the modular recipe, not exact same-source-task Bayesian conditioning. Stage36 used a different same-task f-only conditional operator, so results are not direct replications.",
+  "adaptation": "First raw paired[f,g] from each of the first2 held policy IDs, in fixed order. Full propagates both. Point_from_source0 updates only each observed physical policy. Point_after_first shares the full first-anchor posterior, then second-anchor update affects only that policy.14other held policies stay unobserved.",
+  "forecast_barrier": "Write all4folds x2family forecasts before loading held scoring labels. Training archives exclude every raw at all16held policies. Prediction uses only2 explicitly permitted pairedraw rows; no target geometry or outcomes enter.",
+  "metrics": "Scoring14 points uses3 rawmeans/variances; g subtracts task tau. MSE,bias,noise-subtractedMSE and moment predictive calibration distinguish mean vs noise. Eta_g uses unbiased logsamplevariance label. f relative ranking reference is firstanchor unused2raw. No true chance-feasibility labels, simulated deployments or exact mixture log-density claim.",
+  "statistical_unit": "2 source families; report4 overlapping folds within each family and equal-family aggregate.112policy-family pairs are descriptive, not112independent tasks.",
+  "new_budget": {
+    "source_calls": 0,
+    "target_calls": 0,
+    "verification_calls": 0,
+    "truth_calls": 0,
+    "source_fitting_pipelines": 8,
+    "current_bundle_fits": 4,
+    "native_prior_fits": 4,
+    "unique_reused_adaptation_raw_rows": 16,
+    "downloads": 0
+  },
+  "limits": "Deployed d1000 model stays frozen. Joint f/g observations may change shared identity weights. Finite3repeat labels are noisy; retain negative noise-subtractedMSE. Existing source sampler precision and lowESSflags retained, no extra quadrature or risk patch screening.",
+  "next_step_gate": "Interpret full minus point_after_first first; separate initialization benefit versus point_from_source0. No correction adopted on this validation alone. Any later candidate needs source support and fresh target geometry validation; Stage41 targetoutcomes are never tuningdata.",
+  "started_utc": "2026-10-16T03:12:15.574010+00:00",
+  "completed_utc": "2026-10-16T03:18:03.972013+00:00",
+  "posthoc_saved_moment_diagnostic": {
+    "entrypoint": "performance/diagnose_mainline_source_noise_moments.py",
+    "output": "paper_artifacts/mainline_role_source_holdout_v1/noise_moments.json",
+    "status": "complete",
+    "scope": "Read saved moments for all scoring policies at all three prefixes; compare exp(Eeta), the moment-matched Gaussian exponential moment, and the actual saved noise expectation. No source refit, posterior restoration, simulator, truth, or model change.",
+    "cost": "Recorded separately in noise_moments.json; original fit/scoring ledger unchanged.",
+    "correction_adopted": false
+  }
+}

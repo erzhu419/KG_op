@@ -1,0 +1,266 @@
+{
+  "status": "passed",
+  "paid": {
+    "new_target_initial_calls": 240,
+    "new_target_search_calls": 432,
+    "new_verification_calls": 73568,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 1044,
+    "download_bytes": 0
+  },
+  "source_attempt_count": 168,
+  "unique_paid_source_histories": 168,
+  "totals": {
+    "cells": 216,
+    "old_physical": 50416,
+    "old_logical": 50416,
+    "new_logical": 71584,
+    "new_physical": 23152,
+    "old_raw_reused": 48432,
+    "old_safety_tail": 1984,
+    "old_not_consumed_by_new": 1984,
+    "third_newly_safety_exposed": 184
+  },
+  "per_arm": {
+    "legacy_role_full": {
+      "cells": 24,
+      "old_physical": 5600,
+      "old_logical": 5600,
+      "new_logical": 8096,
+      "new_physical": 2712,
+      "old_raw_reused": 5384,
+      "old_safety_tail": 216,
+      "old_not_consumed_by_new": 216,
+      "third_newly_safety_exposed": 21
+    },
+    "legacy_role_full_native_terminal": {
+      "cells": 24,
+      "old_physical": 5824,
+      "old_logical": 5824,
+      "new_logical": 8064,
+      "new_physical": 2472,
+      "old_raw_reused": 5592,
+      "old_safety_tail": 232,
+      "old_not_consumed_by_new": 232,
+      "third_newly_safety_exposed": 19
+    },
+    "legacy_role_after_init_point_only": {
+      "cells": 24,
+      "old_physical": 5360,
+      "old_logical": 5360,
+      "new_logical": 8112,
+      "new_physical": 2952,
+      "old_raw_reused": 5160,
+      "old_safety_tail": 200,
+      "old_not_consumed_by_new": 200,
+      "third_newly_safety_exposed": 23
+    },
+    "legacy_role_after_init_point_only_native_terminal": {
+      "cells": 24,
+      "old_physical": 5712,
+      "old_logical": 5712,
+      "new_logical": 8032,
+      "new_physical": 2544,
+      "old_raw_reused": 5488,
+      "old_safety_tail": 224,
+      "old_not_consumed_by_new": 224,
+      "third_newly_safety_exposed": 20
+    },
+    "legacy_native_neighbors": {
+      "cells": 24,
+      "old_physical": 5712,
+      "old_logical": 5712,
+      "new_logical": 8032,
+      "new_physical": 2544,
+      "old_raw_reused": 5488,
+      "old_safety_tail": 224,
+      "old_not_consumed_by_new": 224,
+      "third_newly_safety_exposed": 20
+    },
+    "same_source_gp": {
+      "cells": 24,
+      "old_physical": 5328,
+      "old_logical": 5328,
+      "new_logical": 7824,
+      "new_physical": 2704,
+      "old_raw_reused": 5120,
+      "old_safety_tail": 208,
+      "old_not_consumed_by_new": 208,
+      "third_newly_safety_exposed": 22
+    },
+    "legacy_role_point_only": {
+      "cells": 24,
+      "old_physical": 5680,
+      "old_logical": 5680,
+      "new_logical": 7744,
+      "new_physical": 2296,
+      "old_raw_reused": 5448,
+      "old_safety_tail": 232,
+      "old_not_consumed_by_new": 232,
+      "third_newly_safety_exposed": 19
+    },
+    "current_structural_mixture": {
+      "cells": 24,
+      "old_physical": 5520,
+      "old_logical": 5520,
+      "new_logical": 7952,
+      "new_physical": 2648,
+      "old_raw_reused": 5304,
+      "old_safety_tail": 216,
+      "old_not_consumed_by_new": 216,
+      "third_newly_safety_exposed": 21
+    },
+    "initialization_only": {
+      "cells": 24,
+      "old_physical": 5680,
+      "old_logical": 5680,
+      "new_logical": 7728,
+      "new_physical": 2280,
+      "old_raw_reused": 5448,
+      "old_safety_tail": 232,
+      "old_not_consumed_by_new": 232,
+      "third_newly_safety_exposed": 19
+    }
+  },
+  "maximum_old_logical": 336,
+  "maximum_new_logical": 352,
+  "maximum_same_cell_physical_union": 360,
+  "safety_prefix_flips": [
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_full",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_full_native_terminal",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_full_native_terminal",
+      "candidate_index": 2,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": true,
+      "new_certified": false,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_after_init_point_only",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_after_init_point_only_native_terminal",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_after_init_point_only_native_terminal",
+      "candidate_index": 2,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": true,
+      "new_certified": false,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_native_neighbors",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": false,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "same_source_gp",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "legacy_role_point_only",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": false,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "current_structural_mixture",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": true,
+      "new_final_certified": true
+    },
+    {
+      "seed": 2026104002,
+      "arm": "initialization_only",
+      "candidate_index": 1,
+      "old_budget": 128,
+      "new_budget": 120,
+      "old_certified": false,
+      "new_certified": true,
+      "old_final_certified": false,
+      "new_final_certified": true
+    }
+  ],
+  "failed_attempts": [
+    {
+      "stage": "synthetic-fresh-cohort-search-wiring",
+      "status": "failed",
+      "error": "PluginValidationError(\"Plugin '123736190746192' for hook 'pytest_runtest_logreport'\\nhookimpl definition: pytest_runtest_logreport(r)\\nArgument(s) {'r'} are declared in the hookimpl but can not be found in the hookspec\")",
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "cpu_seconds": 0.03909500899999996
+    }
+  ],
+  "completion_cpu_before_audit": 74646.4594460481,
+  "actual_simulation_failures": 0,
+  "new_physical_target_calls": 74240
+}

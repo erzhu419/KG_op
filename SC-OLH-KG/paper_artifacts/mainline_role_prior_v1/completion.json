@@ -1,0 +1,113 @@
+{
+  "status": "complete: fixed source-prior contrast; 3 initial trajectories and 9 one-step query comparisons; no deployment experiment",
+  "finished_utc": "2026-10-15T15:36:30.525615+00:00",
+  "scientific_attempts": 7,
+  "failed_attempts": 0,
+  "trajectory_count": 3,
+  "query_count": 9,
+  "all_outputs_complete": true,
+  "maximum_parity_error": 3.552713678800501e-15,
+  "recorded_cpu_seconds": 545.2223498740001,
+  "scientific_cpu_seconds": 544.588841289,
+  "unit_tests_passed": 1,
+  "roundoff_events": 213,
+  "saved_raw_rows_replayed_including_restorations": 199,
+  "source_model_restorations": 19,
+  "new_source_simulations": 0,
+  "new_target_simulations": 0,
+  "new_verification_calls": 0,
+  "new_source_fits": 0,
+  "new_truth_function_calls": 0,
+  "download_bytes": 0,
+  "query_counts": [
+    {
+      "control": "full",
+      "paid_prefixes": [
+        10,
+        11,
+        12
+      ],
+      "query_count": 9,
+      "known_truth_count": 9,
+      "safe_count": 5,
+      "feasible_improving_count": 1,
+      "new_neighbor_count": 7,
+      "selected_neighbor_indices": [
+        27,
+        27,
+        47,
+        null,
+        13,
+        10,
+        44,
+        55,
+        0
+      ]
+    },
+    {
+      "control": "frozen10",
+      "paid_prefixes": [
+        10,
+        11,
+        12
+      ],
+      "query_count": 9,
+      "known_truth_count": 9,
+      "safe_count": 6,
+      "feasible_improving_count": 1,
+      "new_neighbor_count": 7,
+      "selected_neighbor_indices": [
+        27,
+        27,
+        47,
+        null,
+        10,
+        10,
+        44,
+        55,
+        0
+      ]
+    },
+    {
+      "control": "full",
+      "paid_prefixes": [
+        11,
+        12
+      ],
+      "query_count": 6,
+      "known_truth_count": 6,
+      "safe_count": 4,
+      "feasible_improving_count": 0,
+      "new_neighbor_count": 5,
+      "selected_neighbor_indices": [
+        27,
+        47,
+        13,
+        10,
+        55,
+        0
+      ]
+    },
+    {
+      "control": "frozen10",
+      "paid_prefixes": [
+        11,
+        12
+      ],
+      "query_count": 6,
+      "known_truth_count": 6,
+      "safe_count": 5,
+      "feasible_improving_count": 0,
+      "new_neighbor_count": 5,
+      "selected_neighbor_indices": [
+        27,
+        47,
+        10,
+        10,
+        55,
+        0
+      ]
+    }
+  ],
+  "decision": "Retain exactly this fixed role prior as the candidate for a fresh-geometry closed-loop comparison. No further risk-patch selection. Compare its cross-policy propagation with a point-only control from initialization and retain native, GP, current structure and STOP; keep the already matched online/STOP budget and independent verification. No fresh run in this diagnosis."
+}

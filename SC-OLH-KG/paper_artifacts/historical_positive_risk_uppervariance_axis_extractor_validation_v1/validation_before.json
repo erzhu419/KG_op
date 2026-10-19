@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_extract_cached_origin4_intervals.py",
+    "-v"
+  ],
+  "exit_code": 1,
+  "process_cpu_seconds": 0.09353447499999999,
+  "stdout": "",
+  "stderr": "test_current_interval_mass_is_checked_beyond_global_closure (test_extract_cached_origin4_intervals.CachedOrigin4IntervalsTest) ... FAIL\ntest_internal_boundaries_belong_to_the_right_bucket (test_extract_cached_origin4_intervals.CachedOrigin4IntervalsTest) ... ok\ntest_missing_shard_reports_incomplete_and_cpu (test_extract_cached_origin4_intervals.CachedOrigin4IntervalsTest) ... ok\ntest_weights_orders_and_empty_gauss_buckets (test_extract_cached_origin4_intervals.CachedOrigin4IntervalsTest) ... ERROR\n\n======================================================================\nERROR: test_weights_orders_and_empty_gauss_buckets (test_extract_cached_origin4_intervals.CachedOrigin4IntervalsTest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/erzhu419/mine_code/KG_op/SC-OLH-KG/tests/test_extract_cached_origin4_intervals.py\", line 72, in test_weights_orders_and_empty_gauss_buckets\n    self.assertEqual(result['eta_order_semantics']['current'], 'fixed128_with64_128_control')\nKeyError: 'eta_order_semantics'\n\n======================================================================\nFAIL: test_current_interval_mass_is_checked_beyond_global_closure (test_extract_cached_origin4_intervals.CachedOrigin4IntervalsTest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/erzhu419/mine_code/KG_op/SC-OLH-KG/tests/test_extract_cached_origin4_intervals.py\", line 96, in test_current_interval_mass_is_checked_beyond_global_closure\n    with self.assertRaises(AssertionError):\nAssertionError: AssertionError not raised\n\n----------------------------------------------------------------------\nRan 4 tests in 0.027s\n\nFAILED (failures=1, errors=1)\n",
+  "software_fixture_only": true,
+  "server_reads": 0,
+  "new_integrations": 0
+}

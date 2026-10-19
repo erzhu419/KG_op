@@ -1,0 +1,56 @@
+{
+  "cost": {
+    "cpu_seconds": 37942.34934123904,
+    "wall_seconds": 41585.88297980366,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 120,
+    "new_target_search_calls": 215,
+    "new_verification_calls": 23072,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 2484,
+    "download_bytes": 0
+  },
+  "attempt_count": 350,
+  "failed_attempts": [
+    {
+      "stage": "search",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "current_structural_mixture",
+      "started_utc": "2026-10-16T09:25:21.406580+00:00",
+      "status": "failed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 2,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "seed": 2026102120,
+      "new_target_initial_calls": 0,
+      "new_source_fits": 0,
+      "download_bytes": 0,
+      "error": "ValueError('Nonfinite posterior moments')",
+      "cpu_seconds": 281.36785946099997,
+      "wall_seconds": 309.16378752101446,
+      "finished_utc": "2026-10-16T09:30:01.456660+00:00"
+    }
+  ],
+  "status": "complete_with_search_failure",
+  "recommendations": 214,
+  "registered_terminal_cells": 216,
+  "execution_failures": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026102120,
+      "arm": "current_structural_mixture",
+      "status": "search_failed",
+      "logical_search_calls": 12,
+      "new_search_calls": 2,
+      "reason": "Frozen posterior E[exp(eta)] exceeds float64 range for mandatory shared neighbors11 and15; no clipping, identity deletion or model patch.",
+      "diagnosis": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/numeric_failure_diagnosis.json",
+      "failed_raw_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/failed_search_raw_1792143001434065953.json"
+    }
+  ],
+  "logical_failed_cell_calls": 24,
+  "new_physical_target_calls": 23407,
+  "logical_target_calls": 48542,
+  "completed_utc": "2026-10-16T09:44:59.897861+00:00",
+  "cached_summary_refresh": "Only corrected missing-task labels and comparison names; no simulations, truth evaluation or model execution."
+}

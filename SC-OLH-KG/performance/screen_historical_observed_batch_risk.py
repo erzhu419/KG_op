@@ -12,6 +12,7 @@ from scipy.special import logsumexp
 
 from core.direct_terminal_reference import fast_expected_certificates
 from core.marginal_certificate_bound import raw_feasibility_upper, projected_feasibility_upper, certificate_upper, branch_quality_upper
+from core.shared_certificate_pair import anchor_branch_quality_upper,primary_incumbent_quality_upper
 from performance.complete_historical_source_heads import ROOT, read, save, cpu_timeout
 from performance.diagnose_historical_component_guarded import compressed_read, compressed_write
 from performance.diagnose_historical_predictive_tower import query_direct_value
@@ -177,11 +178,19 @@ def native_direct_worker(plan,shard):
     return result
 
 
-def collect(plan=PLAN):
+def collect(plan=PLAN,certificate_caps=None,anchor_caps=None,primary_incumbent_caps=None,record_kinds=None):
     start=time.process_time();spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
     base=ROOT/read(spec['bank_plan'])['output'] if 'bank_plan' in spec else out
     context=compressed_read(base/'context.json.gz')
-    signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,240.)
+    previous=None;requested=None
+    if record_kinds is not None:
+        requested=set(map(tuple,record_kinds));source=read(spec['source_bound_plan'])
+        assert source['bank_plan']==spec['bank_plan']
+        assert spec['joint_reference_plans'][:len(source['joint_reference_plans'])]==source['joint_reference_plans']
+        previous=read(source['output']+'/summary.json');assert previous['numerical_containment_passed']
+        previous_records={(r['record'],r['kind']):r for r in previous['records']}
+        assert requested<=previous_records.keys()
+    signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,spec.get('maximum_collection_cpu_seconds',240.))
     tasks=[read(str(base/'tasks'/f'{h}_{s}.json')) for h in (4,5) for s in range(len(spec['policy_shards']))]
     assert all(t['complete'] for t in tasks)
     parts={(t['identity'],r['record'],r['policy']):r for t in tasks for r in t['rows']}
@@ -234,12 +243,15 @@ def collect(plan=PLAN):
     native=native_direct_references(spec,context,out) if 'native_direct_cost_plan' in spec else dict(rows=[],cpu_seconds=0.)
     native_parts={(r['identity'],r['record'],r['action']):r for r in native['rows']}
     if native['rows']:fixed_error=max(fixed_error,max(r['numerical_error'] for r in native['rows']))
-    containment=0.;records=[];prior=np.asarray(context['prior_weights']);actions=context['actions'];groups=action_groups(actions)
+    containment=0. if previous is None else previous['maximum_validated_reference_above_bound']
+    records=[];prior=np.asarray(context['prior_weights']);actions=context['actions'];groups=action_groups(actions)
     for origin_id,origin in context['origins'].items():
         for r in origin['risk']:
             scores=np.log(prior)+np.asarray(origin['objective_scores'])+r['head_log_scores']
             posterior=np.exp(scores-logsumexp(scores,axis=-1)[:,None]);missing=posterior[:,[0,1,2,3,6,7]].sum(axis=-1)
             for kind in ('raw','projected'):
+                if requested is not None and (r['record'],kind) not in requested:
+                    records.append(previous_records[r['record'],kind]);continue
                 objective=np.asarray(origin['objective'][kind]);fixed=np.zeros(16);upper=np.zeros((16,365))
                 for h in (4,5):
                     fixed+=posterior[:,h]*objective[:,h,355,0]*parts[h,r['record'],63]['fixed'][kind]
@@ -248,9 +260,21 @@ def collect(plan=PLAN):
                         for policy,budget in zip(action['shortlist'],action['budgets']):
                             part=parts[h,r['record'],policy]
                             feasible=part['raw']['128']['feasible_upper'] if kind=='raw' else part['projected_feasible_upper']
-                            caps.append(certificate_upper(feasible,budget,len(action['shortlist']),context['protocol']))
+                            cap=certificate_upper(feasible,budget,len(action['shortlist']),context['protocol'])
+                            if certificate_caps is not None:
+                                key=(kind,h,r['record'],policy,budget,len(action['shortlist']))
+                                if key in certificate_caps:cap=min(cap,certificate_caps[key])
+                            caps.append(cap)
                         quality=objective[:,h,a]
                         bounded=quality[:,0]*caps[0] if len(caps)==1 else branch_quality_upper(quality,np.asarray(caps),action['incumbent_position'])
+                        if anchor_caps is not None and action['incumbent_position']==1 and len(caps)==3:
+                            key=(kind,h,r['record'],tuple(action['shortlist'][1:]),tuple(action['budgets'][1:]))
+                            if key in anchor_caps:
+                                bounded=np.minimum(bounded,anchor_branch_quality_upper(quality,caps[0],anchor_caps[key]))
+                        if primary_incumbent_caps is not None and action['incumbent_position']==1 and len(caps)==3:
+                            key=(kind,h,r['record'],tuple(action['shortlist'][:2]),tuple(action['budgets'][:2]))
+                            if key in primary_incumbent_caps:
+                                bounded=np.minimum(bounded,primary_incumbent_quality_upper(quality,primary_incumbent_caps[key],caps[2]))
                         upper[:,a]+=posterior[:,h]*bounded
                 upper+=missing[:,None];containment=max(containment,float(np.max(fixed-upper[:,355])))
                 fixed_action=fixed.copy();references={355:fixed.copy()}
@@ -310,6 +334,9 @@ def collect(plan=PLAN):
         components={str(t['identity']):t['components'] for t in tasks},new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         full_predictive_integration_admitted=False,independent_confirmation=False,
         scope=f'All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the{observation_count} registered risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain.')
+    if requested is not None:
+        result.update(recomputed_record_kinds=[list(k) for k in sorted(requested)],
+            reused_record_kinds=len(records)-len(requested),cached_record_source=spec['source_bound_plan'])
     if all(r['outer_grid_weight'] is not None for r in records):
         sums={o:sum(r['outer_weight'] for r in v['risk']) for o,v in context['origins'].items()}
         result['weighted_bank_envelope']=dict(positive_weight_sums_per_origin=sums,
@@ -320,7 +347,10 @@ def collect(plan=PLAN):
             scope='Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate.')
     if 'native_direct_cost_plan' in spec:
         result['joint_reference_phase_estimated_cpu_seconds']=read(spec.get('reference_phase_cost_plan',spec['native_direct_cost_plan']))['expected_cpu_seconds_including600reserves']
-        result['cached_collection_charged_to_joint_reference_phase_reserves']=True
+        result['cached_collection_charged_to_joint_reference_phase_reserves']=certificate_caps is None
+    if certificate_caps is not None:
+        result['certificate_cap_refinement_plan']=spec['certificate_cap_plan']
+        result['cached_collection_charged_to_certificate_cap_phase_reserves']=True
     save(out/'summary.json',result);compact={k:v for k,v in result.items() if k!='records'}
     compact['closest_records']=[dict(record=r['record'],kind=r['kind'],
         overlapping_action_head_pairs=r['overlapping_action_head_pairs'],

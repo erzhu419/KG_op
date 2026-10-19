@@ -1,0 +1,17 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_extractor_validation_v1",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_minimal_cache_plan_v1/completion.json",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+  "extractor": "performance/extract_cached_origin4_intervals.py",
+  "input_cache_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_minimal_cache_plan_v1.json",
+  "tests": "tests/test_extract_cached_origin4_intervals.py",
+  "scope": "Explicitly requested local software validation of buckets,weights and eta-order aggregation. Synthetic scalar fixtures use local metadata;no certificate,predictive rule,server read or cache extraction.",
+  "shared_phase_reserve_cpu_seconds": 600,
+  "authorized_additional_support_budget_cpu_seconds": 5,
+  "new_phase_reserve_cpu_seconds": 0,
+  "diagnostic_sources": [
+    "../markdown/GPT_diagnosis_v4.md",
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md"
+  ]
+}

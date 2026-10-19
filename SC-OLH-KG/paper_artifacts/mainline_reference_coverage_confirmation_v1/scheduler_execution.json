@@ -1,0 +1,208 @@
+{
+  "status": "registered_preparation_complete",
+  "completed_utc": "2026-10-17T14:55:12.310197+00:00",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "local_scientific_computation": false,
+  "independent_scientific_execution": false,
+  "scientific_descriptors_submitted": 0,
+  "tasks": [
+    {
+      "id": "t173113",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_confirmation_v1/stage80/validation/attempt1/0-1"
+    }
+  ],
+  "all_scheduler_tasks_done": true,
+  "scheduler_retries": 0,
+  "explicit_recovery_attempts": 0,
+  "prior_stage79_tasks": [
+    {
+      "id": "t173089",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_preparation_v1/stage79/validation/attempt1/0-1"
+    },
+    {
+      "id": "t173091",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_preparation_v1/stage79/validation/attempt2/0-1"
+    },
+    {
+      "id": "t173094",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_preparation_v1/stage79/validation/attempt3/0-1"
+    }
+  ],
+  "validations": [
+    {
+      "status": "passed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_reference_coverage_confirmation_registration.py",
+        "tests/test_mainline_reference_coverage_cohort.py",
+        "tests/test_mainline_reference_coverage_execution.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_reference_coverage_confirmation_registration.py",
+        "tests/test_mainline_reference_coverage_cohort.py",
+        "tests/test_mainline_reference_coverage_execution.py"
+      ],
+      "test_counts": {
+        "passed": 28
+      },
+      "returncode": 0,
+      "cpu_seconds": 11.866515,
+      "wall_seconds": 12.191779347136617,
+      "checked_utc": "2026-10-17T14:51:45.389926+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0,
+      "independent_scientific_execution": false
+    }
+  ],
+  "passed_checks": 28,
+  "validation_cpu_seconds": 11.866515,
+  "registration_attempts": [
+    {
+      "stage": "register-reference-coverage-confirmation",
+      "family": null,
+      "arm": null,
+      "started_utc": "2026-10-17T14:51:46.082613+00:00",
+      "status": "completed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "new_target_initial_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "geometry_uniform_draws": 96,
+      "download_bytes": 0,
+      "cpu_seconds": 0.04713955599999997,
+      "wall_seconds": 0.15765121206641197,
+      "finished_utc": "2026-10-17T14:51:46.240255+00:00"
+    }
+  ],
+  "registration_cpu_seconds": 0.04713955599999997,
+  "wrapper_records": [
+    {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/run_stage80_validation_attempt1.py"
+      ],
+      "started_utc": "2026-10-17T14:51:33.139442+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-17T14:51:46.345567+00:00",
+      "wall_seconds": 13.206161637790501,
+      "log_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/validation/attempt1/0_1.log",
+      "own_cpu_seconds": 0.100361,
+      "child_cpu_seconds": 12.722228,
+      "total_cpu_seconds": 12.822588999999999,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    }
+  ],
+  "fee_rule": "Wrapper CPU overlaps validation and registration; do not sum the overlapping totals. All historical scientific and failed preparation spending remains in referenced accounts.",
+  "registration": {
+    "status": "registered_preparation_complete",
+    "geometry_count": 24,
+    "search_histories": 168,
+    "terminal_cells": 864,
+    "independent_scientific_execution": false,
+    "new_target_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_fits": 0,
+    "models_loaded": 0,
+    "posteriors_restored": 0,
+    "new_candidate_scores": 0,
+    "maximum_target_physical_calls": 111264,
+    "maximum_expanded_logical_calls": 315072,
+    "manifest": "performance/manifests/mainline_reference_coverage_confirmation_v1.json",
+    "node": "node006",
+    "geometry_uniform_draws": 96,
+    "checks_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/validation/attempt1/checks.json"
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_retention_v1/completion.json",
+    "paper_artifacts/mainline_reference_retention_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_preparation_v1/scheduler_execution.json"
+  ],
+  "new_work": {
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "scientific_rng_draws": 0,
+    "geometry_metadata_uniform_draws": 96
+  },
+  "transfers": {
+    "initial_upload_files": 9,
+    "initial_upload_bytes": 76284,
+    "summary_pull_payload_bytes": 38445,
+    "controller_metadata_payload_bytes": 870,
+    "source_manifest_status_payload_bytes": 400,
+    "latest_cohort_file_metadata_payload_bytes": 253,
+    "total_observed_download_payload_bytes": 39968,
+    "raw_trajectory_or_model_download_bytes": 0,
+    "old_method_or_reference_overwritten": false
+  }
+}

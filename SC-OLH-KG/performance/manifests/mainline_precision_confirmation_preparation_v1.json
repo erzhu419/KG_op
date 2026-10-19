@@ -1,0 +1,102 @@
+{
+  "name": "mainline_precision_confirmation_preparation_v1",
+  "stage": 84,
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_precision_confirmation_preparation_v1",
+  "protocol_document": "docs/mainline_precision_confirmation_protocol_20261018.md",
+  "source83_readout": "paper_artifacts/mainline_pathway_replication_v1/readout.json",
+  "source82_readout": "paper_artifacts/mainline_frozen_propagation_paths_v1/readout.json",
+  "candidate_geometries": [
+    24,
+    48,
+    72,
+    96,
+    120,
+    144,
+    192,
+    288,
+    384
+  ],
+  "halfwidth_targets": {
+    "G": 0.0005,
+    "C": 0.05
+  },
+  "selection_rule": "First balanced candidate N for which each historical cohort separately meets both plug-in halfwidth targets using its historical defined-baseline coverage. No pooling, mean-sign selection, winner deletion or automatic grid expansion.",
+  "future_observation_streams": 2,
+  "paired_cost_sources": [
+    {
+      "name": "reference",
+      "completion": "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json"
+    },
+    {
+      "name": "observation_1",
+      "completion": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/completion.json"
+    },
+    {
+      "name": "observation_2",
+      "completion": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/completion.json"
+    }
+  ],
+  "new_geometry_cost_source": {
+    "completion": "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "seal": "paper_artifacts/mainline_reference_coverage_confirmation_v1/execution_status.json"
+  },
+  "independent_inventories": [
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/mechanism/inventory.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/mechanism/inventory.json"
+  ],
+  "historical_accounts": [
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_frozen_propagation_paths_v1/completion.json",
+    "paper_artifacts/mainline_pathway_replication_v1/completion.json",
+    "paper_artifacts/mainline_pathway_replication_v1/cluster_control/stage83_scheduler_execution_20261018.json"
+  ],
+  "frozen": {
+    "AFTER": true,
+    "model": true,
+    "sources": true,
+    "search": true,
+    "old_terminal": true,
+    "thresholds": true,
+    "dimension": 1000,
+    "terminal_cap_per_arm": 352
+  },
+  "execution": {
+    "node_pool": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "blas_threads_per_worker": 1,
+    "independent_items": "submit-cpu-batch",
+    "scientific_execution_authorized": false
+  },
+  "zero_new_science": [
+    "simulation",
+    "verification",
+    "candidate_scores",
+    "truth_fields",
+    "source_fits",
+    "model_restoration",
+    "posterior_restoration",
+    "raw_replay"
+  ],
+  "metadata_only_randomness": "After deterministic precision selection, draw exactly4N geometry uniforms from RNG2026120000 and register disjoint observation/verification seed maps. No simulator or search random draws.",
+  "limits": [
+    "Precision targets are planning choices, not utility thresholds, statistical power guarantees or changes to the verification rule.",
+    "Old two-stream variances condition on the historical shared64 bank; new streams generate their own banks with the unchanged algorithm.",
+    "The new single-stream geometry cohort receives no assumed square-root-of-two precision improvement.",
+    "Missing baselines and execution failures remain missing; full-cohort and defined-subset results are separate.",
+    "Actual successful physical cost, protocol caps, logical expansion, analytic truth, CPU, failures and historical fees remain distinct.",
+    "Only metadata is registered; an old-only two-stream execution adapter and explicit subsequent scientific launch remain pending."
+  ],
+  "completed_utc": "2026-10-18T00:08:06.748883+00:00",
+  "selected_N": 144,
+  "scientific_execution_started": false
+}

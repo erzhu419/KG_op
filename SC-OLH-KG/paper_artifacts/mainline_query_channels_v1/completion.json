@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-15T14:59:47.262501+00:00",
+  "recovered_paths": 9,
+  "original_query_parity_count": 27,
+  "channel_cases": 6,
+  "channel_stages": 18,
+  "native_frozen10_cases": 3,
+  "channel_full_draw_and_moment_max_error": 0.0,
+  "new_target_simulation_calls": 0,
+  "new_verification_calls": 0,
+  "new_source_simulation_calls": 0,
+  "new_source_fits": 0,
+  "download_bytes": 0,
+  "new_analytical_truth_function_calls": 6,
+  "new_analytical_truth_policies": 2,
+  "recorded_cpu_seconds": 1748.3626796540002,
+  "attempt_count": 18,
+  "successful_attempts": 16,
+  "failed_attempts": [
+    {
+      "stage": "recover-query-rng",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "legacy_native_neighbors",
+      "error": "RecursionError('maximum recursion depth exceeded')",
+      "cpu_seconds": 42.176449073,
+      "started_utc": "2026-10-15T14:41:41.050263+00:00"
+    },
+    {
+      "stage": "recover-query-rng",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "legacy_native_neighbors",
+      "error": "PicklingError(\"Can't pickle <class 'unittest.mock.MagicMock'>: it's not the same object as unittest.mock.MagicMock\")",
+      "cpu_seconds": 42.357682276000006,
+      "started_utc": "2026-10-15T14:43:20.585634+00:00"
+    }
+  ],
+  "query_channel_model_restorations": 48,
+  "scope": "One-step fixed-history diagnostics only. Existing deployed reward and verification results are not new counterfactual rewards.",
+  "summary_file": "paper_artifacts/mainline_query_channels_v1/summary.json",
+  "report": "docs/mainline_query_channels_results_20261015.md"
+}

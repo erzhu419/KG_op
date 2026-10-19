@@ -1,0 +1,254 @@
+{
+  "name": "mainline_source_numerical_executability_audit_v1",
+  "stage": 96,
+  "execution_stage": 97,
+  "saved_record_audit_authorized": true,
+  "status": "complete",
+  "registered_utc": "2026-10-19T03:31:40.933460+00:00",
+  "protocol_document": "docs/mainline_source_numerical_executability_protocol_20261019.md",
+  "source_manifest": "performance/manifests/mainline_source_alignment_targets_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_source_alignment_control_v1",
+  "output_dir": "paper_artifacts/mainline_source_numerical_executability_audit_v1",
+  "audit_execution_started": true,
+  "numerical_validation_started": false,
+  "target_validation_authorized": false,
+  "scope": "One saved-diagnostic and failure-log audit; no numerical kernel execution or reconstruction of missing target outcomes.",
+  "source_asset_seal_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/source_asset_seal.json",
+  "source_diagnostic_index_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_source_assets_compact.json",
+  "source_diagnostics": [
+    {
+      "family": "InventorySupplyChain",
+      "real": {
+        "structural": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/source_diagnostics.json",
+        "native": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_source_diagnostics.json"
+      },
+      "permuted": {
+        "structural": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/structural_source_diagnostics.json",
+        "native": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_diagnostics.json"
+      }
+    },
+    {
+      "family": "QueueResourceControl",
+      "real": {
+        "structural": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/source_diagnostics.json",
+        "native": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/native_source_diagnostics.json"
+      },
+      "permuted": {
+        "structural": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/structural_source_diagnostics.json",
+        "native": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_diagnostics.json"
+      }
+    },
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "real": {
+        "structural": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_diagnostics.json",
+        "native": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_diagnostics.json"
+      },
+      "permuted": {
+        "structural": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/structural_source_diagnostics.json",
+        "native": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_diagnostics.json"
+      }
+    }
+  ],
+  "failure_index_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_failed_prefix_cost_audit_20261019.json",
+  "failure_signature_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_online_failure_signatures_20261019.json",
+  "failure_log_resolution": "Use all67 saved labels and the existing execution-state/log paths; no recursive model or trajectory scan. The compact signature file contains only3 complete traceback samples.",
+  "retained_terminal_arms": [
+    "legacy_role_full",
+    "legacy_role_full_native_terminal",
+    "legacy_role_after_init_point_only",
+    "legacy_role_after_init_point_only_native_terminal",
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "legacy_role_point_only",
+    "current_structural_mixture",
+    "initialization_only",
+    "source_permuted_role_after_init_point_only",
+    "source_permuted_role_point_only"
+  ],
+  "coverage": {
+    "registered_geometries": 144,
+    "required_streams_per_geometry": 2,
+    "registered_terminal_cells": 3168,
+    "completed_terminal_cells": 3101,
+    "retained_failures": 67,
+    "permuted_AFTER_failures": 66,
+    "other_structural_failure": 1,
+    "missing_complete_source_pair_geometries": 39,
+    "additional_undefined_quality_baseline_geometries": 8,
+    "complete_source_C_geometries": 105,
+    "complete_source_G_geometries": 97,
+    "full144_source_C": null,
+    "full144_source_G": null
+  },
+  "frozen": {
+    "AFTER": true,
+    "sources_and_models": true,
+    "frontend": true,
+    "search": true,
+    "old_terminal": true,
+    "random_streams": true,
+    "all_thresholds": true,
+    "d": 1000,
+    "terminal_call_cap": 352
+  },
+  "existing_numeric_contract": {
+    "source_nodes_per_identity_head": 1024,
+    "low_ESS_warning_threshold": 8,
+    "raw_moment_guard": "shared_error_estimate / min_component_normalizer <= 1e-8",
+    "quad_vec": {
+      "t_bounds": [
+        -12,
+        12
+      ],
+      "norm": "max",
+      "epsabs": 1e-12,
+      "epsrel": 1e-12,
+      "limit": 128,
+      "workers": 1
+    },
+    "guard_is_certified_posterior_error": false,
+    "all67_failure_branch_inference": "Finite integral, positive normalizers and integrator success follow from frozen control flow, not a recorded status value.",
+    "source_ESS_is_distinct_from_target_moment_guard": true
+  },
+  "saved_source_fields": [
+    "identity_head_ESS",
+    "maximum_normalized_weight",
+    "half_node_logZ_difference",
+    "identity_weights",
+    "optimizer_status",
+    "precision_certified",
+    "fit_receipt_and_cost"
+  ],
+  "saved_failure_fields": [
+    "label",
+    "arm",
+    "attempt_count",
+    "traceback_phase",
+    "returned_query_count",
+    "error_message",
+    "reported_error_ratio",
+    "head",
+    "identity_or_component_range",
+    "internal_raw_position",
+    "integration_absolute_error",
+    "minimum_normalizer",
+    "integration_status",
+    "integrand_evaluations",
+    "retained_cost"
+  ],
+  "field_policy": "Preserve recorded values, mark code-derived inferences explicitly, and leave unavailable fields unknown. Do not calculate missing local means, covariances, moments or diagnostic values.",
+  "source_warning": "Retain Queue6/16 lowESS and about99.84percent objective-head identity weight, Inventory2/16, FactorShock0/16, and all three permuted structural precision_certified=false flags.",
+  "audit_selection": "All3 families, both source associations, both existing model components, and all67 failures. No target truth, quality, score or win-based selection; all11 arm status and cost records retained.",
+  "planned_execution": {
+    "batch_submission": "submit-cpu-batch",
+    "node_pool": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "workers": 1,
+    "blas_threads": 1,
+    "passes": 1,
+    "scheduled_items": 1,
+    "automatic_retries": false,
+    "stages": [
+      "targeted_saved_record_parser_substitutes",
+      "one_saved_record_audit_and_collect"
+    ],
+    "implementation_status": "validated_and_audit_complete",
+    "audit_module": "performance.audit_mainline_source_numerical_executability",
+    "controller": "../scripts/run_mainline_source_numerical_audit_cluster.py",
+    "test_files": [
+      "tests/test_mainline_source_numerical_executability.py",
+      "tests/test_mainline_source_numerical_audit_cluster.py"
+    ],
+    "submitted_tasks": [
+      "t189905"
+    ]
+  },
+  "planned_outputs": [
+    "source_diagnostics.json",
+    "failure_locations_and_costs.json",
+    "conclusion.json"
+  ],
+  "stop_rule": "If saved records identify no concrete implementation inconsistency or lack decisive local quantities, report cause_unidentified and stop with the minimum missing fields; do not replay or refine a failed query.",
+  "future_gate": "A concrete discrepancy may motivate a separately registered and authorized finite source-only numerical validation. Audit completion does not authorize a patch, target execution or numerical certification. Any later new-cohort confirmation retains all11 arms,352 cap and the global terminal/failure seal before scoring; the old144 outcomes remain unchanged.",
+  "zero_new_work": [
+    "simulation",
+    "terminal_verification",
+    "truth_fields",
+    "candidate_predictions",
+    "source_fit",
+    "source_resampling",
+    "model_load",
+    "posterior_restore",
+    "raw_replay",
+    "random_draws",
+    "new_integration"
+  ],
+  "historical_accounts": [
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json",
+    "paper_artifacts/mainline_source_alignment_paths_v1/cluster_control/stage94_accounting.json",
+    "paper_artifacts/mainline_evidence_chain_update_v1/cluster_control/stage95_accounting.json"
+  ],
+  "registration_accounting_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage96_accounting.json",
+  "cohort_policy": "Stage85 and earlier cohorts remain separate from Stage93/94. Preserve all positives, ties, negatives, false certificates, missing outcomes and nested historical fees. No old-cohort rerun or imputation.",
+  "evidence_documents": [
+    "docs/mainline_evidence_chain_20261018.md",
+    "docs/mainline_source_alignment_target_results_20261018.md",
+    "docs/mainline_source_alignment_paths_results_20261019.md",
+    "docs/mainline_source_alignment_fit_results_20261018.md"
+  ],
+  "failure_execution_index_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/inputs/online_failure_log_index.json",
+  "completed_utc": "2026-10-19T03:50:38.454199+00:00",
+  "diagnosis": "cause_unidentified",
+  "result_document": "docs/mainline_source_numerical_executability_results_20261019.md",
+  "conclusion_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/conclusion.json",
+  "completion_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/completion.json",
+  "execution_accounting_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_accounting.json",
+  "execution_receipt": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_completion_audit.json",
+  "execution_result": {
+    "task_id": "t189905",
+    "node": "node006",
+    "cpu_cores": 1,
+    "vram": 0,
+    "retry_count": 0,
+    "wrapper_status": "complete",
+    "wrapper_child_returncode": 0,
+    "wrapper_duplicate_count": 0,
+    "audit_attempts": 1,
+    "source_diagnostics_read": 12,
+    "failure_logs_read": 67,
+    "input_issues": [],
+    "substitute_checks_passed": 16,
+    "phase_counts": {
+      "initial_conditioning": 63,
+      "post_initial_own_update": 3,
+      "terminal_recommendation": 1
+    },
+    "scheduler_snapshot_status": "running",
+    "scheduler_snapshot_utc": "2026-10-19T03:53:37.139803+00:00",
+    "completion_basis": "Sealed successful wrapper and audit completion; no repeated dispatch or recovery polling.",
+    "new_work": {
+      "new_source_calls": 0,
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_candidate_scores": 0,
+      "new_source_fits": 0,
+      "source_model_restorations": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "raw_replays": 0,
+      "new_rng_draws": 0,
+      "new_integrations": 0
+    }
+  }
+}

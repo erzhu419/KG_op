@@ -1,0 +1,20 @@
+{
+  "software_fixture_only": true,
+  "tests_passed": 4,
+  "tests_run": 4,
+  "cache_extraction_executed": false,
+  "scientific_precision_retested": false,
+  "changes": [
+    "Current128 order is explicitly fixed128_with64_128_control;Gauss andR2048 order semantics are adaptive_first_passing.",
+    "Current interval masses must equal registered interval widths;Gauss mask masses retain actual values without interval normalization.",
+    "The existing comment was narrowed to match its checks;no extra duplicate-cache framework introduced."
+  ],
+  "verified": [
+    "Internal half-open boundaries belong to the right bucket.",
+    "Current target80/control32 records,interval masses and synthetic totals close.",
+    "Gauss unequal bucket masses and empty buckets remain unchanged.",
+    "Gauss unequal weighted order masses differ correctly from node counts;R2048 uses count/2048.",
+    "Missing shard yields complete=false and records CPU."
+  ],
+  "limitations": "Fixtures validate extraction software only. No missing scientific caches were read and no matched-interval or adaptive-vs128 numerical comparisons were produced."
+}

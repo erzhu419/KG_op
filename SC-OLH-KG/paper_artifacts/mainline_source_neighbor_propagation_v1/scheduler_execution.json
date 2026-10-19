@@ -1,0 +1,138 @@
+{
+  "status": "complete",
+  "recorded_utc": "2026-10-17T01:31:16.888240+00:00",
+  "manifest": "performance/manifests/mainline_source_neighbor_propagation_v1.json",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "items": 1,
+  "workers": 1,
+  "vram_mb": 0,
+  "blas_threads": 1,
+  "ram_reservation_mb": 8192,
+  "tasks": [
+    {
+      "id": "t166350",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792200527.2238529,
+      "finished_at": 1792200509.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166350.log"
+    }
+  ],
+  "scheduler_failure_tasks": [],
+  "scheduler_terminal_status_pending": false,
+  "scientific_failed_attempts": [],
+  "failed_arm_cases": [],
+  "attempts": [
+    {
+      "status": "complete",
+      "error": null,
+      "node": "node004",
+      "utc": "2026-10-17T01:28:29.720987+00:00",
+      "cpu_seconds": 1.0772429700000001,
+      "wall_seconds": 1.338259750045836,
+      "new_source_calls": 0,
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "source_model_restorations": 0,
+      "posterior_restorations": 0,
+      "raw_conditioning": 0,
+      "raw_replays": 0,
+      "new_rng_draws": 0
+    }
+  ],
+  "coverage": {
+    "source_groups": 24,
+    "arm_cases": 96,
+    "snapshots": 192,
+    "completed_snapshots": 192,
+    "fixed_pairs": 282,
+    "failed_arm_cases": [],
+    "original_uu_pairs": 30,
+    "final_uu_pairs": 6
+  },
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0
+  },
+  "analysis_cpu_seconds": 1.0772429700000001,
+  "validation_cpu_seconds": 1.199363,
+  "registration_cpu_seconds": 0.00026361999999999913,
+  "recorded_total_cpu_seconds": 2.2768695900000004,
+  "cpu_scope": "Measured saved-difference analysis plus fixture/CLI and registration; scheduler, metadata and transfer CPU not measured",
+  "historical_accounts": [
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_confirmation_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_observed_ranking_v1/completion.json",
+    "paper_artifacts/mainline_objective_contrast_exposure_v1/completion.json",
+    "paper_artifacts/mainline_objective_selection_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/completion.json"
+  ],
+  "local_scientific_computation": false,
+  "scientific_reruns": 0,
+  "additional_collect": false,
+  "new_target_state_analyses": 0,
+  "upload": {
+    "files": [
+      "performance/analyze_mainline_source_neighbor_propagation.py",
+      "performance/mainline_source_neighbor_propagation.py",
+      "performance/manifests/mainline_source_neighbor_propagation_v1.json",
+      "docs/mainline_source_neighbor_propagation_protocol_20261017.md",
+      "paper_artifacts/mainline_source_neighbor_propagation_v1/registration.json",
+      "paper_artifacts/mainline_source_neighbor_propagation_v1/validation/fixtures.json",
+      "paper_artifacts/mainline_source_neighbor_propagation_v1/validation/cli.json"
+    ],
+    "bytes": 27078,
+    "returncode": 0
+  },
+  "download": {
+    "files": [
+      "paper_artifacts/mainline_source_neighbor_propagation_v1/summary.json",
+      "paper_artifacts/mainline_source_neighbor_propagation_v1/completion.json",
+      "performance/manifests/mainline_source_neighbor_propagation_v1.json"
+    ],
+    "bytes": 289951,
+    "returncode": 0
+  },
+  "download_scope": "Selected artifact file payload only; lightweight status and log relay traffic not byte-accounted",
+  "remote_only": [
+    "analysis.json",
+    "Stage70 fixed pairs and detailed source predictions",
+    "historical raw trajectories and model engines"
+  ],
+  "evidence_files": [
+    "cluster_control/preflight.json",
+    "cluster_control/submission.json",
+    "cluster_control/dispatch.json",
+    "cluster_control/final_status.json",
+    "cluster_control/upload.json",
+    "cluster_control/final_download.json"
+  ],
+  "scheduler_clock_note": "Cross-host task timestamps are not used to calculate analysis CPU or wall time."
+}

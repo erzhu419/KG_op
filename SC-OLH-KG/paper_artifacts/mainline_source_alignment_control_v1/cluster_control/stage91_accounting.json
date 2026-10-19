@@ -1,0 +1,406 @@
+{
+  "stage": 91,
+  "status": "source_fit_complete_target_not_started",
+  "execution_counts": {
+    "source_fits": 6,
+    "structural_fits": 3,
+    "native_fits": 3,
+    "source_permutations_generated": 3,
+    "fit_failures": 0,
+    "physical_fit_attempts": 6,
+    "automatic_refits": 0,
+    "scheduler_submissions": 7,
+    "manual_dispatches": 3,
+    "duplicate_wrapper_attempts": 0,
+    "target_tasks": 0,
+    "tests_repeated": 0
+  },
+  "source_fitting": {
+    "fit_only_cpu_seconds": 58.82856184,
+    "fit_wrapper_inclusive_cpu_seconds": 66.49479099999999,
+    "fit_wrapper_import_and_control_cpu_seconds_included": 7.666229159999993,
+    "old_stage90_prepare_cpu_seconds_not_new": 8.462300000000589e-05,
+    "collect_known_recorded_cpu_seconds_including_old_prepare": 58.828646463,
+    "per_job": [
+      {
+        "job_id": "InventorySupplyChain/structural",
+        "cost": {
+          "stage": "fit-source-alignment-structural",
+          "family": "InventorySupplyChain",
+          "arm": null,
+          "started_utc": "2026-10-18T09:17:13.018444+00:00",
+          "status": "completed",
+          "new_source_calls": 0,
+          "new_target_search_calls": 0,
+          "new_verification_calls": 0,
+          "source_model_restorations": 0,
+          "new_target_initial_calls": 0,
+          "new_truth_function_calls": 0,
+          "new_candidate_scores": 0,
+          "engine_restorations": 0,
+          "posterior_restorations": 0,
+          "new_source_fits": 1,
+          "current_bundle_fits": 1,
+          "native_prior_fits": 0,
+          "source_permutations_generated": 1,
+          "simulation_rng_draws": 0,
+          "job_id": "InventorySupplyChain/structural",
+          "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/source_models.pkl",
+          "source_archive_calls_reused": 384,
+          "source_sites_reused": 128,
+          "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/permutation.json",
+          "source_reuse_scope": "Logical rows consumed by this fit only; not new or globally unique source calls",
+          "cpu_seconds": 13.614659409000001,
+          "wall_seconds": 13.836950444616377,
+          "finished_utc": "2026-10-18T09:17:26.855418+00:00"
+        },
+        "wrapper_inclusive_cpu_seconds": 14.871631999999998
+      },
+      {
+        "job_id": "QueueResourceControl/structural",
+        "cost": {
+          "stage": "fit-source-alignment-structural",
+          "family": "QueueResourceControl",
+          "arm": null,
+          "started_utc": "2026-10-18T09:17:12.883436+00:00",
+          "status": "completed",
+          "new_source_calls": 0,
+          "new_target_search_calls": 0,
+          "new_verification_calls": 0,
+          "source_model_restorations": 0,
+          "new_target_initial_calls": 0,
+          "new_truth_function_calls": 0,
+          "new_candidate_scores": 0,
+          "engine_restorations": 0,
+          "posterior_restorations": 0,
+          "new_source_fits": 1,
+          "current_bundle_fits": 1,
+          "native_prior_fits": 0,
+          "source_permutations_generated": 1,
+          "simulation_rng_draws": 0,
+          "job_id": "QueueResourceControl/structural",
+          "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/source_models.pkl",
+          "source_archive_calls_reused": 384,
+          "source_sites_reused": 128,
+          "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/permutation.json",
+          "source_reuse_scope": "Logical rows consumed by this fit only; not new or globally unique source calls",
+          "cpu_seconds": 14.956690958,
+          "wall_seconds": 15.040200741961598,
+          "finished_utc": "2026-10-18T09:17:27.923647+00:00"
+        },
+        "wrapper_inclusive_cpu_seconds": 16.088859
+      },
+      {
+        "job_id": "FactorShockStatePolicyRZDT1/structural",
+        "cost": {
+          "stage": "fit-source-alignment-structural",
+          "family": "FactorShockStatePolicyRZDT1",
+          "arm": null,
+          "started_utc": "2026-10-18T09:17:13.048141+00:00",
+          "status": "completed",
+          "new_source_calls": 0,
+          "new_target_search_calls": 0,
+          "new_verification_calls": 0,
+          "source_model_restorations": 0,
+          "new_target_initial_calls": 0,
+          "new_truth_function_calls": 0,
+          "new_candidate_scores": 0,
+          "engine_restorations": 0,
+          "posterior_restorations": 0,
+          "new_source_fits": 1,
+          "current_bundle_fits": 1,
+          "native_prior_fits": 0,
+          "source_permutations_generated": 1,
+          "simulation_rng_draws": 0,
+          "job_id": "FactorShockStatePolicyRZDT1/structural",
+          "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+          "source_archive_calls_reused": 384,
+          "source_sites_reused": 128,
+          "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/permutation.json",
+          "source_reuse_scope": "Logical rows consumed by this fit only; not new or globally unique source calls",
+          "cpu_seconds": 21.411614075,
+          "wall_seconds": 21.522665889933705,
+          "finished_utc": "2026-10-18T09:17:34.570797+00:00"
+        },
+        "wrapper_inclusive_cpu_seconds": 22.651753
+      },
+      {
+        "job_id": "InventorySupplyChain/native",
+        "cost": {
+          "stage": "fit-source-alignment-native",
+          "family": "InventorySupplyChain",
+          "arm": null,
+          "started_utc": "2026-10-18T09:20:14.818855+00:00",
+          "status": "completed",
+          "new_source_calls": 0,
+          "new_target_search_calls": 0,
+          "new_verification_calls": 0,
+          "source_model_restorations": 0,
+          "new_target_initial_calls": 0,
+          "new_truth_function_calls": 0,
+          "new_candidate_scores": 0,
+          "engine_restorations": 0,
+          "posterior_restorations": 0,
+          "new_source_fits": 1,
+          "current_bundle_fits": 0,
+          "native_prior_fits": 1,
+          "source_permutations_generated": 0,
+          "simulation_rng_draws": 0,
+          "job_id": "InventorySupplyChain/native",
+          "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_prior.pkl",
+          "source_archive_calls_reused": 384,
+          "source_sites_reused": 128,
+          "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/permutation.json",
+          "source_reuse_scope": "Logical rows consumed by this fit only; not new or globally unique source calls",
+          "cpu_seconds": 2.940450998,
+          "wall_seconds": 2.956496019847691,
+          "finished_utc": "2026-10-18T09:20:17.775355+00:00"
+        },
+        "wrapper_inclusive_cpu_seconds": 4.273994
+      },
+      {
+        "job_id": "QueueResourceControl/native",
+        "cost": {
+          "stage": "fit-source-alignment-native",
+          "family": "QueueResourceControl",
+          "arm": null,
+          "started_utc": "2026-10-18T09:20:15.365173+00:00",
+          "status": "completed",
+          "new_source_calls": 0,
+          "new_target_search_calls": 0,
+          "new_verification_calls": 0,
+          "source_model_restorations": 0,
+          "new_target_initial_calls": 0,
+          "new_truth_function_calls": 0,
+          "new_candidate_scores": 0,
+          "engine_restorations": 0,
+          "posterior_restorations": 0,
+          "new_source_fits": 1,
+          "current_bundle_fits": 0,
+          "native_prior_fits": 1,
+          "source_permutations_generated": 0,
+          "simulation_rng_draws": 0,
+          "job_id": "QueueResourceControl/native",
+          "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_prior.pkl",
+          "source_archive_calls_reused": 384,
+          "source_sites_reused": 128,
+          "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/permutation.json",
+          "source_reuse_scope": "Logical rows consumed by this fit only; not new or globally unique source calls",
+          "cpu_seconds": 2.902263335,
+          "wall_seconds": 2.9201643634587526,
+          "finished_utc": "2026-10-18T09:20:18.285341+00:00"
+        },
+        "wrapper_inclusive_cpu_seconds": 4.232543
+      },
+      {
+        "job_id": "FactorShockStatePolicyRZDT1/native",
+        "cost": {
+          "stage": "fit-source-alignment-native",
+          "family": "FactorShockStatePolicyRZDT1",
+          "arm": null,
+          "started_utc": "2026-10-18T09:20:14.826694+00:00",
+          "status": "completed",
+          "new_source_calls": 0,
+          "new_target_search_calls": 0,
+          "new_verification_calls": 0,
+          "source_model_restorations": 0,
+          "new_target_initial_calls": 0,
+          "new_truth_function_calls": 0,
+          "new_candidate_scores": 0,
+          "engine_restorations": 0,
+          "posterior_restorations": 0,
+          "new_source_fits": 1,
+          "current_bundle_fits": 0,
+          "native_prior_fits": 1,
+          "source_permutations_generated": 0,
+          "simulation_rng_draws": 0,
+          "job_id": "FactorShockStatePolicyRZDT1/native",
+          "output_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+          "source_archive_calls_reused": 384,
+          "source_sites_reused": 128,
+          "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/permutation.json",
+          "source_reuse_scope": "Logical rows consumed by this fit only; not new or globally unique source calls",
+          "cpu_seconds": 3.002883065,
+          "wall_seconds": 3.015518351458013,
+          "finished_utc": "2026-10-18T09:20:17.842208+00:00"
+        },
+        "wrapper_inclusive_cpu_seconds": 4.37601
+      }
+    ],
+    "scope": "Source fitting consumes existing raw archives; reused rows/calls are provenance and not new simulator fees. Fit costs are included in fit-wrapper CPU, not added twice."
+  },
+  "collection": {
+    "task_id": "t183518",
+    "wrapper_inclusive_cpu_seconds": 1.325383,
+    "wrapper_wall_seconds": 1.4301164587959647,
+    "new_fits": 0
+  },
+  "scheduler_control": {
+    "total_cpu_seconds": 315.999068,
+    "sum_command_wall_seconds_not_elapsed": 597.2787491089839,
+    "events": [
+      {
+        "file": "stage91_submissions/native/FactorShockStatePolicyRZDT1.json",
+        "cpu_seconds": 19.605092,
+        "wall_seconds": 52.062057558010565,
+        "returncode": 0,
+        "task_ids": [
+          "t183517"
+        ],
+        "kind": "native",
+        "family": "FactorShockStatePolicyRZDT1"
+      },
+      {
+        "file": "stage91_submissions/native/InventorySupplyChain.json",
+        "cpu_seconds": 19.412273,
+        "wall_seconds": 35.43381585099269,
+        "returncode": 0,
+        "task_ids": [
+          "t183515"
+        ],
+        "kind": "native",
+        "family": "InventorySupplyChain"
+      },
+      {
+        "file": "stage91_submissions/native/QueueResourceControl.json",
+        "cpu_seconds": 19.23644,
+        "wall_seconds": 43.781361011002446,
+        "returncode": 0,
+        "task_ids": [
+          "t183516"
+        ],
+        "kind": "native",
+        "family": "QueueResourceControl"
+      },
+      {
+        "file": "stage91_submissions/structural/FactorShockStatePolicyRZDT1.json",
+        "cpu_seconds": 28.057865999999997,
+        "wall_seconds": 42.48060299101053,
+        "returncode": 0,
+        "task_ids": [
+          "t183510"
+        ],
+        "kind": "structural",
+        "family": "FactorShockStatePolicyRZDT1"
+      },
+      {
+        "file": "stage91_submissions/structural/InventorySupplyChain.json",
+        "cpu_seconds": 27.855955,
+        "wall_seconds": 53.18116235898924,
+        "returncode": 0,
+        "task_ids": [
+          "t183511"
+        ],
+        "kind": "structural",
+        "family": "InventorySupplyChain"
+      },
+      {
+        "file": "stage91_submissions/structural/QueueResourceControl.json",
+        "cpu_seconds": 26.637261000000002,
+        "wall_seconds": 62.09430467200582,
+        "returncode": 0,
+        "task_ids": [
+          "t183512"
+        ],
+        "kind": "structural",
+        "family": "QueueResourceControl"
+      },
+      {
+        "file": "stage91_submission_collect.json",
+        "cpu_seconds": 16.69761,
+        "wall_seconds": 28.827881631994387,
+        "returncode": 0,
+        "task_ids": [
+          "t183518"
+        ],
+        "kind": null,
+        "family": null
+      },
+      {
+        "file": "stage91_dispatch_structural.json",
+        "cpu_seconds": 66.503365,
+        "wall_seconds": 107.66158075499698,
+        "returncode": 0,
+        "task_ids": [
+          "t183510",
+          "t183511",
+          "t183512"
+        ],
+        "kind": "structural",
+        "family": null
+      },
+      {
+        "file": "stage91_dispatch_native.json",
+        "cpu_seconds": 43.091264,
+        "wall_seconds": 91.79204617097275,
+        "returncode": 0,
+        "task_ids": [
+          "t183515",
+          "t183516",
+          "t183517"
+        ],
+        "kind": "native",
+        "family": null
+      },
+      {
+        "file": "stage91_dispatch_collect.json",
+        "cpu_seconds": 48.901942,
+        "wall_seconds": 79.9639361090085,
+        "returncode": 0,
+        "task_ids": [
+          "t183518"
+        ],
+        "kind": null,
+        "family": null
+      }
+    ],
+    "scope": "Local scheduler submission/dispatch overhead separate from source-fit compute; concurrent command wall times overlap."
+  },
+  "small_transfer": {
+    "metadata_download_bytes": 99092,
+    "manifest_uploaded_bytes": 29626,
+    "manifest_compressed_bytes": 7162,
+    "remote_metadata_and_manifest_upload_cpu_seconds": 0.013680759000000021,
+    "model_downloads": 0,
+    "archive_downloads": 0
+  },
+  "new_work": {
+    "source_simulation_calls": 0,
+    "target_initial_calls": 0,
+    "target_search_calls": 0,
+    "verification_calls": 0,
+    "truth_function_calls": 0,
+    "candidate_scores": 0,
+    "model_restorations": 0,
+    "posterior_restorations": 0,
+    "simulation_rng_draws": 0,
+    "target_geometries_generated": 0
+  },
+  "historical_fee_policy": "Stage89, Stage90 and prior scientific records retained separately. Stage90 preparation appears in collect known_recorded but is excluded from this stage fit-only CPU.",
+  "unmetered": [
+    "local editing and small-file orchestration CPU",
+    "background scheduler/monitor and SSH transport overhead"
+  ],
+  "records": [
+    "stage91_submissions/native/FactorShockStatePolicyRZDT1.json",
+    "stage91_submissions/native/InventorySupplyChain.json",
+    "stage91_submissions/native/QueueResourceControl.json",
+    "stage91_submissions/structural/FactorShockStatePolicyRZDT1.json",
+    "stage91_submissions/structural/InventorySupplyChain.json",
+    "stage91_submissions/structural/QueueResourceControl.json",
+    "stage91_submission_collect.json",
+    "stage91_dispatch_structural.json",
+    "stage91_dispatch_native.json",
+    "stage91_dispatch_collect.json",
+    "stage91_preflight.json",
+    "stage91_authorization_upload.json",
+    "stage91_structural_status1.json",
+    "stage91_native_status1.json",
+    "stage91_source_metadata_read.json",
+    "stage91_collection_metadata_read.json",
+    "stage91_structural_barrier.json",
+    "stage91_source_assets_compact.json",
+    "stage91_collection_compact.json",
+    "stage91_completion_audit.json"
+  ]
+}

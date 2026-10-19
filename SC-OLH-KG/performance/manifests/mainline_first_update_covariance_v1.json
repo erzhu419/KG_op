@@ -1,0 +1,33 @@
+{
+  "name": "mainline_first_update_covariance_v1",
+  "status": "complete",
+  "analysis_type": "Retrospective exact accounting of the first saved raw update, not a covariance intervention or optimizer experiment.",
+  "parent_manifest": "performance/manifests/mainline_role_replication_v1.json",
+  "input_dir": "paper_artifacts/mainline_role_replication_v1",
+  "projection_dir": "paper_artifacts/mainline_objective_attribution_v1",
+  "output_dir": "paper_artifacts/mainline_first_update_covariance_v1",
+  "report": "docs/mainline_first_update_covariance_results_20261016.md",
+  "focus_neighbors": {
+    "2026101672": [
+      24,
+      36
+    ],
+    "2026101675": [
+      33
+    ]
+  },
+  "frozen_protocol": "Keep the original role model, source bundle, physical policies, d1000 and all saved observations. Read cached prefix0/1 nodes only; no target filter replay, source fit, new truth or simulation.",
+  "decomposition": "For each source-conditioned node use K_common=D record.covariance D^T, K_task=D law.task D^T and K_white=law.white I. The first node update has zero f/eta cross covariance, so each point contribution is K_part(x,0)/K_total(0,0) times the saved node mean change at0. Aggregate with saved prefix0 node/identity weights; add the existing node, f-identity and g-identity reweight terms.",
+  "validation": "Check source identity/order and physical/query mean and covariance against cached nodes; then require component sums to reconstruct every cached node mean update, mixed within-node update and full first update. Failure stops attribution and requires fixing lineage, projection or algebra, not more integration precision.",
+  "interpretation": "White is persistent point-independent latent discrepancy, not fresh episode noise. Saved mean change already includes the raw noise likelihood; do not add noise again to the denominator. Contributions use the original full denominator and are not predictions after deleting a component.",
+  "new_budget": {
+    "target_calls": 0,
+    "source_calls": 0,
+    "source_fits": 0,
+    "truth_calls": 0,
+    "download_bytes": 0
+  },
+  "decision_boundary": "Close this diagnostic branch without another representation or risk patch. A future correction requires source-residual support and a single frozen proposal before fresh task evaluation; these two opened target tasks cannot select covariance multipliers.",
+  "source_support": "Read the previously fixed 51 public-neighbor pairs per source family from stage33 JSON. Summarize squared residual differences minus saved observation variance and the closest pair, including common/task/white predicted contrast variance. Training-data support only; no kernel or covariance multiplier selection.",
+  "entrypoint": "performance/diagnose_mainline_first_update_covariance.py"
+}

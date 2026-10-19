@@ -1,0 +1,126 @@
+{
+  "name": "mainline_observed_terminal_attribution_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-17T04:32:11.223008+00:00",
+  "cohort_manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+  "cohort_dir": "paper_artifacts/mainline_safe_unsampled_validation_v1",
+  "output_dir": "paper_artifacts/mainline_observed_terminal_attribution_v1",
+  "protocol_document": "docs/mainline_observed_terminal_attribution_protocol_20261017.md",
+  "target_seeds": [
+    2026107001,
+    2026107002,
+    2026107003,
+    2026107004,
+    2026107005,
+    2026107006,
+    2026107007,
+    2026107008,
+    2026107009,
+    2026107010,
+    2026107011,
+    2026107012,
+    2026107013,
+    2026107014,
+    2026107015,
+    2026107016,
+    2026107017,
+    2026107018,
+    2026107019,
+    2026107020,
+    2026107021,
+    2026107022,
+    2026107023,
+    2026107024
+  ],
+  "focus_seeds": [
+    2026107009,
+    2026107014,
+    2026107016,
+    2026107024
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "expected": {
+    "geometries": 24,
+    "terminal_pairs": 216,
+    "terminal_cells": 432
+  },
+  "frozen": {
+    "model": true,
+    "AFTER": true,
+    "search": true,
+    "shortlist": true,
+    "terminal": true,
+    "thresholds": true,
+    "maximum_terminal_calls": 352
+  },
+  "forbidden_new_work": [
+    "simulation",
+    "verification",
+    "truth",
+    "source_fitting",
+    "posterior_restoration",
+    "random_sampling"
+  ],
+  "historical_accounts": [
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion_compact.json"
+  ],
+  "all_control_evidence": [
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/summary_selected.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/outcomes_by_geometry.json"
+  ],
+  "statistical_unit": "Geometry. Policy-arm exposures describe routes, not independent experimental samples.",
+  "limits": [
+    "Saved final scores only; missing stays unknown. Query-prefix scores are not final posterior scores.",
+    "Observed outcomes only. No certificates for unexecuted shortlist or comparison alternatives.",
+    "Stage73 opened truth is diagnosis-only, not parameter or patch selection."
+  ],
+  "completed_utc": "2026-10-17T04:41:34.586846+00:00",
+  "saved_identity_supplement": "paper_artifacts/mainline_observed_terminal_attribution_v1/metadata_identity_supplement.json"
+}

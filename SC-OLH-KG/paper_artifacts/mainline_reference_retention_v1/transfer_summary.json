@@ -1,0 +1,64 @@
+{
+  "status": "complete",
+  "known_returned_payload_bytes": 875245,
+  "known_returns": [
+    {
+      "kind": "Stage77_completion_preflight",
+      "payload_bytes": 541
+    },
+    {
+      "kind": "Stage78_registration_and_checks",
+      "payload_bytes": 802
+    },
+    {
+      "kind": "Stage78_account_and_artifact_sizes",
+      "payload_bytes": 2944
+    },
+    {
+      "kind": "compact_summary_file",
+      "payload_bytes": 695735
+    },
+    {
+      "kind": "selected_contrast_paths",
+      "payload_bytes": 159546
+    },
+    {
+      "kind": "completed_manifest_file",
+      "payload_bytes": 10371
+    },
+    {
+      "kind": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_reference_retention_v1/cluster_control/jobs/validation/attempt1/0_1.json"
+      ],
+      "payload_bytes": 821
+    },
+    {
+      "kind": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_reference_retention_v1/cluster_control/jobs/audit/tasks/0_6.json",
+        "paper_artifacts/mainline_reference_retention_v1/cluster_control/jobs/audit/tasks/6_12.json",
+        "paper_artifacts/mainline_reference_retention_v1/cluster_control/jobs/audit/tasks/12_18.json",
+        "paper_artifacts/mainline_reference_retention_v1/cluster_control/jobs/audit/tasks/18_24.json"
+      ],
+      "payload_bytes": 3621
+    },
+    {
+      "kind": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_reference_retention_v1/cluster_control/jobs/audit/collect/0_1.json"
+      ],
+      "payload_bytes": 864
+    }
+  ],
+  "uncaptured_metadata_reads": [
+    {
+      "kind": "Stage78_registration_and_checks",
+      "reads": 1,
+      "note": "One earlier read was started with an exec yield and its completion payload was not captured. The successful repeat returned 802 bytes; do not present the recorded total as exact wire traffic."
+    }
+  ],
+  "raw_trajectory_model_checkpoint_downloads": 0,
+  "remote_full_summary_bytes_not_downloaded": 34802038,
+  "note": "Payload bytes only; SSH/rsync protocol overhead and stderr are not included. Large trajectories and model files stayed remote."
+}

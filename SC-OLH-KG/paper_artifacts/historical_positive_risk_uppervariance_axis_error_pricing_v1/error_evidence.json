@@ -1,0 +1,153 @@
+{
+  "sources": {
+    "references": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v2/compact_summary.json",
+    "prepared": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v2/prepared_reference_summary.json",
+    "screen": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v2_screen/compact_summary.json",
+    "status": "paper_artifacts/historical_positive_risk_uppervariance_axis_continuation_v1/status.json"
+  },
+  "diagnostic_basis": "markdown/GPT_diagnosis_v4.md section 7; GPT6_action_competition_diagnosis_20261013.md fixed-355 and opportunity-cost boundary",
+  "metadata_files_read": 4,
+  "integral_arrays_read": 0,
+  "terms": {
+    "action_unresolved": {
+      "strict_certificate": false,
+      "available": {
+        "finite_bank": {
+          "raw": {
+            "best_reference_contrast": 0.021135648950585218,
+            "unresolved_upper_gap": 8.349610362239822e-05
+          },
+          "projected": {
+            "best_reference_contrast": 0.02176711778079685,
+            "unresolved_upper_gap": 0.000276730584134957
+          }
+        },
+        "candidate_totals": {
+          "raw": {
+            "compared_action_head_pairs": 1308160,
+            "overlapping_action_head_pairs": 1851,
+            "record_action_candidates": 144,
+            "record_group_candidates": 67
+          },
+          "projected": {
+            "compared_action_head_pairs": 1308160,
+            "overlapping_action_head_pairs": 2974,
+            "record_action_candidates": 204,
+            "record_group_candidates": 81
+          }
+        }
+      },
+      "missing": "True-value lower errors for accepted references and propagated continuous-law maximum error; current G is a finite-rule diagnostic."
+    },
+    "terminal_integrals": {
+      "strict_certificate": false,
+      "available": {
+        "current_reward_controls": [
+          {
+            "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p17",
+            "kind": "projected",
+            "candidate_passed": false,
+            "selected_candidate": "E10",
+            "source_pair_precision_passed": false,
+            "maximum_mixed_reward_rule_difference": 0.0002237305526743283,
+            "fallback_reward_omission_bound": 1.8597990065033297e-19,
+            "maximum_mixed_cost_rule_difference": 0.033815235652042475,
+            "cost_precision_threshold_applied": false,
+            "maximum_log_evidence_error": 6.661338147750937e-16
+          },
+          {
+            "record": "positive_body_v1_n4_m4_v4_o4_h1_p3",
+            "kind": "projected",
+            "candidate_passed": true,
+            "selected_candidate": "E9",
+            "source_pair_precision_passed": true,
+            "maximum_mixed_reward_rule_difference": 8.846419300767572e-06,
+            "fallback_reward_omission_bound": 1.8598127076061855e-19,
+            "maximum_mixed_cost_rule_difference": 0.0014845260324420906,
+            "cost_precision_threshold_applied": false,
+            "maximum_log_evidence_error": 8.881784197001248e-16
+          }
+        ],
+        "numerical_containment_passed": true
+      },
+      "missing": "Absolute terminal reward error bounds. Cross-rule differences and log-evidence checks are controls, not certified absolute errors."
+    },
+    "risk_outer": {
+      "strict_certificate": false,
+      "available": {
+        "risk_observations": 224,
+        "scope": "All365 n4 actions screened against independently integrated query and admitted joint action references,conditional on the224 registered risk observations and16 cached objective heads perorigin. All8 identity scores and512/1024 components retained; no full batch outer convergence,query selection or independent gain."
+      },
+      "missing": "Error control for the current guard-max integrand over the predictive risk distribution, including every variance interval. Old 8x16/16x8 fixed-action checks do not provide this bound."
+    },
+    "objective_outer": {
+      "strict_certificate": false,
+      "available": {
+        "cached_heads_per_origin": 16
+      },
+      "missing": "F16 refinement or an independent objective-outer absolute error bound; terminal rule refinement does not certify F16."
+    },
+    "weights_omissions": {
+      "strict_certificate": false,
+      "available": {
+        "positive_weight_sums_per_origin": {
+          "4": 1.0000000000000002,
+          "5": 1.0000000000000002
+        },
+        "normalized_per_origin": true,
+        "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+        "uncomputed_utility_identities_allowance_already_in_upper": true
+      },
+      "missing": "Propagate predictive-weight errors and the unrepresented origin contribution through the comparison, preserving existing missing-utility allowances without double counting. No additional omitted tail mass is measured by this metadata review."
+    },
+    "baseline_value": {
+      "strict_certificate": false,
+      "available": {
+        "contrast_baseline_action": 355,
+        "reference_contrasts": {
+          "raw": 0.021135648950585218,
+          "projected": 0.02176711778079685
+        },
+        "historical_opportunity_cost_preview": 5.5586761e-05
+      },
+      "missing": "Matched-budget V_STOP, debit/query opportunity cost and their absolute errors for the actual continuation policy; contrast to fixed action 355 is not net KG or a query comparison."
+    }
+  },
+  "original_gate_status": "HOLD",
+  "global_epsilon_declared": false,
+  "global_total_error_certificate_available": false,
+  "current_status_metadata": {
+    "state": "bound_refinement_hold",
+    "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
+    "continuation_worker_cpu_seconds": 102426.64611715398,
+    "recorded_process_cpu_seconds": 106887.41750211203,
+    "maximum_live_workers": 8,
+    "full_predictive_integration_admitted": false,
+    "independent_confirmation": false,
+    "historical_controller_source": "paper_artifacts/historical_positive_risk_continuation_v3/continue_when_ready.py",
+    "scope": "Continuation from the registered closed grid phase. Earlier costs remain linked in its completion ledger;outer-axis refinement is separate.",
+    "maximum_new_phases": 60,
+    "total_phase_estimated_cpu_seconds": 202763.90747095988,
+    "preparation_id": "t151796",
+    "unmeasured_failed_collection_conservative_charge_seconds": 35,
+    "latest_bound_diagnostic_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+    "hold_reason": "Finite-bank raw/projected G8.3496104e-5/2.7673058e-4,67/81groups unchanged. Completed current-deploy metadata-only unattached guard search:47outputs/220groups,no new matching accepted reference. Sole body_o4p0 Gauss E9 controls are exactly identical statistics/costs to already-attached competition_v5 for both identities. No projected_p17 exact/coordinate match. Original3pair HOLDs and1reward HOLD retained,all failed/recovery fees preserved,same600reserve,newreserve0,no new integration. Stop repeating this cache search; zero-candidate,overall-error and independent-confirmation gates remain open.",
+    "bound_refinement_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_guard_cache_index_v1/completion.json",
+    "bound_refinement_recorded_process_cpu_seconds": 7452.0268980030005,
+    "recorded_reference_campaign_plus_bound_refinement_cpu_seconds": 114339.44440011503,
+    "bound_refinement_precision_hold_units": 3,
+    "latest_bound_shared_reserve_charged_cpu_seconds": 591.5021331739999,
+    "latest_bound_shared_reserve_remaining_cpu_seconds": 8.497866826000063,
+    "bound_refinement_nonbinding_precision_hold_units": 1,
+    "bound_refinement_remaining_registered_worker_estimate_capacity_cpu_seconds": 47.60628498599954
+  },
+  "reader_cpu_seconds": 0.005646982000000002,
+  "reader_process_cpu_seconds": 0.016488997,
+  "snapshot_source_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_guard_cache_index_v1/completion.json",
+  "total_absolute_error_upper_bound": null,
+  "next_evidence_needed": [
+    "Propagatable absolute terminal reward errors for selected policies and references.",
+    "Matched risk and objective outer error control for the current guard-max or frozen continuation policy.",
+    "Matched-budget STOP value and sampling debit before interpreting fixed355 contrast as net KG."
+  ]
+}

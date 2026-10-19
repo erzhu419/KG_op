@@ -1,0 +1,619 @@
+{
+  "status": "Frozen source-only public mean residual correction; fresh initialization, search and verification streams.",
+  "goal_contract": "docs/original_goal_and_mainline_contract_20261015.md",
+  "reuse_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "output": "paper_artifacts/mainline_d1000_risk_corrected_v1",
+  "cross_dimension_inputs": "paper_artifacts/mainline_d1000_ranked_v1/bridge_inputs.json",
+  "query_coordinates": "paper_artifacts/mainline_d1000_ranked_v1/query_coordinates.json",
+  "dimension_audit": "paper_artifacts/mainline_d1000_two_round_v1/dimension_audit.json",
+  "target_dimension": 1000,
+  "task_count": 4,
+  "target_tasks": [
+    {
+      "task_id": "original_d1000_risk_corrected_seed00",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    },
+    {
+      "task_id": "original_d1000_risk_corrected_seed01",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    },
+    {
+      "task_id": "original_d1000_risk_corrected_seed02",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    },
+    {
+      "task_id": "original_d1000_risk_corrected_seed03",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    }
+  ],
+  "pairing_unit": "independent observation seed on one fixed nominal problem, not independent geometry task",
+  "evaluation_scope": "One fixed nominal d1000 problem, four new observation seeds. Same ranked104 bank and old source fits, with one source48 coefficient correction. Coefficient LOTO informed the correction; the original selector used all48 source labels. Development comparison, not independent task generalization.",
+  "layout": "5",
+  "models": [
+    "source_structural_mixture",
+    "source_common_task_rbf"
+  ],
+  "policies": [
+    "stop_after_initialization",
+    "fixed_two_round_moment_kg"
+  ],
+  "initialization_indices": [
+    45,
+    10
+  ],
+  "rounds": 2,
+  "replicates_per_round": 1,
+  "candidate_count": 104,
+  "total_target_call_cap": 362,
+  "maximum_physical_calls": 5768,
+  "maximum_case_cpu_seconds": 600,
+  "task_seed": 2026101521,
+  "initialization_seed": 2026101542,
+  "search_seed": 2026101543,
+  "verification_seed": 2026101544,
+  "bootstrap_seed": 2026101545,
+  "bootstrap_draws": 10000,
+  "bank": "Reuse the exact ranked_v1 104 physical policies, coordinates and provenance. Original73 prefix, round1 release89 and round2 release104. No regenerated proposals, new ranking, new source fit or target-informed change to the bank.",
+  "representation": "Reuse identical frozen d1000 mean4/risk10 coordinates and original source laws/GP. Add only the source48 fitted residual linear mean4 subspace to the native structural g field; no coordinate refit or response rescaling.",
+  "response_units": "Identity mapping for f,g-tau,log sigma_f^2,log sigma_g^2. Formula uses normalized control-group means and global SD, not a dimension sum. L,sigma,alpha,weights,tau are identical; changes caused by actual policy/group geometry are not response-unit rescaling.",
+  "selection": "Same fixed order3 moment KG and actual native-mixture raw updates. Round1 query/terminal sees release1 prefix; round2 sees full union. Stop chooses from full union using initialization only. Full union is restored once; latent future-point predictions never enter round1 selection.",
+  "terminal": "Same fixed moment terminal utility as d50, direct single candidate, familywise delta.05. Stop uses360 independent verifier episodes and online358. Freeze all16 recommendations before any verifier, finish all verifiers before explicit truth scoring.",
+  "mechanism_diagnostic": "Before outcomes, each round additionally freezes a terminal-only counterfactual holding current unsampled policy marginals at their pre-observation values while retaining actual updates at observed policies. Compare its recommendation to the full update at the same remaining budget. Score both conditional safe rewards after all terminal verification; this is not a fifth optimizer or independent deployed outcome. Also freeze a terminal intervention on new generated unsampled marginals only; score new-point initial/final and prerelease propagation after all verifiers.",
+  "endpoints": "Four-arm actual certified safe reward; unsampled f/g/logvariance prediction errors; whether unsampled marginal propagation changes recommendation and its post-freeze conditional reward. Include negative transfers, rejected/false certificates, and non-contracting uncertainty.",
+  "randomness": "Four independent observation-seed units. Draw two fresh initialization episodes per unit and share them across its four arms. Fresh initialization/search/verification streams are independent of previous runs. Search uses paired common random numbers when models choose the same query in the same round; verifier streams are shared within each seed unit and independent of search. No cached target observations are reused.",
+  "accounting": "Eight new shared initialization episodes,16 new search and5744 new verification=5768 physical,5792 logical calls. Original source laws/GP not refit. One final source-only residual coefficient fit plus separately recorded source diagnostic fits; preserve all diagnostic failures and previous ledgers.",
+  "dynamic_candidates": {
+    "original_count": 73,
+    "round_end_indices": [
+      89,
+      104
+    ],
+    "seed": 2026101520,
+    "origins": [
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 0
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 1
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 2
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 3
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 4
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 5
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 6
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 7
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 8
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 9
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 10
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 11
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 12
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 13
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 14
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 15
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 16
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 17
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 18
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 19
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 20
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 21
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 22
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 23
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 24
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 25
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 26
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 27
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 28
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 29
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 30
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 31
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 32
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 33
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 34
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 35
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 36
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 37
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 38
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 39
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 40
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 41
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 42
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 43
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 44
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 45
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 46
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 47
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 48
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 49
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 50
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 51
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 52
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 53
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 54
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 55
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 56
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 57
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 58
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 59
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 60
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 61
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 62
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 63
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 64
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 65
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 66
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 67
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 68
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 69
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 70
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 71
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 72
+      },
+      {
+        "birth_round": 1,
+        "route": "canonical_sobol"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 237,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 1
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 220,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 1
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 43,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 248,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 171,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 4
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 1,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 3
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 219,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 1
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 35,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 38,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 120,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 5
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 153,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 3
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 216,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 7
+      }
+    ],
+    "complete_metadata_source": "paper_artifacts/mainline_d1000_ranked_v1/bridge_inputs.json"
+  },
+  "source_risk_correction_file": "paper_artifacts/mainline_d1000_risk_basis_diagnostic_v1/calibration.json",
+  "correction": "Before target observations, add the source48 fitted mean4 residual coefficient mean and CR1 covariance to native g fields of spectral/head_specific identities. Original f/eta heads, mixture source weights, positive components and GP stay frozen. Fit parameters use no target data."
+}

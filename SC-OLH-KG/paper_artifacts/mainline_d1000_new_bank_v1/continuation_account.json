@@ -1,0 +1,69 @@
+{
+  "scope": "Only the new shared candidate bank and sixteen new geometries; all earlier results and ledgers remain separate.",
+  "completed_at": "2026-10-15T11:03:56.602105+00:00",
+  "recorded_cpu_seconds_by_stage": {
+    "bank_and_geometry_preparation": 52.735043342,
+    "native_smoke_parity": 0.086870549,
+    "experiment_attempts": 3282.306948728001,
+    "case_orchestration_parent": 0.168036673,
+    "smoke_orchestration_parent": 0.005588087999999998,
+    "summary": 0.848620671,
+    "saved_query_analysis": 0.41149794100000003,
+    "saved_new_bank_analysis": 0.12714092700000001,
+    "account_assembly": 0.094730133
+  },
+  "case_batch_wall_seconds": 1068.4984610029933,
+  "native_smoke_batch_wall_seconds": 68.36965120799141,
+  "concurrent_case_workers": 3,
+  "physical_calls": {
+    "initialization": 32,
+    "search": 160,
+    "verification": 40160,
+    "total": 40352
+  },
+  "logical_calls": 40544,
+  "calls_per_arm": 362,
+  "independent_geometries": 16,
+  "arms_per_task": 7,
+  "model_cases": 80,
+  "verified_recommendations": 112,
+  "source_fits": 0,
+  "gp_refits": 0,
+  "calibration_refits": 0,
+  "new_source_labels": 0,
+  "server_downloads": 0,
+  "frozen_source_encoder_reconstructions": 2,
+  "new_tests": 0,
+  "reused_test_evidence": [
+    "../mainline_d1000_frozen_query_v1/implementation_tests.json"
+  ],
+  "failed_scientific_attempts": 0,
+  "failed_preparation_attempts": 0,
+  "failed_case_processes": [],
+  "failed_postprocessing_attempts": 0,
+  "implementation": "Reused original generator, frozen source models, ranking, representation and seven-arm runner. Added new-bank preparation and saved-result novelty analysis; no online model or acquisition changes.",
+  "lineage": {
+    "previous_bank": "../mainline_d1000_ranked_v1/frozen_inputs.json",
+    "source_calibration": "../mainline_source_risk_calibration_v1/calibration.json",
+    "new_manifest": "../../performance/manifests/mainline_d1000_new_bank_v1.json"
+  },
+  "unmeasured_cost_scope": "General inspection, document writing, interpreter startup outside timers, static syntax checks and geometry registration metadata finalization are not assigned estimated CPU costs. Parallel child wall times are not summed as elapsed batch time. Preparation already includes candidate generation, geometry registration and its assembly; component costs are not added twice.",
+  "evidence": [
+    "preparation_audit.json",
+    "bank_preparation_audit.json",
+    "bank_preparation_attempts.jsonl",
+    "geometry_registration_audit.json",
+    "smoke_check.json",
+    "smoke_orchestration_account.json",
+    "attempts.jsonl",
+    "case_processes.jsonl",
+    "orchestration_account.json",
+    "postprocessing_attempts.jsonl",
+    "query_adaptation_analysis_attempts.jsonl",
+    "new_bank_transfer_analysis_attempts.jsonl",
+    "summary.json",
+    "query_adaptation_analysis.json",
+    "new_bank_transfer_analysis.json"
+  ],
+  "total_recorded_cpu_seconds": 3336.784477052001
+}

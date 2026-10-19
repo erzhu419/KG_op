@@ -1,0 +1,314 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load the unchanged stage31 native prior and GP/structural bundle. Use original design80 physical policies with fresh paired initial raw on every new task. Stage36 training-fold refits are not used. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "name": "mainline_role_after_init_v1",
+  "registered_utc": "2026-10-16T00:17:43.594877+00:00",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_role_after_init_v1",
+  "target_seeds": [
+    2026101731,
+    2026101732,
+    2026101733,
+    2026101734,
+    2026101735,
+    2026101736,
+    2026101737,
+    2026101738,
+    2026101739,
+    2026101740,
+    2026101741,
+    2026101742
+  ],
+  "geometry_seed": 2026101730,
+  "geometry_by_seed": {
+    "2026101731": {
+      "task_id": "role_after_init_factorshock_00",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02136800258479645,
+          -0.02969969202781226,
+          -0.014540109537988396
+        ],
+        "task_geometry_radius_scale": 1.0087050811959828
+      }
+    },
+    "2026101732": {
+      "task_id": "role_after_init_factorshock_01",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.007460447949266966,
+          0.032818230102090215,
+          -0.009324822910119084
+        ],
+        "task_geometry_radius_scale": 0.9675679061527215
+      }
+    },
+    "2026101733": {
+      "task_id": "role_after_init_factorshock_02",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.004072834025691481,
+          0.02371727139768255,
+          0.019443624364489508
+        ],
+        "task_geometry_radius_scale": 1.025856304048158
+      }
+    },
+    "2026101734": {
+      "task_id": "role_after_init_factorshock_03",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.013696269193529668,
+          -0.015280230567918985,
+          0.01765173337457119
+        ],
+        "task_geometry_radius_scale": 0.9914307386733657
+      }
+    },
+    "2026101735": {
+      "task_id": "role_after_init_factorshock_04",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.005818463445249465,
+          0.00134314679377949,
+          0.019416623192490504
+        ],
+        "task_geometry_radius_scale": 1.022875827608394
+      }
+    },
+    "2026101736": {
+      "task_id": "role_after_init_factorshock_05",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.002386887224831248,
+          -0.013188231675101216,
+          -0.02326076862585012
+        ],
+        "task_geometry_radius_scale": 1.0384887641927152
+      }
+    },
+    "2026101737": {
+      "task_id": "role_after_init_factorshock_06",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.023551725769320728,
+          -0.0012419421038773193,
+          -0.005765305151098413
+        ],
+        "task_geometry_radius_scale": 0.9892798983689097
+      }
+    },
+    "2026101738": {
+      "task_id": "role_after_init_factorshock_07",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.004293167239423315,
+          0.02060412848738221,
+          0.012939729194577573
+        ],
+        "task_geometry_radius_scale": 1.04279045349089
+      }
+    },
+    "2026101739": {
+      "task_id": "role_after_init_factorshock_08",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.02840009991658353,
+          -0.030284802673776808,
+          -0.0200906083524061
+        ],
+        "task_geometry_radius_scale": 0.9720491046382912
+      }
+    },
+    "2026101740": {
+      "task_id": "role_after_init_factorshock_09",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.030915023694390247,
+          -0.013118871828919184,
+          0.020720550672098784
+        ],
+        "task_geometry_radius_scale": 1.0172948004863784
+      }
+    },
+    "2026101741": {
+      "task_id": "role_after_init_factorshock_10",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.006214791819146984,
+          -0.017492976890451973,
+          -0.002080390665291601
+        ],
+        "task_geometry_radius_scale": 0.9524522714768935
+      }
+    },
+    "2026101742": {
+      "task_id": "role_after_init_factorshock_11",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.0064178403301697745,
+          -0.00014650763725498894,
+          -0.0056268086104106045
+        ],
+        "task_geometry_radius_scale": 1.0221579958228346
+      }
+    }
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "entrypoints": [
+    "performance/run_mainline_role_fresh.py",
+    "performance/summarize_mainline_role_fresh.py",
+    "performance/run_mainline_role_batch.py",
+    "performance/summarize_mainline_role_decisions.py",
+    "performance/check_mainline_role_after_init.py",
+    "performance/recover_mainline_role_after_init.py"
+  ],
+  "report": "docs/mainline_role_after_init_results_20261016.md",
+  "geometry": "Exactly12 draws with geometryseed1730, shift U(-.035,.035)^3 followed by radius U(.95,1.05), unchanged native clipping. All task seeds1731-1742 fixed before new observations. No outcome screening, replacement, additions or outcome-dependent stopping.",
+  "initialization": "Collect10 fresh paired raw per geometry using design80, physically shared across7 arms and charged logically to each. Freeze all12 shared64-neighbor banks before any online search.",
+  "frontends": "All6 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Exactly stage28 frozen modular g source law with legacy latent_shared split, current f/eta marginal laws,8 identities/1024 nodes and raw update. No source reconditioning, refitting or precision adjustment.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "streams": "Same original search/proposal/TS and independent verifier namespaces, runseed per task. Each arm physically executes its own3 adaptive queries and verifier. Initial10 physically shared per task, logically charged to each arm.",
+  "barriers": {
+    "before_online": "All12 initial10 and shared64-neighbor banks frozen.",
+    "before_verify": "All84 shortlists and search histories frozen.",
+    "before_truth": "All84 verifications complete before any task truth evaluation.",
+    "failure": "Retain every attempt, consumed raw and CPU. Do not rerun partially consumed paid stages from zero; repair computation from saved state where possible."
+  },
+  "budget": {
+    "task_count": 12,
+    "recommendation_count": 84,
+    "online_case_count": 72,
+    "initial_only_case_count": 12,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 120,
+    "new_search_physical_calls_max": 216,
+    "new_verification_physical_calls_max": 29568,
+    "new_target_physical_calls_max": 29904,
+    "logical_target_calls_max": 30624,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "downloads": 0
+  },
+  "comparisons": "Primary: task-equal full-role minus after-init-point-only certified true-feasible quality gain relative to initial. Secondary: after-init-point-only minus source0-point-only. Separately report certification-weighted initial quality and total safe reward. All12 task outcomes and all six previous arms retained; no pooling earlier cohorts. Prediction metrics use the common never-sampled new neighbors of5 replacement backends, task-equal primary, saved prefixes10->12.",
+  "continuation": "Stage38: freeze Stage37 model and all scientific settings; add exactly one post-initialization cross-policy-update intervention. No source fits, model/basis/noise/risk patches, verifier allocation change, or extra quadrature.",
+  "primary_reference": "legacy_role_after_init_point_only",
+  "prediction_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "after_init_point_only": "All10 initialization raws condition the unchanged full role prior exactly once. Every later policy inherits its conditional node-level paired-response marginal and posterior identity/head-node masses. Only that physical policy subsequent raw updates its own four heads and identity/node masses. Never-observed policies stay at initial10. TS uses fixed initial10 correlations scaled by current marginal standard deviations, a diagnostic moment control. Original frontend still learns from own arm history.",
+  "preflight": {
+    "parent_manifest": "performance/manifests/mainline_role_confirmation_v2.json",
+    "saved_seeds": [
+      2026101711,
+      2026101716,
+      2026101720
+    ],
+    "output": "paper_artifacts/mainline_role_after_init_v1/preflight/results.json",
+    "scope": "Zero new simulator, verifier, truth or source-fit calls. Check initial10 parity, conditional own-point updates, untouched/dynamically introduced policy invariance, cache idempotence and serialized backend restoration."
+  },
+  "started_utc": "2026-10-16T00:22:33.014379+00:00",
+  "numerical_status_handling": {
+    "recorded_utc": "2026-10-16T00:29:59.428882+00:00",
+    "trigger": "seed1732 full-role and after-init control terminal updates, each savedall3 paidqueries; status1 relative_errors2.749642325895815e-12 and5.950339862815768e-12",
+    "change": "Accept status1 finite positive result under unchanged existing1e-8 error requirement, as well as prior roundoff handling. epsabs/epsrel1e-12 andlimit128 unchanged. Record actual status; no model/precision change. Reconstruct audit/terminal from all13 savedraw with simulator blocked and selected-action parity. Preserve failedcost."
+  },
+  "completed_utc": "2026-10-16T00:45:40.140507+00:00",
+  "completion_file": "paper_artifacts/mainline_role_after_init_v1/completion.json",
+  "execution": {
+    "completed_initializations": 12,
+    "completed_searches": 84,
+    "completed_verifications": 84,
+    "new_target_observations_started": true,
+    "new_initial_calls": 120,
+    "new_search_calls": 216,
+    "new_verification_calls": 14368,
+    "new_physical_target_calls": 14704,
+    "logical_target_calls": 15424,
+    "new_truth_function_calls": 2433,
+    "source_fits": 0,
+    "downloads": 0,
+    "failed_attempts": 2
+  }
+}

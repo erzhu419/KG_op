@@ -1,0 +1,61 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0,
+    "tau": 0.0
+  },
+  "target_seeds": [
+    2026101641,
+    2026101642,
+    2026101643
+  ],
+  "parent_output": "paper_artifacts/mainline_shared_neighbors_v1",
+  "query_channels_output": "paper_artifacts/mainline_query_channels_v1",
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load frozen native prior, GP/structural bundle, public mean10/learned risk10 representation, eight source identities and 1024 source integration nodes. Reuse the parent STOP initial10 raw in original order. No source simulation, fitting, encoder fitting or download."
+  },
+  "source_archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+  "budget": {
+    "new_target_simulations": 0,
+    "new_verification_calls": 0,
+    "new_source_simulations": 0,
+    "new_source_or_encoder_fits": 0,
+    "new_truth_function_calls": 0,
+    "downloads": 0
+  },
+  "name": "mainline_role_prior_v1",
+  "status": "complete:3 saved initialization paths and9 query counterfactuals; cached-truth summary",
+  "registered_utc": "2026-10-15T15:27:33.435821+00:00",
+  "output_dir": "paper_artifacts/mainline_role_prior_v1",
+  "baseline_output": "paper_artifacts/mainline_initialization_audit_v1",
+  "report": "docs/mainline_role_prior_results_20261015.md",
+  "entrypoints": [
+    "performance/mainline_role_prior.py",
+    "performance/run_mainline_role_prior.py",
+    "performance/summarize_mainline_role_prior.py"
+  ],
+  "fixed_contrast": {
+    "name": "legacy_g_role_prior_current_raw",
+    "g_prior": "Frozen native single_gaussian_draw source law with existing latent_shared discrepancy calibration; 13 observable exchangeable features plus intercept. Use source-only coefficient methods, not fitted target GPR moments. Center coefficient intercept by target tau exactly once.",
+    "factorization": "For each frozen identity, p_new(g,eta_g|source,id)=p_native(g|source)*p_current(eta_g|source,id). Preserve source eta nodes, conditional eta covariance, node weights, identity weights and complete f/eta_f records. This removes old g-eta source dependence and is a modular marginal intervention, not a joint source refit or pure feature ablation.",
+    "target_update": "Unchanged JointFunctionRiskPosterior raw likelihood, 1024 source nodes, shared identity evidence updates. Later f/eta posteriors may change through g evidence.",
+    "source_reuse": "Do not apply the source likelihood again. Native coefficient source record count128 (384raw); no target labels/truth used in source law or discrepancy calibration."
+  },
+  "initialization": "All three saved initial10 paths on the original unique initial10+64-neighbor banks; prefixes0..10, four-head moments and exact Eexpeta. Compare each full initialized unsampled marginal against its own source0 (the no-cross marginal) and frozen GP/structure snapshots.",
+  "queries": "One-step counterfactuals only on all9 saved structural query pools/prefixes10,11,12 with recovered original pre-score RNG. Compare new prior full vs new prior frozen10 and original structural scores. Actual future raw is never attributed to counterfactual actions. No new raw or deployment reward.",
+  "checks": "Before scoring, source g law must equal the frozen native component prior; source0 projected g moments must match direct native coefficient projection. Source0 f/eta means, marginal variances and exact noise must remain equal to original structural snapshots. First streamed endpoint must match role_moment_state. If mismatch, fix implementation before interpretation; no precision change.",
+  "truth": "Freeze all three trajectory and query score files before cache-only truth summary. Missing truth remains missing; no new analytical calls. No target-truth fitting or seed/candidate selection.",
+  "continuation": "Assess all three groups together: own-point residual adaptation, truly-unsampled risk error/noise and selected-policy feasibility/improvement. Improved risk prediction alone does not authorize a superiority claim or establish decision gain. If saved-path decisions still fail, document the remaining channel before a fresh-task comparison; do not screen alternative risk priors in this stage.",
+  "completion_file": "paper_artifacts/mainline_role_prior_v1/completion.json"
+}

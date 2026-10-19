@@ -1,0 +1,38 @@
+{
+  "name": "mainline_noise_boundary_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T03:38:04.846647+00:00",
+  "parent_manifest": "performance/manifests/mainline_role_source_holdout_v1.json",
+  "fold": 3,
+  "boundary_policy_id": 0,
+  "focus_policy_ids": [
+    0,
+    5,
+    10
+  ],
+  "output_dir": "paper_artifacts/mainline_noise_boundary_v1",
+  "entrypoint": "performance/diagnose_mainline_noise_boundary.py",
+  "report": "docs/mainline_noise_boundary_results_20261016.md",
+  "protocol": "Reconstruct one structural source bundle with the frozen fold3 training48 per family and unchanged1024 source nodes. Native risk mean law does not affect source0 eta or source weights, so no native fit. Compare boundary0 with nearest physical training policy and training mean closest to0.5, chosen without labels. Project all64 policies per family for context; source0 only.",
+  "decomposition": "Exact total eta variance: conditional common, independent new task, persistent point discrepancy, source-node mean mixture, outer identity mean mixture. Exact log exponential moment: within-node variance halves plus node and identity Jensen gaps.",
+  "verification": "Reconstruct all16 held source0 eta mean/variance and noise in both families, plus identity weights, against Stage43 at rtol1e-8 atol1e-10. Stop interpretation on mismatch.",
+  "new_budget": {
+    "structural_source_fits": 1,
+    "native_source_fits": 0,
+    "source_calls": 0,
+    "target_calls": 0,
+    "verification_calls": 0,
+    "truth_calls": 0,
+    "downloads": 0
+  },
+  "limits": "Opened-fold mechanism diagnosis, not a new held-out success claim. No deployed model change, precision increase, covariance/noise scale screening, candidate deletion, target outcomes or new optimizer cohort. No source models/checkpoints copied to disk; save compact contribution statistics only.",
+  "next_step": "Judge a single source-supported correction only after identifying the variance and representation mechanism; otherwise retain initialization propagation plus later point-only baseline.",
+  "started_utc": "2026-10-16T03:39:05.930990+00:00",
+  "completed_utc": "2026-10-16T03:39:13.717920+00:00",
+  "postdiagnosis_next_candidate": {
+    "scope": "Apply existing source_tanh only to the f_mean and g_mean source encoders; retain eta-specific encoders, dimensions, variance components, source quadrature and target rules. Refit the complete source likelihood.",
+    "selection": "Reuse the existing source-only temperature rule inside each outer training48 subset; no held-policy or target outcome selection.",
+    "evaluation": "All four opened source-policy folds are development acceptance only; require boundary noise calibration and retained ordinary-policy prediction before registering fresh d1000 validation.",
+    "adopted": false
+  }
+}

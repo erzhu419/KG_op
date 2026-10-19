@@ -1,0 +1,120 @@
+{
+  "status": "DRAFT_ONLY_NOT_EXECUTED",
+  "scope": "Reviewable connection protocol; no new scientific run, integration, server read or source fit in this work.",
+  "existing_protocol": {
+    "manifest": "performance/manifests/historical_independent_kg_pilot_v1.json:9-33",
+    "tasks": 6,
+    "dimension": 50,
+    "initial_target_episodes": 2,
+    "policy_bank": 8,
+    "query_policy_count": 6,
+    "terminal_action_count": 40,
+    "maximum_additional_query_episodes": 1,
+    "logical_target_episode_cap": 362,
+    "freeze": "48 final recommendations before any verifier/truth; completed results are development evidence now.",
+    "current_execution": "performance/run_historical_independent_kg_pilot.py:73-79,174-210",
+    "target_budget": "362 includes initialization, all new search episodes, objective comparison and terminal safety verification; source and CPU costs excluded and reported separately."
+  },
+  "shared_fairness": {
+    "arms": [
+      "source_raw_kg",
+      "same_source_common_task_gp_raw_kg",
+      "source_stop_n0",
+      "same_source_common_task_gp_stop_n0"
+    ],
+    "source_information": "Same immutable archived source labels and source-only training selections for the two source-informed priors; disclose all original source calls. No source refit in the bridge.",
+    "initialization": "n0=2 common fresh paired f/g episodes at the same two predeclared physical policy coordinates. Share records; debit two episodes to every logical arm.",
+    "observations": "Only raw f and g-tau. Fresh repeats form their own batch sample statistics. Keep all prior paid evidence in posterior; do not resummarize old observations as fresh data.",
+    "risk_model": "Retain all eight identity likelihoods/weights, every retained positive component, full cross-policy covariance and original raw likelihood. No legacy variance pseudo-label, target sigma estimate or posterior score may silently replace these.",
+    "verification": "Same SD16/familywise safety law and objective-comparison debit; per-task paired verifier noise namespace, recommendation fixed before verifier; no verifier sample reuse as search.",
+    "target_cap": 362,
+    "cpu_budget": "Separate prospective authorization after measured interface/numerical cost. Current remaining support reserve does not authorize scientific execution.",
+    "ledger": "Append new measured CPU and physical episodes to the existing chain; preserve every earlier failure/recovery fee and any negative balance. Reused scientific caches are not charged again.",
+    "target_cap_interpretation": "362 is an upper bound, never a requirement to spend every episode. Source costs and measured process/child CPU remain separate."
+  },
+  "phase_0_local_bridge": {
+    "purpose": "Pure interface fixture before any integration; current turn prepares this plan only.",
+    "bank": "Full common public73 candidate library, no target-outcome-selected eight-policy truncation.",
+    "entry": "performance/historical_full_bank_development.py:49-61 restore_full_prior; :64 terminal_rule",
+    "constraint": "restore_full_prior may restore source-only priors on fixed d50 public references; do not replay old paid45/10 updates into fresh tasks (old target updates at :92-104 belong to opened development replay).",
+    "requirements": [
+      "Strip old target observations and start zero-paid prior.",
+      "Map old local eight-bank query indices to physical public73 policy coordinates exactly.",
+      "Construct all original terminal templates for public73 at arbitrary remaining budget and the new common initialized shortlist/incumbent.",
+      "Check source and GP get the identical public73 coordinates and fresh raw records; no integration needed for these interface assertions."
+    ],
+    "claim": "A d50 interface bridge only; not high-dimensional optimization completion."
+  },
+  "phase_A_static_public73": {
+    "status": "Planned; blocked on phase_0 and separately authorized scientific CPU.",
+    "task_cohort": "Reserve a new task/initialization/search/verifier seed block disjoint from all opened six tasks and earlier development; write exact IDs and parameters before generation.",
+    "dimension": 50,
+    "minimal_development_size": 4,
+    "bank": "All public73 policies available to every arm; no response truth supplied to learners.",
+    "query_set": "Start with original six physical policies, explicitly mapped to public73, to isolate bank/terminal expansion from query-set expansion.",
+    "batch_choices": [
+      1,
+      4
+    ],
+    "batch_note": "Both kernel APIs exist, but common selector and fresh paid batch runner still need connection. Neither is registered as a working multiround entrypoint.",
+    "maximum_rounds": 2,
+    "maximum_paid_search_episodes": 8,
+    "N_gt_n0": "Permit at most two paid query rounds, N=2+sum(n_r)<=10 and terminal budget>=352. N>n0 occurs only when an accepted positive net KG query is chosen; all-stop outcomes with N=2 are retained.",
+    "per_round": "Before comparing any query, freeze current full73 terminal bank, shortlist/incumbent and budget-dependent action class; STOP is valued in exactly that class. Compare all registered (q,n) against stop after debiting n episodes. Execute at most one chosen fresh batch and update raw posterior. Rebuild/freeze the next round only after that paid update.",
+    "selector": "Choose greatest accepted positive net KG among all six queries and n in{1,4}, deterministic registered-order tie break. If any required comparison is numerical HOLD, freeze no decision and do not execute physical observations/verification. Current adjacent-rule checks remain diagnostics, not a new ranking certificate.",
+    "terminal_remaining": "362-(2+sum(n_r)); include original objective-comparison overhead inside terminal action budgets.",
+    "stop_controls": "Each prior has its n0-only terminal recommendation under the same73 bank and original verification law, using360 remaining episodes. Per-round stop is additionally logged as a counterfactual value for that arm, not as a new physical verifier arm.",
+    "method_name": "Receding one-step raw KG; no claim of multistep Bellman optimality.",
+    "verification_barrier": "All4 tasks x1 predeclared layout x4 arm recommendations frozen before any verifier or truth scoring call.",
+    "physical_maximum": "4 tasks x1 predeclared layout x4 arms x362 logical episodes minus24 duplicated initialization debits =5768 physical episodes upper bound with8 shared physical initialization episodes. Each query debit reduces its own terminal allowance; no additional terminal budget is created. Any additional layout is budgeted separately.",
+    "maximum_additional_query_episodes": 8,
+    "interpretation": "Two rounds is a minimal engineering/development demonstration of N>n0 only. A longer scientific main experiment requires a separately frozen horizon and task/seed cohort.",
+    "maximum_total_preverification_episodes": 10,
+    "layouts": "One predeclared public73 layout only; choose/freeze the layout before new task generation. A second layout requires separate CPU and physical budget."
+  },
+  "phase_B_high_dimensional_generation": {
+    "status": "Planned; blocked until callable source fields and generator/raw adapter are implemented and reviewed.",
+    "dimension": 1000,
+    "source_field_gap": "Current raw restore depends on frozen public_mean_reference/public_reference_psi arrays. Add a source-only callable feature/function-prior evaluation at arbitrary generated high-dimensional policies, preserving identity/component/cross-covariance laws. Shape adaptation or reusing d50 arrays is insufficient.",
+    "candidate_apis": [
+      "algorithms/single_olhkg.py:5378 _generate_candidates"
+    ],
+    "proposal_contract": "Freeze one common generator, options, random stream convention and compute allowance for source/GP. Legacy proposal scores that consume target_sigma_mean or old posterior objects require a raw-observation adapter, or an explicitly common source/public-only driver. Generated candidates have no free target response labels.",
+    "candidate_freeze": "At each paid-update boundary generate/append candidates using only the arm own paid history and frozen public/source data, then freeze query and terminal pool before KG/STOP evaluation. Preserve already sampled policies and empirical incumbent. Do not share the other arm paid data. No unexplained eight-point truncation.",
+    "fairness_interpretation": "Same algorithmic proposal rule with different own paid histories may produce different candidate trajectories; this evaluates full algorithms. A pure prior comparison requiring identical pools must use a source/public-only fixed proposal schedule and be labeled separately.",
+    "query_expansion": "Generated candidates become eligible queries and terminal policies under the same (q,n) selector; register exact generator output count/options and treatment of duplicates before the fresh task block.",
+    "N_gt_n0_and_budget": "Keep phase_A multiround/cap/stop rules; report N, new unique policy coordinates, repeated-policy episodes and candidate-bank changes. At least new policy generation and candidate access must be evidenced; d50 finite-bank success alone does not pass this phase.",
+    "truth_separation": "Use a separate fresh unopened task block after source-field/generator contract freezes. Previously opened six tasks may validate fixtures only and never become confirmation again."
+  },
+  "reusable_APIs": [
+    "core/positive_mixture_lookahead.py:153 predictive_positive_batches(model,query,replicates,power,seed)",
+    "core/raw_terminal_head_grid.py:75 evaluate_head_records; :127 remaining-replicates; :186 compose_head_grid; :318 summarize_joint_actions",
+    "representation/joint_response_mixture.py:34 JointResponseMixture.update_raw; :43-55 update_replicates",
+    "performance/prepare_historical_independent_kg.py:53 terminal_from_initialization"
+  ],
+  "missing_connections": [
+    "Common (query,batch,STOP) selector across all comparisons.",
+    "Fresh paid repeated-batch execution and durable per-round debit records.",
+    "Terminal shortlist/action rebuilding and freeze at every remaining budget.",
+    "Raw posterior covariance extension at generated high-dimensional policies.",
+    "Final recommendation barrier for the complete task-arm block."
+  ],
+  "primary_analysis": "Task-paired sourceKG minus same-source GP KG and eachKG minus own n0 stop, all at362 targetepisodes. Report actual verified safe reward, false certificates, rejected recommendations, source/target/CPU costs, number of policy changes and N. Four-task development size is feasibility/negative-evidence only, not stable superiority confirmation.",
+  "not_authorized_now": [
+    "Any numerical integration",
+    "Any physical/source/verifier call",
+    "Any server/network read",
+    "Any project import or scientific execution"
+  ],
+  "evidence": {
+    "candidate_lineage": "paper_artifacts/historical_mainline_candidate_connection_v1/candidate_lineage.json",
+    "raw_interface": "paper_artifacts/historical_mainline_candidate_connection_v1/raw_interface_audit.json",
+    "prior_mainline_audit": "paper_artifacts/historical_mainline_optimization_audit_v1/mainline_audit.json",
+    "diagnoses": [
+      "../markdown/GPT_diagnosis_v4.md",
+      "../markdown/GPT6_action_competition_diagnosis_20261013.md"
+    ]
+  },
+  "cache_reuse": "Reuse compatible source fits, frozen encoders/reference coordinates, raw observation records and exact-matching numerical cases. Candidate/action/state changes do not inherit unmatched old integral certificates.",
+  "scientific_execution_authorized_in_this_phase": false
+}

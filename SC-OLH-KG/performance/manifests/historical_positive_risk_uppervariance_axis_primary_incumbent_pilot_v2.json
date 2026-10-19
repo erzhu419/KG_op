@@ -1,0 +1,58 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_screen_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v1/completion.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v2",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_screen_v2.json",
+  "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p24",
+  "rules": [
+    [
+      "L8",
+      16,
+      8,
+      0
+    ],
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "F8",
+      32,
+      8,
+      101
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "identity": 4,
+  "kind": "raw",
+  "estimated_worker_cpu_seconds": 70,
+  "maximum_worker_cpu_seconds": 65,
+  "aggregate_estimated_phase_cpu_seconds": 3598.5429872544,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "new_phase_reserve_cpu_seconds": 0,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "scope": "Same residual observation and posterior; historical alternate Gaussian mean integration,incumbent45 analytic. Diagnostic charged to existing cap phase600analysis reserve. Failed coordinate experiment retained; unchanged3598.54phase estimate,no new reserve,source field,noise model,verifier orgate.",
+  "integrated_position": 1,
+  "analysis_reserve_admission": {
+    "source_phase_estimated_cpu_seconds": 3598.5429872544,
+    "already_charged_support_cpu_seconds": 127.358427448,
+    "estimated_cached_coordinate_analysis_cpu_seconds": 70,
+    "following_collection_allowance_cpu_seconds": 40,
+    "total_reserved_support_cpu_seconds": 237.358427448,
+    "shared_phase_reserve_cpu_seconds": 600,
+    "new_phase_reserve_cpu_seconds": 0,
+    "cost_admitted": true
+  }
+}

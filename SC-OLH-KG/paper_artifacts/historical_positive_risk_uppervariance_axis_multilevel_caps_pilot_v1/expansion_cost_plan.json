@@ -1,0 +1,22 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
+  "counts": {
+    "raw": {
+      "observations": 153,
+      "policy_observation_pairs": 484,
+      "action_candidates": 763
+    },
+    "projected": {
+      "observations": 126,
+      "policy_observation_pairs": 462,
+      "action_candidates": 630
+    }
+  },
+  "union_policy_observation_pairs": 522,
+  "maximum_observed_identity_policy_cpu_seconds": 1.5115630843333332,
+  "conservative_both_kind_estimated_phase_cpu_seconds": 2509.6862320528,
+  "phase_cpu_limit": 3600,
+  "cost_admitted": true,
+  "maximum_live_workers": 8,
+  "scope": "Pricing only, using the maximum measured same-pilot step duration, including first-case setup. Raw and projected are priced at the raw rate; this overestimates projected work. No sweep dispatched."
+}

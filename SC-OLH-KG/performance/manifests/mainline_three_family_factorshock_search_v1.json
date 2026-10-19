@@ -1,0 +1,160 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "initialization": "Fresh10 paired raw per geometry, physically shared across7 histories, logically charged to each. All12 tasks initialization and all64-neighbor banks finish before online search.",
+  "frontends": "All6 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Unchanged modular operator applied to each family own frozen native source g coefficient law and structural f/eta marginals; original latent_shared split,8identities/1024nodes/raw update. No source reconditioning or fitting.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "after_init_point_only": "All10 initialization raws condition the unchanged full role prior exactly once. Every later policy inherits its conditional node-level paired-response marginal and posterior identity/head-node masses. Only that physical policy subsequent raw updates its own four heads and identity/node masses. Never-observed policies stay at initial10. TS uses fixed initial10 correlations scaled by current marginal standard deviations, a diagnostic moment control. Original frontend still learns from own arm history.",
+  "prediction_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "name": "mainline_three_family_factorshock_search_v1",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_three_family_v1/FactorShockStatePolicyRZDT1/search",
+  "target_seeds": [
+    2026102019,
+    2026102020,
+    2026102021,
+    2026102022
+  ],
+  "geometry_seed": 2026102000,
+  "geometry_by_seed": {
+    "2026102019": {
+      "task_id": "three_family_factorshock_0",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.019431560451261293,
+          0.012365898433457971,
+          -0.005214303690175004
+        ],
+        "task_geometry_radius_scale": 1.0387837017999282
+      }
+    },
+    "2026102020": {
+      "task_id": "three_family_factorshock_1",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.029739708316883495,
+          0.00573210433953418,
+          0.009309252130860556
+        ],
+        "task_geometry_radius_scale": 1.047710580076753
+      }
+    },
+    "2026102021": {
+      "task_id": "three_family_factorshock_2",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.015709699904621684,
+          0.0026487967330679554,
+          -0.019928700509193674
+        ],
+        "task_geometry_radius_scale": 0.9744221198988179
+      }
+    },
+    "2026102022": {
+      "task_id": "three_family_factorshock_3",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.013617725810737308,
+          -0.014567313333605714,
+          -0.030004686592871786
+        ],
+        "task_geometry_radius_scale": 0.9921695764928697
+      }
+    }
+  },
+  "primary_reference": "legacy_role_point_only",
+  "continuation": "Stage47 frozen family-specific Stage31 sources and original V69 frontend; initialization propagation followed by point updates is the primary candidate. No model or precision change.",
+  "streams": "Original runseed proposal/TS namespaces; initial10 shared per task, each online arm pays its own3 queries. Independent verifier seed1921..1932 is registered in the terminal manifest.",
+  "geometry": "Four draws per family in registered Inventory,Queue,FactorShock order from geometryseed2026102000: shift U(-.035,.035)^3 then radius U(.95,1.05). All12 retained.",
+  "barriers": {
+    "before_online": "All12 tasks initial10 and neighbor banks frozen.",
+    "before_verify": "All84 searches and24 alternative native terminals frozen across three families.",
+    "before_truth": "All108 verifications complete across three families.",
+    "failure": "Retain paid raw/state and cost; never resample a partial paid stage."
+  },
+  "registered_utc": "2026-10-16T07:03:01.229574+00:00",
+  "completed_utc": "2026-10-16T07:23:21.121649+00:00"
+}

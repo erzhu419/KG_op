@@ -1,0 +1,125 @@
+{
+  "scope": "Software interface verification using saved public coordinates/raw initialization plus lightweight recording models only.",
+  "tests": {
+    "tests_run": 6,
+    "failures": 0,
+    "errors": 0,
+    "passed": true,
+    "scientific_backend_imported": false,
+    "new_integrations": 0,
+    "server_reads": 0,
+    "process_cpu_seconds": 0.041436118,
+    "failure_details": []
+  },
+  "patch_review": {
+    "stage": "patch_text_read",
+    "files": [
+      {
+        "path": "performance/historical_common_bank.py",
+        "lines_read": [
+          [
+            1,
+            102
+          ]
+        ]
+      },
+      {
+        "path": "performance/historical_full_bank_development.py",
+        "lines_read": [
+          [
+            1,
+            29
+          ],
+          [
+            51,
+            63
+          ],
+          [
+            80,
+            147
+          ]
+        ]
+      }
+    ],
+    "cpu_seconds": 0.004027717000000002,
+    "new_integrals": 0,
+    "server_reads": 0,
+    "project_imports": 0,
+    "tests_run": 0,
+    "verdict": "No new blocking interface or accounting defect found in the supported common73 path by text review",
+    "reviewed_contracts": {
+      "lazy_restore": "historical_common_bank.py:46-53 imports historical backend inside restore_zero_paid_prior; pure mapping/budget imports stay stdlib",
+      "prior_zero": "historical_common_bank.py:38-43 checks mixture paid/history and each head candidate_count/paid, covering GP full-array length too",
+      "batch_partition": "historical_common_bank.py:56-62 initialization returns original singleton batches;76-102 preserves supplied fresh batch order and dispatches n1 to update_raw,n>1 to update_replicates",
+      "centering": "historical_common_bank.py:92 subtracts tau once from raw rows; legacy_search_batch:65-73 selects raw_observation rather than centered_observation",
+      "debit": "historical_common_bank.py:84 uses sum batch rows,not number batches;98 validates model paid_episodes; returns newphysical0 forreplay",
+      "cap": "historical_common_bank.py:30-35 targetcap362 less oldpaid and prospective n; run_case:96-105 uses remaining fromreplay. Existing terminal.allocations reserves 2*objective comparison budget before distributing safety budget",
+      "integration": "historical_full_bank_development.py:95-100 restoreszero,replaysinitialization,maps old queries topublicindices,checks restricted posterior replay"
+    },
+    "limits": [
+      "No true source/GP restore, replay conditioning or verifier executed; fixture success remains software-only evidence",
+      "run_case existing early cached-return at83-84 means already-frozen historical result is returned unchanged; newly added replay/mapping fields only appear when actual case executes. Do not present this patch as existing outcomes recomputed.",
+      "Existing run_case recommendation_frozen is a written-state flag even when numerical_diagnostics_passed false; retain explicit gate distinction, no change to those semantics requested."
+    ],
+    "review_amendment_cpu_seconds": 7.617499999999951e-05,
+    "total_cpu_seconds": 0.004103892000000001
+  },
+  "syntax_and_whitespace": {
+    "modified_python_syntax_passed": true,
+    "tracked_patch_whitespace_passed": true,
+    "details": "",
+    "process_and_child_cpu_seconds": 0.021547827999999998
+  },
+  "common_bank_size": 73,
+  "public_query_indices": {
+    "5": [
+      24,
+      52,
+      11,
+      42,
+      45,
+      10
+    ],
+    "6": [
+      53,
+      22,
+      51,
+      33,
+      45,
+      10
+    ]
+  },
+  "initial_policy_indices": [
+    45,
+    10
+  ],
+  "target_episode_cap": 362,
+  "budget_examples": [
+    {
+      "paid": 2,
+      "prospective_batch": 0,
+      "remaining": 360
+    },
+    {
+      "paid": 2,
+      "prospective_batch": 4,
+      "remaining": 356
+    },
+    {
+      "paid": 6,
+      "prospective_batch": 0,
+      "remaining": 356
+    },
+    {
+      "paid": 10,
+      "prospective_batch": 0,
+      "remaining": 352
+    }
+  ],
+  "real_zero_paid_prior_restoration_executed": false,
+  "real_raw_posterior_replay_executed": false,
+  "new_integrations": 0,
+  "new_physical_calls": 0,
+  "server_reads": 0,
+  "existing_frozen_scientific_results_modified": false
+}

@@ -27,7 +27,8 @@ def sync(paths):
 
 def replay_for(bound):
     spec=read(bound);ref=read(spec['joint_reference_plans'][-1])
-    return read(ref['output']+'/incumbent_replay_final.json')
+    completion=read(spec['phase_completion'])
+    return read(completion.get('replay_summary_path',ref['output']+'/incumbent_replay_final.json'))
 
 
 def run(source_bound,mean_axis='midmean'):

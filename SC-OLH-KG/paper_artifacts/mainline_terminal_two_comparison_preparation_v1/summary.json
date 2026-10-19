@@ -1,0 +1,107 @@
+{
+  "status": "preparation_complete",
+  "registered_cells": 216,
+  "prepared_inputs": 215,
+  "registered_geometries": 24,
+  "arm_counts": {
+    "legacy_role_full": 24,
+    "legacy_role_full_native_terminal": 24,
+    "legacy_role_after_init_point_only": 24,
+    "legacy_role_after_init_point_only_native_terminal": 24,
+    "legacy_native_neighbors": 24,
+    "same_source_gp": 24,
+    "legacy_role_point_only": 23,
+    "current_structural_mixture": 24,
+    "initialization_only": 24
+  },
+  "observed_prefix_counts": {
+    "13": 191,
+    "10": 24
+  },
+  "checks_passed": 35,
+  "checks_failed": 0,
+  "frozen_input_records_exactly_preserved": 215,
+  "missing_cells": [
+    {
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "domain": "FactorShockStatePolicyRZDT1",
+      "status": "execution_failure"
+    }
+  ],
+  "undefined_quality_baseline_cells": 9,
+  "synthetic_recording_evidence": [
+    {
+      "synthetic": true,
+      "arm": "legacy_role_full",
+      "completed_observations": 352,
+      "logical_total": 365,
+      "completed_reuse_no_extra_calls": true
+    },
+    {
+      "synthetic": true,
+      "arm": "initialization_only",
+      "completed_observations": 352,
+      "logical_total": 362,
+      "completed_reuse_no_extra_calls": true
+    },
+    {
+      "synthetic": true,
+      "completed_observations": 81,
+      "raw_retained": true,
+      "retry_blocked": true,
+      "retry_extra_calls": 0
+    },
+    {
+      "synthetic": true,
+      "completed_observations": 337,
+      "raw_retained": true,
+      "retry_blocked": true,
+      "retry_extra_calls": 0
+    }
+  ],
+  "safety_budgets": [
+    80,
+    120,
+    120
+  ],
+  "maximum_terminal_calls": 352,
+  "actual_branch_calls": [
+    320,
+    336,
+    352
+  ],
+  "objective_delta_per_comparison": 0.008333333333333333,
+  "safety_familywise_delta": 0.05,
+  "seed_mapping": {
+    "block0": "[verification_seed, replication, 0x4F424A44]",
+    "block1": "[verification_seed, replication, 0x4F424A44, 1]",
+    "within_pair": "Two independent RNG objects initialized with identical block/replication components.",
+    "first_comparison_skipped": "Third versus winner still uses block1.",
+    "search": "[observation_seed or config.seed, history_index, 0x53434F4C]",
+    "primary_safety": "[verification_seed, replication, 0x56455249]",
+    "other_safety": "[verification_seed, candidate_index, replication, 0x56534C54]"
+  },
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "scientific_evaluation_started": false,
+  "limitations": [
+    "Deterministic substitutes establish routing and accounting, not safety power or deployment improvement.",
+    "Lower safety sample counts and stricter comparison thresholds may lose certificates or objective power.",
+    "The prepared verification seeds preserve provenance; block0 would share randomness with the old comparison if reused. This is not an independent confirmation.",
+    "Existing target geometries are opened development data. Future real verification requires a separate execution protocol."
+  ]
+}

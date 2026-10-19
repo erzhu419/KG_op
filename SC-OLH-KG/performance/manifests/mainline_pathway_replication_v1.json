@@ -1,0 +1,342 @@
+{
+  "name": "mainline_pathway_replication_v1",
+  "status": "complete",
+  "stage": 83,
+  "output_dir": "paper_artifacts/mainline_pathway_replication_v1",
+  "protocol_document": "docs/mainline_pathway_replication_protocol_20261018.md",
+  "tasks": [
+    {
+      "seed": 2026107001,
+      "geometry_task_seed": 2026107001,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107002,
+      "geometry_task_seed": 2026107002,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107003,
+      "geometry_task_seed": 2026107003,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107004,
+      "geometry_task_seed": 2026107004,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107005,
+      "geometry_task_seed": 2026107005,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107006,
+      "geometry_task_seed": 2026107006,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107007,
+      "geometry_task_seed": 2026107007,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107008,
+      "geometry_task_seed": 2026107008,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107009,
+      "geometry_task_seed": 2026107009,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107010,
+      "geometry_task_seed": 2026107010,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107011,
+      "geometry_task_seed": 2026107011,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107012,
+      "geometry_task_seed": 2026107012,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107013,
+      "geometry_task_seed": 2026107013,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107014,
+      "geometry_task_seed": 2026107014,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107015,
+      "geometry_task_seed": 2026107015,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107016,
+      "geometry_task_seed": 2026107016,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107017,
+      "geometry_task_seed": 2026107017,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107018,
+      "geometry_task_seed": 2026107018,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107019,
+      "geometry_task_seed": 2026107019,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107020,
+      "geometry_task_seed": 2026107020,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107021,
+      "geometry_task_seed": 2026107021,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107022,
+      "geometry_task_seed": 2026107022,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107023,
+      "geometry_task_seed": 2026107023,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107024,
+      "geometry_task_seed": 2026107024,
+      "domain": "FactorShockStatePolicyRZDT1"
+    }
+  ],
+  "target_seeds": [
+    2026107001,
+    2026107002,
+    2026107003,
+    2026107004,
+    2026107005,
+    2026107006,
+    2026107007,
+    2026107008,
+    2026107009,
+    2026107010,
+    2026107011,
+    2026107012,
+    2026107013,
+    2026107014,
+    2026107015,
+    2026107016,
+    2026107017,
+    2026107018,
+    2026107019,
+    2026107020,
+    2026107021,
+    2026107022,
+    2026107023,
+    2026107024
+  ],
+  "streams": [
+    {
+      "name": "reference",
+      "batch": "reference",
+      "source_manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+      "source_output_dir": "paper_artifacts/mainline_safe_unsampled_validation_v1",
+      "attribution_file_pattern": "paper_artifacts/mainline_observed_terminal_attribution_v1/cases/seed_{seed}/analysis.json",
+      "attribution_kind": "observed_terminal"
+    },
+    {
+      "name": "observation_1",
+      "batch": "independent",
+      "source_manifest": "performance/manifests/mainline_terminal_recording_seed_replication_stream_1_v1.json",
+      "source_output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1",
+      "attribution_file_pattern": "paper_artifacts/mainline_decision_path_attribution_v1/cases/seed_{seed}/observation_1/result.json",
+      "attribution_kind": "decision_path"
+    },
+    {
+      "name": "observation_2",
+      "batch": "independent",
+      "source_manifest": "performance/manifests/mainline_terminal_recording_seed_replication_stream_2_v1.json",
+      "source_output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2",
+      "attribution_file_pattern": "paper_artifacts/mainline_decision_path_attribution_v1/cases/seed_{seed}/observation_2/result.json",
+      "attribution_kind": "decision_path"
+    }
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": [
+    "old",
+    "new"
+  ],
+  "expected": {
+    "geometries": 24,
+    "streams": 3,
+    "task_streams": 72,
+    "terminal_arms": 9,
+    "terminal_outcomes": 1296,
+    "role_query_states": 648
+  },
+  "primary": {
+    "left": "legacy_role_after_init_point_only",
+    "right": "legacy_role_point_only",
+    "protocol": "old",
+    "batch": "independent",
+    "endpoints": [
+      "C",
+      "G"
+    ],
+    "components": [
+      "P",
+      "L"
+    ]
+  },
+  "statistical_unit": "24 fixed geometries; average the two independent streams within each geometry; report the reference stream separately. Baseline-missing geometry 2026107012 remains registered with undefined G/P/L.",
+  "batches": [
+    {
+      "name": "reference",
+      "streams": [
+        "reference"
+      ]
+    },
+    {
+      "name": "independent",
+      "streams": [
+        "observation_1",
+        "observation_2"
+      ]
+    }
+  ],
+  "context": {
+    "manifest": "performance/manifests/mainline_frozen_propagation_paths_v1.json",
+    "readout": "paper_artifacts/mainline_frozen_propagation_paths_v1/readout.json",
+    "report": "docs/mainline_frozen_propagation_paths_results_20261018.md",
+    "scope": "Separate new-geometry cohort; incomplete pool truth, excluded from full-pool pathway denominators."
+  },
+  "frozen": {
+    "AFTER": true,
+    "model": true,
+    "sources": true,
+    "search": true,
+    "terminal": true,
+    "thresholds": true,
+    "seeds": true
+  },
+  "zero_new_work": [
+    "simulation",
+    "verification",
+    "truth_fields",
+    "candidate_scores",
+    "source_fit",
+    "model_restore",
+    "posterior_restore",
+    "raw_replay",
+    "random_draws"
+  ],
+  "classification": "First actual returned discovery: multiple safe eligible unseen competitors, single safe eligible unseen competitor, minimum-violation discovery, other/unknown. Initial policies separate. Returned requery is an orthogonal tag, not another additive discovery category.",
+  "decomposition": "For each arm use its own deployed-policy category. Signed category delta P and L_POINT-L_AFTER sum exactly to original delta G; keep both arms positive and negative outcomes.",
+  "missing": "No filling missing truth, saved states, baseline, failed analyses or unexecuted terminal counterfactuals. Keep all registered units and controls.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_retention_v1/completion.json",
+    "paper_artifacts/mainline_reference_retention_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_preparation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/stage81_execution_account_20261018.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/stage81_result_transfer_20261018.json",
+    "paper_artifacts/mainline_frozen_propagation_paths_v1/completion.json",
+    "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/stage82_scheduler_execution_20261018.json"
+  ],
+  "limits": [
+    "Saved completed mechanism and attribution files only; do not call their analysis/scoring functions again.",
+    "Three role histories have full-pool mechanism coverage; all nine controls retain outcomes, failures and costs.",
+    "Query and pair counts are repeated diagnostics, not independent sample sizes.",
+    "Post-discovery replication is observed sequencing, not proof of causal certification necessity.",
+    "Common-state first divergence and later diverged histories have different attribution scope.",
+    "Old stream, independent two-stream batch, and separate Stage81 new geometries are not pooled.",
+    "No model changes, threshold tuning or new scientific experiment."
+  ],
+  "completed_source_batches": [
+    "paper_artifacts/mainline_safe_unsampled_validation_v1",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1"
+  ],
+  "registered_utc": "2026-10-17T23:24:37.249278+00:00",
+  "completed_utc": "2026-10-17T23:30:22.934415+00:00",
+  "summary_file": "paper_artifacts/mainline_pathway_replication_v1/summary.json",
+  "completion_file": "paper_artifacts/mainline_pathway_replication_v1/completion.json"
+}

@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "execution_status": "completed_with_declared_execution_failures",
+  "registered_terminal_cells": 108,
+  "failed_terminal_cells": 1,
+  "execution_failures": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026102120,
+      "arm": "current_structural_mixture",
+      "status": "search_failed",
+      "logical_search_calls": 12,
+      "new_search_calls": 2,
+      "reason": "Frozen posterior E[exp(eta)] exceeds float64 range for mandatory shared neighbors11 and15; no clipping, identity deletion or model patch.",
+      "diagnosis": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/numeric_failure_diagnosis.json",
+      "failed_raw_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/failed_search_raw_1792143001434065953.json"
+    }
+  ],
+  "terminal_cells": 107,
+  "cost": {
+    "cpu_seconds": 3.723665878000002,
+    "wall_seconds": 4.098645234800642,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 1920,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "source_model_restorations": 0,
+    "download_bytes": 0
+  },
+  "attempt_count": 111,
+  "failed_attempts": [],
+  "new_physical_target_calls": 1920,
+  "logical_target_calls": 26023,
+  "completed_cells_logical_target_calls": 26011,
+  "failed_cells_logical_search_calls": 12,
+  "logical_verification_calls": 24656,
+  "reused_raw_calls_expanded_cells": 22736,
+  "input_changed_cells": 33,
+  "completed_utc": "2026-10-16T09:44:59.874484+00:00"
+}

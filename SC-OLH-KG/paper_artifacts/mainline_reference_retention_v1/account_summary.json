@@ -1,0 +1,70 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-17T14:00:51.314137+00:00",
+  "registered_task_streams": 48,
+  "complete_task_streams": 48,
+  "registered_terminal_outcomes": 864,
+  "failures": [],
+  "recorded_analysis_cpu_seconds": 25.165889761,
+  "validations": [
+    {
+      "status": "complete",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_reference_retention.py",
+        "tests/test_mainline_reference_retention_summary.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_reference_retention.py",
+        "tests/test_mainline_reference_retention_summary.py"
+      ],
+      "expected_instances": 11,
+      "returncode": 0,
+      "cpu_seconds": 1.239268,
+      "wall_seconds": 1.4312875885516405,
+      "checked_utc": "2026-10-17T13:55:07.631945+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0
+    }
+  ],
+  "new_work": {
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "download_bytes": 0,
+    "new_rng_draws": 0,
+    "truth_problem_constructions": 0
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json"
+  ],
+  "accounting": "Attempt and coordinator CPU counted once; validation separate; wrapper overlaps. Historical science and failed analyses stay in referenced ledgers."
+}

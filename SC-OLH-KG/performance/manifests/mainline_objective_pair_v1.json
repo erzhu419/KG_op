@@ -1,0 +1,51 @@
+{
+  "name": "mainline_objective_pair_v1",
+  "status": "complete",
+  "parent_manifest": "performance/manifests/mainline_role_replication_v1.json",
+  "input_dir": "paper_artifacts/mainline_role_replication_v1",
+  "output_dir": "paper_artifacts/mainline_objective_pair_v1",
+  "report": "docs/mainline_objective_pair_results_20261016.md",
+  "target_seeds": [
+    2026101671,
+    2026101672,
+    2026101673,
+    2026101674,
+    2026101675,
+    2026101676
+  ],
+  "variants": [
+    "original_role",
+    "head_specific_objective_pair"
+  ],
+  "prefixes": [
+    0,
+    10,
+    11,
+    12
+  ],
+  "single_candidate": "Replace each identity's complete objective response pair(f,eta_f) and both designs with the frozen head_specific pair matching kind and task covariance mode. Keep8 identity names and original source log weights; no source evidence refit or duplicate collapse.",
+  "risk": "Reuse exactly each identity's current role g conditional trajectory. Source0 aggregate g and risk noise unchanged; after raw updates shared identity weights can alter aggregate risk predictions.",
+  "replay": "All six stage31 full-role saved trajectories through paid12, source1024 nodes, stream batches64, unchanged raw filter. Bank is union of saved query pools, shared64 and history; no new candidate generation.",
+  "validation": "Original replay matches saved scores at all18 query prefixes. Candidate direct full-field projection/raw replay at source0 andinitial10 on first registered task checks donor designs, nodes and moment mixing. Source0 risk equality and shared conditional-g object reuse check intervention scope.",
+  "metrics": "Fixed shared64 minus every point in original13-row search history,330 policies in six tasks. Equal task-weighted f/g/noise and objective-difference errors, source0->10 and10->12 changes, feasible subset, and focal24/36/33 separate. Mean-feasible-first pool ranking is only a diagnostic, not original TS or a deployment.",
+  "truth": "Save both projections before reading existing task truth. Missing counterfactual truth stays unknown. No new truth calls.",
+  "limits": "Retrospective development comparison on saved actual histories. Changing f pair includes eta_f and source dependence; not a pure representation ablation. Better endpoint accuracy is not automatically improved propagation. No new model adopted or future raw/verification credit transferred.",
+  "budget": {
+    "new_target_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_calls": 0,
+    "download_bytes": 0
+  },
+  "entrypoints": [
+    "performance/run_mainline_objective_pair.py",
+    "performance/summarize_mainline_objective_pair.py"
+  ],
+  "decision": "Do not adopt the head_specific objective-pair candidate or launch a new optimizer cohort: endpoint f and objective-difference MSE are worse in all six tasks; no extra improving policy in the saved-pool mean-rule diagnostic.",
+  "next_step": {
+    "inputs": "Existing stage33 node_projections.npz prefixes0/1 plus the frozen source objective pair and actual designs for1672/1675.",
+    "analysis": "Split first-raw within-node objective-difference update into common, task and independent white covariance contributions. Per node use (K_part(x,0)-K_part(0,0))/K_total(0,0) times the saved initial-point conditional mean change; then add saved node and identity weight contributions.",
+    "validation": "Node-level f/eta cross-covariance is zero at source0. Check the three parts reconstruct saved first-step within-node movement before interpreting attribution.",
+    "boundary": "No new model, refit, simulation, truth or precision change. Do not attribute failure simply to weaker coupling or purely risk inputs: both marginal laws and local noise change, and the auxiliary coordinates include objective-mean axes."
+  }
+}

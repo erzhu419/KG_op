@@ -1,0 +1,169 @@
+{
+  "name": "mainline_terminal_cross_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T01:16:19.785270+00:00",
+  "source_manifest": "performance/manifests/mainline_role_after_init_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_role_after_init_v1",
+  "decision_manifest": "performance/manifests/mainline_terminal_backend_v1.json",
+  "decision_output_dir": "paper_artifacts/mainline_terminal_backend_v1",
+  "output_dir": "paper_artifacts/mainline_terminal_cross_v1",
+  "report": "docs/mainline_terminal_cross_results_20261016.md",
+  "entrypoint": "performance/run_mainline_terminal_cross.py",
+  "target_seeds": [
+    2026101731,
+    2026101732,
+    2026101733,
+    2026101734,
+    2026101735,
+    2026101736,
+    2026101737,
+    2026101738,
+    2026101739,
+    2026101740,
+    2026101741,
+    2026101742
+  ],
+  "verification_seed_by_task": {
+    "2026101731": 2026101801,
+    "2026101732": 2026101802,
+    "2026101733": 2026101803,
+    "2026101734": 2026101804,
+    "2026101735": 2026101805,
+    "2026101736": 2026101806,
+    "2026101737": 2026101807,
+    "2026101738": 2026101808,
+    "2026101739": 2026101809,
+    "2026101740": 2026101810,
+    "2026101741": 2026101811,
+    "2026101742": 2026101812
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "original": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "scope": "Fixed2x2: full versus after-initialization point-only search history, each with original role or old native terminal posterior. Retain all five original references on identical fresh per-task terminal RNG streams. All12 Stage38 geometries and all84 old paid searches are fixed; Stage39 native shortlists are reused without posterior recomputation.",
+  "freeze": "Prepare all108 physical-policy ordered shortlists and incumbent positions before new verification. Keep source models, representations, initial raw, search trajectories, terminal eligibility/ranking rules, safety80/128/128 and paired8+8 objective guard unchanged. No prior/threshold/budget/precision or task selection.",
+  "verification": "Use the existing verify_frozen_shortlist and terminal_equal.verify unchanged. Seed2026101801..1812 is common across all9 cells within each task; position-specific safety RNG and paired objective RNG retain their original tags. Each arm pays its independently executed samples even when CRN yields identical raw. Never splice old verifier outcomes into a changed shortlist or new stream.",
+  "preflight": "Replay the shared verifier adapter against all84 original cases from saved paid raw, checking deployment, branch and full certificate/guard fields. This tests adapter equivalence, not a new model or certificate claim.",
+  "truth_barrier": "Score only after all108 registered verifiers finish. Reuse existing cached truth; unknown values stay unknown. No additional analytic truth evaluations or search-model update from verification.",
+  "primary_comparisons": [
+    "Within each fixed history: native minus original terminal, separating certified quality gain from certification contribution.",
+    "Within each terminal backend: full minus after-init search history.",
+    "Interaction: (full-native minus after-init-native) minus (full-role minus after-init-role)."
+  ],
+  "references": "All five reference cells use the same new terminal seeds, retaining their original search histories and terminal backends.",
+  "statistical_unit": "One paired task geometry with its frozen search histories;12 equal-weight task units. Report paired W/T/L with1e-12 tie tolerance, not policy/query/replication counts as independent tasks.",
+  "interpretation": "Conditional terminal validation on already-opened geometries and fixed searches. Fresh verification streams are independent of search and previous verification, not fresh task confirmation. Native-terminal full-minus-control is a fixed-terminal trajectory comparison, not automatic proof of improved unsampled prediction.",
+  "budget": {
+    "verification_cases": 108,
+    "maximum_verification_calls_per_case": 352,
+    "maximum_new_verification_calls": 38016,
+    "logical_reused_search_calls_per_terminal_cell": 1368,
+    "maximum_logical_target_calls": 39384,
+    "unique_source_histories": 84,
+    "unique_source_logical_search_calls": 1056,
+    "new_search_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_calls": 0,
+    "downloads": 0
+  },
+  "cost_accounting": "Retain every failed attempt and paid raw; do not restart a partially paid case. Source-stage120initial+216search physical calls are reused and reported separately, never charged as new. Stage38/39 previous verification and diagnostic costs remain separate.",
+  "completed_utc": "2026-10-16T01:18:13.465732+00:00",
+  "completion_file": "paper_artifacts/mainline_terminal_cross_v1/completion.json",
+  "execution": {
+    "status": "complete",
+    "recommendations": 108,
+    "cost": {
+      "cpu_seconds": 21.616187439,
+      "wall_seconds": 23.21382092309068,
+      "new_source_calls": 0,
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 19648,
+      "new_source_fits": 0,
+      "download_bytes": 0,
+      "new_truth_function_calls": 0
+    },
+    "attempt_count": 111,
+    "failed_attempts": [],
+    "new_physical_target_calls": 19648,
+    "new_physical_verification_calls": 19648,
+    "successful_verification_calls": 19648,
+    "logical_target_calls": 21016,
+    "reused_source_history_count": 84,
+    "reused_logical_search_calls_unique_histories": 1056,
+    "reused_logical_search_calls_expanded_cells": 1368,
+    "source_stage_physical_initial_and_search_calls": 336,
+    "completed_utc": "2026-10-16T01:18:13.457554+00:00"
+  }
+}

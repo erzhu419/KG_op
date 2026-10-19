@@ -1,0 +1,225 @@
+{
+  "domain": "QueueResourceControl",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/design.json",
+    "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "initialization": "Use unchanged source-only design80 recipe to construct physicalinitial10 for eachfamily/newtask; draw10fresh observations shared by all7 histories.",
+  "frontends": "All6 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Unchanged modular operator applied to each family own frozen native source g coefficient law and structural f/eta marginals; original latent_shared split,8identities/1024nodes/raw update. No source reconditioning or fitting.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "after_init_point_only": "All10 initialization raws condition the unchanged full role prior exactly once. Every later policy inherits its conditional node-level paired-response marginal and posterior identity/head-node masses. Only that physical policy subsequent raw updates its own four heads and identity/node masses. Never-observed policies stay at initial10. TS uses fixed initial10 correlations scaled by current marginal standard deviations, a diagnostic moment control. Original frontend still learns from own arm history.",
+  "prediction_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "name": "observation_replica_1_QueueResourceControl_search",
+  "status": "registered",
+  "output_dir": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/QueueResourceControl/search",
+  "target_seeds": [
+    2026103009,
+    2026103010,
+    2026103011,
+    2026103012,
+    2026103013,
+    2026103014,
+    2026103015,
+    2026103016
+  ],
+  "geometry_seed": 2026103000,
+  "geometry_by_seed": {
+    "2026103009": {
+      "task_id": "unseen_confirmation_QueueResourceControl_0",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.03384411564250557,
+          0.009726747230872461,
+          0.022047585160661305
+        ],
+        "task_geometry_radius_scale": 0.9530458432911177
+      }
+    },
+    "2026103010": {
+      "task_id": "unseen_confirmation_QueueResourceControl_1",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.02008312415460241,
+          -0.01320523148261276,
+          -0.0005732147961078418
+        ],
+        "task_geometry_radius_scale": 1.01539339058033
+      }
+    },
+    "2026103011": {
+      "task_id": "unseen_confirmation_QueueResourceControl_2",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.030856428226266802,
+          0.03287930051586163,
+          0.01120191166305258
+        ],
+        "task_geometry_radius_scale": 1.0450903654568744
+      }
+    },
+    "2026103012": {
+      "task_id": "unseen_confirmation_QueueResourceControl_3",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.02070643780046951,
+          0.026301340283251734,
+          0.032309619911461904
+        ],
+        "task_geometry_radius_scale": 0.9738449500385242
+      }
+    },
+    "2026103013": {
+      "task_id": "unseen_confirmation_QueueResourceControl_4",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.0017519172626175306,
+          -0.016066936132572554,
+          0.0017857846766299312
+        ],
+        "task_geometry_radius_scale": 0.951920830085869
+      }
+    },
+    "2026103014": {
+      "task_id": "unseen_confirmation_QueueResourceControl_5",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.028366138860537876,
+          -0.01508760389226654,
+          0.02125613362821787
+        ],
+        "task_geometry_radius_scale": 1.0482557841159927
+      }
+    },
+    "2026103015": {
+      "task_id": "unseen_confirmation_QueueResourceControl_6",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.011046178662419862,
+          0.008938791012546646,
+          0.027717485924756993
+        ],
+        "task_geometry_radius_scale": 0.9638041952710131
+      }
+    },
+    "2026103016": {
+      "task_id": "unseen_confirmation_QueueResourceControl_7",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.002251412592468173,
+          -0.009747502207307707,
+          0.008014005771116064
+        ],
+        "task_geometry_radius_scale": 0.99917799819372
+      }
+    }
+  },
+  "primary_reference": "legacy_role_point_only",
+  "continuation": "Confirm whether frozen initialization cross-policy propagation produces certification and decision-quality benefits on24unseen task geometries; no model or terminal selection.",
+  "streams": {
+    "optimizer_seed": "Use newly registered geometry_task_seed as config.seed; frozen optimizer/proposal/TS recipe.",
+    "observation_stream": "SeedSequence([observation_seed, evaluation_index, SIMULATION_STREAM_TAG]); indices0..9 initialization and10..12 adaptive queries.",
+    "verification_stream": "Use registered independent verification_seed with unchanged slot/replication/safety/objective stream namespaces.",
+    "pairing": "Within each task/replicate all arms use matching observation and verification namespaces. Same evaluation index can query different policies; shared random numbers do not make responses identical.",
+    "limitation": "New observations can change adaptive pools, trajectories and RNG consumption. Fixed optimizer seed does not freeze every per-policy TS innovation.",
+    "reuse": "Never reuse old observations or certificates across the new streams. Only exactly matching new-stream physical observations may be shared with explicit accounting."
+  },
+  "geometry": "Single RNG2026103000; family order Inventory,Queue,FactorShock;8successive draws each: shift uniform(-.035,.035)^3 then radius uniform(.95,1.05). No outcome-based filtering.",
+  "barriers": {
+    "before_sampling": "Freeze all24geometry vectors andindependentnoise seeds; validate fresh materialization andglobal scoringbarrier with zero-call substitutes.",
+    "before_online": "Freeze all24newinitialization histories andfresh64-neighbor banks before anyadaptive search.",
+    "before_verification": "Freeze all168 histories and all216 transformed terminal inputs before any verification.",
+    "before_scoring": "Complete all available registered verifications before reading cached truth or evaluating uncached deployment truth; record any failures before scoring.",
+    "failure": "Keep every task/arm registered. Preserve paid raw/state/cost; no resampling, identity deletion or numerical patch. Full registered-cohort estimates with missing executions stay unknown; completed-case summaries labeled."
+  },
+  "registered_utc": "2026-10-16T12:50:27.136035+00:00",
+  "observation_seed_by_task": {
+    "2026103009": 2026103109,
+    "2026103010": 2026103110,
+    "2026103011": 2026103111,
+    "2026103012": 2026103112,
+    "2026103013": 2026103113,
+    "2026103014": 2026103114,
+    "2026103015": 2026103115,
+    "2026103016": 2026103116
+  }
+}

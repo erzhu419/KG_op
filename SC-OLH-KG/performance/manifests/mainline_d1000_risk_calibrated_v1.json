@@ -1,0 +1,695 @@
+{
+  "status": "Protocol frozen before target observations; source-only task-scale evidence and usable calibration must be frozen before preparation",
+  "goal_contract": "docs/original_goal_and_mainline_contract_20261015.md",
+  "reuse_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "output": "paper_artifacts/mainline_d1000_risk_calibrated_v1",
+  "cross_dimension_inputs": "paper_artifacts/mainline_d1000_ranked_v1/bridge_inputs.json",
+  "query_coordinates": "paper_artifacts/mainline_d1000_ranked_v1/query_coordinates.json",
+  "dimension_audit": "paper_artifacts/mainline_d1000_two_round_v1/dimension_audit.json",
+  "target_dimension": 1000,
+  "task_count": 4,
+  "target_tasks": [
+    {
+      "task_id": "unseen_d1000_risk_calibrated_task00",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.016387914671536268,
+          -0.021046364409304536,
+          0.015702553154576984
+        ],
+        "task_geometry_radius_scale": 1.004843848519815
+      }
+    },
+    {
+      "task_id": "unseen_d1000_risk_calibrated_task01",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.026799331657074106,
+          -0.03041532738598731,
+          0.016879349550188348
+        ],
+        "task_geometry_radius_scale": 1.0363517930968191
+      }
+    },
+    {
+      "task_id": "unseen_d1000_risk_calibrated_task02",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.026178768942356302,
+          -0.02726021582401071,
+          -0.028228449663225304
+        ],
+        "task_geometry_radius_scale": 1.0241963851570706
+      }
+    },
+    {
+      "task_id": "unseen_d1000_risk_calibrated_task03",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.02793335428117979,
+          0.0044615067062391545,
+          -0.003173046656737115
+        ],
+        "task_geometry_radius_scale": 0.9598182595135563
+      }
+    }
+  ],
+  "pairing_unit": "independent unseen task geometry with one independent observation stream; four paired geometry tasks",
+  "evaluation_scope": "Four fresh InventorySupplyChain task geometries at d1000, drawn once from the existing source-task distribution using seed2026101571. Exclude exact reuse of source00..07, nominal and the previous seed2026101561 tasks by public parameters only. Freeze the source-only risk calibration and its interface before any target observations; source and same-source GP each have STOP and two-round online arms on the unchanged ranked104 bank.",
+  "layout": "5",
+  "models": [
+    "source_structural_mixture",
+    "source_common_task_rbf"
+  ],
+  "policies": [
+    "stop_after_initialization",
+    "fixed_two_round_moment_kg"
+  ],
+  "initialization_indices": [
+    45,
+    10
+  ],
+  "rounds": 2,
+  "replicates_per_round": 1,
+  "candidate_count": 104,
+  "total_target_call_cap": 362,
+  "maximum_physical_calls": 5768,
+  "maximum_case_cpu_seconds": 600,
+  "task_seed": 2026101571,
+  "initialization_seed": 2026101572,
+  "search_seed": 2026101573,
+  "verification_seed": 2026101574,
+  "bootstrap_seed": 2026101575,
+  "bootstrap_draws": 10000,
+  "bank": "Reuse exact ranked_v1 104 physical policies, source-only proposal ranking, coordinates and provenance. Original73 prefix, round1 release89 and round2 release104. No regenerated proposals, reranking or task-dependent feasibility filtering.",
+  "representation": "Reuse frozen ranked104 mean4/risk10 coordinates, eight source identities and unchanged same-source GP. Public control descriptors are geometry-independent; inherit the prior representation proof. Starting from the previous joint source calibration, fit one multiplier of the original g task covariance per dominant spectral/head_specific identity. Apply the multiplier consistently to source/query task priors; keep the prior mean, common covariance, added mean4 variances and eta prior parameters fixed. Reweight eta-component and outer identity masses by the updated source evidence. Target geometry parameters and outcomes do not enter source fitting or representation.",
+  "response_units": "Identity mapping for f,g-tau,log sigma_f^2,log sigma_g^2. Formula uses normalized control-group means and global SD, not a dimension sum. L,sigma,alpha,weights,tau are identical; changes caused by actual policy/group geometry are not response-unit rescaling.",
+  "selection": "Same fixed order3 moment KG and actual native-mixture raw updates. Round1 query/terminal sees release1 prefix; round2 sees full union. Stop chooses from full union using initialization only. Full union is restored once; latent future-point predictions never enter round1 selection.",
+  "terminal": "Same fixed moment terminal utility as d50, direct single candidate, familywise delta.05. Stop uses360 independent verifier episodes and online358. Freeze all16 recommendations before any verifier, finish all verifiers before explicit truth scoring.",
+  "mechanism_diagnostic": "Before outcomes, each round additionally freezes a terminal-only counterfactual holding current unsampled policy marginals at their pre-observation values while retaining actual updates at observed policies. Compare its recommendation to the full update at the same remaining budget. Score both conditional safe rewards after all terminal verification; this is not a fifth optimizer or independent deployed outcome. Also freeze a terminal intervention on new generated unsampled marginals only; score new-point initial/final and prerelease propagation after all verifiers.",
+  "endpoints": "Four-arm actual certified safe reward and false certificates, paired by unseen task geometry. Score unsampled f/g/logvariance errors against each task own truth, plus terminal-only marginal interventions and their task-specific conditional safe reward. After all16 verifiers complete, report each task feasible-bank count and best feasible quality for original73/generated31/union104 separately. Keep empty feasible banks and failed certificates; never replace tasks based on outcomes.",
+  "randomness": "Draw exactly four tasks once using task_configs(seed2026101571): three independent Uniform(-.035,.035) shifts then Uniform(.95,1.05) radius per task. Initialization/search/verification/bootstrap use fresh seeds2026101572/73/74/75. Share the two new initialization episodes within each task across all four arms. Search uses paired common random numbers for equal task/round/query; verification is paired within task and independent of search. No cached target observations, outcomes-based task replacement or additional geometry draws.",
+  "accounting": "8 fresh shared initialization +16 search +5744 independent verification=5768 new physical calls;5792 logical calls. Two dominant g identities each receive one new source-only original-task-covariance multiplier fit on the same48 old source records, so this stage source_fits=2. The previous joint source calibration is reused without refitting or recounting its two fits. Original source-law files and GP are not retrained; model restoration does not fit. Record source diagnostics and failures separately and preserve all prior ledgers.",
+  "dynamic_candidates": {
+    "original_count": 73,
+    "round_end_indices": [
+      89,
+      104
+    ],
+    "seed": 2026101520,
+    "origins": [
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 0
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 1
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 2
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 3
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 4
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 5
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 6
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 7
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 8
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 9
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 10
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 11
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 12
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 13
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 14
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 15
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 16
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 17
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 18
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 19
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 20
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 21
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 22
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 23
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 24
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 25
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 26
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 27
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 28
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 29
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 30
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 31
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 32
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 33
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 34
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 35
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 36
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 37
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 38
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 39
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 40
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 41
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 42
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 43
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 44
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 45
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 46
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 47
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 48
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 49
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 50
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 51
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 52
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 53
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 54
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 55
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 56
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 57
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 58
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 59
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 60
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 61
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 62
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 63
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 64
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 65
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 66
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 67
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 68
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 69
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 70
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 71
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 72
+      },
+      {
+        "birth_round": 1,
+        "route": "canonical_sobol"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 237,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 1
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 220,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 1
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 43,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 248,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 171,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 4
+      },
+      {
+        "birth_round": 1,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 1,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 3
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 219,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 1
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 35,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 38,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 2
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 120,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 5
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 153,
+        "nominated_by": "source_structural_mixture",
+        "rank_within_arm": 3
+      },
+      {
+        "birth_round": 2,
+        "route": "source_ranked_inverse_pool",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 216,
+        "nominated_by": "source_common_task_rbf",
+        "rank_within_arm": 7
+      }
+    ],
+    "complete_metadata_source": "paper_artifacts/mainline_d1000_ranked_v1/bridge_inputs.json"
+  },
+  "source_fit_scope": {
+    "training_task_ids": [
+      "related_inventory_02",
+      "related_inventory_03",
+      "related_inventory_04",
+      "related_inventory_05"
+    ],
+    "source_label_count_per_head": 48,
+    "target_geometry_parameters_used": false,
+    "target_observations_used": false,
+    "artifact_status": "Method/API defined; await source-only evidence adoption and freeze complete usable calibration before preparation.",
+    "previous_source_joint_calibration": "paper_artifacts/mainline_joint_risk_source_v1/calibration.json",
+    "new_calibration_fit_count": 2,
+    "original_source_law_refits": 0,
+    "gp_refits": 0,
+    "joint_g_identity_fits": 2,
+    "source_fits": 2,
+    "source_joint_risk_fit_file": "paper_artifacts/mainline_source_risk_calibration_v1/calibration.json",
+    "calibration_api": "performance.mainline_joint_risk_source.apply_joint_risk_source(model, coordinates, calibration)",
+    "row_parameter": "original_task_covariance_multiplier",
+    "parameters_per_affected_identity": 1,
+    "fitted_parameter_scope": "Original g task covariance multiplier, applied to source task blocks and query task prior consistently.",
+    "fixed_prior_parameters": [
+      "prior mean",
+      "common covariance",
+      "added public mean4 common/task variances",
+      "eta prior parameters"
+    ],
+    "posterior_reweighting": [
+      "eta component masses",
+      "outer source identity masses"
+    ],
+    "reused_previous_joint_fits": 2,
+    "new_previous_joint_fits": 0,
+    "rejected_source_candidate": "GLS mean correction was rejected by source-only evidence; not applied."
+  },
+  "geometry_coordinate_audit": {
+    "inherited_from": "paper_artifacts/mainline_d1000_joint_risk_v1/preparation_audit.json",
+    "public_schema": "Unchanged task_configs distribution and InventorySupplyChain normalized three control groups; mean4 uses group means/global SD, risk10 uses the same frozen encoder of public exposure descriptors.",
+    "candidate_count": 104,
+    "new_geometry_draw_seed": 2026101571,
+    "opened_source_geometries_excluded": 8,
+    "previous_target_geometry_seed_excluded": 2026101561,
+    "previous_target_geometries_excluded": 4,
+    "nominal_geometry_excluded": true,
+    "new_coordinate_evaluations": 0,
+    "target_truth_calls": 0,
+    "new_simulator_calls": 0
+  },
+  "source_joint_risk_fit_file": "paper_artifacts/mainline_source_risk_calibration_v1/calibration.json"
+}

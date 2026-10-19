@@ -1,0 +1,61 @@
+{
+  "missing_sources": {
+    "current_fixed": "paper_artifacts/historical_positive_risk_uppervariance_axis_v1/tasks/4_3.json",
+    "gauss_shards": [
+      "paper_artifacts/historical_observed_batch_outer_v1/o4_r16_v64_s0/bank.json",
+      "paper_artifacts/historical_observed_batch_outer_v1/o4_r16_v64_s1/bank.json"
+    ],
+    "r2048_risk_orders": "paper_artifacts/historical_observed_prediction_v1/n4/4/1/results.json"
+  },
+  "required_fields": {
+    "current_fixed": [
+      "rows(policy63).record",
+      "rows(policy63).fixed.raw",
+      "rows(policy63).fixed.raw64_128_difference",
+      "rows(policy63).fixed.raw_evidence_error"
+    ],
+    "gauss_shards": [
+      "probabilities",
+      "weights",
+      "values",
+      "inner_orders"
+    ],
+    "r2048_risk_orders": [
+      "orders",
+      "complete",
+      "all_inner_rules_passed"
+    ]
+  },
+  "local_availability": [
+    {
+      "path": "paper_artifacts/historical_positive_risk_uppervariance_axis_v1/tasks/4_3.json",
+      "exists_local": false,
+      "server_presence_checked_this_round": false
+    },
+    {
+      "path": "paper_artifacts/historical_observed_batch_outer_v1/o4_r16_v64_s0/bank.json",
+      "exists_local": false,
+      "server_presence_checked_this_round": false
+    },
+    {
+      "path": "paper_artifacts/historical_observed_batch_outer_v1/o4_r16_v64_s1/bank.json",
+      "exists_local": false,
+      "server_presence_checked_this_round": false
+    },
+    {
+      "path": "paper_artifacts/historical_observed_prediction_v1/n4/4/1/results.json",
+      "exists_local": false,
+      "server_presence_checked_this_round": false
+    }
+  ],
+  "recoverable": [
+    "Current source4 target/control weighted contributions",
+    "Old Gauss discrete-node bucket contributions and actual eta order distributions",
+    "R2048 source4 risk-head global eta order distribution"
+  ],
+  "not_recoverable_from_these_caches": [
+    "A new high-order Gauss rule matching the five registered intervals",
+    "Nontrivial same-node adaptive-minus128 differences where128 was not the final selected order"
+  ],
+  "payload_policy": "Arrays remain on the source filesystem. Export six interval summaries,two totals,and eta-order histograms;do not copy context,state,model snapshots or whole bank/results arrays."
+}

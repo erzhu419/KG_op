@@ -1,0 +1,120 @@
+{
+  "stage": 99,
+  "status": "complete",
+  "utc": "2026-10-19T06:51:54.276254+00:00",
+  "scheduler_tasks": [
+    {
+      "id": "t190344",
+      "status": "running",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": null,
+      "retry_count": 0,
+      "started_at": 1792392524.144482,
+      "finished_at": null,
+      "last_block_reason": null
+    }
+  ],
+  "task_status_available": true,
+  "task_ids": [
+    "t190344"
+  ],
+  "wrapper": {
+    "status": "complete",
+    "node": "node004",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-u",
+      "-m",
+      "performance.run_mainline_source_alignment_validation",
+      "--attempt",
+      "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/validation/stage99_attempt1",
+      "--test",
+      "tests/test_mainline_source_finite_numerical_probe.py",
+      "--test",
+      "tests/test_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "started_utc": "2026-10-19T06:48:28.611741+00:00",
+    "subprocess_started": true,
+    "child_returncode": 0,
+    "completed_utc": "2026-10-19T06:48:33.232168+00:00",
+    "wall_seconds": 4.620483816601336,
+    "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/validation/stage99_attempt1/0_1.log",
+    "own_cpu_seconds": 0.096873,
+    "child_cpu_seconds": 2.14702,
+    "total_cpu_seconds": 2.243893,
+    "outer_exit_policy": "Saved child failure is not retried by scheduler"
+  },
+  "wrapper_duplicate_count": 0,
+  "checks": {
+    "status": "passed",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_source_finite_numerical_probe.py",
+      "tests/test_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "test_files": [
+      "tests/test_mainline_source_finite_numerical_probe.py",
+      "tests/test_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "test_counts": {
+      "passed": 18
+    },
+    "returncode": 0,
+    "launch_error": null,
+    "cpu_seconds": 2.0305299999999997,
+    "coordinator_cpu_seconds": 0.0039281929999999965,
+    "wall_seconds": 4.5057833306491375,
+    "started_utc": "2026-10-19T06:48:28.708905+00:00",
+    "completed_utc": "2026-10-19T06:48:33.215442+00:00",
+    "scope": "Explicit substitute checks only; no scientific runner or registration invoked",
+    "new_scientific_calls": 0,
+    "new_truth_calls": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0,
+    "registered_permutations_materialized_by_checks": false,
+    "registered_geometries_materialized_by_checks": false,
+    "automatic_retries": 0
+  },
+  "execution_authorized": false,
+  "manual_dispatch": {
+    "task_ids": [
+      "t190344"
+    ],
+    "cpu_seconds": 59.512292,
+    "wall_seconds": 205.95369653898524,
+    "new_submissions": 0,
+    "automatic_scientific_retries": 0
+  },
+  "controller_exit": {
+    "returncode": 0,
+    "pid": 1444570,
+    "completed_utc": "2026-10-19T06:49:32.832047+00:00",
+    "child_cpu_seconds": 85.503475,
+    "supervisor_cpu_seconds": 0.018444,
+    "wall_seconds": 274.28928125899984,
+    "automatic_retries": 0
+  },
+  "scheduler_recovery_note": "Successful child wrapper is the completion basis; the scheduler snapshot is retained and no additional recovery polling is needed.",
+  "local_queue_projection_cpu_seconds": 4.031303664,
+  "local_editing_and_static_inspection_cpu_seconds": null,
+  "new_work": {
+    "real_source_probes": 0,
+    "simulator_calls": 0,
+    "target_scores": 0,
+    "source_fits": 0,
+    "real_model_loads": 0,
+    "posterior_restorations": 0,
+    "real_integrations": 0,
+    "old_failed_query_retries": 0,
+    "raw_model_or_csv_downloads": 0,
+    "scheduler_tasks": 1,
+    "substitute_check_jobs": 1
+  }
+}

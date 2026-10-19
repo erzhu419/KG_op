@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "command": [
+    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:capture",
+    "-q",
+    "tests/test_mainline_source_alignment_targets.py",
+    "tests/test_mainline_source_alignment_science_cluster.py",
+    "tests/test_mainline_source_alignment_science.py",
+    "tests/test_mainline_source_alignment_target_summary.py",
+    "tests/test_mainline_source_alignment_backend.py",
+    "tests/test_mainline_source_alignment_summary.py",
+    "tests/test_mainline_source_alignment_wiring.py"
+  ],
+  "test_files": [
+    "tests/test_mainline_source_alignment_targets.py",
+    "tests/test_mainline_source_alignment_science_cluster.py",
+    "tests/test_mainline_source_alignment_science.py",
+    "tests/test_mainline_source_alignment_target_summary.py",
+    "tests/test_mainline_source_alignment_backend.py",
+    "tests/test_mainline_source_alignment_summary.py",
+    "tests/test_mainline_source_alignment_wiring.py"
+  ],
+  "test_counts": {
+    "passed": 93
+  },
+  "returncode": 0,
+  "launch_error": null,
+  "cpu_seconds": 6.16312,
+  "coordinator_cpu_seconds": 0.010880096999999998,
+  "wall_seconds": 6.697470982559025,
+  "started_utc": "2026-10-18T10:45:04.199699+00:00",
+  "completed_utc": "2026-10-18T10:45:10.897854+00:00",
+  "scope": "Explicit substitute checks only; no scientific runner or registration invoked",
+  "new_scientific_calls": 0,
+  "new_truth_calls": 0,
+  "new_fits": 0,
+  "new_posterior_restorations": 0,
+  "registered_permutations_materialized_by_checks": false,
+  "registered_geometries_materialized_by_checks": false,
+  "automatic_retries": 0
+}

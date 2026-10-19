@@ -55,18 +55,28 @@ def local_raw_moments(means, covariances, label, eta_label=None, replicates=1):
 
     integral, error, info = quad_vec(integrand, -12., 12., points=points, norm='max', full_output=True,
         epsabs=1e-12, epsrel=1e-12, limit=128, cache_size=16*1024**2, workers=1)
-    if not info.success or not np.all(integral[:, 0] > 0):
-        raise RuntimeError(f'Batched raw moment integration failed: {info.message}')
+    valid = bool(np.isfinite(integral).all() and np.all(integral[:, 0] > 0))
+    relative_error = float(error/integral[:, 0].min()) if valid else np.inf
+    # The interval limit or roundoff can stop the requested 1e-12 integration
+    # while its returned result still meets the frozen 1e-8 error requirement.
+    # Keep the integration work unchanged and retain the actual stop status.
+    roundoff_accepted = bool(info.status == 2 and valid and relative_error <= 1e-8)
+    bounded_error_accepted = bool(info.status in (1, 2) and valid and relative_error <= 1e-8)
+    if (not info.success and not bounded_error_accepted) or not valid:
+        raise RuntimeError(f'Batched raw moment integration failed: {info.message}; '
+            f'status={info.status}, error={error}, relative_error={relative_error}')
     statistics = integral/integral[:, :1]; displacement = statistics[:, [1, 3]]
     covariance = np.empty((len(gm), 2, 2))
     covariance[:, 0, 0] = statistics[:, 2]; covariance[:, 1, 1] = statistics[:, 4]
     covariance[:, 0, 1] = covariance[:, 1, 0] = statistics[:, 5]
     covariance -= displacement[:, :, None]*displacement[:, None, :]
-    relative_error = float(error/integral[:, 0].min())
     if relative_error > 1e-8:
         raise RuntimeError(f'Batched raw moment error exceeds frozen tolerance: {relative_error}')
     return {'mean': np.asarray(means)+displacement, 'covariance': covariance,
         'log_evidence': shifts+np.log(integral[:, 0]), 'integration_relative_error': relative_error,
+        'roundoff_accepted': roundoff_accepted, 'integration_status': int(info.status),
+        'bounded_error_accepted': bounded_error_accepted,
+        'integration_absolute_error': float(error), 'minimum_normalizer': float(integral[:, 0].min()),
         'integrand_evaluations': int(info.neval), 'largest_integrand_array_bytes': int(integral.nbytes)}
 
 
@@ -95,9 +105,21 @@ def apply_raw_moments(field,candidate,result,gain=None,*,replicates=1):
     local_covariance = field.covariances[:, indices][:, :, indices].copy()
     if gain is None:gain = np.linalg.solve(local_covariance, field.covariances[:, indices, :]).transpose(0, 2, 1)
     field.means += np.einsum('kij,kj->ki', gain, result['mean']-local_mean)
-    correction = gain@(result['covariance']-local_covariance)@gain.transpose(0, 2, 1)
-    field.covariances += correction
-    field.covariances = .5*(field.covariances+field.covariances.transpose(0, 2, 1))
+    # Keep the complete component law while bounding the dense temporary.
+    # Full104 has 1024 matrices of size208; one full correction is354 MB.
+    block_size = 64
+    scratch = np.empty((min(block_size, len(gain)), *field.covariances.shape[1:]),
+                       dtype=field.covariances.dtype)
+    for start in range(0, len(gain), block_size):
+        stop = min(start+block_size, len(gain))
+        block_gain = gain[start:stop]
+        covariance = field.covariances[start:stop]
+        work = scratch[:stop-start]
+        np.matmul(block_gain@(result['covariance'][start:stop]-local_covariance[start:stop]),
+                  block_gain.transpose(0, 2, 1), out=work)
+        covariance += work
+        np.add(covariance, covariance.transpose(0, 2, 1), out=work)
+        np.multiply(work, .5, out=covariance)
     field.log_weights += result['log_evidence']; evidence = float(logsumexp(field.log_weights))
     field.log_weights -= evidence; field.paid_batches += 1; field.paid_episodes += replicates
     field.max_integration_relative_error = max(field.max_integration_relative_error, result['integration_relative_error'])
@@ -108,6 +130,16 @@ def update_raw_observation(field, candidate, label, eta_label=None, replicates=1
     indices=[2*candidate,2*candidate+1]
     result=local_raw_moments(field.means[:,indices],field.covariances[:,indices][:,:,indices],
                              label,eta_label,replicates)
+    if result['bounded_error_accepted']:
+        events = getattr(field, 'roundoff_events', [])
+        events.append({'candidate': int(candidate), 'paid_episodes_before': field.paid_episodes,
+            'label': float(label), 'replicates': int(replicates),
+            'bounded_error_accepted': True, 'roundoff_accepted': result['roundoff_accepted'],
+            'means': field.means[:, indices].tolist(),
+            'covariances': field.covariances[:, indices][:, :, indices].tolist(),
+            **{key: result[key] for key in ('integration_status', 'integration_absolute_error',
+                                           'minimum_normalizer', 'integration_relative_error')}})
+        field.roundoff_events = events
     return apply_raw_moments(field,candidate,result,replicates=replicates)
 
 

@@ -1,0 +1,48 @@
+{
+  "name": "mainline_cohort_evidence_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T10:12:19.212247+00:00",
+  "output_dir": "paper_artifacts/mainline_cohort_evidence_v1",
+  "report": "docs/mainline_cohort_evidence_results_20261016.md",
+  "entrypoint": "performance/summarize_mainline_cohort_evidence.py",
+  "cohorts": [
+    {
+      "name": "geometry_2000",
+      "source_manifest": "performance/manifests/mainline_three_family_v1.json",
+      "original_results": "paper_artifacts/mainline_three_family_v1/results.json",
+      "modified_results": "paper_artifacts/mainline_same_policy_challenge_v1/results.json",
+      "evidence_role": {
+        "original": "Frozen initialization-propagation confirmation before terminal development.",
+        "modified": "Opened-cohort terminal development; not independent confirmation of the new terminal."
+      }
+    },
+    {
+      "name": "geometry_2100",
+      "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+      "original_results": "paper_artifacts/mainline_same_policy_confirmation_v1/results.json",
+      "modified_results": "paper_artifacts/mainline_same_policy_confirmation_v1/challenge/results.json",
+      "evidence_role": {
+        "original": "Prespecified original-terminal comparator on fresh geometries.",
+        "modified": "Independent fresh-geometry confirmation of the frozen new terminal and models."
+      }
+    }
+  ],
+  "metric_definitions": {
+    "certification": "I(certified and truly feasible); false certificates separately counted.",
+    "reward": "I(certified and truly feasible) * deployed quality.",
+    "quality_increment": "I(certified and truly feasible) * (deployed quality - best true-feasible initial10 quality). Signed, not clipped; zero for uncertified completed runs; missing execution remains unknown.",
+    "best_initial_reference": "I(certified and truly feasible) * best true-feasible initial10 quality. Descriptive decomposition, not a hypothetical certificate for that initial policy.",
+    "good_new_deployment": "Certified, truly feasible, outside initial10, and better than best true-feasible initial10.",
+    "weighting": "Each cohort separately: four geometries per family, three equally weighted known families; no pooled 24-geometry confirmation."
+  },
+  "scope": "Saved result JSON and initial policy identities only. No model edits, restoration, raw replay, RNG draws, simulation, verification, truth evaluation, fit or download.",
+  "next_protocol": "performance/manifests/mainline_observation_seed_replication_v1.json",
+  "expected_new_calls": 0,
+  "completed_utc": "2026-10-16T10:12:19.313109+00:00",
+  "decision": {
+    "conclusion": "Initialization transfer remains the working candidate; development and independent confirmation stay separate, with concentrated certification and quality contributions.",
+    "deployed_model_changed": false,
+    "next_protocol_status": "registered_not_started",
+    "next_step": "Connect independent observation_seed routing and logging, fixed saved neighbor banks, and modified-terminal-only execution; validate with deterministic stubs before new real calls."
+  }
+}

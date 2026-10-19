@@ -1,0 +1,144 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_screen_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v1/completion.json",
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v3",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v3.json",
+  "rules": [
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ],
+    [
+      "F9",
+      32,
+      9,
+      101
+    ],
+    [
+      "L9",
+      16,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "selected_records": [
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p28",
+    "positive_body_v1_n4_m4_v4_o5_h1_p8",
+    "positive_midmean_v1_n4_m4_localv_o5_h1_p21"
+  ],
+  "selected_kinds": [
+    "raw"
+  ],
+  "shards": 3,
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p28"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 93.7360339712,
+      "maximum_worker_cpu_seconds": 94
+    },
+    {
+      "identity": 4,
+      "shard": 1,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o5_h1_p8"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 93.7360339712,
+      "maximum_worker_cpu_seconds": 94
+    },
+    {
+      "identity": 4,
+      "shard": 2,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p21"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 93.7360339712,
+      "maximum_worker_cpu_seconds": 94
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p28"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179
+    },
+    {
+      "identity": 5,
+      "shard": 1,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o5_h1_p8"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179
+    },
+    {
+      "identity": 5,
+      "shard": 2,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p21"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179
+    }
+  ],
+  "estimated_cost_admitted": true,
+  "estimated_worker_cpu_seconds": 816.5336125619999,
+  "estimated_phase_cpu_seconds": 2853.2185326439994,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "inherited_shared_reserve_charged_cpu_seconds": 157.520711744,
+  "new_phase_reserve_cpu_seconds": 0,
+  "previous_cap_refinement_recorded_cpu_seconds": 5081.156712859,
+  "matched_measured_raw_cpu_rates": {
+    "4": 76.446694976,
+    "5": 147.034864069
+  },
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "scope": "Only three user-selected63raw observations; reuse existing incumbent-mean analytic E9 controls and accepted63/71/query/anchor/multilevel caps. Full original source covariance,512/1024positive components,all8identity likelihoods,SD16/F16/224 and original zero-candidate/overall-error gates retained. Prior5081.156712859CPU and all failed/recovery profiles remain in ledger. Continue same600support reserve already charged157.520711744; new reserve0. Aggregate phase estimate extends last71component phase,not a new allowance.",
+  "primary_policy": 63,
+  "integration_backend": "pair",
+  "source_phase_estimated_cpu_seconds": 2036.6849200819997
+}

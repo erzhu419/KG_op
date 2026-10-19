@@ -1,0 +1,181 @@
+{
+  "name": "mainline_legacy_backend_bridge_v1",
+  "status": "Complete:12 frozen searches,12 independent verifications and truth scoring;6 posterior replay actions match saved primaries.",
+  "role": "Three-family development bridge at already opened seed80, not independent confirmation or bitwise reproduction of historical native runs.",
+  "output_dir": "paper_artifacts/mainline_legacy_backend_bridge_v1",
+  "inputs_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/inputs.json",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "target_seed": 80,
+  "source_dimension": 50,
+  "target_dimension": 1000,
+  "L": 100,
+  "sigma": 0.04,
+  "alpha": 0.05,
+  "weights": [
+    0.5,
+    0.5
+  ],
+  "anchor": {
+    "scheduler_file": "../scripts/submit_scolhkg_v53_constrained_certificate_gate_scheduler.py",
+    "variant": "v69_feasible_first_verified_incumbent",
+    "native_backend": "constrained_ts",
+    "native_terminal_rule": "feasible_first",
+    "implementation_contract_id": "v69_feasible_first_verified_initial_incumbent",
+    "theory_contract_id": "v69_familywise_safety_paired_objective_dominance_v1",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "v51_closure_is_not_execution_anchor": true
+  },
+  "arms": [
+    {
+      "name": "legacy_native_v69",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "frontend": {
+    "initial_design": "Reuse the complete original source-informed combination frontend seed80 ten-point d1000 design, in its saved order.",
+    "online_candidates": "Run the original full candidate and recommendation generator per arm. Its old proposal posterior reads all of that arm own initialization and search raw; the selected backend ranks the generated pool. Candidate paths may differ. Do not omit original active routes, freeze candidates into73/104 points, or share outcome-adaptive pools.",
+    "source_archive_scope": "Each target family uses its two other-family archives only; the same 384 historical source calls are available to all three backends.",
+    "new_source_calls": 0
+  },
+  "source_fit_scope": {
+    "authorized_refit": true,
+    "same_source_gp": "Fit on the corresponding original 384-call archive; shared public mean10 plus learned risk10.",
+    "current_structural_mixture": "Fit the current eight-identity four-head source model on the same archive and representation.",
+    "native_frontend": "Restore the original source learner and its own online target updates.",
+    "target_outcomes_or_parameters_in_source_fit": false,
+    "source_fit_count": "Record actual newly executed source/encoder fits and CPU; do not label this stage zero-fit.",
+    "fit_artifact_files": {
+      "FactorShockStatePolicyRZDT1": {
+        "source_models": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+        "native_source_prior": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl"
+      },
+      "InventorySupplyChain": {
+        "source_models": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/source_models.pkl",
+        "native_source_prior": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_source_prior.pkl"
+      },
+      "QueueResourceControl": {
+        "source_models": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/source_models.pkl",
+        "native_source_prior": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/native_source_prior.pkl"
+      }
+    },
+    "source_integration": {
+      "positive_nodes": 1024,
+      "scope": "Current structural source mixture for every family; same node count throughout this comparison.",
+      "precision_certified": false,
+      "initial_256_node_attempt": "Importance-overlap failure retained in source_fit_attempts.json; no source/target simulations were used to repair it."
+    },
+    "fixed_quadrature_diagnostics": "Minimum component ESS across retained source heads: FactorShock4.32059, Inventory28.85391, Queue4.74915. Maximum single-node mass below0.475; no further refinement, no numerical certification."
+  },
+  "initialization": {
+    "physical_calls_new": 0,
+    "historical_raw_rows_reused": 30,
+    "logical_calls_per_arm": 10,
+    "raw_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/inputs.json",
+    "same_raw_all_arms": true,
+    "stream_differs_from_original_native": true,
+    "original_native_raw_reproduction_claim": false
+  },
+  "terminal": {
+    "candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "objective_comparison_delta": 0.016666666666666666,
+    "maximum_verification_calls_per_recommendation": 352,
+    "support": "Freeze the backend primary, insert minimum empirical-objective policy from the original ten initial observations, retain original V69 observed safe support; unique three-policy shortlist frozen before independent verification.",
+    "samples_update_search_posterior": false,
+    "truth_access": "Only after all12 shortlists are frozen and all12 independent verifications finish; no outcome-based task/candidate selection.",
+    "decision_candidate_scope": "observed policies from that arm initial and search history"
+  },
+  "budget": {
+    "domain_count": 3,
+    "online_case_count": 9,
+    "initial_only_case_count": 3,
+    "recommendation_count": 12,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 0,
+    "new_search_physical_calls_max": 27,
+    "new_verification_physical_calls_max": 4224,
+    "new_target_physical_calls_max": 4251,
+    "logical_target_calls_max": 4371,
+    "reused_initial_logical_calls": 120,
+    "historical_source_calls_per_archive": 384,
+    "new_source_calls": 0,
+    "accounting": "Report realized early-stop verification calls, reused initialization, source refits, numerical CPU and failed attempts separately; retain all prior ledgers."
+  },
+  "comparisons": [
+    "Compare three posterior systems under the same384 source calls, complete old frontend routes, constrained_ts/feasible_first rule, observed-only terminal scope and V69 verification. This is not a three-way identical-representation prior ablation.",
+    "Each online backend versus shared initialization-only support; distinguish primary recommendation and verified deployed policy."
+  ],
+  "scope": "All three predetermined families and seed80; no selecting cases or candidates from truth, no importing Inventory-only calibration into other families.",
+  "execution": {
+    "entrypoint": "performance/run_mainline_legacy_backend_bridge.py",
+    "backend_adapter_details": "performance/mainline_legacy_backend.py",
+    "new_search_or_verification_started": true,
+    "numerical_recovery": {
+      "failed_case": "FactorShockStatePolicyRZDT1/current_structural_mixture",
+      "failed_new_simulator_calls": 0,
+      "change": "Accept only roundoff status2 when finite positive integrals satisfy the existing normalized error estimate <=1e-8; requested quadrature tolerance remains1e-12.",
+      "measured_relative_error_range": [
+        5.135e-11,
+        6.166e-11
+      ],
+      "component_batch_size_after_recovery": 64,
+      "batch_changes_posterior": false,
+      "source_law_or_decision_rule_changed": false,
+      "evidence": "paper_artifacts/mainline_legacy_backend_bridge_v1/numerical_replay/initial10_batch64_attempt02.json"
+    },
+    "completed": true,
+    "results_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/results.json",
+    "diagnostic_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/diagnostic_replay.json"
+  },
+  "problem_kwargs_by_domain": {
+    "FactorShockStatePolicyRZDT1": {
+      "shared_shock_scale": 1.0
+    },
+    "InventorySupplyChain": {},
+    "QueueResourceControl": {}
+  },
+  "task_contract": "All arms use the same declared family parameters. FactorShock shared_shock_scale=1 matches the reused legacy_joint_bridge raw and base simulator default; the historical V69 scheduler default was0, so this is not a bitwise old-run reproduction.",
+  "decision_protocol": {
+    "applies_to": [
+      "legacy_native_v69",
+      "same_source_gp",
+      "current_structural_mixture"
+    ],
+    "decision_backend": "constrained_ts",
+    "decision_terminal_rule": "feasible_first",
+    "decision_terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "posterior_update": "GP and current structural backend retain their native raw-observation posterior updates; original native backend retains its historical posterior machinery.",
+    "acquisition_excludes": "Do not substitute the recent order3 moment-KG or quality-times-certificate-power decision rule.",
+    "candidate_scoring": "Each new backend scores the original candidate pool; retain all original active proposal and recommendation routes.",
+    "constrained_ts_projection": "For GP/current, each response head is projected to its joint Gaussian mean/covariance across the original candidate pool for constrained TS selection; this is a decision approximation, not a replacement of the raw posterior.",
+    "aleatoric_noise": "For GP/current, use exact positive-mixture E[exp(eta)] from the retained posterior, not exp(E[eta]).",
+    "representation_scope": "GP and current structural backend share public mean10 and learned risk10 from the same 384-call archive; the native backend retains its historical representation and HVD."
+  }
+}

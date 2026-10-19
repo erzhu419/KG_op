@@ -1,0 +1,42 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
+  "selection_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_branch_coupling_pilot_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_competition_v60/completion.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_certificate_caps_v1",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_certificate_caps_screen_v1.json",
+  "pricing_plan": "paper_artifacts/historical_positive_risk_uppervariance_axis_multilevel_caps_pilot_v1/expansion_cost_plan.json",
+  "pilot_output": "paper_artifacts/historical_positive_risk_uppervariance_axis_multilevel_caps_pilot_v1",
+  "thresholds": [
+    -4.0,
+    -3.5,
+    -3.0,
+    -2.75,
+    -2.5,
+    -2.25,
+    -2.0,
+    -1.9,
+    -1.8,
+    -1.7,
+    -1.6,
+    -1.5,
+    -1.2815515655446004,
+    -1.0,
+    -0.5
+  ],
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "maximum_estimated_cpu_seconds": 3600,
+  "shared_reserve_cpu_seconds": 600,
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "risk_observations": 224,
+  "objective_heads_per_origin": 16,
+  "all_identity_likelihoods": 8,
+  "action_count": 365,
+  "remaining_calls": 356,
+  "replicates": 4,
+  "verifier_sd_order": 16,
+  "scope": "One separately priced cap-refinement phase, linked to all prior costs. Only policies needed by existing raw/projected candidates; reuse cached pilot caps. Original prior, all8 likelihoods,512/1024 positive components,F16/224,365 actions and SD16 retained. No new joint references or observations."
+}

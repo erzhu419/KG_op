@@ -42,8 +42,11 @@ def condition_pair(mean, covariance, query, policy, eta, label, *, replicates=1)
     return after_mean,after_covariance
 
 
-def raw_feasibility_upper(field, updated, query, policy, label, score, alpha, order,
+def raw_ratio_cdf_upper(field, updated, query, policy, label, score, thresholds, order,
         *, replicates=1, eta_label=None):
+    """Bound P(g/sigma <= t) at negative t, sharing the raw eta quadrature."""
+    thresholds=np.asarray(thresholds,dtype=float)
+    assert thresholds.ndim==1 and np.all(thresholds<0)
     z, gh = roots_hermitenorm(order); gh /= np.sqrt(2*np.pi)
     active = np.flatnonzero(np.isfinite(updated.log_weights))
     components = np.repeat(active,order)
@@ -53,15 +56,29 @@ def raw_feasibility_upper(field, updated, query, policy, label, score, alpha, or
         replicates=replicates)
     log_weights = updated.log_weights[components]+np.tile(np.log(gh),len(active))+logs
     mass = logsumexp(log_weights)
-    upper = np.exp(log_weights-mass) @ gaussian_feasibility_upper(mean,covariance,ndtri(1-alpha))
-    return float(upper),dict(log_evidence_error=float(mass),components=len(active),order=order,
+    weights=np.exp(log_weights-mass)
+    upper=np.asarray([weights @ gaussian_feasibility_upper(mean,covariance,-t) for t in thresholds])
+    return upper,dict(log_evidence_error=float(mass),components=len(active),order=order,
         points=len(components),all_positive_components_retained=True)
+
+
+def raw_feasibility_upper(field, updated, query, policy, label, score, alpha, order,
+        *, replicates=1, eta_label=None):
+    upper,diagnostics=raw_ratio_cdf_upper(field,updated,query,policy,label,score,[-ndtri(1-alpha)],order,
+        replicates=replicates,eta_label=eta_label)
+    return float(upper[0]),diagnostics
 
 
 def projected_feasibility_upper(updated, policy, alpha):
     ix = [2*policy,2*policy+1]
     upper = gaussian_feasibility_upper(updated.means[:,ix],updated.covariances[:,ix][:,:,ix],ndtri(1-alpha))
     return float(np.exp(updated.log_weights) @ upper)
+
+
+def projected_ratio_cdf_upper(updated, policy, thresholds):
+    ix=[2*policy,2*policy+1];weights=np.exp(updated.log_weights)
+    return np.asarray([weights @ gaussian_feasibility_upper(updated.means[:,ix],
+        updated.covariances[:,ix][:,:,ix],-t) for t in thresholds])
 
 
 def certificate_upper(feasible, budget, shortlist_size, protocol):
@@ -74,6 +91,25 @@ def certificate_upper(feasible, budget, shortlist_size, protocol):
     boundary = conditional_safety_power(-ndtri(1-protocol['chance_alpha']),1.,budget,
         protocol['chance_alpha'],protocol['familywise_delta']/shortlist_size)
     return float(boundary+(1-boundary)*feasible)
+
+
+def multilevel_certificate_upper(cdf_upper, thresholds, budget, shortlist_size, protocol):
+    """Upper step envelope of the saved SD16 certification power p(g/sigma).
+
+    For increasing negative t, p(T) <= p(t_K) + sum_k
+    (p(t_{k-1})-p(t_k))*1{T<=t_k}, with p(t_0)=1.
+    Positive coefficients preserve each marginal event upper bound.
+    """
+    thresholds=np.asarray(thresholds,dtype=float)
+    assert thresholds.ndim==1 and len(thresholds)>0
+    assert np.all(np.diff(thresholds)>0) and np.all(thresholds<0)
+    power=conditional_safety_power(thresholds,np.ones_like(thresholds),budget,
+        protocol['chance_alpha'],protocol['familywise_delta']/shortlist_size)
+    # SD16's normalized weights can sum to one plus floating-point roundoff.
+    power=np.maximum.accumulate(power[::-1])[::-1]
+    coefficients=np.r_[1.+16*np.finfo(float).eps,power[:-1]]-power
+    assert np.all(coefficients>=0)
+    return power[-1]+np.asarray(cdf_upper) @ coefficients
 
 
 def branch_quality_upper(quality, marginals, incumbent):

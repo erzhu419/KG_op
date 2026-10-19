@@ -1,0 +1,165 @@
+{
+  "stage": 90,
+  "status": "substitute_checks_passed_metadata_prepared_scientific_execution_not_started",
+  "task_ids": {
+    "cancelled_infrastructure_failure": "t183496",
+    "successful": "t183498"
+  },
+  "node": "node002",
+  "execution_counts": {
+    "scheduler_submissions": 2,
+    "manual_dispatches": 2,
+    "launch_failures": 1,
+    "cancellation_attempts": 2,
+    "cancellation_deferrals": 1,
+    "completed_validation_attempts": 1,
+    "pytest_failures": 0,
+    "completed_metadata_preparations": 1,
+    "duplicate_wrapper_attempts": 0,
+    "scientific_retries": 0
+  },
+  "remote_execution": {
+    "total_cpu_seconds_including_children": 3.1259859999999997,
+    "wall_seconds": 3.6814729403704405,
+    "phases": [
+      {
+        "stage": "substitute_checks",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-u",
+          "-m",
+          "performance.run_mainline_source_alignment_validation",
+          "--attempt",
+          "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage90_attempt1",
+          "--test",
+          "tests/test_mainline_source_alignment_archive.py",
+          "--test",
+          "tests/test_mainline_source_alignment_sources.py"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "cpu_seconds": 1.891856,
+        "wall_seconds": 2.4244197197258472
+      },
+      {
+        "stage": "metadata_preparation",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-u",
+          "-m",
+          "performance.prepare_mainline_source_alignment_sources",
+          "--action",
+          "prepare",
+          "--manifest",
+          "performance/manifests/mainline_source_alignment_control_v1.json"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "cpu_seconds": 1.0453050000000002,
+        "wall_seconds": 1.172326480038464
+      }
+    ],
+    "pytest_cpu_seconds_included": 1.799125,
+    "preparation_internal_attempt_cpu_seconds_included": 8.462300000000589e-05,
+    "accounting": "Phase/import/pytest/preparation CPU are parts of wrapper inclusive total, not additional costs"
+  },
+  "scheduler_control": {
+    "total_cpu_seconds": 213.126699,
+    "total_command_wall_seconds": 632.372942388989,
+    "events": [
+      {
+        "file": "stage90_submission_attempt1.json",
+        "returncode": 0,
+        "cpu_seconds": 40.895873,
+        "wall_seconds": 136.9185751840123,
+        "task_ids": [
+          "t183496"
+        ]
+      },
+      {
+        "file": "stage90_dispatch_attempt1.json",
+        "returncode": 0,
+        "cpu_seconds": 71.09752499999999,
+        "wall_seconds": 250.843476524984,
+        "task_ids": null
+      },
+      {
+        "file": "stage90_cancel_attempt1.json",
+        "returncode": 1,
+        "cpu_seconds": 0.39509399999999995,
+        "wall_seconds": 0.49716662100399844,
+        "task_ids": null
+      },
+      {
+        "file": "stage90_cancel_attempt1_urgent.json",
+        "returncode": 0,
+        "cpu_seconds": 16.401387,
+        "wall_seconds": 47.22885626499192,
+        "task_ids": null
+      },
+      {
+        "file": "stage90_submission_short_entry_attempt1.json",
+        "returncode": 0,
+        "cpu_seconds": 25.48615,
+        "wall_seconds": 39.61099193998962,
+        "task_ids": [
+          "t183498"
+        ]
+      },
+      {
+        "file": "stage90_dispatch_short_entry_attempt1.json",
+        "returncode": 0,
+        "cpu_seconds": 58.85067,
+        "wall_seconds": 157.2738758540072,
+        "task_ids": null
+      }
+    ],
+    "scope": "Includes failed launch, deferred cancellation, successful cancellation, repaired submission and dispatch; separate from scientific fees"
+  },
+  "small_transfer": {
+    "upload_events": [
+      "stage90_code_upload.json",
+      "stage90_code_upload_correction.json",
+      "stage90_short_entry_upload.json"
+    ],
+    "uploaded_files_including_correction": 9,
+    "uploaded_bytes_including_correction": 113644,
+    "compressed_bytes": 28307,
+    "remote_upload_cpu_seconds": 0.00306706800000002,
+    "metadata_download_bytes": 20637,
+    "remote_metadata_cpu_seconds": 0.0017561129999999966
+  },
+  "new_work": {
+    "simulation_calls": 0,
+    "truth_scoring_calls": 0,
+    "source_fits": 0,
+    "posterior_restorations": 0,
+    "registered_geometry_draws": 0,
+    "registered_permutation_draws": 0
+  },
+  "historical_fee_policy": "Stage89 and all scientific costs retained separately; no overwrite or replacement",
+  "unmetered": [
+    "local editing and small-file orchestration CPU",
+    "background scheduler/monitor processes"
+  ],
+  "records": [
+    "stage90_submission_attempt1.json",
+    "stage90_dispatch_attempt1.json",
+    "stage90_cancel_attempt1.json",
+    "stage90_cancel_attempt1_urgent.json",
+    "stage90_submission_short_entry_attempt1.json",
+    "stage90_dispatch_short_entry_attempt1.json",
+    "stage90_code_upload.json",
+    "stage90_code_upload_correction.json",
+    "stage90_short_entry_upload.json",
+    "stage90_helper_preflight.json",
+    "stage90_attempt1_metadata1.json",
+    "stage90_unstarted_paths_after_cancel.json",
+    "stage90_attempt1_completion_metadata.json",
+    "stage90_dispatch_lock_observation.json",
+    "stage90_completion_audit.json",
+    "jobs/stage90_attempt1/0_1.json",
+    "validation/stage90_attempt1/checks.json",
+    "validation/stage90_attempt1_sequence.json"
+  ]
+}

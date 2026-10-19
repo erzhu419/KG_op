@@ -28,8 +28,8 @@ def learned_law(original, scales):
     return law
 
 
-def restore_learned_source_prior(layout, candidate_bank_indices, plan=PLAN):
-    """Restore positive source components on frozen public policy coordinates."""
+def restore_learned_source_prior(layout, candidate_bank_indices, plan=PLAN, *, coordinates=None):
+    """Restore source components on cached or explicitly supplied coordinates."""
     spec = read(plan)
     parent = read(spec['source_plan'])
     selection = read(parent['selection_plan']); covariance = read(parent['covariance_plan'])
@@ -47,9 +47,16 @@ def restore_learned_source_prior(layout, candidate_bank_indices, plan=PLAN):
     tasks = [t for t in inputs['source_tasks'] if t['name'] in selection['source_tasks']]
     assert [t['name'] for t in tasks] == selection['source_tasks']
     response = np.vstack([t['response'] for t in tasks])
-    old = read(spec['legacy_connection_plan']); risk = read(old['query_risk_inputs_by_layout'][layout])
-    coordinates = (np.asarray(inputs['public_mean_reference'])[candidate_bank_indices],
-        np.asarray(risk['public_reference_psi'])[candidate_bank_indices])
+    if coordinates is None:
+        old = read(spec['legacy_connection_plan']); risk = read(old['query_risk_inputs_by_layout'][layout])
+        coordinates = (np.asarray(inputs['public_mean_reference'])[candidate_bank_indices],
+            np.asarray(risk['public_reference_psi'])[candidate_bank_indices])
+    else:
+        coordinates = tuple(np.asarray(values, dtype=float) for values in coordinates)
+        if (len(coordinates) != 2 or coordinates[0].shape != (len(candidate_bank_indices), 4)
+                or coordinates[1].shape != (len(candidate_bank_indices), 10)
+                or not all(np.isfinite(values).all() for values in coordinates)):
+            raise ValueError('Explicit coordinates must align as mean[N,4] and risk[N,10]')
     block = weights['by_layout'][layout]; identities = block['identities']
     source_weights = np.asarray(block['equal_prior_source_posterior_weights'])
     assert len(identities) == 8 and np.all(source_weights > 0)

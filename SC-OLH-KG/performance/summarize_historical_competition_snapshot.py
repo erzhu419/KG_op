@@ -70,7 +70,7 @@ def summarize(plan, output):
             projected_gap=c['weighted_bank_envelope']['kinds']['projected']['unresolved_upper_gap'],
             raw_best_reference_contrast=c['weighted_bank_envelope']['kinds']['raw']['best_reference_contrast']))
     phase_folder=ROOT/Path(spec['phase_completion']).parent
-    replay=read(str(phase_folder/'incumbent_replay_final.json'))
+    replay=read(completion.get('replay_summary_path',str(phase_folder/'incumbent_replay_final.json')))
     result=dict(source_bound_plan=plan,closed_phase=number,
         protocol={k:spec[k] for k in ('risk_observations','objective_heads_per_origin','all_identity_likelihoods','source_components','action_count','remaining_calls')},
         prior_weights=context['prior_weights'],control_variate=spec['control_variate'],

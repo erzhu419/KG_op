@@ -1,0 +1,348 @@
+{
+  "name": "mainline_terminal_recording_preparation_v1",
+  "status": "complete_registration_not_started",
+  "scope": "passive_recording_wiring_tests_then_metadata_registration_only",
+  "execution_started": false,
+  "scheduler": {
+    "task_id": "t169515",
+    "status": "done",
+    "node": "node002",
+    "exit_code": 0,
+    "last_block_reason": null,
+    "submitted_at": "2026-10-17T05:03:01.550581+00:00",
+    "nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "cpu": 1,
+    "ram_mb": 2048,
+    "vram_mb": 0,
+    "blas_threads": 1,
+    "resubmitted": false,
+    "automatic_check_then_register_preserved": true,
+    "record": "paper_artifacts/mainline_terminal_recording_preparation_v1/cluster_control/jobs/attempt1_0_1.json",
+    "child_returncode": 0,
+    "job_started_utc": "2026-10-17T05:41:15.837708+00:00",
+    "job_completed_utc": "2026-10-17T05:41:22.252450+00:00",
+    "wall_seconds": 6.414780671708286
+  },
+  "tests": {
+    "name": "checks",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_terminal_recording.py",
+      "tests/test_mainline_terminal_recording_seed_replication.py"
+    ],
+    "returncode": 0,
+    "status": "complete",
+    "cpu_seconds": 4.463336,
+    "wall_seconds": 4.807821808382869,
+    "passed": 12,
+    "failed": 0,
+    "expected_instances": 12,
+    "log_file": "paper_artifacts/mainline_terminal_recording_preparation_v1/cluster_control/jobs/attempt1_0_1.log"
+  },
+  "registration": {
+    "name": "registration_process",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-u",
+      "-m",
+      "performance.register_mainline_terminal_recording_seed_replication"
+    ],
+    "returncode": 0,
+    "status": "complete",
+    "cpu_seconds": 1.3537280000000003,
+    "wall_seconds": 1.5521451560780406,
+    "result": {
+      "status": "registered_not_started",
+      "manifest": "performance/manifests/mainline_terminal_recording_seed_replication_v1.json",
+      "children": [
+        "performance/manifests/mainline_terminal_recording_seed_replication_stream_1_v1.json",
+        "performance/manifests/mainline_terminal_recording_seed_replication_stream_2_v1.json"
+      ],
+      "family_plans": [
+        {
+          "domain": "InventorySupplyChain",
+          "search_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/InventorySupplyChain/search_plan.json",
+          "terminal_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/InventorySupplyChain/terminal_plan.json"
+        },
+        {
+          "domain": "QueueResourceControl",
+          "search_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/QueueResourceControl/search_plan.json",
+          "terminal_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/QueueResourceControl/terminal_plan.json"
+        },
+        {
+          "domain": "FactorShockStatePolicyRZDT1",
+          "search_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/search_plan.json",
+          "terminal_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/terminal_plan.json"
+        },
+        {
+          "domain": "InventorySupplyChain",
+          "search_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/InventorySupplyChain/search_plan.json",
+          "terminal_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/InventorySupplyChain/terminal_plan.json"
+        },
+        {
+          "domain": "QueueResourceControl",
+          "search_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/search_plan.json",
+          "terminal_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/terminal_plan.json"
+        },
+        {
+          "domain": "FactorShockStatePolicyRZDT1",
+          "search_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/FactorShockStatePolicyRZDT1/search_plan.json",
+          "terminal_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/FactorShockStatePolicyRZDT1/terminal_plan.json"
+        }
+      ],
+      "checked_asset_files": 81,
+      "new_stream_seeds": 96,
+      "execution_started": false,
+      "models_loaded": 0,
+      "truth_read": false,
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_source_calls": 0,
+      "new_source_fits": 0,
+      "new_truth_function_calls": 0,
+      "source_model_restorations": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "new_rng_draws": 0,
+      "new_raw_replays": 0,
+      "geometry_uniform_draws": 0,
+      "download_bytes": 0
+    },
+    "body_attempts": [
+      {
+        "stage": "register-terminal-recording-seed-replication",
+        "family": null,
+        "arm": null,
+        "started_utc": "2026-10-17T05:41:21.774818+00:00",
+        "status": "completed",
+        "new_source_calls": 0,
+        "new_target_search_calls": 0,
+        "new_verification_calls": 0,
+        "source_model_restorations": 0,
+        "new_target_initial_calls": 0,
+        "new_source_fits": 0,
+        "new_truth_function_calls": 0,
+        "engine_restorations": 0,
+        "posterior_restorations": 0,
+        "new_rng_draws": 0,
+        "new_raw_replays": 0,
+        "geometry_uniform_draws": 0,
+        "download_bytes": 0,
+        "cpu_seconds": 0.05889194099999995,
+        "wall_seconds": 0.1403263909742236,
+        "finished_utc": "2026-10-17T05:41:21.915135+00:00"
+      }
+    ]
+  },
+  "whole_job_cpu_seconds": 5.954213,
+  "accounting_note": "Test CPU and registration subprocess CPU are disjoint: 5.817064s combined. The registration body CPU is a subset of its subprocess CPU. Whole-job CPU 5.954213s includes all subprocesses and wrapper; do not add these layers. Metadata, transport and scheduler preflight CPU are unmetered, not assumed zero.",
+  "attempts": [
+    {
+      "task_id": "t169515",
+      "status": "complete",
+      "record": "paper_artifacts/mainline_terminal_recording_preparation_v1/cluster_control/jobs/attempt1_0_1.json",
+      "child_returncode": 0,
+      "cpu_seconds_inclusive": 5.954213
+    }
+  ],
+  "failures": [],
+  "retries": [],
+  "historical_cost_references": [
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/scheduler_execution.json"
+  ],
+  "transfers": {
+    "initial_upload": {
+      "returncode": 0,
+      "files": [
+        {
+          "path": "algorithms/single_olhkg.py",
+          "bytes": 750294
+        },
+        {
+          "path": "performance/mainline_terminal_recording.py",
+          "bytes": 2259
+        },
+        {
+          "path": "performance/run_mainline_role_fresh.py",
+          "bytes": 12508
+        },
+        {
+          "path": "performance/run_mainline_terminal_confirmation.py",
+          "bytes": 12806
+        },
+        {
+          "path": "performance/run_mainline_same_policy.py",
+          "bytes": 13881
+        },
+        {
+          "path": "performance/register_mainline_terminal_recording_seed_replication.py",
+          "bytes": 14767
+        },
+        {
+          "path": "tests/test_mainline_terminal_recording.py",
+          "bytes": 19174
+        },
+        {
+          "path": "tests/test_mainline_terminal_recording_seed_replication.py",
+          "bytes": 4142
+        },
+        {
+          "path": "tests/test_mainline_failed_query_audit.py",
+          "bytes": 5961
+        },
+        {
+          "path": "docs/mainline_terminal_recording_seed_replication_protocol_20261017.md",
+          "bytes": 3342
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_preparation_v1/cluster_control/run_stage75_steps.py",
+          "bytes": 1342
+        }
+      ],
+      "payload_bytes": 840476,
+      "stdout": "",
+      "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+    },
+    "metadata_payload_bytes": 26819,
+    "result_download_bytes": 228109,
+    "final_copy_accounting": "Final exact document and ledger copy is recorded separately in cluster_control/final_sync.json. Counts are file or UTF-8 payload sizes, not network-wire bytes.",
+    "completed_pending_sync": "cluster_control/pending_sync.json",
+    "cumulative_upload_bytes_before_final_sync": 1220161,
+    "reads_payload_bytes": {
+      "source_metadata_read.json": 17164,
+      "result_metadata_read.json": 7236,
+      "download_size_read.json": 2419
+    },
+    "registered_metadata_download": {
+      "returncode": 0,
+      "files": [
+        {
+          "path": "performance/manifests/mainline_terminal_recording_seed_replication_v1.json",
+          "bytes": 39071
+        },
+        {
+          "path": "performance/manifests/mainline_terminal_recording_seed_replication_stream_1_v1.json",
+          "bytes": 43159
+        },
+        {
+          "path": "performance/manifests/mainline_terminal_recording_seed_replication_stream_2_v1.json",
+          "bytes": 43159
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/InventorySupplyChain/search_plan.json",
+          "bytes": 12436
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/InventorySupplyChain/terminal_plan.json",
+          "bytes": 4124
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/QueueResourceControl/search_plan.json",
+          "bytes": 12432
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/QueueResourceControl/terminal_plan.json",
+          "bytes": 4124
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/search_plan.json",
+          "bytes": 12641
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/terminal_plan.json",
+          "bytes": 4159
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/InventorySupplyChain/search_plan.json",
+          "bytes": 12436
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/InventorySupplyChain/terminal_plan.json",
+          "bytes": 4124
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/search_plan.json",
+          "bytes": 12432
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/terminal_plan.json",
+          "bytes": 4124
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/FactorShockStatePolicyRZDT1/search_plan.json",
+          "bytes": 12641
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/FactorShockStatePolicyRZDT1/terminal_plan.json",
+          "bytes": 4159
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/prepared.json",
+          "bytes": 1444
+        },
+        {
+          "path": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/prepared.json",
+          "bytes": 1444
+        }
+      ],
+      "payload_bytes": 228109,
+      "stdout": "",
+      "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+      "records_from_existing_metadata_bytes": 5977,
+      "records_not_downloaded_twice": true
+    },
+    "total_download_payload_bytes": 254928,
+    "raw_model_engine_download_bytes": 0
+  },
+  "preflight": {
+    "heal": "cluster_control/heal.json",
+    "doctor": "cluster_control/doctor.json",
+    "cpu_plan": "cluster_control/cpu_plan.json",
+    "source_metadata": "cluster_control/source_metadata.json",
+    "repeated": false
+  },
+  "checked_utc": "2026-10-17T06:16:42.183042+00:00",
+  "snapshot_only": false,
+  "authoritative_followup_outputs": {
+    "whole_job_record": "paper_artifacts/mainline_terminal_recording_preparation_v1/cluster_control/jobs/attempt1_0_1.json",
+    "whole_job_log": "paper_artifacts/mainline_terminal_recording_preparation_v1/cluster_control/jobs/attempt1_0_1.log",
+    "checks": "paper_artifacts/mainline_terminal_recording_preparation_v1/checks.json",
+    "registration_process": "paper_artifacts/mainline_terminal_recording_preparation_v1/registration_process.json",
+    "registration_result": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/registration/result.json",
+    "registration_attempts": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/registration/attempts.jsonl"
+  },
+  "completed_utc": "2026-10-17T05:41:22.252450+00:00",
+  "pending_snapshot_history": "cluster_control/pending_execution_snapshot.json",
+  "cpu_seconds": {
+    "tests": 4.463336,
+    "registration_subprocess": 1.3537280000000003,
+    "registration_body_subset": 0.05889194099999995,
+    "tests_plus_registration_subprocess": 5.817064,
+    "whole_job_inclusive": 5.954213,
+    "whole_job_own": 0.073652,
+    "whole_job_child_inclusive": 5.880561
+  },
+  "new_scientific_activity": {
+    "simulation_calls": 0,
+    "source_fits": 0,
+    "posterior_restorations": 0,
+    "truth_function_calls": 0,
+    "raw_observation_replays": 0,
+    "new_geometry_draws": 0
+  }
+}

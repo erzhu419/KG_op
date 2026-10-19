@@ -164,6 +164,17 @@ def run(plan=None, output=None, emit=True):
     return result
 
 
+def collect_saved_replay(plan, output):
+    """Keep the full replay on the server and collect only its decision summary."""
+    path=ROOT/output
+    result=read(output) if path.exists() else run(plan,output,emit=False)
+    assert result['complete'] and result['source_bound_plan']==plan
+    summary={k:v for k,v in result.items() if k not in ('rows','native_incumbents')}
+    summary['raw_recommendation']={k:v for k,v in result['raw_recommendation'].items() if k!='rows'}
+    summary.update(artifact_content='decision_summary',full_replay_path=output)
+    return summary
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--plan');p.add_argument('--output');a=p.parse_args()
     run(a.plan,a.output)

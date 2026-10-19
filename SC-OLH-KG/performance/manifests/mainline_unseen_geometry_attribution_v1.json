@@ -1,0 +1,175 @@
+{
+  "query_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only"
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "decomposition": "For C=true-feasible certificate and B=best feasible sharedinitial10: R=C*B+G; G=C*max(Q-B,0)-C*max(B-Q,0). Report positive gain and regression separately without changing signed primary G. Positive gain must be a new physical policy outside initial10.",
+  "analysis": [
+    "Reconstruct all recorded query choices before fixed-state component substitutions.",
+    "First divergence only supports component attribution when paid history and physical candidate pool agree; later divergent states are descriptive.",
+    "Link each role history to queried good physical policies, frozen shortlist, actual safety exposure, objective guard and deployment.",
+    "Retain all9 terminal arms; compare missed good-policy quality with actual certified deployment before calling it loss.",
+    "Use one registered observation stream per each of24 geometries; separate new-policy improvement, avoided below-best regression and certificate reference.",
+    "Compare native terminal crosses only on the same saved history; slot/order/budget/noise changes are not an isolated sample-size intervention."
+  ],
+  "limits": [
+    "No simulation, verification, truth-function evaluation, fitting, model/posterior restoration, RNG sampling, raw replay or downloads.",
+    "Cached truth may be missing for unqueried dynamic policies; keep unknown. Prefix12 scores do not substitute for final13 posterior scores.",
+    "Unexposed policies have no counterfactual certificates; saved TS innovations do not identify full covariance interventions.",
+    "Opened cases are mechanism evidence, not patch-selection data; no model, risk, terminal, seed or precision selection.",
+    "Failure/undefined baseline cells keep their registered identities; quality labels are null rather than false.",
+    "Source task evidence and new target mechanism evidence stay separate; existing source diagnostics may not validate the current ranking rule."
+  ],
+  "name": "mainline_unseen_geometry_attribution_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T14:00:35.204577+00:00",
+  "source_manifest": "performance/manifests/mainline_unseen_geometry_confirmation_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_unseen_geometry_confirmation_v1",
+  "prepared_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/prepared.json",
+  "output_dir": "paper_artifacts/mainline_unseen_geometry_attribution_v1",
+  "report": "docs/mainline_unseen_geometry_attribution_results_20261016.md",
+  "target_seeds": [
+    2026103001,
+    2026103002,
+    2026103003,
+    2026103004,
+    2026103005,
+    2026103006,
+    2026103007,
+    2026103008,
+    2026103009,
+    2026103010,
+    2026103011,
+    2026103012,
+    2026103013,
+    2026103014,
+    2026103015,
+    2026103016,
+    2026103017,
+    2026103018,
+    2026103019,
+    2026103020,
+    2026103021,
+    2026103022,
+    2026103023,
+    2026103024
+  ],
+  "replicates": [
+    1
+  ],
+  "geometry_count": 24,
+  "task_noise_units": 24,
+  "expected_recorded_choices": 213,
+  "registered_query_choices": 216,
+  "expected_terminal_cells": 216,
+  "completed_terminal_cells": 215,
+  "source_execution_failures": [
+    {
+      "replicate": 1,
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "status": "search_failed",
+      "logical_search_calls": 11,
+      "new_search_calls": 1,
+      "reason": "RuntimeError('Batched raw moment error exceeds frozen tolerance: 2.5773155986877152e-08')",
+      "failed_raw_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_raw_1792157276809918126.json",
+      "failed_state_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_engine.pkl"
+    }
+  ],
+  "undefined_quality_reference_tasks": [
+    2026103009
+  ],
+  "terminal_diagnosis_file": "paper_artifacts/mainline_unseen_geometry_terminal_attribution_v1/terminal.json",
+  "scope": "Post-score zero-call attribution of all24 frozen Stage56 unseen geometries, one stream each; no new outcome cohort.",
+  "expected_new_calls": 0,
+  "expected_new_source_fits": 0,
+  "expected_posterior_restorations": 0,
+  "focal_queries": {
+    "2026103002": [
+      21
+    ],
+    "2026103009": [
+      52
+    ],
+    "2026103010": [],
+    "2026103013": [],
+    "2026103016": [],
+    "2026103007": [
+      61
+    ],
+    "2026103021": [
+      49
+    ]
+  },
+  "analysis_priorities": [
+    "Reconstruct every available role choice; retain failed POINT3018 and undefined best-feasible-initial reference3009.",
+    "Trace OLD-only certification at3002/3009 through existing AFTER candidate pools and saved score components; do not infer OLD posterior if unsaved.",
+    "Attribute AFTER/POINT and FULL/AFTER first divergence on identical histories and pools; later divergence descriptive.",
+    "Reuse completed terminal funnels; connect third-slot omissions to actual current/native ranking and stopping rules across alltasks.",
+    "Inspect only saved source evidence for a uniform rule; no target-selected model or terminal adoption."
+  ],
+  "entrypoints": [
+    "performance/diagnose_mainline_observation_seed_queries.py",
+    "performance/diagnose_mainline_unseen_coverage.py",
+    "performance/diagnose_mainline_terminal_order_support.py"
+  ],
+  "completed_utc": "2026-10-16T14:07:49.362091+00:00",
+  "completion_file": "paper_artifacts/mainline_unseen_geometry_attribution_v1/completion.json",
+  "artifacts": {
+    "queries": "paper_artifacts/mainline_unseen_geometry_attribution_v1/query_diagnosis.json",
+    "coverage": "paper_artifacts/mainline_unseen_geometry_attribution_v1/coverage_diagnosis.json",
+    "terminal_source_support": "paper_artifacts/mainline_unseen_geometry_attribution_v1/terminal_order_support.json",
+    "focal_chains": "paper_artifacts/mainline_unseen_geometry_attribution_v1/focal_query_deployment_chains.json"
+  },
+  "followup_manifest": "performance/manifests/mainline_source_observed_ranking_v1.json",
+  "correction_adopted": false
+}

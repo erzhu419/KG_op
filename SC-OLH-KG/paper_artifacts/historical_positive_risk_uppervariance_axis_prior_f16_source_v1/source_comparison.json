@@ -1,0 +1,58 @@
+{
+  "objective_function_match_by_code": true,
+  "objective_function": "core.legacy_joint_kg.clipped_objective_quality;both paths pass protocol objective_reference",
+  "baseline_fixed_quality": "core.direct_terminal_reference.expected_quality:analytic Gaussian clipped-quality expectation per positive component,then exp(log_weights) mixture sum.",
+  "baseline_fixed_risk": "ConditionalTerminalActions.evaluate_head(head1,direct):fast_expected_certificates with original SD rule;direct action does not consume Sobol nodes.",
+  "baseline_terminal_implementation": "ConditionalTerminalActions.evaluate_posterior via historical_full_bank_development.terminal_rule",
+  "baseline_budgets": {
+    "STOP": 360,
+    "debited": 356
+  },
+  "baseline_fixed_action": 355,
+  "f16_source": "historical_observed_batch_bound_v1 -> predictive_extension_precision_v2/source_n4 -> original_heads plus assembled precision replacements;highest saved raw statistic power is selected.",
+  "f16_objective": "raw_terminal_head(head0) applies the same clipped_objective_quality to conditional raw coordinates after objective observation;F16 counts outer objective observations,not an inner kernel power.",
+  "same_numerical_draw_path": false,
+  "same_draw_equality_is_not_required_for_analytic_prior": true,
+  "snapshot_value_equality_rechecked": false,
+  "final_replacement_head_kernel_seed_and_power_inspected": false,
+  "declared_state": "learned_prior_independent_02_source_structural_mixture_layout6",
+  "source_budget_contract_matched": true,
+  "source_observation_match": {
+    "source": "historical_observed_batch_assembly_v1 cached fixed diagnostic",
+    "objective_and_risk_labels_maximum_difference": 0.0,
+    "cached_runner_initial_raw_head_parity_gate": 1e-10
+  },
+  "prior_general_terminal_seed": 202610077,
+  "original_predictive_manifest_seed": 202610092,
+  "seed_scope": "Different algorithmic roles;neither prior terminal power nor predictive_seed identifies final repaired raw head kernel settings. The fixed direct prior quality and certificate bypass Sobol.",
+  "current_raw_fixed_tower_residual": 0.001405189208507296,
+  "cached_f16_r2048_tower_residual": -0.000283699793840575,
+  "cached_f2048_r2048_tower_residual": 5.7974564482532465e-05,
+  "objective_prefix_effect_at_r2048": 0.00034167435832310744,
+  "current_bank_minus_factorized_f16_r2048": 0.0016888890023478709,
+  "interpretation": "Objective definition and360/356 contract match. Prior analytic/factorized expectation and finite conditional F16 bank are different numerical objects;this alone is not a model mismatch. Current bank and componentwise prefix product use different finite operators,so their difference cannot be assigned entirely to risk or F16 error.",
+  "missing": "A matched finite-operator decomposition and absolute error propagation remain open;no new baseline or current-bank reference is admitted from these arithmetic controls.",
+  "next_step": "Compare shared-identity posterior mixing with within-identity factorization at the same finite objective heads using paid metadata/statistics;retain current bank and gates.",
+  "code_sources": [
+    {
+      "file": "core/direct_terminal_reference.py",
+      "line": 21
+    },
+    {
+      "file": "core/raw_terminal_head_grid.py",
+      "line": 39
+    },
+    {
+      "file": "core/conditional_terminal_kg.py",
+      "line": 175
+    },
+    {
+      "file": "performance/assemble_historical_observed_batch_references.py",
+      "line": 30
+    },
+    {
+      "file": "performance/screen_historical_observed_batch_risk.py",
+      "line": 64
+    }
+  ]
+}

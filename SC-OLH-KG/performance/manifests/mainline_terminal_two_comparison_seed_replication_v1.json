@@ -1,0 +1,547 @@
+{
+  "name": "mainline_terminal_two_comparison_seed_replication_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T23:32:38.216456+00:00",
+  "execution_started": true,
+  "reference_manifest": "performance/manifests/mainline_terminal_two_comparison_confirmation_v1.json",
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1",
+  "streams": [
+    {
+      "name": "observation_1",
+      "replicate": 1,
+      "manifest": "performance/manifests/mainline_terminal_two_comparison_seed_replication_stream_1_v1.json"
+    },
+    {
+      "name": "observation_2",
+      "replicate": 2,
+      "manifest": "performance/manifests/mainline_terminal_two_comparison_seed_replication_stream_2_v1.json"
+    }
+  ],
+  "tasks": [
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104001,
+      "optimizer_seed": 2026104001,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.01929574641829968,
+            0.03266192524850267,
+            -0.01967145959570725
+          ],
+          "task_geometry_radius_scale": 1.0356668912100446
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104002,
+      "optimizer_seed": 2026104002,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.020184355935209418,
+            -0.03034046626347639,
+            0.010946421486131779
+          ],
+          "task_geometry_radius_scale": 0.9587167455321504
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104003,
+      "optimizer_seed": 2026104003,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.017366699973358164,
+            0.03457167003940913,
+            -0.028430116926926242
+          ],
+          "task_geometry_radius_scale": 0.9628329726385803
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104004,
+      "optimizer_seed": 2026104004,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.03237644914498499,
+            0.021553698965034104,
+            -0.007001075760151687
+          ],
+          "task_geometry_radius_scale": 1.009205009255819
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104005,
+      "optimizer_seed": 2026104005,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.03468091088747402,
+            0.023440228564373597,
+            -0.02284207559500751
+          ],
+          "task_geometry_radius_scale": 1.0472635744486196
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104006,
+      "optimizer_seed": 2026104006,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.00063534904149673,
+            -0.021365674851797058,
+            -0.016512333631186857
+          ],
+          "task_geometry_radius_scale": 0.9507398878059743
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104007,
+      "optimizer_seed": 2026104007,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.026539293730540293,
+            -0.023350580063634385,
+            -0.005837553711657381
+          ],
+          "task_geometry_radius_scale": 0.9783659441184773
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026104008,
+      "optimizer_seed": 2026104008,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_InventorySupplyChain_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.009266162158940994,
+            -0.033937521282878996,
+            0.012722799275287175
+          ],
+          "task_geometry_radius_scale": 1.035799580127659
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104009,
+      "optimizer_seed": 2026104009,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.0021261133925546682,
+            0.0026892209626863603,
+            0.031038304422777344
+          ],
+          "task_geometry_radius_scale": 0.990607142869943
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104010,
+      "optimizer_seed": 2026104010,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.02106992429853761,
+            -0.02105240292691479,
+            -0.02511418714592048
+          ],
+          "task_geometry_radius_scale": 0.9926823632063198
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104011,
+      "optimizer_seed": 2026104011,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.020875766700788778,
+            -0.002473988723880896,
+            -0.008347080897250996
+          ],
+          "task_geometry_radius_scale": 0.9726626889106734
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104012,
+      "optimizer_seed": 2026104012,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.012175393770139598,
+            -0.011637545280387771,
+            0.0021579780453384115
+          ],
+          "task_geometry_radius_scale": 1.0224016801335298
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104013,
+      "optimizer_seed": 2026104013,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.013877560839452914,
+            -0.013902625066381777,
+            -0.007587976598802459
+          ],
+          "task_geometry_radius_scale": 1.0266587911134883
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104014,
+      "optimizer_seed": 2026104014,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.02116303205574281,
+            -0.016688653653394538,
+            0.012527600141544547
+          ],
+          "task_geometry_radius_scale": 1.0449307738589917
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104015,
+      "optimizer_seed": 2026104015,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.006978725923770433,
+            -0.03417359878166304,
+            0.02958983475785651
+          ],
+          "task_geometry_radius_scale": 1.0378034334291288
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026104016,
+      "optimizer_seed": 2026104016,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_QueueResourceControl_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.017495349728952763,
+            -0.009802887321423016,
+            0.03041602486593553
+          ],
+          "task_geometry_radius_scale": 1.038003363975166
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104017,
+      "optimizer_seed": 2026104017,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.013657334147949063,
+            0.001792463120004216,
+            0.01762315569276697
+          ],
+          "task_geometry_radius_scale": 0.9959708718968667
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104018,
+      "optimizer_seed": 2026104018,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.02624140886963368,
+            0.005911313449357976,
+            -0.005160901940813523
+          ],
+          "task_geometry_radius_scale": 1.037071238415393
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104019,
+      "optimizer_seed": 2026104019,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.01868623189222491,
+            -0.022565296487312196,
+            -0.006527292560548032
+          ],
+          "task_geometry_radius_scale": 0.982669033516173
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104020,
+      "optimizer_seed": 2026104020,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.01401264769646729,
+            -0.011499241681583224,
+            -0.0325425627616023
+          ],
+          "task_geometry_radius_scale": 1.0101628073737676
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104021,
+      "optimizer_seed": 2026104021,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.006114145310072212,
+            0.01283779196517032,
+            0.03041522008622148
+          ],
+          "task_geometry_radius_scale": 0.9801823266623598
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104022,
+      "optimizer_seed": 2026104022,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.001418439162091223,
+            -0.014295765264292166,
+            -0.004051670250692797
+          ],
+          "task_geometry_radius_scale": 0.9969144633255015
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104023,
+      "optimizer_seed": 2026104023,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.02701959669574229,
+            -0.012139745332259963,
+            0.028616507070395758
+          ],
+          "task_geometry_radius_scale": 0.959774065144166
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026104024,
+      "optimizer_seed": 2026104024,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.021982619908164816,
+            0.011028277478081633,
+            -0.02935843003859118
+          ],
+          "task_geometry_radius_scale": 1.0056736396889097
+        }
+      }
+    }
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "search_arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "initialization_only"
+  ],
+  "objective": "Test whether frozen AFTER new-minus-old terminal gains and the secondary propagation contrasts survive two fresh observation/verification streams.",
+  "scope": "24 fixed Stage65 geometries,8per known family,two newly registered streams; no new geometry sample.",
+  "statistical_unit": "24 fixed geometries. The outer analysis averages the two new-stream effects within each geometry before uncertainty summaries; stream and arm cells are not independent geometry samples.",
+  "frozen": {
+    "model_changes": false,
+    "source_fits": 0,
+    "new_source_calls": 0,
+    "new_geometry_draws": 0,
+    "d": 1000,
+    "initial_design_seed": 80,
+    "source_protocol": "performance/manifests/mainline_terminal_two_comparison_confirmation_v1.json",
+    "optimizer_seeds": "Exact original geometry_task_seed4001..4024 in both streams",
+    "old_and_new_terminals": "Unchanged Stage65 rules, shortlisting and352-call ceiling"
+  },
+  "budget": {
+    "geometry_count": 24,
+    "observation_replicates": 2,
+    "task_stream_units": 48,
+    "unique_search_histories": 336,
+    "terminal_cells_per_protocol": 432,
+    "registered_terminal_cells": 864,
+    "initial_physical_calls": 480,
+    "online_search_physical_calls": 864,
+    "maximum_verification_calls_per_cell": 352,
+    "maximum_unique_terminal_calls_per_paired_cell": 368,
+    "maximum_verification_physical_calls": 158976,
+    "maximum_target_physical_calls": 160320,
+    "maximum_logical_target_calls_both_protocols": 315072,
+    "new_source_calls": 0,
+    "new_source_fits": 0
+  },
+  "barriers": {
+    "before_sampling": "Freeze both new stream maps, original geometry/optimizer identities, model references and reused initial/neighbor policy files before any sampling.",
+    "before_online": "Both streams must complete all48 initialization histories and freeze all48 reused neighbor banks before any adaptive search.",
+    "before_verification": "Both streams must seal all336 histories or retained failures and all432 paired terminal inputs before terminal simulation.",
+    "before_scoring": "Both streams must seal all864 old/new terminal outcomes or failures before any new scoring or target-truth access.",
+    "failure": "Preserve any arm failure, paid prefixes and CPU; no automatic resampling, precision patch, seed replacement or dropping tasks."
+  },
+  "analysis": {
+    "primary": "AFTER paired new-minus-old terminal C and signedG, averaged across two new streams within each geometry; report both without substitution and retain each stream separately.",
+    "paired_terminal": "AFTER new-minus-old C and signedG, including tradeoffs and largest-task concentration.",
+    "controls": "Retain all9 arms, FULL-minus-AFTER, same-source GP, native terminal crosses, STOP, all failures and fees.",
+    "contributions": "Report shared-neighbor and dynamic policy contributions separately, including zero/negative effects and uncertified/false-certified outcomes.",
+    "truth": "Only after both streams are globally sealed, merge deterministic Stage65 and already scored new-stream truth for the same geometry and exact physical policy. Fill task truth caches only during scoring; evaluate only missing terminal-union policies and charge new analytic truth calls separately.",
+    "missing": "Keep undefined G null; distinguish complete24-geometry estimates from the explicitly defined subset. Never fill an undefined baseline with zero.",
+    "uncertainty": "Descriptive geometry-level paired95%t intervals; streams are paired repetitions, not48 independent geometry samples.",
+    "secondary": "AFTER-minus-POINT and FULL-minus-AFTER under each frozen terminal and changes in these contrasts; report shared-neighbor and dynamic-policy contributions separately."
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_confirmation_attribution_v1/completion.json"
+  ],
+  "protocol_document": "docs/mainline_terminal_two_comparison_seed_replication_protocol_20261017.md",
+  "new_target_calls_at_registration": 0,
+  "truth_used_at_registration": false,
+  "execution_started_utc": "2026-10-16T23:37:16.528096+00:00",
+  "execution_control_file": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/cluster_control/state.json",
+  "completed_utc": "2026-10-17T00:18:49.102570+00:00",
+  "summary_file": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/summary.json",
+  "compact_summary_file": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/compact_summary.json",
+  "completion_file": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json"
+}

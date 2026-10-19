@@ -1,0 +1,375 @@
+{
+  "stage": 74,
+  "name": "mainline_observed_terminal_attribution_v1",
+  "scientific_status": "complete",
+  "scheduler_status": "complete",
+  "recorded_utc": "2026-10-17T04:51:17.314926+00:00",
+  "manifest": "performance/manifests/mainline_observed_terminal_attribution_v1.json",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "actual_node": "node006",
+  "cpu_cores": 1,
+  "vram_mb": 0,
+  "blas_threads": 1,
+  "ram_mb": 8192,
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "preflight": {
+    "heal": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/heal.json",
+    "doctor": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/doctor.json",
+    "live_cpu_plan": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/cpu_plan_summary.json"
+  },
+  "tasks": [
+    {
+      "id": "t169481",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 8192,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t169481.log"
+    }
+  ],
+  "automatic_retry_task_ids": [],
+  "validation": {
+    "tests": 9,
+    "status": "passed",
+    "log": "9 passed in 1.27s",
+    "record": "validation/pytest_attempt1.json",
+    "additional_identity_fixture": {
+      "status": "passed",
+      "tests": 1,
+      "log": "1 passed in 1.20s",
+      "record": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/identity_pytest.json"
+    }
+  },
+  "completed_geometries": 24,
+  "failed_attempts": [],
+  "missing": [],
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "new_raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "process_record": {
+    "status": "complete",
+    "node": "node006",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-u",
+      "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/run_stage74_steps.py"
+    ],
+    "started_utc": "2026-10-17T04:41:12.423053+00:00",
+    "subprocess_started": true,
+    "child_returncode": 0,
+    "completed_utc": "2026-10-17T04:41:34.913548+00:00",
+    "wall_seconds": 22.490537592209876,
+    "log_file": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/jobs/attempt1_0_1.log",
+    "own_cpu_seconds": 0.081405,
+    "child_cpu_seconds": 18.117245999999998,
+    "total_cpu_seconds": 18.198650999999998,
+    "outer_exit_policy": "Saved child failure is not retried by scheduler"
+  },
+  "phase_process_records": {
+    "validation/pytest_attempt1.json": {
+      "label": "tests",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_observed_shortlist_attribution.py",
+        "tests/test_mainline_saved_terminal_comparison.py"
+      ],
+      "returncode": 0,
+      "status": "complete",
+      "cpu_seconds": 1.592792,
+      "wall_seconds": 1.8410594752058387
+    },
+    "cluster_control/analysis_process.json": {
+      "label": "analysis",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.analyze_mainline_observed_terminal_attribution",
+        "--manifest",
+        "performance/manifests/mainline_observed_terminal_attribution_v1.json",
+        "--start",
+        "0",
+        "--end",
+        "24",
+        "--workers",
+        "1"
+      ],
+      "returncode": 0,
+      "status": "complete",
+      "cpu_seconds": 14.804208000000003,
+      "wall_seconds": 18.84715794865042
+    },
+    "cluster_control/collect_process.json": {
+      "label": "collect",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.analyze_mainline_observed_terminal_attribution",
+        "--manifest",
+        "performance/manifests/mainline_observed_terminal_attribution_v1.json",
+        "--collect"
+      ],
+      "returncode": 0,
+      "status": "complete",
+      "cpu_seconds": 1.6302199999999978,
+      "wall_seconds": 1.732676357962191
+    }
+  },
+  "cost": {
+    "recorded_analysis_cpu_seconds": 14.587676888999997,
+    "recorded_coordinator_cpu_seconds": 0.040227368,
+    "recorded_validation_cpu_seconds": 1.592792,
+    "recorded_collector_cpu_seconds": 1.255912376,
+    "total_new_recorded_cpu_seconds": 17.476608632999998,
+    "whole_job_cpu_seconds": 18.198650999999998,
+    "whole_job_child_cpu_seconds": 18.117245999999998,
+    "wrapper_own_cpu_seconds": 0.081405,
+    "whole_job_wall_seconds": 22.490537592209876,
+    "note": "Whole-job CPU includes body, imports, driver and wrapper. It overlaps completion accounting and must not be added. Local control, metadata field inspection/packaging, transfer and documentation CPU are unmetered, not zero. Scheduler timestamps are not used to calculate CPU.",
+    "identity_supplement_recorded_cpu_seconds": 1.662019,
+    "total_new_recorded_cpu_seconds_with_identity_supplement": 19.138627633,
+    "whole_job_cpu_seconds_with_identity_supplement": 19.98126
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion_compact.json"
+  ],
+  "transfers": {
+    "upload_record": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/upload.json",
+    "uploaded_file_payload_bytes": 600943,
+    "uploaded_files": [
+      {
+        "path": "performance/analyze_mainline_observed_terminal_attribution.py",
+        "bytes": 7762
+      },
+      {
+        "path": "performance/mainline_observed_shortlist_attribution.py",
+        "bytes": 16769
+      },
+      {
+        "path": "performance/mainline_saved_terminal_comparison.py",
+        "bytes": 14387
+      },
+      {
+        "path": "tests/test_mainline_observed_shortlist_attribution.py",
+        "bytes": 4608
+      },
+      {
+        "path": "tests/test_mainline_saved_terminal_comparison.py",
+        "bytes": 6521
+      },
+      {
+        "path": "performance/manifests/mainline_observed_terminal_attribution_v1.json",
+        "bytes": 3503
+      },
+      {
+        "path": "docs/mainline_observed_terminal_attribution_protocol_20261017.md",
+        "bytes": 2539
+      },
+      {
+        "path": "docs/original_goal_and_mainline_contract_20261015.md",
+        "bytes": 143229
+      },
+      {
+        "path": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/run_stage74_steps.py",
+        "bytes": 1731
+      }
+    ],
+    "download_record": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/download.json",
+    "downloaded_file_payload_bytes": 366361,
+    "downloaded_files": [
+      {
+        "path": "paper_artifacts/mainline_observed_terminal_attribution_v1/summary.json",
+        "bytes": 253092
+      },
+      {
+        "path": "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+        "bytes": 12672
+      },
+      {
+        "path": "paper_artifacts/mainline_observed_terminal_attribution_v1/focus_details.json.gz",
+        "bytes": 43006
+      },
+      {
+        "path": "paper_artifacts/mainline_observed_terminal_attribution_v1/validation/pytest_attempt1.json",
+        "bytes": 424
+      },
+      {
+        "path": "performance/manifests/mainline_observed_terminal_attribution_v1.json",
+        "bytes": 2885
+      },
+      {
+        "path": "paper_artifacts/mainline_observed_terminal_attribution_v1/metadata_identity_supplement.json",
+        "bytes": 54282
+      }
+    ],
+    "metadata_payload_bytes": 130716,
+    "remote_only": [
+      "all_task_details.json",
+      "cases/*/analysis.json",
+      "cases/*/policy_vectors.json",
+      "all prior raw observations, search engines and models"
+    ],
+    "compressed_focus": {
+      "transferred_bytes": 43006,
+      "local_expanded_bytes": 883998
+    },
+    "note": "Selected file/UTF-8 payload bytes, not SSH or rsync wire bytes; no old scientific cohort repeated.",
+    "identity_upload_record": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/identity_upload.json",
+    "identity_download_record": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/identity_download.json",
+    "final_file_sync": {
+      "returncode": 0,
+      "files": [
+        {
+          "path": "README.md",
+          "bytes": 218031
+        },
+        {
+          "path": "docs/original_goal_and_mainline_contract_20261015.md",
+          "bytes": 144179
+        },
+        {
+          "path": "docs/mainline_observed_terminal_attribution_protocol_20261017.md",
+          "bytes": 2719
+        },
+        {
+          "path": "docs/mainline_observed_terminal_attribution_results_20261017.md",
+          "bytes": 5690
+        },
+        {
+          "path": "performance/manifests/mainline_observed_terminal_attribution_v1.json",
+          "bytes": 3682
+        }
+      ],
+      "payload_bytes": 374301
+    },
+    "final_sync_result_file": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/final_sync.json",
+    "ledger_self_copy_note": "The final transfer of this ledger is recorded separately in final_sync_result_file after the copy returns; uploaded_file_payload_bytes excludes that self-copy."
+  },
+  "limits": [
+    "Unrecorded full default-terminal posterior scores remain unknown; native scores are not a replacement.",
+    "No new simulator, truth, fit, posterior restoration, model loading or raw replay."
+  ],
+  "identity_supplement": {
+    "status": "complete",
+    "scheduler_status": "complete",
+    "tasks": [
+      {
+        "id": "t169490",
+        "status": "done",
+        "parent_id": null,
+        "retry_count": 0,
+        "node": "node004",
+        "cpu_cores": 1,
+        "ram_mb": 2048,
+        "est_vram_mb": 0,
+        "exit_code": 0,
+        "allowed_nodes": [
+          "node001",
+          "node002",
+          "node003",
+          "node004",
+          "node005",
+          "node006"
+        ],
+        "preferred_node": "node004",
+        "require_node": null,
+        "log_path": "/tmp/sched_t169490.log"
+      }
+    ],
+    "process_record": {
+      "status": "complete",
+      "node": "node004",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/run_stage74_identity_steps.py"
+      ],
+      "started_utc": "2026-10-17T04:49:15.201797+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-17T04:49:17.208131+00:00",
+      "wall_seconds": 2.006378225982189,
+      "log_file": "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/jobs/identity_attempt1_0_1.log",
+      "own_cpu_seconds": 0.058658999999999996,
+      "child_cpu_seconds": 1.72395,
+      "total_cpu_seconds": 1.782609,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "test_record": {
+      "label": "identity_pytest",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_observed_shortlist_attribution.py::test_incumbent_overwritten_contract_retains_challenger_identity_from_role"
+      ],
+      "returncode": 0,
+      "status": "complete",
+      "cpu_seconds": 1.539866,
+      "wall_seconds": 1.8106061154976487
+    },
+    "metadata_read_record": {
+      "label": "identity_read",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "paper_artifacts/mainline_observed_terminal_attribution_v1/cluster_control/stage74_challenger_identity_supplement.py",
+        "paper_artifacts/mainline_observed_terminal_attribution_v1",
+        "paper_artifacts/mainline_observed_terminal_attribution_v1/metadata_identity_supplement.json"
+      ],
+      "returncode": 0,
+      "status": "complete",
+      "cpu_seconds": 0.12215299999999996,
+      "wall_seconds": 0.1481999009847641
+    },
+    "artifact": "metadata_identity_supplement.json",
+    "registered_rows": 216,
+    "registered_tasks": 24,
+    "resolved_null_identities": 74,
+    "original_analysis_overwritten": false,
+    "scientific_metrics_changed": false,
+    "final_score_values_changed": false
+  }
+}

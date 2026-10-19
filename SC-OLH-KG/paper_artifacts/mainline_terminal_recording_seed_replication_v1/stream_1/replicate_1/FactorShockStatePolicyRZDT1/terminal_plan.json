@@ -1,0 +1,109 @@
+{
+  "name": "observation_replica_1_FactorShockStatePolicyRZDT1_terminal",
+  "status": "registered",
+  "source_manifest": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/search_plan.json",
+  "source_output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/search",
+  "output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/terminal",
+  "target_seeds": [
+    2026107017,
+    2026107018,
+    2026107019,
+    2026107020,
+    2026107021,
+    2026107022,
+    2026107023,
+    2026107024
+  ],
+  "verification_seed_by_task": {
+    "2026107017": 2026108217,
+    "2026107018": 2026108218,
+    "2026107019": 2026108219,
+    "2026107020": 2026108220,
+    "2026107021": 2026108221,
+    "2026107022": 2026108222,
+    "2026107023": 2026108223,
+    "2026107024": 2026108224
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "same_policy_distinct_challenger": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Original-terminal paired control for the common frozen modified-terminal primary after-init-minus-source0-point comparison.",
+    "Preserve full-afterinit, original/native terminal crossing and all references; compare each unchanged original input to its frozen same-policy challenger transform."
+  ],
+  "statistical_unit": "24 fixed Stage73 geometries. The two new-stream paired effects are averaged within each geometry; policies, prefixes, streams and terminal cells are not independent geometry samples.",
+  "truth_barrier": "Seal all864 old/new terminal outcomes or retained failures across both streams, then seal the complete saved action-pool physical inventory before any target-truth access or scoring.",
+  "scope": "Replicate frozen AFTER cross-policy propagation versus POINT under a fresh observation/verification stream, while passively saving the complete existing terminal selection process.",
+  "registered_utc": "2026-10-17T05:41:21.775673+00:00",
+  "inherited_replay_check_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/terminal/replay_check.json"
+}

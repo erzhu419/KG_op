@@ -1,0 +1,27 @@
+{
+  "state": "authorized",
+  "reader": "performance/diagnose_cached_fixed_origin_diagonal.py",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_mixture_v1/completion.json",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+  "requested_additional_support_cpu_seconds": 5.0,
+  "additional_support_cpu_seconds_authorized": 5.0,
+  "new_phase_reserve_cpu_seconds": 0,
+  "original_support_reserve_cpu_seconds": 600,
+  "original_reserve_balance_after_preparation_cpu_seconds": -0.2520133780000151,
+  "requested_reader_prof_timer_cpu_seconds": 3.0,
+  "new_integrations": 0,
+  "new_reference_admissions": 0,
+  "stored_raw_fixed_mix": 0.7452258287528934,
+  "stored_prior_debited_fixed": 0.7438206395443862,
+  "scope": "Aggregate paid same-node own-origin fixed355 objective means and risk weighted sums;reuse the settled mixed point;no posterior recomputation or pair integration.",
+  "arithmetic": [
+    "B=sum_o pi_o*mean_F16_o*weighted_G_current_risk224_o",
+    "D=stored_mix-B;E=B-stored_prior",
+    "D+E=0.001405189208507296"
+  ],
+  "unresolved": "D includes finite cross-origin mixing and omitted utility;directional flows and absolute error remain unresolved.",
+  "budget_use": "If authorized,the added5CPU includes existing recorded overrun,one cached-reader attempt,collection and settlement. Original600 ledger and its negative balance remain visible;no worker capacity is transferred.",
+  "execution_started": true,
+  "user_authorization": "\u6388\u6743",
+  "execution_phase": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_diagonal_v1"
+}

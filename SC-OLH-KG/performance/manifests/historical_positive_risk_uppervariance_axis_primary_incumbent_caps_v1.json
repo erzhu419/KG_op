@@ -1,0 +1,285 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_screen_v3.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3/completion.json",
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v1",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v1.json",
+  "rules": [
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ],
+    [
+      "F9",
+      32,
+      9,
+      101
+    ],
+    [
+      "L9",
+      16,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_worker_cpu_seconds": 200,
+  "selected_records": [
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p20",
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p17",
+    "positive_body_v1_n4_m4_v4_o5_h1_p12",
+    "positive_body_v1_n4_m4_v4_o4_h1_p3",
+    "positive_body_v1_n4_m4_v4_o4_h1_p12"
+  ],
+  "pricing_admission": {
+    "cost_admitted": true,
+    "pilot": true,
+    "estimated_worker_cpu_seconds": 800,
+    "shared_phase_reserve_cpu_seconds": 600,
+    "aggregate_estimated_phase_cpu_seconds": 1400,
+    "source": "Matched h4 raw four-rule total71.309341107CPU; h5 has1024components. Initial h4/h5 raw/projected four single-core runs capped200CPU each,600support reserve."
+  },
+  "scope": "Independent primary63/incumbent45 cap refinement phase on frozen224/F16 bank. Incumbent mean analytic and historicalE9 controls. Previous1798.731458091CPU and failures retained; original cap phase reserve258.744580901/600 remains charged. No source,likelihood,physical,verifier or zero-candidate gate change.",
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p17"
+      ],
+      "estimated_cpu_seconds": 163.3241956136,
+      "maximum_worker_cpu_seconds": 164
+    },
+    {
+      "identity": 4,
+      "shard": 1,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o5_h1_p12"
+      ],
+      "estimated_cpu_seconds": 163.3241956136,
+      "maximum_worker_cpu_seconds": 164
+    },
+    {
+      "identity": 4,
+      "shard": 2,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o4_h1_p3"
+      ],
+      "estimated_cpu_seconds": 163.3241956136,
+      "maximum_worker_cpu_seconds": 164
+    },
+    {
+      "identity": 4,
+      "shard": 3,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o4_h1_p12"
+      ],
+      "estimated_cpu_seconds": 74.49159762800001,
+      "maximum_worker_cpu_seconds": 75
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p17"
+      ],
+      "estimated_cpu_seconds": 334.55954983999993,
+      "maximum_worker_cpu_seconds": 335
+    },
+    {
+      "identity": 5,
+      "shard": 1,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o5_h1_p12"
+      ],
+      "estimated_cpu_seconds": 334.55954983999993,
+      "maximum_worker_cpu_seconds": 335
+    },
+    {
+      "identity": 5,
+      "shard": 2,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o4_h1_p3"
+      ],
+      "estimated_cpu_seconds": 334.55954983999993,
+      "maximum_worker_cpu_seconds": 335
+    },
+    {
+      "identity": 5,
+      "shard": 3,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o4_h1_p12"
+      ],
+      "estimated_cpu_seconds": 158.11771295719998,
+      "maximum_worker_cpu_seconds": 159
+    },
+    {
+      "identity": 4,
+      "shard": 4,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p17"
+      ],
+      "kinds": [
+        "projected"
+      ],
+      "estimated_cpu_seconds": 106.9508169896,
+      "maximum_worker_cpu_seconds": 107
+    },
+    {
+      "identity": 5,
+      "shard": 4,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p17"
+      ],
+      "kinds": [
+        "projected"
+      ],
+      "estimated_cpu_seconds": 212.61775637359997,
+      "maximum_worker_cpu_seconds": 213
+    }
+  ],
+  "shards": 4,
+  "estimated_cost_admitted": true,
+  "estimated_phase_cpu_seconds": 3541.7170330687995,
+  "registered_initial_pricing_estimate_cpu_seconds": 800,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "matched_measured_cpu_rates": [
+    {
+      "identity": 5,
+      "kind": "projected",
+      "worker_cpu_seconds": 130.09809413099998
+    },
+    {
+      "identity": 5,
+      "kind": "raw",
+      "worker_cpu_seconds": 147.034864069
+    },
+    {
+      "identity": 4,
+      "kind": "projected",
+      "worker_cpu_seconds": 60.40966469000001
+    },
+    {
+      "identity": 4,
+      "kind": "raw",
+      "worker_cpu_seconds": 74.027164988
+    }
+  ],
+  "previous_cap_phase_recorded_cpu_seconds": 1798.731458091,
+  "previous_cap_phase_shared_reserve_charged_cpu_seconds": 258.744580901,
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "admission_basis": "Retain initial800 pricing estimate; remaining observed pair-unit rates with20percent margin and2CPU setup perworker; one shared600reserve. Only top5 distinct records; old costs untouched.",
+  "unit_rule_refinements": [
+    {
+      "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p17",
+      "identity": 4,
+      "kind": "projected",
+      "rules": [
+        [
+          "E9",
+          32,
+          9,
+          0
+        ],
+        [
+          "E10",
+          32,
+          10,
+          0
+        ],
+        [
+          "F10",
+          32,
+          10,
+          101
+        ],
+        [
+          "L10",
+          16,
+          10,
+          0
+        ]
+      ],
+      "selected_rule": "E10"
+    },
+    {
+      "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p17",
+      "identity": 5,
+      "kind": "projected",
+      "rules": [
+        [
+          "E9",
+          32,
+          9,
+          0
+        ],
+        [
+          "E10",
+          32,
+          10,
+          0
+        ],
+        [
+          "F10",
+          32,
+          10,
+          101
+        ],
+        [
+          "L10",
+          16,
+          10,
+          0
+        ]
+      ],
+      "selected_rule": "E10"
+    }
+  ],
+  "original_batch_estimated_phase_cpu_seconds": 3126.2605469459995,
+  "recovery_cost_admission": {
+    "cost_admitted": true,
+    "original_rules_hold_maximum_difference_by_identity": {
+      "4": 0.00011723529898655105,
+      "5": 0.00012069190208796599
+    },
+    "cause": "E8 coarse control exceeds original1e-4gate; E9/F9/L9 differences pass. Register historical E10 control promotion; reuse existing E9,compute onlyE10/F10/L10.",
+    "additional_estimated_worker_cpu_seconds": 319.56857336319996,
+    "shared_phase_reserve_cpu_seconds": 600,
+    "new_phase_reserve_cpu_seconds": 0,
+    "all_failed_profile_costs_retained": true
+  },
+  "automatic_recovery_cost_registration": {
+    "task_ids": [
+      "t151861",
+      "t151862"
+    ],
+    "failed_task_ids": [
+      "t151859",
+      "t151860"
+    ],
+    "additional_estimated_cpu_seconds": 95.8879127596,
+    "new_phase_reserve_cpu_seconds": 0,
+    "reused_completed_rules": 6,
+    "new_tail_rules": 2,
+    "scope": "Scheduler automatic retries reused E9/E10/F10 and only completed L10; failed attempts and both recovery workers charged to this same phase."
+  }
+}

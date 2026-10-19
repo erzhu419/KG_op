@@ -1,0 +1,41 @@
+{
+  "sources": {
+    "fixed_tower_diagnostic": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_uppervariance_axis_policy_error_v1/fixed_tower_diagnostic.json",
+    "code_files": [
+      "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/check_historical_observed_batch_risk.py",
+      "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/prepare_historical_positive_risk_screen.py"
+    ]
+  },
+  "small_files_read": 3,
+  "context_arrays_read": 0,
+  "risk_layer_objective_head_lineage": {
+    "same_F16_within_reused_bank": true,
+    "proof_scope": "Risk-axis construction replaces risk rows while retaining origin objective/objective_scores from the reused context; source observed-batch context obtains the cached objective heads from original_heads. Root already checked the exact reuse assertions. This preserves the same F16 across these reused risk layers."
+  },
+  "calibrated_prior_baseline_objective_lineage": {
+    "same_draws_proved_by_requested_files": false,
+    "limitation": "The two preparation files track risk-bank F16 reuse but do not trace the calibrated pre-query baseline objective evaluator or prove its draw/seed equivalence. Do not attribute the whole fixed-tower residual to risk-axis integration on this evidence."
+  },
+  "code_evidence": [
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/check_historical_observed_batch_risk.py",
+      "line": 62,
+      "text": "f,g=heads[0,origin],heads[1,origin];actions=original_heads(precision,case,origin)[0]['actions']"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/prepare_historical_positive_risk_screen.py",
+      "line": 58,
+      "text": "assert data['objective']==context['origins'][o]['objective'] and data['objective_scores']==context['origins'][o]['objective_scores']"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/prepare_historical_positive_risk_screen.py",
+      "line": 104,
+      "text": "origins[str(origin)]=dict(context['origins'][str(origin)],risk=rows)"
+    }
+  ],
+  "new_integrations": 0,
+  "new_threshold": null,
+  "original_gate_status": "HOLD",
+  "reader_cpu_seconds": 0.005156079999999999,
+  "reader_process_cpu_seconds": 0.015714715
+}

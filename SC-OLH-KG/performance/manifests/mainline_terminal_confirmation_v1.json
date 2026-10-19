@@ -1,0 +1,60 @@
+{
+  "name": "mainline_terminal_confirmation_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T01:32:29.547370+00:00",
+  "search_manifest": "performance/manifests/mainline_terminal_confirmation_search_v1.json",
+  "terminal_manifest": "performance/manifests/mainline_terminal_confirmation_cells_v1.json",
+  "output_dir": "paper_artifacts/mainline_terminal_confirmation_v1",
+  "report": "docs/mainline_terminal_confirmation_results_20261016.md",
+  "entrypoints": [
+    "performance/run_mainline_terminal_confirmation.py",
+    "performance/summarize_mainline_terminal_confirmation.py"
+  ],
+  "target_seeds": [
+    2026101901,
+    2026101902,
+    2026101903,
+    2026101904,
+    2026101905,
+    2026101906,
+    2026101907,
+    2026101908,
+    2026101909,
+    2026101910,
+    2026101911,
+    2026101912
+  ],
+  "geometry_seed": 2026101900,
+  "freeze": "Reuse unchanged Stage38 source pickles, model, representation, frontend, after-init control, numerical settings and terminal rules. No online model/threshold/budget selection. Execute all12 tasks and full2x2 plus five references.",
+  "primary_comparison": "Primary: full minus after-initialization point-only under the common old native terminal, task-equal certified true-feasible quality gain relative to initial.",
+  "barriers": {
+    "before_online": "All12 initial10 and shared64-neighbor banks frozen.",
+    "before_verify": "All84 searches and24 alternative native terminals frozen; all108 inputs prepared.",
+    "before_truth": "All108 registered verifications complete.",
+    "failure": "Preserve consumed raw and every attempt; no partially paid stage restart from zero."
+  },
+  "budget": {
+    "task_count": 12,
+    "unique_search_histories": 84,
+    "terminal_cells": 108,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "initial_physical_calls": 120,
+    "online_search_physical_calls": 216,
+    "maximum_verification_calls_per_cell": 352,
+    "maximum_verification_physical_calls": 38016,
+    "maximum_target_physical_calls": 38352,
+    "unique_logical_search_calls": 1056,
+    "expanded_logical_search_calls": 1368,
+    "maximum_logical_target_calls": 39384,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "download_bytes": 0
+  },
+  "prediction_scope": "Saved paid10->12 predictions on common never-sampled shared neighbors of five replacement backends. Descriptive task-equal errors; full-minus-control is the total adaptive trajectory effect, not automatic proof of improved covariance.",
+  "preflight": "Reuse settled Stage40 84-case saved-raw verifier parity. Check new input adapter on three saved original/native/STOP cases before new observations. Native freeze reuses Stage39 with simulation and truth blocked.",
+  "continuation": "Finish all search and verification before analytical truth scoring. Evaluate actual gains under common terminal before any further model proposal. Keep earlier cohort results separate.",
+  "started_utc": "2026-10-16T01:33:29.096517+00:00",
+  "completion_file": "paper_artifacts/mainline_terminal_confirmation_v1/completion.json",
+  "completed_utc": "2026-10-16T01:51:10.777947+00:00"
+}

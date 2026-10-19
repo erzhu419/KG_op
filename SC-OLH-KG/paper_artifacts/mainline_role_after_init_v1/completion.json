@@ -1,0 +1,61 @@
+{
+  "status": "complete",
+  "recommendations": 84,
+  "attempt_count": 285,
+  "failed_attempts": [
+    {
+      "stage": "search",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "legacy_role_full",
+      "started_utc": "2026-10-16T00:23:29.098297+00:00",
+      "status": "failed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 3,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "seed": 2026101732,
+      "new_target_initial_calls": 0,
+      "new_source_fits": 0,
+      "download_bytes": 0,
+      "error": "RuntimeError('Batched raw moment integration failed: Target precision not reached.; status=1, error=6.4040180390109675e-12, relative_error=2.749642325895815e-12')",
+      "cpu_seconds": 220.122234241,
+      "wall_seconds": 234.5254474079993,
+      "finished_utc": "2026-10-16T00:27:09.763527+00:00"
+    },
+    {
+      "stage": "search",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "legacy_role_after_init_point_only",
+      "started_utc": "2026-10-16T00:23:29.244028+00:00",
+      "status": "failed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 3,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "seed": 2026101732,
+      "new_target_initial_calls": 0,
+      "new_source_fits": 0,
+      "download_bytes": 0,
+      "error": "RuntimeError('Batched raw moment integration failed: Target precision not reached.; status=1, error=1.2714054855445597e-11, relative_error=5.950339862815768e-12')",
+      "cpu_seconds": 123.277369064,
+      "wall_seconds": 131.32465925900033,
+      "finished_utc": "2026-10-16T00:25:32.655751+00:00"
+    }
+  ],
+  "cost": {
+    "cpu_seconds": 15478.192277728991,
+    "wall_seconds": 16507.274853153853,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 120,
+    "new_target_search_calls": 216,
+    "new_verification_calls": 14368,
+    "new_source_fits": 0,
+    "download_bytes": 0,
+    "new_truth_function_calls": 2433
+  },
+  "role_filter_roundoff_events": 708,
+  "role_filter_interval_limit_events": 56,
+  "new_physical_target_calls": 14704,
+  "logical_target_calls": 15424,
+  "completed_utc": "2026-10-16T00:49:10.883652+00:00"
+}

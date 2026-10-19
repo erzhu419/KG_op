@@ -1,0 +1,105 @@
+{
+  "name": "mainline_source_observed_ranking_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T14:06:17.560677+00:00",
+  "objective": "Compare frozen role/native decision inputs on identical source-only observed histories, without selecting a target-specific correction or claiming certification.",
+  "source_archives": [
+    {
+      "heldout_target_family": "FactorShockStatePolicyRZDT1",
+      "path": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+      "source_families": [
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "source_policy_counts": [
+        64,
+        64
+      ]
+    },
+    {
+      "heldout_target_family": "InventorySupplyChain",
+      "path": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+      "source_families": [
+        "FactorShockStatePolicyRZDT1",
+        "QueueResourceControl"
+      ],
+      "source_policy_counts": [
+        64,
+        64
+      ]
+    },
+    {
+      "heldout_target_family": "QueueResourceControl",
+      "path": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+      "source_families": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain"
+      ],
+      "source_policy_counts": [
+        64,
+        64
+      ]
+    }
+  ],
+  "partition_manifest": "performance/manifests/mainline_source_policy_holdout_v1.json",
+  "folds": 4,
+  "fold_seed": 2026101680,
+  "output_dir": "paper_artifacts/mainline_source_observed_ranking_v1",
+  "arms": [
+    "legacy_native",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only"
+  ],
+  "source_fit": "Reuse existing whole-policy48train/16held partition and unchanged fit recipes separately for each of3frozen source archives. All rawreplicates of held policies excluded from every response-dependent fit. Do not overwrite deployment bundles.",
+  "fixed_history": "For each source archive/fold/source family, use first raw pair at held policy IDs0..12 in fixed partition order: initial10 then3updates. All arms observe the same physical policies/raw order; no adaptive query selection. Freeze predictions at prefixes10and13, observed-only terminal ranks at13, and predictions for held IDs13..15 never observed.",
+  "ranking": "Unchanged terminal probability-of-violation<=0.5 eligibility, objective-mean rank and minimum-violation fallback. Compare eligible sets, relative-objective ranks and ordering changes; record no-eligible cases. No new selector, threshold, temperature or ensemble weight.",
+  "scoring": "Freeze all available forecasts before held scoring labels. For observed13 use remaining two raw repeats only; never-observed3 use allthree. Report f/g mean error, relative-objective ordering and predictive-noise agreement against noisy held labels. These are not true chance-feasibility or80/128certificate labels. Keep uncertainty and missing results.",
+  "statistical_unit": "Report each source-archive/fold/source-family case and family summaries. Source families and archives overlap;24fold-family cases are not24independent tasks. This d50 source-policy holdout does not establish d1000 task generalization.",
+  "target_exclusion": "No Stage56/earlier target outcomes enter fitting, scoring, threshold selection or source case ordering. Positive and negative target cases motivate the comparison only.",
+  "failure": "Keep fit failures, original precision/ESS flags and paid CPU; no retries with changed precision, discarded folds or invented predictions.",
+  "budget": {
+    "new_source_simulations": 0,
+    "new_target_simulations": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "downloads": 0,
+    "current_bundle_fits": 12,
+    "native_prior_fits": 12,
+    "source_history_cases": 24,
+    "paired_raw_adaptation_exposures": 312
+  },
+  "reuse_entrypoints": [
+    "performance/run_mainline_role_source_holdout.py",
+    "performance/mainline_role_source_holdout.py",
+    "performance/mainline_role_after_init.py",
+    "performance/diagnose_mainline_terminal_backend.py"
+  ],
+  "decision": "Retain current deployment model and AFTER working baseline. Initial propagation improves unobserved mean prediction, but continued propagation worsens two empirical terminal decisions and includes a boundary noise distortion. No uniform risk, noise or native-terminal replacement is adopted.",
+  "started": true,
+  "operator_requirements": [
+    "Parameterize fit_native with each archive heldout_target_family; its existing FactorShock literal is not valid for the other two source archives.",
+    "Use actual native initial10 fitting, task-pilot and HVD update path, then the same3fixed raw updates. Its pilot may access only the allowed initial10 raw pairs, not scoring repeats or held policies13..15. build_source_engine alone is only a role projection stub with gpr[0]=None and is not a native posterior.",
+    "AFTER uses the deployed mainline_role_after_init initial10 boundary and point-local later updates; do not use the old point_after_first two-anchor shortcut.",
+    "Source-fit held-policy exclusion precedes fitting; allowed first-raw history adaptation is a separate declared use. Future independent scoring uses only unused repeats."
+  ],
+  "entrypoint": "performance/run_mainline_source_observed_ranking.py",
+  "report": "docs/mainline_source_observed_ranking_results_20261016.md",
+  "execution_preparation": {
+    "status": "completed",
+    "planned_workers": 4,
+    "smoke": "First registered archive/fold is the full-path smoke and retained as formal output; no held scoring until all12 fold files are frozen.",
+    "tests": "tests/test_mainline_source_observed_ranking.py: 10 passed",
+    "smoke_result": "FactorShockStatePolicyRZDT1/fold_0: both families, four arms, both prefixes complete; no scoring labels read; CPU221.890299173s.",
+    "first_fold_after_and_point_unobserved_max_change": 0.0,
+    "first_fold_full_after_initial10_max_difference": 1.5987211554602254e-14
+  },
+  "started_utc": "2026-10-16T14:25:54.831543+00:00",
+  "completed_utc": "2026-10-16T14:51:11.659511+00:00",
+  "results_file": "paper_artifacts/mainline_source_observed_ranking_v1/summary.json",
+  "completion_file": "paper_artifacts/mainline_source_observed_ranking_v1/completion.json",
+  "additional_analyses": [
+    "paper_artifacts/mainline_source_observed_ranking_v1/terminal_components.json",
+    "paper_artifacts/mainline_source_observed_ranking_v1/source_findings.json"
+  ]
+}

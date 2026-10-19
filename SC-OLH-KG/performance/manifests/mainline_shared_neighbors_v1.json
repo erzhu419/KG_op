@@ -1,0 +1,160 @@
+{
+  "name": "mainline_shared_neighbors_v1",
+  "status": "complete:18 frozen recommendations,18 independent verifications,36 query audits and shared-neighborhood diagnosis",
+  "registered_utc": "2026-10-15T14:11:14+00:00",
+  "role": "Conditional pilot on the already opened nominal FactorShock geometry and three previously observed initialization blocks. Search and verification streams are new; initialization and geometry are not independent confirmation data.",
+  "parent_manifest": "performance/manifests/mainline_local_noise_control_v1.json",
+  "parent_output": "paper_artifacts/mainline_local_noise_control_v1",
+  "output_dir": "paper_artifacts/mainline_shared_neighbors_v1",
+  "entrypoint": "performance/run_mainline_shared_neighbors.py",
+  "domain": "FactorShockStatePolicyRZDT1",
+  "target_seeds": [
+    2026101641,
+    2026101642,
+    2026101643
+  ],
+  "initialization_seed_by_run": {
+    "2026101641": 2026101631,
+    "2026101642": 2026101632,
+    "2026101643": 2026101633
+  },
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "arms": [
+    {
+      "name": "legacy_native_v69",
+      "online": true
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "current_structural_local_noise",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "augmented_arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture",
+    "current_structural_local_noise"
+  ],
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load frozen native prior, GP/structural bundle, public mean10/learned risk10 representation, eight source identities and 1024 source integration nodes. Reuse the parent STOP initial10 raw in original order. No source simulation, fitting, encoder fitting or download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "frontends": {
+    "public_neighbors": "Call the existing domain-generic _observed_neighbor_candidates once per initialization block using only its ten shared paid raw observations and the registered independent RNG. Keep its empirical-margin ordering, at most eight parent policies, default radius 0.08, soft margin scale1 and global/tail/third/sparse perturbations. Freeze all three banks before any new search. Count64 includes returned historical parent policies; report truly new unique points separately. No truth-based screening, replacement or extra generation.",
+    "augmentation": "Append all64 returned policies, including historical parent policies, in the same frozen order at every adaptive iteration to every augmented arm. Deduplicate by integer policy while preserving original candidates and order, and record shared_observed_neighbor provenance for additions. Historical parents omitted by the original replication route may therefore become selectable again; do not impose a new global replication filter. Retain all original V69 routes and their own-history proposal posterior; only the supplemental bank is identical across arms, not the entire dynamic pool. No arm's new observations enter the public generator.",
+    "fixed_reference": "legacy_native_v69 keeps the complete original frontend unchanged. legacy_native_neighbors uses the same native backend with only shared-neighbor augmentation. Initialization-only remains STOP. Both fixed references are reconstructed with the new run seed and reused initialization, then independently verified.",
+    "local_noise_pair": "Run full structure once per seed, then reuse its exact13-row history and query trace for current_structural_local_noise. Change only terminal constraint episode variance to the source-zero per-policy marginal updated with own raw, retaining full structural means/covariance, objective noise and query posterior. Freeze the separate local shortlist and execute its own verifier."
+  },
+  "streams": {
+    "novelty_check": "Before registration, root found no2026101641/1642/1643 in performance/manifests, docs or README. The three mapped initialization blocks and nominal geometry were previously opened.",
+    "construction": "Construct each engine with its new run seed and the mapped saved initial10 raw. Replay initialization for zero new simulation calls; do not change seed after engine construction.",
+    "native_search_rng": "default_rng(run_seed); recommendation RNG default_rng(run_seed+1000003); original proposal namespaces and decision_backend_seed_offset470003 retained.",
+    "search_raw": "SeedSequence([run_seed, zero_based_paid_evaluation_index, 0x53434F4C]), indices10..12; each independent online arm executes its own queries using paired common random numbers.",
+    "verification": "Original independent-of-search primary, fallback and paired-objective namespaces with run_seed; all arms in the same block share the run seed. Every arm executes and pays for its verifier separately."
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false
+  },
+  "barriers": {
+    "before_search": "Freeze this protocol, all three shared neighbor banks and their parent raw lineage before any new target observation. Do not open new candidate truth while searching.",
+    "before_verification": "All18 searches and shortlists, including STOP and local-noise controls, must be frozen before any verifier runs.",
+    "before_new_truth": "All18 independent verifications must finish before analytical truth scoring or prediction-error diagnostics; reuse existing truth cache only after that barrier.",
+    "failure": "Retain every failed attempt, consumed simulation and CPU cost. Do not replace seeds, tune neighbors/models from outcomes, silently restart observations or increase numerical precision based on a result."
+  },
+  "budget": {
+    "seed_count": 3,
+    "online_case_count": 15,
+    "initial_only_case_count": 3,
+    "recommendation_count": 18,
+    "independent_online_search_case_count": 12,
+    "terminal_only_control_case_count": 3,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 0,
+    "historical_unique_initial_raw_reused": 30,
+    "initial_logical_calls_across_all_arms": 180,
+    "new_search_physical_calls_max": 36,
+    "coupled_query_calls_reused": 9,
+    "new_verification_physical_calls_max": 6336,
+    "new_target_physical_calls_max": 6372,
+    "logical_target_calls_max": 6561,
+    "new_source_calls": 0,
+    "new_source_or_encoder_fits": 0,
+    "remote_downloads": 0,
+    "accounting": "Report actual early verifier exits. Reused initial raw and the local-noise arm's coupled queries still count logically. Preserve parent ledgers; analytical scoring and CPU cost are separate from paid target simulation."
+  },
+  "comparisons": [
+    "Native neighbors versus unchanged native: effect of supplemental candidate supply under the same backend, initialization, new random streams and maximum budget.",
+    "Augmented native versus GP versus full structure: same public supplemental candidates and target budgets, with original own-history dynamic routes retained. Compare selected new neighbors, primary safety, certified deployed quality and verification expenditure against STOP.",
+    "Local-noise versus full structure: paired terminal-noise intervention on exactly the same paid query path.",
+    "After verification, assess feasibility/improvement coverage and prediction change on the fixed shared neighborhood. Separate new neighbors from newly available historical parents, and distinguish policies never observed along each path. Attribute candidate-supply gains to the corresponding group rather than automatically to new-neighbor generalization. Report all three blocks without outcome filtering."
+  ],
+  "limitations": [
+    "The already opened geometry and reused initial raw make this a conditional development pilot, not an independent generalization result.",
+    "Only the added neighborhood is shared; original dynamic candidate pools may differ with each backend's paid history.",
+    "The local-noise arm isolates terminal noise, not the causal benefit of mean/covariance propagation. A positive decision gain alone does not identify cross-policy propagation as its cause."
+  ],
+  "execution": {
+    "new_target_observations_started": true,
+    "new_source_fits": 0,
+    "source_simulations": 0,
+    "remote_downloads": 0,
+    "completed_recommendations": 18
+  },
+  "completion_file": "paper_artifacts/mainline_shared_neighbors_v1/completion.json",
+  "report": "docs/mainline_shared_neighbors_results_20261015.md"
+}

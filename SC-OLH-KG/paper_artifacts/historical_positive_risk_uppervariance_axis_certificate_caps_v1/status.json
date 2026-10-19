@@ -1,0 +1,48 @@
+{
+  "state": "bound_refined",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
+  "final_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_certificate_caps_screen_v1.json",
+  "precision_passed": true,
+  "numerical_containment_passed": true,
+  "comparison": {
+    "raw": {
+      "old_gap": 0.0023442622285033063,
+      "new_gap": 0.00039045284139349763,
+      "reduction": 0.8334431888011171,
+      "old_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 10410,
+        "record_action_candidates": 763,
+        "record_group_candidates": 279
+      },
+      "new_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 3049,
+        "record_action_candidates": 221,
+        "record_group_candidates": 95
+      }
+    },
+    "projected": {
+      "old_gap": 0.002035521564125173,
+      "new_gap": 0.00046661925720303154,
+      "reduction": 0.7707618207407322,
+      "old_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 9027,
+        "record_action_candidates": 630,
+        "record_group_candidates": 210
+      },
+      "new_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 3677,
+        "record_action_candidates": 248,
+        "record_group_candidates": 97
+      }
+    }
+  },
+  "all_conditional_actions_closed": false,
+  "original_zero_candidate_gate_unchanged": true,
+  "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_certificate_caps_v1/completion.json",
+  "next_step": "Reuse historical query=deploy SD16 marginal integration for group63, then assess shared45/10 joint-event bounds.",
+  "independent_confirmation": false
+}

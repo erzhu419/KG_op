@@ -38,17 +38,24 @@ def close(plan,controller_output='paper_artifacts/historical_positive_risk_full_
         resource=(ROOT/controller_output/f'preparation_v{number}_result.json') if i==0 else folder/'preparation_resources.json'
         recorded=json.loads(resource.read_text());prep_cpu+=(recorded['resource'] if i==0 else recorded)['process_cpu_seconds']
         logs.append(folder/'observed-batch-risk_collection.log')
-        for name in ('observed-batch-risk_collection_before_refinement.log','refinement_preparation.log'):
+        for name in ('observed-batch-risk_collection_before_refinement.log','refinement_preparation.log','branch_coupling_probe.log','multilevel_caps_probe.log'):
             if (folder/name).exists():logs.append(folder/name)
         following=json.loads((ROOT/spec['followup_bound_plan']).read_text())
         logs.extend(ROOT/following['output']/(stage+'_collection.log') for stage in ('observed-batch-bound','observed-batch-next-plan'))
     destination=str((out/'incumbent_replay_final.json').relative_to(ROOT))
-    command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-m','performance.replay_historical_positive_risk_subset','--plan',plan,'--output',destination])
-    rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False);log=out/'incumbent_replay_final.log';log.write_text(body+err)
+    code=('import json,resource,time;from performance.replay_historical_positive_risk_subset import collect_saved_replay;'
+        'result=collect_saved_replay('+repr(plan)+','+repr(destination)+');'
+        'print("SCHEDULEURM_DONE "+json.dumps(result),flush=True);'
+        'print("SCHEDULEURM_RESOURCE "+json.dumps(dict(process_cpu_seconds=time.process_time(),'
+        'peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)),flush=True)')
+    command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-c',code])
+    rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False);log=out/'incumbent_replay_final.log'
+    with log.open('a') as stream:stream.write(body+err)
     if rc:raise RuntimeError(err or body)
     replay=json.loads([s[17:] for s in body.splitlines() if s.startswith('SCHEDULEURM_DONE ')][-1])
     assert replay['source_bound_plan']==plan and replay['native_choices_all_raw_referenced']
-    (ROOT/destination).write_text(json.dumps(replay,indent=2)+'\n');logs.append(log)
+    summary_path=out/'incumbent_replay_summary.json'
+    summary_path.write_text(json.dumps(replay,indent=2)+'\n');logs.append(log)
     if (out/'incumbent_replay_initial.log').exists():logs.append(out/'incumbent_replay_initial.log')
     if (out/'incumbent_replay_failed_close.log').exists():logs.append(out/'incumbent_replay_failed_close.log')
     collection=sum(json.loads(s[21:])['process_cpu_seconds'] for p in logs for s in p.read_text().splitlines() if s.startswith('SCHEDULEURM_RESOURCE '))
@@ -82,6 +89,7 @@ def close(plan,controller_output='paper_artifacts/historical_positive_risk_full_
         reference_group_checks=len(checks),allocation_checks=allocations,all_reference_precision_passed=True,
         maximum_reference_rule_difference=max(c['maximum_difference'] for r in checks for c in r['checks']['comparisons']),
         maximum_live_workers=8,native_incumbents_all_raw_referenced=True,
+        replay_summary_path=str(summary_path.relative_to(ROOT)),
         raw_reward_of_native_incumbent_contrast=replay['weighted_raw_reward_of_native_incumbent_contrast'],
         raw_best_admitted_contrast=replay['weighted_raw_best_admitted_contrast'],
         projected_incumbent_contrast=replay['weighted_projected_incumbent_contrast'],

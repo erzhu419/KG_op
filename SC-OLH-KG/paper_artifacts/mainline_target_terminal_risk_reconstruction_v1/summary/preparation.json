@@ -1,0 +1,40 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-16T15:25:23.036807+00:00",
+  "checks": [
+    "missing registered outcome blocks labels",
+    "unequal raw histories block component attribution",
+    "13 observations can retain only 12 distinct policies",
+    "frozen CDF ties differ from pre-CDF ordering"
+  ],
+  "synthetic_check_cost": {
+    "cpu_seconds": 0.379628222,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "posterior_restorations": 0,
+    "engine_restorations": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "startup_failures": [
+    {
+      "interpreter": "/home/erzhu419/.venvs/scheduleurm-or-exact/bin/python",
+      "error": "ModuleNotFoundError: No module named 'numpy'",
+      "stage": "import before synthetic assertions",
+      "cpu_seconds": null
+    },
+    {
+      "interpreter": "/home/erzhu419/.venvs/scheduleurm-or-exact-site/bin/python",
+      "error": "No such file or directory",
+      "stage": "interpreter startup",
+      "cpu_seconds": null
+    }
+  ],
+  "startup_failure_accounting": "Two startup failures preserved. CPU was not metered and must not be reported as zero. No scientific restoration or label scoring started.",
+  "actual_artifacts_scored": 0
+}

@@ -1,0 +1,172 @@
+{
+  "status": "complete",
+  "scope": "Frozen-history retrospective FactorShock seed80 diagnosis, not an additional optimizer experiment",
+  "bank_size": 18,
+  "raw_rows_in_saved_three_arm_histories": 39,
+  "source_models_changed": false,
+  "new_source_simulator_calls": 0,
+  "new_target_search_calls": 0,
+  "new_target_verification_calls": 0,
+  "new_fits": 0,
+  "download_bytes": 0,
+  "unique_policies_truth_scored": 18,
+  "truth_function_calls": 54,
+  "recorded_compute_cpu_seconds": 22.506730073999993,
+  "cpu_scope": "Measured preparation, native views, three source-geometry passes, replay including failed attempt, truth scoring and decomposition; excludes interpreter startup and interactive inspection.",
+  "preparation": {
+    "cpu_seconds": 0.027085870999999997,
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "truth_calls": 0,
+    "source_fits": 0,
+    "remote_downloads": 0
+  },
+  "native_views": {
+    "cpu_seconds": 3.568115946,
+    "new_simulator_calls": 0,
+    "source_fits": 0,
+    "target_model_refits": 0,
+    "downloads": 0
+  },
+  "source_geometry_attempts": {
+    "cpu_seconds": [
+      0.10796103600000007,
+      0.11818954699999995,
+      0.10048132300000001
+    ],
+    "provenance": "Agent tool execution outputs; the saved source_geometry.json retains the final pass only. All three passes completed without fits, simulations, truth calls or downloads."
+  },
+  "attempts": [
+    {
+      "stage": "replay",
+      "arm": "current_structural_mixture",
+      "status": "failed",
+      "truth_function_calls": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "error": "AssertionError('\\nArrays are not equal\\n\\nMismatched elements: 28 / 32 (87.5%)\\nMax absolute difference among violations: 1.0658141e-14\\nMax relative difference among violations: 1.68909276e-15\\n ACTUAL: array([[ 3.435814e-01, -9.850587e+00,  8.507557e-02, -6.931641e+00],\\n       [ 3.345747e-01, -9.832526e+00,  6.994398e-02, -6.915547e+00],\\n       [ 9.042237e-02, -1.055271e+01, -7.073679e-01, -9.618903e+00],...\\n DESIRED: array([[ 3.435814e-01, -9.850587e+00,  8.507557e-02, -6.931641e+00],\\n       [ 3.345747e-01, -9.832526e+00,  6.994398e-02, -6.915547e+00],\\n       [ 9.042237e-02, -1.055271e+01, -7.073679e-01, -9.618903e+00],...')",
+      "cpu_seconds": 7.163233506999999,
+      "wall_seconds": 7.163725692007574,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/current_structural_mixture_attempts.jsonl",
+      "ledger_line": 1
+    },
+    {
+      "stage": "replay",
+      "arm": "current_structural_mixture",
+      "status": "complete",
+      "truth_function_calls": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "cpu_seconds": 11.10685096,
+      "wall_seconds": 11.192308199999388,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/current_structural_mixture_attempts.jsonl",
+      "ledger_line": 2
+    },
+    {
+      "stage": "decompose",
+      "arm": null,
+      "status": "complete",
+      "truth_function_calls": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "cpu_seconds": 0.013378983999999927,
+      "wall_seconds": 0.013372707006055862,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/decompose_attempts.jsonl",
+      "ledger_line": 1
+    },
+    {
+      "stage": "decompose",
+      "arm": null,
+      "status": "complete",
+      "truth_function_calls": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "cpu_seconds": 0.013407116999999968,
+      "wall_seconds": 0.014158260004478507,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/decompose_attempts.jsonl",
+      "ledger_line": 2
+    },
+    {
+      "stage": "decompose",
+      "arm": null,
+      "status": "complete",
+      "truth_function_calls": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "cpu_seconds": 0.013507818000000005,
+      "wall_seconds": 0.013650309992954135,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/decompose_attempts.jsonl",
+      "ledger_line": 3
+    },
+    {
+      "stage": "replay",
+      "arm": "same_source_gp",
+      "status": "complete",
+      "truth_function_calls": 0,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "cpu_seconds": 0.241452981,
+      "wall_seconds": 0.2414541750040371,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/same_source_gp_attempts.jsonl",
+      "ledger_line": 1
+    },
+    {
+      "stage": "truth",
+      "arm": null,
+      "status": "complete",
+      "truth_function_calls": 54,
+      "new_simulator_calls": 0,
+      "new_verification_calls": 0,
+      "new_fits": 0,
+      "download_bytes": 0,
+      "cpu_seconds": 0.033064983999999964,
+      "wall_seconds": 0.033065800002077594,
+      "ledger": "paper_artifacts/mainline_factorshock_diagnosis_v1/truth_attempts.jsonl",
+      "ledger_line": 1
+    }
+  ],
+  "recovery": "A zero-paid point-only marginal equality assertion encountered 1.0658141e-14 mixture summation roundoff. Changed only comparison to atol2e-11 and replayed; source model, likelihood and decisions unchanged.",
+  "completed_checks": {
+    "final_full_primary_and_moment_parity": {
+      "same_source_gp": true,
+      "current_structural_mixture": true
+    },
+    "untouched_point_only_marginal_parity": true
+  },
+  "results": {
+    "native_same_history_choices": {
+      "same_source_gp": 0,
+      "current_structural_mixture": 0
+    },
+    "full_choices": {
+      "same_source_gp": 4,
+      "current_structural_mixture": 16
+    },
+    "point_only_from_zero_choices": {
+      "same_source_gp": 9,
+      "current_structural_mixture": 0
+    },
+    "point_only_after_initial10_choices": {
+      "same_source_gp": 5,
+      "current_structural_mixture": 0
+    }
+  },
+  "diagnostic_limitations": [
+    "One opened development case; fixed actual paths; no new independently verified performance.",
+    "Old posterior views use its native expert decision weights and mixture probabilities, whereas newer arms retain their Gaussian moment terminal rule.",
+    "Only old_constraint_epistemic substitutions hit all-one CDF ties that change chosen indices; unchanged primary ordering does not depend on this numerical saturation."
+  ],
+  "report": "docs/mainline_factorshock_diagnosis_results_20261015.md"
+}

@@ -1,0 +1,477 @@
+{
+  "status": "All12 search shortlists frozen, all12 independently verified and then scored; saved-result audit only.",
+  "scope": "Three predetermined families, one already opened seed80 each. Development comparison; no statistical superiority test. FactorShock scale1, same-source384 archives, original dynamic frontend, V69 constrainedTS/observed-only terminal.",
+  "outcome": {
+    "recommendations": 12,
+    "certified_and_true_feasible": 12,
+    "false_certificates": 0,
+    "primary_true_feasible": 9,
+    "deployment_fallbacks": 3
+  },
+  "arms": [
+    {
+      "arm": "legacy_native_v69",
+      "certified_count": 3,
+      "primary_true_feasible_count": 3,
+      "mean_actual_safe_reward": 0.8054515028660347,
+      "new_search_calls": 9,
+      "new_verification_calls": 240
+    },
+    {
+      "arm": "same_source_gp",
+      "certified_count": 3,
+      "primary_true_feasible_count": 2,
+      "mean_actual_safe_reward": 0.8055966939912919,
+      "new_search_calls": 9,
+      "new_verification_calls": 512
+    },
+    {
+      "arm": "current_structural_mixture",
+      "certified_count": 3,
+      "primary_true_feasible_count": 2,
+      "mean_actual_safe_reward": 0.8055966939912919,
+      "new_search_calls": 9,
+      "new_verification_calls": 512
+    },
+    {
+      "arm": "initialization_only",
+      "certified_count": 3,
+      "primary_true_feasible_count": 2,
+      "mean_actual_safe_reward": 0.8054515028660347,
+      "new_search_calls": 0,
+      "new_verification_calls": 368
+    }
+  ],
+  "cases": [
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "legacy_native_v69",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.033201874624488065,
+      "deployed_quality": 0.7908333333333334,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 3,
+      "new_verification_calls": 80,
+      "logical_total_calls": 93,
+      "search_cpu_seconds_including_failures": 103.786251963,
+      "verification_cpu_seconds": 0.623255418
+    },
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "same_source_gp",
+      "primary_true_feasible": false,
+      "primary_true_chance_margin": 0.4419316606545252,
+      "deployed_quality": 0.7908333333333334,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": false,
+      "selected_shortlist_rank": 2,
+      "guard_status": "challenger_not_safety_certified",
+      "new_search_calls": 3,
+      "new_verification_calls": 208,
+      "logical_total_calls": 221,
+      "search_cpu_seconds_including_failures": 98.610086561,
+      "verification_cpu_seconds": 0.27621636800000005
+    },
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "current_structural_mixture",
+      "primary_true_feasible": false,
+      "primary_true_chance_margin": 0.8480526248173789,
+      "deployed_quality": 0.7908333333333334,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": false,
+      "selected_shortlist_rank": 2,
+      "guard_status": "challenger_not_safety_certified",
+      "new_search_calls": 3,
+      "new_verification_calls": 208,
+      "logical_total_calls": 221,
+      "search_cpu_seconds_including_failures": 342.33785094200005,
+      "verification_cpu_seconds": 34.849423756
+    },
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "initialization_only",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.033201874624488065,
+      "deployed_quality": 0.7908333333333334,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 0,
+      "new_verification_calls": 80,
+      "logical_total_calls": 90,
+      "search_cpu_seconds_including_failures": 37.607233487,
+      "verification_cpu_seconds": 0.5286057209999999
+    },
+    {
+      "family": "InventorySupplyChain",
+      "arm": "legacy_native_v69",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.02048179930868426,
+      "deployed_quality": 0.8080990688520624,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 3,
+      "new_verification_calls": 80,
+      "logical_total_calls": 93,
+      "search_cpu_seconds_including_failures": 77.87041649700001,
+      "verification_cpu_seconds": 0.6470429339999999
+    },
+    {
+      "family": "InventorySupplyChain",
+      "arm": "same_source_gp",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.021507965089250097,
+      "deployed_quality": 0.8085346422278341,
+      "deployed_delta_vs_initialization_only": 0.00043557337577171396,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "challenger_dominates",
+      "new_search_calls": 3,
+      "new_verification_calls": 224,
+      "logical_total_calls": 237,
+      "search_cpu_seconds_including_failures": 80.690535021,
+      "verification_cpu_seconds": 0.272585717
+    },
+    {
+      "family": "InventorySupplyChain",
+      "arm": "current_structural_mixture",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.021507965089250097,
+      "deployed_quality": 0.8085346422278341,
+      "deployed_delta_vs_initialization_only": 0.00043557337577171396,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "challenger_dominates",
+      "new_search_calls": 3,
+      "new_verification_calls": 224,
+      "logical_total_calls": 237,
+      "search_cpu_seconds_including_failures": 903.224641462,
+      "verification_cpu_seconds": 35.207461403
+    },
+    {
+      "family": "InventorySupplyChain",
+      "arm": "initialization_only",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.02048179930868426,
+      "deployed_quality": 0.8080990688520624,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 0,
+      "new_verification_calls": 80,
+      "logical_total_calls": 90,
+      "search_cpu_seconds_including_failures": 44.357582014,
+      "verification_cpu_seconds": 0.546486539
+    },
+    {
+      "family": "QueueResourceControl",
+      "arm": "legacy_native_v69",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.024302200638751388,
+      "deployed_quality": 0.8174221064127083,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 3,
+      "new_verification_calls": 80,
+      "logical_total_calls": 93,
+      "search_cpu_seconds_including_failures": 104.75448646599999,
+      "verification_cpu_seconds": 0.606057917
+    },
+    {
+      "family": "QueueResourceControl",
+      "arm": "same_source_gp",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.024302200638751388,
+      "deployed_quality": 0.8174221064127083,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 3,
+      "new_verification_calls": 80,
+      "logical_total_calls": 93,
+      "search_cpu_seconds_including_failures": 92.23785388900001,
+      "verification_cpu_seconds": 0.21978706500000006
+    },
+    {
+      "family": "QueueResourceControl",
+      "arm": "current_structural_mixture",
+      "primary_true_feasible": true,
+      "primary_true_chance_margin": -0.024302200638751388,
+      "deployed_quality": 0.8174221064127083,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": true,
+      "selected_shortlist_rank": 1,
+      "guard_status": "same_policy",
+      "new_search_calls": 3,
+      "new_verification_calls": 80,
+      "logical_total_calls": 93,
+      "search_cpu_seconds_including_failures": 855.015043588,
+      "verification_cpu_seconds": 35.084202348
+    },
+    {
+      "family": "QueueResourceControl",
+      "arm": "initialization_only",
+      "primary_true_feasible": false,
+      "primary_true_chance_margin": 0.018923696579142644,
+      "deployed_quality": 0.8174221064127083,
+      "deployed_delta_vs_initialization_only": 0.0,
+      "deployed_equals_primary": false,
+      "selected_shortlist_rank": 2,
+      "guard_status": "challenger_not_safety_certified",
+      "new_search_calls": 0,
+      "new_verification_calls": 208,
+      "logical_total_calls": 218,
+      "search_cpu_seconds_including_failures": 53.409707014,
+      "verification_cpu_seconds": 0.7078554289999999
+    }
+  ],
+  "interpretation": {
+    "InventorySupplyChain": {
+      "gp_and_structural_winner_physical_policies_exactly_equal": true,
+      "quality_gain_over_native_and_initialization_only": 0.00043557337577171396,
+      "winner_is_new_relative_to_initial10": true,
+      "paths": {
+        "same_source_gp": {
+          "winner_paid_positions_1based": [
+            13
+          ],
+          "query_routes": [
+            "random",
+            "source_consensus_frozen",
+            "source_consensus_frozen"
+          ],
+          "query_action_kinds": [
+            "new",
+            "new",
+            "new"
+          ],
+          "query_candidate_counts": [
+            33,
+            33,
+            32
+          ],
+          "paired_objective_difference_upper_bound": -0.0005547829912034577
+        },
+        "current_structural_mixture": {
+          "winner_paid_positions_1based": [
+            11,
+            13
+          ],
+          "query_routes": [
+            "source_consensus_frozen",
+            "source_consensus_frozen",
+            "source_consensus_frozen"
+          ],
+          "query_action_kinds": [
+            "new",
+            "new",
+            "replicate"
+          ],
+          "query_candidate_counts": [
+            33,
+            33,
+            34
+          ],
+          "paired_objective_difference_upper_bound": -0.0005547829912034577
+        }
+      }
+    },
+    "fallbacks": [
+      {
+        "family": "FactorShockStatePolicyRZDT1",
+        "arm": "same_source_gp",
+        "primary_paid_positions_1based": [
+          5
+        ],
+        "deployed_paid_positions_1based": [
+          1
+        ],
+        "primary_true_margin": 0.4419316606545252,
+        "verification_upper_margins": [
+          0.4747158954950812,
+          -0.02212372372615516
+        ],
+        "guard_status": "challenger_not_safety_certified",
+        "objective_comparison_calls": 0
+      },
+      {
+        "family": "FactorShockStatePolicyRZDT1",
+        "arm": "current_structural_mixture",
+        "primary_paid_positions_1based": [
+          12
+        ],
+        "deployed_paid_positions_1based": [
+          1
+        ],
+        "primary_true_margin": 0.8480526248173789,
+        "verification_upper_margins": [
+          0.8728040275194512,
+          -0.02212372372615516
+        ],
+        "guard_status": "challenger_not_safety_certified",
+        "objective_comparison_calls": 0
+      },
+      {
+        "family": "QueueResourceControl",
+        "arm": "initialization_only",
+        "primary_paid_positions_1based": [
+          4
+        ],
+        "deployed_paid_positions_1based": [
+          7
+        ],
+        "primary_true_margin": 0.018923696579142644,
+        "verification_upper_margins": [
+          0.033234978741662036,
+          -0.01583064443853561
+        ],
+        "guard_status": "challenger_not_safety_certified",
+        "objective_comparison_calls": 0
+      }
+    ],
+    "overall": "All four arms deploy the same policy in FactorShock and Queue. Inventory GP and current prior discover the same slightly better source-consensus policy. Guarded deployment success does not imply all backend primary recommendations were safe.",
+    "precision": "Current source integration1024 positive nodes is not precision-certified; retained source_fit_summary reports low overlap, including dominant Queue identities."
+  },
+  "calls": {
+    "new_source_simulator_calls": 0,
+    "new_initial_simulator_calls": 0,
+    "reused_initial_physical_rows": 30,
+    "reused_initial_logical_calls": 120,
+    "new_search_calls": 27,
+    "new_verification_calls": 1632,
+    "new_physical_total_including_failures": 1659,
+    "logical_total": 1779,
+    "failed_attempt_new_simulator_calls": 0,
+    "server_download_bytes": 0
+  },
+  "barrier": {
+    "last_successful_search_finished_utc": "2026-10-15T11:56:53.277451+00:00",
+    "first_verification_started_utc": "2026-10-15T11:58:43.926180+00:00",
+    "last_verification_finished_utc": "2026-10-15T11:59:24.744151+00:00",
+    "truth_score_started_utc": "2026-10-15T11:59:34.320555+00:00",
+    "passed": true
+  },
+  "cost": {
+    "cpu_seconds_by_nonoverlapping_category": {
+      "source_models_fit_including_failed_attempt": 34.609021752,
+      "native_source_restoration": 4.182974457,
+      "case_search_including_failed_attempt": 2793.901688904,
+      "case_verification": 109.56898061500002,
+      "saved_truth_scoring": 0.380260276,
+      "numerical_replay_including_failed_attempt": 24.54324817,
+      "post_verification_diagnostic_replay": 279.606320724,
+      "implementation_tests": 39.227192169999995,
+      "registered_input_preparation": 0.011901198999999998,
+      "saved_only_summary_assembly": 0.38459116299999996
+    },
+    "source_families": [
+      {
+        "family": "FactorShockStatePolicyRZDT1",
+        "new_model_fit_attempts": 1,
+        "new_model_fit_cpu_seconds_including_failures": 10.631013131,
+        "native_source_restore_cpu_seconds": 1.4801225519999999
+      },
+      {
+        "family": "InventorySupplyChain",
+        "new_model_fit_attempts": 2,
+        "new_model_fit_cpu_seconds_including_failures": 13.285948344999998,
+        "native_source_restore_cpu_seconds": 1.177395399
+      },
+      {
+        "family": "QueueResourceControl",
+        "new_model_fit_attempts": 1,
+        "new_model_fit_cpu_seconds_including_failures": 10.692060276,
+        "native_source_restore_cpu_seconds": 1.525456506
+      }
+    ],
+    "failures": [
+      {
+        "file": "FactorShockStatePolicyRZDT1/current_structural_mixture/attempts.jsonl",
+        "stage": "search",
+        "cpu_seconds": 157.220077994,
+        "error": "RuntimeError('Batched raw moment integration failed: Target precision could not be reached due to rounding error.')",
+        "new_simulator_calls": 0
+      },
+      {
+        "file": "source_models/InventorySupplyChain/source_fit_attempts.json",
+        "stage": "source_fit",
+        "cpu_seconds": 2.365131334,
+        "error": "SourceQuadratureOverlapError(\"Fixed source quadrature has inadequate importance overlap: ['spectral', 'head_specific', 'observed_task', 'g']\")",
+        "new_simulator_calls": 0
+      },
+      {
+        "file": "numerical_replay/initial10_batch64.json",
+        "stage": "numerical_replay",
+        "cpu_seconds": 0.020810364000000026,
+        "error": "TypeError(\"build_scalarized_problem() got an unexpected keyword argument 'shared_shock_scale'\")",
+        "new_simulator_calls": 0
+      }
+    ],
+    "failure_count": 3,
+    "numerical_replay": [
+      {
+        "file": "numerical_replay/initial10_batch64.json",
+        "status": "failed",
+        "cpu_seconds": 0.020810364000000026
+      },
+      {
+        "file": "numerical_replay/initial10_batch64_attempt02.json",
+        "status": "complete",
+        "cpu_seconds": 24.383233856
+      },
+      {
+        "file": "numerical_replay/actual_roundoff_parity.json",
+        "status": "complete",
+        "cpu_seconds": 0.13920395000000002
+      }
+    ],
+    "implementation_tests": {
+      "source_model_tests": 4,
+      "runner_checks": 5,
+      "batched_integration_test": 1,
+      "cpu_seconds": 39.227192169999995,
+      "scope": "Previously recorded execution only; this completion audit ran no tests.",
+      "native_restore_smoke": {
+        "ledger": "paper_artifacts/mainline_legacy_native_restore_v1/implementation_test_attempts.jsonl",
+        "tests": 2,
+        "cpu_seconds": 35.808433734,
+        "new_simulator_calls": 0,
+        "duplicate_summary_excluded": "paper_artifacts/mainline_legacy_native_restore_v1/implementation_tests.json"
+      },
+      "additional_parent_pytest_repeat": {
+        "tests": 5,
+        "pytest_reported_duration_seconds": 2.7,
+        "cpu_seconds": null,
+        "cpu_measurement": "Not recorded; reported pytest duration is not added as CPU."
+      }
+    },
+    "diagnostic_replay": {
+      "file": "diagnostic_replay.json",
+      "cases": 6,
+      "cpu_seconds": 279.606320724,
+      "truth_function_calls": 36,
+      "new_simulator_calls": 0
+    },
+    "accounting": "Sum primary attempt ledgers once. Exclude duplicated source_diagnostics/source_fit_summary fit CPU, runner_implementation_tests copy, and per-family diagnostic_replay costs already in the merged diagnostic. New source fit counts and native source restoration remain distinct. Native initialization smoke is counted from its external implementation_test_attempts.jsonl once; its duplicate implementation_tests.json is excluded. Parent repeated5 pytest had no separately measured CPU.",
+    "recorded_cpu_seconds_including_completion": 3286.4658809330003
+  },
+  "audit_cost": {
+    "cpu_seconds": 0.049701503,
+    "wall_seconds": 0.049890292997588404,
+    "new_simulator_calls": 0,
+    "new_truth_calls": 0,
+    "new_source_fits": 0,
+    "new_tests": 0
+  }
+}

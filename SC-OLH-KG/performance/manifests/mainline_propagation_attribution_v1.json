@@ -1,0 +1,43 @@
+{
+  "name": "mainline_propagation_attribution_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T02:06:49.606288+00:00",
+  "analysis_type": "Retrospective frozen-model saved-score attribution of all12 Stage41 tasks; no fresh experiment.",
+  "source_manifest": "performance/manifests/mainline_terminal_confirmation_search_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_terminal_confirmation_v1/search",
+  "terminal_output_dir": "paper_artifacts/mainline_terminal_confirmation_v1/terminal",
+  "output_dir": "paper_artifacts/mainline_propagation_attribution_v1",
+  "target_seeds": [
+    2026101901,
+    2026101902,
+    2026101903,
+    2026101904,
+    2026101905,
+    2026101906,
+    2026101907,
+    2026101908,
+    2026101909,
+    2026101910,
+    2026101911,
+    2026101912
+  ],
+  "history_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only"
+  ],
+  "report": "docs/mainline_propagation_attribution_results_20261016.md",
+  "entrypoint": "performance/diagnose_mainline_propagation_attribution.py",
+  "query_scope": "All36 paired paid10/11/12 states. Verify saved constrained-TS scores; align physical policies. Attribute first divergences only under identical paid history and ordered pools. Later histories and altered pools are descriptive.",
+  "decomposition": "Sampled risk margin = riskmean + z_alpha*sqrt(episodevariance) + realized constraint TS innovation (tau=0). Compare selected pair gap and bidirectional saved-component swaps; full8 riskcomponent subsets and objective mean/draw/all plus all components. Objective and risk reconstruction must reproduce original choices. No resampling.",
+  "terminal_scope": "Derive full-only improving queried policies from all12 cachedtruth/histories; follow discovery, ordered shortlist, safety attempt, objectiveguard and deployment for both histories and terminals. Use all-observed native terminal components and available role shortlist metadata.",
+  "limits": "Component substitutions are one-step saved-score sensitivity, not posterior ablations or alternate adaptive trajectories. TS innovation includes covariance/factorization/random-draw effects; off-diagonal covariance is not identified by marginal snapshots. Uncached truth stays unknown. Role omitted-candidate final numeric posterior is unavailable unless saved, never replaced with paid12 as paid13.",
+  "new_budget": {
+    "target_calls": 0,
+    "source_calls": 0,
+    "source_fits": 0,
+    "truth_calls": 0,
+    "posterior_restorations": 0,
+    "downloads": 0
+  },
+  "next_step_gate": "No model change in this stage. A later single correction requires a shared mechanism across tasks and source-data support; otherwise retain initialization propagation plus point-only update as working baseline."
+}

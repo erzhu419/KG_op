@@ -1,0 +1,167 @@
+{
+  "stage": 99,
+  "status": "complete",
+  "created_utc": "2026-10-19T06:37:27.555011+00:00",
+  "scope": "Finite source numerical probe wiring and substitute checks only; registered numerical probe not executed",
+  "local_editing_and_static_inspection_cpu_seconds": null,
+  "unmeasured_cpu_note": "Local editing and static inspection CPU were not separately timed; unknown, not zero.",
+  "local_substitute_checks": [],
+  "transfers": [
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_code_upload_receipt.json",
+      "status": "completed",
+      "file_bytes": 65945,
+      "compressed_bytes": 16504,
+      "base64_bytes": 22008,
+      "local_control_cpu_seconds": 0.026002321000000023,
+      "remote_upload_cpu_seconds": 0.0018236719999999984,
+      "acknowledgement_download_bytes": 1430
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_final_document_upload_20261019.json",
+      "scope": "Final five static files only",
+      "status": "completed",
+      "file_bytes": 469943,
+      "compressed_bytes": 155849,
+      "base64_bytes": 207800,
+      "local_control_cpu_seconds": 0.10874595400000003,
+      "remote_upload_cpu_seconds": 0.00815022,
+      "acknowledgement_download_bytes": 3946
+    }
+  ],
+  "scheduler_task_ids": [
+    "t190344"
+  ],
+  "controller": {
+    "launch_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_controller_launch.json",
+    "pid": 1444570,
+    "exit_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_controller_exit.json",
+    "returncode": 0,
+    "completed_utc": "2026-10-19T06:49:32.832047+00:00",
+    "child_cpu_seconds": 85.503475,
+    "supervisor_cpu_seconds": 0.018444,
+    "wall_seconds": 274.28928125899984,
+    "automatic_retries": 0
+  },
+  "new_work": {
+    "real_source_probes": 0,
+    "simulator_calls": 0,
+    "target_scores": 0,
+    "source_fits": 0,
+    "real_model_loads": 0,
+    "posterior_restorations": 0,
+    "real_integrations": 0,
+    "old_failed_query_retries": 0,
+    "raw_model_or_csv_downloads": 0,
+    "scheduler_tasks": 1,
+    "substitute_check_jobs": 1
+  },
+  "historical_account_references": [
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage98_accounting.json",
+    "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_accounting.json"
+  ],
+  "cost_policy": "Substitute pytest CPU is nested in the scheduled wrapper total. Controller and transfer CPU are separate. Prior scientific/registration costs remain references.",
+  "failures_retained": [],
+  "metadata_reads": [
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_dependency_availability.json",
+      "returncode": 0,
+      "local_control_cpu_seconds": 0.016177598000000015,
+      "wall_seconds": 2.0107404190057423,
+      "stdout_bytes": 1211,
+      "stderr_bytes": 461,
+      "utc": "2026-10-19T06:44:26.058516+00:00",
+      "remote_cpu_seconds": 0.0011255360000000103
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_dispatch_wait_read.json",
+      "returncode": 0,
+      "local_control_cpu_seconds": 0.017672840000000023,
+      "wall_seconds": 1.553186186007224,
+      "stdout_bytes": 2360,
+      "stderr_bytes": 461,
+      "utc": "2026-10-19T06:49:43.254370+00:00",
+      "remote_cpu_seconds": 0.00031351699999999927
+    }
+  ],
+  "result_download": {
+    "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_result_download_receipt.json",
+    "returncode": 0,
+    "local_control_cpu_seconds": 0.028047709000000004,
+    "wall_seconds": 9.628847184008919,
+    "stdout_bytes": 237,
+    "stderr_bytes": 461,
+    "utc": "2026-10-19T06:50:55.198413+00:00",
+    "remote_cpu_seconds": 0.0008193560000000072
+  },
+  "scheduler_tasks": [
+    {
+      "id": "t190344",
+      "status": "running",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": null,
+      "retry_count": 0,
+      "started_at": 1792392524.144482,
+      "finished_at": null,
+      "last_block_reason": null
+    }
+  ],
+  "wrapper_duplicate_count": 0,
+  "wrapper_inclusive_cpu_seconds": 2.243893,
+  "wrapper_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_wrapper.json",
+  "checks_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/validation/stage99_attempt1/checks.json",
+  "completion_audit_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_completion_audit.json",
+  "scheduled_substitute_checks": {
+    "status": "passed",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_source_finite_numerical_probe.py",
+      "tests/test_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "test_files": [
+      "tests/test_mainline_source_finite_numerical_probe.py",
+      "tests/test_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "test_counts": {
+      "passed": 18
+    },
+    "returncode": 0,
+    "launch_error": null,
+    "cpu_seconds": 2.0305299999999997,
+    "coordinator_cpu_seconds": 0.0039281929999999965,
+    "wall_seconds": 4.5057833306491375,
+    "started_utc": "2026-10-19T06:48:28.708905+00:00",
+    "completed_utc": "2026-10-19T06:48:33.215442+00:00",
+    "scope": "Explicit substitute checks only; no scientific runner or registration invoked",
+    "new_scientific_calls": 0,
+    "new_truth_calls": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0,
+    "registered_permutations_materialized_by_checks": false,
+    "registered_geometries_materialized_by_checks": false,
+    "automatic_retries": 0
+  },
+  "manual_dispatch": {
+    "task_ids": [
+      "t190344"
+    ],
+    "cpu_seconds": 59.512292,
+    "wall_seconds": 205.95369653898524,
+    "new_submissions": 0,
+    "automatic_scientific_retries": 0
+  },
+  "local_queue_projection_cpu_seconds": 4.031303664,
+  "execution_authorized": false,
+  "known_control_cpu_seconds": 89.762101387,
+  "known_new_total_cpu_seconds": 92.005994387,
+  "cpu_total_note": "Known new total = wrapper inclusive CPU + controller/metadata/transfer CPU. Pytest and validator coordinator CPU are nested inside wrapper. Manual dispatch CPU is nested inside controller child CPU. Earlier local editing/static inspection remains unknown.",
+  "final_document_sync_status": "completed",
+  "updated_utc": "2026-10-19T06:54:13.699115+00:00"
+}

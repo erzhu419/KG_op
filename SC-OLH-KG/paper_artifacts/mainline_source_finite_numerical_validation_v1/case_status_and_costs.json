@@ -1,0 +1,2608 @@
+{
+  "status": "collected",
+  "manifest": "performance/manifests/mainline_source_finite_numerical_validation_v1.json",
+  "registered_cases": 12,
+  "cases": [
+    {
+      "case": {
+        "case_id": "InventorySupplyChain__real__QueueResourceControl",
+        "asset_group": "InventorySupplyChain",
+        "association": "real",
+        "source_family": "QueueResourceControl",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/InventorySupplyChain__real__QueueResourceControl/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "InventorySupplyChain__real__QueueResourceControl",
+          "asset_group": "InventorySupplyChain",
+          "association": "real",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.504602031000001,
+        "wall_seconds": 12.679432306438684
+      },
+      "case_attempt_cpu_seconds": 10.505118392,
+      "worker_process_cpu_seconds_inclusive": 10.505379765,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0002613730000007308,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 114,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__real__QueueResourceControl",
+          "asset_group": "InventorySupplyChain",
+          "association": "real",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/deconvolved_task",
+          "head": "g",
+          "component_start": 512,
+          "component_stop": 576,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.847845793645031e-13,
+          "minimum_normalizer": 2.5048827108990137,
+          "integration_relative_error": 1.5361381101409023e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 425,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__real__QueueResourceControl",
+          "asset_group": "InventorySupplyChain",
+          "association": "real",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/observed_task",
+          "head": "g",
+          "component_start": 256,
+          "component_stop": 320,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.5793146427325099,
+            1.0226208286709333
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 2.7857203691086147e-13,
+          "minimum_normalizer": 2.4844811301799634,
+          "integration_relative_error": 1.1212483505184968e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 336,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "InventorySupplyChain__real__FactorShockStatePolicyRZDT1",
+        "asset_group": "InventorySupplyChain",
+        "association": "real",
+        "source_family": "FactorShockStatePolicyRZDT1",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/InventorySupplyChain__real__FactorShockStatePolicyRZDT1/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "InventorySupplyChain__real__FactorShockStatePolicyRZDT1",
+          "asset_group": "InventorySupplyChain",
+          "association": "real",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.49805183,
+        "wall_seconds": 12.653635993599892
+      },
+      "case_attempt_cpu_seconds": 10.498678399000001,
+      "worker_process_cpu_seconds_inclusive": 10.498955608,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.00027720899999827964,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 55,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__real__FactorShockStatePolicyRZDT1",
+          "asset_group": "InventorySupplyChain",
+          "association": "real",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/observed_task",
+          "head": "g",
+          "component_start": 704,
+          "component_stop": 768,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            2.104341996278352,
+            1.97902384534459
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 2.4394452238558335e-13,
+          "minimum_normalizer": 2.5079821898291836,
+          "integration_relative_error": 9.726724670329425e-14,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 236,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__real__FactorShockStatePolicyRZDT1",
+          "asset_group": "InventorySupplyChain",
+          "association": "real",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 320,
+          "component_stop": 384,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 1.127430049853324e-13,
+          "minimum_normalizer": 2.506360038958525,
+          "integration_relative_error": 4.4982765138635396e-14,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "InventorySupplyChain__permuted__QueueResourceControl",
+        "asset_group": "InventorySupplyChain",
+        "association": "permuted",
+        "source_family": "QueueResourceControl",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/InventorySupplyChain__permuted__QueueResourceControl/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "InventorySupplyChain__permuted__QueueResourceControl",
+          "asset_group": "InventorySupplyChain",
+          "association": "permuted",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.582871698,
+        "wall_seconds": 11.429561445489526
+      },
+      "case_attempt_cpu_seconds": 10.583340859,
+      "worker_process_cpu_seconds_inclusive": 10.583587398999999,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0002465399999991291,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 176,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__permuted__QueueResourceControl",
+          "asset_group": "InventorySupplyChain",
+          "association": "permuted",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/observed_task",
+          "head": "g",
+          "component_start": 448,
+          "component_stop": 512,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.258107290109079e-13,
+          "minimum_normalizer": 2.5081994889456682,
+          "integration_relative_error": 1.2989825189218252e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 36,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__permuted__QueueResourceControl",
+          "asset_group": "InventorySupplyChain",
+          "association": "permuted",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/observed_task",
+          "head": "g",
+          "component_start": 64,
+          "component_stop": 128,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 2.1214809178009893e-13,
+          "minimum_normalizer": 2.498429835298274,
+          "integration_relative_error": 8.491256739846437e-14,
+          "integration_status": 0,
+          "integrand_evaluations": 378,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "InventorySupplyChain__permuted__FactorShockStatePolicyRZDT1",
+        "asset_group": "InventorySupplyChain",
+        "association": "permuted",
+        "source_family": "FactorShockStatePolicyRZDT1",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/InventorySupplyChain__permuted__FactorShockStatePolicyRZDT1/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "InventorySupplyChain__permuted__FactorShockStatePolicyRZDT1",
+          "asset_group": "InventorySupplyChain",
+          "association": "permuted",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.25549077,
+        "wall_seconds": 11.111723486334085
+      },
+      "case_attempt_cpu_seconds": 10.256000247,
+      "worker_process_cpu_seconds_inclusive": 10.256260038,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.00025979100000128597,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 52,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__permuted__FactorShockStatePolicyRZDT1",
+          "asset_group": "InventorySupplyChain",
+          "association": "permuted",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/observed_task",
+          "head": "g",
+          "component_start": 576,
+          "component_stop": 640,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 1.7232833602361337e-12,
+          "minimum_normalizer": 2.693391877971515,
+          "integration_relative_error": 6.398190231174221e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 378,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 130,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "InventorySupplyChain__permuted__FactorShockStatePolicyRZDT1",
+          "asset_group": "InventorySupplyChain",
+          "association": "permuted",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/observed_task",
+          "head": "f",
+          "component_start": 0,
+          "component_stop": 64,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.9025411134684e-13,
+          "minimum_normalizer": 2.5064664960533505,
+          "integration_relative_error": 1.5569891397364736e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 336,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "QueueResourceControl__real__InventorySupplyChain",
+        "asset_group": "QueueResourceControl",
+        "association": "real",
+        "source_family": "InventorySupplyChain",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/QueueResourceControl__real__InventorySupplyChain/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "QueueResourceControl__real__InventorySupplyChain",
+          "asset_group": "QueueResourceControl",
+          "association": "real",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.6426505235591055,
+            1.1880193711591178
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.03222413,
+        "wall_seconds": 10.858521176502109
+      },
+      "case_attempt_cpu_seconds": 10.03292421,
+      "worker_process_cpu_seconds_inclusive": 10.033188417,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.00026420700000073793,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 439,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__real__InventorySupplyChain",
+          "asset_group": "QueueResourceControl",
+          "association": "real",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/observed_task",
+          "head": "g",
+          "component_start": 704,
+          "component_stop": 768,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.615413530712801,
+            0.6229273495361776
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.588009550852837e-13,
+          "minimum_normalizer": 2.483831878564761,
+          "integration_relative_error": 1.4445460587799951e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 439,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__real__InventorySupplyChain",
+          "asset_group": "QueueResourceControl",
+          "association": "real",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/observed_task",
+          "head": "g",
+          "component_start": 704,
+          "component_stop": 768,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.615413530712801,
+            0.6229273495361776
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.588009550852837e-13,
+          "minimum_normalizer": 2.483831878564761,
+          "integration_relative_error": 1.4445460587799951e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "QueueResourceControl__real__FactorShockStatePolicyRZDT1",
+        "asset_group": "QueueResourceControl",
+        "association": "real",
+        "source_family": "FactorShockStatePolicyRZDT1",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/QueueResourceControl__real__FactorShockStatePolicyRZDT1/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "QueueResourceControl__real__FactorShockStatePolicyRZDT1",
+          "asset_group": "QueueResourceControl",
+          "association": "real",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.203343081,
+        "wall_seconds": 10.988421354442835
+      },
+      "case_attempt_cpu_seconds": 10.203921638999999,
+      "worker_process_cpu_seconds_inclusive": 10.204198442,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0002768030000002142,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 56,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__real__FactorShockStatePolicyRZDT1",
+          "asset_group": "QueueResourceControl",
+          "association": "real",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/observed_task",
+          "head": "g",
+          "component_start": 704,
+          "component_stop": 768,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 2.7429637807388573e-13,
+          "minimum_normalizer": 2.504122174848329,
+          "integration_relative_error": 1.0953793741733047e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 50,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__real__FactorShockStatePolicyRZDT1",
+          "asset_group": "QueueResourceControl",
+          "association": "real",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/observed_task",
+          "head": "g",
+          "component_start": 512,
+          "component_stop": 576,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 2.7081933854842737e-13,
+          "minimum_normalizer": 2.5039121437700094,
+          "integration_relative_error": 1.0815848280549847e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "QueueResourceControl__permuted__InventorySupplyChain",
+        "asset_group": "QueueResourceControl",
+        "association": "permuted",
+        "source_family": "InventorySupplyChain",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/QueueResourceControl__permuted__InventorySupplyChain/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "QueueResourceControl__permuted__InventorySupplyChain",
+          "asset_group": "QueueResourceControl",
+          "association": "permuted",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.6426505235591055,
+            1.1880193711591178
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 11.019513027999999,
+        "wall_seconds": 11.851532163098454
+      },
+      "case_attempt_cpu_seconds": 11.019982877999999,
+      "worker_process_cpu_seconds_inclusive": 11.020490866,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0005079880000007364,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 439,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__permuted__InventorySupplyChain",
+          "asset_group": "QueueResourceControl",
+          "association": "permuted",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/observed_task",
+          "head": "g",
+          "component_start": 704,
+          "component_stop": 768,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.615413530712801,
+            0.6229273495361776
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.950326232169015e-13,
+          "minimum_normalizer": 2.5010560276555305,
+          "integration_relative_error": 1.5794633100930645e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 336,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 426,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__permuted__InventorySupplyChain",
+          "asset_group": "QueueResourceControl",
+          "association": "permuted",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/observed_task",
+          "head": "g",
+          "component_start": 256,
+          "component_stop": 320,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.6426505235591055,
+            1.1880193711591178
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.4874322999579253e-13,
+          "minimum_normalizer": 2.483579819711716,
+          "integration_relative_error": 1.4041957791244786e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 420,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "QueueResourceControl__permuted__FactorShockStatePolicyRZDT1",
+        "asset_group": "QueueResourceControl",
+        "association": "permuted",
+        "source_family": "FactorShockStatePolicyRZDT1",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/QueueResourceControl__permuted__FactorShockStatePolicyRZDT1/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "QueueResourceControl__permuted__FactorShockStatePolicyRZDT1",
+          "asset_group": "QueueResourceControl",
+          "association": "permuted",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.352759209,
+        "wall_seconds": 11.174188249744475
+      },
+      "case_attempt_cpu_seconds": 10.353352086000001,
+      "worker_process_cpu_seconds_inclusive": 10.353609011,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.00025692499999863116,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 490,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__permuted__FactorShockStatePolicyRZDT1",
+          "asset_group": "QueueResourceControl",
+          "association": "permuted",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 256,
+          "component_stop": 320,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 5.532481715820242e-13,
+          "minimum_normalizer": 2.5130626881214697,
+          "integration_relative_error": 2.2014897367943525e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 336,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 286,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "QueueResourceControl__permuted__FactorShockStatePolicyRZDT1",
+          "asset_group": "QueueResourceControl",
+          "association": "permuted",
+          "source_family": "FactorShockStatePolicyRZDT1",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/head_specific/observed_task",
+          "head": "f",
+          "component_start": 896,
+          "component_stop": 960,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            1.402287691505206,
+            1.002212427209414
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 1.1147698903603717e-13,
+          "minimum_normalizer": 2.506568554569351,
+          "integration_relative_error": 4.447394380369933e-14,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "FactorShockStatePolicyRZDT1__real__InventorySupplyChain",
+        "asset_group": "FactorShockStatePolicyRZDT1",
+        "association": "real",
+        "source_family": "InventorySupplyChain",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/FactorShockStatePolicyRZDT1__real__InventorySupplyChain/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "FactorShockStatePolicyRZDT1__real__InventorySupplyChain",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "real",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.6480436397013187,
+            1.1574527847066833
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.633893991,
+        "wall_seconds": 12.331116272136569
+      },
+      "case_attempt_cpu_seconds": 10.634527649,
+      "worker_process_cpu_seconds_inclusive": 10.634806913,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0002792639999995572,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 312,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__real__InventorySupplyChain",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "real",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/head_specific/observed_task",
+          "head": "g",
+          "component_start": 704,
+          "component_stop": 768,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.6480436397013187,
+            1.1574527847066833
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.646477540907537e-13,
+          "minimum_normalizer": 2.504859260166863,
+          "integration_relative_error": 1.4557614469184286e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 179,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__real__InventorySupplyChain",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "real",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/observed_task",
+          "head": "g",
+          "component_start": 576,
+          "component_stop": 640,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.606068914744606,
+            0.6636368105474091
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.06053987735674e-13,
+          "minimum_normalizer": 2.46252636358432,
+          "integration_relative_error": 1.2428455275102046e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 420,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "FactorShockStatePolicyRZDT1__real__QueueResourceControl",
+        "asset_group": "FactorShockStatePolicyRZDT1",
+        "association": "real",
+        "source_family": "QueueResourceControl",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/FactorShockStatePolicyRZDT1__real__QueueResourceControl/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "FactorShockStatePolicyRZDT1__real__QueueResourceControl",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "real",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.518951287,
+        "wall_seconds": 12.174420543946326
+      },
+      "case_attempt_cpu_seconds": 10.519488355,
+      "worker_process_cpu_seconds_inclusive": 10.51976608,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.00027772500000011746,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 243,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__real__QueueResourceControl",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "real",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 576,
+          "component_stop": 640,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.5793146427325099,
+            1.0226208286709333
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 8.046676888964767e-13,
+          "minimum_normalizer": 2.4557034665455837,
+          "integration_relative_error": 3.276729865224304e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 378,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 179,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__real__QueueResourceControl",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "real",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/observed_task",
+          "head": "g",
+          "component_start": 576,
+          "component_stop": 640,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.5793146427325099,
+            1.0226208286709333
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.063225914965928e-13,
+          "minimum_normalizer": 2.4511345691160153,
+          "integration_relative_error": 1.249717560823541e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 420,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "FactorShockStatePolicyRZDT1__permuted__InventorySupplyChain",
+        "asset_group": "FactorShockStatePolicyRZDT1",
+        "association": "permuted",
+        "source_family": "InventorySupplyChain",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/FactorShockStatePolicyRZDT1__permuted__InventorySupplyChain/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "FactorShockStatePolicyRZDT1__permuted__InventorySupplyChain",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "permuted",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.6480436397013187,
+            1.1574527847066833
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 12.041724965,
+        "wall_seconds": 13.668814248405397
+      },
+      "case_attempt_cpu_seconds": 12.042222853,
+      "worker_process_cpu_seconds_inclusive": 12.042467310000001,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0002444570000008639,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 379,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__permuted__InventorySupplyChain",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "permuted",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/head_specific/deconvolved_task",
+          "head": "g",
+          "component_start": 832,
+          "component_stop": 896,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.606068914744606,
+            0.6636368105474091
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 7.670334036127272e-13,
+          "minimum_normalizer": 2.4993601691466942,
+          "integration_relative_error": 3.068919050088727e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 378,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 41,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__permuted__InventorySupplyChain",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "permuted",
+          "source_family": "InventorySupplyChain",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/observed_task",
+          "head": "g",
+          "component_start": 256,
+          "component_stop": 320,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.606068914744606,
+            0.6636368105474091
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 3.594182974370348e-13,
+          "minimum_normalizer": 2.491489845500859,
+          "integration_relative_error": 1.4425838342711835e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 378,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    },
+    {
+      "case": {
+        "case_id": "FactorShockStatePolicyRZDT1__permuted__QueueResourceControl",
+        "asset_group": "FactorShockStatePolicyRZDT1",
+        "association": "permuted",
+        "source_family": "QueueResourceControl",
+        "policy_indices": [
+          0,
+          1
+        ],
+        "repeat_indices": [
+          0,
+          0
+        ]
+      },
+      "status": "complete",
+      "category": "complete",
+      "error": null,
+      "worker_status": "complete",
+      "dispatch_status": "complete",
+      "result_file": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_source_finite_numerical_validation_v1/cases/FactorShockStatePolicyRZDT1__permuted__QueueResourceControl/result.json",
+      "attempt_count": 1,
+      "saved_attempt_rows": 1,
+      "automatic_retries": 0,
+      "not_reached_kernel_calls": 0,
+      "original_cost": {
+        "source_model_file_load_attempts": 2,
+        "source_model_file_loads": 2,
+        "source_projection_attempts": 1,
+        "source_projection_calls": 1,
+        "source_conditioning_attempts": 16,
+        "source_conditioning_calls": 16,
+        "local_raw_moment_attempts": 512,
+        "quad_vec_attempts": 512,
+        "completed_calls": 512,
+        "failed_calls": 0,
+        "resource_stopped_calls": 0,
+        "unreturned_calls": 0,
+        "last_kernel_context": {
+          "case_id": "FactorShockStatePolicyRZDT1__permuted__QueueResourceControl",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "permuted",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "additive/joint/deconvolved_task",
+          "head": "g",
+          "component_start": 960,
+          "component_stop": 1024,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "recording_errors": [],
+        "process_cpu_seconds": 10.617162471,
+        "wall_seconds": 12.30349178891629
+      },
+      "case_attempt_cpu_seconds": 10.617717307,
+      "worker_process_cpu_seconds_inclusive": 10.617977524999999,
+      "worker_driver_cpu_seconds_excluding_case_attempt": 0.0002602179999993126,
+      "saved_call_rows": 512,
+      "saved_entered_kernel_rows": 512,
+      "saved_returned_rows": 512,
+      "bounded_accepted_returned_calls": 0,
+      "maximum_recorded_relative_error": {
+        "call_id": 103,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__permuted__QueueResourceControl",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "permuted",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/head_specific/deconvolved_task",
+          "head": "g",
+          "component_start": 192,
+          "component_stop": 256,
+          "prefix": 0,
+          "policy_index": 0,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.5793146427325099,
+            1.0226208286709333
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 5.418789779472672e-13,
+          "minimum_normalizer": 2.508320620654116,
+          "integration_relative_error": 2.160325811163474e-13,
+          "integration_status": 0,
+          "integrand_evaluations": 378,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "minimum_recorded_normalizer": {
+        "call_id": 142,
+        "status": "returned",
+        "returned": true,
+        "entered_kernel": null,
+        "context": {
+          "case_id": "FactorShockStatePolicyRZDT1__permuted__QueueResourceControl",
+          "asset_group": "FactorShockStatePolicyRZDT1",
+          "association": "permuted",
+          "source_family": "QueueResourceControl",
+          "policy_indices": [
+            0,
+            1
+          ],
+          "repeat_indices": [
+            0,
+            0
+          ],
+          "tau": 0.0,
+          "identity": "spectral/joint/observed_task",
+          "head": "f",
+          "component_start": 384,
+          "component_stop": 448,
+          "prefix": 1,
+          "policy_index": 1,
+          "repeat_index": 0,
+          "original_raw_pair": [
+            0.42354970753807036,
+            0.8437095012233883
+          ]
+        },
+        "error": null,
+        "recorded": {
+          "integration_absolute_error": 1.140205493448806e-13,
+          "minimum_normalizer": 2.5048087499827476,
+          "integration_relative_error": 4.552066074731891e-14,
+          "integration_status": 0,
+          "integrand_evaluations": 294,
+          "bounded_error_accepted": false,
+          "roundoff_accepted": false,
+          "argmin_Z_node": null,
+          "info.success": null,
+          "info.message": null
+        },
+        "missing_fields": {
+          "per_node_Z": "not_exposed_by_return",
+          "argmin_Z_node": "not_exposed_by_return",
+          "shifts": "not_exposed_by_return",
+          "info.success": "not_exposed_by_return",
+          "info.message": "not_exposed_by_return"
+        }
+      },
+      "nonfinite_error_records": [],
+      "stop_calls": [],
+      "numeric_rejection_call_count": 0,
+      "zero_work": {
+        "source_simulation": 0,
+        "target_simulation": 0,
+        "candidate_scores": 0,
+        "truth_scores": 0,
+        "source_fit": 0,
+        "permutation_resampling": 0,
+        "target_engine_restoration": 0,
+        "target_posterior_restoration": 0,
+        "old_failed_query_replay": 0,
+        "terminal_verification": 0
+      },
+      "record_issues": [],
+      "record_counts_match": true
+    }
+  ],
+  "accounting": {
+    "source_model_file_load_attempts": {
+      "total": 24,
+      "known_subtotal": 24,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_model_file_loads": {
+      "total": 24,
+      "known_subtotal": 24,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_projection_attempts": {
+      "total": 12,
+      "known_subtotal": 12,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_projection_calls": {
+      "total": 12,
+      "known_subtotal": 12,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_conditioning_attempts": {
+      "total": 192,
+      "known_subtotal": 192,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_conditioning_calls": {
+      "total": 192,
+      "known_subtotal": 192,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "local_raw_moment_attempts": {
+      "total": 6144,
+      "known_subtotal": 6144,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "quad_vec_attempts": {
+      "total": 6144,
+      "known_subtotal": 6144,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "completed_calls": {
+      "total": 6144,
+      "known_subtotal": 6144,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "failed_calls": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "resource_stopped_calls": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "unreturned_calls": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "process_cpu_seconds": {
+      "total": 127.26058849100001,
+      "known_subtotal": 127.26058849100001,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "case_attempt_cpu_seconds": {
+      "total": 127.26727487399998,
+      "known_subtotal": 127.26727487399998,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "worker_process_cpu_seconds_inclusive": {
+      "total": 127.270687374,
+      "known_subtotal": 127.270687374,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "worker_driver_cpu_seconds_excluding_case_attempt": {
+      "total": 0.0034124999999995964,
+      "known_subtotal": 0.0034124999999995964,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "batch_driver_cpu_seconds": 0.07733707000000001,
+    "scope": "Case result CPU is nested in case attempt CPU, which is nested in worker/wrapper CPU. Use leaf case attempts once; worker driver and batch/collection CPU are separate. Missing costs are null with known subtotals; retained historical fees are not charged again."
+  },
+  "zero_work": {
+    "source_simulation": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "target_simulation": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "candidate_scores": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "truth_scores": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_fit": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "permutation_resampling": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "target_engine_restoration": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "target_posterior_restoration": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "old_failed_query_replay": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "terminal_verification": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    }
+  },
+  "historical": {
+    "retained_terminal_arms": [
+      "legacy_role_full",
+      "legacy_role_full_native_terminal",
+      "legacy_role_after_init_point_only",
+      "legacy_role_after_init_point_only_native_terminal",
+      "legacy_native_neighbors",
+      "same_source_gp",
+      "legacy_role_point_only",
+      "current_structural_mixture",
+      "initialization_only",
+      "source_permuted_role_after_init_point_only",
+      "source_permuted_role_point_only"
+    ],
+    "unchanged_historical_coverage": {
+      "registered_geometries": 144,
+      "required_streams_per_geometry": 2,
+      "registered_terminal_cells": 3168,
+      "completed_terminal_cells": 3101,
+      "retained_failures": 67,
+      "permuted_AFTER_failures": 66,
+      "other_structural_failure": 1,
+      "missing_complete_source_pair_geometries": 39,
+      "additional_undefined_quality_baseline_geometries": 8,
+      "complete_source_C_geometries": 105,
+      "complete_source_G_geometries": 97,
+      "full144_source_C": null,
+      "full144_source_G": null
+    },
+    "retained_source_warnings": {
+      "Queue_real_low_ESS_heads": 2,
+      "Queue_permuted_low_ESS_heads": 6,
+      "heads_per_bundle": 16,
+      "permuted_Queue_objective_identity_weight_approx": 0.9984,
+      "structural_bundles_precision_certified_false": 6,
+      "source_ESS_does_not_diagnose_target_moment_failure": true
+    },
+    "historical_accounts": [
+      "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+      "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json",
+      "paper_artifacts/mainline_source_alignment_paths_v1/cluster_control/stage94_accounting.json",
+      "paper_artifacts/mainline_evidence_chain_update_v1/cluster_control/stage95_accounting.json",
+      "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage96_accounting.json",
+      "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_accounting.json"
+    ],
+    "historical_failure_fees": "67 old failures and 8617.606060537 CPU seconds remain in the original Stage93 target ledger; do not add them twice."
+  },
+  "collection_cpu_seconds": 0.13069133900000002,
+  "collection_wall_seconds": 0.1429867846891284
+}

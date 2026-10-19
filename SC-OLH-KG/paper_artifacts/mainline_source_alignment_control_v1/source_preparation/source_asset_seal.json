@@ -1,0 +1,182 @@
+{
+  "stage": 91,
+  "status": "sealed_sources_only",
+  "sealed_utc": "2026-10-18T09:25:14.515948+00:00",
+  "registered_manifest": "performance/manifests/mainline_source_alignment_control_v1.json",
+  "source_status_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/status.json",
+  "source_models_ready": true,
+  "target_execution_allowed": false,
+  "target_execution_started": false,
+  "completed_fit_pipelines": 6,
+  "source_permutations_generated": 3,
+  "source_fitting_recipes_unchanged": true,
+  "families": [
+    {
+      "family": "InventorySupplyChain",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/permutation.json",
+      "permutation_seed": 2026190001,
+      "source_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "QueueResourceControl"
+      ],
+      "fixed_points": [
+        9
+      ],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "models": [
+        {
+          "kind": "structural",
+          "model_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/source_models.pkl",
+          "size_bytes": 20687272,
+          "mtime_ns": 1792315340605296533,
+          "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/structural_source_diagnostics.json",
+          "receipt_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/fit_structural/result.json",
+          "receipt_status": "complete"
+        },
+        {
+          "kind": "native",
+          "model_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_prior.pkl",
+          "size_bytes": 623612,
+          "mtime_ns": 1792315511533290420,
+          "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_diagnostics.json",
+          "receipt_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/fit_native/result.json",
+          "receipt_status": "complete"
+        }
+      ],
+      "source_sites": 128,
+      "source_raw_reuse_per_fit": 384,
+      "identities": 8,
+      "quadrature_nodes": 1024,
+      "low_ess_head_diagnostics": 2,
+      "head_diagnostics": 16,
+      "minimum_ess": 3.232461628958521,
+      "precision_certified": false,
+      "native_status": "fit",
+      "native_source_records": 128
+    },
+    {
+      "family": "QueueResourceControl",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/permutation.json",
+      "permutation_seed": 2026190002,
+      "source_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain"
+      ],
+      "fixed_points": [
+        29,
+        32
+      ],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "models": [
+        {
+          "kind": "structural",
+          "model_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/source_models.pkl",
+          "size_bytes": 20687218,
+          "mtime_ns": 1792315341671296495,
+          "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/structural_source_diagnostics.json",
+          "receipt_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/fit_structural/result.json",
+          "receipt_status": "complete"
+        },
+        {
+          "kind": "native",
+          "model_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_prior.pkl",
+          "size_bytes": 627505,
+          "mtime_ns": 1792315512042290402,
+          "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_diagnostics.json",
+          "receipt_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/fit_native/result.json",
+          "receipt_status": "complete"
+        }
+      ],
+      "source_sites": 128,
+      "source_raw_reuse_per_fit": 384,
+      "identities": 8,
+      "quadrature_nodes": 1024,
+      "low_ess_head_diagnostics": 6,
+      "head_diagnostics": 16,
+      "minimum_ess": 2.6015388414561733,
+      "precision_certified": false,
+      "native_status": "fit",
+      "native_source_records": 128
+    },
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+      "permutation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/permutation.json",
+      "permutation_seed": 2026190003,
+      "source_domains": [
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "fixed_points": [],
+      "consumers": [
+        "source_permuted_role_after_init_point_only",
+        "source_permuted_role_point_only"
+      ],
+      "models": [
+        {
+          "kind": "structural",
+          "model_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+          "size_bytes": 20687235,
+          "mtime_ns": 1792315348319296257,
+          "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/structural_source_diagnostics.json",
+          "receipt_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/fit_structural/result.json",
+          "receipt_status": "complete"
+        },
+        {
+          "kind": "native",
+          "model_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+          "size_bytes": 625566,
+          "mtime_ns": 1792315511600290417,
+          "diagnostics_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_diagnostics.json",
+          "receipt_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/fit_native/result.json",
+          "receipt_status": "complete"
+        }
+      ],
+      "source_sites": 128,
+      "source_raw_reuse_per_fit": 384,
+      "identities": 8,
+      "quadrature_nodes": 1024,
+      "low_ess_head_diagnostics": 0,
+      "head_diagnostics": 16,
+      "minimum_ess": 10.759069321059371,
+      "precision_certified": false,
+      "native_status": "fit",
+      "native_source_records": 128
+    }
+  ],
+  "failures": [],
+  "unknown_attempt_costs": [],
+  "source_fit_cpu_seconds": 58.82856184,
+  "accounting_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+  "diagnostic_record": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_source_assets_compact.json",
+  "collection_record": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_collection_compact.json",
+  "original_asset_metadata_unchanged": true,
+  "original_preservation_basis": "Independent output paths; before/after size and mtime unchanged for 3 archives, 6 original models and 3 designs. No model reload or new digest.",
+  "target_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0
+  },
+  "numerical_limits": "Retain all low-ESS flags without refinement; Queue low-ESS f heads account for about 99.84 percent of identity weight. All three bundles have precision_certified=false. Successful source fitting does not establish target deployment benefit.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_legacy_backend_bridge_v1/completion.json",
+    "docs/mainline_evidence_chain_20261018.md",
+    "paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_completion_compact_20261018.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage89_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage90_accounting.json"
+  ]
+}

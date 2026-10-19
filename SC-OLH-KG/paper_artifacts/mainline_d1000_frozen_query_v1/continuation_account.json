@@ -1,0 +1,60 @@
+{
+  "scope": "Only the new16-geometry seven-arm frozen-query experiment; previous task cohorts and ledgers remain separate.",
+  "completed_at": "2026-10-15T08:39:27.229581+00:00",
+  "recorded_cpu_seconds_by_stage": {
+    "public_geometry_preparation": 0.405147883,
+    "implementation_tests": 1.481211748,
+    "native_smoke_parity": 0.034387195,
+    "experiment_attempts": 1852.7669863600001,
+    "case_orchestration_parent": 0.091170633,
+    "summary": 0.835522892,
+    "saved_path_analysis": 0.541427372,
+    "account_assembly": 0.09059307899999999
+  },
+  "case_batch_wall_seconds": 992.359038213006,
+  "concurrent_case_workers": 2,
+  "smoke_case_wall_seconds": [
+    39.31555021699751,
+    41.02825063400087
+  ],
+  "physical_calls": {
+    "initialization": 32,
+    "search": 160,
+    "verification": 40160,
+    "total": 40352
+  },
+  "logical_calls": 40544,
+  "calls_per_arm": 362,
+  "independent_geometries": 16,
+  "arms_per_task": 7,
+  "model_cases": 80,
+  "verified_recommendations": 112,
+  "source_fits": 0,
+  "gp_refits": 0,
+  "calibration_refits": 0,
+  "new_source_labels": 0,
+  "server_downloads": 0,
+  "new_tests": 2,
+  "existing_tests_run": 2,
+  "failed_test_attempts": 0,
+  "failed_scientific_attempts": 0,
+  "failed_case_processes": [],
+  "failed_postprocessing_attempts": 0,
+  "implementation": "Added initialization-frozen query moments with native point-only terminal updates; existing six-arm logic retained. Added primary paired contrast and saved-trace analysis.",
+  "unmeasured_cost_scope": "General inspection/document writing, interpreter startup outside timers, syntax checks and smoke orchestration overhead are not assigned estimated CPU costs. Case timers include model restoration and scientific updates; parallel case wall times are not summed as elapsed batch time.",
+  "memory_scope": "Process high-water RSS may inherit the launching process high-water mark; not whole-batch live memory.",
+  "evidence": [
+    "preparation_audit.json",
+    "implementation_tests.json",
+    "implementation_test_attempts.jsonl",
+    "smoke_check.json",
+    "attempts.jsonl",
+    "case_processes.jsonl",
+    "orchestration_account.json",
+    "postprocessing_attempts.jsonl",
+    "query_adaptation_analysis_attempts.jsonl",
+    "summary.json",
+    "query_adaptation_analysis.json"
+  ],
+  "total_recorded_cpu_seconds": 1856.246447162
+}

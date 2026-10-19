@@ -1,0 +1,48 @@
+{
+  "status": "complete",
+  "tasks": 6,
+  "cohort_count": 330,
+  "attempts": 8,
+  "failed_attempts": [
+    {
+      "stage": "objective-pair-replay",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": null,
+      "started_utc": "2026-10-15T23:02:29.484809+00:00",
+      "status": "failed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 1,
+      "seed": 2026101671,
+      "new_source_fits": 0,
+      "new_truth_function_calls": 0,
+      "download_bytes": 0,
+      "new_target_initial_calls": 0,
+      "saved_raw_rows_replayed": 12,
+      "error": "KeyError('weights')",
+      "cpu_seconds": 68.091408252,
+      "wall_seconds": 72.36027324199677,
+      "finished_utc": "2026-10-15T23:03:38.137989+00:00"
+    }
+  ],
+  "cost": {
+    "cpu_seconds": 503.26396711100006,
+    "wall_seconds": 534.367064874983,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "download_bytes": 0,
+    "source_model_restorations": 8,
+    "saved_raw_rows_replayed": 94
+  },
+  "original_score_prefix_count": 18,
+  "original_score_max_absolute_error": 1.8318679906315083e-15,
+  "direct_candidate_max_absolute_error": 2.3447910280083306e-12,
+  "source0_risk_max_absolute_error": 3.552713678800501e-15,
+  "roundoff_events": 52,
+  "recovery": "First direct projection check read weights from moment_state; corrected to model.weights. Failed zero-simulation replay CPU retained."
+}

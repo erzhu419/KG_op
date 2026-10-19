@@ -1,0 +1,109 @@
+{
+  "name": "observation_replica_1_FactorShockStatePolicyRZDT1_terminal",
+  "status": "registered",
+  "source_manifest": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search_plan.json",
+  "source_output_dir": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search",
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/terminal",
+  "target_seeds": [
+    2026104017,
+    2026104018,
+    2026104019,
+    2026104020,
+    2026104021,
+    2026104022,
+    2026104023,
+    2026104024
+  ],
+  "verification_seed_by_task": {
+    "2026104017": 2026104217,
+    "2026104018": 2026104218,
+    "2026104019": 2026104219,
+    "2026104020": 2026104220,
+    "2026104021": 2026104221,
+    "2026104022": 2026104222,
+    "2026104023": 2026104223,
+    "2026104024": 2026104224
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "same_policy_distinct_challenger": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Original-terminal paired control for the common frozen modified-terminal primary after-init-minus-source0-point comparison.",
+    "Preserve full-afterinit, original/native terminal crossing and all references; compare each unchanged original input to its frozen same-policy challenger transform."
+  ],
+  "statistical_unit": "24 independent registered geometries; paired protocols and nine arms are not independent samples.",
+  "truth_barrier": "Seal every old/new terminal outcome or failure before opening/evaluating any target truth. Terminal results never update searches.",
+  "scope": "Independently confirm AFTER old-to-new terminal certification and signed quality gains on24 fresh geometries, and quantify contribution concentration without model or threshold selection.",
+  "registered_utc": "2026-10-16T21:37:16.645471+00:00",
+  "inherited_replay_check_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/terminal/replay_check.json"
+}

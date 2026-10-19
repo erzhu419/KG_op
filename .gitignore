@@ -1,6 +1,7 @@
 reference/
 repo/
 __pycache__/
+.pytest_cache/
 .tmp/
 *.pyc
 SC-OLH-KG/results/
@@ -22,6 +23,11 @@ SC-OLH-KG/manuscript/*.out
 # Generated posterior banks and integration arrays stay in the artifact store.
 # Keep code, plans, compact evidence and resource accounts in Git.
 SC-OLH-KG/paper_artifacts/**/*.npz
+SC-OLH-KG/paper_artifacts/**/*.pkl
+SC-OLH-KG/paper_artifacts/**/*.whl
+SC-OLH-KG/paper_artifacts/**/*.pstats
+SC-OLH-KG/paper_artifacts/**/*.pid
+SC-OLH-KG/paper_artifacts/**/*.lock
 SC-OLH-KG/paper_artifacts/**/*.gz
 SC-OLH-KG/paper_artifacts/**/*.json
 SC-OLH-KG/paper_artifacts/**/*.jsonl

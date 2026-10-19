@@ -1,0 +1,109 @@
+{
+  "name": "observation_replica_1_QueueResourceControl_terminal",
+  "status": "registered",
+  "source_manifest": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search_plan.json",
+  "source_output_dir": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search",
+  "output_dir": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/terminal",
+  "target_seeds": [
+    2026107009,
+    2026107010,
+    2026107011,
+    2026107012,
+    2026107013,
+    2026107014,
+    2026107015,
+    2026107016
+  ],
+  "verification_seed_by_task": {
+    "2026107009": 2026107209,
+    "2026107010": 2026107210,
+    "2026107011": 2026107211,
+    "2026107012": 2026107212,
+    "2026107013": 2026107213,
+    "2026107014": 2026107214,
+    "2026107015": 2026107215,
+    "2026107016": 2026107216
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "same_policy_distinct_challenger": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Original-terminal paired control for the common frozen modified-terminal primary after-init-minus-source0-point comparison.",
+    "Preserve full-afterinit, original/native terminal crossing and all references; compare each unchanged original input to its frozen same-policy challenger transform."
+  ],
+  "statistical_unit": "24 geometry-level paired effects; policies, pairs, prefixes, arms and terminal protocols are not independent samples.",
+  "truth_barrier": "Seal all432 old/new terminal outcomes or retained failures, then seal the complete audit policy inventory from saved action_ids, before opening any target truth. No scoring or truth-driven stopping during execution.",
+  "scope": "Independent frozen AFTER-minus-POINT deployment comparison, with complete post-seal audit of safe unobserved candidate competition.",
+  "registered_utc": "2026-10-17T01:57:48.757704+00:00",
+  "inherited_replay_check_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/terminal/replay_check.json"
+}

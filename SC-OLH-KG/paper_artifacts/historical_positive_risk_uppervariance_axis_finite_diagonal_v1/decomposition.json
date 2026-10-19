@@ -1,0 +1,42 @@
+{
+  "complete": true,
+  "scope": "Arithmetic comparison of paid fixed-action results only;no integration or error certificate.",
+  "stored_mix": 0.7452258287528934,
+  "same_node_diagonal": 0.745105791827742,
+  "prior_debited": 0.7438206395443862,
+  "mix_minus_diagonal": 0.000120036925151501,
+  "diagonal_minus_prior": 0.001285152283355795,
+  "tower_residual": 0.001405189208507296,
+  "mix_fraction_of_residual": 0.08542403003437081,
+  "diagonal_prior_fraction_of_residual": 0.9145759699656292,
+  "current_objective_with_cached_risk2048": 0.7435369120816679,
+  "risk224_minus_risk2048_at_current_objective": 0.0015688797460740034,
+  "cached_risk2048_at_current_objective_minus_prior": -0.0002837274627182085,
+  "objective_statistic_difference_effect": -2.766887763350212e-08,
+  "origin_rows": [
+    {
+      "origin": 4,
+      "current_objective_mean": 0.8001466166106924,
+      "cached_legacy_objective_mean": 0.8001466498489166,
+      "objective_mean_difference": -3.323822417300448e-08,
+      "current_risk224_weighted_sum": 0.9264742479857824,
+      "cached_risk2048_mean": 0.9240241364948554,
+      "risk_mean_difference": 0.0024501114909269983,
+      "matched_objective_risk_rule_change": 0.0013653255265706498
+    },
+    {
+      "origin": 5,
+      "current_objective_mean": 0.8000355024603371,
+      "cached_legacy_objective_mean": 0.8000355244338464,
+      "objective_mean_difference": -2.197350934540765e-08,
+      "current_risk224_weighted_sum": 0.9422107528117828,
+      "cached_risk2048_mean": 0.9413726069348894,
+      "risk_mean_difference": 0.0008381458768933481,
+      "matched_objective_risk_rule_change": 0.00020355421950335524
+    }
+  ],
+  "next_priority": "Audit risk224 versus cached R2048 node/weight/evaluator provenance using existing results before further identity-transfer work.",
+  "limitations": "The frozen mixed point is reused,not independently recomputed. Different finite risk operators are compared;neither is certified more accurate. Directional posterior transfers,omitted utility,missing origins and absolute error remain open.",
+  "arithmetic_checks_passed": true,
+  "process_cpu_seconds": 0.005732253999999999
+}

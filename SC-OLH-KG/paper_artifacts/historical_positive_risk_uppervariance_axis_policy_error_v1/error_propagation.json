@@ -1,0 +1,169 @@
+{
+  "scope": "Error propagation for a declared selector on the frozen positive-weight bank; continuous-policy deployment and absolute-error certification remain separate.",
+  "sources": {
+    "previous_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_error_pricing_v1/error_evidence.json",
+    "screen_code": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+    "policy_code": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/replay_historical_positive_risk_subset.py"
+  },
+  "small_files_read": 3,
+  "integral_arrays_read": 0,
+  "definitions": {
+    "V_i_a": "True terminal reward at bank node i under the declared model and exact action budget; 0<=V_i(a)<=1.",
+    "omega_hat_i": "Current positive bank weight. No renormalization is assumed.",
+    "L_hat_i": "Maximum numerical reward over the admitted cached reference actions A_ref(i). It is not a certified true lower bound.",
+    "H_hat_i": "max(L_hat_i, max of stored numerical upper bounds over actions outside A_ref(i)).",
+    "g_i": "H_hat_i-L_hat_i; current G=sum_i omega_hat_i*g_i.",
+    "pi_i": "Declared finite-bank selector evaluated at node i, with an admitted same-kind/budget numerical reward; the current common-pool comparison selector differs from the all-raw admitted-reference selector.",
+    "d_i": "L_hat_i-V_hat_i(pi_i). Nonnegative when pi_i belongs to A_ref(i). If it is not in that set, use max(d_i,0) for the conservative regret bound.",
+    "u_i": "Certified upward error for the COMPLETE H_hat_i envelope, including upper error of cached reference rewards where needed.",
+    "ell_i_pi": "Certified lower-side terminal error such that V_i(pi_i)>=V_hat_i(pi_i)-ell_i_pi."
+  },
+  "finite_bank_relation": {
+    "pointwise": "max_a V_i(a)-V_i(pi_i) <= g_i + max(d_i,0) + u_i + ell_i_pi.",
+    "weighted": "sum_i omega_i*regret_i <= G_hat + sum_i omega_hat_i*max(d_i,0) + sum_i omega_hat_i*(u_i+ell_i_pi) + ||omega-omega_hat||_1, using rewards in [0,1].",
+    "policy_not_automatically_G": "Current common-pool raw selector has measured shortfall1.2948013879722498e-6 from the all-raw numerical reference envelope. Current G alone omits this term.",
+    "current_G": {
+      "raw": {
+        "best_reference_contrast": 0.021135648950585218,
+        "unresolved_upper_gap": 8.349610362239822e-05
+      },
+      "projected": {
+        "best_reference_contrast": 0.02176711778079685,
+        "unresolved_upper_gap": 0.000276730584134957
+      }
+    },
+    "absolute_bounds_available": false,
+    "selection_gap_evaluated": true,
+    "previous_matched_policy_evidence": {
+      "source": "Parent-provided v60 common-pool selector and old-screen point metadata",
+      "v60_raw_common_pool_policy_contrast": 0.021134354149197246,
+      "old_screen_raw_reference_contrast": 0.02113489044123799,
+      "old_matched_selection_shortfall": 5.362920407446514e-07,
+      "latest_screen_raw_reference_contrast": 0.021135648950585218,
+      "latest_policy_contrast_replay_pending": false,
+      "new_reference_record_count": 3,
+      "original_reference_plans": 83,
+      "current_reference_plans": 85
+    },
+    "current_matched_policy_evidence": {
+      "source": "paper_artifacts/historical_positive_risk_uppervariance_axis_policy_error_v1/incremental_replay.json",
+      "raw_common_pool_selection_contrast": 0.021134354149197246,
+      "raw_reference_envelope_contrast": 0.021135648950585218,
+      "weighted_selection_shortfall": 1.2948013879722498e-06,
+      "nominal_raw_common_policy_upper_gap": 8.479090501037047e-05,
+      "policy_totals_unchanged": true,
+      "updated_records": 3,
+      "reused_records": 221,
+      "maximum_old_target_reward_difference": 0.0
+    },
+    "all_raw_reference_selector": {
+      "numerical_same_bank_selection_shortfall": 0.0,
+      "scope": "Argmax of all admitted raw values uses the same numerical envelope; this selector is separate from the four-policy common-pool comparison and is not a complete365-action deployment certificate."
+    },
+    "absolute_regret_upper_bound": null
+  },
+  "count_once": {
+    "included_utility_omission": "screen adds missing[:,None] into action upper values before constructing G. That represented utility slack is already spent in the envelope; do not add sum omega*missing again. Any omission not covered by the complete envelope must be assigned once to u_i.",
+    "posterior_weights": "Either include shared-identity posterior weight errors inside u_i/ell_i_pi, or derive a separate conditional-value propagation bound; do not charge the same score/weight uncertainty again.",
+    "outer_support": "Unrepresented outer origin/tail mass is separate from missing utility at a covered node. Count it once, either by extending the weight-error bound with zero numerical weights on omitted nodes or as a separate support remainder.",
+    "fallback_zero": "The omitted fallback reward is nonnegative. It does not create additional downward error of the selected action; its cap belongs once to the full-reward numerical/upper-error accounting. P/I numerical rule error still needs a true lower-side certificate."
+  },
+  "continuous_distribution": {
+    "relation": "Continuous-policy regret additionally needs risk-outer and objective-outer/F16 propagation for the same regret or selected-policy integrand, plus any outer support remainder not already in the weight term.",
+    "risk_outer": "Old fixed-action 8x16/16x8 comparisons do not certify the current 224-node guard-max/selected-policy integrand.",
+    "objective_outer": "The cached F16 heads do not by themselves provide an objective-outer convergence or absolute-error certificate.",
+    "rule_controls": "Cross-rule differences and predictive log-evidence checks remain diagnostics; they cannot be substituted for u_i or ell_i_pi as absolute-error certificates."
+  },
+  "baseline_relation": {
+    "numerical_policy_contrast": "C_hat(pi,355)=C_hat(ref,355)-sum_i omega_hat_i*d_i, using the signed selection difference.",
+    "matched_net_KG": "J_continue(pi;B-n)-V_STOP(B) = C(pi,355) - D(355,STOP), where D=V_STOP(B)-J_continue(355;B-n).",
+    "required_baseline": "STOP/debited point values are already available; their strict propagated error certificate is missing. Retain the same model, before/after budget and query/batch contract.",
+    "shared_control_variates": "If the SAME numerical 355 quantity is used in both C and D, it cancels algebraically in C-D; propagate the remaining primitive errors rather than charging its error twice. Different baseline evaluations need their residual mismatch controlled.",
+    "query_selection": "A value comparison across queries/batches needs each matched continuation/STOP/debit evaluation; the current single-query bank does not supply it.",
+    "point_values_available": {
+      "STOP": 0.7438762263054653,
+      "debited": 0.7438206395443862,
+      "sampling_opportunity_cost": 5.558676107919602e-05
+    },
+    "baseline_absolute_error_certificate_available": false,
+    "current_net_point_previews": {
+      "raw_common_policy": 0.021078769749839472,
+      "projected_choice_raw_value": 0.021037151994396,
+      "scope": "Point previews only; not net KG absolute-error certificates."
+    },
+    "current_shared_fixed_cancellation_applied": false,
+    "current_primitive_net_error_relation": "For Khat=Chat(pi,355)+Bhat_debited-Shat_STOP, an absolute bound is E_C(pi,355)+e_B+e_S. E_C requires matched selected-action/fixed-action terminal errors and risk/F16/weight propagation. Current baseline uses a separate prior calibration; no numerical355-error cancellation is assumed without a matched shared estimator.",
+    "absolute_net_error_upper_bound": null,
+    "current_fixed_tower_diagnostic": {
+      "source": "paper_artifacts/historical_positive_risk_uppervariance_axis_policy_error_v1/fixed_tower_diagnostic.json",
+      "raw_fixed_bank_point": 0.7452258287528934,
+      "prior_debited_point": 0.7438206395443862,
+      "numerical_residual": 0.001405189208507296,
+      "absolute_error_certificate_available": false
+    }
+  },
+  "original_gate_status": "HOLD",
+  "new_global_threshold": null,
+  "code_evidence": [
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+      "line": 251,
+      "text": "posterior=np.exp(scores-logsumexp(scores,axis=-1)[:,None]);missing=posterior[:,[0,1,2,3,6,7]].sum(axis=-1)"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+      "line": 279,
+      "text": "upper+=missing[:,None];containment=max(containment,float(np.max(fixed-upper[:,355])))"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+      "line": 284,
+      "text": "fixed=np.maximum(fixed,value)"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+      "line": 289,
+      "text": "fixed=np.maximum(fixed,value)"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+      "line": 299,
+      "text": "fixed=np.maximum(fixed,value.max(axis=-1))"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/screen_historical_observed_batch_risk.py",
+      "line": 304,
+      "text": "unresolved=np.maximum(unknown.max(axis=-1)-fixed,0.)"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/replay_historical_positive_risk_subset.py",
+      "line": 71,
+      "text": "rows=[];missing=[];incumbents=[];maximum_omitted=0.;weighted_raw_best=0."
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/replay_historical_positive_risk_subset.py",
+      "line": 86,
+      "text": "choices=np.lexsort((nc,-native),axis=-1)[:,:,0];raw_choices=select_raw_terminal_actions(raw,rc)"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/replay_historical_positive_risk_subset.py",
+      "line": 91,
+      "text": "selected={'projected':np.lexsort((nc,-np.where(common,native,-np.inf)),axis=-1)[:,:,0],"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/replay_historical_positive_risk_subset.py",
+      "line": 96,
+      "text": "selected[name]=np.lexsort((c,-np.where(common,value,-np.inf)),axis=-1)[:,:,0]"
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/replay_historical_positive_risk_subset.py",
+      "line": 151,
+      "text": "scoring='Admitted raw conditional terminal reward; expected raw cost breaks ties.',"
+    }
+  ],
+  "reader_cpu_seconds": 0.005751541000000001,
+  "reader_process_cpu_seconds": 0.016914813,
+  "metadata_revision_cpu_seconds": 0.005297699000000001,
+  "metadata_revision_process_cpu_seconds": 0.016949273,
+  "total_recorded_process_cpu_seconds": 0.033864086
+}

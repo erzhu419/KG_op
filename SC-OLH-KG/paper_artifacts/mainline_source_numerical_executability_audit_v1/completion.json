@@ -1,0 +1,151 @@
+{
+  "status": "complete",
+  "diagnosis": "cause_unidentified",
+  "completed_utc": "2026-10-19T03:50:38.454199+00:00",
+  "source_diagnostic_files": {
+    "registered": 12,
+    "read": 12
+  },
+  "failure_logs": {
+    "registered": 67,
+    "read": 67
+  },
+  "input_issues": [],
+  "retained_terminal_status": {
+    "status": "sealed",
+    "registered_terminal_cells": 3168,
+    "saved_terminal_cells": 3168,
+    "status_counts": {
+      "complete": 3101,
+      "missing": 67
+    },
+    "arms": [
+      {
+        "arm": "legacy_role_full",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "legacy_role_full_native_terminal",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "legacy_role_after_init_point_only",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "legacy_role_after_init_point_only_native_terminal",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "legacy_native_neighbors",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "same_source_gp",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "legacy_role_point_only",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "current_structural_mixture",
+        "status_counts": {
+          "complete": 287,
+          "missing": 1
+        }
+      },
+      {
+        "arm": "initialization_only",
+        "status_counts": {
+          "complete": 288
+        }
+      },
+      {
+        "arm": "source_permuted_role_after_init_point_only",
+        "status_counts": {
+          "complete": 222,
+          "missing": 66
+        }
+      },
+      {
+        "arm": "source_permuted_role_point_only",
+        "status_counts": {
+          "complete": 288
+        }
+      }
+    ]
+  },
+  "phase_counts": {
+    "initial_conditioning": 63,
+    "post_initial_own_update": 3,
+    "terminal_recommendation": 1
+  },
+  "missing_failure_quantities": [
+    "head",
+    "identity_or_component_range",
+    "integrand_evaluations",
+    "integration_absolute_error",
+    "integration_status",
+    "internal_raw_position",
+    "minimum_normalizer"
+  ],
+  "checks_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/validation/stage97_attempt1/checks.json",
+  "attempt": {
+    "stage": "audit-source-numerical-executability",
+    "started_utc": "2026-10-19T03:50:38.005205+00:00",
+    "status": "completed",
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "new_integrations": 0,
+    "cpu_seconds": 0.21284221899999997,
+    "wall_seconds": 0.44854725804179907,
+    "finished_utc": "2026-10-19T03:50:38.453755+00:00"
+  },
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "new_integrations": 0
+  },
+  "output_files": [
+    "source_diagnostics.json",
+    "failure_locations_and_costs.json",
+    "conclusion.json",
+    "accounting.json"
+  ],
+  "accounting": "Audit attempt CPU is included in scheduler wrapper CPU; preserved scientific fees are not new audit fees."
+}

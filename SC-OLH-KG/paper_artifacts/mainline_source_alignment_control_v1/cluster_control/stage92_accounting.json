@@ -1,0 +1,91 @@
+{
+  "stage": 92,
+  "status": "complete_substitute_checks_only",
+  "completed_utc": "2026-10-18T10:47:10.774875+00:00",
+  "task_id": "t183531",
+  "node": "node002",
+  "submissions": 1,
+  "manual_dispatches": 1,
+  "automatic_retries": 0,
+  "duplicate_wrapper_records": 0,
+  "test_count": {
+    "passed": 93
+  },
+  "compute": {
+    "pytest_cpu_seconds": 6.16312,
+    "validation_coordinator_cpu_seconds": 0.010880096999999998,
+    "wrapper_inclusive_cpu_seconds": 6.346508999999999,
+    "wrapper_wall_seconds": 6.779686795547605,
+    "scope": "Wrapper includes pytest and coordinator/import overhead; never sum child and wrapper totals."
+  },
+  "scheduler_control": {
+    "events": [
+      {
+        "file": "stage92_submission_attempt1.json",
+        "cpu_seconds": 17.507987,
+        "wall_seconds": 36.77282969199587,
+        "returncode": 0
+      },
+      {
+        "file": "stage92_dispatch_attempt1.json",
+        "cpu_seconds": 51.078008,
+        "wall_seconds": 99.74573750499985,
+        "returncode": 0
+      }
+    ],
+    "cpu_seconds": 68.585995,
+    "wall_seconds": 136.51856719699572,
+    "scope": "Submission and manual dispatch overhead; separate from check CPU."
+  },
+  "transfer": {
+    "exact_code_files": 12,
+    "code_bytes": 159912,
+    "compressed_code_bytes": 37965,
+    "code_upload_cpu_seconds": 0.00341822700000001,
+    "metadata_read_cpu_seconds": 0.0027518170000000036,
+    "downloaded_metadata_and_log_bytes": 9315,
+    "code_upload_receipt_bytes": 914,
+    "no_model_archive_or_trajectory_download": true,
+    "final_document_upload_file": "stage92_final_document_upload.json"
+  },
+  "failures": [],
+  "scope": {
+    "new_target_scientific_jobs": 0,
+    "new_simulator_calls": 0,
+    "new_truth_calls": 0,
+    "new_source_fits": 0,
+    "new_posterior_restorations": 0,
+    "registered_target_geometries_materialized": 0,
+    "new_registered_source_permutations": 0,
+    "target_execution_authorized": false
+  },
+  "original_and_sealed_source_assets_unchanged_by_size_mtime": 18,
+  "historical_accounts": [
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage89_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage90_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json"
+  ],
+  "retained_records": [
+    "stage92_preflight.json",
+    "stage92_code_upload.json",
+    "stage92_submission_attempt1.json",
+    "stage92_dispatch_attempt1.json",
+    "stage92_status1.json",
+    "stage92_completion_metadata.json",
+    "stage92_completion_audit.json",
+    "jobs/stage92_attempt1/0_1.json",
+    "validation/stage92_attempt1/checks.json",
+    "validation/stage92_attempt1/pytest.log",
+    "stage92_duplicate_path_correction.json"
+  ],
+  "prior_failures_and_costs_preserved": true,
+  "duplicate_wrapper_counter_basis": "stage92_duplicate_path_correction.json",
+  "diagnostic_corrections": [
+    {
+      "file": "stage92_duplicate_path_correction.json",
+      "reason": "Correct duplicate suffix to wrapper.with_suffix convention; prior diagnostic read used appended .json suffix",
+      "new_test_runs": 0,
+      "new_scientific_calls": 0
+    }
+  ]
+}

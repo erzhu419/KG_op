@@ -1,0 +1,106 @@
+{
+  "name": "mainline_terminal_two_comparison_preparation_v1",
+  "status": "complete",
+  "started": true,
+  "registered_utc": "2026-10-16T16:00:39.449441+00:00",
+  "parent_manifest": "performance/manifests/mainline_objective_contrast_exposure_v1.json",
+  "objective": "Prepare one same-budget three-candidate terminal comparison rule with deterministic substitutes; retain the frozen prior and distinguish comparison exposure from objective mean repair.",
+  "evidence": {
+    "source": "paper_artifacts/mainline_objective_contrast_exposure_v1/source_contrasts.json",
+    "target": "paper_artifacts/mainline_objective_contrast_exposure_v1/target_contrasts.json",
+    "terminal": "paper_artifacts/mainline_objective_contrast_exposure_v1/comparison_exposure.json",
+    "interpretation": "Source forecasts support initialization propagation for observed-unobserved contrasts but do not repair close observed-point ordering. The exact allocation is an untested design, not a source-validated correction. Opened targets establish exposure gaps, not independent superiority."
+  },
+  "frozen": {
+    "deployed_model": true,
+    "source_recipe": true,
+    "representation": true,
+    "d": 1000,
+    "search_rules": true,
+    "initialization": true,
+    "risk_eligibility": true,
+    "existing_three_candidate_shortlists": true,
+    "numerical_precision": true,
+    "all9_controls": true,
+    "existing_failures_and_costs": true,
+    "existing_initial10_plus3_query_history": true
+  },
+  "input_contract": {
+    "completed_reference_inputs": 215,
+    "registered_reference_cells": 216,
+    "incumbent_position": 2,
+    "distinct_physical_candidates": 3,
+    "online_completed_inputs": 191,
+    "stop_completed_inputs": 24,
+    "missing_reference": "legacy_role_point_only / FactorShockStatePolicyRZDT1 / 2026103018",
+    "undefined_quality_baseline": "QueueResourceControl / 2026103009"
+  },
+  "single_candidate": {
+    "name": "frozen_three_candidate_two_objective_comparisons",
+    "original_safety_budgets": [
+      80,
+      128,
+      128
+    ],
+    "proposed_safety_budgets": [
+      80,
+      120,
+      120
+    ],
+    "safety_familywise_delta": 0.05,
+    "objective_comparison_calls_per_policy": 8,
+    "maximum_objective_comparisons": 2,
+    "original_objective_delta": 0.016666666666666666,
+    "objective_delta_per_comparison": 0.008333333333333333,
+    "maximum_terminal_calls": 352,
+    "online_initial_plus_search_calls": 13,
+    "online_total_limit": 365,
+    "stop_initial_calls": 10,
+    "stop_total_limit": 362,
+    "allocation_basis": "Keep primary80; subtract8 symmetrically from the two original128 safety allocations to fund one additional16-call comparison. Divide the original objective error allowance equally between the two predetermined comparisons; no data-tuned threshold.",
+    "flow": [
+      "Safety-check the original primary and initial incumbent using their assigned budgets.",
+      "If both pass, compare primary against incumbent on comparison block0 and retain the incumbent unless the primary dominates under the existing paired statistic and the new delta. If only one passes, that policy is the current winner.",
+      "Safety-check the existing third candidate even when the first two produced a winner; apply no added risk filter or new candidate selection.",
+      "If third passes and a winner exists, compare third against that winner on independent comparison block1; switch only on paired objective dominance.",
+      "If the first two both fail and third passes, deploy third without a target comparison. If third fails, retain any certified winner. If all fail, report no certified deployment.",
+      "Preserve numerical execution failures and already used calls through the existing failure-accounting path; do not patch or retry the model."
+    ],
+    "independence": "Block1 must be independent of block0, search, and safety; common random numbers are shared only within each compared pair. Current helper uses a fixed stream tag, so calling it twice with the same seed would reuse samples. Prepare an explicit comparison block index and document its seed mapping.",
+    "reuse": "Reuse verify_frozen_policy and the existing paired objective statistic. The old verify_frozen_shortlist early-return control flow requires a small dedicated adjustment.",
+    "tradeoff": "Lower backup safety counts and stricter objective comparisons may reduce power. Original certificates cannot be inherited, and omissions cannot be counted as recovered successes."
+  },
+  "preparation_scope": [
+    "Implement only the local candidate path and deterministic-substitute checks; do not execute any real simulator or verifier on target policies.",
+    "Check at most352 terminal calls,365 online and362 STOP totals; retain partial spending and failures.",
+    "Check both-safe, one-safe, neither-safe, third-fails and third-only-safe branches; a challenger without objective dominance must not replace a certified winner.",
+    "Check explicit independent block indexing without drawing random samples; preserve paired common-random-number semantics inside each block.",
+    "Keep all9 existing controls and all24 geometries in saved-data wiring. Old and proposed paths stay distinguishable; real future evaluation needs a separately registered execution protocol.",
+    "Do not re-score old paid blocks into new certificates, rank further terminal patches, refit a model, or replay a posterior."
+  ],
+  "budget": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "decision": "Preparation only. No adopted model/terminal change, no new cohort, no real verification and no claim of recovered deployment gain.",
+  "cost": "Record preparation CPU and all attempts; preserve historical expenses by reference.",
+  "started_utc": "2026-10-16T21:08:32.600174+00:00",
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_preparation_v1",
+  "completed_utc": "2026-10-16T21:12:29.976960+00:00",
+  "summary": "paper_artifacts/mainline_terminal_two_comparison_preparation_v1/summary.json",
+  "completion": "paper_artifacts/mainline_terminal_two_comparison_preparation_v1/completion.json",
+  "prepared_file": "paper_artifacts/mainline_terminal_two_comparison_preparation_v1/prepared.json",
+  "result_document": "docs/mainline_terminal_two_comparison_preparation_results_20261017.md",
+  "scientific_evaluation_started": false
+}

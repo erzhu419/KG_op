@@ -1,0 +1,51 @@
+{
+  "state": "bound_refinement_hold",
+  "final_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v1.json",
+  "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v1/completion.json",
+  "precision_passed": false,
+  "accepted_units": 16,
+  "precision_hold_units": 2,
+  "numerical_containment_passed": true,
+  "remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 1308160,
+      "overlapping_action_head_pairs": 2459,
+      "record_action_candidates": 182,
+      "record_group_candidates": 81
+    },
+    "projected": {
+      "compared_action_head_pairs": 1308160,
+      "overlapping_action_head_pairs": 2983,
+      "record_action_candidates": 207,
+      "record_group_candidates": 82
+    }
+  },
+  "weighted_bank_envelope": {
+    "positive_weight_sums_per_origin": {
+      "4": 1.0000000000000002,
+      "5": 1.0000000000000002
+    },
+    "normalized_per_origin": true,
+    "unrepresented_origin_prior_mass": 5.901279465092557e-12,
+    "kinds": {
+      "raw": {
+        "best_reference_contrast": 0.02113489044123799,
+        "unresolved_upper_gap": 0.00018417956354694473
+      },
+      "projected": {
+        "best_reference_contrast": 0.021766947126729632,
+        "unresolved_upper_gap": 0.0002771874991076108
+      }
+    },
+    "scope": "Envelope within the registered finite grid and admitted numerical rules. Projected values are not raw deployment rewards;outer quadrature error is separate."
+  },
+  "all_conditional_actions_closed": false,
+  "original_zero_candidate_gate_unchanged": true,
+  "next_raw_records": [
+    "positive_midmean_v1_n4_m4_localv_o5_h1_p24",
+    "positive_midmean_v1_n4_m4_localv_o5_h1_p20",
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p16"
+  ],
+  "next_step": "Prioritize unprocessed raw63/45 records o5/p24,o5/p20,o4/p16 with existing incumbent-mean analytic E9 controls; then price a71/45 pilot from residuals. Keep p17 projected precision hold; diagnose primary-mean analytic integration on that projected case before any further uniform Sobol increase.",
+  "independent_confirmation": false
+}

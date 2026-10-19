@@ -1,0 +1,41 @@
+{
+  "name": "mainline_objective_attribution_v1",
+  "status": "complete",
+  "analysis_type": "Retrospective mechanism and source-support diagnosis, not an optimizer experiment or held-out validation.",
+  "parent_manifest": "performance/manifests/mainline_role_replication_v1.json",
+  "input_dir": "paper_artifacts/mainline_role_replication_v1",
+  "output_dir": "paper_artifacts/mainline_objective_attribution_v1",
+  "report": "docs/mainline_objective_attribution_results_20261016.md",
+  "focus_neighbors": {
+    "2026101672": [
+      24,
+      36
+    ],
+    "2026101675": [
+      33
+    ]
+  },
+  "target_protocol": "Reuse full-role histories through paid12, all8 identities and1024 nodes, unchanged raw update and64-node streaming. Retain node f moments/masses at prefixes0..12. No new model or precision setting.",
+  "decomposition": "Per observed raw, telescope within-node mean change, f-node mass change and common identity mass change. Split identity change by the average of f-then-g and g-then-f evidence order. Preserve target and initial contributions separately. Sum per-raw contributions for0->10 and10->12.",
+  "validation": "Compare all recorded focal/initial f/g mean, marginal variance and noise at prefixes10/11/12; stop on drift. Check telescope sums. Validate difference variance once against original full-covariance projection. These detect replay/projection errors before interpreting contributions.",
+  "source_protocol": "Existing Inventory/Queue64sites x3raw only. Deterministic within-task nearest-neighbor pairs in frozen standardized public mean10, symmetrized/deduplicated. Compare observed objective differences and observation variance with frozen source common-law means and common/task/white contrast variances. No new per-task coefficient fitting. All source data were used in fitting, so no holdout claim.",
+  "new_budget": {
+    "target_calls": 0,
+    "source_calls": 0,
+    "source_fits": 0,
+    "truth_calls": 0,
+    "download_bytes": 0
+  },
+  "decision_boundary": "Diagnose first; no target-truth-tuned objective/risk patch, new model selection or fresh optimization cohort in this stage. Read existing target truth only for reporting, after projections saved.",
+  "entrypoints": [
+    "performance/diagnose_mainline_objective_attribution.py",
+    "performance/diagnose_mainline_objective_source_support.py"
+  ],
+  "additional_support_diagnostic": "Compare actual source/query joint20 and learned f designs; source reconstruction detects an inconsistent provider or scale. Distances are descriptive, not proof of extrapolation or a selected model change.",
+  "next_step": {
+    "single_candidate": "For each existing identity match kind and task-covariance mode, reuse its frozen head_specific objective response pair (f,eta_f) and corresponding designs. Keep the role g conditional model and original source identity weights; no source refit.",
+    "comparison": "First source0/initial10 projection checks, then all six stage31 saved full-role trajectories with unchanged candidate pools/raw/precision. Preserve original model as fixed reference. Evaluate target difference and unsampled prediction only.",
+    "limits": "Target common identity weights still update and may alter risk predictions. This is a modular response-pair intervention including objective noise and source dependence changes, not a pure mean/basis ablation. No transferred deployment credit or target-truth tuning.",
+    "rationale": "Within-node objective updates dominate ranking reversal; actual joint design has sparse source support despite public-coordinate proximity. Existing head_specific source-pair fit is worse, so it is a diagnostic candidate, not an adopted fix."
+  }
+}

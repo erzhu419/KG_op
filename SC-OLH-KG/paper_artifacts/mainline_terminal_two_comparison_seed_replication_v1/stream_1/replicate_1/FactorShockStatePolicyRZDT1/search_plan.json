@@ -1,0 +1,245 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "initialization": "Reuse exact Stage65 initial10 physical policies from initial_policy_file; ignore their old raw responses and draw10 fresh shared observations.",
+  "frontends": "All6 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Unchanged modular operator applied to each family own frozen native source g coefficient law and structural f/eta marginals; original latent_shared split,8identities/1024nodes/raw update. No source reconditioning or fitting.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "after_init_point_only": "All10 initialization raws condition the unchanged full role prior exactly once. Every later policy inherits its conditional node-level paired-response marginal and posterior identity/head-node masses. Only that physical policy subsequent raw updates its own four heads and identity/node masses. Never-observed policies stay at initial10. TS uses fixed initial10 correlations scaled by current marginal standard deviations, a diagnostic moment control. Original frontend still learns from own arm history.",
+  "prediction_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "name": "observation_replica_1_FactorShockStatePolicyRZDT1_search",
+  "status": "registered",
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/stream_1/replicate_1/FactorShockStatePolicyRZDT1/search",
+  "target_seeds": [
+    2026104017,
+    2026104018,
+    2026104019,
+    2026104020,
+    2026104021,
+    2026104022,
+    2026104023,
+    2026104024
+  ],
+  "geometry_seed": 2026104000,
+  "geometry_by_seed": {
+    "2026104017": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_0",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.013657334147949063,
+          0.001792463120004216,
+          0.01762315569276697
+        ],
+        "task_geometry_radius_scale": 0.9959708718968667
+      }
+    },
+    "2026104018": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_1",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02624140886963368,
+          0.005911313449357976,
+          -0.005160901940813523
+        ],
+        "task_geometry_radius_scale": 1.037071238415393
+      }
+    },
+    "2026104019": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_2",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.01868623189222491,
+          -0.022565296487312196,
+          -0.006527292560548032
+        ],
+        "task_geometry_radius_scale": 0.982669033516173
+      }
+    },
+    "2026104020": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_3",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.01401264769646729,
+          -0.011499241681583224,
+          -0.0325425627616023
+        ],
+        "task_geometry_radius_scale": 1.0101628073737676
+      }
+    },
+    "2026104021": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_4",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.006114145310072212,
+          0.01283779196517032,
+          0.03041522008622148
+        ],
+        "task_geometry_radius_scale": 0.9801823266623598
+      }
+    },
+    "2026104022": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_5",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.001418439162091223,
+          -0.014295765264292166,
+          -0.004051670250692797
+        ],
+        "task_geometry_radius_scale": 0.9969144633255015
+      }
+    },
+    "2026104023": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_6",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02701959669574229,
+          -0.012139745332259963,
+          0.028616507070395758
+        ],
+        "task_geometry_radius_scale": 0.959774065144166
+      }
+    },
+    "2026104024": {
+      "task_id": "two_comparison_confirmation_FactorShockStatePolicyRZDT1_7",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.021982619908164816,
+          0.011028277478081633,
+          -0.02935843003859118
+        ],
+        "task_geometry_radius_scale": 1.0056736396889097
+      }
+    }
+  },
+  "primary_reference": "legacy_role_point_only",
+  "continuation": "Confirm frozen AFTER propagation and paired terminal gains under a new observation/verification stream on the same24 Stage65 geometries; no model, threshold or geometry selection.",
+  "streams": {
+    "optimizer_seed": "Preserve each Stage65 geometry_task_seed=optimizer_seed4001..4024 as config.seed; observation seeds never replace optimizer seeds.",
+    "observation_stream": "SeedSequence([observation_seed, evaluation_index, SIMULATION_STREAM_TAG]); indices0..9 initialization and10..12 adaptive queries.",
+    "verification_stream": "Use registered independent verification_seed with unchanged slot/replication/safety/objective stream namespaces.",
+    "pairing": "Within each task/replicate all arms use matching observation and verification namespaces. Same evaluation index can query different policies; shared random numbers do not make responses identical.",
+    "limitation": "New observations can change adaptive pools, trajectories and RNG consumption. Fixed optimizer seed does not freeze every per-policy TS innovation.",
+    "reuse": "Never reuse old observations or certificates across the new streams. Only exactly matching new-stream physical observations may be shared with explicit accounting."
+  },
+  "geometry": "Reuse every Stage65 physical geometry, optimizer seed, initial10 policy vector and shared64 neighbor vector; draw only the newly registered observation/verification streams.",
+  "barriers": {
+    "before_sampling": "Freeze both new stream maps, original geometry/optimizer identities, model references and reused initial/neighbor policy files before any sampling.",
+    "before_online": "Both streams must complete all48 initialization histories and freeze all48 reused neighbor banks before any adaptive search.",
+    "before_verification": "Both streams must seal all336 histories or retained failures and all432 paired terminal inputs before terminal simulation.",
+    "before_scoring": "Both streams must seal all864 old/new terminal outcomes or failures before any new scoring or target-truth access.",
+    "failure": "Preserve any arm failure, paid prefixes and CPU; no automatic resampling, precision patch, seed replacement or dropping tasks."
+  },
+  "registered_utc": "2026-10-16T23:32:38.216456+00:00",
+  "observation_seed_by_task": {
+    "2026104017": 2026105117,
+    "2026104018": 2026105118,
+    "2026104019": 2026105119,
+    "2026104020": 2026105120,
+    "2026104021": 2026105121,
+    "2026104022": 2026105122,
+    "2026104023": 2026105123,
+    "2026104024": 2026105124
+  },
+  "fixed_initialization_file_by_task": {
+    "2026104017": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104017/initialization.json",
+    "2026104018": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104018/initialization.json",
+    "2026104019": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104019/initialization.json",
+    "2026104020": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104020/initialization.json",
+    "2026104021": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104021/initialization.json",
+    "2026104022": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104022/initialization.json",
+    "2026104023": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104023/initialization.json",
+    "2026104024": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104024/initialization.json"
+  },
+  "fixed_neighbors_file_by_task": {
+    "2026104017": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104017/neighbors.npz",
+    "2026104018": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104018/neighbors.npz",
+    "2026104019": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104019/neighbors.npz",
+    "2026104020": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104020/neighbors.npz",
+    "2026104021": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104021/neighbors.npz",
+    "2026104022": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104022/neighbors.npz",
+    "2026104023": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104023/neighbors.npz",
+    "2026104024": "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026104024/neighbors.npz"
+  }
+}

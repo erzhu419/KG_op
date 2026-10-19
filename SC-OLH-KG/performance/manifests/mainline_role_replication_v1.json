@@ -1,0 +1,209 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load frozen native prior, GP/structural bundle, public mean10/learned risk10 representation, eight source identities and 1024 source integration nodes. Reuse the parent STOP initial10 raw in original order. No source simulation, fitting, encoder fitting or download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "name": "mainline_role_replication_v1",
+  "registered_utc": "2026-10-15T16:25:26.298447+00:00",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_role_replication_v1",
+  "target_seeds": [
+    2026101671,
+    2026101672,
+    2026101673,
+    2026101674,
+    2026101675,
+    2026101676
+  ],
+  "geometry_seed": 2026101670,
+  "geometry_by_seed": {
+    "2026101671": {
+      "task_id": "role_replication_factorshock_00",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.01548304762674356,
+          -0.023410697689137023,
+          -0.002984234485129786
+        ],
+        "task_geometry_radius_scale": 0.9857682459299548
+      }
+    },
+    "2026101672": {
+      "task_id": "role_replication_factorshock_01",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.006556228606907695,
+          -0.011155295354985162,
+          -0.020661694015973415
+        ],
+        "task_geometry_radius_scale": 1.040445141306984
+      }
+    },
+    "2026101673": {
+      "task_id": "role_replication_factorshock_02",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.003963256346735264,
+          0.03490814198058077,
+          0.02331207955293723
+        ],
+        "task_geometry_radius_scale": 0.9638406077071207
+      }
+    },
+    "2026101674": {
+      "task_id": "role_replication_factorshock_03",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.017290749628671796,
+          0.008648525158404488,
+          0.012326378051131341
+        ],
+        "task_geometry_radius_scale": 1.0218091744692681
+      }
+    },
+    "2026101675": {
+      "task_id": "role_replication_factorshock_04",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.004564173876923733,
+          0.018109521677922624,
+          -0.020423212452159483
+        ],
+        "task_geometry_radius_scale": 1.015202614642338
+      }
+    },
+    "2026101676": {
+      "task_id": "role_replication_factorshock_05",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.010689589777076208,
+          -0.027890251297680926,
+          -0.00669281536235029
+        ],
+        "task_geometry_radius_scale": 0.9828060341252929
+      }
+    }
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "entrypoints": [
+    "performance/run_mainline_role_fresh.py",
+    "performance/summarize_mainline_role_fresh.py"
+  ],
+  "report": "docs/mainline_role_replication_results_20261016.md",
+  "geometry": "Exactly6 independent draws from unchanged shift U(-.035,.035)^3 then radius U(.95,1.05), native center clipping unchanged. One draw per task, no outcome screening/replacement/additions. Seeds1670-1676 absent from prior manifests/docs/README before registration; frozen source tasks exclude FactorShock.",
+  "initialization": "Reuse source-only physical design80, collect10 fresh paired raw on each new geometry and share exactly those raws within task across all6arms. Freeze all6 shared64-neighbor banks before online search.",
+  "frontends": "All5 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Exactly stage28 frozen modular g source law with legacy latent_shared split, current f/eta marginal laws,8 identities/1024 nodes and raw update. No source reconditioning, refitting or precision adjustment.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "streams": "Same original search/proposal/TS and independent verifier namespaces, runseed per task. Each arm physically executes its own3 adaptive queries and verifier. Initial10 physically shared per task, logically charged to each arm.",
+  "barriers": {
+    "before_online": "All6 initial10 and neighbor banks frozen.",
+    "before_verify": "All36 shortlists and search histories frozen.",
+    "before_truth": "All36 independent verifications complete; truth cache is separate per new task, no nominal/previous task reuse.",
+    "failure": "Retain every attempt, consumed raw and CPU. Do not rerun partially consumed paid stages from zero; repair computation from saved state where possible."
+  },
+  "budget": {
+    "task_count": 6,
+    "recommendation_count": 36,
+    "online_case_count": 30,
+    "initial_only_case_count": 6,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 60,
+    "new_search_physical_calls_max": 90,
+    "new_verification_physical_calls_max": 12672,
+    "new_target_physical_calls_max": 12822,
+    "logical_target_calls_max": 13122,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "downloads": 0
+  },
+  "comparisons": "Primary: frozen role_full vs role_point_only on6new tasks, one observation stream each. Separate certified true-feasible rate, certified feasible improving deployments, per-task certified true-quality-minus-initial contribution, and total safe reward. Decompose reward as certification-weighted initial quality plus certified policy quality difference; initial need not be safe. Retain all4 references. Report queries, unseen predictions and each task. Descriptive paired results, no task significance claim or pooling with development cohorts.",
+  "continuation": "Fresh6task replication after stage30 terminal allocation rejection. Original80/128/128 and8+8guard retained. Source law, representation, source integration, TS, point-only update, frontend and64-neighbor rules unchanged.",
+  "execution": {
+    "completed_initializations": 6,
+    "completed_searches": 36,
+    "completed_verifications": 36,
+    "new_target_observations_started": true,
+    "new_initial_calls": 60,
+    "new_search_calls": 90,
+    "new_verification_calls": 4816,
+    "new_physical_target_calls": 4966,
+    "logical_target_calls": 5266,
+    "new_truth_function_calls": 1236,
+    "source_fits": 0,
+    "downloads": 0,
+    "failed_attempts": 0
+  },
+  "completed_utc": "2026-10-15T16:48:40.656208+00:00",
+  "completion_file": "paper_artifacts/mainline_role_replication_v1/completion.json"
+}

@@ -1,0 +1,98 @@
+{
+  "status": "registration_complete",
+  "execution_started": false,
+  "finished_utc": "2026-10-16T21:21:01.771274+00:00",
+  "recorded_cpu_seconds": 0.18463513499999995,
+  "recorded_wall_seconds": 0.20658354300394421,
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "attempt_statuses": {
+    "completed": 2
+  },
+  "attempts": [
+    {
+      "stage": "register-paired-development-and-block-coverage",
+      "family": null,
+      "arm": null,
+      "started_utc": "2026-10-16T21:19:20.761840+00:00",
+      "status": "completed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "new_target_initial_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "raw_conditioning": 0,
+      "raw_replays": 0,
+      "new_rng_draws": 0,
+      "download_bytes": 0,
+      "raw_rows_read": 0,
+      "certificate_rescorings": 0,
+      "cpu_seconds": 0.12946713199999993,
+      "wall_seconds": 0.14845566599979065,
+      "finished_utc": "2026-10-16T21:19:20.910293+00:00",
+      "ledger": "paper_artifacts/mainline_terminal_two_comparison_development_v1/attempts.jsonl"
+    },
+    {
+      "stage": "seal-metadata-registration",
+      "family": null,
+      "arm": null,
+      "started_utc": "2026-10-16T21:21:01.712880+00:00",
+      "status": "completed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "new_target_initial_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "raw_conditioning": 0,
+      "raw_replays": 0,
+      "new_rng_draws": 0,
+      "download_bytes": 0,
+      "raw_rows_read": 0,
+      "certificate_rescorings": 0,
+      "cpu_seconds": 0.05516800300000002,
+      "wall_seconds": 0.05812787700415356,
+      "finished_utc": "2026-10-16T21:21:01.771008+00:00",
+      "ledger": "paper_artifacts/mainline_terminal_two_comparison_development_v1/registration_checks/attempts.jsonl"
+    }
+  ],
+  "inherited_failures": [
+    {
+      "replicate": 1,
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "status": "search_failed",
+      "logical_search_calls": 11,
+      "new_search_calls": 1,
+      "reason": "RuntimeError('Batched raw moment error exceeds frozen tolerance: 2.5773155986877152e-08')",
+      "failed_raw_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_raw_1792157276809918126.json",
+      "failed_state_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_engine.pkl"
+    }
+  ],
+  "inherited_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_objective_contrast_exposure_v1/completion.json"
+  ],
+  "note": "Metadata-only registration; no raw contents read, no certificates rescored. Recorded CPU excludes pre-meter imports, exploratory shell reads and documentation."
+}

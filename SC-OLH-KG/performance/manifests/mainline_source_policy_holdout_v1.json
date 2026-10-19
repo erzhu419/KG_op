@@ -1,0 +1,32 @@
+{
+  "name": "mainline_source_policy_holdout_v1",
+  "status": "complete",
+  "archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+  "output_dir": "paper_artifacts/mainline_source_policy_holdout_v1",
+  "report": "docs/mainline_source_policy_holdout_results_20261016.md",
+  "fold_seed": 2026101680,
+  "folds": 4,
+  "source_protocol": "Two existing d50 families share64 physical policies, each with3 raw episodes. A single label-free permutation partitions physical policies into4 groups of16, shared across families. Each fit uses the other48 policies per family; every response-dependent encoder, basis, units, covariance, discrepancy, evidence and GP fit is rerun on that subset with existing settings and1024 nodes.",
+  "adaptation": "Within each held group the first2 policy IDs are fixed anchors. Observe only the first f raw of anchor1 then anchor2, giving2 rounds. The other14 policies remain unobserved. Source identity weights include training f/g evidence; held g is never used, isolating objective propagation.",
+  "conditioning": "These are missing policies of an existing source task. Condition common plus that family's task effect on training raw once. Include task covariance only in same-family query/source cross terms. Retain source eta nodes/weights; do not use the independent new-task projection or replay training raw.",
+  "controls": "Full objective propagation versus point-only from round0. For point-only, all14 scoring means stay at round0; anchor1 keeps its own round1 posterior mean through round2. Both use the same observed f raw. No alternative covariance, representation or risk model is screened.",
+  "scoring": "Freeze all fold forecasts before scoring. Each scoring reference is its3-raw f mean. Relative objective differences use anchor1's other2 raw episodes, independent of its update raw. Report absolute and relative MSE, bias, direction agreement and saved observation variance at rounds0/1/2. Primary unit is source family (2); folds and policies are dependent. This is source-policy validation, not unseen-family/generalization or deployment evidence.",
+  "checks": "Verify physical-policy partition and training-only dimensions. Reconstructed source common moments and node weights must match original fit before same-task projection. A synthetic joint Gaussian test distinguishes same-task from other-task covariance and catches double-counting task variance. Failure stops that fold, with its cost retained.",
+  "new_budget": {
+    "source_calls": 0,
+    "target_calls": 0,
+    "verification_calls": 0,
+    "truth_calls": 0,
+    "source_fits": 4,
+    "download_bytes": 0
+  },
+  "decision_boundary": "Interpret this fixed diagnostic before proposing one source-supported correction. Do not select parameters from1672/1675 target outcomes or from repeated holdout trials. The deployed d1000 model remains frozen. Any future decision-benefit claim requires fresh geometries and matched budgets with full, point-only, same-source GP and legacy references.",
+  "entrypoint": "performance/run_mainline_source_policy_holdout.py",
+  "outcome": {
+    "model_changed": false,
+    "final_direction_changes": 0,
+    "final_scoring_argmin_changes": 0,
+    "conclusion": "Limited source-policy MSE improvement, inconsistent across the two families; no new relative signs or scoring-pool choices. No correction selected."
+  },
+  "next_step": "Freeze the current d1000 role model and stage31 six-arm protocol. Register a whole fresh-geometry batch before observations, retain original online365/STOP362 budgets and verifier, and compare verified policy quality without outcome-dependent task selection or batch resizing."
+}

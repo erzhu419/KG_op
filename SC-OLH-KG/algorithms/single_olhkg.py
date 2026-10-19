@@ -86,6 +86,7 @@ from representation.task_posterior import (
     FiniteTaskSensitivityPosterior,
     TaskExpertState,
 )
+from performance import mainline_terminal_recording as terminal_recording
 from variance.orthogonal_hvd import OrthogonalHVD
 
 
@@ -549,6 +550,7 @@ class SingleOLHKGConfig:
     eval_pool_size: int = 500
     evaluate_interval: int = 5
     seed: int = 123
+    observation_seed: int | None = None
 
 
 class SingleOLHKGAlgorithm:
@@ -1112,7 +1114,8 @@ class SingleOLHKGAlgorithm:
     def _simulate_and_store(self, x):
         evaluation_index = int(len(self.history))
         simulation_rng = np.random.default_rng(np.random.SeedSequence([
-            int(self.config.seed),
+            int(self.config.seed if self.config.observation_seed is None
+                else self.config.observation_seed),
             evaluation_index,
             SIMULATION_STREAM_TAG,
         ]))
@@ -1254,6 +1257,10 @@ class SingleOLHKGAlgorithm:
                 task_ensemble=self.task_ensemble,
                 risk_penalty=self.config.decision_risk_penalty,
             )
+            terminal_recording.capture(self, "objective_gate",
+                pool=candidates, components=components,
+                maximum_violation_probability=float(
+                    self.config.terminal_objective_challenger_max_violation_probability))
             objective_challenger = (
                 select_objective_verification_challenger(
                     candidates,
@@ -1265,6 +1272,8 @@ class SingleOLHKGAlgorithm:
                     ),
                 )
             )
+            terminal_recording.capture(self, "objective_choice",
+                selected=objective_challenger)
             shortlist = []
             challenger_point = objective_challenger.get("point")
             if challenger_point is not None:
@@ -1373,6 +1382,11 @@ class SingleOLHKGAlgorithm:
                     if key != "point"
                 })
             frozen_shortlist.append(record)
+        terminal_recording.capture(self, "pre_incumbent",
+            shortlist=frozen_shortlist, primary=primary,
+            objective_challenger=objective_challenger,
+            safe_fallback=safe_interior, ranked_points=ranked,
+            shortlist_mode=shortlist_mode)
         objective_incumbent_audit = None
         if bool(self.config.terminal_objective_incumbent_guard):
             initial_incumbent = self._terminal_initial_objective_incumbent()
@@ -1387,6 +1401,8 @@ class SingleOLHKGAlgorithm:
                 tuple(int(value) for value in record["point"])
                 for record in frozen_shortlist
             ]
+        terminal_recording.capture(self, "post_incumbent",
+            shortlist=frozen_shortlist, incumbent_audit=objective_incumbent_audit)
 
         comparison_budget = int(
             self.config.terminal_objective_comparison_budget)
@@ -1409,6 +1425,8 @@ class SingleOLHKGAlgorithm:
         if objective_guard_enabled and not 0.0 < comparison_delta < 1.0:
             raise ValueError(
                 "terminal objective comparison delta must lie in (0, 1)")
+        terminal_recording.capture(self, "frozen_shortlist",
+            shortlist=frozen_shortlist)
         incumbent_index = (
             None
             if objective_incumbent_audit is None
@@ -1585,6 +1603,7 @@ class SingleOLHKGAlgorithm:
                 self.config.terminal_verification_mean_delta_fraction),
             "frozen_shortlist_size": int(len(shortlist)),
             "frozen_shortlist": frozen_shortlist,
+            "terminal_recording": terminal_recording.snapshot(self),
             "attempts": attempts,
             "attempt_count": int(len(attempts)),
             "objective_incumbent_guard_enabled": bool(
@@ -1672,7 +1691,11 @@ class SingleOLHKGAlgorithm:
         )
         selection_mode = str(
             self.config.terminal_safe_interior_selection_mode)
-        return select_posterior_safe_interior(
+        terminal_recording.capture(self, "safe_pool",
+            pool=candidates, components=components, primary=primary,
+            candidate_universe=candidate_universe, selection_mode=selection_mode,
+            probability_slack=float(self.config.terminal_safe_interior_probability_slack))
+        selected = select_posterior_safe_interior(
             self.problem,
             primary,
             candidates,
@@ -1690,6 +1713,8 @@ class SingleOLHKGAlgorithm:
                 self.config.terminal_safe_interior_require_provider),
             candidate_universe=candidate_universe,
         )
+        terminal_recording.capture(self, "safe_fallback", selected=selected)
+        return selected
 
     def _fit_initial_belief(self, samples):
         timing = {}
@@ -13672,6 +13697,7 @@ class SingleOLHKGAlgorithm:
         consulting target truth or adding an empirical fallback.
         """
 
+        terminal_recording.capture(self, "start")
         self._last_terminal_bayes_ranked_points = []
         backend = str(
             self.config.decision_backend or "legacy"
@@ -13740,6 +13766,8 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             risk_penalty=self.config.decision_risk_penalty,
         )
+        terminal_recording.capture(self, "primary_pool",
+            pool=action_pool, components=components, pool_source=pool_source)
         terminal_rule = str(
             self.config.decision_terminal_rule or "bayes_risk"
         ).strip().lower().replace("-", "_")
@@ -13772,6 +13800,12 @@ class SingleOLHKGAlgorithm:
         ]
         local = int(order[0])
         selected = tuple(int(v) for v in action_pool[local])
+        terminal_recording.capture(self, "primary_order",
+            order=order, ranked_points=self._last_terminal_bayes_ranked_points,
+            selected=selected, terminal_rule=terminal_rule,
+            feasibility_mode=terminal_feasibility_mode,
+            maximum_violation_probability=float(
+                self.config.decision_terminal_maximum_violation_probability))
         _, details = self._solve_posterior_recommendation(pool=[selected])
         details.update({
             "decision_backend_terminal_used": True,
@@ -16795,7 +16829,9 @@ class SingleOLHKGAlgorithm:
             "online_action_trace_target_oracle_used": False,
             "simulation_randomness_contract": {
                 "mode": "evaluation_indexed_seed_sequence",
-                "base_seed": int(self.config.seed),
+                "base_seed": int(
+                    self.config.seed if self.config.observation_seed is None
+                    else self.config.observation_seed),
                 "stream_tag": int(SIMULATION_STREAM_TAG),
                 "evaluation_count": int(len(self.history)),
                 "verification_stream_tag": int(

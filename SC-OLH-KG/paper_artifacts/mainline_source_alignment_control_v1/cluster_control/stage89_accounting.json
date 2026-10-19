@@ -1,0 +1,64 @@
+{
+  "stage": 89,
+  "status": "substitute_checks_passed_scientific_execution_not_started",
+  "task_id": "t183485",
+  "node": "node004",
+  "attempts": 1,
+  "failed_validation_attempts": 0,
+  "duplicate_wrapper_attempts": 0,
+  "automatic_retries": 0,
+  "validation": {
+    "test_files": [
+      "tests/test_mainline_source_alignment_backend.py",
+      "tests/test_mainline_source_alignment_summary.py",
+      "tests/test_mainline_source_alignment_wiring.py",
+      "tests/test_mainline_terminal_recording.py",
+      "tests/test_mainline_failed_query_audit.py"
+    ],
+    "passed": 61,
+    "cpu_seconds_total_including_runner": 4.881353,
+    "pytest_cpu_seconds_included": 4.697094,
+    "wall_seconds": 5.046923999674618
+  },
+  "scheduler_control": {
+    "submit_cpu_seconds": 48.396878,
+    "dispatch_cpu_seconds": 111.080476,
+    "total_cpu_seconds": 159.477354,
+    "submit_wall_seconds": 73.93235967398505,
+    "dispatch_wall_seconds": 158.9460571090167,
+    "scientific_cpu_seconds": 0
+  },
+  "small_transfer": {
+    "code_files": 10,
+    "code_uncompressed_bytes": 103603,
+    "code_compressed_bytes": 26715,
+    "metadata_download_bytes": 4039,
+    "remote_code_upload_cpu_seconds": 0.002607554000000012,
+    "remote_metadata_cpu_seconds": 0.0014116539999999844
+  },
+  "new_work": {
+    "simulation_calls": 0,
+    "truth_scoring_calls": 0,
+    "source_fits": 0,
+    "posterior_restorations": 0,
+    "registered_geometry_draws": 0,
+    "registered_permutation_draws": 0
+  },
+  "fee_scope": "Validation CPU, scheduler-control CPU and transfer metadata separated. Historical experiment fees retained in their existing records; no costs overwritten or counted as zero.",
+  "unmetered": [
+    "local editing, review and small metadata orchestration CPU",
+    "scheduler background watcher and external process overhead"
+  ],
+  "completion_basis": "Existing successful wrapper and checks records, plus Done in scheduler log; queue bookkeeping may still show running.",
+  "records": [
+    "stage89_submission_attempt1.json",
+    "stage89_dispatch_attempt1.json",
+    "stage89_code_upload.json",
+    "stage89_helper_preflight.json",
+    "stage89_attempt1_metadata1.json",
+    "stage89_attempt1_metadata2.json",
+    "stage89_completion_audit.json",
+    "jobs/stage89_attempt1/0_1.json",
+    "validation/stage89_attempt1/checks.json"
+  ]
+}

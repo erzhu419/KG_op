@@ -1,0 +1,409 @@
+{
+  "complete": true,
+  "scope": "Reuse already-paid risk grids with unchanged F16 heads. Layer differences are diagnostics,not absolute error bounds;raw prior baseline is not assumed to share finite objective draws.",
+  "levels": [
+    {
+      "bound_plan": "performance/manifests/historical_positive_risk_full_grid_screen_competition_v19_refs_v1.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_full_grid_v1.json",
+      "source_summary": "paper_artifacts/historical_positive_risk_full_grid_screen_competition_v19_refs_v1/summary.json",
+      "risk_observations": 32,
+      "objective_heads_per_origin": 16,
+      "remaining_calls": 356,
+      "source_numerical_containment_passed": true,
+      "raw_weighted_fixed_reward": 0.7745964040605519,
+      "raw_fixed_tower_residual": 0.030775764516165705,
+      "origin_contributions": {
+        "4": {
+          "weighted_fixed_reward": 0.5384729879005289,
+          "weight": 0.6964353220376636,
+          "records": 16
+        },
+        "5": {
+          "weighted_fixed_reward": 0.236123416160023,
+          "weight": 0.30356467795643494,
+          "records": 16
+        }
+      },
+      "represented_origin_weight": 0.9999999999940985,
+      "risk_grid_metadata": {
+        "outer_axis": null,
+        "risk_mean_order": 2,
+        "risk_variance_order": 4,
+        "risk_variance_orders": null,
+        "mean_cdf_intervals": [
+          [
+            0.0,
+            0.99
+          ],
+          [
+            0.99,
+            1.0
+          ]
+        ],
+        "same_state_context_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+        "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json"
+      }
+    },
+    {
+      "bound_plan": "performance/manifests/historical_positive_risk_body_axis_bound_incumbents_v3.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_body_axis_v1.json",
+      "source_summary": "paper_artifacts/historical_positive_risk_body_axis_bound_incumbents_v3/summary.json",
+      "risk_observations": 96,
+      "objective_heads_per_origin": 16,
+      "remaining_calls": 356,
+      "source_numerical_containment_passed": true,
+      "raw_weighted_fixed_reward": 0.7448249281249527,
+      "raw_fixed_tower_residual": 0.0010042885805665591,
+      "origin_contributions": {
+        "4": {
+          "weighted_fixed_reward": 0.5175807699434264,
+          "weight": 0.6964353220376643,
+          "records": 48
+        },
+        "5": {
+          "weighted_fixed_reward": 0.22724415818152635,
+          "weight": 0.3035646779564356,
+          "records": 48
+        }
+      },
+      "represented_origin_weight": 0.9999999999940999,
+      "risk_grid_metadata": {
+        "outer_axis": "mean_body_partition",
+        "risk_mean_order": 4,
+        "risk_variance_order": 4,
+        "risk_variance_orders": null,
+        "mean_cdf_intervals": [
+          [
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.99
+          ],
+          [
+            0.99,
+            1.0
+          ]
+        ],
+        "same_state_context_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+        "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json"
+      }
+    },
+    {
+      "bound_plan": "performance/manifests/historical_positive_risk_shoulder_axis_bound_incumbents_v4.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_shoulder_axis_v1.json",
+      "source_summary": "paper_artifacts/historical_positive_risk_shoulder_axis_bound_incumbents_v4/summary.json",
+      "risk_observations": 128,
+      "objective_heads_per_origin": 16,
+      "remaining_calls": 356,
+      "source_numerical_containment_passed": true,
+      "raw_weighted_fixed_reward": 0.7452272967798415,
+      "raw_fixed_tower_residual": 0.0014066572354552997,
+      "origin_contributions": {
+        "4": {
+          "weighted_fixed_reward": 0.5178579874959154,
+          "weight": 0.6964353220376635,
+          "records": 64
+        },
+        "5": {
+          "weighted_fixed_reward": 0.22736930928392607,
+          "weight": 0.303564677956435,
+          "records": 64
+        }
+      },
+      "represented_origin_weight": 0.9999999999940985,
+      "risk_grid_metadata": {
+        "outer_axis": "upper_mean_body_partition",
+        "risk_mean_order": 4,
+        "risk_variance_order": 4,
+        "risk_variance_orders": null,
+        "mean_cdf_intervals": [
+          [
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.95
+          ],
+          [
+            0.95,
+            0.99
+          ],
+          [
+            0.99,
+            1.0
+          ]
+        ],
+        "same_state_context_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+        "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json"
+      }
+    },
+    {
+      "bound_plan": "performance/manifests/historical_positive_risk_midmean_axis_bound_incumbents_v3.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_midmean_axis_v1.json",
+      "source_summary": "paper_artifacts/historical_positive_risk_midmean_axis_bound_incumbents_v3/summary.json",
+      "risk_observations": 160,
+      "objective_heads_per_origin": 16,
+      "remaining_calls": 356,
+      "source_numerical_containment_passed": true,
+      "raw_weighted_fixed_reward": 0.7452262701951924,
+      "raw_fixed_tower_residual": 0.0014056306508062333,
+      "origin_contributions": {
+        "4": {
+          "weighted_fixed_reward": 0.5178573394807311,
+          "weight": 0.6964353220376639,
+          "records": 80
+        },
+        "5": {
+          "weighted_fixed_reward": 0.22736893071446135,
+          "weight": 0.3035646779564353,
+          "records": 80
+        }
+      },
+      "represented_origin_weight": 0.9999999999940992,
+      "risk_grid_metadata": {
+        "outer_axis": "midmean",
+        "risk_mean_order": 4,
+        "risk_variance_order": 4,
+        "risk_variance_orders": [
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "mean_cdf_intervals": [
+          [
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.875
+          ],
+          [
+            0.875,
+            0.95
+          ],
+          [
+            0.95,
+            0.99
+          ],
+          [
+            0.99,
+            1.0
+          ]
+        ],
+        "same_state_context_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+        "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json"
+      }
+    },
+    {
+      "bound_plan": "performance/manifests/historical_positive_risk_uppermidmean_axis_bound_incumbents_v4.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_uppermidmean_axis_v1.json",
+      "source_summary": "paper_artifacts/historical_positive_risk_uppermidmean_axis_bound_incumbents_v4/summary.json",
+      "risk_observations": 192,
+      "objective_heads_per_origin": 16,
+      "remaining_calls": 356,
+      "source_numerical_containment_passed": true,
+      "raw_weighted_fixed_reward": 0.7452262945805005,
+      "raw_fixed_tower_residual": 0.0014056550361143394,
+      "origin_contributions": {
+        "4": {
+          "weighted_fixed_reward": 0.517857357901007,
+          "weight": 0.6964353220376639,
+          "records": 96
+        },
+        "5": {
+          "weighted_fixed_reward": 0.22736893667949357,
+          "weight": 0.30356467795643555,
+          "records": 96
+        }
+      },
+      "represented_origin_weight": 0.9999999999940994,
+      "risk_grid_metadata": {
+        "outer_axis": "uppermidmean",
+        "risk_mean_order": 4,
+        "risk_variance_order": 4,
+        "risk_variance_orders": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "mean_cdf_intervals": [
+          [
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.875
+          ],
+          [
+            0.875,
+            0.9125
+          ],
+          [
+            0.9125,
+            0.95
+          ],
+          [
+            0.95,
+            0.99
+          ],
+          [
+            0.99,
+            1.0
+          ]
+        ],
+        "same_state_context_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+        "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json"
+      }
+    },
+    {
+      "bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+      "bank_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_v1.json",
+      "source_summary": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v2_screen/summary.json",
+      "risk_observations": 224,
+      "objective_heads_per_origin": 16,
+      "remaining_calls": 356,
+      "source_numerical_containment_passed": true,
+      "raw_weighted_fixed_reward": 0.7452258287528936,
+      "raw_fixed_tower_residual": 0.001405189208507407,
+      "origin_contributions": {
+        "4": {
+          "weighted_fixed_reward": 0.5178581669489756,
+          "weight": 0.6964353220376639,
+          "records": 112
+        },
+        "5": {
+          "weighted_fixed_reward": 0.22736766180391801,
+          "weight": 0.30356467795643555,
+          "records": 112
+        }
+      },
+      "represented_origin_weight": 0.9999999999940994,
+      "risk_grid_metadata": {
+        "outer_axis": "uppervariance",
+        "risk_mean_order": 4,
+        "risk_variance_order": 4,
+        "risk_variance_orders": [
+          4,
+          4,
+          4,
+          4,
+          8,
+          4
+        ],
+        "mean_cdf_intervals": [
+          [
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.875
+          ],
+          [
+            0.875,
+            0.9125
+          ],
+          [
+            0.9125,
+            0.95
+          ],
+          [
+            0.95,
+            0.99
+          ],
+          [
+            0.99,
+            1.0
+          ]
+        ],
+        "same_state_context_plan": "performance/manifests/historical_positive_risk_screen_v1.json",
+        "historical_bound_plan": "performance/manifests/historical_observed_batch_bound_v1.json"
+      }
+    }
+  ],
+  "adjacent_comparisons": [
+    {
+      "from_observations": 32,
+      "to_observations": 96,
+      "weighted_fixed_difference": -0.029771475935599145,
+      "retained_cdf_coordinate_count": 0,
+      "maximum_retained_coordinate_fixed_difference": 0.0,
+      "origin_fixed_differences": {
+        "4": -0.0208922179571025,
+        "5": -0.008879257978496646
+      }
+    },
+    {
+      "from_observations": 96,
+      "to_observations": 128,
+      "weighted_fixed_difference": 0.00040236865488874063,
+      "retained_cdf_coordinate_count": 64,
+      "maximum_retained_coordinate_fixed_difference": 0.0,
+      "origin_fixed_differences": {
+        "4": 0.00027721755248899527,
+        "5": 0.0001251511023997176
+      }
+    },
+    {
+      "from_observations": 128,
+      "to_observations": 160,
+      "weighted_fixed_difference": -1.0265846490664643e-06,
+      "retained_cdf_coordinate_count": 96,
+      "maximum_retained_coordinate_fixed_difference": 0.0,
+      "origin_fixed_differences": {
+        "4": -6.480151842902515e-07,
+        "5": -3.7856946472070163e-07
+      }
+    },
+    {
+      "from_observations": 160,
+      "to_observations": 192,
+      "weighted_fixed_difference": 2.4385308106111836e-08,
+      "retained_cdf_coordinate_count": 128,
+      "maximum_retained_coordinate_fixed_difference": 0.0,
+      "origin_fixed_differences": {
+        "4": 1.842027586018702e-08,
+        "5": 5.965032218169242e-09
+      }
+    },
+    {
+      "from_observations": 192,
+      "to_observations": 224,
+      "weighted_fixed_difference": -4.658276069324785e-07,
+      "retained_cdf_coordinate_count": 160,
+      "maximum_retained_coordinate_fixed_difference": 0.0,
+      "origin_fixed_differences": {
+        "4": 8.090479686195806e-07,
+        "5": -1.274875575552059e-06
+      }
+    }
+  ],
+  "baseline_point_values": {
+    "formula": "net_preview = debited_fixed_reward - stop_reward + E[raw_value(native_choice(Y)) - raw_value(fixed_action,Y)]",
+    "stop_reward": 0.7438762263054653,
+    "debited_fixed_reward": 0.7438206395443862,
+    "sampling_opportunity_loss": 5.558676107919602e-05,
+    "fixed_action": 355,
+    "baseline_source": "paper_artifacts/historical_observed_batch_assembly_v1/compact_summary.json",
+    "fixed_action_integral_already_passed": true,
+    "objective_rule_must_remain_matched": true
+  },
+  "same_declared_objective_heads": 16,
+  "baseline_draw_identity_verified": false,
+  "new_integrations": 0,
+  "full_context_arrays_read": 0,
+  "reader_process_cpu_seconds": 0.11240132900000001,
+  "local_later_layer_fixed_range": 1.468026947892831e-06,
+  "local_128_to224_fixed_change": -1.468026947892831e-06,
+  "interpretation": "Later upper-mean and local-variance refinements change the same-F16 fixed point by about1.47e-6 while a1.405e-3 prior-baseline residual persists. These refinements do not account for the residual; unchanged risk regions,finite objective heads and baseline matching remain unresolved. This is not a risk-error exclusion or total-error certificate."
+}

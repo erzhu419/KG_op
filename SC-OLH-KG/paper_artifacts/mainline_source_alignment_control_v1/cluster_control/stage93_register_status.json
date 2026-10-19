@@ -1,0 +1,47 @@
+{
+  "returncode": 0,
+  "result": {
+    "records": {
+      "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/stage93/register/0_1.json": {
+        "status": "complete",
+        "node": "node006",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-u",
+          "-m",
+          "performance.prepare_mainline_source_alignment_targets",
+          "register",
+          "--checks",
+          "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage92_attempt1/checks.json"
+        ],
+        "started_utc": "2026-10-18T10:53:58.993719+00:00",
+        "subprocess_started": true,
+        "child_returncode": 0,
+        "completed_utc": "2026-10-18T10:54:00.438076+00:00",
+        "wall_seconds": 1.4444021070376039,
+        "log_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/stage93/register/0_1.log",
+        "own_cpu_seconds": 0.074729,
+        "child_cpu_seconds": 1.200811,
+        "total_cpu_seconds": 1.2755400000000001,
+        "outer_exit_policy": "Saved child failure is not retried by scheduler"
+      },
+      "paper_artifacts/mainline_source_alignment_control_v1/target_registration.json": {
+        "status": "registered_not_started",
+        "manifest": "performance/manifests/mainline_source_alignment_targets_v1.json",
+        "registered_geometries": 144,
+        "streams": 2,
+        "terminal_cells": 3168,
+        "geometry_uniform_draws": 576,
+        "target_execution_started": false,
+        "target_execution_authorized": false,
+        "source_asset_seal_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/source_asset_seal.json",
+        "new_target_calls": 0
+      }
+    },
+    "duplicate_wrapper_records": 0,
+    "cpu_seconds": 0.0006348340000000008
+  },
+  "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+  "payload_bytes": 1534,
+  "wall_seconds": 1.402171971014468
+}

@@ -1,0 +1,236 @@
+{
+  "stage": 97,
+  "status": "complete",
+  "created_utc": "2026-10-19T03:41:05.094591+00:00",
+  "scope": "Targeted parser substitutes followed by one saved-diagnostic and saved-failure-log audit",
+  "local_editing_and_inspection_cpu_seconds": null,
+  "unmeasured_cpu_note": "Local editing and small schema inspections were not separately timed; unknown, not zero.",
+  "local_substitute_checks": [
+    {
+      "status": "passed",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_source_numerical_executability.py",
+        "tests/test_mainline_source_numerical_audit_cluster.py"
+      ],
+      "returncode": 0,
+      "cpu_seconds": 0.482934,
+      "wall_seconds": 0.5715105909912381,
+      "completed_utc": "2026-10-19T03:45:06.866261+00:00",
+      "test_counts": {
+        "passed": 16
+      },
+      "scope": "Local deterministic saved-record fixtures and gate substitutes; actual records audit not invoked",
+      "new_scientific_calls": 0,
+      "checks_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/local_validation/stage97_attempt1/checks.json",
+      "log_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/local_validation/stage97_attempt1/pytest.log"
+    },
+    {
+      "status": "passed",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_source_numerical_executability.py",
+        "tests/test_mainline_source_numerical_audit_cluster.py"
+      ],
+      "returncode": 0,
+      "cpu_seconds": 0.482833,
+      "wall_seconds": 0.6441773920087144,
+      "completed_utc": "2026-10-19T03:47:28.286949+00:00",
+      "test_counts": {
+        "passed": 16
+      },
+      "scope": "Local targeted fixtures after explicit compact execution-index wiring; no existing records audit",
+      "new_scientific_calls": 0,
+      "checks_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/local_validation/stage97_attempt2/checks.json",
+      "log_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/local_validation/stage97_attempt2/pytest.log"
+    }
+  ],
+  "transfers": [
+    {
+      "receipt_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_input_upload_receipt.json",
+      "status": "completed",
+      "file_bytes": 326363,
+      "compressed_bytes": 53164,
+      "base64_bytes": 70888,
+      "local_control_cpu_seconds": 0.04708657000000002,
+      "remote_upload_cpu_seconds": 0.008800869000000003,
+      "acknowledgement_download_bytes": 3095
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_final_document_upload_20261019.json",
+      "scope": "Final five static files only",
+      "status": "completed",
+      "file_bytes": 455446,
+      "compressed_bytes": 152527,
+      "base64_bytes": 203372,
+      "local_control_cpu_seconds": 0.104945331,
+      "remote_upload_cpu_seconds": 0.008109863000000009,
+      "acknowledgement_download_bytes": 3947
+    }
+  ],
+  "scheduler_task_ids": [
+    "t189905"
+  ],
+  "controller": {
+    "launch_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_controller_launch.json",
+    "pid": 82652,
+    "exit_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_controller_exit.json",
+    "returncode": 0,
+    "completed_utc": "2026-10-19T03:51:45.806878+00:00",
+    "child_cpu_seconds": 87.740775,
+    "supervisor_cpu_seconds": 0.019507,
+    "wall_seconds": 205.55763846298214,
+    "automatic_retries": 0
+  },
+  "known_audit_cpu_seconds": 0.21284221899999997,
+  "known_wrapper_inclusive_cpu_seconds": 1.1760329999999999,
+  "cost_policy": "Test and audit phase CPU are nested inside wrapper total; control and transfer CPU are separate. Historical failure/source costs remain references, not new work.",
+  "historical_account_references": [
+    "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage96_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json"
+  ],
+  "new_work": {
+    "simulator_calls": 0,
+    "target_scores": 0,
+    "source_fits": 0,
+    "posterior_restorations": 0,
+    "integration_calls": 0,
+    "old_failed_search_retries": 0,
+    "raw_model_or_csv_downloads": 0,
+    "saved_record_audit_jobs": 1,
+    "scheduler_tasks": 1
+  },
+  "failures_retained": [],
+  "metadata_reads": [
+    {
+      "receipt_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_input_availability.json",
+      "returncode": 0,
+      "stdout_bytes": 3406,
+      "stderr_bytes": 461,
+      "local_control_cpu_seconds": 0.014994756999999997,
+      "wall_seconds": 3.47271458801697,
+      "utc": "2026-10-19T03:46:05.670619+00:00",
+      "remote_cpu_seconds": 0.002319643000000003
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_cost_input_availability.json",
+      "returncode": 0,
+      "stdout_bytes": 706,
+      "stderr_bytes": 461,
+      "local_control_cpu_seconds": 0.015417342,
+      "wall_seconds": 1.5859660729765892,
+      "utc": "2026-10-19T03:46:55.077286+00:00",
+      "remote_cpu_seconds": 0.00028115900000000305
+    }
+  ],
+  "result_download": {
+    "receipt_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_result_download_receipt.json",
+    "local_control_cpu_seconds": 0.014350435000000022,
+    "remote_cpu_seconds": 0.00216514000000001,
+    "stdout_bytes": 6519,
+    "stderr_bytes": 461,
+    "compressed_bytes": 4364,
+    "uncompressed_bytes": 50647
+  },
+  "scheduler_tasks": [
+    {
+      "id": "t189905",
+      "status": "running",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": null,
+      "retry_count": 0,
+      "started_at": 1792381852.9001136,
+      "finished_at": null,
+      "last_block_reason": null
+    }
+  ],
+  "wrapper_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_wrapper.json",
+  "completion_audit_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_completion_audit.json",
+  "scheduler_substitute_checks": {
+    "status": "passed",
+    "returncode": 0,
+    "test_files": [
+      "tests/test_mainline_source_numerical_executability.py",
+      "tests/test_mainline_source_numerical_audit_cluster.py"
+    ],
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_source_numerical_executability.py",
+      "tests/test_mainline_source_numerical_audit_cluster.py"
+    ],
+    "test_counts": {
+      "passed": 16
+    },
+    "cpu_seconds": 0.7021069999999999,
+    "wall_seconds": 1.229063780978322,
+    "completed_utc": "2026-10-19T03:50:37.942317+00:00",
+    "automatic_retries": 0,
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0
+  },
+  "sequence_phase_costs": [
+    {
+      "phase": "substitute_checks",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_source_numerical_executability.py",
+        "tests/test_mainline_source_numerical_audit_cluster.py"
+      ],
+      "returncode": 0,
+      "launch_error": null,
+      "child_cpu_seconds": 0.7021069999999999,
+      "wall_seconds": 1.229063780978322
+    },
+    {
+      "phase": "saved_record_audit",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.audit_mainline_source_numerical_executability",
+        "--manifest",
+        "performance/manifests/mainline_source_numerical_executability_audit_v1.json",
+        "--checks",
+        "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/validation/stage97_attempt1/checks.json"
+      ],
+      "returncode": 0,
+      "launch_error": null,
+      "child_cpu_seconds": 0.28408600000000006,
+      "wall_seconds": 0.5271669505164027
+    }
+  ],
+  "wrapper_duplicate_count": 0,
+  "audit_attempt_records": 1,
+  "task_metadata_read_cpu_seconds": 4.148980773,
+  "known_local_substitute_cpu_seconds": 0.965767,
+  "known_control_cpu_seconds": 92.12773388200002,
+  "known_new_total_cpu_seconds": 94.26953388200002,
+  "cpu_total_note": "Known new total = local fixture checks + remote wrapper inclusive CPU + control/transfer CPU. Remote pytest and audit phases are contained within wrapper. Manual dispatch is contained within controller child CPU. Earlier editing/static inspection CPU remains unknown.",
+  "final_document_sync_status": "completed",
+  "updated_utc": "2026-10-19T03:57:22.337958+00:00"
+}

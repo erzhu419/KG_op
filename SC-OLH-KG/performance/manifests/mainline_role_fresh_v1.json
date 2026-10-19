@@ -1,0 +1,172 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load frozen native prior, GP/structural bundle, public mean10/learned risk10 representation, eight source identities and 1024 source integration nodes. Reuse the parent STOP initial10 raw in original order. No source simulation, fitting, encoder fitting or download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false
+  },
+  "name": "mainline_role_fresh_v1",
+  "registered_utc": "2026-10-15T15:43:53.636324+00:00",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_role_fresh_v1",
+  "target_seeds": [
+    2026101651,
+    2026101652,
+    2026101653
+  ],
+  "geometry_seed": 2026101650,
+  "geometry_by_seed": {
+    "2026101651": {
+      "task_id": "role_fresh_factorshock_00",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.011586766352657492,
+          0.0006595862631951777,
+          0.03032346079457289
+        ],
+        "task_geometry_radius_scale": 1.010893609695146
+      }
+    },
+    "2026101652": {
+      "task_id": "role_fresh_factorshock_01",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.021932909504801493,
+          -0.028580006137912024,
+          -0.004433625320736632
+        ],
+        "task_geometry_radius_scale": 0.9546212748139621
+      }
+    },
+    "2026101653": {
+      "task_id": "role_fresh_factorshock_02",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02498040420393228,
+          -0.012685805122796316,
+          -0.026762860558179544
+        ],
+        "task_geometry_radius_scale": 1.0238860323483108
+      }
+    }
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "entrypoints": [
+    "performance/run_mainline_role_fresh.py",
+    "performance/summarize_mainline_role_fresh.py"
+  ],
+  "report": "docs/mainline_role_fresh_results_20261016.md",
+  "geometry": "Exactly3 independent draws from existing shift U(-.035,.035)^3 and radius U(.95,1.05), unchanged shared_shock_scale1. Native constructor applies its documented center clipping. No outcome screening, replacement or additions. New seed1650 and1651-53 absent from prior manifests/docs/README before registration; all tuples nonnominal and distinct; frozen source tasks exclude FactorShock.",
+  "initialization": "Reuse source-only physical design80, but physically collect10 fresh paired raw on each new geometry using its run seed. Replay the same task initial10 to every online arm, count10 logically for each. Freeze all3 shared64-neighbor banks from these raws before online search.",
+  "frontends": "All5 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Exactly stage28 frozen modular g source law with legacy latent_shared split, current f/eta marginal laws,8 identities/1024 nodes and raw update. No source reconditioning, refitting or precision adjustment.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "streams": "Same original search/proposal/TS and independent verifier namespaces, runseed per task. Each arm physically executes its own3 adaptive queries and verifier. Initial10 physically shared per task, logically charged to each arm.",
+  "barriers": {
+    "before_online": "All3 initial10 and neighbor banks frozen.",
+    "before_verify": "All18 shortlists and search histories frozen.",
+    "before_truth": "All18 verifications complete. Score truth per task separately, never reuse nominal geometry truth or cache solely by policy across tasks.",
+    "failure": "Retain every attempt, consumed raw and CPU. Do not rerun partially consumed paid stages from zero; repair computation from saved state where possible."
+  },
+  "budget": {
+    "task_count": 3,
+    "recommendation_count": 18,
+    "online_case_count": 15,
+    "initial_only_case_count": 3,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 30,
+    "new_search_physical_calls_max": 45,
+    "new_verification_physical_calls_max": 6336,
+    "new_target_physical_calls_max": 6411,
+    "logical_target_calls_max": 6561,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "downloads": 0
+  },
+  "comparisons": "Primary: role_full versus role_point_only deployment safe reward under same cap. Secondary: role_full versus native,GP,original structure,STOP. Report all3 tasks individually; count query feasibility/improvement, new policy hits, certificate errors and verification calls. Use saved predictions on common never-sampled shared neighbors. Small3-task exploratory validation; no seed-level significance claim.",
+  "execution": {
+    "new_target_observations_started": true,
+    "completed_initializations": 3,
+    "new_initial_calls": 30,
+    "source_fits": 0,
+    "downloads": 0,
+    "completed_searches": 18,
+    "completed_verifications": 18,
+    "new_search_calls": 45,
+    "new_verification_calls": 3136,
+    "new_physical_target_calls": 3211,
+    "logical_target_calls": 3361,
+    "new_truth_function_calls": 609,
+    "failed_attempts": 1,
+    "paid_failed_attempts": 0
+  },
+  "completed_utc": "2026-10-15T16:02:39.549588+00:00",
+  "completion_file": "paper_artifacts/mainline_role_fresh_v1/completion.json"
+}

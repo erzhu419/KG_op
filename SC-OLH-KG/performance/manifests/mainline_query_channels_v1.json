@@ -1,0 +1,75 @@
+{
+  "name": "mainline_query_channels_v1",
+  "status": "complete:27 original query replays,18 channel stages,3 native frozen controls and cached truth summary",
+  "registered_utc": "2026-10-15T14:41:04.329825+00:00",
+  "role": "Fixed-trajectory query diagnosis on already opened shared-neighborhood cases; no new optimizer or deployed reward.",
+  "parent_manifest": "performance/manifests/mainline_shared_neighbors_v1.json",
+  "parent_output": "paper_artifacts/mainline_shared_neighbors_v1",
+  "output_dir": "paper_artifacts/mainline_query_channels_v1",
+  "entrypoints": [
+    "performance/recover_shared_neighbor_query_rng.py",
+    "performance/run_mainline_query_channels.py"
+  ],
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "target_seeds": [
+    2026101641,
+    2026101642,
+    2026101643
+  ],
+  "arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load frozen native prior, GP/structural bundle, public mean10/learned risk10 representation, eight source identities and 1024 source integration nodes. Reuse the parent STOP initial10 raw in original order. No source simulation, fitting, encoder fitting or download."
+  },
+  "initialization": "All controls share the full posterior after original ten raw observations. Only adaptive observations at paid prefixes11/12 are intervened on.",
+  "replay": "Reuse all13 saved raw in original order. Reproduce three candidate pools, complete scores, selections and raw; capture actual pre-score RNG; stop after supplying third query raw before final update/terminal.",
+  "controls": {
+    "full": "Recorded full posterior and actual TS draw.",
+    "no_cross_noise": "Use initial10 noise for unobserved policies; for subsequently observed points, condition initial10 on only that point subsequent raw. Full means, covariance and draws retained.",
+    "no_cross_mean": "Own-point after-initial10 f/g means; retain full epistemic covariance and full noise. Same Gaussian draw residual: draw_full-mean_full+mean_own.",
+    "no_cross_mean_noise": "Combine the previous two marginal interventions, retaining full epistemic covariance.",
+    "no_cross_all_fixed_correlation": "Own-point means/variance/noise with initial10 inter-policy correlation, C_cf=D C10 D where D=sqrt(var_own/var10). Use original pre-call RNG and bank order. This is a diagnostic fixed-correlation moment control, not a native joint posterior; it avoids the product control independently deleting all inter-policy correlation.",
+    "frozen10": "Keep initial10 full posterior, same actual pool/observed set and pre-score RNG; no adaptive posterior update.",
+    "native_frozen10": "Freeze native objective/constraint/HVD/expert models at initial10, retaining original scorer and each actual candidate pool/observed set and same pre-score RNG. All three seeds, not only successful case."
+  },
+  "policy_local_conditioning": "Initial10 full moments on current bank. For each unique post-initialization sampled policy restore only initial10 plus that policy adaptive raw on the small bank containing its required history; replace only its own marginal. Unobserved policy marginals stay at initial10.",
+  "checks": "Full replay must reproduce ordered candidates, all saved score fields and selected raw. Reconstructed TS full draws/scores must match saved score and first-query controls match full before subsequent comparisons. Keep original precision and record failures.",
+  "barriers": {
+    "before_counterfactuals": "Register this protocol before recovery or counterfactual computation.",
+    "before_truth": "Freeze all nine recovery files and six GP/structure channel files before truth scoring. Reuse existing truth; evaluate only missing selected counterfactual policies analytically, record calls. No oracle-driven branch/model selection."
+  },
+  "budget": {
+    "new_target_simulations": 0,
+    "new_verification_calls": 0,
+    "new_source_simulations": 0,
+    "new_source_or_encoder_fits": 0,
+    "downloads": 0,
+    "replayed_paths": 9,
+    "replayed_raw_rows": 117,
+    "counterfactual_channel_cases": 6
+  },
+  "limitations": [
+    "One-step counterfactuals condition on the actual paid history; their selections cannot inherit subsequent raw or actual verification/deployment rewards.",
+    "Same arm RNG is paired; native expert draws and GP/structure finite-bank draws have different dimensions, so random variables are not matched across backends.",
+    "The fixed-correlation control preserves initial dependence while removing adaptive cross-policy changes in moments; it is a diagnostic construction, not a learned replacement model."
+  ],
+  "report": "docs/mainline_query_channels_results_20261015.md",
+  "completion_file": "paper_artifacts/mainline_query_channels_v1/completion.json"
+}

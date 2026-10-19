@@ -1,0 +1,35 @@
+{
+  "code_sources": [
+    {
+      "file": "core/raw_terminal_head_grid.py",
+      "lines": [
+        218,
+        229
+      ]
+    },
+    {
+      "file": "performance/prepare_historical_positive_risk_screen.py",
+      "lines": [
+        101,
+        104
+      ]
+    }
+  ],
+  "origin_measure": "Q_o uses objective and risk nodes conditional on the same origin o; external weight is the unrenormalized prior mass pi_o.",
+  "posterior": "W_k(f,g)=pi_k*p_k(f)*p_k(g)/sum_r(pi_r*p_r(f)*p_r(g))",
+  "fixed_action": "H_k(f,g)=F_k(f)*G_k(g); same fixed action355 throughout.",
+  "same_node_identity": "A-B=sum_o pi_o Q_o[sum_{k!=o} W_k*(H_k-H_o)]",
+  "baseline_decomposition": "A-C_prior=(A-B)+(B-C_prior), with B evaluated on the identical finite nodes.",
+  "source_weight_construction_correct": true,
+  "additional_density_ratio_required": false,
+  "prior_weights_renormalized": false,
+  "fixed_diagonal_can_replace_bank_maximum": false,
+  "full_continuous_identity_transfer_cancels": true,
+  "finite_origin_quadrature_transfer_need_not_cancel": true,
+  "numerical_diagnostic_complete": false,
+  "same_node_fixed_reproduction_checked": false,
+  "same_node_mix": null,
+  "same_node_diagonal": null,
+  "identity_transfer_values": null,
+  "limitation": "Only source weighting and algebra are established. The failed reader did not reproduce the current fixed value or quantify either transfer. Tower residual attribution and absolute error certification remain open."
+}

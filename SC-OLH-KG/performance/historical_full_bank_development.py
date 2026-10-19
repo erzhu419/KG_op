@@ -11,6 +11,8 @@ import time
 import numpy as np
 
 from performance.complete_historical_source_heads import ROOT, read, save, cpu_timeout
+from performance.historical_common_bank import (common_bank_mapping, initialization_batches,
+    replay_raw_batches, restore_zero_paid_prior)
 from performance.connect_historical_learned_prior_kg import restore_learned_source_prior
 from performance.connect_historical_matched_gp import controls_from_fit
 from performance.connect_historical_prior_posterior import snapshot
@@ -90,10 +92,12 @@ def run_case(plan):
         paid = next(r for r in read(spec['initializations'])['rows'] if r['task_id'] == state['task_id'])
         provider = no_outcomes(problem_for(public, task))
         candidates = [tuple(p) for p in bank]
-        model, restoration = restore_full_prior(spec, pilot, state, connection, old, len(bank))
-        assert model.paid_episodes == 0 and not model.history
-        for candidate, pair in zip(paid['candidate_bank_indices'], paid['paired_observations']):
-            model.update_raw(candidate, [pair[0], pair[1]-paid['tau']])
+        frozen_bank = next(b for b in frozen['banks'] if b['layout'] == state['layout'])
+        mapping = common_bank_mapping(bank, frozen_bank)
+        model, restoration = restore_zero_paid_prior(spec, pilot, state, connection, old, len(bank))
+        replay = replay_raw_batches(model, initialization_batches(paid), paid['tau'])
+        remaining = replay['remaining_calls']
+        queries = mapping['queries']
         check_replayed_snapshot(restricted_snapshot(model, state['candidate_bank_indices']),
                                 state['posterior_moment_diagnostic'], roundoff_units=max(64, 2*len(bank)))
         restoration_cpu = time.process_time()-started
@@ -108,7 +112,7 @@ def run_case(plan):
         certificate_caches = {}
         for power in spec['terminal_powers']:
             if not any(r['power'] == power for r in rules):
-                rules.append(terminal_rule(model, terminal, 360, identities, power, spec['integration_seed'], certificate_caches))
+                rules.append(terminal_rule(model, terminal, remaining, identities, power, spec['integration_seed'], certificate_caches))
                 save(record, {'rows': rules})
                 print('SCHEDULEURM_PROGRESS '+json.dumps({'step': len(rules), 'total': len(spec['terminal_powers']),
                     'unit': 'terminal_rules', 'metrics': {'state': state['name'], 'cpu_seconds': time.process_time()-started}}), flush=True)
@@ -119,12 +123,13 @@ def run_case(plan):
                  'identity_remainder': omitted <= spec['maximum_identity_integration_error_bound']}
         row = {k: state[k] for k in ('name', 'task_id', 'layout', 'arm')}
         row.update(bank_size=len(bank), paid_bank_indices=paid['candidate_bank_indices'],
+            public_query_indices=queries, raw_replay=replay,
             paid_episodes=model.paid_episodes, source_weights=model.weights.tolist(), native_subset_replay_passed=True,
             native_replay_roundoff_units=max(64, 2*len(bank)),
             restoration=restoration, posterior_mean=mean.tolist(), posterior_variance=variance.tolist(),
             terminal_protocol=state['terminal_protocol'], utility_identities=identities, omitted_utility_mass=omitted,
             terminal_action_count=len(high['actions']), action=high['best_action'], action_index=high['best_action_index'],
-            predicted_reward=high['best_reward'], predicted_calls=2+high['costs'][high['best_action_index']],
+            predicted_reward=high['best_reward'], predicted_calls=model.paid_episodes+high['costs'][high['best_action_index']],
             all_action_resolution_difference=difference, gates=gates, numerical_diagnostics_passed=all(gates.values()),
             terminal_rules=str(record.relative_to(ROOT)), recommendation_frozen=True, scoring_truth_opened=False,
             cpu_seconds=time.process_time()-started, restoration_cpu_seconds=restoration_cpu,
@@ -148,7 +153,7 @@ def prepare():
     spec = read(PLAN); _, _, states, _, _, _, _ = context(spec)
     out = ROOT/spec['output']; out.mkdir(parents=True, exist_ok=True)
     plans = ROOT/'performance/manifests/historical_full_bank_development_v1'; plans.mkdir(exist_ok=True)
-    files = {PLAN, 'performance/historical_full_bank_development.py', 'performance/prepare_historical_independent_kg.py',
+    files = {PLAN, 'performance/historical_full_bank_development.py', 'performance/historical_common_bank.py', 'performance/prepare_historical_independent_kg.py',
              'core/conditional_terminal_kg.py',
              spec['gp_fit'], spec['initializations']}
     shards, specs = [], []

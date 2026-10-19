@@ -1,0 +1,46 @@
+{
+  "name": "mainline_role_choice_audit_v1",
+  "status": "complete",
+  "analysis_type": "Retrospective diagnosis after stage31 outcomes were known; not a prospective experiment.",
+  "parent_manifest": "performance/manifests/mainline_role_replication_v1.json",
+  "input_dir": "paper_artifacts/mainline_role_replication_v1",
+  "output_dir": "paper_artifacts/mainline_role_choice_audit_v1",
+  "report": "docs/mainline_role_choice_audit_results_20261016.md",
+  "entrypoint": "performance/diagnose_mainline_role_choice.py",
+  "focus_neighbors": {
+    "2026101672": [
+      24,
+      36
+    ],
+    "2026101675": [
+      33
+    ]
+  },
+  "scope": "All90 recorded choices across six tasks and five online arms; detailed contrasts for missed1672 and successful1675. Read JSON and NPZ only, with frozen models, pools, draws and verifier.",
+  "analysis": [
+    "Reconstruct constrained TS from saved sampled objective and margin before interpreting decomposition.",
+    "Within each recorded pool cross objective sample/mean with risk margin sample/mean. Retain original feasibility-first and minimum-violation fallback semantics.",
+    "At focal neighbors separate objective-relative-mean error, objective draw innovation, risk mean bias, aleatoric scale error and constraint draw innovation.",
+    "Use only existing per-task truth cache; missing counterfactual truth remains unknown."
+  ],
+  "limits": "One-step score substitutions are not a posterior ablation, independent rerun or deployed reward. Later recorded states remain conditional on actual actions. No thresholds, model fitting, new truth or follow-through on counterfactual actions.",
+  "new_budget": {
+    "target_calls": 0,
+    "source_calls": 0,
+    "source_fits": 0,
+    "truth_calls": 0,
+    "downloads": 0
+  },
+  "startup_issue": "One read-only inspection used unavailable python alias (exit127, before Python started); continued with installed python3, zero simulation consumption.",
+  "output_semantics": "choices.mode/feasible_count describe the substituted rule. choices.selected retains original recorded scores, including original sampled_feasible; these are not recomputed posterior predictions.",
+  "next_step": {
+    "scope": "Frozen-risk objective-difference attribution and source-support diagnosis; no new source or target simulations.",
+    "trajectory_entrypoint": "performance/mainline_role_prior.py:role_trajectory",
+    "node_projection_entrypoint": "performance/diagnose_mainline_initialization.py:stream_head",
+    "design_entrypoint": "performance/mainline_legacy_source_models.py:_query_design",
+    "source_raw": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+    "labels_entrypoint": "representation/legacy_function_prior.py:legacy_source_labels",
+    "decomposition": "Within-node mean updates, integration-node mass reweighting, then common identity weights; identity-internal updates alone must not be called pure spatial conditioning.",
+    "source_boundary": "Two source tasks,64sites x3repeats each, all used in the frozen fit. Existing projections diagnose source support, not held-out prediction. Native f is fitted on target initialization pilot, not a ready frozen source-law replacement."
+  }
+}

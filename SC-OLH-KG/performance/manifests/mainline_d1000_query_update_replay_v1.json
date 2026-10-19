@@ -1,0 +1,49 @@
+{
+  "status": "Registered before query replay; all16 completed tasks included without outcome selection",
+  "goal_contract": "docs/original_goal_and_mainline_contract_20261015.md",
+  "output": "paper_artifacts/mainline_d1000_query_update_replay_v1",
+  "source_manifest": "performance/manifests/mainline_d1000_dual_channel_replication_v1.json",
+  "source_output": "paper_artifacts/mainline_d1000_dual_channel_replication_v1",
+  "source_results": "paper_artifacts/mainline_d1000_dual_channel_replication_v1/results.json",
+  "source_joint_risk_fit_file": "paper_artifacts/mainline_source_risk_calibration_v1/calibration.json",
+  "arm": "source_structural_mixture",
+  "task_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  "task_count": 16,
+  "target_dimension": 1000,
+  "candidate_count": 104,
+  "remaining": 359,
+  "quadrature_order": 3,
+  "maximum_case_cpu_seconds": 600,
+  "states": {
+    "before": "Restore the frozen calibrated full source model and replay both saved initialization raw observations at45/10; native paid count2.",
+    "after": "Continue the same native model with its own saved round1 query and raw observation; native paid count3.",
+    "comparison": "Score both states on all104 candidates at remaining359, the round2 budget after3 paid episodes. Do not score before at360 or restrict it to the old89-point release.",
+    "acquisition": "Unchanged performance.mainline_moment_policy.query_action: order3 moment KG and full-model terminal proxy. Native refers to posterior restoration and raw conditioning, not exact KG."
+  },
+  "inputs": {
+    "initialization": "task{task_index:02d}/initialization.json",
+    "case": "task{task_index:02d}/source_structural_mixture/case.json",
+    "first_raw": "task{task_index:02d}/source_structural_mixture/round1_observation.json",
+    "second_decision": "task{task_index:02d}/source_structural_mixture/round2.json",
+    "interpretation": "Paths are relative to source_output. Reuse frozen model, bank, coordinates and source calibration from source_manifest; no new observations or source evidence."
+  },
+  "record": [
+    "Before/after query score vectors and argmax; actual saved round2 query, its before rank and gap to the before maximum.",
+    "For all16 tasks, align restored native moments and available query cross-covariance slices with saved initial and post-round1 states. Only task0 recomputes the after acquisition to match all saved round2 scores; tasks1..15 reuse the saved after scores once state parity holds.",
+    "Mean and covariance changes at points unobserved after round1, excluding45/10 and that round1 query; retain the query-point change separately.",
+    "Task-level association with already saved actual/conditional decision rewards, if used; do not treat association as a newly executed counterfactual policy."
+  ],
+  "execution": "Run task0 first to confirm native restore/raw/score wiring, then tasks1..15. Compute16 matched-budget baseline acquisitions and1 after-state acquisition check,17 query_action calls total; replay48 already-paid raw observations. Preserve any failure and numerical CPU/wall cost; no outcome-based skipping, replacement or tuning.",
+  "accounting": {
+    "new_simulator_calls": 0,
+    "new_verification_calls": 0,
+    "new_target_truth_calls": 0,
+    "new_source_labels": 0,
+    "new_source_fits": 0,
+    "new_deployments": 0,
+    "replayed_raw_is_already_charged": true,
+    "numerical_cpu_recorded_separately": true,
+    "previous_ledgers_preserved": true
+  },
+  "scope": "Separates first-observation posterior effects on round2 query ranking from static initialized coupling, budget reduction and candidate release. Posterior effects include queried-point conditioning and cross-policy propagation; they are not wholly attributable to cross-policy coupling. Saved outcomes were already opened, so this is a retrospective mechanism diagnostic, not a new held-out verified arm."
+}

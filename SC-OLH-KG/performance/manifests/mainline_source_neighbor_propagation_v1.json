@@ -1,0 +1,66 @@
+{
+  "name": "mainline_source_neighbor_propagation_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-17T01:24:06.050280+00:00",
+  "output_dir": "paper_artifacts/mainline_source_neighbor_propagation_v1",
+  "inputs": {
+    "neighbor_analysis": "paper_artifacts/mainline_source_neighbor_coverage_v1/analysis.json"
+  },
+  "expected": {
+    "source_groups": 24,
+    "fixed_pairs": 282,
+    "source_arm_cases": 96,
+    "source_snapshots": 192,
+    "initial_unobserved_pairs": 30,
+    "final_unobserved_pairs": 6
+  },
+  "frozen": [
+    "source models",
+    "model representation",
+    "target search",
+    "terminal rules",
+    "simulation budgets",
+    "precision",
+    "scoring repeats"
+  ],
+  "statistical_unit": "24 overlapping source archive/fold/family groups, four frozen backends, two prefixes. No new independent-task or deployment inference.",
+  "decomposition": "Same pair: F13=P10+(P13-P10)+(A10-P10)+[(A13-P13)-(A10-P10)]+(F13-A13). P is a source prior gap only while both endpoints are unobserved; other P gaps are point-update references.",
+  "pair_population": "Reuse all282 sealed pairs; follow the original30 initial-UU pairs through both prefixes. Current final-UU6 is a separate subset, not a replacement.",
+  "decision": "No offset, scale or temperature sweep. If saved positive and negative evidence does not identify a consistent unsampled mean-gap mechanism, stop this correction direction; preserve the deployed model.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_confirmation_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_observed_ranking_v1/completion.json",
+    "paper_artifacts/mainline_objective_contrast_exposure_v1/completion.json",
+    "paper_artifacts/mainline_objective_selection_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/completion.json"
+  ],
+  "all_control_evidence": "paper_artifacts/mainline_three_stream_attribution_v1/summary.json",
+  "execution": {
+    "nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "cpu_per_phase": 1,
+    "blas_threads": 1
+  },
+  "entrypoint": "performance.analyze_mainline_source_neighbor_propagation",
+  "protocol": "docs/mainline_source_neighbor_propagation_protocol_20261017.md",
+  "completed_utc": "2026-10-17T01:28:29.720987+00:00",
+  "decision_result": {
+    "local_mechanism": "All three initial-UU newly wrong orders are movements toward the scoring label that overshoot and worsen absolute gap error; two label signs are stable and one is unstable.",
+    "correction_direction": "common objective offset or global scaling of initialization propagation",
+    "direction_status": "closed_without_model_change",
+    "reason": "The local overshoots do not identify a prospective correction condition that also preserves the positive source cases; do not infer anchor, covariance or source-family causation.",
+    "retain": "Current AFTER model, initialization propagation, search, terminal, all controls and historical costs.",
+    "next_same_direction_analysis": false,
+    "report": "docs/mainline_source_neighbor_propagation_results_20261017.md"
+  }
+}

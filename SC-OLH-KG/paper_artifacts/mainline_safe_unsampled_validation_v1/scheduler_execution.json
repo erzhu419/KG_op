@@ -1,0 +1,1986 @@
+{
+  "stage": 73,
+  "name": "mainline_safe_unsampled_validation_v1",
+  "status": "complete",
+  "recorded_utc": "2026-10-17T03:37:14.692367+00:00",
+  "manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "blas_threads": 1,
+  "vram_mb": 0,
+  "requested_ram_mb_per_shard": 32768,
+  "execution_policy": "All scientific computation through scheduler; local control, compact metadata and deterministic mocked control fixtures only.",
+  "preflight": {
+    "heal": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_heal_preflight.json",
+    "doctor": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_doctor.json",
+    "live_cpu_plan": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_cpu_plan.json",
+    "shared_disk": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_disk.json"
+  },
+  "validation": {
+    "status": "validated",
+    "unique_tests": 18,
+    "previous_passes": 17,
+    "repaired_test_passes": 1,
+    "prior_failed_attempt_retained": true,
+    "prior_task_ids": [
+      "t166413"
+    ],
+    "repair_task_ids": [
+      "t166415"
+    ],
+    "check_records": [
+      "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/validation/0_1.json",
+      "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/validation_fixture_fix/0_1.json"
+    ],
+    "scheduler_test_cpu_seconds": 3.139188,
+    "local_control_fixture_cpu_seconds": 0.24956899999999999,
+    "scientific_calls": 0,
+    "completed_utc": "2026-10-17T02:20:36.284050+00:00"
+  },
+  "stages": {
+    "initial": {
+      "registered_jobs": 24,
+      "status": "complete",
+      "completion": {
+        "status": "complete",
+        "stage": "initial",
+        "jobs": 24,
+        "truth_used": false,
+        "failed_jobs": []
+      }
+    },
+    "neighbors": {
+      "registered_jobs": 24,
+      "status": "complete",
+      "completion": {
+        "status": "complete",
+        "stage": "neighbors",
+        "jobs": 24,
+        "truth_used": false,
+        "failed_jobs": []
+      }
+    },
+    "online": {
+      "registered_jobs": 144,
+      "status": "complete",
+      "completion": {
+        "status": "complete",
+        "stage": "online",
+        "jobs": 144,
+        "truth_used": false,
+        "failed_jobs": []
+      }
+    },
+    "native": {
+      "registered_jobs": 48,
+      "status": "complete",
+      "completion": {
+        "status": "complete",
+        "stage": "native",
+        "jobs": 48,
+        "truth_used": false,
+        "failed_jobs": []
+      }
+    },
+    "old": {
+      "registered_jobs": 216,
+      "status": "complete",
+      "completion": {
+        "status": "complete",
+        "stage": "old",
+        "jobs": 216,
+        "truth_used": false,
+        "failed_jobs": []
+      }
+    },
+    "new": {
+      "registered_jobs": 216,
+      "status": "complete",
+      "completion": {
+        "status": "complete",
+        "stage": "new",
+        "jobs": 216,
+        "truth_used": false,
+        "failed_jobs": []
+      }
+    }
+  },
+  "terminal_seal": {
+    "status": "sealed",
+    "registered_pairs": 216,
+    "registered_terminal_cells": 432,
+    "completed_old": 216,
+    "completed_new": 216,
+    "truth_access_allowed": true,
+    "truth_used": false
+  },
+  "inventory": {
+    "status": "sealed",
+    "registered_tasks": 24,
+    "truth_used": false,
+    "distinct_policy_task_units": 3199,
+    "maximum_analytic_function_calls": 9597
+  },
+  "scheduler_task_count": 44,
+  "scheduler_status_counts": {
+    "done": 44
+  },
+  "automatic_retry_task_ids": [],
+  "tasks": [
+    {
+      "label": "validation",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/validation/0_1.json",
+      "id": "t166413",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166413.log",
+      "child_status": "child_failed",
+      "child_returncode": 1,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 1.900725,
+      "child_cpu_seconds": 1.82769,
+      "own_cpu_seconds": 0.07303499999999999,
+      "wall_seconds": 2.13105592969805
+    },
+    {
+      "label": "validation_fixture_fix",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/validation_fixture_fix/0_1.json",
+      "id": "t166415",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166415.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 1.2384629999999999,
+      "child_cpu_seconds": 1.145891,
+      "own_cpu_seconds": 0.092572,
+      "wall_seconds": 1.3925331551581621
+    },
+    {
+      "label": "initial/describe",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/describe/0_1.json",
+      "id": "t166417",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166417.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 1.253775,
+      "child_cpu_seconds": 1.173697,
+      "own_cpu_seconds": 0.080078,
+      "wall_seconds": 1.3750130897387862
+    },
+    {
+      "label": "initial/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/0_6.json",
+      "id": "t166419",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 6,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166419.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 479.93924999999996,
+      "child_cpu_seconds": 479.87294099999997,
+      "own_cpu_seconds": 0.06630899999999999,
+      "wall_seconds": 81.9838380003348
+    },
+    {
+      "label": "initial/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/6_12.json",
+      "id": "t166420",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 6,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166420.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 493.822324,
+      "child_cpu_seconds": 493.769392,
+      "own_cpu_seconds": 0.05293199999999999,
+      "wall_seconds": 86.75791670940816
+    },
+    {
+      "label": "initial/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/12_18.json",
+      "id": "t166421",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 6,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166421.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 487.04370800000004,
+      "child_cpu_seconds": 486.97172700000004,
+      "own_cpu_seconds": 0.07198099999999999,
+      "wall_seconds": 88.10300381481647
+    },
+    {
+      "label": "initial/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/18_24.json",
+      "id": "t166422",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 6,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166422.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 500.28983,
+      "child_cpu_seconds": 500.20696,
+      "own_cpu_seconds": 0.08287,
+      "wall_seconds": 85.66124846413732
+    },
+    {
+      "label": "initial/finish",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/finish/0_1.json",
+      "id": "t166423",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 1,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166423.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 1.12216,
+      "child_cpu_seconds": 1.052046,
+      "own_cpu_seconds": 0.070114,
+      "wall_seconds": 1.2445066142827272
+    },
+    {
+      "label": "neighbors/describe",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/describe/0_1.json",
+      "id": "t166424",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166424.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 1.152415,
+      "child_cpu_seconds": 1.080463,
+      "own_cpu_seconds": 0.07195199999999999,
+      "wall_seconds": 1.237810974009335
+    },
+    {
+      "label": "neighbors/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/0_6.json",
+      "id": "t166426",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 6,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166426.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 8.064736,
+      "child_cpu_seconds": 7.998034,
+      "own_cpu_seconds": 0.066702,
+      "wall_seconds": 2.633910325355828
+    },
+    {
+      "label": "neighbors/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/6_12.json",
+      "id": "t166427",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 6,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166427.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 7.972605,
+      "child_cpu_seconds": 7.90313,
+      "own_cpu_seconds": 0.069475,
+      "wall_seconds": 2.378694192506373
+    },
+    {
+      "label": "neighbors/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/12_18.json",
+      "id": "t166428",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 6,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166428.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 8.055487,
+      "child_cpu_seconds": 7.989071,
+      "own_cpu_seconds": 0.066416,
+      "wall_seconds": 2.463264675810933
+    },
+    {
+      "label": "neighbors/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/18_24.json",
+      "id": "t166429",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 6,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166429.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 8.565614,
+      "child_cpu_seconds": 8.490206,
+      "own_cpu_seconds": 0.07540799999999999,
+      "wall_seconds": 2.637764318846166
+    },
+    {
+      "label": "neighbors/finish",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/finish/0_1.json",
+      "id": "t166433",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 1,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166433.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 1.169986,
+      "child_cpu_seconds": 1.090399,
+      "own_cpu_seconds": 0.07958699999999999,
+      "wall_seconds": 1.2737783072516322
+    },
+    {
+      "label": "online/describe",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/describe/0_1.json",
+      "id": "t166435",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 820,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166435.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 1.01616,
+      "child_cpu_seconds": 0.944507,
+      "own_cpu_seconds": 0.071653,
+      "wall_seconds": 1.1086770743131638
+    },
+    {
+      "label": "online/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/0_36.json",
+      "id": "t166446",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 36,
+      "ram_mb": 5923,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166446.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 7702.578687,
+      "child_cpu_seconds": 7702.495342,
+      "own_cpu_seconds": 0.083345,
+      "wall_seconds": 333.286690980196
+    },
+    {
+      "label": "online/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/36_72.json",
+      "id": "t166447",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 36,
+      "ram_mb": 5911,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166447.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 7628.359521,
+      "child_cpu_seconds": 7628.284963,
+      "own_cpu_seconds": 0.07455799999999999,
+      "wall_seconds": 325.8547056475654
+    },
+    {
+      "label": "online/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/72_108.json",
+      "id": "t166448",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 36,
+      "ram_mb": 6008,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166448.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 7826.502726,
+      "child_cpu_seconds": 7826.42656,
+      "own_cpu_seconds": 0.076166,
+      "wall_seconds": 339.9284853944555
+    },
+    {
+      "label": "online/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/108_144.json",
+      "id": "t166449",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 36,
+      "ram_mb": 5838,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166449.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 8214.556883,
+      "child_cpu_seconds": 8214.477794,
+      "own_cpu_seconds": 0.07908899999999999,
+      "wall_seconds": 342.1510565299541
+    },
+    {
+      "label": "online/finish",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/finish/0_1.json",
+      "id": "t166451",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166451.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 0.997232,
+      "child_cpu_seconds": 0.928117,
+      "own_cpu_seconds": 0.069115,
+      "wall_seconds": 1.1866560839116573
+    },
+    {
+      "label": "native/describe",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/describe/0_1.json",
+      "id": "t166453",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166453.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 0.9715379999999999,
+      "child_cpu_seconds": 0.912642,
+      "own_cpu_seconds": 0.058896,
+      "wall_seconds": 1.1024901568889618
+    },
+    {
+      "label": "native/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/0_12.json",
+      "id": "t166456",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 12,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166456.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 51.179421,
+      "child_cpu_seconds": 51.100766,
+      "own_cpu_seconds": 0.078655,
+      "wall_seconds": 6.8053322825580835
+    },
+    {
+      "label": "native/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/12_24.json",
+      "id": "t166457",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 12,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166457.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 51.672031000000004,
+      "child_cpu_seconds": 51.593673,
+      "own_cpu_seconds": 0.078358,
+      "wall_seconds": 6.6708882031962276
+    },
+    {
+      "label": "native/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/24_36.json",
+      "id": "t166458",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 12,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166458.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 49.288701,
+      "child_cpu_seconds": 49.212477,
+      "own_cpu_seconds": 0.076224,
+      "wall_seconds": 6.655909619294107
+    },
+    {
+      "label": "native/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/36_48.json",
+      "id": "t166459",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 12,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166459.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 46.294855999999996,
+      "child_cpu_seconds": 46.223107999999996,
+      "own_cpu_seconds": 0.071748,
+      "wall_seconds": 6.187710642814636
+    },
+    {
+      "label": "native/finish",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/finish/0_1.json",
+      "id": "t166460",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166460.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 7.2197119999999995,
+      "child_cpu_seconds": 7.1445799999999995,
+      "own_cpu_seconds": 0.075132,
+      "wall_seconds": 10.606498870998621
+    },
+    {
+      "label": "old/describe",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/describe/0_1.json",
+      "id": "t166481",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166481.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 1.192656,
+      "child_cpu_seconds": 1.122433,
+      "own_cpu_seconds": 0.070223,
+      "wall_seconds": 1.342531893402338
+    },
+    {
+      "label": "old/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/0_54.json",
+      "id": "t166483",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 54,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166483.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 121.276817,
+      "child_cpu_seconds": 121.202322,
+      "own_cpu_seconds": 0.07449499999999999,
+      "wall_seconds": 5.789661021903157
+    },
+    {
+      "label": "old/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/54_108.json",
+      "id": "t166484",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 54,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166484.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 124.48831,
+      "child_cpu_seconds": 124.401092,
+      "own_cpu_seconds": 0.087218,
+      "wall_seconds": 6.166349039413035
+    },
+    {
+      "label": "old/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/108_162.json",
+      "id": "t166485",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 54,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166485.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 121.63782,
+      "child_cpu_seconds": 121.567302,
+      "own_cpu_seconds": 0.070518,
+      "wall_seconds": 5.967868930660188
+    },
+    {
+      "label": "old/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/162_216.json",
+      "id": "t166486",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 54,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166486.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 119.82118600000001,
+      "child_cpu_seconds": 119.717836,
+      "own_cpu_seconds": 0.10334999999999998,
+      "wall_seconds": 5.879988824017346
+    },
+    {
+      "label": "old/finish",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/finish/0_1.json",
+      "id": "t166488",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166488.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 1.627051,
+      "child_cpu_seconds": 1.53837,
+      "own_cpu_seconds": 0.08868100000000001,
+      "wall_seconds": 1.9670283664017916
+    },
+    {
+      "label": "new/describe",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/describe/0_1.json",
+      "id": "t166490",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166490.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 0.978969,
+      "child_cpu_seconds": 0.907428,
+      "own_cpu_seconds": 0.071541,
+      "wall_seconds": 1.0739955743774772
+    },
+    {
+      "label": "new/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/0_55.json",
+      "id": "t166498",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 55,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166498.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 154.72994599999998,
+      "child_cpu_seconds": 154.662094,
+      "own_cpu_seconds": 0.067852,
+      "wall_seconds": 7.444751655682921
+    },
+    {
+      "label": "new/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/55_108.json",
+      "id": "t166499",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 53,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166499.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 120.671908,
+      "child_cpu_seconds": 120.596061,
+      "own_cpu_seconds": 0.075847,
+      "wall_seconds": 6.130919201299548
+    },
+    {
+      "label": "new/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/108_162.json",
+      "id": "t166500",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 54,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166500.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 137.469394,
+      "child_cpu_seconds": 137.39237699999998,
+      "own_cpu_seconds": 0.077017,
+      "wall_seconds": 6.944881210103631
+    },
+    {
+      "label": "new/workers",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/162_216.json",
+      "id": "t166501",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 54,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166501.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 138.470404,
+      "child_cpu_seconds": 138.384454,
+      "own_cpu_seconds": 0.08595,
+      "wall_seconds": 6.301714992150664
+    },
+    {
+      "label": "new/finish",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/finish/0_1.json",
+      "id": "t166502",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166502.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 1.435948,
+      "child_cpu_seconds": 1.3662459999999998,
+      "own_cpu_seconds": 0.06970199999999999,
+      "wall_seconds": 2.032380328513682
+    },
+    {
+      "label": "audit/freeze",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/freeze/0_1.json",
+      "id": "t166503",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166503.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 6.851706999999999,
+      "child_cpu_seconds": 6.769676,
+      "own_cpu_seconds": 0.08203099999999999,
+      "wall_seconds": 7.593622073531151
+    },
+    {
+      "label": "audit/tasks",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/0_6.json",
+      "id": "t166504",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 6,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166504.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 18.437669,
+      "child_cpu_seconds": 18.365334,
+      "own_cpu_seconds": 0.072335,
+      "wall_seconds": 3.920154116116464
+    },
+    {
+      "label": "audit/tasks",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/6_12.json",
+      "id": "t166505",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node006",
+      "cpu_cores": 6,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node004",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166505.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node006",
+      "total_cpu_seconds": 17.097632,
+      "child_cpu_seconds": 17.023525,
+      "own_cpu_seconds": 0.074107,
+      "wall_seconds": 3.558511503972113
+    },
+    {
+      "label": "audit/tasks",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/12_18.json",
+      "id": "t166506",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node002",
+      "cpu_cores": 6,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node005",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166506.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node002",
+      "total_cpu_seconds": 18.723225,
+      "child_cpu_seconds": 18.651298,
+      "own_cpu_seconds": 0.07192699999999999,
+      "wall_seconds": 4.1240358874201775
+    },
+    {
+      "label": "audit/tasks",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/18_24.json",
+      "id": "t166507",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node005",
+      "cpu_cores": 6,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node006",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166507.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node005",
+      "total_cpu_seconds": 19.674955999999998,
+      "child_cpu_seconds": 19.600285,
+      "own_cpu_seconds": 0.07467099999999999,
+      "wall_seconds": 4.326599278487265
+    },
+    {
+      "label": "audit/collect",
+      "record_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/collect/0_1.json",
+      "id": "t166508",
+      "status": "done",
+      "parent_id": null,
+      "retry_count": 0,
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 7108,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "preferred_node": "node002",
+      "require_node": null,
+      "log_path": "/tmp/sched_t166508.log",
+      "child_status": "complete",
+      "child_returncode": 0,
+      "worker_actual_node": "node004",
+      "total_cpu_seconds": 13.122345999999999,
+      "child_cpu_seconds": 13.035699999999999,
+      "own_cpu_seconds": 0.086646,
+      "wall_seconds": 14.629995080642402
+    }
+  ],
+  "jobs": [
+    {
+      "label": "validation",
+      "status": "retained_failed_fixture",
+      "task_ids": [
+        "t166413"
+      ],
+      "measured_total_cpu_seconds": 1.900725,
+      "measured_child_cpu_seconds": 1.82769,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/validation/0_1.json"
+      ]
+    },
+    {
+      "label": "validation_fixture_fix",
+      "status": "complete",
+      "task_ids": [
+        "t166415"
+      ],
+      "measured_total_cpu_seconds": 1.2384629999999999,
+      "measured_child_cpu_seconds": 1.145891,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/validation_fixture_fix/0_1.json"
+      ]
+    },
+    {
+      "label": "initial/describe",
+      "status": "complete",
+      "task_ids": [
+        "t166417"
+      ],
+      "measured_total_cpu_seconds": 1.253775,
+      "measured_child_cpu_seconds": 1.173697,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/describe/0_1.json"
+      ]
+    },
+    {
+      "label": "initial/workers",
+      "status": "complete",
+      "task_ids": [
+        "t166419",
+        "t166420",
+        "t166421",
+        "t166422"
+      ],
+      "measured_total_cpu_seconds": 1961.0951119999997,
+      "measured_child_cpu_seconds": 1960.82102,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/0_6.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/6_12.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/12_18.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/workers/18_24.json"
+      ]
+    },
+    {
+      "label": "initial/finish",
+      "status": "complete",
+      "task_ids": [
+        "t166423"
+      ],
+      "measured_total_cpu_seconds": 1.12216,
+      "measured_child_cpu_seconds": 1.052046,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/initial/finish/0_1.json"
+      ]
+    },
+    {
+      "label": "neighbors/describe",
+      "status": "complete",
+      "task_ids": [
+        "t166424"
+      ],
+      "measured_total_cpu_seconds": 1.152415,
+      "measured_child_cpu_seconds": 1.080463,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/describe/0_1.json"
+      ]
+    },
+    {
+      "label": "neighbors/workers",
+      "status": "complete",
+      "task_ids": [
+        "t166426",
+        "t166427",
+        "t166428",
+        "t166429"
+      ],
+      "measured_total_cpu_seconds": 32.658441999999994,
+      "measured_child_cpu_seconds": 32.380441000000005,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/0_6.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/6_12.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/12_18.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/workers/18_24.json"
+      ]
+    },
+    {
+      "label": "neighbors/finish",
+      "status": "complete",
+      "task_ids": [
+        "t166433"
+      ],
+      "measured_total_cpu_seconds": 1.169986,
+      "measured_child_cpu_seconds": 1.090399,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/neighbors/finish/0_1.json"
+      ]
+    },
+    {
+      "label": "online/describe",
+      "status": "complete",
+      "task_ids": [
+        "t166435"
+      ],
+      "measured_total_cpu_seconds": 1.01616,
+      "measured_child_cpu_seconds": 0.944507,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/describe/0_1.json"
+      ]
+    },
+    {
+      "label": "online/workers",
+      "status": "complete",
+      "task_ids": [
+        "t166446",
+        "t166447",
+        "t166448",
+        "t166449"
+      ],
+      "measured_total_cpu_seconds": 31371.997816999996,
+      "measured_child_cpu_seconds": 31371.684659,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/0_36.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/36_72.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/72_108.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/workers/108_144.json"
+      ]
+    },
+    {
+      "label": "online/finish",
+      "status": "complete",
+      "task_ids": [
+        "t166451"
+      ],
+      "measured_total_cpu_seconds": 0.997232,
+      "measured_child_cpu_seconds": 0.928117,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/online/finish/0_1.json"
+      ]
+    },
+    {
+      "label": "native/describe",
+      "status": "complete",
+      "task_ids": [
+        "t166453"
+      ],
+      "measured_total_cpu_seconds": 0.9715379999999999,
+      "measured_child_cpu_seconds": 0.912642,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/describe/0_1.json"
+      ]
+    },
+    {
+      "label": "native/workers",
+      "status": "complete",
+      "task_ids": [
+        "t166456",
+        "t166457",
+        "t166458",
+        "t166459"
+      ],
+      "measured_total_cpu_seconds": 198.43500899999998,
+      "measured_child_cpu_seconds": 198.130024,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/0_12.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/12_24.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/24_36.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/workers/36_48.json"
+      ]
+    },
+    {
+      "label": "native/finish",
+      "status": "complete",
+      "task_ids": [
+        "t166460"
+      ],
+      "measured_total_cpu_seconds": 7.2197119999999995,
+      "measured_child_cpu_seconds": 7.1445799999999995,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/native/finish/0_1.json"
+      ]
+    },
+    {
+      "label": "old/describe",
+      "status": "complete",
+      "task_ids": [
+        "t166481"
+      ],
+      "measured_total_cpu_seconds": 1.192656,
+      "measured_child_cpu_seconds": 1.122433,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/describe/0_1.json"
+      ]
+    },
+    {
+      "label": "old/workers",
+      "status": "complete",
+      "task_ids": [
+        "t166483",
+        "t166484",
+        "t166485",
+        "t166486"
+      ],
+      "measured_total_cpu_seconds": 487.22413300000005,
+      "measured_child_cpu_seconds": 486.888552,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/0_54.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/54_108.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/108_162.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/workers/162_216.json"
+      ]
+    },
+    {
+      "label": "old/finish",
+      "status": "complete",
+      "task_ids": [
+        "t166488"
+      ],
+      "measured_total_cpu_seconds": 1.627051,
+      "measured_child_cpu_seconds": 1.53837,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/old/finish/0_1.json"
+      ]
+    },
+    {
+      "label": "new/describe",
+      "status": "complete",
+      "task_ids": [
+        "t166490"
+      ],
+      "measured_total_cpu_seconds": 0.978969,
+      "measured_child_cpu_seconds": 0.907428,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/describe/0_1.json"
+      ]
+    },
+    {
+      "label": "new/workers",
+      "status": "complete",
+      "task_ids": [
+        "t166498",
+        "t166499",
+        "t166500",
+        "t166501"
+      ],
+      "measured_total_cpu_seconds": 551.341652,
+      "measured_child_cpu_seconds": 551.034986,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/0_55.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/55_108.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/108_162.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/workers/162_216.json"
+      ]
+    },
+    {
+      "label": "new/finish",
+      "status": "complete",
+      "task_ids": [
+        "t166502"
+      ],
+      "measured_total_cpu_seconds": 1.435948,
+      "measured_child_cpu_seconds": 1.3662459999999998,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/new/finish/0_1.json"
+      ]
+    },
+    {
+      "label": "audit/freeze",
+      "status": "complete",
+      "task_ids": [
+        "t166503"
+      ],
+      "measured_total_cpu_seconds": 6.851706999999999,
+      "measured_child_cpu_seconds": 6.769676,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/freeze/0_1.json"
+      ]
+    },
+    {
+      "label": "audit/tasks",
+      "status": "complete",
+      "task_ids": [
+        "t166504",
+        "t166505",
+        "t166506",
+        "t166507"
+      ],
+      "measured_total_cpu_seconds": 73.933482,
+      "measured_child_cpu_seconds": 73.640442,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/0_6.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/6_12.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/12_18.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/tasks/18_24.json"
+      ]
+    },
+    {
+      "label": "audit/collect",
+      "status": "complete",
+      "task_ids": [
+        "t166508"
+      ],
+      "measured_total_cpu_seconds": 13.122345999999999,
+      "measured_child_cpu_seconds": 13.035699999999999,
+      "record_paths": [
+        "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/jobs/audit/collect/0_1.json"
+      ]
+    }
+  ],
+  "failures": {
+    "scientific_attempts": [],
+    "execution": [],
+    "retained_validation": [
+      {
+        "task_id": "t166413",
+        "child_returncode": 1,
+        "passed": 17,
+        "failed": 1,
+        "reason": "Fixture temporary ROOT versus recorded_attempt_costs I/O; only fixture patched and failed test rerun in t166415; scientific code unchanged.",
+        "record": "cluster_control/jobs/validation/0_1.json"
+      }
+    ],
+    "retained_metadata_reads": [
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_inventory_metadata.json",
+        "returncode": 1,
+        "reason": "Read-only inventory path omitted mechanism subdirectory; corrected subsequent metadata path; no computation repeated."
+      }
+    ],
+    "audit_failed_task_count": 0
+  },
+  "cost": {
+    "scientific_recorded_cpu_seconds": 33563.75919368895,
+    "scientific_recorded_attempt_wall_seconds": 33835.64831723645,
+    "scientific_attempt_count": 706,
+    "new_work": {
+      "new_source_calls": 0,
+      "new_target_initial_calls": 240,
+      "new_target_search_calls": 432,
+      "new_verification_calls": 73312,
+      "new_source_fits": 0,
+      "new_truth_function_calls": 9597,
+      "download_bytes": 0,
+      "new_rng_draws": null,
+      "randomized_new_observations": true,
+      "source_model_restorations": null,
+      "search_engine_restorations": null,
+      "failed_simulation_calls_recorded": 0
+    },
+    "new_physical_target_calls": 73984,
+    "terminal_costs": {
+      "old_logical_calls": 49936,
+      "new_logical_calls": 71360,
+      "old_physical_calls": 49936,
+      "additional_new_protocol_physical_calls": 23376,
+      "unique_paired_physical_calls": 73312,
+      "old_raw_consumed_by_new_last_attempt": 47984,
+      "new_stage_raw_replayed_last_attempt": 0,
+      "complete_old_safety_tail_calls_beyond_candidate_prefix": 1952,
+      "old_paid_raw_not_consumed_by_new_last_attempt": 1952,
+      "paid_rows_in_failed_old_cells": 0,
+      "paid_rows_in_failed_new_cells": 0
+    },
+    "scheduler_process_total_cpu_seconds": 34719.93649,
+    "scheduler_process_child_cpu_seconds": 34716.620009,
+    "scheduler_wrapper_own_cpu_seconds": 3.316480999999999,
+    "local_mocked_control_fixture_cpu_seconds": 0.24956899999999999,
+    "measurement_note": "Whole-process scheduler CPU includes scientific body CPU, pre-meter imports, wrappers and scheduler validation. These are overlapping views and must not be added together. Local controller, scheduler services, metadata reading/extraction, file transfer, documentation and final serialization CPU were not measured and are not assumed zero.",
+    "historical_registration_account": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "scientific_authority": "completion.json (full attempts remain remote)",
+    "compact_completion": "completion_compact.json"
+  },
+  "transfers": {
+    "upload_records": [
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_upload.json",
+        "returncode": 0,
+        "payload_bytes": 220608
+      },
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_upload.json",
+        "returncode": 0,
+        "payload_bytes": 11431
+      },
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_adapter_final_sync.json",
+        "returncode": 0,
+        "payload_bytes": 15341
+      },
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_fixture_fix_sync.json",
+        "returncode": 0,
+        "payload_bytes": 5160
+      },
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_validation_sync.json",
+        "returncode": 0,
+        "payload_bytes": 35145
+      },
+      {
+        "record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_mechanism_extract.json",
+        "returncode": 0,
+        "payload_bytes": 2561,
+        "scope": "Pure existing-JSON field-selection helper"
+      }
+    ],
+    "uploaded_file_payload_bytes": 664758,
+    "download_record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_download.json",
+    "downloaded_selected_file_payload_bytes": 625719,
+    "downloaded_files": [
+      {
+        "path": "paper_artifacts/mainline_safe_unsampled_validation_v1/summary_selected.json",
+        "bytes": 312649
+      },
+      {
+        "path": "paper_artifacts/mainline_safe_unsampled_validation_v1/outcomes_by_geometry.json",
+        "bytes": 231804
+      },
+      {
+        "path": "paper_artifacts/mainline_safe_unsampled_validation_v1/completion_compact.json",
+        "bytes": 3010
+      },
+      {
+        "path": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+        "bytes": 34534
+      },
+      {
+        "path": "paper_artifacts/mainline_safe_unsampled_validation_v1/ap_old_mechanism_selected.json.gz",
+        "bytes": 43722,
+        "decompressed_local_path": "paper_artifacts/mainline_safe_unsampled_validation_v1/ap_old_mechanism_selected.json",
+        "decompressed_bytes": 801476
+      }
+    ],
+    "metered_metadata_payload_bytes": 58599,
+    "metadata_components": {
+      "controller": 43084,
+      "progress": 10912,
+      "selected_result_inspection": 3098,
+      "extraction_response": 104,
+      "single_saved_physical_chain": 1401
+    },
+    "note": "Counts are selected UTF-8/file payload bytes, not SSH/rsync wire bytes. Some early status/log inspection traffic was unmetered. Full compact_summary (10464863 B), mainline_summary, summary, mechanism analysis, raw, engine and model files remain remote.",
+    "additional_extraction_record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_mechanism_extract.json",
+    "single_chain_record": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_single_chain_extract.json",
+    "single_chain_artifact": "paper_artifacts/mainline_safe_unsampled_validation_v1/same_physical_7016_p0073_gp.json",
+    "final_document_sync": {
+      "returncode": 0,
+      "files": [
+        {
+          "path": "README.md",
+          "bytes": 217017
+        },
+        {
+          "path": "docs/original_goal_and_mainline_contract_20261015.md",
+          "bytes": 142484
+        },
+        {
+          "path": "docs/mainline_safe_unsampled_validation_results_20261017.md",
+          "bytes": 7673
+        },
+        {
+          "path": "docs/mainline_safe_unsampled_validation_protocol_20261017.md",
+          "bytes": 7338
+        }
+      ],
+      "payload_bytes": 374512
+    },
+    "final_sync_result_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_final_sync.json",
+    "ledger_self_copy_note": "The transfer of this ledger is recorded separately in final_sync_result_file after the copy returns; uploaded_file_payload_bytes here excludes that final self-copy."
+  },
+  "control_state": "paper_artifacts/mainline_safe_unsampled_validation_v1/cluster_control/stage73_state.json",
+  "timestamp_note": "Known cross-host scheduler timestamp skew; CPU and worker wall use saved process measurements, never finished_at minus started_at. Summed attempt wall is not elapsed cohort wall."
+}

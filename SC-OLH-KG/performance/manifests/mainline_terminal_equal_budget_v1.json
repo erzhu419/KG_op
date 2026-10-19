@@ -1,0 +1,150 @@
+{
+  "name": "mainline_terminal_equal_budget_v1",
+  "registered_utc": "2026-10-15T16:15:52.660348+00:00",
+  "status": "complete",
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "output_dir": "paper_artifacts/mainline_terminal_equal_budget_v1",
+  "report": "docs/mainline_role_terminal_results_20261016.md",
+  "target_seeds": [
+    2026101651,
+    2026101652,
+    2026101653
+  ],
+  "geometry_by_seed": {
+    "2026101651": {
+      "task_id": "role_fresh_factorshock_00",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.011586766352657492,
+          0.0006595862631951777,
+          0.03032346079457289
+        ],
+        "task_geometry_radius_scale": 1.010893609695146
+      }
+    },
+    "2026101652": {
+      "task_id": "role_fresh_factorshock_01",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.021932909504801493,
+          -0.028580006137912024,
+          -0.004433625320736632
+        ],
+        "task_geometry_radius_scale": 0.9546212748139621
+      }
+    },
+    "2026101653": {
+      "task_id": "role_fresh_factorshock_02",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02498040420393228,
+          -0.012685805122796316,
+          -0.026762860558179544
+        ],
+        "task_geometry_radius_scale": 1.0238860323483108
+      }
+    }
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "protocols": {
+    "original": [
+      80,
+      128,
+      128
+    ],
+    "equal": [
+      112,
+      112,
+      112
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false
+  },
+  "objective_comparison_delta": 0.016666666666666666,
+  "freeze": "Reuse all18 search histories, original primary and complete ordered shortlist, objective incumbent position and observed-only scope. Do not reconstruct posteriors or choose new candidates. Freeze all36 protocol inputs before any new verification.",
+  "change": "Only redistribute336 safety calls equally over3 existing slots. Keep safety familywise0.05, objective guard delta0.05/3,8+8pairedCRN, all stopping branches and slot-specific random streams. Same new verification seed for both protocols and all backends in a task. Missing samples are newly paid, never spliced from a different old stream.",
+  "truth_barrier": "Complete all36 verifications before scoring with saved per-task truth. No new analytical truth calls; report unavailable truth explicitly. Do not tune or retry failed certificates.",
+  "budget": {
+    "verification_cases": 36,
+    "maximum_verification_calls_per_case": 352,
+    "maximum_new_verification_calls": 12672,
+    "logical_reused_search_calls": 450,
+    "maximum_logical_calls": 13122,
+    "new_target_search_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_calls": 0,
+    "downloads": 0
+  },
+  "cost_accounting": "All36verifiers independently execute their paid samples, including common seeded prefixes. Record every attempt and raw; do not restart partially paid stages. Keep prior3211physical calls separate.",
+  "interpretation": "Conditional terminal allocation test on3 already-opened geometries and18 fixed search paths; not new search or held-out task confirmation. Primary effect is paired equal-original within each backend. Full-point differences do not on their own isolate allocation, since frozen shortlists and histories differ.",
+  "entrypoint": "performance/run_mainline_terminal_equal.py",
+  "source_manifest": "performance/manifests/mainline_role_fresh_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_role_fresh_v1",
+  "verification_seed_by_task": {
+    "2026101651": 2026101661,
+    "2026101652": 2026101662,
+    "2026101653": 2026101663
+  },
+  "completed_utc": "2026-10-15T16:22:09.753324+00:00",
+  "completion_file": "paper_artifacts/mainline_terminal_equal_budget_v1/completion.json",
+  "execution": {
+    "completed_verifications": 36,
+    "new_verification_calls": 7360,
+    "logical_target_calls": 7810,
+    "failed_attempts": 0,
+    "adopt_equal_allocation": false
+  }
+}

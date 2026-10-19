@@ -1,0 +1,48 @@
+{
+  "scope": "Independent16-geometry six-arm replication only. Previous four proposal-development tasks and all prior ledgers remain separate.",
+  "recorded_cpu_seconds_by_stage": {
+    "public_preparation_and_experiment": 2672.2150533439994,
+    "case_orchestration_parent_only": 0.131469083,
+    "summary": 0.6233896720000001,
+    "saved_trace_mechanism_audit": 0.63791826
+  },
+  "total_recorded_cpu_seconds": 2673.6078303589993,
+  "case_batch_wall_seconds": 992.6869160330025,
+  "concurrent_case_workers": 3,
+  "physical_calls": {
+    "initialization": 32,
+    "search": 128,
+    "verification": 34432,
+    "total": 34592
+  },
+  "logical_calls": 34752,
+  "calls_per_arm": 362,
+  "independent_geometries": 16,
+  "arms_per_task": 6,
+  "verified_recommendations": 96,
+  "source_fits": 0,
+  "gp_refits": 0,
+  "calibration_refits": 0,
+  "new_source_labels": 0,
+  "server_downloads": 0,
+  "frozen_calibration": "../mainline_source_risk_calibration_v1/calibration.json",
+  "implementation_changes": "Only prepare-count and bootstrap-scope status text was generalized to registered task_count; scientific logic unchanged.",
+  "new_tests": 0,
+  "reused_mechanism_test_evidence": "../mainline_d1000_dual_channel_v1/implementation_tests.json",
+  "runtime_validation": "Native initial-marginal, point-only locality and paid-budget assertions executed in actual cases; all96 recommendations frozen before verification and all verifiers completed before truth scoring.",
+  "failed_scientific_attempts": 0,
+  "failed_case_processes": [],
+  "failed_postprocessing_attempts": 0,
+  "failed_mechanism_audit_attempts": 0,
+  "unmeasured_cost_scope": "General inspection, document writing and shell/import overhead outside script timers are not assigned estimated CPU costs.",
+  "memory_scope": "Process high-water RSS values, including inherited values, are not instantaneous whole-batch memory use.",
+  "evidence": [
+    "preparation_audit.json",
+    "attempts.jsonl",
+    "case_processes.jsonl",
+    "orchestration_account.json",
+    "postprocessing_attempts.jsonl",
+    "mechanism_audit.json",
+    "summary.json"
+  ]
+}

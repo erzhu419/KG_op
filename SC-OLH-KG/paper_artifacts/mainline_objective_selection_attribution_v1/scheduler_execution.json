@@ -1,0 +1,218 @@
+{
+  "status": "complete",
+  "recorded_utc": "2026-10-17T01:01:26.313397+00:00",
+  "manifest": "performance/manifests/mainline_objective_selection_attribution_v1.json",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "vram_mb": 0,
+  "blas_threads_per_worker": 1,
+  "ram_reservation_per_shard_mb": 8192,
+  "item_definition": "24 target geometries plus one source saved-prediction analysis item",
+  "global_barrier": "Four item shards done exit0 before single CPU collect submitted",
+  "local_scientific_computation": false,
+  "scientific_reruns": 0,
+  "tasks": [
+    {
+      "id": "t166303",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792198524.7128615,
+      "finished_at": 1792198507.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166303.log"
+    },
+    {
+      "id": "t166304",
+      "status": "done",
+      "node": "node002",
+      "cpu_cores": 7,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792198524.718295,
+      "finished_at": 1792198507.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166304.log"
+    },
+    {
+      "id": "t166305",
+      "status": "done",
+      "node": "node005",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792198521.9781938,
+      "finished_at": 1792198506.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166305.log"
+    },
+    {
+      "id": "t166306",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792198521.9845443,
+      "finished_at": 1792198506.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166306.log"
+    },
+    {
+      "id": "t166307",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792198707.763035,
+      "finished_at": 1792198691.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166307.log"
+    }
+  ],
+  "scheduler_failure_tasks": [],
+  "completed_target_geometries": 24,
+  "source_complete": true,
+  "scientific_failed_worker_attempts": [],
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0
+  },
+  "recorded_analysis_cpu_seconds": 46.307517575999995,
+  "cpu_source": "completion.json; analysis, registration and fixtures; scheduler, transport and field selection metadata CPU are not measured",
+  "historical_accounts": [
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_confirmation_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_observed_ranking_v1/completion.json",
+    "paper_artifacts/mainline_objective_contrast_exposure_v1/completion.json"
+  ],
+  "uploads": [
+    {
+      "files": [
+        "performance/manifests/mainline_source_observed_ranking_v1.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/completion.json",
+        "paper_artifacts/mainline_objective_contrast_exposure_v1/source_contrasts.json",
+        "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+        "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+        "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_0/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_0/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_0/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_1/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_1/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_1/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_2/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_2/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_2/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_3/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_3/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/FactorShockStatePolicyRZDT1/fold_3/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_0/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_0/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_0/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_1/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_1/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_1/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_2/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_2/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_2/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_3/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_3/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/InventorySupplyChain/fold_3/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_0/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_0/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_0/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_1/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_1/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_1/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_2/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_2/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_2/fit_diagnostics.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_3/forecasts.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_3/split.json",
+        "paper_artifacts/mainline_source_observed_ranking_v1/QueueResourceControl/fold_3/fit_diagnostics.json"
+      ],
+      "bytes": 13951256,
+      "returncode": 0
+    },
+    {
+      "files": [
+        "performance/analyze_mainline_objective_selection.py",
+        "performance/mainline_objective_selection_target.py",
+        "performance/mainline_objective_selection_source.py",
+        "performance/manifests/mainline_objective_selection_attribution_v1.json",
+        "docs/mainline_objective_selection_protocol_20261017.md",
+        "docs/original_goal_and_mainline_contract_20261015.md",
+        "paper_artifacts/mainline_objective_selection_attribution_v1/registration.json",
+        "paper_artifacts/mainline_objective_selection_attribution_v1/validation/semantic_tests.json",
+        "paper_artifacts/mainline_objective_selection_attribution_v1/validation/entry_point.json"
+      ],
+      "bytes": 209271,
+      "returncode": 0
+    }
+  ],
+  "uploaded_input_and_code_bytes": 14160527,
+  "downloads": [
+    {
+      "files": [
+        "paper_artifacts/mainline_objective_selection_attribution_v1/summary.json",
+        "paper_artifacts/mainline_objective_selection_attribution_v1/completion.json",
+        "performance/manifests/mainline_objective_selection_attribution_v1.json"
+      ],
+      "bytes": 305811,
+      "returncode": 0
+    },
+    {
+      "files": [
+        "paper_artifacts/mainline_objective_selection_attribution_v1/winner_comparisons.json",
+        "paper_artifacts/mainline_objective_selection_attribution_v1/focus_selected.json"
+      ],
+      "bytes": 317009,
+      "returncode": 0
+    }
+  ],
+  "downloaded_result_bytes": 622820,
+  "remote_only": [
+    "all_target_details.json",
+    "focus_details.json",
+    "source/analysis.json",
+    "source/compact.json (already embedded in downloaded summary)",
+    "cases/*/analysis.json",
+    "cases/*/compact.json",
+    "historical raw trajectories, query vectors and engines"
+  ],
+  "field_selection_scope": "winner_comparisons preserves all 135 qualifying saved pairs; focus_selected contains AFTER states for 4009/4023 and requested physical policy chains. No recomputation.",
+  "evidence_files": [
+    "cluster_control/preflight.json",
+    "cluster_control/source_preflight.json",
+    "cluster_control/target_preflight.json",
+    "cluster_control/item_submission.json",
+    "cluster_control/collect_submission.json",
+    "cluster_control/final_status.json",
+    "cluster_control/item_log_progress.json",
+    "cluster_control/field_selection.json"
+  ],
+  "scheduler_clock_note": "Cross-host timestamps are not used to calculate analysis CPU or wall time."
+}

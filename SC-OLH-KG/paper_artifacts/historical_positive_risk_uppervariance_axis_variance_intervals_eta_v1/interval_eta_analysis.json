@@ -1,0 +1,211 @@
+{
+  "complete": true,
+  "new_integrations": 0,
+  "server_reads": 0,
+  "sources": {
+    "half_shards": "paper_artifacts/historical_observed_batch_outer_v1/worker_resources_variance64_mean16.json",
+    "matched_gauss": "paper_artifacts/historical_positive_risk_uppervariance_axis_local_risk_provenance_v1/matched_gauss_comparison.json",
+    "current": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_diagonal_v1/diagonal_result.json",
+    "eta_fixed_summary": "paper_artifacts/historical_positive_risk_uppervariance_axis_v1/compact_summary.json"
+  },
+  "high_gauss_variance_half_contributions": [
+    {
+      "origin": 4,
+      "variance_cdf_half": [
+        0.0,
+        0.5
+      ],
+      "quadrature_mass": 0.49999999999999994,
+      "risk_weighted_contribution": 0.47689215791892337,
+      "same_f16_fixed_reward_contribution": 0.2657483298369085,
+      "current_minus_fine_half": null
+    },
+    {
+      "origin": 4,
+      "variance_cdf_half": [
+        0.5,
+        1.0
+      ],
+      "quadrature_mass": 0.49999999999999994,
+      "risk_weighted_contribution": 0.4471184277197823,
+      "same_f16_fixed_reward_contribution": 0.24915690776789293,
+      "current_minus_fine_half": null
+    },
+    {
+      "origin": 5,
+      "variance_cdf_half": [
+        0.0,
+        0.5
+      ],
+      "quadrature_mass": 0.49999999999999994,
+      "risk_weighted_contribution": 0.47824245250387015,
+      "same_f16_fixed_reward_contribution": 0.11614716702255286,
+      "current_minus_fine_half": null
+    },
+    {
+      "origin": 5,
+      "variance_cdf_half": [
+        0.5,
+        1.0
+      ],
+      "quadrature_mass": 0.49999999999999994,
+      "risk_weighted_contribution": 0.46292181189064885,
+      "same_f16_fixed_reward_contribution": 0.11242635764044992,
+      "current_minus_fine_half": null
+    }
+  ],
+  "origin_rule_changes": [
+    {
+      "origin": 4,
+      "current_minus_fine_rule": 0.001372876746128071,
+      "same_gauss_family_variance8_minus64": 0.0004222661475184636,
+      "share_of_current_minus_fine_rule": 0.8437933642586545
+    },
+    {
+      "origin": 5,
+      "current_minus_fine_rule": 0.00025415281380966603,
+      "same_gauss_family_variance8_minus64": 7.939270280323355e-05,
+      "share_of_current_minus_fine_rule": 0.15620663574139668
+    }
+  ],
+  "same_f16_rule_ladder": [
+    {
+      "from_rule": "currentrisk224",
+      "to_rule": "oldmean16_variance8",
+      "difference": 0.001125370709616047,
+      "changes_only_registered_outer_variance_order": false,
+      "eta_controller_unchanged": false
+    },
+    {
+      "from_rule": "oldmean16_variance8",
+      "to_rule": "oldmean16_variance16",
+      "difference": 0.0003668312614834024,
+      "changes_only_registered_outer_variance_order": true,
+      "eta_controller_unchanged": true
+    },
+    {
+      "from_rule": "oldmean16_variance16",
+      "to_rule": "oldmean16_variance32",
+      "difference": 0.00010702134886864112,
+      "changes_only_registered_outer_variance_order": true,
+      "eta_controller_unchanged": true
+    },
+    {
+      "from_rule": "oldmean16_variance32",
+      "to_rule": "oldmean16_variance64",
+      "difference": 2.780623996956333e-05,
+      "changes_only_registered_outer_variance_order": true,
+      "eta_controller_unchanged": true
+    }
+  ],
+  "remaining_variance4_mean_mass": 0.96,
+  "mean_interval_attribution": [
+    {
+      "mean_cdf_interval": [
+        0.0,
+        0.8
+      ],
+      "variance_order": 4,
+      "probability_mass": 0.8,
+      "current_minus_fine_contribution": null,
+      "reason": "No matched per-mean-interval weighted values in local caches."
+    },
+    {
+      "mean_cdf_interval": [
+        0.8,
+        0.875
+      ],
+      "variance_order": 4,
+      "probability_mass": 0.07499999999999996,
+      "current_minus_fine_contribution": null,
+      "reason": "No matched per-mean-interval weighted values in local caches."
+    },
+    {
+      "mean_cdf_interval": [
+        0.875,
+        0.9125
+      ],
+      "variance_order": 4,
+      "probability_mass": 0.03749999999999998,
+      "current_minus_fine_contribution": null,
+      "reason": "No matched per-mean-interval weighted values in local caches."
+    },
+    {
+      "mean_cdf_interval": [
+        0.9125,
+        0.95
+      ],
+      "variance_order": 4,
+      "probability_mass": 0.03749999999999998,
+      "current_minus_fine_contribution": null,
+      "reason": "No matched per-mean-interval weighted values in local caches."
+    },
+    {
+      "mean_cdf_interval": [
+        0.95,
+        0.99
+      ],
+      "variance_order": 8,
+      "probability_mass": 0.04000000000000003,
+      "current_minus_fine_contribution": null,
+      "reason": "No matched per-mean-interval weighted values in local caches."
+    },
+    {
+      "mean_cdf_interval": [
+        0.99,
+        1.0
+      ],
+      "variance_order": 4,
+      "probability_mass": 0.010000000000000009,
+      "current_minus_fine_contribution": null,
+      "reason": "No matched per-mean-interval weighted values in local caches."
+    }
+  ],
+  "observed_local_variance_refinement": {
+    "mean_cdf_interval": [
+      0.95,
+      0.99
+    ],
+    "variance_orders": [
+      4,
+      8
+    ],
+    "mixed_fixed_change": -4.658276069324785e-07,
+    "origin_mixed_fixed_changes": {
+      "4": 8.090479686195806e-07,
+      "5": -1.274875575552059e-06
+    },
+    "scope": "Already settled same-F16 posterior-mixed fixed value;different object from origin-diagonal ladder."
+  },
+  "eta_control": {
+    "current_orders": [
+      64,
+      128
+    ],
+    "current_selected_order": 128,
+    "current_summary_maximum_fixed_error": 9.990057392439411e-12,
+    "adaptive_orders": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "adaptive_selection": "First adjacent difference and current abs(log normalizer) both<=1e-4",
+    "adaptive_actual_orders_available_locally": false,
+    "adaptive_returned_error": "abs(log normalizer),not the adjacent value difference or an absolute certificate",
+    "high_gauss_all_inner_passed": true,
+    "high_gauss_maximum_normalization_error": 2.0321522242738865e-12,
+    "adaptive_vs128_difference": null,
+    "weighted_64_to128_origin_diagonal_perturbation_upper_bound": 7.993173654314616e-12,
+    "perturbation_bound_scope": "Only the within-origin fixed355 diagonal on the registered positive weights;not an absolute integration bound or a mixed-policy bound."
+  },
+  "excluded_cache": {
+    "path": "paper_artifacts/historical_predictive_upper_risk_v6/fixed_axis_diagnostic.json",
+    "reason": "Its manifest freezes replicates1;current contract has4. No single-call tail values are admitted."
+  },
+  "limitations": "High Gauss half values are already weighted contributions,not errors or conditional means. Current minus fine error cannot be apportioned across halves or five mean intervals using aggregate sums. The initial ladder step also changes mean partition/order and eta controls. The finite64/128 perturbation is bounded,not absolute integration error.",
+  "next_step": "Prefer origin4 when matching cached current/fine per-interval values and actual eta orders become locally available. Keep unknown interval and adaptive-vs128 differences unset;do not create or fetch them in this round.",
+  "arithmetic_checks_passed": true,
+  "process_cpu_seconds": 0.005820583000000001
+}

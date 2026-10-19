@@ -1,0 +1,103 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_screen_v1.json",
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_query_caps_v1/completion.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_screen_v1.json",
+  "cases": [
+    {
+      "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p24",
+      "candidate_groups": [
+        63
+      ],
+      "weighted_gap": 2.7372874425197426e-05,
+      "anchor_budgets": [
+        [
+          80,
+          131
+        ],
+        [
+          129,
+          82
+        ],
+        [
+          129,
+          131
+        ]
+      ]
+    },
+    {
+      "record": "positive_midmean_v1_n4_m4_localv_o4_h1_p20",
+      "candidate_groups": [
+        63
+      ],
+      "weighted_gap": 2.4694391716809842e-05,
+      "anchor_budgets": [
+        [
+          80,
+          131
+        ],
+        [
+          129,
+          82
+        ],
+        [
+          129,
+          131
+        ]
+      ]
+    }
+  ],
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "seed": 202610140,
+  "rules": [
+    [
+      "L8",
+      16,
+      8,
+      0
+    ],
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "F8",
+      32,
+      8,
+      101
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ]
+  ],
+  "cost_admission": {
+    "source_phase_estimated_cpu_seconds": 2628.5429872544,
+    "estimated_anchor_workers_cpu_seconds": 600,
+    "aggregate_estimated_phase_cpu_seconds": 3228.5429872544,
+    "maximum_worker_cpu_seconds": 300,
+    "original_shared_phase_reserve_cpu_seconds": 600,
+    "already_charged_support_cpu_seconds": 89.276036601,
+    "new_phase_reserve_cpu_seconds": 0,
+    "cost_admitted": true
+  },
+  "maximum_live_workers": 2,
+  "priority": "low",
+  "risk_observations": 224,
+  "objective_heads_per_origin": 16,
+  "all_identity_likelihoods": 8,
+  "action_count": 365,
+  "remaining_calls": 356,
+  "verifier_sd_order": 16,
+  "replicates": 4,
+  "scope": "Two development observations only; joint45/10 certification states, actual guarded budgets,delta/3 andSD16. Retain all source components and covariance. Four numerical profiles;1e-4 original gate. Extension of same priced cap phase,one600reserve; no physical/source/verifier calls."
+}

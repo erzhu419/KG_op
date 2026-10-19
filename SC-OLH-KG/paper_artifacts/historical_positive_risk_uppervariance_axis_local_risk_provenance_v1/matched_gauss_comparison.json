@@ -1,0 +1,135 @@
+{
+  "complete": true,
+  "source": "paper_artifacts/historical_observed_batch_outer_v1/compact_summary.json",
+  "cached_gauss_rows": [
+    {
+      "mean_order": 8,
+      "variance_order": 8,
+      "nodes_per_origin": 128,
+      "same_f16_origin_diagonal": 0.7439841387465395,
+      "diagonal_minus_prior": 0.0001634992021533055,
+      "cached_f2048_fixed_reward": 0.7443260469633071,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 8,
+      "variance_order": 16,
+      "nodes_per_origin": 256,
+      "same_f16_origin_diagonal": 0.7436172922506794,
+      "diagonal_minus_prior": -0.00020334729370674598,
+      "cached_f2048_fixed_reward": 0.7439590315321813,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 8,
+      "variance_order": 32,
+      "nodes_per_origin": 512,
+      "same_f16_origin_diagonal": 0.7435102753931122,
+      "diagonal_minus_prior": -0.00031036415127394523,
+      "cached_f2048_fixed_reward": 0.7438519653983422,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 8,
+      "variance_order": 64,
+      "nodes_per_origin": 1024,
+      "same_f16_origin_diagonal": 0.7434824717311208,
+      "diagonal_minus_prior": -0.0003381678132653443,
+      "cached_f2048_fixed_reward": 0.7438241489373021,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 16,
+      "variance_order": 8,
+      "nodes_per_origin": 256,
+      "same_f16_origin_diagonal": 0.7439804211181259,
+      "diagonal_minus_prior": 0.00015978157373974788,
+      "cached_f2048_fixed_reward": 0.7443223276310194,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 16,
+      "variance_order": 16,
+      "nodes_per_origin": 512,
+      "same_f16_origin_diagonal": 0.7436135898566425,
+      "diagonal_minus_prior": -0.0002070496877436545,
+      "cached_f2048_fixed_reward": 0.7439553274412942,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 16,
+      "variance_order": 32,
+      "nodes_per_origin": 1024,
+      "same_f16_origin_diagonal": 0.7435065685077739,
+      "diagonal_minus_prior": -0.00031407103661229563,
+      "cached_f2048_fixed_reward": 0.7438482568140784,
+      "reward_reconstruction_error": 0.0
+    },
+    {
+      "mean_order": 16,
+      "variance_order": 64,
+      "nodes_per_origin": 2048,
+      "same_f16_origin_diagonal": 0.7434787622678043,
+      "diagonal_minus_prior": -0.00034187727658185896,
+      "cached_f2048_fixed_reward": 0.7438204377738694,
+      "reward_reconstruction_error": 0.0
+    }
+  ],
+  "current_f16_diagonal": 0.745105791827742,
+  "fine_gauss_same_f16_diagonal": 0.7434787622678043,
+  "decomposition_terms": {
+    "mix_minus_current_diagonal": 0.000120036925151501,
+    "current_diagonal_minus_fine_gauss_same_f16": 0.0016270295599376539,
+    "f16_minus_f2048_at_fine_gauss": -0.00034167550606512,
+    "fine_gauss_f2048_minus_prior": -2.0177051673897495e-07
+  },
+  "tower_residual": 0.001405189208507296,
+  "source_partitions": {
+    "current": [
+      [
+        0,
+        0.8
+      ],
+      [
+        0.8,
+        0.875
+      ],
+      [
+        0.875,
+        0.9125
+      ],
+      [
+        0.9125,
+        0.95
+      ],
+      [
+        0.95,
+        0.99
+      ],
+      [
+        0.99,
+        1
+      ]
+    ],
+    "fine_gauss": [
+      [
+        0.0,
+        0.9
+      ],
+      [
+        0.9,
+        1.0
+      ]
+    ]
+  },
+  "old_gauss_axis_changes": {
+    "risk_mean8_16": 3.7111634326736365e-06,
+    "risk_variance32_64": 2.781904020898729e-05
+  },
+  "stored_fine_gauss_f2048_tower_residual": -2.0177051673897495e-07,
+  "arithmetic_checks_passed": true,
+  "new_integrations": 0,
+  "limitations": "Same fixed action and original law by source contracts. Fine Gauss uses a different mean partition and adaptive eta orders;the rule-change term is not solely variance error. No absolute certificate,no mixture/bank replacement,no individual arrays rechecked.",
+  "next_step": "Prioritize the remaining coarse variance intervals and align eta-order controls using already paid per-node results when locally available;retain current bank and gates.",
+  "process_cpu_seconds": 0.005332946
+}

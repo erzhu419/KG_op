@@ -1,0 +1,104 @@
+{
+  "name": "mainline_candidate_pool_audit_v1",
+  "status": "complete: all 27 query selections, scores and routes reproduced; frozen pools scored",
+  "role": "Post hoc coverage and query-selection diagnosis on all three previously completed nominal FactorShock streams; no new optimizer run or confirmation experiment.",
+  "parent_manifest": "performance/manifests/mainline_local_noise_control_v1.json",
+  "parent_output": "paper_artifacts/mainline_local_noise_control_v1",
+  "output_dir": "paper_artifacts/mainline_candidate_pool_audit_v1",
+  "entrypoint": "performance/run_mainline_candidate_pool_audit.py",
+  "domain": "FactorShockStatePolicyRZDT1",
+  "target_seeds": [
+    2026101631,
+    2026101632,
+    2026101633
+  ],
+  "arms": [
+    "legacy_native_v69",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "shared_path_control": {
+    "current_structural_local_noise": "Shares the full structural query path and pools exactly; its terminal-only intervention adds no fourth search trajectory.",
+    "initialization_only": "Supplies the common ten paid initialization rows and initial incumbent; no adaptive pool."
+  },
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "initial_design_key": "80",
+    "saved_case_pattern": "paper_artifacts/mainline_local_noise_control_v1/seed_{seed}/{arm}",
+    "saved_case_inputs": [
+      "search_engine.pkl",
+      "search.json"
+    ],
+    "reuse": "Load the original native prior and GP/structure bundle, including representations, likelihood, source integration, weights and covariance; replay only the saved own-arm raw observations. Do not refit, recalibrate or change source precision."
+  },
+  "recovery": {
+    "case_count": 9,
+    "query_stages_per_case": 3,
+    "total_query_stages": 27,
+    "paid_prefix_lengths": [
+      10,
+      11,
+      12
+    ],
+    "engine": "Original complete V69 candidate generator, constrained TS and native proposal posterior, with original random streams and saved observation order.",
+    "simulator": "No simulator call is permitted. A replayed selected policy must match the next saved policy before its already paid raw row is supplied.",
+    "generated_pool": "Recover the actual generated proposal pools and routing/filtering stages exposed by the existing execution path; preserve policy coordinates, order and route. Report unrecoverable intermediate stages explicitly.",
+    "scored_pool": "Recover the exact candidates presented to the selected backend, preserving order, acquisition scores and selected index. Do not add candidates or substitute a newly sampled pool.",
+    "prediction_snapshot": "For each scored policy record objective/risk mean, constraint episode variance, constraint epistemic variance, posterior chance-violation probability and acquisition rank when available from the exact scoring call.",
+    "parity": "All 27 selected policies must match the saved histories exactly. Check recorded score/route parity where historical traces exist; any mismatch remains a recovery failure and blocks truth scoring for the recovered experiment.",
+    "barrier": "Finish and freeze every registered recovered path and its query parity before any new analytical truth evaluation. Do not inspect truth to repair replay or choose a subset of seeds."
+  },
+  "truth_access": {
+    "scope": "Analytical f, g and episode-noise truth on the stable unique union of recovered generated/scored policies, actual terminal/recommendation policies and the fixed initial incumbent; the nominal geometry was already opened. Report recommendation-only policies separately: inclusion in a terminal or recommendation pool does not make a policy available in the actual query-action pool.",
+    "cache_files": [
+      "paper_artifacts/mainline_local_noise_control_v1/headroom_truth.json",
+      "paper_artifacts/mainline_local_noise_control_v1/diagnostic_truth.json",
+      "paper_artifacts/mainline_local_noise_control_v1/truth.json",
+      "paper_artifacts/mainline_factorshock_diagnosis_v1/truth.json"
+    ],
+    "cache_rule": "Reuse matching physical-policy records from existing compatible nominal-geometry caches before evaluating missing truth. Deduplicate by integer policy coordinates, without new hashes or fingerprints.",
+    "feasibility": "g(x) + Phi_inverse(1-alpha) * sigma_g(x) <= 0, with the original target threshold and response scale.",
+    "improvement": "The objective f is minimized: a feasible policy improves when f is strictly lower than fixed initial policy0. Report objective reduction initial_f-f and quality gain (initial_f-f)/1.5 separately from actual deployed utility.",
+    "restriction": "Truth is diagnostic only, never a posterior update, candidate filter, acquisition score, model patch or new-seed selector.",
+    "accounting": "Record reused unique policies, newly evaluated unique policies and actual primitive f/g/sigma function calls separately; these analytical evaluations are not simulator observations."
+  },
+  "comparisons": [
+    "Coverage: feasible and feasible-improving counts and lowest objective in each generated and backend-scored pool; separate failures to generate from filtering out an available improvement. Report terminal/recommendation-only headroom separately from actual action-pool coverage.",
+    "Selection: whether the original selected policy is feasible-improving, its acquisition rank and true objective gap to the best feasible policy available in that same scored pool.",
+    "Prediction: risk mean error versus chance-margin/noise error and epistemic uncertainty for feasible improvements and selected policies; preserve the actual TS scores rather than replacing the query rule with terminal mean ranking.",
+    "Propagation: report predictions for candidates not observed at the scored checkpoint, and distinguish their coverage/ranking from already observed policies; fixed paths do not establish an adaptive cross-policy treatment effect.",
+    "Report all three seeds and all three actual backends, retaining local-noise as the shared structural search path. Existing terminal verification and deployed returns remain historical observations."
+  ],
+  "cost": {
+    "new_source_simulator_calls": 0,
+    "new_target_search_calls": 0,
+    "new_target_verification_calls": 0,
+    "new_source_or_encoder_fits": 0,
+    "remote_downloads": 0,
+    "new_truth_scoring": "Only missing unique recovered policies after the recovery barrier; actual function calls and CPU recorded.",
+    "replay": "Preserve successful and failed recovery attempts and CPU/wall cost; no historical paid costs are charged again."
+  },
+  "limitations": [
+    "Three random streams on one already opened nominal geometry, with endogenous backend-specific pools; not a new-geometry test or a scientific superiority claim.",
+    "A true improvement in a rejected pool is post hoc headroom, not a policy the frozen optimizer actually found or independently verified.",
+    "Native and newer posteriors retain their existing representations and noise models; compare each backend against the pool it actually scored.",
+    "Internal larger alignment or uncertainty proposal pools before generator admission were not separately captured; coverage conclusions apply to recovered generator outputs, scored pools and recommendation unions."
+  ],
+  "report": "docs/mainline_candidate_pool_audit_results_20261015.md",
+  "completion_file": "paper_artifacts/mainline_candidate_pool_audit_v1/completion.json",
+  "summary_file": "paper_artifacts/mainline_candidate_pool_audit_v1/summary.json"
+}

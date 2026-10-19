@@ -1,0 +1,510 @@
+{
+  "name": "mainline_observation_seed_replication_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T10:13:35.445957+00:00",
+  "report": "docs/mainline_observation_seed_replication_protocol_20261016.md",
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+  "source_evidence": "paper_artifacts/mainline_cohort_evidence_v1/summary.json",
+  "objective": "Conditional observation/verification-noise robustness of frozen initialization propagation on all12 Stage50 geometries. Not new-geometry or new-family confirmation.",
+  "primary_candidate": "legacy_role_after_init_point_only",
+  "primary_reference": "legacy_role_point_only",
+  "search_arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "initialization_only"
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "tasks": [
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026102111,
+      "optimizer_seed": 2026102111,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_inventory_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.024370396568040457,
+            0.012040998718917777,
+            -0.024690862287169074
+          ],
+          "task_geometry_radius_scale": 1.0013923792097317
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102111/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102111/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026102112,
+      "optimizer_seed": 2026102112,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_inventory_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.012547458015166713,
+            -0.005271199681875338,
+            0.016649970439102192
+          ],
+          "task_geometry_radius_scale": 0.978071142174762
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102112/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102112/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026102113,
+      "optimizer_seed": 2026102113,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_inventory_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.01802364755805555,
+            0.006814591450492916,
+            -0.02296991244754166
+          ],
+          "task_geometry_radius_scale": 0.9973521190726486
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102113/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102113/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026102114,
+      "optimizer_seed": 2026102114,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_inventory_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.010900886216189613,
+            0.007984988964344998,
+            -0.0017561290552567457
+          ],
+          "task_geometry_radius_scale": 1.0015816028114919
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102114/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search/seed_2026102114/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026102115,
+      "optimizer_seed": 2026102115,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_queue_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.0068278142226982814,
+            0.012777453049183436,
+            0.004613346710379371
+          ],
+          "task_geometry_radius_scale": 0.9793245597999194
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102115/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102115/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026102116,
+      "optimizer_seed": 2026102116,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_queue_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.014581947898934598,
+            0.008929877260506855,
+            0.03478683427596019
+          ],
+          "task_geometry_radius_scale": 0.9590039347270904
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102116/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102116/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026102117,
+      "optimizer_seed": 2026102117,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_queue_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.02275745764300966,
+            0.018804663050634537,
+            0.023813401862345318
+          ],
+          "task_geometry_radius_scale": 0.993029490186991
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102117/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102117/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026102118,
+      "optimizer_seed": 2026102118,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_queue_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.012533548286433705,
+            -0.03254906872004297,
+            -0.023134887868785876
+          ],
+          "task_geometry_radius_scale": 1.0218445867326087
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102118/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/search/seed_2026102118/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026102119,
+      "optimizer_seed": 2026102119,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_factorshock_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.022012213437929796,
+            -0.031312843439579956,
+            0.028344008661810985
+          ],
+          "task_geometry_radius_scale": 1.0251870041560294
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102119/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102119/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026102120,
+      "optimizer_seed": 2026102120,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_factorshock_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.009435019814514972,
+            0.025938409091823683,
+            -0.02215289714144419
+          ],
+          "task_geometry_radius_scale": 0.9800719505679032
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026102121,
+      "optimizer_seed": 2026102121,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_factorshock_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.005994204640675578,
+            0.017360027438839187,
+            -0.013150303281095826
+          ],
+          "task_geometry_radius_scale": 1.0053950051883624
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102121/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102121/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026102122,
+      "optimizer_seed": 2026102122,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "same_policy_confirmation_factorshock_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.021227430196260076,
+            -0.012660874546551296,
+            -0.02184122205245074
+          ],
+          "task_geometry_radius_scale": 1.0216063317431219
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102122/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102122/neighbors.npz"
+    }
+  ],
+  "replicates": [
+    {
+      "replicate": 1,
+      "output_dir": "paper_artifacts/mainline_observation_seed_replication_v1/replicate_1",
+      "seed_by_task": {
+        "2026102111": {
+          "observation_seed": 2026102211,
+          "verification_seed": 2026102241
+        },
+        "2026102112": {
+          "observation_seed": 2026102212,
+          "verification_seed": 2026102242
+        },
+        "2026102113": {
+          "observation_seed": 2026102213,
+          "verification_seed": 2026102243
+        },
+        "2026102114": {
+          "observation_seed": 2026102214,
+          "verification_seed": 2026102244
+        },
+        "2026102115": {
+          "observation_seed": 2026102215,
+          "verification_seed": 2026102245
+        },
+        "2026102116": {
+          "observation_seed": 2026102216,
+          "verification_seed": 2026102246
+        },
+        "2026102117": {
+          "observation_seed": 2026102217,
+          "verification_seed": 2026102247
+        },
+        "2026102118": {
+          "observation_seed": 2026102218,
+          "verification_seed": 2026102248
+        },
+        "2026102119": {
+          "observation_seed": 2026102219,
+          "verification_seed": 2026102249
+        },
+        "2026102120": {
+          "observation_seed": 2026102220,
+          "verification_seed": 2026102250
+        },
+        "2026102121": {
+          "observation_seed": 2026102221,
+          "verification_seed": 2026102251
+        },
+        "2026102122": {
+          "observation_seed": 2026102222,
+          "verification_seed": 2026102252
+        }
+      }
+    },
+    {
+      "replicate": 2,
+      "output_dir": "paper_artifacts/mainline_observation_seed_replication_v1/replicate_2",
+      "seed_by_task": {
+        "2026102111": {
+          "observation_seed": 2026102311,
+          "verification_seed": 2026102341
+        },
+        "2026102112": {
+          "observation_seed": 2026102312,
+          "verification_seed": 2026102342
+        },
+        "2026102113": {
+          "observation_seed": 2026102313,
+          "verification_seed": 2026102343
+        },
+        "2026102114": {
+          "observation_seed": 2026102314,
+          "verification_seed": 2026102344
+        },
+        "2026102115": {
+          "observation_seed": 2026102315,
+          "verification_seed": 2026102345
+        },
+        "2026102116": {
+          "observation_seed": 2026102316,
+          "verification_seed": 2026102346
+        },
+        "2026102117": {
+          "observation_seed": 2026102317,
+          "verification_seed": 2026102347
+        },
+        "2026102118": {
+          "observation_seed": 2026102318,
+          "verification_seed": 2026102348
+        },
+        "2026102119": {
+          "observation_seed": 2026102319,
+          "verification_seed": 2026102349
+        },
+        "2026102120": {
+          "observation_seed": 2026102320,
+          "verification_seed": 2026102350
+        },
+        "2026102121": {
+          "observation_seed": 2026102321,
+          "verification_seed": 2026102351
+        },
+        "2026102122": {
+          "observation_seed": 2026102322,
+          "verification_seed": 2026102352
+        }
+      }
+    }
+  ],
+  "frozen": {
+    "d": 1000,
+    "source_models": "Unchanged family-specific Stage31 source models and native source priors from each source_search_manifest.",
+    "initial_policies": "Reuse only the10 physical policy identities in initial_policy_file; generate10 new raws per task/replicate, physically shared by all7 histories and charged logically to each.",
+    "shared_neighbors": "Reuse all64 physical strategies from each Stage50 neighbors.npz; no regeneration from the new noisy initialization.",
+    "frontend": "Unchanged original frontend and shared-neighbor supplement; adaptive proposals continue to learn from each arm own new history.",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "terminal": "Frozen Stage49 same_policy distinct-challenger transform for all9cells; no original-terminal verification in this replication.",
+    "candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "objective_comparison_budget_per_policy": 8,
+    "familywise_delta": 0.05,
+    "objective_comparison_delta": 0.016666666666666666,
+    "terminal_maximum_violation_probability": 0.5,
+    "verification_method": "normal_quantile_tolerance",
+    "model_changes": false,
+    "source_fits": 0,
+    "new_source_calls": 0
+  },
+  "randomness": {
+    "optimizer_seed": "Keep geometry_task_seed as config.seed for the original algorithm/proposal/TS random sources.",
+    "observation_stream": "SeedSequence([observation_seed, evaluation_index, SIMULATION_STREAM_TAG]); indices0..9 initialization and10..12 adaptive queries.",
+    "verification_stream": "Use registered independent verification_seed with unchanged slot/replication/safety/objective stream namespaces.",
+    "pairing": "Within each task/replicate all arms use matching observation and verification namespaces. Same evaluation index can query different policies; shared random numbers do not make responses identical.",
+    "limitation": "New observations can change adaptive pools, trajectories and RNG consumption. Fixed optimizer seed does not freeze every per-policy TS innovation.",
+    "reuse": "Never reuse old observations or certificates across the new streams. Only exactly matching new-stream physical observations may be shared with explicit accounting."
+  },
+  "budget": {
+    "geometry_count": 12,
+    "observation_replicates": 2,
+    "task_replicate_units": 24,
+    "unique_search_histories": 168,
+    "terminal_cells": 216,
+    "initial_physical_calls": 240,
+    "online_search_physical_calls": 432,
+    "maximum_verification_calls_per_cell": 352,
+    "maximum_verification_physical_calls": 76032,
+    "maximum_target_physical_calls": 76704,
+    "unique_logical_search_calls": 2112,
+    "expanded_logical_search_calls": 2736,
+    "maximum_logical_target_calls": 78768,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "download_bytes": 0
+  },
+  "analysis": {
+    "primary": [
+      "Paired true-feasible certification probability: AFTER minus SOURCE0.",
+      "Paired signed certified quality increment beyond best true-feasible initial10: AFTER minus SOURCE0."
+    ],
+    "quality_definition": "C*(Qdeployed-Qbest_initial), C=I(certified and true feasible). No clipping; completed uncertified runs get0, execution failures remain missing.",
+    "reference": "Best true-feasible initial10 quality is fixed within geometry because physical initial policies and geometry are fixed. Keep original first-row metrics as separately named legacy outputs.",
+    "reward": "Report safe reward=C*Qdeployed and decompose into C*Qbest_initial plus the signed increment.",
+    "auxiliary": [
+      "Good new policy deployment count beyond initial10.",
+      "Actual certificates and false certificates.",
+      "Quality difference among jointly certified pairs, labeled conditional.",
+      "Physical and expanded logical calls per arm and replicate."
+    ],
+    "secondary": [
+      "FULL minus AFTER under the same new terminal.",
+      "AFTER versus old native, same-source GP, original structure and STOP.",
+      "The two existing native-terminal crossings, not independent task samples."
+    ],
+    "weighting": "Average the two new observation replicates within each of the12 geometries; average four geometries within family and then three families equally. Also report each new replicate separately.",
+    "uncertainty": "Show all12 geometry-level paired effects and a descriptive paired t interval across these geometry-level means (df11), labeled conditional on this fixed geometry set and two new noise streams; no claim of24 independent geometries.",
+    "historical_data": "Keep Stage47/49 development and Stage50 historical confirmation outside the new-stream primary estimate. No old-stream observations in the two-replicate mean.",
+    "interpretation": "Certification and quality are separate endpoints. A reward gain driven only by certification does not establish better optimization quality; report direction consistency across both new streams and all families without tuning the model or selecting a winner from this batch."
+  },
+  "barriers": {
+    "before_sampling": "Finalize independent observation-seed routing, frozen-bank reuse and modified-only execution; check seed isolation with deterministic stubs and saved configuration, without real task calls.",
+    "before_online": "Freeze all24 new initialization histories and their copied64-neighbor banks before any adaptive search.",
+    "before_verification": "Freeze all168 histories and all216 transformed terminal inputs before any verification.",
+    "before_scoring": "Complete all available registered verifications before reading cached truth or evaluating uncached deployment truth; record any failures before scoring.",
+    "failure": "Keep every task/arm registered. Preserve paid raw/state/cost; no resampling, identity deletion or numerical patch. Full registered-cohort estimates with missing executions stay unknown; completed-case summaries labeled."
+  },
+  "historical_failure": "Stage50 structural2120 remains missing in historical tables. Register and attempt the same arm under each new noise stream; do not pre-exclude it.",
+  "execution_preparation": {
+    "status": "validated",
+    "entrypoint": "performance/run_mainline_observation_seed_replication.py",
+    "completed_changes": [
+      "Route observation_seed into SingleOLHKG._simulate_and_store and its observation seed log while preserving config.seed; pass it through build_fresh_backend before initialization.",
+      "Reuse the saved initial physical policies and neighbors.npz in fresh preparation, with newly generated initialization raws.",
+      "Construct input_record then apply existing same_policy.transform and call the existing verifier directly for the modified terminal only. Current three_family.run and same_policy.load_blocks require old-terminal execution/raw and cannot be used unchanged."
+    ],
+    "validation_file": "paper_artifacts/mainline_observation_seed_preparation_v1/validation.json",
+    "prepare_command": "python3 -m performance.run_mainline_observation_seed_replication prepare",
+    "run_command": "python3 -m performance.run_mainline_observation_seed_replication run --workers 12"
+  },
+  "execution_started": true,
+  "new_calls_at_registration": 0,
+  "output_dir": "paper_artifacts/mainline_observation_seed_replication_v1",
+  "completed_utc": "2026-10-16T11:07:33.836102+00:00",
+  "results_report": "docs/mainline_observation_seed_replication_results_20261016.md",
+  "next_step": "Frozen-model zero-call attribution over all 24 saved task-noise trajectories: query divergence, beyond-best-initial improvement, avoided initial-policy regression, and terminal exposure. No model, terminal, seed or precision selection on these results.",
+  "attribution_manifest": "performance/manifests/mainline_observation_seed_attribution_v1.json"
+}

@@ -1,0 +1,141 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v1/completion.json",
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v2",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v2.json",
+  "rules": [
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ],
+    [
+      "F9",
+      32,
+      9,
+      101
+    ],
+    [
+      "L9",
+      16,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "selected_records": [
+    "positive_midmean_v1_n4_m4_localv_o5_h1_p24",
+    "positive_midmean_v1_n4_m4_localv_o5_h1_p20",
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p16"
+  ],
+  "selected_kinds": [
+    "raw"
+  ],
+  "shards": 3,
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p24"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 90.8805790532,
+      "maximum_worker_cpu_seconds": 91
+    },
+    {
+      "identity": 4,
+      "shard": 1,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p20"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 90.8805790532,
+      "maximum_worker_cpu_seconds": 91
+    },
+    {
+      "identity": 4,
+      "shard": 2,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p16"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 90.8805790532,
+      "maximum_worker_cpu_seconds": 91
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p24"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179
+    },
+    {
+      "identity": 5,
+      "shard": 1,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p20"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179
+    },
+    {
+      "identity": 5,
+      "shard": 2,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o4_h1_p16"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179
+    }
+  ],
+  "estimated_cost_admitted": true,
+  "estimated_worker_cpu_seconds": 807.9672478079999,
+  "estimated_phase_cpu_seconds": 1407.967247808,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "inherited_shared_reserve_charged_cpu_seconds": 61.507156858,
+  "new_phase_reserve_cpu_seconds": 0,
+  "previous_cap_refinement_recorded_cpu_seconds": 3969.638206673,
+  "matched_measured_raw_cpu_rates": {
+    "4": 74.067149211,
+    "5": 147.034864069
+  },
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "scope": "Three user-selected high-weight raw63/45 observations only. Reuse incumbent-mean analytic E9 controls, all previous accepted caps and original bank. Prior failures/recoveries and3969.638206673CPU retained. Inherit the existing600support reserve already charged61.507156858; add no reserve or reset. Frozen224/F16,all8identity likelihoods,512/1024positive components,SD16,original zero-candidate gate retained."
+}

@@ -1,0 +1,82 @@
+{
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v2",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v1/completion.json",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+  "diagnosis_path": "paper_artifacts/historical_positive_risk_uppervariance_axis_cached_pair_references_v2/projected_reward_diagnosis.json",
+  "selected_records": [
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p17",
+    "positive_body_v1_n4_m4_v4_o4_h1_p3"
+  ],
+  "selected_kinds": [
+    "projected"
+  ],
+  "source_pair_plans": {
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p17": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v1.json",
+    "positive_body_v1_n4_m4_v4_o4_h1_p3": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v1.json"
+  },
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "maximum_action_difference": 0.0001,
+  "selected_candidate": "E9",
+  "validation_rule": "E9",
+  "maximum_cached_analysis_cpu_seconds": 12,
+  "estimated_cached_collection_cpu_seconds": 10,
+  "maximum_estimated_cpu_seconds": 3600,
+  "estimated_worker_cpu_seconds": 0,
+  "estimated_phase_cpu_seconds": 3552.3937150140005,
+  "estimated_cost_admitted": true,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "inherited_shared_reserve_charged_cpu_seconds": 553.674736923,
+  "new_phase_reserve_cpu_seconds": 0,
+  "previous_cap_refinement_recorded_cpu_seconds": 7414.199501752,
+  "source_phase_registered_estimated_cpu_seconds": 3552.3937150140005,
+  "settled_source_worker_rows": [
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v2/completion.json",
+      "worker_process_cpu_seconds": 627.023444678
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_pilot_v1/completion.json",
+      "worker_process_cpu_seconds": 196.392364724
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v1/completion.json",
+      "worker_process_cpu_seconds": 192.08914189799998
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v3/completion.json",
+      "worker_process_cpu_seconds": 512.248573933
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v2/completion.json",
+      "worker_process_cpu_seconds": 195.17550887699997
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/completion.json",
+      "worker_process_cpu_seconds": 380.207746587
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v3/completion.json",
+      "worker_process_cpu_seconds": 205.8334523
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v5/completion.json",
+      "worker_process_cpu_seconds": 241.870900059
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v4/completion.json",
+      "worker_process_cpu_seconds": 235.23792101700002
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v6/completion.json",
+      "worker_process_cpu_seconds": 166.314660941
+    }
+  ],
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "scope": "Cache-only projected complete-reward control check;source pair-state HOLD unchanged. Source adaptive E9/E10/F10/L10 retained for midmean_o4p17,old E8/E9/F9/L9 retained for body_o4p3. Original1e-4 mixed16head reward/evidence gate with matched projected fallback omission;cost controls stored without a new gate. Admit only passed groups,keep failure controls/fees. Same600reserve,newreserve0,no pair/full integrals. Incremental screen changes only accepted record/kind rows,retains84old reference plans and all old accepted caps;zero-candidate/overall-error/independent gates unchanged."
+}

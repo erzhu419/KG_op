@@ -1,0 +1,733 @@
+{
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+  "primary_candidate": "legacy_role_after_init_point_only",
+  "primary_reference": "legacy_role_point_only",
+  "search_arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "initialization_only"
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "frozen": {
+    "d": 1000,
+    "source_models": "Unchanged family-specific Stage31 source models and native source priors from each source_search_manifest.",
+    "initial_policies": "Use unchanged source-only design80 recipe to construct physicalinitial10 for eachfamily/newtask; draw10fresh observations shared by all7 histories.",
+    "shared_neighbors": "Generate64neighbors pernewtask from its STOP engine with the existing seed-tagged generator, radius.08 andsafe_margin_scale1.0; share physically acrossallarms.",
+    "frontend": "Unchanged original frontend and shared-neighbor supplement; adaptive proposals continue to learn from each arm own new history.",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "terminal": "Frozen Stage49 same_policy_distinct_challenger transform for all9cells; native crossings remain. Execute only this registered terminal protocol.",
+    "candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "objective_comparison_budget_per_policy": 8,
+    "familywise_delta": 0.05,
+    "objective_comparison_delta": 0.016666666666666666,
+    "terminal_maximum_violation_probability": 0.5,
+    "verification_method": "normal_quantile_tolerance",
+    "model_changes": false,
+    "source_fits": 0,
+    "new_source_calls": 0
+  },
+  "randomness": {
+    "optimizer_seed": "Use newly registered geometry_task_seed as config.seed; frozen optimizer/proposal/TS recipe.",
+    "observation_stream": "SeedSequence([observation_seed, evaluation_index, SIMULATION_STREAM_TAG]); indices0..9 initialization and10..12 adaptive queries.",
+    "verification_stream": "Use registered independent verification_seed with unchanged slot/replication/safety/objective stream namespaces.",
+    "pairing": "Within each task/replicate all arms use matching observation and verification namespaces. Same evaluation index can query different policies; shared random numbers do not make responses identical.",
+    "limitation": "New observations can change adaptive pools, trajectories and RNG consumption. Fixed optimizer seed does not freeze every per-policy TS innovation.",
+    "reuse": "Never reuse old observations or certificates across the new streams. Only exactly matching new-stream physical observations may be shared with explicit accounting."
+  },
+  "budget": {
+    "geometry_count": 24,
+    "observation_replicates": 1,
+    "task_replicate_units": 24,
+    "unique_search_histories": 168,
+    "terminal_cells": 216,
+    "initial_physical_calls": 240,
+    "online_search_physical_calls": 432,
+    "maximum_verification_calls_per_cell": 352,
+    "maximum_verification_physical_calls": 76032,
+    "maximum_target_physical_calls": 76704,
+    "unique_logical_search_calls": 2112,
+    "expanded_logical_search_calls": 2736,
+    "maximum_logical_target_calls": 78768,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "download_bytes": 0
+  },
+  "barriers": {
+    "before_sampling": "Freeze all24geometry vectors andindependentnoise seeds; validate fresh materialization andglobal scoringbarrier with zero-call substitutes.",
+    "before_online": "Freeze all24newinitialization histories andfresh64-neighbor banks before anyadaptive search.",
+    "before_verification": "Freeze all168 histories and all216 transformed terminal inputs before any verification.",
+    "before_scoring": "Complete all available registered verifications before reading cached truth or evaluating uncached deployment truth; record any failures before scoring.",
+    "failure": "Keep every task/arm registered. Preserve paid raw/state/cost; no resampling, identity deletion or numerical patch. Full registered-cohort estimates with missing executions stay unknown; completed-case summaries labeled."
+  },
+  "historical_failure": "Stage50 structural2120 remains missing in historical tables. Register and attempt the same arm under each new noise stream; do not pre-exclude it.",
+  "name": "mainline_unseen_geometry_confirmation_v1",
+  "status": "complete_with_search_failure",
+  "registered_utc": "2026-10-16T12:50:27.136035+00:00",
+  "report": "docs/mainline_unseen_geometry_confirmation_results_20261016.md",
+  "protocol_report": "docs/mainline_unseen_geometry_confirmation_protocol_20261016.md",
+  "output_dir": "paper_artifacts/mainline_unseen_geometry_confirmation_v1",
+  "geometry_seed": 2026103000,
+  "objective": "Confirm whether frozen initialization cross-policy propagation produces certification and decision-quality benefits on24unseen task geometries; no model or terminal selection.",
+  "allocation_evidence": "paper_artifacts/mainline_geometry_allocation_v1/results.json",
+  "source_evidence": [
+    "performance/manifests/mainline_observation_seed_replication_v1.json",
+    "performance/manifests/mainline_observation_seed_attribution_v1.json"
+  ],
+  "scope": "24 unseen task geometries,8per known family, with1independent observation stream and verification stream each. Frozen models and construction recipes; prior cohorts excluded from confirmation estimates.",
+  "geometry_description": "Single RNG2026103000; family order Inventory,Queue,FactorShock;8successive draws each: shift uniform(-.035,.035)^3 then radius uniform(.95,1.05). No outcome-based filtering.",
+  "statistical_unit": "24 independent registered task geometries,8per known family; one observation and one independent verification stream each.",
+  "interval_scope": "Descriptive paired t interval across24new geometry-level effects,df23, conditional on the three known benchmark families and frozen task distribution.",
+  "weighting": "One observation stream per newgeometry;8geometries per family, then3families equally. Task-equal and family-equal weights coincide.",
+  "design_revision": {
+    "previous": "Stage55 suggested12newgeometries\u00d72streams.",
+    "current": "24newgeometries\u00d71stream; same24task-noise units and total budget.",
+    "reason": "Pilot variation and concentrated gains favor broader unseen task coverage; no outcome from the new batch used."
+  },
+  "execution_started": true,
+  "new_calls_at_registration": 0,
+  "analysis": {
+    "primary": [
+      "Paired true-feasible certification probability: AFTER minus SOURCE0.",
+      "Paired signed certified quality increment beyond best true-feasible initial10: AFTER minus SOURCE0."
+    ],
+    "quality_definition": "C*(Qdeployed-Qbest_initial), C=I(certified and true feasible). No clipping; completed uncertified runs get0, execution failures remain missing.",
+    "reference": "Best true-feasible policy among the sharedinitial10 on eachnewgeometry; same reference for allarms.",
+    "reward": "Report safe reward=C*Qdeployed and decompose into C*Qbest_initial plus the signed increment.",
+    "fixed_decomposition": "G=P-L, P=C*max(Qdeployed-Qbest_initial,0), L=C*max(Qbest_initial-Qdeployed,0); positiveP split by physicaldynamic/shared-neighbor origin. Decomposition doesnotreplace signedG primary.",
+    "secondary": [
+      "FULL minus AFTER under the same new terminal.",
+      "AFTER versus old native, same-source GP, original structure and STOP.",
+      "The two existing native-terminal crossings, not independent task samples."
+    ],
+    "auxiliary": [
+      "Good new policy deployment count beyond initial10.",
+      "Actual certificates and false certificates.",
+      "Quality difference among jointly certified pairs, labeled conditional.",
+      "Physical and expanded logical calls per arm and replicate.",
+      "Pure new-policy gain, below-best regression, dynamic/shared positivegain anddeploymentcounts.",
+      "Family directions, all24paired effects, and contribution concentration."
+    ],
+    "weighting": "One observation stream per newgeometry;8geometries per family, then3families equally. Task-equal and family-equal weights coincide.",
+    "uncertainty": "Descriptive paired t interval across24new geometry-level effects,df23, conditional on the three known benchmark families and frozen task distribution.",
+    "historical_data": "All previously opened development,confirmation andnoise-replication cohorts remain outside thisnew primary estimate.",
+    "stopping": "Finish the fixed24registered geometries. No interim outcome reads, optional expansion, seed substitution or model/terminal changes.",
+    "interpretation": "Report certification C andsignedG together, keep reward-reference/P/L separate; no universal superiority or within-new-geometry noise-stability claim fromone stream."
+  },
+  "tasks": [
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103001,
+      "optimizer_seed": 2026103001,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.018547823893985786,
+            0.020230902365126327,
+            0.022235765623302442
+          ],
+          "task_geometry_radius_scale": 1.0087977593777513
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103002,
+      "optimizer_seed": 2026103002,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.00021160424365942315,
+            -0.028967059790970643,
+            -0.0020839452776602596
+          ],
+          "task_geometry_radius_scale": 0.9661464126418374
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103003,
+      "optimizer_seed": 2026103003,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.01716954627261305,
+            -0.004738533381549278,
+            0.02170214385146218
+          ],
+          "task_geometry_radius_scale": 0.9638986080977043
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103004,
+      "optimizer_seed": 2026103004,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.01052901936412496,
+            0.029385491799314795,
+            0.026744986034173163
+          ],
+          "task_geometry_radius_scale": 0.9566869911899806
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103005,
+      "optimizer_seed": 2026103005,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.0033762883598951535,
+            -0.005204510390345977,
+            0.015963573886918353
+          ],
+          "task_geometry_radius_scale": 1.0253867865696145
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103006,
+      "optimizer_seed": 2026103006,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.011580604033609325,
+            -0.008486939398132786,
+            0.029452764609198337
+          ],
+          "task_geometry_radius_scale": 0.9781582066000089
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103007,
+      "optimizer_seed": 2026103007,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.02852125336506872,
+            0.033482388645045866,
+            -0.007181323279657453
+          ],
+          "task_geometry_radius_scale": 1.011050734033464
+        }
+      }
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026103008,
+      "optimizer_seed": 2026103008,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_InventorySupplyChain_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.02697972679313084,
+            -0.03165367203969017,
+            0.011800638333005833
+          ],
+          "task_geometry_radius_scale": 0.9758297481601843
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103009,
+      "optimizer_seed": 2026103009,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.03384411564250557,
+            0.009726747230872461,
+            0.022047585160661305
+          ],
+          "task_geometry_radius_scale": 0.9530458432911177
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103010,
+      "optimizer_seed": 2026103010,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.02008312415460241,
+            -0.01320523148261276,
+            -0.0005732147961078418
+          ],
+          "task_geometry_radius_scale": 1.01539339058033
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103011,
+      "optimizer_seed": 2026103011,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.030856428226266802,
+            0.03287930051586163,
+            0.01120191166305258
+          ],
+          "task_geometry_radius_scale": 1.0450903654568744
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103012,
+      "optimizer_seed": 2026103012,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.02070643780046951,
+            0.026301340283251734,
+            0.032309619911461904
+          ],
+          "task_geometry_radius_scale": 0.9738449500385242
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103013,
+      "optimizer_seed": 2026103013,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.0017519172626175306,
+            -0.016066936132572554,
+            0.0017857846766299312
+          ],
+          "task_geometry_radius_scale": 0.951920830085869
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103014,
+      "optimizer_seed": 2026103014,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.028366138860537876,
+            -0.01508760389226654,
+            0.02125613362821787
+          ],
+          "task_geometry_radius_scale": 1.0482557841159927
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103015,
+      "optimizer_seed": 2026103015,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.011046178662419862,
+            0.008938791012546646,
+            0.027717485924756993
+          ],
+          "task_geometry_radius_scale": 0.9638041952710131
+        }
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026103016,
+      "optimizer_seed": 2026103016,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_QueueResourceControl_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.002251412592468173,
+            -0.009747502207307707,
+            0.008014005771116064
+          ],
+          "task_geometry_radius_scale": 0.99917799819372
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103017,
+      "optimizer_seed": 2026103017,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.006820911178343096,
+            0.0038516269458955046,
+            0.010654035892986233
+          ],
+          "task_geometry_radius_scale": 0.956986564122699
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103018,
+      "optimizer_seed": 2026103018,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.012313436723734833,
+            -0.020823952865441846,
+            0.026190214909610446
+          ],
+          "task_geometry_radius_scale": 0.9629458772697386
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103019,
+      "optimizer_seed": 2026103019,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.028998493593555153,
+            -0.015965962448226362,
+            0.016702122054652824
+          ],
+          "task_geometry_radius_scale": 0.9881662323318988
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103020,
+      "optimizer_seed": 2026103020,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.004190511845640024,
+            0.020413557781054137,
+            -0.026497605404124318
+          ],
+          "task_geometry_radius_scale": 1.0089810114575755
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103021,
+      "optimizer_seed": 2026103021,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.025630804848176418,
+            0.0032086219083718726,
+            0.023664784077604105
+          ],
+          "task_geometry_radius_scale": 0.9527841314529771
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103022,
+      "optimizer_seed": 2026103022,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.015837713172999035,
+            -0.008697145191102588,
+            -0.0025361002059311466
+          ],
+          "task_geometry_radius_scale": 1.0064511715584683
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103023,
+      "optimizer_seed": 2026103023,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.009788113486959436,
+            -0.022562511700856235,
+            -0.030910336778222657
+          ],
+          "task_geometry_radius_scale": 1.0265203192921248
+        }
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026103024,
+      "optimizer_seed": 2026103024,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "unseen_confirmation_FactorShockStatePolicyRZDT1_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.0011115137659892457,
+            0.015962882990882825,
+            -0.031190663513643694
+          ],
+          "task_geometry_radius_scale": 0.995609861931182
+        }
+      }
+    }
+  ],
+  "replicates": [
+    {
+      "replicate": 1,
+      "output_dir": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1",
+      "seed_by_task": {
+        "2026103001": {
+          "observation_seed": 2026103101,
+          "verification_seed": 2026103201
+        },
+        "2026103002": {
+          "observation_seed": 2026103102,
+          "verification_seed": 2026103202
+        },
+        "2026103003": {
+          "observation_seed": 2026103103,
+          "verification_seed": 2026103203
+        },
+        "2026103004": {
+          "observation_seed": 2026103104,
+          "verification_seed": 2026103204
+        },
+        "2026103005": {
+          "observation_seed": 2026103105,
+          "verification_seed": 2026103205
+        },
+        "2026103006": {
+          "observation_seed": 2026103106,
+          "verification_seed": 2026103206
+        },
+        "2026103007": {
+          "observation_seed": 2026103107,
+          "verification_seed": 2026103207
+        },
+        "2026103008": {
+          "observation_seed": 2026103108,
+          "verification_seed": 2026103208
+        },
+        "2026103009": {
+          "observation_seed": 2026103109,
+          "verification_seed": 2026103209
+        },
+        "2026103010": {
+          "observation_seed": 2026103110,
+          "verification_seed": 2026103210
+        },
+        "2026103011": {
+          "observation_seed": 2026103111,
+          "verification_seed": 2026103211
+        },
+        "2026103012": {
+          "observation_seed": 2026103112,
+          "verification_seed": 2026103212
+        },
+        "2026103013": {
+          "observation_seed": 2026103113,
+          "verification_seed": 2026103213
+        },
+        "2026103014": {
+          "observation_seed": 2026103114,
+          "verification_seed": 2026103214
+        },
+        "2026103015": {
+          "observation_seed": 2026103115,
+          "verification_seed": 2026103215
+        },
+        "2026103016": {
+          "observation_seed": 2026103116,
+          "verification_seed": 2026103216
+        },
+        "2026103017": {
+          "observation_seed": 2026103117,
+          "verification_seed": 2026103217
+        },
+        "2026103018": {
+          "observation_seed": 2026103118,
+          "verification_seed": 2026103218
+        },
+        "2026103019": {
+          "observation_seed": 2026103119,
+          "verification_seed": 2026103219
+        },
+        "2026103020": {
+          "observation_seed": 2026103120,
+          "verification_seed": 2026103220
+        },
+        "2026103021": {
+          "observation_seed": 2026103121,
+          "verification_seed": 2026103221
+        },
+        "2026103022": {
+          "observation_seed": 2026103122,
+          "verification_seed": 2026103222
+        },
+        "2026103023": {
+          "observation_seed": 2026103123,
+          "verification_seed": 2026103223
+        },
+        "2026103024": {
+          "observation_seed": 2026103124,
+          "verification_seed": 2026103224
+        }
+      }
+    }
+  ],
+  "execution_preparation": {
+    "status": "validated",
+    "entrypoint": "performance/run_mainline_observation_seed_replication.py",
+    "inherited_preflight": "paper_artifacts/mainline_three_family_v1/preflight.json",
+    "inherited_seed_routing": "paper_artifacts/mainline_observation_seed_preparation_v1/validation.json",
+    "validation_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/preparation_validation.json",
+    "prepare_command": "python3 -m performance.run_mainline_observation_seed_replication prepare --manifest performance/manifests/mainline_unseen_geometry_confirmation_v1.json",
+    "run_command": "python3 -u -m performance.run_mainline_observation_seed_replication run --manifest performance/manifests/mainline_unseen_geometry_confirmation_v1.json --workers 12",
+    "completed_utc": "2026-10-16T12:52:34.227192+00:00"
+  },
+  "execution_failures": [
+    {
+      "replicate": 1,
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "status": "search_failed",
+      "logical_search_calls": 11,
+      "new_search_calls": 1,
+      "reason": "RuntimeError('Batched raw moment error exceeds frozen tolerance: 2.5773155986877152e-08')",
+      "failed_raw_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_raw_1792157276809918126.json",
+      "failed_state_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_engine.pkl"
+    }
+  ],
+  "failure_resolution": {
+    "recorded_utc": "2026-10-16T13:43:19.599672+00:00",
+    "before_any_verification": true,
+    "action": "Retain the observed POINT search failure as missing with its paid prefix; resume only unfinished stages. No resampling, model/tolerance change, raw replay or posterior recovery. Full24 AFTER-POINT means and intervals remain null."
+  },
+  "completed_utc": "2026-10-16T13:47:28.769643+00:00",
+  "results_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/results.json",
+  "results_report": "docs/mainline_unseen_geometry_confirmation_results_20261016.md",
+  "conditional_statistics_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/conditional_statistics.json",
+  "execution_audit_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/independent_execution_audit.json",
+  "terminal_attribution_manifest": "performance/manifests/mainline_unseen_geometry_terminal_attribution_v1.json",
+  "quality_reference_limitations": [
+    {
+      "seed": 2026103009,
+      "domain": "QueueResourceControl",
+      "reason": "No true-feasible initial10 policy; original best-feasible-initial reference is undefined.",
+      "handling": "Keep all execution/certificate/reward/cost outcomes; dependent quality metrics null; no imputed baseline or geometry replacement."
+    }
+  ],
+  "next_step": "Frozen zero-call query competition and terminal ordering attribution across all24 saved tasks, preserving missing/undefined cases. No model/tolerance change or additional paid cohort.",
+  "attribution_manifest": "performance/manifests/mainline_unseen_geometry_attribution_v1.json"
+}

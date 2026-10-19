@@ -1,0 +1,262 @@
+{
+  "status": "complete",
+  "updated_utc": "2026-10-17T23:01:25.165844+00:00",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "scheduler_task_count": 7,
+  "all_scheduler_tasks_done": true,
+  "jobs": [
+    {
+      "label": "validation/stage82_attempt1",
+      "status": "complete",
+      "scheduler_tasks": [
+        {
+          "id": "t175890",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277397.4835665,
+          "finished_at": 1792277387.0,
+          "log_path": "/tmp/sched_t175890.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/validation/stage82_attempt1/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:49:40.872448+00:00",
+          "completed_utc": "2026-10-17T22:49:47.322100+00:00",
+          "wall_seconds": 6.449701911769807,
+          "own_cpu_seconds": 0.098105,
+          "child_cpu_seconds": 4.304896,
+          "total_cpu_seconds": 4.403001
+        }
+      ]
+    },
+    {
+      "label": "audit/tasks",
+      "status": "complete",
+      "scheduler_tasks": [
+        {
+          "id": "t175898",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 3,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277736.3623786,
+          "finished_at": 1792277724.0,
+          "log_path": "/tmp/sched_t175898.log"
+        },
+        {
+          "id": "t175899",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277736.32939,
+          "finished_at": 1792277725.0,
+          "log_path": "/tmp/sched_t175899.log"
+        },
+        {
+          "id": "t175900",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277736.2125754,
+          "finished_at": 1792277724.0,
+          "log_path": "/tmp/sched_t175900.log"
+        },
+        {
+          "id": "t175901",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277736.9782734,
+          "finished_at": 1792277726.0,
+          "log_path": "/tmp/sched_t175901.log"
+        },
+        {
+          "id": "t175902",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277736.3564389,
+          "finished_at": 1792277724.0,
+          "log_path": "/tmp/sched_t175902.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/audit/tasks/0_3.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:55:19.539029+00:00",
+          "completed_utc": "2026-10-17T22:55:24.529242+00:00",
+          "wall_seconds": 4.991855247877538,
+          "own_cpu_seconds": 0.08948799999999998,
+          "child_cpu_seconds": 9.031184,
+          "total_cpu_seconds": 9.120671999999999
+        },
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/audit/tasks/3_9.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:55:19.564266+00:00",
+          "completed_utc": "2026-10-17T22:55:25.437268+00:00",
+          "wall_seconds": 5.873047394677997,
+          "own_cpu_seconds": 0.13660699999999998,
+          "child_cpu_seconds": 16.957371000000002,
+          "total_cpu_seconds": 17.093978
+        },
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/audit/tasks/9_14.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:55:19.410974+00:00",
+          "completed_utc": "2026-10-17T22:55:24.602587+00:00",
+          "wall_seconds": 5.191661554388702,
+          "own_cpu_seconds": 0.09275599999999999,
+          "child_cpu_seconds": 14.600776,
+          "total_cpu_seconds": 14.693532000000001
+        },
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/audit/tasks/14_19.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:55:20.141793+00:00",
+          "completed_utc": "2026-10-17T22:55:26.355368+00:00",
+          "wall_seconds": 6.213616552762687,
+          "own_cpu_seconds": 0.095445,
+          "child_cpu_seconds": 14.082152,
+          "total_cpu_seconds": 14.177597
+        },
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/audit/tasks/19_24.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:55:19.539634+00:00",
+          "completed_utc": "2026-10-17T22:55:24.364064+00:00",
+          "wall_seconds": 4.824470944702625,
+          "own_cpu_seconds": 0.098834,
+          "child_cpu_seconds": 14.355847,
+          "total_cpu_seconds": 14.454681
+        }
+      ]
+    },
+    {
+      "label": "audit/collect",
+      "status": "complete",
+      "scheduler_tasks": [
+        {
+          "id": "t175906",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792277959.4856203,
+          "finished_at": 1792277945.0,
+          "log_path": "/tmp/sched_t175906.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/jobs/audit/collect/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T22:59:02.163959+00:00",
+          "completed_utc": "2026-10-17T22:59:05.391934+00:00",
+          "wall_seconds": 3.2280273344367743,
+          "own_cpu_seconds": 0.10542099999999999,
+          "child_cpu_seconds": 2.299425,
+          "total_cpu_seconds": 2.404846
+        }
+      ]
+    }
+  ],
+  "automatic_scientific_retries": 0,
+  "recorded_analysis_cpu_seconds": 62.995326893000005,
+  "recorded_coordinator_cpu_seconds": 0.147058417,
+  "validation_cpu_seconds": 1.79215,
+  "validation_test_counts": {
+    "passed": 15
+  },
+  "wrapper_cpu_seconds_including_children_not_additive": 76.348307,
+  "wrapper_own_cpu_seconds": 0.7166559999999998,
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0,
+    "new_candidate_scores": 0,
+    "truth_problem_constructions": 0
+  },
+  "analysis_failures": [],
+  "failed_attempts": [],
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_retention_v1/completion.json",
+    "paper_artifacts/mainline_reference_retention_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_preparation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/stage81_execution_account_20261018.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/stage81_result_transfer_20261018.json"
+  ],
+  "controller_metadata_payload_bytes": 7209,
+  "accounting_note": "Analysis attempts, coordinator and checks remain distinct. Wrapper total includes children and startup; do not add it to those ledgers. No scientific retries or repeated submissions. Scheduler timestamps may use different clocks; wrapper wall_seconds is measured monotonically."
+}

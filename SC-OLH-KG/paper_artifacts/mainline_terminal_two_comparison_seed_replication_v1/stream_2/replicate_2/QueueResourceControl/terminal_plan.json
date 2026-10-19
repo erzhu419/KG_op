@@ -1,0 +1,109 @@
+{
+  "name": "observation_replica_2_QueueResourceControl_terminal",
+  "status": "registered",
+  "source_manifest": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/search_plan.json",
+  "source_output_dir": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/search",
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/stream_2/replicate_2/QueueResourceControl/terminal",
+  "target_seeds": [
+    2026104009,
+    2026104010,
+    2026104011,
+    2026104012,
+    2026104013,
+    2026104014,
+    2026104015,
+    2026104016
+  ],
+  "verification_seed_by_task": {
+    "2026104009": 2026106209,
+    "2026104010": 2026106210,
+    "2026104011": 2026106211,
+    "2026104012": 2026106212,
+    "2026104013": 2026106213,
+    "2026104014": 2026106214,
+    "2026104015": 2026106215,
+    "2026104016": 2026106216
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "same_policy_distinct_challenger": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Original-terminal paired control for the common frozen modified-terminal primary after-init-minus-source0-point comparison.",
+    "Preserve full-afterinit, original/native terminal crossing and all references; compare each unchanged original input to its frozen same-policy challenger transform."
+  ],
+  "statistical_unit": "24 fixed geometries. The outer analysis averages the two new-stream effects within each geometry before uncertainty summaries; stream and arm cells are not independent geometry samples.",
+  "truth_barrier": "Both streams must seal all864 old/new terminal outcomes or failures before any new scoring or target-truth access.",
+  "scope": "Confirm frozen AFTER propagation and paired terminal gains under a new observation/verification stream on the same24 Stage65 geometries; no model, threshold or geometry selection.",
+  "registered_utc": "2026-10-16T23:32:38.216456+00:00",
+  "inherited_replay_check_file": "paper_artifacts/mainline_same_policy_confirmation_v1/QueueResourceControl/terminal/replay_check.json"
+}

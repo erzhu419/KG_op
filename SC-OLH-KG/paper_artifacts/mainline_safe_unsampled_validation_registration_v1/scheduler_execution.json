@@ -1,0 +1,763 @@
+{
+  "stage": 72,
+  "name": "mainline_safe_unsampled_validation_registration_v1",
+  "status": "registration_validated_cohort_not_started",
+  "recorded_utc": "2026-10-17T02:00:16.489321+00:00",
+  "manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "per_job_workers": 1,
+  "vram_mb": 0,
+  "blas_threads": 1,
+  "requested_ram_mb": 8192,
+  "scientific_summary": {
+    "status": "registration_validated",
+    "geometry_count": 24,
+    "search_histories": 168,
+    "terminal_cells": 432,
+    "primary": "AFTER-minus-POINT / old terminal",
+    "target_cohort_started": false,
+    "full_pool_audit_wiring": "pending",
+    "new_target_calls": 0,
+    "new_truth_function_calls": 0,
+    "models_loaded": 0,
+    "posteriors_restored": 0,
+    "maximum_target_physical_calls": 80160,
+    "maximum_expanded_logical_calls": 157536,
+    "manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+    "node": "node004",
+    "geometry_uniform_draws": 96
+  },
+  "registration_attempts": [
+    {
+      "stage": "register-safe-unsampled-validation",
+      "family": null,
+      "arm": null,
+      "started_utc": "2026-10-17T01:57:48.757138+00:00",
+      "status": "completed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "new_target_initial_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "geometry_uniform_draws": 96,
+      "download_bytes": 0,
+      "cpu_seconds": 0.025826410999999938,
+      "wall_seconds": 0.06076277606189251,
+      "finished_utc": "2026-10-17T01:57:48.817895+00:00"
+    }
+  ],
+  "check_attempts": [
+    {
+      "task_id": "t166362",
+      "check_file": "checks.json",
+      "status": "failed",
+      "node": "node004",
+      "started_utc": "2026-10-17T01:42:54.943059+00:00",
+      "steps": [
+        {
+          "name": "pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_mainline_safe_unsampled_registration.py",
+            "tests/test_mainline_failed_query_audit.py"
+          ],
+          "returncode": 1,
+          "wall_seconds": 0.0460160942748189,
+          "cpu_seconds": 0.04011699999999999,
+          "user_seconds": 0.033610999999999995,
+          "system_seconds": 0.006506,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest.log"
+        }
+      ],
+      "scope": "Deterministic fixtures and registration metadata only; no scientific cohort execution",
+      "returncode": 1,
+      "completed_utc": "2026-10-17T01:42:54.989584+00:00",
+      "wall_seconds": 0.04657375067472458,
+      "wrapper_cpu": {
+        "user_seconds": 0.061716999999999994,
+        "system_seconds": 0.027666
+      },
+      "child_cpu": {
+        "user_seconds": 0.056694999999999995,
+        "system_seconds": 0.016335
+      },
+      "total_job_cpu_seconds": 0.16241299999999997,
+      "cpu_scope": "Wrapper plus completed child process CPU at final bookkeeping snapshot; scheduler overhead excluded"
+    },
+    {
+      "task_id": "t166389",
+      "check_file": "checks_attempt2.json",
+      "status": "failed",
+      "node": "node005",
+      "attempt": 2,
+      "prior_failed_checks": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks.json",
+      "started_utc": "2026-10-17T01:45:51.573726+00:00",
+      "steps": [
+        {
+          "name": "install_pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-m",
+            "pip",
+            "--disable-pip-version-check",
+            "install",
+            "pytest==8.3.5"
+          ],
+          "returncode": 1,
+          "wall_seconds": 11.228711368516088,
+          "cpu_seconds": 1.359556,
+          "user_seconds": 1.140456,
+          "system_seconds": 0.2191,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/install_pytest_attempt2.log"
+        }
+      ],
+      "scope": "Deterministic fixtures and registration metadata only; no scientific cohort execution",
+      "returncode": 1,
+      "completed_utc": "2026-10-17T01:46:02.802902+00:00",
+      "wall_seconds": 11.22922059521079,
+      "wrapper_cpu": {
+        "user_seconds": 0.060973,
+        "system_seconds": 0.027712999999999998
+      },
+      "child_cpu": {
+        "user_seconds": 1.162863,
+        "system_seconds": 0.22866199999999998
+      },
+      "total_job_cpu_seconds": 1.480211,
+      "cpu_scope": "Wrapper plus completed child process CPU at final bookkeeping snapshot; scheduler overhead excluded"
+    },
+    {
+      "task_id": "t166395",
+      "check_file": "checks_attempt3.json",
+      "status": "failed",
+      "node": "node006",
+      "attempt": 3,
+      "prior_failed_checks": [
+        "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks.json",
+        "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks_attempt2.json"
+      ],
+      "started_utc": "2026-10-17T01:49:23.634552+00:00",
+      "steps": [
+        {
+          "name": "install_pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-m",
+            "pip",
+            "--disable-pip-version-check",
+            "install",
+            "--no-index",
+            "--find-links",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels",
+            "pytest==8.3.5"
+          ],
+          "returncode": 0,
+          "wall_seconds": 2.009581821039319,
+          "cpu_seconds": 1.427488,
+          "user_seconds": 1.17798,
+          "system_seconds": 0.249508,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/install_pytest_attempt3.log"
+        },
+        {
+          "name": "import_pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-c",
+            "import sys, pytest; print(sys.executable); print(pytest.__version__)"
+          ],
+          "returncode": 0,
+          "wall_seconds": 0.18398413062095642,
+          "cpu_seconds": 0.15335799999999994,
+          "user_seconds": 0.11757499999999999,
+          "system_seconds": 0.035782999999999954,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/import_pytest_attempt3.log"
+        },
+        {
+          "name": "pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_mainline_safe_unsampled_registration.py",
+            "tests/test_mainline_failed_query_audit.py"
+          ],
+          "returncode": -11,
+          "wall_seconds": 0.37004746217280626,
+          "cpu_seconds": 0.1619040000000001,
+          "user_seconds": 0.12874300000000005,
+          "system_seconds": 0.03316100000000005,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest_attempt3.log"
+        }
+      ],
+      "scope": "Deterministic fixtures and registration metadata only; no scientific cohort execution",
+      "returncode": -11,
+      "completed_utc": "2026-10-17T01:49:26.199026+00:00",
+      "wall_seconds": 2.5645126942545176,
+      "wrapper_cpu": {
+        "user_seconds": 0.059384,
+        "system_seconds": 0.030751999999999998
+      },
+      "child_cpu": {
+        "user_seconds": 1.444207,
+        "system_seconds": 0.330467
+      },
+      "total_job_cpu_seconds": 1.86481,
+      "cpu_scope": "Wrapper plus completed child process CPU at final bookkeeping snapshot; scheduler overhead excluded"
+    },
+    {
+      "task_id": "t166398",
+      "check_file": "checks_attempt4.json",
+      "status": "failed",
+      "attempt": 4,
+      "node": "node004",
+      "steps": [
+        {
+          "name": "pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-X",
+            "faulthandler",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_mainline_safe_unsampled_registration.py",
+            "tests/test_mainline_failed_query_audit.py"
+          ],
+          "returncode": -11,
+          "wall_seconds": 0.23909906577318907,
+          "user_seconds": 0.14751699999999998,
+          "system_seconds": 0.034041999999999996,
+          "cpu_seconds": 0.18155899999999997,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest_attempt4.log"
+        },
+        {
+          "name": "import_diagnostic",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-X",
+            "faulthandler",
+            "-c",
+            "import importlib\nfor name in ['numpy','scipy','performance.register_mainline_safe_unsampled_validation','performance.run_mainline_role_fresh']:\n print('IMPORT '+name, flush=True)\n importlib.import_module(name)\n print('OK '+name, flush=True)\n"
+          ],
+          "returncode": 0,
+          "wall_seconds": 1.1112792612984776,
+          "user_seconds": 0.7584979999999999,
+          "system_seconds": 0.165765,
+          "cpu_seconds": 0.9242629999999998,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/import_diagnostic_attempt4.log"
+        }
+      ],
+      "started_utc": "2026-10-17T01:54:11.794240+00:00",
+      "scope": "Fixtures and metadata registration only; no scientific cohort",
+      "pytest_plugin_autoload": false,
+      "faulthandler": true,
+      "child_returncode": -11,
+      "completed_utc": "2026-10-17T01:54:13.145288+00:00",
+      "wall_seconds": 1.3510819654911757,
+      "wrapper_cpu_seconds": 0.091339,
+      "child_cpu_seconds": 1.139184,
+      "total_job_cpu_seconds": 1.2305229999999998,
+      "cpu_scope": "Wrapper and child CPU at final bookkeeping snapshot; scheduler overhead excluded",
+      "outer_exit_policy": "Return zero after saving any child failure; no scheduler automatic retry"
+    },
+    {
+      "task_id": "t166400",
+      "check_file": "checks_attempt5.json",
+      "status": "complete",
+      "attempt": 5,
+      "node": "node004",
+      "steps": [
+        {
+          "name": "pytest",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-X",
+            "faulthandler",
+            "-m",
+            "pytest",
+            "-p",
+            "no:capture",
+            "-q",
+            "tests/test_mainline_safe_unsampled_registration.py",
+            "tests/test_mainline_failed_query_audit.py"
+          ],
+          "returncode": 0,
+          "wall_seconds": 1.6006498439237475,
+          "user_seconds": 1.0726179999999998,
+          "system_seconds": 0.22333699999999998,
+          "cpu_seconds": 1.2959549999999997,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest_attempt5.log"
+        },
+        {
+          "name": "registration",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-X",
+            "faulthandler",
+            "-m",
+            "performance.register_mainline_safe_unsampled_validation"
+          ],
+          "returncode": 0,
+          "wall_seconds": 0.8727460158988833,
+          "user_seconds": 0.623113,
+          "system_seconds": 0.13589700000000002,
+          "cpu_seconds": 0.7590100000000001,
+          "log": "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/registration_attempt5.log"
+        }
+      ],
+      "started_utc": "2026-10-17T01:57:46.443272+00:00",
+      "scope": "Fixtures and metadata registration only; no scientific cohort",
+      "pytest_plugin_autoload": false,
+      "pytest_capture_plugin": false,
+      "faulthandler": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-17T01:57:48.917572+00:00",
+      "wall_seconds": 2.474340501241386,
+      "wrapper_cpu_seconds": 0.090074,
+      "child_cpu_seconds": 2.085663,
+      "total_job_cpu_seconds": 2.175737,
+      "cpu_scope": "Wrapper and child CPU at final bookkeeping snapshot; scheduler overhead excluded",
+      "outer_exit_policy": "Return zero after saving any child failure; no scheduler automatic retry"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t166362",
+      "status": "failed",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "exit_code": 1,
+      "started_at": 1792201393.227771,
+      "finished_at": 1792201375.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; died after only 24s with no success marker",
+      "log_path": "/tmp/sched_t166362.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks/0-1",
+      "measured_wrapper_cpu_seconds": 0.16241299999999997,
+      "cpu_measurement_status": "measured wrapper+children"
+    },
+    {
+      "id": "t166387",
+      "status": "failed",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 1,
+      "parent_id": "t166362",
+      "exit_code": 1,
+      "started_at": 1792201458.5885973,
+      "finished_at": 1792201439.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; err_pattern: Traceback (most recent call, Error:, AssertionError",
+      "log_path": "/tmp/sched_t166387.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166389",
+      "status": "failed",
+      "node": "node005",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "exit_code": 1,
+      "started_at": 1792201569.6595147,
+      "finished_at": 1792201562.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; died after only 102s with no success marker",
+      "log_path": "/tmp/sched_t166389.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt2/0-1",
+      "measured_wrapper_cpu_seconds": 1.480211,
+      "cpu_measurement_status": "measured wrapper+children"
+    },
+    {
+      "id": "t166391",
+      "status": "failed",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 2,
+      "parent_id": "t166387",
+      "exit_code": 1,
+      "started_at": 1792201576.0073998,
+      "finished_at": 1792201556.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; err_pattern: Traceback (most recent call, Error:",
+      "log_path": "/tmp/sched_t166391.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166392",
+      "status": "failed",
+      "node": "node005",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 1,
+      "parent_id": "t166389",
+      "exit_code": 1,
+      "started_at": 1792201690.791387,
+      "finished_at": 1792201671.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; err_pattern: Traceback (most recent call, Error:, AssertionError",
+      "log_path": "/tmp/sched_t166392.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt2/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166393",
+      "status": "failed",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 3,
+      "parent_id": "t166391",
+      "exit_code": 1,
+      "started_at": 1792201686.7029893,
+      "finished_at": 1792201668.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; err_pattern: Traceback (most recent call, Error:, AssertionError",
+      "log_path": "/tmp/sched_t166393.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166394",
+      "status": "failed",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "exit_code": 1,
+      "started_at": 1792201781.7703216,
+      "finished_at": 1792201763.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=1; err_pattern: Traceback (most recent call, Error:",
+      "log_path": "/tmp/sched_t166394.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt3/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166395",
+      "status": "failed",
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 2,
+      "parent_id": "t166392",
+      "exit_code": 245,
+      "started_at": 1792201781.7560868,
+      "finished_at": 1792201766.0,
+      "last_block_reason": "launcher exit-status sentinel recorded rc=245; died after only 62s with no success marker",
+      "log_path": "/tmp/sched_t166395.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt2/0-1",
+      "measured_wrapper_cpu_seconds": 1.86481,
+      "cpu_measurement_status": "measured wrapper+children"
+    },
+    {
+      "id": "t166396",
+      "status": "cancelled",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 1,
+      "parent_id": "t166394",
+      "exit_code": null,
+      "started_at": 1792201859.618368,
+      "finished_at": 1792201924.5542014,
+      "last_block_reason": "user batch force-cancel",
+      "log_path": "/tmp/sched_t166396.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt3/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166397",
+      "status": "cancelled",
+      "node": "node006",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 3,
+      "parent_id": "t166395",
+      "exit_code": null,
+      "started_at": 1792201858.7596192,
+      "finished_at": 1792201924.5607247,
+      "last_block_reason": "user batch force-cancel",
+      "log_path": "/tmp/sched_t166397.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt2/0-1",
+      "measured_wrapper_cpu_seconds": null,
+      "cpu_measurement_status": "unmeasured guard/launch or cancelled overhead; not zero"
+    },
+    {
+      "id": "t166398",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "exit_code": 0,
+      "started_at": 1792202071.266133,
+      "finished_at": 1792202053.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166398.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt4/0-1",
+      "measured_wrapper_cpu_seconds": 1.2305229999999998,
+      "cpu_measurement_status": "measured wrapper+children"
+    },
+    {
+      "id": "t166400",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "ram_mb": 6731,
+      "est_vram_mb": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "exit_code": 0,
+      "started_at": 1792202284.2173538,
+      "finished_at": 1792202268.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166400.log",
+      "signature": "KG_op/mainline_safe_unsampled_validation_registration_v1/checks_attempt5/0-1",
+      "measured_wrapper_cpu_seconds": 2.175737,
+      "cpu_measurement_status": "measured wrapper+children"
+    }
+  ],
+  "scheduler_terminal_status_pending": false,
+  "scheduler_status_counts": {
+    "cancelled": 2,
+    "done": 2,
+    "failed": 8
+  },
+  "registration_failures": 0,
+  "retained_failed_check_reports": 4,
+  "automatic_retry_task_ids": [
+    "t166387",
+    "t166391",
+    "t166392",
+    "t166393",
+    "t166395",
+    "t166396",
+    "t166397"
+  ],
+  "automatic_retry_resolution": {
+    "cancelled": [
+      "t166396",
+      "t166397"
+    ],
+    "cancel_record": "cluster_control/cancel_automatic_descendants.json",
+    "action": "Only active descendants of this registration checks signature were cancelled. Independent attempt4/5 wrappers retain child failure in JSON and exit zero after bookkeeping, preventing scheduler automatic repeat.",
+    "third_check_owner": "t166395/node006, an automatic descendant of t166389, executed the then-current wrapper. t166394/node004 stopped on existing log preservation. No registration existed before attempt5."
+  },
+  "cost": {
+    "measured_remote_wrapper_and_child_cpu_seconds": 6.913694,
+    "measured_local_dependency_download_cpu_seconds": 0.638241,
+    "total_measured_cpu_seconds_lower_bound": 7.551934999999999,
+    "successful_pytest_cpu_seconds": 1.2959549999999997,
+    "all_pytest_child_cpu_seconds": 1.6795349999999998,
+    "successful_registration_child_cpu_seconds": 0.7590100000000001,
+    "registration_body_cpu_seconds_included": 0.025826410999999938,
+    "successful_job_total_cpu_seconds": 2.175737,
+    "unmeasured_scheduler_task_ids": [
+      "t166387",
+      "t166391",
+      "t166392",
+      "t166393",
+      "t166394",
+      "t166396",
+      "t166397"
+    ],
+    "unmeasured_cost": "Guard-only and cancelled launcher CPU, scheduler/transport/orchestration overhead were not measured; not assigned zero. Scientific attempts body CPU is already inside wrapper child CPU, so do not add again.",
+    "historical_accounts": [
+      "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+      "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+      "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+      "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+      "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+      "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+      "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json"
+    ],
+    "historical_accounts_added_to_new_cpu": false
+  },
+  "environment_resolution": {
+    "pytest_version": "8.3.5",
+    "scientific_dependencies_changed": false,
+    "additional_test_packages": [
+      "exceptiongroup==1.2.2",
+      "iniconfig==2.0.0",
+      "packaging==24.2",
+      "pluggy==1.5.0",
+      "tomli==2.2.1"
+    ],
+    "dependency_wheel_payload_bytes": 466243,
+    "failures": [
+      "Missing pytest before collection",
+      "Compute-node HTTPS certificate chain rejected pip download",
+      "Native readline import segfault in pytest capture initialization"
+    ],
+    "fault_evidence": "pytest_attempt4.log: _pytest/capture.py:94 imports readline; line160 invokes it before test collection.",
+    "successful_import_evidence": "import_diagnostic_attempt4.log: numpy, scipy, registration and role modules all imported successfully.",
+    "minimal_resolution": "Fixed offline test wheels, PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 and pytest -p no:capture; tests, registration, scientific dependencies and algorithms unchanged.",
+    "success_evidence": "pytest_attempt5.log: 4 passed in 1.22s"
+  },
+  "transfers": {
+    "uploads": [
+      {
+        "files": [
+          "performance/register_mainline_safe_unsampled_validation.py",
+          "performance/run_mainline_role_fresh.py",
+          "tests/test_mainline_safe_unsampled_registration.py",
+          "tests/test_mainline_failed_query_audit.py",
+          "docs/mainline_safe_unsampled_validation_protocol_20261017.md",
+          "performance/run_mainline_safe_unsampled_registration_checks.py"
+        ],
+        "payload_bytes": 43922,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+      },
+      {
+        "files": [
+          "performance/register_mainline_safe_unsampled_validation.py",
+          "performance/run_mainline_safe_unsampled_registration_checks.py"
+        ],
+        "payload_bytes": 16771,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+        "reason": "Parent-authorized test dependency repair; original failed check preserved; registration wording clarification only"
+      },
+      {
+        "files": [
+          "performance/run_mainline_safe_unsampled_registration_checks.py",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/dependency_download.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels/exceptiongroup-1.2.2-py3-none-any.whl",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels/iniconfig-2.0.0-py3-none-any.whl",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels/packaging-24.2-py3-none-any.whl",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels/pluggy-1.5.0-py3-none-any.whl",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels/pytest-8.3.5-py3-none-any.whl",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/cluster_control/pytest_wheels/tomli-2.2.1-py3-none-any.whl"
+        ],
+        "payload_bytes": 472898,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+        "reason": "Offline pytest dependency installation after retained TLS failure"
+      },
+      {
+        "files": [
+          "performance/run_mainline_safe_unsampled_registration_attempt4.py"
+        ],
+        "payload_bytes": 3529,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+      },
+      {
+        "files": [
+          "performance/run_mainline_safe_unsampled_registration_attempt5.py"
+        ],
+        "payload_bytes": 3578,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+      }
+    ],
+    "downloads": [
+      {
+        "files": [
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest.log"
+        ],
+        "payload_bytes": 1401,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+      },
+      {
+        "files": [
+          "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/prepared.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search_plan.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/terminal_plan.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search_plan.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/terminal_plan.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search_plan.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/terminal_plan.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/summary.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/attempts.jsonl",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks_attempt2.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks_attempt3.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks_attempt4.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/checks_attempt5.json",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/install_pytest_attempt2.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/install_pytest_attempt3.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/import_pytest_attempt3.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest_attempt3.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest_attempt4.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/import_diagnostic_attempt4.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/pytest_attempt5.log",
+          "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/registration_attempt5.log"
+        ],
+        "payload_bytes": 93877,
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+      }
+    ],
+    "upload_payload_bytes": 540698,
+    "server_download_payload_bytes": 95278,
+    "package_download_from_package_index_bytes": 466243,
+    "bytes_scope": "Exact selected file payload sizes; SSH/log relay traffic and wire compression overhead unmetered.",
+    "raw_or_checkpoint_downloads": 0
+  },
+  "new_work": {
+    "target_initial_calls": 0,
+    "target_search_calls": 0,
+    "verification_calls": 0,
+    "source_calls": 0,
+    "source_fits": 0,
+    "truth_function_calls": 0,
+    "model_loads": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "geometry_uniform_metadata_draws": 96,
+    "cohort_started": false
+  },
+  "preflight_file": "cluster_control/preflight.json",
+  "remaining": "Full-action-pool truth inventory/scoring/aggregation wiring and substitute gates remain pending before any cohort execution.",
+  "timestamp_note": "Host timestamps differ; scheduler start/finish timestamps are provenance only and are not used to estimate CPU."
+}

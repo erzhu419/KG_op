@@ -1,0 +1,256 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load the unchanged stage31 native prior and GP/structural bundle. Use original design80 physical policies with fresh paired initial raw on every new task. Stage36 training-fold refits are not used. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "initialization": "Collect10 fresh paired raw per geometry using design80, physically shared across7 arms and charged logically to each. Freeze all12 shared64-neighbor banks before any online search.",
+  "frontends": "All6 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Exactly stage28 frozen modular g source law with legacy latent_shared split, current f/eta marginal laws,8 identities/1024 nodes and raw update. No source reconditioning, refitting or precision adjustment.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "after_init_point_only": "All10 initialization raws condition the unchanged full role prior exactly once. Every later policy inherits its conditional node-level paired-response marginal and posterior identity/head-node masses. Only that physical policy subsequent raw updates its own four heads and identity/node masses. Never-observed policies stay at initial10. TS uses fixed initial10 correlations scaled by current marginal standard deviations, a diagnostic moment control. Original frontend still learns from own arm history.",
+  "prediction_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "name": "mainline_terminal_confirmation_search_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T01:32:29.547370+00:00",
+  "output_dir": "paper_artifacts/mainline_terminal_confirmation_v1/search",
+  "target_seeds": [
+    2026101901,
+    2026101902,
+    2026101903,
+    2026101904,
+    2026101905,
+    2026101906,
+    2026101907,
+    2026101908,
+    2026101909,
+    2026101910,
+    2026101911,
+    2026101912
+  ],
+  "geometry_seed": 2026101900,
+  "geometry_by_seed": {
+    "2026101901": {
+      "task_id": "terminal_confirmation_factorshock_00",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.01108971326732543,
+          -0.027782098551593346,
+          0.0037553312456802407
+        ],
+        "task_geometry_radius_scale": 0.9735555682454454
+      }
+    },
+    "2026101902": {
+      "task_id": "terminal_confirmation_factorshock_01",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.014577445224279534,
+          0.0055441401241986335,
+          -0.03341575860449053
+        ],
+        "task_geometry_radius_scale": 0.9992091401511761
+      }
+    },
+    "2026101903": {
+      "task_id": "terminal_confirmation_factorshock_02",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.0024276289889824873,
+          0.007367988366869485,
+          -0.008393997514260107
+        ],
+        "task_geometry_radius_scale": 0.9643183104338495
+      }
+    },
+    "2026101904": {
+      "task_id": "terminal_confirmation_factorshock_03",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.0011319623159056005,
+          -0.02081583941003808,
+          -0.00265226134721884
+        ],
+        "task_geometry_radius_scale": 1.0368191191324878
+      }
+    },
+    "2026101905": {
+      "task_id": "terminal_confirmation_factorshock_04",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.022894324548162537,
+          0.010138132967721446,
+          0.026232781018108192
+        ],
+        "task_geometry_radius_scale": 1.0313549786067955
+      }
+    },
+    "2026101906": {
+      "task_id": "terminal_confirmation_factorshock_05",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.017538558318361014,
+          0.02777692371209063,
+          -0.016775555599457138
+        ],
+        "task_geometry_radius_scale": 0.9840331752383681
+      }
+    },
+    "2026101907": {
+      "task_id": "terminal_confirmation_factorshock_06",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.014928223053981695,
+          0.029381013551469645,
+          0.022127844140048578
+        ],
+        "task_geometry_radius_scale": 0.9888739207388144
+      }
+    },
+    "2026101908": {
+      "task_id": "terminal_confirmation_factorshock_07",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.016979031199834377,
+          -0.02637690541258885,
+          0.02013613909862865
+        ],
+        "task_geometry_radius_scale": 1.0276328579268605
+      }
+    },
+    "2026101909": {
+      "task_id": "terminal_confirmation_factorshock_08",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.03326651647156241,
+          -0.002821416195245667,
+          -0.01380633930338588
+        ],
+        "task_geometry_radius_scale": 0.9723407428886955
+      }
+    },
+    "2026101910": {
+      "task_id": "terminal_confirmation_factorshock_09",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.03247998374570741,
+          0.017807672850401843,
+          -0.017493110108135965
+        ],
+        "task_geometry_radius_scale": 0.9944271130681348
+      }
+    },
+    "2026101911": {
+      "task_id": "terminal_confirmation_factorshock_10",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.020781112969828187,
+          0.014961371984284669,
+          -0.00954412844995962
+        ],
+        "task_geometry_radius_scale": 1.0202050113300987
+      }
+    },
+    "2026101912": {
+      "task_id": "terminal_confirmation_factorshock_11",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02934767804441811,
+          0.012501544611175676,
+          0.013453214578104528
+        ],
+        "task_geometry_radius_scale": 1.0350716500776889
+      }
+    }
+  },
+  "primary_reference": "legacy_role_after_init_point_only",
+  "continuation": "Stage41: freeze Stage38 model and search, then cross each role history with both terminal backends. No source refit, model patch, basis/noise changes or numerical precision changes.",
+  "streams": "Original runseed proposal/TS namespaces; initial10 shared per task, each online arm pays its own3 queries. Independent verifier seed1921..1932 is registered in the terminal manifest.",
+  "geometry": "Exactly12 draws, geometryseed2026101900: shift U(-.035,.035)^3 then radius U(.95,1.05), with unchanged native clipping. All draws retained without screening.",
+  "barriers": {
+    "before_online": "All12 initial10 and shared64-neighbor banks frozen.",
+    "before_verify": "All84 searches and24 alternative native terminals frozen; all108 inputs prepared.",
+    "before_truth": "All108 registered verifications complete.",
+    "failure": "Preserve consumed raw and every attempt; no partially paid stage restart from zero."
+  },
+  "completed_utc": "2026-10-16T01:51:10.777947+00:00"
+}

@@ -1,0 +1,175 @@
+{
+  "status": "complete",
+  "recorded_utc": "2026-10-17T00:41:51.946046+00:00",
+  "manifest": "performance/manifests/mainline_three_stream_attribution_v1.json",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "vram_mb": 0,
+  "blas_threads_per_worker": 1,
+  "ram_reservation_per_shard_mb": 8192,
+  "item_definition": "24 geometries, each processing three recorded streams sequentially",
+  "global_barrier": "All four case shards done exit0 before submit of the one CPU collector",
+  "scientific_reruns": 0,
+  "local_scientific_computation": false,
+  "tasks": [
+    {
+      "id": "t166290",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792197421.114929,
+      "finished_at": 1792197411.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166290.log"
+    },
+    {
+      "id": "t166291",
+      "status": "done",
+      "node": "node002",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792197421.0357306,
+      "finished_at": 1792197411.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166291.log"
+    },
+    {
+      "id": "t166292",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792197421.0406826,
+      "finished_at": 1792197411.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166292.log"
+    },
+    {
+      "id": "t166293",
+      "status": "done",
+      "node": "node005",
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792197421.110389,
+      "finished_at": 1792197411.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166293.log"
+    },
+    {
+      "id": "t166294",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "started_at": 1792197521.847641,
+      "finished_at": 1792197503.0,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t166294.log"
+    }
+  ],
+  "scheduler_failure_tasks": [],
+  "scientific_failed_worker_attempts": [],
+  "completed_geometries": 24,
+  "reused_original_choices": 216,
+  "newly_reconstructed_choices": 432,
+  "terminal_pairs": 648,
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0
+  },
+  "recorded_analysis_cpu_seconds": 102.04507414599999,
+  "cpu_source": "completion.json; recorded analysis, registration and measured fixtures only; transfer and scheduler metadata processes are not measured",
+  "unmetered_validation": [
+    "paper_artifacts/mainline_three_stream_attribution_v1/validation/query_tests.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/validation/terminal_tests.json"
+  ],
+  "historical_accounts": [
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_confirmation_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json"
+  ],
+  "small_downloads": [
+    {
+      "files": [
+        "paper_artifacts/mainline_three_stream_attribution_v1/summary.json",
+        "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+        "performance/manifests/mainline_three_stream_attribution_v1.json"
+      ],
+      "bytes": 189598,
+      "returncode": 0
+    },
+    {
+      "files": [
+        "paper_artifacts/mainline_three_stream_attribution_v1/focus_selected.json"
+      ],
+      "bytes": 448111,
+      "returncode": 0
+    },
+    {
+      "files": [
+        "paper_artifacts/mainline_three_stream_attribution_v1/focus_query_chains.json"
+      ],
+      "bytes": 159927,
+      "returncode": 0
+    }
+  ],
+  "downloaded_artifact_bytes": 797636,
+  "not_downloaded": [
+    "focus_details.json",
+    "all_task_details.json",
+    "cases/*/analysis.json",
+    "cases/*/policy_vectors.json",
+    "source engines",
+    "raw trajectories"
+  ],
+  "upload": {
+    "utc": "2026-10-17T00:35:49.478772+00:00",
+    "files": [
+      "performance/analyze_mainline_three_stream_attribution.py",
+      "performance/mainline_three_stream_query_attribution.py",
+      "performance/mainline_three_stream_terminal_attribution.py",
+      "performance/manifests/mainline_three_stream_attribution_v1.json",
+      "docs/mainline_three_stream_attribution_protocol_20261017.md",
+      "paper_artifacts/mainline_three_stream_attribution_v1/registration.json",
+      "paper_artifacts/mainline_three_stream_attribution_v1/validation/entry_point.json",
+      "paper_artifacts/mainline_three_stream_attribution_v1/validation/query_tests.json",
+      "paper_artifacts/mainline_three_stream_attribution_v1/validation/terminal_tests.json"
+    ],
+    "bytes": 55421,
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+  },
+  "evidence_files": [
+    "cluster_control/preflight.json",
+    "cluster_control/case_submission.json",
+    "cluster_control/collect_submission.json",
+    "cluster_control/case_dispatch.json",
+    "cluster_control/collect_dispatch.json",
+    "cluster_control/final_status.json"
+  ],
+  "scheduler_clock_note": "Task timestamp differences are not used to calculate analysis CPU or wall time."
+}

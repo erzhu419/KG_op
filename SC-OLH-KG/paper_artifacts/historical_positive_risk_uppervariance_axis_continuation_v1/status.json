@@ -1,6 +1,6 @@
 {
-  "state": "failed",
-  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v59.json",
+  "state": "bound_refinement_hold",
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
   "completed_phases": [
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v1.json",
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v2.json",
@@ -60,7 +60,8 @@
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v56.json",
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v57.json",
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v58.json",
-    "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v59.json"
+    "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v59.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v60.json"
   ],
   "phase_estimates": {
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v1.json": 3558.8948634536,
@@ -125,7 +126,7 @@
     "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v60.json": 3513.3173550398
   },
   "continuation_worker_cpu_seconds": 102426.64611715398,
-  "recorded_process_cpu_seconds": 105018.38214656703,
+  "recorded_process_cpu_seconds": 106887.41750211203,
   "maximum_live_workers": 8,
   "full_predictive_integration_admitted": false,
   "independent_confirmation": false,
@@ -135,22 +136,109 @@
   "remaining_totals": {
     "raw": {
       "compared_action_head_pairs": 1308160,
-      "overlapping_action_head_pairs": 13314,
-      "record_action_candidates": 1036,
-      "record_group_candidates": 370
+      "overlapping_action_head_pairs": 13170,
+      "record_action_candidates": 1027,
+      "record_group_candidates": 367
     },
     "projected": {
       "compared_action_head_pairs": 1308160,
-      "overlapping_action_head_pairs": 13546,
-      "record_action_candidates": 1050,
-      "record_group_candidates": 350
+      "overlapping_action_head_pairs": 13306,
+      "record_action_candidates": 1035,
+      "record_group_candidates": 345
     }
   },
   "total_phase_estimated_cpu_seconds": 202763.90747095988,
   "preparation_id": "t151796",
   "unmeasured_failed_collection_conservative_charge_seconds": 35,
-  "current_phase": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v60.json",
-  "current_reference_worker_cpu_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v60.json",
-  "current_reference_worker_cpu_seconds": 1701.272657942,
-  "error": "Command '['/home/erzhu419/anaconda3/bin/python', '/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/historical_positive_risk_full_grid_continuation_v1/close_phase.py', '--plan', 'performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json', '--controller-output', 'paper_artifacts/historical_positive_risk_uppervariance_axis_continuation_v1']' returned non-zero exit status 1."
+  "latest_bound_diagnostic_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+  "hold_reason": "Returned to main optimization audit. Independent rawKG pilot actually completed144queries/48recommendations/48verifications;all4arms actual reward tie and reach frozen8-policy subset oracle.8/12 subsets lack feasible candidates;remaining4have1. Source12query andGP5query each change1finalpolicy,bothwithout reward gain. Prioritize candidate coverage and connecting dynamic high-dimensional proposals to rawKG under one protocol;query63/n1,n4 remains a single-query component,not completed query/batch search. README current entry corrected. No eta expansion,server reads,integrals,new science or gate change;67/81groups and G unchanged.",
+  "closed_phase_accounted_cpu_seconds": {
+    "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v60.json": 1869.0353555450001
+  },
+  "bound_refinement_completion": "paper_artifacts/historical_common_bank_interface_v1/completion.json",
+  "bound_refinement_recorded_process_cpu_seconds": 7475.118995600001,
+  "recorded_reference_campaign_plus_bound_refinement_cpu_seconds": 114362.53649771203,
+  "bound_refinement_remaining_totals": {
+    "raw": {
+      "compared_action_head_pairs": 1308160,
+      "overlapping_action_head_pairs": 1851,
+      "record_action_candidates": 144,
+      "record_group_candidates": 67
+    },
+    "projected": {
+      "compared_action_head_pairs": 1308160,
+      "overlapping_action_head_pairs": 2974,
+      "record_action_candidates": 204,
+      "record_group_candidates": 81
+    }
+  },
+  "bound_refinement_precision_hold_units": 3,
+  "latest_bound_shared_reserve_charged_cpu_seconds": 614.5942307710002,
+  "latest_bound_shared_reserve_remaining_cpu_seconds": -14.594230771000184,
+  "bound_refinement_completed_phases": [
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v2.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_pilot_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v3.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v2.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v3.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v5.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v4.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v6.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_v2.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_guard_cache_index_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_error_pricing_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_policy_error_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_same_f16_tower_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_prior_f16_source_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_finite_mixture_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_finite_diagonal_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_local_risk_provenance_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_variance_intervals_eta_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_minimal_cache_plan_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_extractor_validation_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_one_shot_budget_v1.json",
+    "performance/manifests/historical_positive_risk_uppervariance_axis_origin4_cache_extract_v1.json",
+    "performance/manifests/historical_mainline_optimization_audit_v1.json",
+    "performance/manifests/historical_mainline_candidate_connection_v1.json",
+    "performance/manifests/historical_common_bank_interface_v1.json"
+  ],
+  "bound_refinement_nonbinding_precision_hold_units": 1,
+  "bound_refinement_remaining_registered_worker_estimate_capacity_cpu_seconds": 47.60628498599954,
+  "latest_policy_replay_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_policy_error_v1/incremental_replay.json",
+  "latest_policy_error_propagation_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_policy_error_v1/error_propagation.json",
+  "latest_same_f16_outer_tower_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_same_f16_tower_v1/outer_levels.json",
+  "latest_prior_f16_source_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_prior_f16_source_v1/source_comparison.json",
+  "latest_bound_shared_reserve_budget_exceeded": true,
+  "latest_finite_mixture_diagnostic": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_mixture_v1/algebra.json",
+  "latest_finite_mixture_reader_failure": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_mixture_v1/reader_failure.json",
+  "latest_cached_diagonal_proposal": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_diagonal_plan_v1/proposal.json",
+  "latest_bound_authorized_additional_support_budget_cpu_seconds": 21,
+  "latest_bound_authorized_support_budget_remaining_cpu_seconds": 6.405769228999816,
+  "latest_bound_authorized_support_budget_exceeded": false,
+  "latest_finite_diagonal_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_finite_diagonal_v1/decomposition.json",
+  "latest_local_risk_source_audit": "paper_artifacts/historical_positive_risk_uppervariance_axis_local_risk_provenance_v1/risk_source_audit.json",
+  "latest_matched_high_gauss_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_local_risk_provenance_v1/matched_gauss_comparison.json",
+  "latest_client_import_audit": "paper_artifacts/historical_positive_risk_uppervariance_axis_local_risk_provenance_v1/client_import_audit.json",
+  "latest_variance_interval_eta_evidence": "paper_artifacts/historical_positive_risk_uppervariance_axis_variance_intervals_eta_v1/interval_eta_analysis.json",
+  "latest_origin4_minimal_cache_plan": "paper_artifacts/historical_positive_risk_uppervariance_axis_minimal_cache_plan_v1/extraction_plan.json",
+  "latest_origin4_cache_inventory": "paper_artifacts/historical_positive_risk_uppervariance_axis_minimal_cache_plan_v1/cache_inventory.json",
+  "latest_origin4_extractor_validation": "paper_artifacts/historical_positive_risk_uppervariance_axis_extractor_validation_v1/validation_summary.json",
+  "latest_one_shot_cache_budget_proposal": "paper_artifacts/historical_positive_risk_uppervariance_axis_one_shot_budget_v1/budget_proposal.json",
+  "latest_requested_additional_support_cpu_seconds": 16,
+  "latest_bound_total_authorized_support_budget_cpu_seconds": 621,
+  "latest_one_shot_cache_extraction": "paper_artifacts/historical_positive_risk_uppervariance_axis_origin4_cache_extract_v1/extraction_result.json",
+  "latest_one_shot_cache_verification": "paper_artifacts/historical_positive_risk_uppervariance_axis_origin4_cache_extract_v1/verification.json",
+  "latest_requested_additional_support_authorized": true,
+  "eta_diagnostic_branch_continuation_stopped": true,
+  "latest_mainline_optimization_audit": "paper_artifacts/historical_mainline_optimization_audit_v1/mainline_audit.json",
+  "latest_mainline_action_chain": "paper_artifacts/historical_mainline_optimization_audit_v1/cached_action_chain.json",
+  "next_mainline_local_plan": "paper_artifacts/historical_common_bank_interface_v1/next_step_plan.json",
+  "latest_mainline_candidate_lineage": "paper_artifacts/historical_mainline_candidate_connection_v1/candidate_lineage.json",
+  "latest_mainline_raw_interface_audit": "paper_artifacts/historical_mainline_candidate_connection_v1/raw_interface_audit.json",
+  "latest_mainline_connection_plan": "paper_artifacts/historical_mainline_candidate_connection_v1/connection_plan.json",
+  "active_workstream": "common73_raw_interface_implementation",
+  "latest_mainline_common_bank_interface": "paper_artifacts/historical_common_bank_interface_v1/validation.json"
 }

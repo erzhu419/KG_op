@@ -1,0 +1,60 @@
+{
+  "scope": "This frozen-model six-arm dual-channel continuation only; earlier source-fit, experiment and failure ledgers retained.",
+  "recorded_cpu_seconds_by_stage": {
+    "public_geometry_preparation_and_experiment": 519.981874949,
+    "mechanism_tests": 0.940653292,
+    "real_task_integration_smoke": 0.020697268,
+    "postprocessing": 0.161835642,
+    "saved_trace_mechanism_audit": 0.207931841
+  },
+  "total_recorded_cpu_seconds": 521.3129929920001,
+  "physical_calls": {
+    "initialization": 8,
+    "search": 32,
+    "verification": 8608,
+    "total": 8648
+  },
+  "logical_calls": 8688,
+  "calls_per_arm": 362,
+  "independent_geometries": 4,
+  "arms_per_task": 6,
+  "verified_recommendations": 24,
+  "source_fits": 0,
+  "gp_refits": 0,
+  "calibration_refits": 0,
+  "new_source_labels": 0,
+  "server_downloads": 0,
+  "frozen_calibration": "../mainline_source_risk_calibration_v1/calibration.json",
+  "tests": {
+    "unique_tests_passed": 2,
+    "evidence": "implementation_tests.json",
+    "integration_smoke": "integration_smoke.json"
+  },
+  "failed_scientific_attempts": 0,
+  "failed_tests": 0,
+  "failed_postprocessing_attempts": 0,
+  "analysis_adaptation_failures": {
+    "total": 2,
+    "summary_python310_syntax": 1,
+    "audit_python310_syntax": 1,
+    "both_fixed": true,
+    "failed_attempt_cpu_seconds": null,
+    "new_physical_calls": 0,
+    "evidence": [
+      "summary_adaptation_checks.json",
+      "mechanism_audit.json"
+    ]
+  },
+  "unmeasured_cost_scope": "General inspection, document writing, shell/import overhead outside per-script timers and the two compilation failures are not assigned estimated CPU costs.",
+  "memory_scope": "Inherited maximum_rss_kib high-water values are not model-specific memory measurements.",
+  "evidence": [
+    "preparation_audit.json",
+    "attempts.jsonl",
+    "implementation_tests.json",
+    "integration_smoke.json",
+    "postprocessing_attempts.jsonl",
+    "summary_adaptation_checks.json",
+    "mechanism_audit.json",
+    "summary.json"
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "source_contracts_match": true,
+  "actual_current_field_arrays_rechecked": false,
+  "raw_certificate_function": "performance.diagnose_historical_predictive_tower.query_direct_value",
+  "query": 63,
+  "fixed_action": 355,
+  "terminal_budget": 356,
+  "observed_replicates": 4,
+  "chance_alpha": 0.05,
+  "familywise_delta": 0.05,
+  "sd_order": 16,
+  "risk224": {
+    "nodes_per_origin": 112,
+    "origins": [
+      4,
+      5
+    ],
+    "outer_rule": "Positive piecewise Gauss-Legendre on variance CDF and conditional-mean CDF",
+    "mean_order": 4,
+    "variance_orders": [
+      4,
+      4,
+      4,
+      4,
+      8,
+      4
+    ],
+    "eta_inner_orders": [
+      64,
+      128
+    ],
+    "selected_eta_order": 128,
+    "cdf_checks": [
+      {
+        "origin": 4,
+        "order": 64,
+        "maximum_inverse_cdf_error": 4.141131881851834e-14,
+        "adaptive_cdf_error_bound": 2.795668913074377e-13,
+        "positive_weight_sum": 0.9999999999999999
+      },
+      {
+        "origin": 5,
+        "order": 64,
+        "maximum_inverse_cdf_error": 1.5787371410169726e-13,
+        "adaptive_cdf_error_bound": 2.154645044305549e-13,
+        "positive_weight_sum": 0.9999999999999999
+      }
+    ]
+  },
+  "risk2048": {
+    "nodes_per_origin": 2048,
+    "outer_rule": "Scrambled Sobol4 dimensions2:4",
+    "predictive_seed": 202610092,
+    "predictive_power": 11,
+    "weight_per_node": 0.00048828125,
+    "eta_inner_orders": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "eta_stopping_difference": 0.0001,
+    "actual_eta_orders_available_locally": false,
+    "actual_cdf_orders": [
+      64,
+      64
+    ],
+    "maximum_inverse_cdf_errors": [
+      1.1909917496666367e-12,
+      1.9895196601282805e-13
+    ],
+    "risk_prefixes": {
+      "4": {
+        "512": 0.9242896888894181,
+        "1024": 0.9240560723261291,
+        "2048": 0.9240241364948543
+      },
+      "5": {
+        "512": 0.9413761162348965,
+        "1024": 0.941352605863421,
+        "2048": 0.9413726069348899
+      }
+    }
+  },
+  "cached_high_gauss_source": "paper_artifacts/historical_observed_batch_outer_v1/compact_summary.json",
+  "sources": [
+    {
+      "file": "performance/refine_historical_observed_prediction.py",
+      "lines": [
+        81,
+        95,
+        133
+      ]
+    },
+    {
+      "file": "performance/check_historical_observed_batch_outer.py",
+      "lines": [
+        23,
+        41,
+        68
+      ]
+    },
+    {
+      "file": "performance/prepare_historical_positive_risk_screen.py",
+      "lines": [
+        28,
+        49,
+        64,
+        77
+      ]
+    },
+    {
+      "file": "performance/screen_historical_observed_batch_risk.py",
+      "lines": [
+        118,
+        123
+      ]
+    },
+    {
+      "file": "performance/diagnose_historical_predictive_tower.py",
+      "lines": [
+        46,
+        64
+      ]
+    },
+    {
+      "file": "core/guarded_deployment_kg.py",
+      "lines": [
+        23,
+        33
+      ]
+    }
+  ],
+  "conclusion": "Shared source law and raw certificate implementation are confirmed by contracts;outer quadrature nodes/weights and eta-order control differ. No node-weight normalization or CDF inversion failure was found.",
+  "limitations": "Current risk224 context,the historical136 marginal and R2048 individual nodes/results are not local. No server reads were made and actual node-by-node evaluator parity was not tested."
+}

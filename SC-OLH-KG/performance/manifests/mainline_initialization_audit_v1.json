@@ -1,0 +1,86 @@
+{
+  "name": "mainline_initialization_audit_v1",
+  "status": "complete:6 initialization trajectories,geometry diagnosis,9 native partition contrasts and cached-truth summary",
+  "registered_utc": "2026-10-15T15:07:33.412792+00:00",
+  "role": "Read-only source-zero to initial10 diagnosis and saved-native-score partition attribution on the three already opened nominal FactorShock blocks.",
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0,
+    "tau": 0.0
+  },
+  "target_seeds": [
+    2026101641,
+    2026101642,
+    2026101643
+  ],
+  "arms": [
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "parent_output": "paper_artifacts/mainline_shared_neighbors_v1",
+  "query_channels_output": "paper_artifacts/mainline_query_channels_v1",
+  "output_dir": "paper_artifacts/mainline_initialization_audit_v1",
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load frozen native prior, GP/structural bundle, public mean10/learned risk10 representation, eight source identities and 1024 source integration nodes. Reuse the parent STOP initial10 raw in original order. No source simulation, fitting, encoder fitting or download."
+  },
+  "source_archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+  "entrypoints": [
+    "performance/diagnose_mainline_initialization.py",
+    "performance/diagnose_mainline_initialization_geometry.py",
+    "performance/diagnose_mainline_native_self_cross.py",
+    "performance/summarize_mainline_initialization.py"
+  ],
+  "bank": "Per seed unique initial10 policies in original order followed by all64 frozen neighbors in original order. No new policy, seed, source model or optimizer.",
+  "initialization_path": {
+    "prefixes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "raw": "Reuse the exact initial10 from shared-neighbor STOP; no new observation or variance label.",
+    "moments": "Same raw mixture/filter and1024 source nodes; stream component batches64 with compact coefficients plus fixed initial-policy discrepancy slots. At each prefix record four-head means/variances, exact Eexpeta episode variances and shared identity weights.",
+    "innovation": "Before each raw, record its predictive mean, epistemic variance, episode noise, standardized raw residual and predictive evidence; no threshold-driven model changes.",
+    "parity": "First structural case compare streamed prefixes0 and10 with existing restore_moment_state on the full common bank at original1e-8 tolerance. Every case match initial10 f/g moments/noise against saved first-query scores on shared candidates. A mismatch stops interpretation; no increased quadrature."
+  },
+  "geometry": "Compare fixed neighbor pairs to nearest initial policy by physical normalized RMS; separately show head and tail control changes, standardized public10 and learned10 distances, g and eta_g source correlations, nearest-source support and source task residual components. Report all neighbors and known improvement points; no outcome-guided selection or fitting.",
+  "native_partition": {
+    "controls": [
+      "frozen10",
+      "own_partition",
+      "cross_partition",
+      "full"
+    ],
+    "definition": "On each actual query pool, own partition is physical policies sampled after initial10 before that query; others form cross partition. Substitute saved full versus frozen sampled f/g and episode noise per partition, recomputing original constrained TS. Keep actual history/pool/draws. Record expert IDs and full/frozen parity.",
+    "interpretation": "A partition of saved scoring changes, not a native point-only posterior or a counterfactual optimizer. No independent deployment reward is inferred."
+  },
+  "truth": "Reuse existing compatible cached truth only. Missing truth remains explicitly missing; no new analytic truth function or simulator calls. Existing truth only scores diagnosis, never changes inputs/models.",
+  "budget": {
+    "new_target_simulations": 0,
+    "new_verification_calls": 0,
+    "new_source_simulations": 0,
+    "new_source_or_encoder_fits": 0,
+    "new_truth_function_calls": 0,
+    "downloads": 0
+  },
+  "report": "docs/mainline_initialization_audit_results_20261015.md",
+  "completion_file": "paper_artifacts/mainline_initialization_audit_v1/completion.json"
+}

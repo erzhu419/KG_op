@@ -1,0 +1,41 @@
+{
+  "archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+  "partition_manifest": "performance/manifests/mainline_source_policy_holdout_v1.json",
+  "fold_seed": 2026101680,
+  "folds": 4,
+  "arms": [
+    "full",
+    "point_from_source0",
+    "point_after_first"
+  ],
+  "name": "mainline_bounded_mean_source_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T03:52:35.489882+00:00",
+  "parent_manifest": "performance/manifests/mainline_role_source_holdout_v1.json",
+  "output_dir": "paper_artifacts/mainline_bounded_mean_source_v1",
+  "entrypoint": "performance/run_mainline_bounded_source.py",
+  "report": "docs/mainline_bounded_mean_source_results_20261016.md",
+  "candidate": "Only f_mean/g_mean observable encoder constructors use existing source_tanh. Eta-specific encoders, ten-dimensional output, native g coefficient law and fitting/update rules unchanged; complete source likelihood refitted.",
+  "selection": "Existing temperatures(0.5,1,2,4), selected only on each outer training48 per family. Inner domain scoring reuses the learned supervised embedding; it is training selection, not nested unseen-family validation.",
+  "protocol": "Reuse all four fixed policy folds, training48+held16 per family; held policy raw wholly excluded from fit. Rebuild4 structural and4 native pipelines because prior diagnostics cannot restore fitted objects. No baseline bundle refits; reuse Stage43 frozen forecasts. Same first2 pairedraw anchors, two updates, full/source0point/afterfirstpoint arms and14 unsampled scores. Freeze all four candidate forecast files before scoring.",
+  "verification": "Compare each native diagnostic to its original; source0g mean/latent variance at all16 held policies must match. Mean encoder output bounded; eta transforms unchanged, with numerical fold3 control against Stage44. Do not demand later g equality.",
+  "metrics": "All112 policy-family pairs primary; fixed auxiliary110 view excludes known boundary0 only for separating ordinary-policy behavior, never for adopting or replacing main scores. Same f/g MSE, bias, noise-subtractedMSE, predictive moment scores, eta_g and f-relative ranking; boundary0 noise and eta variance separately. Source0/first/final and family/fold differences retained.",
+  "acceptance": "Require boundary noise calibration improvement with retained ordinary-policy mean/ranking performance; judge overall source evidence before any adoption. No new target cohort unless this single candidate passes. Do not pick alternate temperatures or variants from held labels.",
+  "new_budget": {
+    "current_bundle_fits": 4,
+    "native_prior_fits": 4,
+    "source_calls": 0,
+    "target_calls": 0,
+    "verification_calls": 0,
+    "truth_calls": 0,
+    "downloads": 0,
+    "unique_reused_adaptation_raw_rows": 16
+  },
+  "limits": "Opened source-fold development acceptance, not independent confirmation. Two source families, overlapping folds, noisy3repeat labels. No true chance-feasibility/deployment claims, source precision changes, target results, checkpoint downloads or deployed model changes. Record failures and existing lowESS flags without screening.",
+  "started_utc": "2026-10-16T03:53:49.259219+00:00",
+  "completed_utc": "2026-10-16T03:55:10.381071+00:00",
+  "source_acceptance": "failed",
+  "candidate_adopted": false,
+  "decision": "Reject this single candidate: boundary noise improves but remains excessive, while ordinary-policy objective mean and relative ranking degrade in both families. Keep deployed models frozen and initialization propagation followed by point updates as the working baseline. Do not launch a new d1000 cohort or screen more temperatures/variants.",
+  "next_step": "Use existing d1000 trajectories to assess whether noise-design extrapolation actually occurs at policies responsible for query changes and terminal omissions. Consider one source-supported noise-interface change only if a cross-task mechanism is present; otherwise close this noise branch. No new target calls."
+}

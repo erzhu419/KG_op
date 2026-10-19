@@ -1,0 +1,930 @@
+{
+  "status": "complete",
+  "attempts": 6,
+  "failed_attempts": [],
+  "cost": {
+    "cpu_seconds": 55.369362738,
+    "wall_seconds": 58.818217597028706,
+    "new_source_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_fits": 4,
+    "new_truth_function_calls": 0,
+    "download_bytes": 0,
+    "reused_adaptation_raws": 16
+  },
+  "validation": [
+    {
+      "fold": 0,
+      "family": "InventorySupplyChain",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.734723475976807e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.734723475976807e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 1.5612511283791264e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.402566836762659e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.5612511283791264e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 9.75781955236954e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.214306433183765e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.214306433183765e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 1.9949319973733282e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.860465750519907e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.9949319973733282e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.318364664277155e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 0,
+      "family": "QueueResourceControl",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.734723475976807e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.734723475976807e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 1.5612511283791264e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.402566836762659e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.5612511283791264e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 9.75781955236954e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.214306433183765e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.214306433183765e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 1.9949319973733282e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.860465750519907e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.9949319973733282e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.318364664277155e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 1,
+      "family": "InventorySupplyChain",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 2.0816681711721685e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.673617379884035e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.0816681711721685e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.673617379884035e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0842021724855044e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.3010426069826053e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 1.6588293239028218e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.402566836762659e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.6588293239028218e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 2.0816681711721685e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.860465750519907e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.0816681711721685e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 1,
+      "family": "QueueResourceControl",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.5178830414797062e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 2.0816681711721685e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.673617379884035e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.0816681711721685e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.673617379884035e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0842021724855044e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.3010426069826053e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 1.6588293239028218e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.402566836762659e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.6588293239028218e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 2.0816681711721685e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.860465750519907e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.0816681711721685e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 2,
+      "family": "InventorySupplyChain",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 6.505213034913027e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.589415207398531e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 1.5612511283791264e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 5.421010862427522e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.5612511283791264e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.214306433183765e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 5.421010862427522e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.214306433183765e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.5612511283791264e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 9.75781955236954e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.5612511283791264e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.734723475976807e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.589415207398531e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.734723475976807e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 6.369687763352339e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 6.098637220230962e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 2,
+      "family": "QueueResourceControl",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 6.505213034913027e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.589415207398531e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 1.5612511283791264e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 5.421010862427522e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.5612511283791264e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.214306433183765e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 5.421010862427522e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.214306433183765e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 1.5612511283791264e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 9.75781955236954e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.5612511283791264e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.734723475976807e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 7.589415207398531e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.734723475976807e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 6.369687763352339e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 6.098637220230962e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 3,
+      "family": "InventorySupplyChain",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0842021724855044e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0842021724855044e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 2.2551405187698492e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0299920638612292e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.2551405187698492e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.673617379884035e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.0816681711721685e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.0816681711721685e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 2.949029909160572e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.111307226797642e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.949029909160572e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0028870095490916e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    },
+    {
+      "fold": 3,
+      "family": "QueueResourceControl",
+      "identities": [
+        {
+          "identity": "spectral/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0842021724855044e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 1.3877787807814457e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0842021724855044e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.3877787807814457e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/observed_task",
+          "maximum_reconstruction_error": 2.2551405187698492e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0299920638612292e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.2551405187698492e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "spectral/joint/deconvolved_task",
+          "maximum_reconstruction_error": 1.0408340855860843e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 8.673617379884035e-19,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 1.0408340855860843e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/observed_task",
+          "maximum_reconstruction_error": 2.0816681711721685e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.0816681711721685e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/head_specific/deconvolved_task",
+          "maximum_reconstruction_error": 2.42861286636753e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.734723475976807e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.42861286636753e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/observed_task",
+          "maximum_reconstruction_error": 2.949029909160572e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.111307226797642e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.949029909160572e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        },
+        {
+          "identity": "additive/joint/deconvolved_task",
+          "maximum_reconstruction_error": 2.7755575615628914e-17,
+          "errors": {
+            "common_mean": 0.0,
+            "common_covariance": 1.0028870095490916e-18,
+            "common_eta_mean": 0.0,
+            "common_eta_covariance": 2.7755575615628914e-17,
+            "normalized_node_log_weights": 0.0
+          },
+          "source_nodes": 1024,
+          "training_observations_added_again": false
+        }
+      ]
+    }
+  ],
+  "maximum_source_reconstruction_error": 2.949029909160572e-17,
+  "roundoff_events": 0,
+  "source_low_ess_flags": [
+    {
+      "fold": 0,
+      "identity": "additive/head_specific/observed_task",
+      "head": "f",
+      "weight_ess": 4.916908219493967,
+      "source_identity_weight": 6.753116655503978e-38
+    },
+    {
+      "fold": 0,
+      "identity": "additive/head_specific/deconvolved_task",
+      "head": "f",
+      "weight_ess": 4.970538891149974,
+      "source_identity_weight": 6.822195393880499e-38
+    },
+    {
+      "fold": 1,
+      "identity": "spectral/joint/observed_task",
+      "head": "g",
+      "weight_ess": 7.371092109384664,
+      "source_identity_weight": 0.4714515773571606
+    },
+    {
+      "fold": 1,
+      "identity": "spectral/joint/deconvolved_task",
+      "head": "g",
+      "weight_ess": 6.702217885925333,
+      "source_identity_weight": 0.5285484226428395
+    }
+  ]
+}

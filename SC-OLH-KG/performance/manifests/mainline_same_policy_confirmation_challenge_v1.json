@@ -1,0 +1,57 @@
+{
+  "name": "mainline_same_policy_confirmation_challenge_v1",
+  "status": "complete_with_search_failure",
+  "registered_utc": "2026-10-16T08:41:57.789679+00:00",
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+  "output_dir": "paper_artifacts/mainline_same_policy_confirmation_v1/challenge",
+  "report": "docs/mainline_same_policy_confirmation_results_20261016.md",
+  "entrypoint": "performance/run_mainline_same_policy.py",
+  "summary_entrypoint": "performance/summarize_mainline_same_policy.py",
+  "task_count": 12,
+  "terminal_cells": 108,
+  "rule": "Use pre-verification frozen primary==empirical-initial-incumbent, never old verification status. Promote lowest saved posterior_rank distinct member of existing three-policy shortlist; incumbent second, remaining member third. Preserve all policies and posterior ranks; all reference arms receive same rule.",
+  "frozen": "Stage50 frozen family-specific Stage31 models/sources, new search histories and geometries, observed candidates, posterior scores, paired verification seeds and original verifier; only unchanged Stage49 transform applied. No new source fits, additional target search, downloads or truth before global216-verification barrier.",
+  "budget": {
+    "safety_slots": [
+      80,
+      128,
+      128
+    ],
+    "objective_comparison_per_policy": 8,
+    "familywise_delta": 0.05,
+    "objective_comparison_delta": 0.016666666666666666,
+    "maximum_verification_per_cell": 352,
+    "online_logical_cap": 365,
+    "stop_logical_cap": 362,
+    "maximum_new_physical_verification_calls": 38016
+  },
+  "reuse": "Recompute certificates/decisions from new-cohort raw blocks only when domain,task,geometry,verification seed,candidate slot,physical policy,budget and statistical parameters match exactly. Objective pairs require ordered policies and original paired stream. Reporting-only search counts and shortlist role labels regenerated per cell. Save newly paid raw with provenance.",
+  "barriers": [
+    "All84 searches,24 alternative native terminals,108 original inputs and108 transformed inputs frozen across all three families before either terminal begins verification.",
+    "All216 original/modified terminal verifications complete across all three families before opening any target truth or scoring outcomes."
+  ],
+  "primary": "Under the common frozen same_policy_distinct_challenger terminal: after-initialization point updates minus source0 point updates, certified true-feasible quality gain. Keep certification-reference contribution separate from true quality.",
+  "limits": "Independent frozen-rule confirmation on12new geometries,4per known family. Stage47/49 development outcomes excluded. No further terminal variant, model refit or precision search; paired terminal outcomes are not independent task samples.",
+  "source_stage_label": "stage50_original",
+  "stage_label": "stage50_challenge",
+  "scope": "Independent frozen-rule confirmation on12 fresh geometries in3 known families.107completed cells per terminal;1registered structural search failure remains missing, not zero. Primary12-task decisions complete; original five-backend prediction intersection available on11tasks. No pooling with development cohorts.",
+  "execution_failures": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026102120,
+      "arm": "current_structural_mixture",
+      "status": "search_failed",
+      "logical_search_calls": 12,
+      "new_search_calls": 2,
+      "reason": "Frozen posterior E[exp(eta)] exceeds float64 range for mandatory shared neighbors11 and15; no clipping, identity deletion or model patch.",
+      "diagnosis": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/numeric_failure_diagnosis.json",
+      "failed_raw_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/failed_search_raw_1792143001434065953.json"
+    }
+  ],
+  "failure_resolution": {
+    "recorded_before_any_verification_or_truth": true,
+    "recorded_utc": "2026-10-16T09:41:35.945008+00:00",
+    "policy": "Retain registered failed task/cell as missing, not zero and not replaced. Finish all other107cells per terminal before truth. Primary12task comparison remains complete; structural full12comparison unknown,11completed conditional results labeled. Five-backend never-sampled cohort on failedtask remains missing; do not redefine intersection."
+  },
+  "completed_utc": "2026-10-16T09:42:16.209247+00:00"
+}

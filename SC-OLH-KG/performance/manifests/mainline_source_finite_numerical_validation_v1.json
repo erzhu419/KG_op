@@ -1,0 +1,653 @@
+{
+  "name": "mainline_source_finite_numerical_validation_v1",
+  "stage": 98,
+  "registered_utc": "2026-10-19T04:11:33.634448+00:00",
+  "status": "completed_fixed_source_probes",
+  "registration_only": false,
+  "execution_authorized": true,
+  "source_numeric_execution_started": true,
+  "implementation_started": true,
+  "substitute_checks_started": true,
+  "target_validation_authorized": false,
+  "protocol_document": "docs/mainline_source_finite_numerical_validation_protocol_20261019.md",
+  "source_manifest": "performance/manifests/mainline_source_alignment_targets_v1.json",
+  "source_asset_manifest": "performance/manifests/mainline_source_alignment_control_v1.json",
+  "source_asset_seal_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/source_asset_seal.json",
+  "predecessor_audit_manifest": "performance/manifests/mainline_source_numerical_executability_audit_v1.json",
+  "predecessor_diagnosis": "cause_unidentified",
+  "output_dir": "paper_artifacts/mainline_source_finite_numerical_validation_v1",
+  "registration_accounting_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage98_accounting.json",
+  "frozen": {
+    "AFTER": true,
+    "sources_and_models": true,
+    "frontend": true,
+    "search": true,
+    "old_terminal": true,
+    "random_streams": true,
+    "all_thresholds": true,
+    "d": 1000,
+    "terminal_call_cap": 352
+  },
+  "retained_terminal_arms": [
+    "legacy_role_full",
+    "legacy_role_full_native_terminal",
+    "legacy_role_after_init_point_only",
+    "legacy_role_after_init_point_only_native_terminal",
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "legacy_role_point_only",
+    "current_structural_mixture",
+    "initialization_only",
+    "source_permuted_role_after_init_point_only",
+    "source_permuted_role_point_only"
+  ],
+  "unchanged_historical_coverage": {
+    "registered_geometries": 144,
+    "required_streams_per_geometry": 2,
+    "registered_terminal_cells": 3168,
+    "completed_terminal_cells": 3101,
+    "retained_failures": 67,
+    "permuted_AFTER_failures": 66,
+    "other_structural_failure": 1,
+    "missing_complete_source_pair_geometries": 39,
+    "additional_undefined_quality_baseline_geometries": 8,
+    "complete_source_C_geometries": 105,
+    "complete_source_G_geometries": 97,
+    "full144_source_C": null,
+    "full144_source_G": null
+  },
+  "retained_source_warnings": {
+    "Queue_real_low_ESS_heads": 2,
+    "Queue_permuted_low_ESS_heads": 6,
+    "heads_per_bundle": 16,
+    "permuted_Queue_objective_identity_weight_approx": 0.9984,
+    "structural_bundles_precision_certified_false": 6,
+    "source_ESS_does_not_diagnose_target_moment_failure": true
+  },
+  "asset_groups": [
+    {
+      "asset_group": "InventorySupplyChain",
+      "actual_source_families": [
+        "QueueResourceControl",
+        "FactorShockStatePolicyRZDT1"
+      ],
+      "original_source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+      "assets": {
+        "real": {
+          "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/source_models.pkl",
+          "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_source_prior.pkl"
+        },
+        "permuted": {
+          "source_models_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/source_models.pkl",
+          "native_source_prior_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_prior.pkl"
+        }
+      }
+    },
+    {
+      "asset_group": "QueueResourceControl",
+      "actual_source_families": [
+        "InventorySupplyChain",
+        "FactorShockStatePolicyRZDT1"
+      ],
+      "original_source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+      "assets": {
+        "real": {
+          "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/source_models.pkl",
+          "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/native_source_prior.pkl"
+        },
+        "permuted": {
+          "source_models_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/source_models.pkl",
+          "native_source_prior_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_prior.pkl"
+        }
+      }
+    },
+    {
+      "asset_group": "FactorShockStatePolicyRZDT1",
+      "actual_source_families": [
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "original_source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+      "assets": {
+        "real": {
+          "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+          "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl"
+        },
+        "permuted": {
+          "source_models_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+          "native_source_prior_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl"
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "InventorySupplyChain__real__QueueResourceControl",
+      "asset_group": "InventorySupplyChain",
+      "association": "real",
+      "source_family": "QueueResourceControl",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "InventorySupplyChain__real__FactorShockStatePolicyRZDT1",
+      "asset_group": "InventorySupplyChain",
+      "association": "real",
+      "source_family": "FactorShockStatePolicyRZDT1",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "InventorySupplyChain__permuted__QueueResourceControl",
+      "asset_group": "InventorySupplyChain",
+      "association": "permuted",
+      "source_family": "QueueResourceControl",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "InventorySupplyChain__permuted__FactorShockStatePolicyRZDT1",
+      "asset_group": "InventorySupplyChain",
+      "association": "permuted",
+      "source_family": "FactorShockStatePolicyRZDT1",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "QueueResourceControl__real__InventorySupplyChain",
+      "asset_group": "QueueResourceControl",
+      "association": "real",
+      "source_family": "InventorySupplyChain",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "QueueResourceControl__real__FactorShockStatePolicyRZDT1",
+      "asset_group": "QueueResourceControl",
+      "association": "real",
+      "source_family": "FactorShockStatePolicyRZDT1",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "QueueResourceControl__permuted__InventorySupplyChain",
+      "asset_group": "QueueResourceControl",
+      "association": "permuted",
+      "source_family": "InventorySupplyChain",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "QueueResourceControl__permuted__FactorShockStatePolicyRZDT1",
+      "asset_group": "QueueResourceControl",
+      "association": "permuted",
+      "source_family": "FactorShockStatePolicyRZDT1",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "FactorShockStatePolicyRZDT1__real__InventorySupplyChain",
+      "asset_group": "FactorShockStatePolicyRZDT1",
+      "association": "real",
+      "source_family": "InventorySupplyChain",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "FactorShockStatePolicyRZDT1__real__QueueResourceControl",
+      "asset_group": "FactorShockStatePolicyRZDT1",
+      "association": "real",
+      "source_family": "QueueResourceControl",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "FactorShockStatePolicyRZDT1__permuted__InventorySupplyChain",
+      "asset_group": "FactorShockStatePolicyRZDT1",
+      "association": "permuted",
+      "source_family": "InventorySupplyChain",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "FactorShockStatePolicyRZDT1__permuted__QueueResourceControl",
+      "asset_group": "FactorShockStatePolicyRZDT1",
+      "association": "permuted",
+      "source_family": "QueueResourceControl",
+      "policy_indices": [
+        0,
+        1
+      ],
+      "repeat_indices": [
+        0,
+        0
+      ]
+    }
+  ],
+  "probe_inputs": {
+    "d": 50,
+    "policy_bank_indices": [
+      0,
+      1
+    ],
+    "history_policy_indices": [
+      0,
+      1
+    ],
+    "repeats": [
+      0,
+      0
+    ],
+    "raw_pairing": "Original archive f/g for both associations; do not permute the probe responses.",
+    "selection": "Fixed physical policy indices only; no response, ESS, target-failure or deployment screening.",
+    "config": "Existing build_source_engine with heldout_family=asset_group, actual source family and d=50; original V69 seed80 config, actual tau.",
+    "scale": "Original f; center raw g and prior g by the same actual tau once through existing interfaces; unchanged eta.",
+    "training_data_reuse": "Numerical stress fixture only; not independent heldout prediction or a valid new-data posterior."
+  },
+  "planned_entry_points": [
+    "performance.mainline_role_source_holdout.build_source_engine",
+    "performance.mainline_role_prior.role_inputs",
+    "performance.mainline_role_prior._history",
+    "performance.diagnose_mainline_initialization.stream_head"
+  ],
+  "fixed_probe_contract": {
+    "identities": 8,
+    "heads": [
+      "f",
+      "g"
+    ],
+    "nodes_per_identity_head": 1024,
+    "batch_size": 64,
+    "raw_rows_per_case": 2,
+    "case_count": 12,
+    "loop_order": "Original identity order, f then g, ascending node batches, policies0 then1 inside each batch.",
+    "backend": "Frozen role projection: structural f/eta, native g replacement and existing risk eta.",
+    "source_only_temporary_states": true,
+    "write_back_models": false,
+    "covers": [
+      "two-row initialization-style source conditioning"
+    ],
+    "not_covered": [
+      "full initial10",
+      "post-initial own-point update and resampling",
+      "structural terminal recommendation",
+      "target d1000 execution"
+    ]
+  },
+  "numeric_contract": {
+    "t_bounds": [
+      -12,
+      12
+    ],
+    "grid_points": 9,
+    "golden_iterations": 32,
+    "norm": "max",
+    "epsabs": 1e-12,
+    "epsrel": 1e-12,
+    "limit": 128,
+    "cache_size": 16777216,
+    "workers": 1,
+    "relative_error_guard": 1e-08,
+    "bounded_error_statuses": [
+      1,
+      2
+    ],
+    "points_shifts_acceptance_and_operation_order": "unchanged",
+    "remove_components": false,
+    "split_batches": false,
+    "reference_integrator_calls": 0
+  },
+  "diagnostic_capture": {
+    "method": "One entrance wrapper around local_raw_moments plus existing stream_head observer; no production kernel edits.",
+    "before_call": [
+      "asset_group",
+      "association",
+      "source_family",
+      "identity",
+      "head",
+      "component_start",
+      "component_stop",
+      "prefix",
+      "policy_index",
+      "repeat_index",
+      "means",
+      "covariances",
+      "label",
+      "eta_label",
+      "replicates",
+      "tau",
+      "original_raw_pair"
+    ],
+    "on_success": "Save original returned diagnostics; return the exact original object.",
+    "on_exception": "Read already-existing locals from the original kernel frame in this same traceback, persist available values, and re-raise original exception.",
+    "success_fields": [
+      "integration_absolute_error",
+      "minimum_normalizer",
+      "integration_relative_error",
+      "integration_status",
+      "integrand_evaluations",
+      "bounded_error_accepted",
+      "roundoff_accepted"
+    ],
+    "exception_fields_when_available": [
+      "integral",
+      "error",
+      "info.success",
+      "info.status",
+      "info.message",
+      "info.neval",
+      "relative_error",
+      "shifts"
+    ],
+    "exception_normalizers": "Read Z=integral[:,0], minZ and its absolute node index only when integral already exists; no reintegration.",
+    "success_not_exposed": [
+      "per_node_Z",
+      "argmin_Z_node",
+      "shifts",
+      "info.success",
+      "info.message"
+    ],
+    "missing_field_policy": "null with reason; no invented status, inferred value or additional call",
+    "absolute_error_semantics": "Shared max-norm quadrature error estimate, not actual/certified absolute posterior error.",
+    "normalizer_semantics": "Component density-shifted Z, distinct from original likelihood evidence and source weights.",
+    "component_attribution": "Head/identity/block are located; argmin Z does not uniquely identify an error-causing node or column.",
+    "rerun_to_capture": false
+  },
+  "limits": {
+    "maximum_attempts_per_case": 1,
+    "maximum_raw_moment_calls_per_case": 512,
+    "maximum_raw_moment_calls_total": 6144,
+    "maximum_quad_vec_calls_total": 6144,
+    "maximum_source_model_file_loads": 24,
+    "unique_source_asset_files": 12,
+    "case_process_cpu_seconds": 300,
+    "case_wall_seconds": 600,
+    "single_raw_moment_call_wall_seconds": 30,
+    "total_case_process_cpu_seconds": 3600,
+    "checks_wrapper_scheduler_control_costs": "record separately, do not hide in source compute or historical costs"
+  },
+  "stop_rules": [
+    "Stop each case on its first original numeric exception, input/logging failure or resource cap; retain completed calls and not_reached remainder.",
+    "Resource stop is distinct from numeric guard rejection; missing post-call fields remain unknown.",
+    "All other fixed cases may execute once; no retry, replacement samples, new permutation, refit or precision escalation.",
+    "If no failure is reproduced, report only no_failure_on_fixed_inputs and stop without expanding this probe.",
+    "If decisive quantities are unavailable, preserve cause_unidentified and stop.",
+    "A concrete inconsistency produces evidence only; any fix, validation or new target campaign requires a separate protocol and authorization."
+  ],
+  "future_scheduler": {
+    "entry": "submit-cpu-batch",
+    "nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "independent_items": 12,
+    "worker_threads": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1,
+    "workers": "Use live free physical cores within the explicit pool; no hard-pinning or local fallback.",
+    "auto_retry": false,
+    "currently_submitted_tasks": []
+  },
+  "future_substitute_checks": [
+    "Synthetic/spy returns and exceptions only: no real integral, source model load or source response conditioning.",
+    "Wrapped and original call args/order/count/return object and original exception are identical.",
+    "Identity/head/block/prefix mapping and same original f/g across real/permuted assets are exact.",
+    "Success, numeric guard rejection, pre-integral exception and resource stop retain available fields, missing reasons, failures and fees without another call.",
+    "Input caps and single-attempt stopping leave remaining work not_reached."
+  ],
+  "planned_outputs": [
+    "case_status_and_costs.json",
+    "call_diagnostics.jsonl",
+    "failure_input_packets/",
+    "conclusion.json"
+  ],
+  "conclusion_dimensions": {
+    "record_completeness": "complete",
+    "fixed_input_executability": "no_failure_on_fixed_inputs",
+    "independent_numeric_accuracy": "not_assessed",
+    "target_d1000_decision_gain": "not_tested"
+  },
+  "future_cost_fields": [
+    "source_model_file_loads",
+    "source_projection_calls",
+    "source_conditioning_calls",
+    "local_raw_moment_attempts",
+    "quad_vec_attempts",
+    "completed_calls",
+    "failed_calls",
+    "unreturned_calls",
+    "process_cpu_seconds",
+    "wall_seconds",
+    "wrapper_cpu_seconds",
+    "control_cpu_seconds"
+  ],
+  "future_zero_work": [
+    "source_simulation",
+    "target_simulation",
+    "candidate_scores",
+    "truth_scores",
+    "source_fit",
+    "permutation_resampling",
+    "target_engine_restoration",
+    "target_posterior_restoration",
+    "old_failed_query_replay",
+    "terminal_verification"
+  ],
+  "current_new_work": {
+    "stage": 100,
+    "scope": "Fixed source-only numerical probes; source conditioning is explicit, target restoration remains zero.",
+    "source_model_loads": 24,
+    "source_projections": 12,
+    "source_conditioning_streams": 192,
+    "local_raw_moment_calls": 6144,
+    "integrations": 6144,
+    "simulations": 0,
+    "scores": 0,
+    "fits": 0,
+    "target_posterior_restorations": 0,
+    "old_failure_replays": 0,
+    "substitute_checks": 10,
+    "scheduler_submissions": 7
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json",
+    "paper_artifacts/mainline_source_alignment_paths_v1/cluster_control/stage94_accounting.json",
+    "paper_artifacts/mainline_evidence_chain_update_v1/cluster_control/stage95_accounting.json",
+    "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage96_accounting.json",
+    "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_accounting.json"
+  ],
+  "historical_failure_fees": "67 old failures and 8617.606060537 CPU seconds remain in the original Stage93 target ledger; do not add them twice.",
+  "claim_boundary": "No backfilling any of67 old failures,39 incomplete source-pair geometries or8 undefined quality baselines. C105/G97 subsets and full144 nulls unchanged. Old/new cohorts and all positive, negative, missing outcomes stay separate.",
+  "wiring": {
+    "stage": 99,
+    "scope": "Independent probe wiring and deterministic substitutes only",
+    "status": "checks_passed",
+    "checks_authorized": true,
+    "real_probe_execution_authorized": false,
+    "core_module": "performance.mainline_source_finite_numerical_probe",
+    "cluster_entry": "../scripts/run_mainline_source_finite_probe_checks_cluster.py",
+    "test_files": [
+      "tests/test_mainline_source_finite_numerical_probe.py",
+      "tests/test_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "execution_accounting_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_accounting.json",
+    "scientific_execution_started": false,
+    "historical_results_unchanged": true,
+    "implementation_files": [
+      "performance/mainline_source_finite_numerical_probe.py",
+      "../scripts/run_mainline_source_finite_probe_checks_cluster.py"
+    ],
+    "real_integrator_is_replaced_in_kernel_tests": true,
+    "local_substitute_runs": 0,
+    "submitted_tasks": [
+      "t190344"
+    ],
+    "result_document": "docs/mainline_source_finite_probe_wiring_results_20261019.md",
+    "completion_receipt": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_completion_audit.json",
+    "test_counts": {
+      "passed": 18
+    },
+    "task_id": "t190344",
+    "node": "node004",
+    "pytest_returncode": 0,
+    "wrapper_status": "complete",
+    "wrapper_child_returncode": 0,
+    "pytest_cpu_seconds": 2.03053,
+    "wrapper_inclusive_cpu_seconds": 2.243893,
+    "retry_count": 0,
+    "wrapper_duplicate_count": 0,
+    "controller_returncode": 0,
+    "scheduler_snapshot_status": "running",
+    "completion_basis": "Sealed successful wrapper and checks; retained scheduler recovery lag, no repeated dispatch.",
+    "checks_completed_utc": "2026-10-19T06:48:33.215442+00:00",
+    "new_work": {
+      "source_model_loads": 0,
+      "source_projections": 0,
+      "source_conditioning": 0,
+      "integrations": 0,
+      "simulations": 0,
+      "scores": 0,
+      "fits": 0,
+      "posterior_restorations": 0,
+      "substitute_checks": 18,
+      "scheduler_submissions": 1
+    }
+  },
+  "execution": {
+    "stage": 100,
+    "status": "complete",
+    "authorized_utc": "2026-10-19T08:15:53.183357+00:00",
+    "authorization_basis": "User continued the next step after Stage99: execute the twelve fixed Stage98 source-only probes once.",
+    "scope": "Frozen finite source numerical probes only; no target validation, simulation, scoring, fitting or old-failure replay.",
+    "source_numeric_execution_started": true,
+    "target_validation_authorized": false,
+    "batch_module": "performance.run_mainline_source_finite_probes",
+    "cluster_entry": "../scripts/run_mainline_source_finite_probes_cluster.py",
+    "new_tests": [
+      "tests/test_mainline_source_finite_probes.py",
+      "tests/test_mainline_source_finite_probes_cluster.py"
+    ],
+    "reuse_completed_stage99_checks": true,
+    "output_accounting_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_accounting.json",
+    "predecessor_accounting_files": [
+      "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage98_accounting.json",
+      "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_accounting.json"
+    ],
+    "automatic_retries": 0,
+    "submitted_tasks": [
+      "t195160",
+      "t195161",
+      "t195162",
+      "t195163",
+      "t195164",
+      "t195165",
+      "t195166"
+    ],
+    "completed_utc": "2026-10-19T08:27:45.156067+00:00",
+    "checks_passed": 10,
+    "registered_cases": 12,
+    "completed_cases": 12,
+    "case_attempts": 12,
+    "failed_cases": 0,
+    "resource_stopped_cases": 0,
+    "scheduler_retry_count": 0,
+    "wrapper_duplicate_count": 0,
+    "controller_returncode": 0,
+    "scheduler_status": "done",
+    "actual_nodes": [
+      "node006"
+    ],
+    "fixed_input_executability": "no_failure_on_fixed_inputs",
+    "record_completeness": "complete",
+    "numerical_accuracy": "not_assessed",
+    "diagnosis": "cause_unidentified",
+    "target_d1000_decision_gain": "not_tested",
+    "case_attempt_cpu_seconds": 127.26727487399998,
+    "result_document": "docs/mainline_source_finite_probe_results_20261019.md",
+    "completion_receipt": "paper_artifacts/mainline_source_finite_numerical_validation_v1/completion.json",
+    "conclusion_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/conclusion.json",
+    "stop_decision": "Fixed input probes completed without failure; close this direction without extra points, precision changes, old-failure replay or target admission.",
+    "scheduler_completion_receipt": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_completion_audit.json",
+    "cost_at_result_seal": {
+      "case_attempt_cpu_seconds_nested": 127.26727487399998,
+      "all_wrapper_inclusive_cpu_seconds": 132.10082899999998,
+      "control_and_transport_cpu_seconds": 245.74042765,
+      "known_total_cpu_seconds": 377.84125665,
+      "final_document_sync": "Appended separately to stage100_accounting.json",
+      "unmeasured_editing_cpu_seconds": null
+    }
+  }
+}

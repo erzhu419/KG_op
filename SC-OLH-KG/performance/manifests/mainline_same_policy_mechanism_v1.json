@@ -1,0 +1,73 @@
+{
+  "name": "mainline_same_policy_mechanism_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T09:56:17.760353+00:00",
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_same_policy_confirmation_v1",
+  "modified_terminal_manifest": "performance/manifests/mainline_same_policy_confirmation_challenge_v1.json",
+  "output_dir": "paper_artifacts/mainline_same_policy_mechanism_v1",
+  "report": "docs/mainline_same_policy_mechanism_results_20261016.md",
+  "target_seeds": [
+    2026102111,
+    2026102112,
+    2026102113,
+    2026102114,
+    2026102115,
+    2026102116,
+    2026102117,
+    2026102118,
+    2026102119,
+    2026102120,
+    2026102121,
+    2026102122
+  ],
+  "task_count": 12,
+  "query_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only"
+  ],
+  "focus_seeds": [
+    2026102111,
+    2026102122,
+    2026102117
+  ],
+  "terminal_file": "modified_terminal.json",
+  "terminal_variants": [
+    "original",
+    "modified"
+  ],
+  "registered_terminal_cells": 216,
+  "available_terminal_cells": 214,
+  "execution_failures": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026102120,
+      "arm": "current_structural_mixture",
+      "status": "search_failed",
+      "logical_search_calls": 12,
+      "new_search_calls": 2,
+      "reason": "Frozen posterior E[exp(eta)] exceeds float64 range for mandatory shared neighbors11 and15; no clipping, identity deletion or model patch.",
+      "diagnosis": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/numeric_failure_diagnosis.json",
+      "failed_raw_file": "paper_artifacts/mainline_same_policy_confirmation_v1/FactorShockStatePolicyRZDT1/search/seed_2026102120/current_structural_mixture/failed_search_raw_1792143001434065953.json"
+    }
+  ],
+  "reference": "New policy outside sharedinitial10, trulyfeasible and better than best cached trulyfeasibleinitial. First initial quality, empiricalincumbent and truebestinitial remain distinct.",
+  "scope": "Post-score mechanism audit of all12 frozen Stage50 tasks. Reuse JSON/NPZ saved scores and cachedtruth only; fixed-state substitutions are diagnostic and not newly executed optimizer trajectories.",
+  "limits": [
+    "No model fitting or posterior restoration, raw replay, RNG sampling, simulation, verification, truth function calls or downloads.",
+    "Keep Stage50 structural2120failure missing in both terminal variants; all three role histories complete.",
+    "Same-history/same-physical-pool swaps only support first-divergence attribution; subsequent divergent histories descriptive.",
+    "Saved TS innovation is not a full covariance intervention; missing final13 posterior components stayunknown.",
+    "Do not redefine the original five-backend never-sampled prediction intersection; failedtask remains unavailable for thatmetric.",
+    "No patchselection, precisiontuning or new taskcohort."
+  ],
+  "expected_new_calls": 0,
+  "expected_new_source_fits": 0,
+  "expected_posterior_restorations": 0,
+  "entrypoints": [
+    "performance/diagnose_mainline_three_family_queries.py:summarize",
+    "performance/diagnose_mainline_three_family_terminal.py:analyze",
+    "performance/summarize_mainline_three_family_funnel.py"
+  ]
+}

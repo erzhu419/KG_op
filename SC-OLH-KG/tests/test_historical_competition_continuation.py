@@ -115,7 +115,7 @@ class CompetitionContinuationTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'dispatch transport failed'):
             self.check_start(5,maximum_new_phases=1,run_phase=True,dispatch_error='dispatch transport failed')
 
-    def check_close(self,failure=None,refinement_cpu=0,collection_failure=None,worker_log='/tmp/log'):
+    def check_close(self,failure=None,refinement_cpu=0,collection_failure=None,worker_log='/tmp/log',probe_cpu=0,multilevel_cpu=0,prior_replay_cpu=0):
         spec=importlib.util.spec_from_file_location('competition_close',FOLDER/'close_phase.py')
         close=importlib.util.module_from_spec(spec);spec.loader.exec_module(close)
         with tempfile.TemporaryDirectory() as tmp:
@@ -150,6 +150,10 @@ class CompetitionContinuationTest(unittest.TestCase):
             if refinement_cpu:
                 for name in ('observed-batch-risk_collection_before_refinement.log','refinement_preparation.log'):
                     (root/phase/name).write_text('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=refinement_cpu/2))+'\n')
+            if probe_cpu:
+                (root/phase/'branch_coupling_probe.log').write_text('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=probe_cpu))+'\n')
+            for name,cpu in [('multilevel_caps_probe.log',multilevel_cpu),('incumbent_replay_final.log',prior_replay_cpu)]:
+                if cpu:(root/phase/name).write_text('SCHEDULEURM_RESOURCE '+json.dumps(dict(process_cpu_seconds=cpu))+'\n')
             replay=dict(source_bound_plan=bound,native_choices_all_raw_referenced=True,
                 weighted_raw_reward_of_native_incumbent_contrast=.2,weighted_raw_best_admitted_contrast=.2,
                 weighted_projected_incumbent_contrast=.19)
@@ -169,13 +173,38 @@ class CompetitionContinuationTest(unittest.TestCase):
             charged=0 if failure is None else failure['conservative_reserve_charge_seconds']
             collection_recorded=0 if collection_failure is None else (collection_failure.get('actual_process_cpu_seconds') or 0)
             collection_charged=0 if collection_failure is None else collection_failure['conservative_reserve_charge_seconds']
-            self.assertEqual(result['total_recorded_process_cpu_seconds'],16+recorded+refinement_cpu+collection_recorded)
-            self.assertEqual(result['shared_reserve_charged_cpu_seconds'],6+charged+refinement_cpu+collection_charged)
+            self.assertEqual(result['total_recorded_process_cpu_seconds'],16+recorded+refinement_cpu+collection_recorded+probe_cpu+multilevel_cpu+prior_replay_cpu)
+            self.assertEqual(result['shared_reserve_charged_cpu_seconds'],6+charged+refinement_cpu+collection_charged+probe_cpu+multilevel_cpu+prior_replay_cpu)
             self.assertEqual(result['unmeasured_failed_preparation_conservative_charge_seconds'],charged-recorded)
             self.assertEqual(result['unmeasured_failed_collection_conservative_charge_seconds'],collection_charged-collection_recorded)
             self.assertEqual(result['weighted_unresolved_gap_reduction'],dict(raw=.5,projected=.5))
+            self.assertEqual(json.loads((root/result['replay_summary_path']).read_text()),replay)
+            self.assertFalse((root/phase/'incumbent_replay_final.json').exists())
             resources=json.loads((root/phase/'worker_resources.json').read_text())
             self.assertEqual(resources[0]['log_path'],worker_log or '/tmp/sched_t1.log')
+
+    def test_saved_replay_summary_preserves_decisions_without_rerunning_or_pulling_rows(self):
+        from performance import replay_historical_positive_risk_subset as replay
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);path='phase/incumbent_replay_final.json'
+            saved=dict(complete=True,source_bound_plan='bound.json',rows=[dict(raw_actions=[1])],
+                native_incumbents=[dict(native_action_counts={'1':16})],maximum_omitted_utility_identity_mass=1e-8,
+                raw_recommendation=dict(policy_totals={'raw':dict(validation_contrast=.2)},rows=[dict(actions=[1])]),
+                weighted_raw_best_admitted_contrast=.2)
+            save(root,path,saved)
+            with patch.object(replay,'ROOT',root),patch.object(replay,'read',side_effect=lambda p:json.loads((root/p).read_text())),\
+                patch.object(replay,'run') as run:
+                summary=replay.collect_saved_replay('bound.json',path)
+            run.assert_not_called()
+            self.assertNotIn('rows',summary)
+            self.assertNotIn('native_incumbents',summary)
+            self.assertNotIn('rows',summary['raw_recommendation'])
+            self.assertEqual(summary['raw_recommendation']['policy_totals'],saved['raw_recommendation']['policy_totals'])
+            self.assertEqual(summary['full_replay_path'],path)
+
+    def test_cap_pilot_and_previous_summary_collection_remain_in_original_reserve(self):
+        self.check_close(probe_cpu=41,multilevel_cpu=70,prior_replay_cpu=1,
+            collection_failure=dict(actual_process_cpu_seconds=None,conservative_reserve_charge_seconds=35))
 
     def test_close_uses_new_preparation_resources_and_original_account_envelope(self):
         self.check_close()
@@ -194,6 +223,9 @@ class CompetitionContinuationTest(unittest.TestCase):
 
     def test_worker_recovered_by_exit_sentinel_preserves_measured_resources(self):
         self.check_close(worker_log=None)
+
+    def test_cached_branch_probe_stays_in_original_phase_reserve(self):
+        self.check_close(probe_cpu=9.5)
 
 
 if __name__=='__main__':

@@ -1,0 +1,622 @@
+{
+  "stage": 93,
+  "status": "complete_with_retained_failures",
+  "updated_utc": "2026-10-19T02:16:03.089154+00:00",
+  "registered_geometries": 144,
+  "streams": 2,
+  "registered_terminal_cells": 3168,
+  "retained_search_arms": 9,
+  "retained_terminal_arms": 11,
+  "verification_cap_per_cell": 352,
+  "registration_draws": 576,
+  "new_source_fits": 0,
+  "new_source_permutations": 0,
+  "new_test_runs": 0,
+  "automatic_retries": 0,
+  "preparation_wrappers": {
+    "register_task": "t183533",
+    "register_node": "node006",
+    "register_cpu_seconds": 1.2755400000000001,
+    "admit_task": "t183535",
+    "admit_node": "node005",
+    "admit_cpu_seconds": 1.171969,
+    "duplicate_wrapper_records": 0
+  },
+  "preparation_scheduler_control": {
+    "events": [
+      {
+        "file": "stage93_submission_register.json",
+        "cpu_seconds": 18.109620999999997,
+        "wall_seconds": 26.730007200996624,
+        "task_ids": [
+          "t183533"
+        ],
+        "returncode": 0
+      },
+      {
+        "file": "stage93_dispatch_register.json",
+        "cpu_seconds": 27.94791,
+        "wall_seconds": 50.66769442599616,
+        "task_ids": [
+          "t183533"
+        ],
+        "returncode": 0
+      },
+      {
+        "file": "stage93_submission_admit.json",
+        "cpu_seconds": 18.527332,
+        "wall_seconds": 24.538196542998776,
+        "task_ids": [
+          "t183535"
+        ],
+        "returncode": 0
+      },
+      {
+        "file": "stage93_dispatch_admit.json",
+        "cpu_seconds": 41.007303,
+        "wall_seconds": 65.934286024014,
+        "task_ids": [
+          "t183535"
+        ],
+        "returncode": 0
+      }
+    ],
+    "cpu_seconds": 105.59216599999999,
+    "wall_seconds": 167.87018419400556
+  },
+  "target_controller": {
+    "process_file": "stage93_controller_process.json",
+    "state_file": "source_alignment_science_state.json",
+    "log_file": "stage93_controller.log",
+    "rusage_file": "stage93_controller_rusage.log",
+    "completion_pending": false,
+    "scope": "Both detached controller invocations are local control only. Rusage includes nested scheduler subprocesses; do not add nested dispatch fees again. Original metadata-timeout exit retained.",
+    "last_snapshot_utc": "2026-10-19T01:34:07.391282+00:00",
+    "status": "complete",
+    "active_stage": "complete",
+    "whole_controller_cpu_seconds": 7318.91,
+    "known_manual_dispatches": [
+      {
+        "label": "initial/describe",
+        "task_ids": [
+          "t183537"
+        ],
+        "cpu_seconds": 39.298716,
+        "wall_seconds": 109.53056748301606,
+        "new_submissions": 0,
+        "automatic_scientific_retries": 0
+      },
+      {
+        "label": "initial/workers",
+        "task_ids": [
+          "t183538",
+          "t183539",
+          "t183540",
+          "t183541"
+        ],
+        "cpu_seconds": 41.618921,
+        "wall_seconds": 59.62474656497943,
+        "new_submissions": 0,
+        "automatic_scientific_retries": 0
+      }
+    ],
+    "known_nested_manual_dispatch_cpu_seconds": 80.917637,
+    "do_not_add_nested_dispatch_to_future_rusage": true,
+    "original_controller_cpu_seconds": 3020.33,
+    "original_controller_exit_code": 1,
+    "original_controller_wall_seconds": 17298,
+    "resume1": {
+      "status": "complete",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_controller_resume1_rusage.log",
+        "/usr/bin/python3",
+        "-u",
+        "/home/erzhu419/mine_code/KG_op/scripts/run_mainline_source_alignment_science_cluster.py",
+        "--manifest",
+        "performance/manifests/mainline_source_alignment_targets_v1.json",
+        "--poll-seconds",
+        "30"
+      ],
+      "log_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_controller_resume1.log",
+      "rusage_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_controller_resume1_rusage.log",
+      "started_utc": "2026-10-18T16:51:10.191360+00:00",
+      "resume_reason": "Prior controller exited on remote wrapper metadata read timeout; all 26 already submitted wrappers now complete/child0 and no retry or duplicates.",
+      "prior_state_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_controller_state_before_resume1.json",
+      "prior_control_cpu_seconds": 3020.33,
+      "prior_control_wall_seconds": 17298,
+      "scientific_resubmissions": 0,
+      "existing_native_task_ids": [
+        "t183645",
+        "t183646",
+        "t183647",
+        "t183648",
+        "t183649"
+      ],
+      "local_scientific_computation": false,
+      "pid": 3728647,
+      "process_group_id": 3728647,
+      "session_id": 3728647
+    },
+    "resume1_cpu_seconds": 4298.58,
+    "all_controller_cpu_seconds": 7318.91,
+    "resume1_wall_elapsed": "8:42:57",
+    "resume1_exit_code": 0
+  },
+  "metadata": {
+    "preflight_bytes": 1847,
+    "registration_bytes": 1534,
+    "admission_and_compressed_manifest_bytes": 18767,
+    "admitted_manifest_bytes": 99411,
+    "remote_metadata_cpu_seconds": 0.0076993010000000195,
+    "no_model_or_trajectory_download": true,
+    "manual_small_reads": [
+      {
+        "file": "stage93_preflight.json",
+        "bytes": 1847,
+        "cpu_seconds": 0.00072113800000001
+      },
+      {
+        "file": "stage93_register_status.json",
+        "bytes": 1534,
+        "cpu_seconds": 0.0006348340000000008
+      },
+      {
+        "file": "stage93_admit_status.json",
+        "bytes": 18767,
+        "cpu_seconds": 0.006343329000000009
+      },
+      {
+        "file": "stage93_initial_progress1.json",
+        "bytes": 707,
+        "cpu_seconds": 0.0005035330000000005
+      },
+      {
+        "file": "stage93_initial_progress2.json",
+        "bytes": 607,
+        "cpu_seconds": 0.0005891189999999991
+      },
+      {
+        "file": "stage93_initial_progress3.json",
+        "bytes": 1877,
+        "cpu_seconds": 0.0011977800000000094
+      },
+      {
+        "file": "stage93_completion_check_20261019_attempt1.json",
+        "bytes": 10901,
+        "cpu_seconds": 0.009011012000000006
+      },
+      {
+        "file": "stage93_online_failure_signatures_20261019.json",
+        "bytes": 32942,
+        "cpu_seconds": 0.06119978799999999
+      },
+      {
+        "file": "stage93_failed_prefix_cost_audit_20261019.json",
+        "bytes": 18452,
+        "cpu_seconds": 0.030437567000000013
+      },
+      {
+        "file": "stage93_native_finish_progress_20261019.json",
+        "bytes": 1794,
+        "cpu_seconds": 0.005279776
+      },
+      {
+        "file": "stage93_terminal_progress1_20261019.json",
+        "bytes": 1437,
+        "cpu_seconds": 0.0010426720000000084
+      },
+      {
+        "file": "stage93_resume1_handoff_remote_audit_20261019.json",
+        "bytes": 9084,
+        "cpu_seconds": 0.005440388999999997
+      },
+      {
+        "file": "stage93_completion_audit_20261019_final.json",
+        "bytes": 76530,
+        "cpu_seconds": 0.045565802
+      },
+      {
+        "file": "stage93_results_compact_transfer_20261019.json",
+        "bytes": 94008,
+        "cpu_seconds": 0.49938575399999996
+      }
+    ],
+    "manual_small_read_total_bytes": 270487,
+    "manual_remote_read_cpu_seconds": 0.667352493,
+    "controller_read_payload_bytes_at_snapshot": 15789,
+    "controller_read_remote_cpu_seconds_known": 0.010195573000000055,
+    "controller_read_rows_without_cpu_counter": 2,
+    "model_archive_trajectory_bytes_downloaded": 0,
+    "failed_metadata_reads": [
+      {
+        "event": "stage93_failed_prefix_cost_audit_first_local_persistence_failure",
+        "failure": "AttributeError: tuple object has no attribute returncode",
+        "returned_bytes": null,
+        "remote_cpu_seconds": null,
+        "science_calls": 0,
+        "retry_scope": "read-only metadata repeated once, not a scientific attempt"
+      }
+    ],
+    "manual_small_reads_complete_cost_known": false,
+    "final_result_projection": {
+      "projected_json_bytes": 1060259,
+      "compressed_bytes": 70415,
+      "payload_bytes": 94008,
+      "remote_cpu_seconds": 0.49938575399999996
+    },
+    "large_summary_downloaded": false
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage89_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage90_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage92_accounting.json"
+  ],
+  "failures": [
+    {
+      "scope": "controller_metadata_read",
+      "count": 1,
+      "source": "stage93_controller_rusage.log",
+      "kind": "SSH wrapper metadata timeout after 45 seconds",
+      "exit_code": 1,
+      "paid_local_control_cpu_seconds": 3020.33,
+      "recovery": "original state resumed once; existing native task IDs reused"
+    },
+    {
+      "scope": "online_science",
+      "count": 67,
+      "kind": "Batched raw moment error exceeds frozen tolerance",
+      "source": "stage93_online_failure_signatures_20261019.json",
+      "arms": {
+        "source_permuted_role_after_init_point_only": 66,
+        "current_structural_mixture": 1
+      },
+      "scientific_retries": 0,
+      "accounting": "Retained failed prefixes and actual paid fees; no conversion of missing terminal outcomes to certified/uncertified zero"
+    },
+    {
+      "scope": "completion_metadata_read",
+      "count": 1,
+      "source": "stage93_scheduler_completion_snapshot_20261019.json",
+      "kind": "Scheduler readonly shared lock timed out after2s; existing queue.json snapshot then read successfully without mutation",
+      "paid_local_control_cpu_seconds": 0.0016315979999999841,
+      "science_calls": 0
+    }
+  ],
+  "actual_target_costs_pending": false,
+  "known_initial_progress_completed": 288,
+  "registered_initial_histories": 288,
+  "current_stage": "complete",
+  "target_simulation_calls_actual": 743022,
+  "initialization_wrappers": {
+    "complete": [
+      {
+        "path": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/initial/workers/0_74.json",
+        "exists": true,
+        "status": "complete",
+        "node": "node004",
+        "child_returncode": 0,
+        "total_cpu_seconds": 7408.628085,
+        "wall_seconds": 708.4702310217544,
+        "started_utc": "2026-10-18T11:00:22.765308+00:00",
+        "completed_utc": "2026-10-18T11:12:11.235501+00:00",
+        "duplicate_records": 0
+      },
+      {
+        "path": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/initial/workers/74_168.json",
+        "exists": true,
+        "status": "complete",
+        "node": "node006",
+        "child_returncode": 0,
+        "total_cpu_seconds": 8223.606248000002,
+        "wall_seconds": 617.4042635811493,
+        "started_utc": "2026-10-18T11:12:20.655617+00:00",
+        "completed_utc": "2026-10-18T11:22:38.059836+00:00",
+        "duplicate_records": 0
+      },
+      {
+        "path": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/initial/workers/168_221.json",
+        "exists": true,
+        "status": "complete",
+        "node": "node002",
+        "child_returncode": 0,
+        "total_cpu_seconds": 4709.224482,
+        "wall_seconds": 626.061931389384,
+        "started_utc": "2026-10-18T11:00:22.190197+00:00",
+        "completed_utc": "2026-10-18T11:10:48.252090+00:00",
+        "duplicate_records": 0
+      },
+      {
+        "path": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/initial/workers/221_288.json",
+        "exists": true,
+        "status": "complete",
+        "node": "node004",
+        "child_returncode": 0,
+        "total_cpu_seconds": 6492.593692,
+        "wall_seconds": 682.0706128748134,
+        "started_utc": "2026-10-18T11:07:31.465927+00:00",
+        "completed_utc": "2026-10-18T11:18:53.536493+00:00",
+        "duplicate_records": 0
+      }
+    ],
+    "known_complete_cpu_seconds": 26834.052507,
+    "unfinished": [],
+    "unfinished_cpu_seconds": 0,
+    "scope": "Inclusive wrapper CPU, not added again to the all-wrapper audit subtotal."
+  },
+  "scientific_coordination_wrappers": {
+    "records": [
+      {
+        "label": "initial/describe",
+        "path": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/initial/describe/0_1.json",
+        "status": "complete",
+        "cpu_seconds": 1.288467,
+        "child_returncode": 0
+      }
+    ],
+    "known_cpu_seconds": 1.288467
+  },
+  "authorization_document_upload": {
+    "returncode": 0,
+    "result": {
+      "files": {
+        "performance/manifests/mainline_source_alignment_control_v1.json": 34189,
+        "docs/mainline_source_alignment_control_protocol_20261018.md": 15457,
+        "docs/mainline_source_alignment_target_results_20261018.md": 2252
+      },
+      "bytes": 51898,
+      "cpu_seconds": 0.0015869689999999936
+    },
+    "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+    "wall_seconds": 1.4266186879831366,
+    "compressed_payload_bytes": 17173,
+    "scope": "Stage93 authorization/status documents only; runtime targets manifest is never uploaded from local"
+  },
+  "observed_duplicate_or_retry_events": {
+    "as_of_utc": "2026-10-19T02:10:05.834927+00:00",
+    "audited_scheduler_task_ids": 41,
+    "wrapper_duplicates": 0,
+    "scheduler_retries": 0,
+    "scientific_resubmissions_on_resume": 0,
+    "resume_count": 1,
+    "placement_attempts_note": "Scheduler dispatch_attempt_count increments before resource fit. Prior handoff recorded up to26 earlier placement checks and3 checks for then-queued tasks. These are not child reruns; final41 tasks are done/exit0/retry_count0 and all wrapper duplicate logs are empty."
+  },
+  "running_handoff_file": "stage93_running_handoff.json",
+  "completed_wrapper_audit": {
+    "source": "stage93_completion_audit_20261019_final.json",
+    "as_of_utc": "2026-10-19T02:08:55.863729+00:00",
+    "records": 41,
+    "known_cpu_seconds_including_registration_and_admission": 599154.0200609998,
+    "all_child_returncode_zero": true,
+    "wrapper_duplicate_records": 0,
+    "scope": "Includes preparation and stage coordination; individual legacy subtotals must not be added to this subtotal.",
+    "additional_sources": [
+      "source_alignment_science_state.json",
+      "stage93_terminal_progress1_20261019.json"
+    ],
+    "registered_wrapper_paths": 41,
+    "unstarted_wrapper_paths": 0
+  },
+  "completed_stage_audit": {
+    "initial": {
+      "status": "complete",
+      "registered_jobs": 288,
+      "failed_jobs": 0
+    },
+    "neighbors": {
+      "status": "complete",
+      "registered_jobs": 288,
+      "failed_jobs": 0
+    },
+    "online": {
+      "status": "complete",
+      "registered_jobs": 2304,
+      "failed_jobs": 67
+    },
+    "native": {
+      "status": "complete",
+      "registered_jobs": 576,
+      "failed_jobs": 0
+    },
+    "terminal": {
+      "status": "complete",
+      "registered_jobs": 3101,
+      "failed_jobs": 0
+    }
+  },
+  "online_failure_paid_prefix_audit": {
+    "source": "stage93_failed_prefix_cost_audit_20261019.json",
+    "failed_attempts": 67,
+    "ledger_rows_per_failure": 1,
+    "returned_query_call_distribution": {
+      "0": 63,
+      "1": 2,
+      "2": 1,
+      "3": 1
+    },
+    "recorded_returned_query_calls": 7,
+    "all_saved_raw_prefix_lengths_match_ledger": true,
+    "failed_attempt_cpu_seconds": 8617.606060537,
+    "scope": "Contained in the all-wrapper subtotal; not additive. Existing initial observations and internal restoration remain within original accounting scope."
+  },
+  "manual_scheduler_diagnostics": {
+    "events": [
+      {
+        "file": "stage93_terminal_scheduler_why_20261019.json",
+        "returncode": 0,
+        "cpu_seconds": 16.066361,
+        "wall_seconds": 24.438689950009575,
+        "scope": "One read-only why for queued original t188748; no force or redispatch."
+      }
+    ],
+    "known_cpu_seconds": 25.204161253,
+    "readonly_task_snapshot": {
+      "file": "stage93_scheduler_final_snapshot_20261019.json",
+      "local_cpu_seconds": 4.138406327,
+      "wall_seconds": 4.275285156007158
+    },
+    "final_completion_reads": [
+      {
+        "file": "stage93_scheduler_completion_snapshot_20261019.json",
+        "status": "read_failed",
+        "local_cpu_seconds": 0.0016315979999999841,
+        "wall_seconds": 2.0438799590046983
+      },
+      {
+        "file": "stage93_scheduler_completed_ids_unlocked_snapshot_20261019.json",
+        "status": "read",
+        "local_cpu_seconds": 4.997762328,
+        "wall_seconds": 5.363649236998754
+      }
+    ]
+  },
+  "known_terminal_completed": 3101,
+  "registered_executable_terminal_cells": 3101,
+  "retained_missing_terminal_cells": 67,
+  "resume1_handoff_file": "stage93_resume1_running_handoff_20261019.json",
+  "final_scientific_accounts": {
+    "source": "stage93_results_compact_20261019.json#costs",
+    "target_known_recorded": {
+      "new_target_initial_calls": 2880,
+      "new_target_search_calls": 6718,
+      "new_verification_calls": 733424,
+      "new_truth_function_calls": 76452,
+      "new_source_calls": 0,
+      "new_source_fits": 0,
+      "cpu_seconds": 588436.5818695182
+    },
+    "physical_target_calls": 743022,
+    "retained_source_known_recorded": {
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_calls": 0,
+      "new_source_fits": 6,
+      "cpu_seconds": 58.828646463
+    },
+    "retained_check_known_recorded": {
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_source_calls": 0,
+      "new_source_fits": 0,
+      "cpu_seconds": 0
+    },
+    "failed_attempt_cpu_seconds": 8617.606060537002,
+    "unknown_target_fee_record_count": 0,
+    "uninstrumented_unknown_fields": {
+      "source_model_restorations": null,
+      "engine_restorations": null,
+      "posterior_restorations": null,
+      "failed_simulator_invocations": null,
+      "simulation_rng_draws": null
+    },
+    "overlap_note": "Target attempt CPU is included in remote wrapper CPU. Retained source/check/history accounts remain separate. Failed attempt CPU is included in target attempt and wrapper totals, not additive."
+  },
+  "final_completion_evidence": {
+    "seal_utc": "2026-10-19T01:21:18.937039+00:00",
+    "registered_cells": 3168,
+    "complete_cells": 3101,
+    "failed_terminal_cells": 0,
+    "missing_cells": 67,
+    "scored_geometries": 144,
+    "scored_streams": 288,
+    "new_scoring_failed_outcomes": 0,
+    "captured_query_states": 4126,
+    "registered_query_states": 4320,
+    "verification_budget": {
+      "recorded_cells": 3101,
+      "minimum": 208,
+      "maximum": 336,
+      "sum": 733424,
+      "over_352": 0,
+      "by_arm": {
+        "legacy_role_full": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 67632,
+          "over_352": 0
+        },
+        "legacy_role_full_native_terminal": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 67888,
+          "over_352": 0
+        },
+        "legacy_role_after_init_point_only": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 67280,
+          "over_352": 0
+        },
+        "legacy_role_after_init_point_only_native_terminal": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 68304,
+          "over_352": 0
+        },
+        "legacy_native_neighbors": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 68336,
+          "over_352": 0
+        },
+        "same_source_gp": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 67248,
+          "over_352": 0
+        },
+        "legacy_role_point_only": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 68272,
+          "over_352": 0
+        },
+        "current_structural_mixture": {
+          "n": 287,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 67536,
+          "over_352": 0
+        },
+        "initialization_only": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 68608,
+          "over_352": 0
+        },
+        "source_permuted_role_after_init_point_only": {
+          "n": 222,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 53920,
+          "over_352": 0
+        },
+        "source_permuted_role_point_only": {
+          "n": 288,
+          "minimum": 208,
+          "maximum": 336,
+          "sum": 68400,
+          "over_352": 0
+        }
+      }
+    },
+    "source_assets_checked": 18,
+    "source_assets_unchanged": 18
+  },
+  "completion_handoff_file": "stage93_completion_handoff_20261019.json"
+}

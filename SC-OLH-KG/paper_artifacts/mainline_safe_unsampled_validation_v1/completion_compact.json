@@ -1,0 +1,57 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-17T03:25:23.477338+00:00",
+  "registered_geometries": 24,
+  "registered_pairs": 216,
+  "registered_terminal_cells": 432,
+  "completed_old": 216,
+  "completed_new": 216,
+  "recorded_cpu_seconds": 33563.75919368895,
+  "recorded_attempt_wall_seconds": 33835.64831723645,
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 240,
+    "new_target_search_calls": 432,
+    "new_verification_calls": 73312,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 9597,
+    "download_bytes": 0,
+    "new_rng_draws": null,
+    "randomized_new_observations": true,
+    "source_model_restorations": null,
+    "search_engine_restorations": null,
+    "failed_simulation_calls_recorded": 0
+  },
+  "new_physical_target_calls": 73984,
+  "terminal_costs": {
+    "old_logical_calls": 49936,
+    "new_logical_calls": 71360,
+    "old_physical_calls": 49936,
+    "additional_new_protocol_physical_calls": 23376,
+    "unique_paired_physical_calls": 73312,
+    "old_raw_consumed_by_new_last_attempt": 47984,
+    "new_stage_raw_replayed_last_attempt": 0,
+    "complete_old_safety_tail_calls_beyond_candidate_prefix": 1952,
+    "old_paid_raw_not_consumed_by_new_last_attempt": 1952,
+    "paid_rows_in_failed_old_cells": 0,
+    "paid_rows_in_failed_new_cells": 0
+  },
+  "failed_attempts": [],
+  "execution_failures": [],
+  "inherited_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json"
+  ],
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+  "accounting_note": "Each local attempt ledger is summed once, including registration, failed harnesses, checks, shared search, native freezes, both terminals and scoring. Shared initial/search calls are charged once physically. All old safety tails and failed paid prefixes remain charged. Historical accounts are linked without adding their nested costs. Reused models are unchanged; search source/engine loading counts are uninstrumented, not zero. Recorded failed simulator invocations cover the new-protocol adapter; older paths retain failed raw/count/CPU without an exact failed-invocation counter. CPU excludes pre-meter imports, shell inspection, documentation and final serialization. Summed attempt wall time is not cohort elapsed time.",
+  "attempt_count": 706,
+  "omitted_remote_fields": [
+    "attempts"
+  ]
+}

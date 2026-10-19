@@ -1,0 +1,804 @@
+{
+  "name": "mainline_source_alignment_control_v1",
+  "stage": 88,
+  "status": "target_complete_with_retained_failures",
+  "registered_utc": "2026-10-18T07:48:52.721940+00:00",
+  "protocol_document": "docs/mainline_source_alignment_control_protocol_20261018.md",
+  "reference_manifest": "performance/manifests/mainline_precision_confirmation_v1.json",
+  "evidence_document": "docs/mainline_evidence_chain_20261018.md",
+  "output_dir": "paper_artifacts/mainline_source_alignment_control_v1",
+  "implementation_started": true,
+  "permutations_materialized": true,
+  "geometries_materialized": true,
+  "source_fitting_started": true,
+  "execution_started": true,
+  "scientific_execution_started": true,
+  "this_stage_scope": "Stage93 completed the authorized144-new-geometry two-stream target cohort under frozen Stage88 rules and six Stage91 assets. All3168 terminal cells sealed before five-role scoring. Retain67 original search failures; no failed-search reruns, source redraw/refit or threshold changes. Complete paired subsets remain distinct from full144.",
+  "hypothesis": "Correct source policy-response association improves frozen AFTER deployment and strengthens initialization-propagation value, conditional on the original source-trained frontend.",
+  "preserved_terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "added_terminal_arms": [
+    {
+      "name": "source_permuted_role_after_init_point_only",
+      "history_arm": "source_permuted_role_after_init_point_only",
+      "terminal_backend": "role",
+      "source_association": "whole_policy_response_permuted",
+      "update_operator": "after_init_point_only",
+      "original_operator_arm": "legacy_role_after_init_point_only"
+    },
+    {
+      "name": "source_permuted_role_point_only",
+      "history_arm": "source_permuted_role_point_only",
+      "terminal_backend": "role",
+      "source_association": "whole_policy_response_permuted",
+      "update_operator": "point_only",
+      "original_operator_arm": "legacy_role_point_only"
+    }
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "source_permuted_role_after_init_point_only",
+      "history_arm": "source_permuted_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "source_permuted_role_point_only",
+      "history_arm": "source_permuted_role_point_only",
+      "terminal_backend": "role"
+    }
+  ],
+  "search_arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "initialization_only",
+    "source_permuted_role_after_init_point_only",
+    "source_permuted_role_point_only"
+  ],
+  "old_protocol": "same_policy_distinct_challenger",
+  "terminal_protocols": [
+    "old"
+  ],
+  "families": [
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_count": 48,
+      "global_geometry_index_first": 1,
+      "global_geometry_index_last": 48,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "task": {
+        "d": 1000,
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "shared_shock_scale": 1.0
+      },
+      "anchor": {
+        "variant": "v69_feasible_first_verified_incumbent",
+        "search_calls": 13,
+        "n0": 10,
+        "adaptive_calls": 3,
+        "initial_design_seed": 80
+      },
+      "frozen_assets": {
+        "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/source_models.pkl",
+        "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_source_prior.pkl",
+        "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/design.json",
+        "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+      },
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/archive.json",
+      "source_permutation_seed": 2026190001,
+      "planned_permuted_model_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain",
+      "decision_protocol": {
+        "decision_backend": "constrained_ts",
+        "terminal_rule": "feasible_first",
+        "terminal_maximum_violation_probability": 0.5,
+        "terminal_candidate_scope": "observed",
+        "terminal_candidate_budgets": [
+          80,
+          128,
+          128
+        ],
+        "familywise_delta": 0.05,
+        "verification_method": "normal_quantile_tolerance",
+        "objective_incumbent_guard": true,
+        "objective_comparison_budget_per_policy": 8,
+        "maximum_verification_calls_per_recommendation": 352,
+        "verification_updates_search_posterior": false,
+        "adaptive_model_or_precision_changes": false,
+        "objective_comparison_delta": 0.016666666666666666
+      },
+      "neighbor_count": 64,
+      "neighbor_radius": 0.08,
+      "neighbor_safe_margin_scale": 1.0,
+      "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+      "source_permuted_assets": {
+        "source_models_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/source_models.pkl",
+        "native_source_prior_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/InventorySupplyChain/native_source_prior.pkl"
+      }
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_count": 48,
+      "global_geometry_index_first": 49,
+      "global_geometry_index_last": 96,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "task": {
+        "d": 1000,
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "shared_shock_scale": 1.0
+      },
+      "anchor": {
+        "variant": "v69_feasible_first_verified_incumbent",
+        "search_calls": 13,
+        "n0": 10,
+        "adaptive_calls": 3,
+        "initial_design_seed": 80
+      },
+      "frozen_assets": {
+        "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/source_models.pkl",
+        "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/QueueResourceControl/native_source_prior.pkl",
+        "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/design.json",
+        "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+      },
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/QueueResourceControl/archive.json",
+      "source_permutation_seed": 2026190002,
+      "planned_permuted_model_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl",
+      "decision_protocol": {
+        "decision_backend": "constrained_ts",
+        "terminal_rule": "feasible_first",
+        "terminal_maximum_violation_probability": 0.5,
+        "terminal_candidate_scope": "observed",
+        "terminal_candidate_budgets": [
+          80,
+          128,
+          128
+        ],
+        "familywise_delta": 0.05,
+        "verification_method": "normal_quantile_tolerance",
+        "objective_incumbent_guard": true,
+        "objective_comparison_budget_per_policy": 8,
+        "maximum_verification_calls_per_recommendation": 352,
+        "verification_updates_search_posterior": false,
+        "adaptive_model_or_precision_changes": false,
+        "objective_comparison_delta": 0.016666666666666666
+      },
+      "neighbor_count": 64,
+      "neighbor_radius": 0.08,
+      "neighbor_safe_margin_scale": 1.0,
+      "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+      "source_permuted_assets": {
+        "source_models_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/source_models.pkl",
+        "native_source_prior_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/QueueResourceControl/native_source_prior.pkl"
+      }
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_count": 48,
+      "global_geometry_index_first": 97,
+      "global_geometry_index_last": 144,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "task": {
+        "d": 1000,
+        "L": 100,
+        "sigma": 0.04,
+        "alpha": 0.05,
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "shared_shock_scale": 1.0
+      },
+      "anchor": {
+        "variant": "v69_feasible_first_verified_incumbent",
+        "search_calls": 13,
+        "n0": 10,
+        "adaptive_calls": 3,
+        "initial_design_seed": 80
+      },
+      "frozen_assets": {
+        "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+        "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+        "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+        "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+      },
+      "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+      "source_permutation_seed": 2026190003,
+      "planned_permuted_model_directory": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1",
+      "decision_protocol": {
+        "decision_backend": "constrained_ts",
+        "terminal_rule": "feasible_first",
+        "terminal_maximum_violation_probability": 0.5,
+        "terminal_candidate_scope": "observed",
+        "terminal_candidate_budgets": [
+          80,
+          128,
+          128
+        ],
+        "familywise_delta": 0.05,
+        "verification_method": "normal_quantile_tolerance",
+        "objective_incumbent_guard": true,
+        "objective_comparison_budget_per_policy": 8,
+        "maximum_verification_calls_per_recommendation": 352,
+        "verification_updates_search_posterior": false,
+        "adaptive_model_or_precision_changes": false,
+        "objective_comparison_delta": 0.016666666666666666
+      },
+      "neighbor_count": 64,
+      "neighbor_radius": 0.08,
+      "neighbor_safe_margin_scale": 1.0,
+      "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+      "source_permuted_assets": {
+        "source_models_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+        "native_source_prior_file": "paper_artifacts/mainline_source_alignment_control_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl"
+      }
+    }
+  ],
+  "source_intervention": {
+    "unit": "One shared permutation of 64 physical-policy response blocks within each two-family source archive.",
+    "generator": "numpy.random.Generator(numpy.random.PCG64(seed)).permutation(64)",
+    "assignment": "At X[i], use original response block pi[i] from the same source family. Use the same pi across both source families.",
+    "preserve": [
+      "X and canonical shared physical-policy order",
+      "family and task metadata",
+      "paired f/g relationship",
+      "all three repeats as one block",
+      "cross-family response pairing",
+      "response marginal distributions"
+    ],
+    "synchronize_fields": [
+      "Y_replicates",
+      "Y_mean",
+      "replicate_variance",
+      "mean_observation_variance",
+      "constraint_sigma"
+    ],
+    "derived_field_rules": {
+      "Y_mean": "mean of three paired response rows",
+      "replicate_variance": "max(var(ddof=1),1e-12)",
+      "mean_observation_variance": "replicate_variance/3",
+      "constraint_sigma": "sqrt(max((sum((g-mean_g)^2)+2*0.04^2)/4,1e-12)); retain original nominal-variance shrinkage, not sqrt(sample variance)",
+      "storage": "Save one small permutation record per original archive; reconstruct the derived archive in memory for each future fit. Original archives and models are read-only."
+    },
+    "refit_response_derived_parts": [
+      "supervised risk encoder and scaling",
+      "spectral/additive feature maps and dictionaries",
+      "all f/g/eta coefficient laws and common/task/white parts",
+      "source evidence and identity/node weights",
+      "native risk basis and coefficient prior including deviation calibration"
+    ],
+    "fit_entrypoints": [
+      "performance.mainline_legacy_source_models.fit_source_models",
+      "performance.mainline_role_source_holdout.fit_native"
+    ],
+    "fit_pipeline_counts": {
+      "structural_bundle": 3,
+      "native_source_prior": 3
+    },
+    "recipe": "Unchanged current source fitting settings, seeds, 8 identities, 1024 nodes and latent_shared split. Both added arms reuse the same family-specific permuted artifacts.",
+    "no_selection": "One preregistered permutation per archive, retain fixed points. No screening, redraw, tuning, fit-score selection or target-outcome selection.",
+    "failure": "Retain failed fits and actual fees; stop before new target simulation if any required control model is unavailable. No automatic retry or replacement permutation; missing effects are null.",
+    "original_models_unchanged": true,
+    "new_source_simulations_planned": 0
+  },
+  "backend_isolation": {
+    "frontend": "Original true-source engine, proposal GPR, initial design and public bank generator remain unchanged; each arm learns its own paid target history.",
+    "role_projection_context": "Separate permuted native risk basis/coefficient law and permuted structural bundle, with actual d1000 target geometry/config/tau; used by both query and final observed-pool ordering.",
+    "implementation_warning": "Replacing only backend_bundle leaks the original native g prior through role_inputs; replacing build_native source_prior also changes the frontend. Neither is the registered intervention.",
+    "cache": "Separate by backend; share the identical permuted source artifacts across added AFTER/POINT operators.",
+    "no_extra_online_scoring": true
+  },
+  "cohort": {
+    "geometry_count": 144,
+    "streams_per_geometry": 2,
+    "task_stream_count": 288,
+    "sampling": "48 per family in registered order; no outcome-based geometry selection.",
+    "sample_size_basis": "Fixed resource design matching previous independent confirmation; no power or precision guarantee for new direct contrasts or interaction. No outcome-dependent enlargement.",
+    "geometry_seed": 2026200000,
+    "geometry_generator": "Generator(PCG64(2026200000)); for each geometry in family order draw shift uniform(-0.035,0.035,size=3), then radius uniform(0.95,1.05).",
+    "geometry_uniform_values_future": 576,
+    "geometry_optimizer_seed_base": 2026200000,
+    "global_index_range": [
+      1,
+      144
+    ],
+    "streams": [
+      {
+        "name": "stream1",
+        "observation_seed_base": 2026210000,
+        "verification_seed_base": 2026220000
+      },
+      {
+        "name": "stream2",
+        "observation_seed_base": 2026230000,
+        "verification_seed_base": 2026240000
+      }
+    ],
+    "stream_seed_rule": "Base plus global geometry index. Same geometry and optimizer seed across streams; independent observation and terminal streams.",
+    "initial_design_seed": 80,
+    "shared_bank": "Each stream builds its own shared64 from its own STOP observations using the frozen generator; never transfers the other stream bank.",
+    "arm_randomness": "Preserve original semantic RNG namespaces; inserting new names must not change old-arm draws.",
+    "seed_preflight": "Server top-level performance/manifests/*.json: 35 parsed, zero proposed-prefix or exact-range conflicts before registration; see cluster_control/stage88_seed_prefix_preflight_20261018.json."
+  },
+  "budget": {
+    "unique_search_histories": 2592,
+    "online_search_histories": 2304,
+    "terminal_cells": 3168,
+    "initial_calls_per_stream": 10,
+    "adaptive_calls_per_online_history": 3,
+    "verification_cap_per_cell": 352,
+    "online_total_logical_cap": 365,
+    "stop_total_logical_cap": 362,
+    "planned_physical_initial_calls": 2880,
+    "planned_physical_adaptive_calls": 6912,
+    "planned_logical_search_calls": 40320,
+    "successful_path_physical_bound": 1074240,
+    "protocol_cap_physical_bound": 1124928,
+    "protocol_cap_logical_bound": 1155456,
+    "bound_formula": "288*(10+8*3+11*352); successful old-verifier path substitutes 336 for 352. Failed attempts and explicitly admitted recovery fees retained separately.",
+    "actual_new_scientific_calls_this_stage": 0,
+    "actual_new_source_fits_this_stage": 0
+  },
+  "analysis": {
+    "primary_endpoints": [
+      "C(real_AFTER)-C(permuted_AFTER)",
+      "G(real_AFTER)-G(permuted_AFTER)"
+    ],
+    "key_secondary_interaction": "For C and G separately: (real_AFTER-real_POINT)-(permuted_AFTER-permuted_POINT).",
+    "other_prespecified_comparisons": [
+      "real_AFTER-real_POINT",
+      "permuted_AFTER-permuted_POINT",
+      "real_POINT-permuted_POINT",
+      "real_FULL-real_AFTER"
+    ],
+    "C": "Original certified-and-truly-feasible indicator; false certification reported separately.",
+    "G": "Original signed certified quality above best truly feasible initial10; G=P-L. No certificate gives G=0 only if baseline is defined; actual deployment quality remains unknown.",
+    "pairing": "Compute per-stream contrasts then average both streams within geometry before original 95% geometry t intervals; report each stream and family separately.",
+    "missing": "Missing baseline or failed execution remains null. If either required stream/cell is absent, the two-stream geometry effect is null. Keep full denominator and separately report defined subsets. Interaction requires a common four-arm subset.",
+    "retain": [
+      "all 11 arm outcomes",
+      "false certificates",
+      "execution and scientific failures",
+      "all positive/tied/negative/missing geometries",
+      "new positive quality versus avoided loss",
+      "largest positive contribution and descriptive leave-largest-out sensitivity",
+      "all historical fees"
+    ],
+    "secondary_inference": "Individual intervals are not a multiplicity-adjusted set of claims. A positive interaction alone does not establish real AFTER deployment superiority.",
+    "mechanisms": "Reuse frozen multi-safe/single-safe/minimum-violation/requery/list/safety/objective-comparison categories; do not present descriptive decomposition as identified mediation.",
+    "historical_batches": "Keep 7001-7024 dual streams, 202611 new24 single stream, Stage85 new144 dual streams and this future cohort separate.",
+    "limitations": [
+      "Conditional on original source-trained frontend and three fixed permutations",
+      "Not a source-free calibrated baseline or proof of source necessity",
+      "Geometry sample does not replicate source-model randomization",
+      "New-interaction precision unknown; no enlargement or threshold/model tuning"
+    ]
+  },
+  "future_barriers": [
+    "targeted substitute wiring checks",
+    "one-time source permutation and 3+3 source fits",
+    "freeze all original and permuted models",
+    "materialize fresh geometry metadata",
+    "all 288 initializations and shared banks",
+    "all 2592 searches complete or failed",
+    "all 3168 terminal inputs or missing",
+    "all 3168 old terminals complete or failed and globally sealed",
+    "freeze complete candidate-pool union",
+    "truth scoring and summaries"
+  ],
+  "saved_score_contract": {
+    "role_histories": [
+      "legacy_role_full",
+      "legacy_role_after_init_point_only",
+      "legacy_role_point_only",
+      "source_permuted_role_after_init_point_only",
+      "source_permuted_role_point_only"
+    ],
+    "query_prefixes": [
+      10,
+      11,
+      12
+    ],
+    "planned_saved_query_states": 4320,
+    "record": "Passively save already-computed query scores, final observed-pool ranks and list construction. No extra online scoring.",
+    "postseal_union": "Saved pools for five role histories, common initial10, all eleven terminal lists/deployments. Missing states remain missing; no restorative scoring.",
+    "all_terminal_outcomes_retained": true
+  },
+  "future_wiring_checks": [
+    "response block and derived-field alignment; original archives unchanged",
+    "native g isolation, actual geometry/d/tau",
+    "explicit AFTER/POINT dispatch, identical control sources, separate caches",
+    "unchanged original nine-arm RNG/choices/budget and paid-prefix recovery",
+    "global 3168-cell seal before truth, no target leakage into source fits",
+    "geometry pairing, null missingness and common interaction subset"
+  ],
+  "scheduler": {
+    "nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "independent_items": "submit-cpu-batch",
+    "workers": "live free physical cores",
+    "threads": {
+      "OMP_NUM_THREADS": 1,
+      "MKL_NUM_THREADS": 1,
+      "OPENBLAS_NUM_THREADS": 1
+    },
+    "automatic_scientific_retry": false,
+    "local_science": false
+  },
+  "this_stage_new_work": {
+    "simulation_calls": 0,
+    "terminal_calls": 0,
+    "truth_fields": 0,
+    "candidate_score_evaluations": 0,
+    "source_fit_pipelines": 0,
+    "model_or_posterior_restorations": 0,
+    "raw_replays": 0,
+    "rng_draws": 0,
+    "scientific_tasks_submitted": 0
+  },
+  "accounting": "Preserve all historical sources, failures and fees; source reuse is not new simulation. Future fit CPU, target physical/logical calls, truth fields, failed attempts, checks and scheduler costs separate. Unmetered values remain unknown.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_legacy_backend_bridge_v1/completion.json",
+    "docs/mainline_evidence_chain_20261018.md",
+    "paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_completion_compact_20261018.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage89_accounting.json"
+  ],
+  "next_step": "Use existing saved four-arm common-state and postseal pool records to distinguish certification, positive quality and new losses; zero new simulation, scoring, fitting or posterior restoration. Retain all11 arms, all ties/losses,67 failures, Queue ESS warnings and costs. No failed-cohort reruns or threshold changes; old and new cohorts separate.",
+  "source_preparation_wiring": {
+    "stage": 90,
+    "status": "source_preparation_validated_metadata_prepared",
+    "archive_module": "performance.mainline_source_alignment_archive",
+    "preparation_module": "performance.prepare_mainline_source_alignment_sources",
+    "validation_module": "performance.run_mainline_source_alignment_source_preparation",
+    "preparation_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/preparation.json",
+    "real_source_fit_pipelines": 0,
+    "real_source_permutations_generated": 0,
+    "new_scientific_calls": 0,
+    "scientific_execution_admitted": false,
+    "failed_launch_task": "t183496",
+    "failed_launch_reason": "Argument list too long: ssh; wrapper/checks/prepare did not start. Original task cancelled; a short module entry completed on t183498.",
+    "result_document": "docs/mainline_source_alignment_preparation_results_20261018.md",
+    "validation_task": "t183498",
+    "validation_node": "node002",
+    "validation_test_count": 31,
+    "validation_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage90_attempt1/checks.json",
+    "validation_completed_utc": "2026-10-18T09:06:18.067527+00:00",
+    "preparation_status": "prepared_not_started",
+    "prepared_fit_pipeline_count": 6,
+    "wrapper_cpu_seconds_including_children": 3.125986,
+    "accounting_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage90_accounting.json",
+    "failed_launch_task_cancelled": true,
+    "duplicate_completed_work": 0
+  },
+  "wiring_preparation": {
+    "stage": 89,
+    "status": "backend_and_summary_validated",
+    "scientific_execution_admitted": false,
+    "backend_module": "performance.mainline_role_backend",
+    "summary_module": "performance.mainline_source_alignment_summary",
+    "validation_module": "performance.run_mainline_source_alignment_validation",
+    "registered_source_assets_exist": true,
+    "scope": "Backend/source reload routing and globally sealed saved-result factorial summary only; no runtime scientific stage scheduler or model fit.",
+    "remaining": "Stage91 source assets sealed; full target orchestration and postseal five-role scoring remain to be wired and validated.",
+    "validation_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage89_attempt1/checks.json",
+    "validation_task": "t183485",
+    "validation_node": "node004",
+    "validation_test_count": 61,
+    "validation_completed_utc": "2026-10-18T08:16:09.483513+00:00",
+    "validation_cpu_seconds": 4.697094,
+    "validation_coordinator_cpu_seconds": 0.010107808000000003
+  },
+  "this_stage_new_work_scope": "Stage92 target wiring and synthetic checks only; Stage91 actual source fits and costs remain recorded separately.",
+  "source_fitting_execution": {
+    "stage": 91,
+    "status": "sealed_sources_only",
+    "authorized_utc": "2026-10-18T09:13:55.149217+00:00",
+    "manifest_preparation": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/preparation.json",
+    "source_fitting_authorized": true,
+    "target_execution_authorized": false,
+    "target_execution_started": false,
+    "stage_order": [
+      "structural_all_three",
+      "native_all_three",
+      "collect_and_source_asset_seal"
+    ],
+    "dispatch": "Existing fit CLI and no-repeat wrapper; three independent single-item submit-cpu-batch jobs per fit stage, explicit node001-node006 pool, vram0, one CPU worker/one BLAS thread each.",
+    "failure_policy": "No next stage after any failed fit; preserve already-started outcomes, all failures and actual fees. No redraw, recipe changes or automatic refitting.",
+    "fit_entrypoint": "performance.prepare_mainline_source_alignment_sources --action fit",
+    "seal_reads": "Saved receipts, diagnostics and permutation JSON plus file metadata only; no model reload or posterior restoration.",
+    "original_assets_unchanged": true,
+    "new_target_simulation_calls": 0,
+    "new_target_score_calls": 0,
+    "new_posterior_restorations": 0,
+    "source_asset_seal_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/source_asset_seal.json",
+    "completed_fit_pipelines": 6,
+    "structural_fits": 3,
+    "native_fits": 3,
+    "source_permutations_generated": 3,
+    "source_fit_failures": 0,
+    "source_fit_cpu_seconds": 58.82856184,
+    "fit_task_ids": [
+      "t183510",
+      "t183511",
+      "t183512",
+      "t183515",
+      "t183516",
+      "t183517"
+    ],
+    "collect_task_id": "t183518",
+    "actual_nodes": [
+      "node002",
+      "node004"
+    ],
+    "accounting_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+    "result_document": "docs/mainline_source_alignment_fit_results_20261018.md"
+  },
+  "target_execution_started": true,
+  "scientific_execution_scope": "Source fitting only; independent target scientific validation is unstarted.",
+  "source_models_ready": true,
+  "target_wiring_preparation": {
+    "stage": 92,
+    "status": "validated_target_not_started",
+    "registration_module": "performance.prepare_mainline_source_alignment_targets",
+    "execution_manifest": "performance/manifests/mainline_source_alignment_targets_v1.json",
+    "execution_module": "performance.run_mainline_source_alignment_science",
+    "cluster_controller": "scripts/run_mainline_source_alignment_science_cluster.py",
+    "postseal_module": "performance.summarize_mainline_source_alignment",
+    "factorial_summary_module": "performance.mainline_source_alignment_summary",
+    "stage_order": [
+      "initial",
+      "neighbors",
+      "online",
+      "native",
+      "terminal",
+      "global_terminal_seal",
+      "inventory",
+      "score",
+      "collect"
+    ],
+    "registered_future_search_histories": 2592,
+    "registered_future_terminal_cells": 3168,
+    "registered_future_query_states": 4320,
+    "maximum_verification_calls_per_cell": 352,
+    "validation_task": "t183531",
+    "validation_node": "node002",
+    "validation_test_count": 93,
+    "validation_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage92_attempt1/checks.json",
+    "validation_child_returncode": 0,
+    "validation_attempts": 1,
+    "automatic_retries": 0,
+    "target_geometries_materialized": false,
+    "target_execution_authorized": false,
+    "target_execution_started": false,
+    "new_real_simulations": 0,
+    "new_target_scores": 0,
+    "new_source_fits": 0,
+    "new_source_permutations": 0,
+    "new_model_or_posterior_restorations": 0,
+    "source_asset_seal_file": "paper_artifacts/mainline_source_alignment_control_v1/source_preparation/source_asset_seal.json",
+    "retain_source_warnings": true,
+    "accounting_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage92_accounting.json",
+    "result_document": "docs/mainline_source_alignment_target_wiring_results_20261018.md"
+  },
+  "target_execution": {
+    "stage": 93,
+    "status": "complete_with_retained_failures",
+    "authorized_utc": "2026-10-18T10:53:22.000969+00:00",
+    "target_execution_authorized": true,
+    "target_execution_started": true,
+    "manifest": "performance/manifests/mainline_source_alignment_targets_v1.json",
+    "controller": "scripts/run_mainline_source_alignment_science_cluster.py",
+    "validation_reused": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage92_attempt1/checks.json",
+    "source_assets_reused": 6,
+    "source_refits_authorized": false,
+    "source_redraw_authorized": false,
+    "geometries": 144,
+    "observation_streams": 2,
+    "terminal_cells": 3168,
+    "verification_cap_per_cell": 352,
+    "node_pool": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "science_retry_policy": "Retain completed work, failed paid prefixes, unknown fees and all11 arms; no automatic scientific retries.",
+    "truth_gate": "All3168 completed/failed/missing terminal cells globally sealed before inventory and truth scoring.",
+    "result_document": "docs/mainline_source_alignment_target_results_20261018.md",
+    "registration_task": "t183533",
+    "registration_node": "node006",
+    "admission_task": "t183535",
+    "admission_node": "node005",
+    "geometry_uniform_draws": 576,
+    "registration_draws_repeated": false,
+    "controller_pid": 3728647,
+    "controller_log": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_controller_resume1.log",
+    "controller_state": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/source_alignment_science_state.json",
+    "initial_description_task": "t183537",
+    "initial_worker_tasks": [
+      "t183538",
+      "t183539",
+      "t183540",
+      "t183541"
+    ],
+    "initial_planned_workers": 43,
+    "latest_progress_snapshot": {
+      "utc": "2026-10-19T01:34:07.391282+00:00",
+      "stage": "complete",
+      "completed_terminal_cells": 3101,
+      "executable_terminal_cells": 3101,
+      "retained_missing_terminal_cells": 67,
+      "registered_terminal_cells": 3168,
+      "completed_terminal_worker_tasks": [
+        "t188746",
+        "t188747",
+        "t188748",
+        "t188749",
+        "t188750"
+      ],
+      "resource_queued_terminal_worker_tasks": [],
+      "scheduler_tasks_audited": 41,
+      "scheduler_retry_count": 0,
+      "duplicate_wrapper_executions": 0,
+      "truth_scoring_started": true,
+      "truth_scoring_complete": true,
+      "scored_geometries": 144,
+      "scored_streams": 288,
+      "scoring_failed_outcomes": 0,
+      "seal_utc": "2026-10-19T01:21:18.937039+00:00",
+      "evidence": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_completion_handoff_20261019.json"
+    },
+    "controller_detached": true,
+    "original_controller_pid": 2498939,
+    "controller_resumes": 1,
+    "scientific_failed_attempts_repeated": 0,
+    "prior_progress_snapshot": {
+      "utc": "2026-10-18T17:23:58+00:00",
+      "stage": "terminal",
+      "completed_terminal_cells": 915,
+      "executable_terminal_cells": 3101,
+      "retained_missing_terminal_cells": 67,
+      "registered_terminal_cells": 3168,
+      "completed_terminal_worker_tasks": [
+        "t188746",
+        "t188749"
+      ],
+      "resource_queued_terminal_worker_tasks": [
+        "t188747",
+        "t188748",
+        "t188750"
+      ],
+      "original_scheduler_tasks_audited": 26,
+      "original_scheduler_retry_count": 0,
+      "duplicate_wrapper_executions": 0,
+      "truth_scoring_started": false,
+      "evidence": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_terminal_progress1_20261019.json"
+    },
+    "controller_completed": true,
+    "accounting_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json",
+    "results_compact": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_results_compact_20261019.json",
+    "result_scope": {
+      "primary_and_interaction_C_geometries": 105,
+      "primary_and_interaction_G_geometries": 97,
+      "full144_primary_and_interaction_mean": null,
+      "real_AFTER_minus_POINT_C_geometries": 144,
+      "real_AFTER_minus_POINT_G_geometries": 136,
+      "quality_interaction_confirmed": false,
+      "all11_arms_retained": true,
+      "source_ESS_warnings_retained": true
+    }
+  }
+}

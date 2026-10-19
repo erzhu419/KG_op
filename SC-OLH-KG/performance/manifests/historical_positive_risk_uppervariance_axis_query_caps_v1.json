@@ -1,0 +1,35 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_certificate_caps_screen_v1.json",
+  "previous_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_certificate_caps_v1.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_certificate_caps_v1/completion.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_query_caps_v1",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_screen_v1.json",
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "pilot_records": [
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p24",
+    "positive_midmean_v1_n4_m4_localv_o4_h1_p17"
+  ],
+  "pilot_cost_admission": {
+    "source_phase_estimated_cpu_seconds": 2509.6862320528,
+    "estimated_pilot_worker_cpu_seconds": 80,
+    "aggregate_estimated_phase_cpu_seconds": 2589.6862320528,
+    "maximum_worker_cpu_seconds": 70,
+    "cost_admitted": true,
+    "original_shared_phase_reserve_cpu_seconds": 600,
+    "already_charged_support_cpu_seconds": 47.232757465000006
+  },
+  "maximum_live_workers": 1,
+  "priority": "low",
+  "risk_observations": 224,
+  "objective_heads_per_origin": 16,
+  "all_identity_likelihoods": 8,
+  "action_count": 365,
+  "remaining_calls": 356,
+  "verifier_sd_order": 16,
+  "replicates": 4,
+  "scope": "Extension of the registered certificate cap phase: one original600reserve, prior costs retained. Query63 equals deployment policy; guarded delta is original familywise delta divided by shortlist size. Historical raw and projected integrators retained,1e-4 numerical padding and original zero-candidate gate."
+}

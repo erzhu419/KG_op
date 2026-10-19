@@ -1,0 +1,64 @@
+{
+  "name": "frozen_three_candidate_two_objective_comparisons",
+  "status": "prepared_not_executed",
+  "target_seeds": [
+    2026103001,
+    2026103002,
+    2026103003,
+    2026103004,
+    2026103005,
+    2026103006,
+    2026103007,
+    2026103008,
+    2026103009,
+    2026103010,
+    2026103011,
+    2026103012,
+    2026103013,
+    2026103014,
+    2026103015,
+    2026103016,
+    2026103017,
+    2026103018,
+    2026103019,
+    2026103020,
+    2026103021,
+    2026103022,
+    2026103023,
+    2026103024
+  ],
+  "arms": [
+    "legacy_role_full",
+    "legacy_role_full_native_terminal",
+    "legacy_role_after_init_point_only",
+    "legacy_role_after_init_point_only_native_terminal",
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "legacy_role_point_only",
+    "current_structural_mixture",
+    "initialization_only"
+  ],
+  "protocols": {
+    "frozen_three_candidate_two_objective_comparisons": [
+      80,
+      120,
+      120
+    ]
+  },
+  "execution_failures": [
+    {
+      "replicate": 1,
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "status": "search_failed",
+      "logical_search_calls": 11,
+      "new_search_calls": 1,
+      "reason": "RuntimeError('Batched raw moment error exceeds frozen tolerance: 2.5773155986877152e-08')",
+      "failed_raw_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_raw_1792157276809918126.json",
+      "failed_state_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_engine.pkl"
+    }
+  ],
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_preparation_v1",
+  "real_execution_authorized": false
+}

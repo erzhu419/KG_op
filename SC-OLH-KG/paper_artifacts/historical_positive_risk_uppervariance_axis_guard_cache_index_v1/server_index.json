@@ -1,0 +1,52 @@
+{
+  "scope": "Only current deploy historical metadata and exact frozen observation coordinates; no integrations or reference admission.",
+  "complete": true,
+  "source_screen_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_cached_pair_references_screen_v2.json",
+  "attached_reference_plans": 85,
+  "unattached_metadata_outputs_scanned": 47,
+  "unattached_groups_scanned": 220,
+  "maximum_metadata_bytes": 262144,
+  "skipped_large_metadata_outputs": [],
+  "matches": [
+    {
+      "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_gauss_pilot_v1",
+      "record": "positive_body_v1_n4_m4_v4_o4_h1_p0",
+      "kind": "raw",
+      "coordinate_target": "positive_body_v1_n4_m4_v4_o4_h1_p0",
+      "group": 34,
+      "action_indices": [
+        34,
+        107,
+        180
+      ],
+      "candidate_passed": true,
+      "selected_candidate": "E9",
+      "selected_rules_by_identity": {
+        "4": "E9",
+        "5": "E9"
+      }
+    }
+  ],
+  "live_record_kinds": 134,
+  "exact_projected_p17_matches": [],
+  "gauss_existing_selected_controls": {
+    "record": "positive_body_v1_n4_m4_v4_o4_h1_p0",
+    "kind": "raw",
+    "source_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_competition_v5.json",
+    "already_attached": true,
+    "selected_candidate": "E9",
+    "comparisons": [
+      {
+        "identity": 4,
+        "statistics_equal": true,
+        "costs_equal": true
+      },
+      {
+        "identity": 5,
+        "statistics_equal": true,
+        "costs_equal": true
+      }
+    ]
+  },
+  "reader_process_cpu_seconds": 1.8503503
+}

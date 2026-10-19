@@ -1,0 +1,88 @@
+{
+  "name": "mainline_three_family_v1",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_three_family_v1",
+  "report": "docs/mainline_three_family_results_20261016.md",
+  "entrypoint": "performance/run_mainline_three_family.py",
+  "families": [
+    {
+      "domain": "InventorySupplyChain",
+      "search_manifest": "performance/manifests/mainline_three_family_inventory_search_v1.json",
+      "terminal_manifest": "performance/manifests/mainline_three_family_inventory_cells_v1.json",
+      "output_dir": "paper_artifacts/mainline_three_family_v1/InventorySupplyChain"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "search_manifest": "performance/manifests/mainline_three_family_queue_search_v1.json",
+      "terminal_manifest": "performance/manifests/mainline_three_family_queue_cells_v1.json",
+      "output_dir": "paper_artifacts/mainline_three_family_v1/QueueResourceControl"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "search_manifest": "performance/manifests/mainline_three_family_factorshock_search_v1.json",
+      "terminal_manifest": "performance/manifests/mainline_three_family_factorshock_cells_v1.json",
+      "output_dir": "paper_artifacts/mainline_three_family_v1/FactorShockStatePolicyRZDT1"
+    }
+  ],
+  "target_seeds": [
+    2026102011,
+    2026102012,
+    2026102013,
+    2026102014,
+    2026102015,
+    2026102016,
+    2026102017,
+    2026102018,
+    2026102019,
+    2026102020,
+    2026102021,
+    2026102022
+  ],
+  "geometry_seed": 2026102000,
+  "preflight_file": "paper_artifacts/mainline_three_family_v1/preflight.json",
+  "primary_comparison": "Under original role terminal: after-initialization point updates minus source0 point updates, certified true-feasible quality gain. Keep actual reward and certified initial-quality component separate.",
+  "secondary": "Full minus after-init under each terminal, native-minus-role and2x2 interaction; all unchanged references. Report each family and equal-family aggregate; four tasks per family.",
+  "budget": {
+    "task_count": 12,
+    "unique_search_histories": 84,
+    "terminal_cells": 108,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "initial_physical_calls": 120,
+    "online_search_physical_calls": 216,
+    "maximum_verification_calls_per_cell": 352,
+    "maximum_verification_physical_calls": 38016,
+    "maximum_target_physical_calls": 38352,
+    "unique_logical_search_calls": 1056,
+    "expanded_logical_search_calls": 1368,
+    "maximum_logical_target_calls": 39384,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "download_bytes": 0
+  },
+  "barriers": {
+    "before_online": "All12 tasks initial10 and neighbor banks frozen.",
+    "before_verify": "All84 searches and24 alternative native terminals frozen across three families.",
+    "before_truth": "All108 verifications complete across three families.",
+    "failure": "Retain paid raw/state and cost; never resample a partial paid stage."
+  },
+  "model_freeze": "Family-specific unchanged Stage31 sources, old frontend,64shared neighbors, initial10+3, online365/STOP362 and original80/128/128+8+8guard. No source fit, model patch, threshold change or precision search.",
+  "limits": "12 fresh task geometries nested in three known benchmark families, not12unseen families or108independent samples. Opened prior targets do not choose parameters. Source0 point-only vs initialization coupling isolates the algorithmic information-sharing intervention; adaptive frontend/trajectory effects belong to its total decision effect.",
+  "preparation": "Per-family source/role interfaces checked on existing raw before registration. Reuse settled verifier replay; only conditional FactorShock kwargs dispatch changes.",
+  "registered_utc": "2026-10-16T07:03:01.229574+00:00",
+  "started_utc": "2026-10-16T07:03:01.750738+00:00",
+  "completed_utc": "2026-10-16T07:23:21.121649+00:00",
+  "decision": {
+    "conclusion": "small_positive_initialization_transfer_not_uniform_superiority",
+    "deployed_model_changed": false,
+    "primary_quality_difference": 1.775089978129733e-05,
+    "primary_wins_ties_losses": [
+      2,
+      10,
+      0
+    ],
+    "certification_reference_difference": 0.0,
+    "working_baseline": "legacy_role_after_init_point_only; full propagation retained as a mechanism control",
+    "next_step": "Saved-trajectory opportunity/query/shortlist/verification audit across all12 tasks against best true-feasible initial10. Separate risk eligibility, objective ranking and actual terminal exposure. No new fits, simulation, truth calls, cohort expansion or boundary-noise patch selection."
+  }
+}

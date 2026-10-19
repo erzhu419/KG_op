@@ -1,0 +1,97 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-16T14:51:11.659511+00:00",
+  "attempts": 15,
+  "cost": {
+    "cpu_seconds": 2703.7152235029994,
+    "wall_seconds": 2742.0677379390045,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_fits": 24,
+    "current_bundle_fits": 12,
+    "native_prior_fits": 12,
+    "new_truth_function_calls": 0,
+    "download_bytes": 0,
+    "paired_raw_adaptation_exposures": 312,
+    "native_replayed_raw_rows": 312,
+    "role_posterior_evaluations": 144
+  },
+  "failed_attempts": [],
+  "fold_failures": [],
+  "source_low_ess_flags": [
+    {
+      "archive": "FactorShockStatePolicyRZDT1",
+      "fold": 0,
+      "identity": [
+        "additive",
+        "head_specific",
+        "observed_task"
+      ],
+      "head": "f",
+      "weight_ess": 4.916908219493967
+    },
+    {
+      "archive": "FactorShockStatePolicyRZDT1",
+      "fold": 0,
+      "identity": [
+        "additive",
+        "head_specific",
+        "deconvolved_task"
+      ],
+      "head": "f",
+      "weight_ess": 4.970538891149974
+    },
+    {
+      "archive": "FactorShockStatePolicyRZDT1",
+      "fold": 1,
+      "identity": [
+        "spectral",
+        "joint",
+        "observed_task"
+      ],
+      "head": "g",
+      "weight_ess": 7.371092109384664
+    },
+    {
+      "archive": "FactorShockStatePolicyRZDT1",
+      "fold": 1,
+      "identity": [
+        "spectral",
+        "joint",
+        "deconvolved_task"
+      ],
+      "head": "g",
+      "weight_ess": 6.702217885925333
+    },
+    {
+      "archive": "InventorySupplyChain",
+      "fold": 1,
+      "identity": [
+        "spectral",
+        "head_specific",
+        "observed_task"
+      ],
+      "head": "g",
+      "weight_ess": 5.620332546105655
+    },
+    {
+      "archive": "InventorySupplyChain",
+      "fold": 1,
+      "identity": [
+        "spectral",
+        "head_specific",
+        "deconvolved_task"
+      ],
+      "head": "g",
+      "weight_ess": 5.575883761713673
+    }
+  ],
+  "deployed_model_changed": false,
+  "forecasts_scored_utc": "2026-10-16T14:41:28.649200+00:00",
+  "additional_analyses": [
+    "terminal_components.json",
+    "source_findings.json"
+  ]
+}

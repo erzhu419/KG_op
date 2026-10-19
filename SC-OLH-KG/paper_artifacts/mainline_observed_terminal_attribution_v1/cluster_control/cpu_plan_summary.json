@@ -1,0 +1,40 @@
+{
+  "logical_items": 24,
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "live_free_physical_cores": {
+    "node002": 4,
+    "node004": 2,
+    "node005": 2
+  },
+  "plan": [
+    {
+      "node": "node002",
+      "start": 0,
+      "end": 12,
+      "workers": 4,
+      "waves": 3
+    },
+    {
+      "node": "node004",
+      "start": 12,
+      "end": 18,
+      "workers": 2,
+      "waves": 3
+    },
+    {
+      "node": "node005",
+      "start": 18,
+      "end": 24,
+      "workers": 2,
+      "waves": 3
+    }
+  ],
+  "source": "single scheduler cpu-plan --items24 explicit six-node pool; no jobs submitted"
+}

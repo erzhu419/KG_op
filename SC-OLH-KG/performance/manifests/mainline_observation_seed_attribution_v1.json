@@ -1,0 +1,116 @@
+{
+  "name": "mainline_observation_seed_attribution_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T12:33:41.492495+00:00",
+  "source_manifest": "performance/manifests/mainline_observation_seed_replication_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_observation_seed_replication_v1",
+  "prepared_file": "paper_artifacts/mainline_observation_seed_replication_v1/prepared.json",
+  "output_dir": "paper_artifacts/mainline_observation_seed_attribution_v1",
+  "report": "docs/mainline_observation_seed_attribution_results_20261016.md",
+  "target_seeds": [
+    2026102111,
+    2026102112,
+    2026102113,
+    2026102114,
+    2026102115,
+    2026102116,
+    2026102117,
+    2026102118,
+    2026102119,
+    2026102120,
+    2026102121,
+    2026102122
+  ],
+  "replicates": [
+    1,
+    2
+  ],
+  "geometry_count": 12,
+  "task_noise_units": 24,
+  "query_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only"
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "expected_recorded_choices": 216,
+  "expected_terminal_cells": 216,
+  "source_execution_failures": [],
+  "historical_failure": "Stage50 structural2120 remains missing in historical tables. Register and attempt the same arm under each new noise stream; do not pre-exclude it.",
+  "scope": "Post-score attribution of all24 saved Stage54 task-noise combinations. Fixed12geometries, no new confirmation cohort or outcome selection.",
+  "decomposition": "For C=true-feasible certificate and B=best feasible sharedinitial10: R=C*B+G; G=C*max(Q-B,0)-C*max(B-Q,0). Report positive gain and regression separately without changing signed primary G. Positive gain must be a new physical policy outside initial10.",
+  "analysis": [
+    "Reconstruct all recorded query choices before fixed-state component substitutions.",
+    "First divergence only supports component attribution when paid history and physical candidate pool agree; later divergent states are descriptive.",
+    "Link each role history to queried good physical policies, frozen shortlist, actual safety exposure, objective guard and deployment.",
+    "Retain all9 terminal arms; compare missed good-policy quality with actual certified deployment before calling it loss.",
+    "Average both registered noise streams within geometry; separate new-policy improvement, avoided below-best regression and certificate reference.",
+    "Compare native terminal crosses only on the same saved history; slot/order/budget/noise changes are not an isolated sample-size intervention."
+  ],
+  "limits": [
+    "No simulation, verification, truth-function evaluation, fitting, model/posterior restoration, RNG sampling, raw replay or downloads.",
+    "Cached truth may be missing for unqueried dynamic policies; keep unknown. Prefix12 scores do not substitute for final13 posterior scores.",
+    "Unexposed policies have no counterfactual certificates; saved TS innovations do not identify full covariance interventions.",
+    "Opened cases are mechanism evidence, not patch-selection data; no model, risk, terminal, seed or precision selection."
+  ],
+  "expected_new_calls": 0,
+  "expected_new_source_fits": 0,
+  "expected_posterior_restorations": 0,
+  "entrypoints": [
+    "performance/diagnose_mainline_observation_seed_queries.py",
+    "performance/diagnose_mainline_observation_seed_terminal.py",
+    "performance/summarize_mainline_observation_seed_attribution.py"
+  ],
+  "observed_opportunity_decomposition": "H=max(0,best true quality among observed policies minus B); U=H-P. Then G=H-U-L exactly. U is an unrealized observed true-quality opportunity, not a counterfactual certificate or guaranteed gain from a terminal change.",
+  "completed_utc": "2026-10-16T12:41:07.160209+00:00",
+  "next_step": "Register an unseen-geometry confirmation with4new geometries per known family and2observation streams, frozen AFTER candidate and all9terminal arms, existing d1000budget/model/terminal. No new calls in this attribution step; do not tune on opened tasks.",
+  "results_file": "paper_artifacts/mainline_observation_seed_attribution_v1/summary.json",
+  "followup_manifest": "performance/manifests/mainline_unseen_geometry_confirmation_v1.json",
+  "followup_allocation_revision": "Before newoutcomes, choose24unseen geometries×1stream ratherthan12×2 atsame24unitbudget; see registeredallocationevidence andprotocol."
+}

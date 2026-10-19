@@ -1,0 +1,119 @@
+{
+  "complete": true,
+  "units": [
+    {
+      "record": "positive_midmean_v1_n4_m4_localv_o5_h1_p17",
+      "kind": "raw",
+      "pair": [
+        63,
+        45
+      ],
+      "budgets": [
+        [
+          129,
+          80
+        ],
+        [
+          129,
+          129
+        ]
+      ],
+      "priority_weight": 0.0012912039253355299,
+      "priority_gap": 0.006104701942882172,
+      "weighted_priority_gap": 7.882415111652897e-06,
+      "weighted_unresolved_upper_gap": 7.882415111652897e-06
+    },
+    {
+      "record": "positive_body_v1_n4_m4_v4_o5_h1_p3",
+      "kind": "raw",
+      "pair": [
+        63,
+        45
+      ],
+      "budgets": [
+        [
+          80,
+          129
+        ],
+        [
+          129,
+          80
+        ],
+        [
+          129,
+          129
+        ]
+      ],
+      "priority_weight": 0.007346446937701684,
+      "priority_gap": 0.000861747590483776,
+      "weighted_priority_gap": 6.330782947181341e-06,
+      "weighted_unresolved_upper_gap": 6.330782947181341e-06
+    }
+  ],
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p17"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 93.7360339712,
+      "maximum_worker_cpu_seconds": 94,
+      "worklist": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/worklists/0.json"
+    },
+    {
+      "identity": 4,
+      "shard": 1,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o5_h1_p3"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 93.7360339712,
+      "maximum_worker_cpu_seconds": 94,
+      "worklist": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/worklists/1.json"
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_midmean_v1_n4_m4_localv_o5_h1_p17"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179,
+      "worklist": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/worklists/0.json"
+    },
+    {
+      "identity": 5,
+      "shard": 1,
+      "records": [
+        "positive_body_v1_n4_m4_v4_o5_h1_p3"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 178.4418368828,
+      "maximum_worker_cpu_seconds": 179,
+      "worklist": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/worklists/1.json"
+    }
+  ],
+  "observations": 2,
+  "pair_observation_kinds": 2,
+  "pair_budget_kind_rows": 5,
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_screen_v2.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v2/completion.json",
+  "original_phase_costs_retained": true,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "estimated_cost_admitted": true,
+  "estimated_phase_cpu_seconds": 2867.284775818
+}
+

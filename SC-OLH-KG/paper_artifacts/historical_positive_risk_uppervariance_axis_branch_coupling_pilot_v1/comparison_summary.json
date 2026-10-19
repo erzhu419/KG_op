@@ -1,0 +1,60 @@
+{
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_branch_coupling_pilot_v1.json",
+  "numerical_containment_passed": true,
+  "maximum_reference_above_new_bound": 0.0,
+  "best_reference_contrasts_preserved": true,
+  "comparison": {
+    "raw": {
+      "old_gap": 0.0037727248185253923,
+      "new_gap": 0.0023442622285033063,
+      "reduction": 0.3786288846214909,
+      "old_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 13170,
+        "record_action_candidates": 1027,
+        "record_group_candidates": 367
+      },
+      "new_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 10410,
+        "record_action_candidates": 763,
+        "record_group_candidates": 279
+      }
+    },
+    "projected": {
+      "old_gap": 0.003507060419173015,
+      "new_gap": 0.002035521564125173,
+      "reduction": 0.41959324310552926,
+      "old_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 13306,
+        "record_action_candidates": 1035,
+        "record_group_candidates": 345
+      },
+      "new_totals": {
+        "compared_action_head_pairs": 1308160,
+        "overlapping_action_head_pairs": 9027,
+        "record_action_candidates": 630,
+        "record_group_candidates": 210
+      }
+    }
+  },
+  "analysis_cpu_seconds": 36.024735531000005,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "new_joint_reference_integrations": 0,
+  "independent_confirmation": false,
+  "original_zero_candidate_gate_unchanged": true,
+  "source_phase_reserve": {
+    "source_phase": "historical_positive_risk_uppervariance_axis_competition_v60",
+    "already_charged_support_and_failure_cpu_seconds": 80.002664258,
+    "estimated_cached_analysis_cpu_seconds": 270,
+    "total_reserved_support_cpu_seconds": 350.002664258,
+    "shared_phase_reserve_cpu_seconds": 600,
+    "cost_admitted": true,
+    "previous_failed_replay_account": "paper_artifacts/historical_positive_risk_uppervariance_axis_competition_v60/collection_failure_account.json"
+  },
+  "scope": "Diagnostic branch-event relaxation only; original posterior, cached references and verifier retained."
+}

@@ -1,0 +1,173 @@
+{
+  "name": "mainline_terminal_two_comparison_development_v1",
+  "status": "complete_with_inherited_search_failure",
+  "registered_utc": "2026-10-16T21:19:20.908886+00:00",
+  "execution_started": true,
+  "parent_manifest": "performance/manifests/mainline_terminal_two_comparison_preparation_v1.json",
+  "output_dir": "paper_artifacts/mainline_terminal_two_comparison_development_v1",
+  "block_inventory": "paper_artifacts/mainline_terminal_two_comparison_development_v1/block_inventory.json",
+  "preparation_file": "paper_artifacts/mainline_terminal_two_comparison_preparation_v1/prepared.json",
+  "protocol_document": "docs/mainline_terminal_two_comparison_development_protocol_20261017.md",
+  "scope": "Paired development on opened24 geometries; old terminal results retained, one frozen new terminal. No source/model/search/shortlist/risk/precision change; not independent confirmation.",
+  "geometry_count": 24,
+  "registered_cells_per_protocol": 216,
+  "available_candidate_cells": 215,
+  "terminal_arms": [
+    "legacy_role_full",
+    "legacy_role_full_native_terminal",
+    "legacy_role_after_init_point_only",
+    "legacy_role_after_init_point_only_native_terminal",
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "legacy_role_point_only",
+    "current_structural_mixture",
+    "initialization_only"
+  ],
+  "old_protocol": "same_policy_distinct_challenger",
+  "candidate_protocol": "frozen_three_candidate_two_objective_comparisons",
+  "frozen_candidate": {
+    "name": "frozen_three_candidate_two_objective_comparisons",
+    "original_safety_budgets": [
+      80,
+      128,
+      128
+    ],
+    "proposed_safety_budgets": [
+      80,
+      120,
+      120
+    ],
+    "safety_familywise_delta": 0.05,
+    "objective_comparison_calls_per_policy": 8,
+    "maximum_objective_comparisons": 2,
+    "original_objective_delta": 0.016666666666666666,
+    "objective_delta_per_comparison": 0.008333333333333333,
+    "maximum_terminal_calls": 352,
+    "online_initial_plus_search_calls": 13,
+    "online_total_limit": 365,
+    "stop_initial_calls": 10,
+    "stop_total_limit": 362,
+    "allocation_basis": "Keep primary80; subtract8 symmetrically from the two original128 safety allocations to fund one additional16-call comparison. Divide the original objective error allowance equally between the two predetermined comparisons; no data-tuned threshold.",
+    "flow": [
+      "Safety-check the original primary and initial incumbent using their assigned budgets.",
+      "If both pass, compare primary against incumbent on comparison block0 and retain the incumbent unless the primary dominates under the existing paired statistic and the new delta. If only one passes, that policy is the current winner.",
+      "Safety-check the existing third candidate even when the first two produced a winner; apply no added risk filter or new candidate selection.",
+      "If third passes and a winner exists, compare third against that winner on independent comparison block1; switch only on paired objective dominance.",
+      "If the first two both fail and third passes, deploy third without a target comparison. If third fails, retain any certified winner. If all fail, report no certified deployment.",
+      "Preserve numerical execution failures and already used calls through the existing failure-accounting path; do not patch or retry the model."
+    ],
+    "independence": "Block1 must be independent of block0, search, and safety; common random numbers are shared only within each compared pair. Current helper uses a fixed stream tag, so calling it twice with the same seed would reuse samples. Prepare an explicit comparison block index and document its seed mapping.",
+    "reuse": "Reuse verify_frozen_policy and the existing paired objective statistic. The old verify_frozen_shortlist early-return control flow requires a small dedicated adjustment.",
+    "tradeoff": "Lower backup safety counts and stricter objective comparisons may reduce power. Original certificates cannot be inherited, and omissions cannot be counted as recovered successes."
+  },
+  "reuse": {
+    "unit": "same original geometry/seed/arm cell only; no cross-arm pooling",
+    "safety": "Exact same slot, point and seed, first80/120/120 rows. Recompute candidate certificates; do not inherit128-sample status.",
+    "comparison0": "Reuse the original ordered primary/incumbent8+8 block only when required; recompute with delta .05/6.",
+    "comparison1": "New independent block1 for third versus actual first-stage winner, only when both are safety-certified.",
+    "identity": "Raw identity is geometry/task/verification_seed/stream/candidate_index or comparison_block_index/ordered points/replication/side. Budget and delta describe inference, not raw identity.",
+    "failure": "Persist exact partial blocks and spending. Ordinary repeat is blocked; an explicit resume reuses every recorded prefix, including a half CRN pair, and buys only missing samples. No resampling or precision change."
+  },
+  "budget": {
+    "new_source_calls": 0,
+    "new_initial_calls": 0,
+    "new_search_calls": 0,
+    "new_source_fits": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "new_truth_function_calls": 0,
+    "download_bytes": 0,
+    "maximum_candidate_terminal_logical_calls": 75680,
+    "tightened_candidate_terminal_logical_bound": 73584,
+    "maximum_new_physical_verification_calls": 24248,
+    "conditional_existing_raw_capacity": 49336,
+    "per_cell_terminal_cap": 352,
+    "online_total_cap": 365,
+    "stop_total_cap": 362,
+    "cumulative_note": "Old physical spending remains charged, including unused last8 safety rows. Historical old plus new spending is not bounded by one candidate352 cap."
+  },
+  "primary_analysis": {
+    "candidate_arm": "legacy_role_after_init_point_only",
+    "comparisons": "Report new-minus-old C and signed G for each of all9 arms; AFTER is predesignated, not selected from results.",
+    "metrics": {
+      "A": "actual certificate",
+      "C": "I(certified and true feasible)",
+      "R": "C*Qdeployed",
+      "G": "C*(Qdeployed-Qbest_true_feasible_initial10), signed",
+      "P": "max(G,0)",
+      "L": "max(-G,0)"
+    },
+    "secondary": "Report change in AFTER-minus-POINT and FULL-minus-AFTER under old versus new terminal, plus native/GP/structural/STOP references; fixed histories mean this is terminal conversion, not new search learning.",
+    "aggregation": "Statistical unit geometry, not arm or pair. Report per-geometry differences, family directions, wins/ties/losses, contribution concentration and descriptive paired t intervals on explicitly stated available subsets.",
+    "missing": "POINT3018 stays missing. Queue3009 G/P/L and all baseline-dependent metrics stay null even when C=0. All24 G means/intervals remain null; conditional n=23, POINT n=22 if no further failures. POINT all24 C mean/interval stays null; known paired sum S permits support bounds[(S-1)/24,(S+1)/24], not confidence intervals."
+  },
+  "mechanism": {
+    "intermediate_B": "Use new first-stage certified winner when present; otherwise use new third-only fallback final outcome.",
+    "decomposition": "For defined metric M: Mnew-Mold=(Mnew-MB)+(MB-Mold). First term is third challenging an existing winner; second is joint safety120 and stricter-delta change, retaining interactions.",
+    "matched_diagnostics": "Report128-to120 safety pass/fail flips and old/new block0 decisions only for actual matched candidates/streams; do not invent additive causal components or new variants.",
+    "focal_cases": {
+      "3016": "Record actual block1 opponent; stricter block0 delta may retain initial6, so53 need not directly face18.",
+      "3021": "Record49 safety120, actual opponent, objective comparison and deployed quality.",
+      "3007": "Keep both role arms already deploying61 and native crossings omitting61; report losses as well as recoveries."
+    }
+  },
+  "barriers": [
+    "Complete exact-prefix/block reuse adapter and deterministic budget/resume/metric checks before real execution. The35 previous checks do not validate cache reuse.",
+    "Use all215 frozen candidate inputs and preserve the216th search failure; no intermediate outcome-based truncation, new seeds, variants or precision patches.",
+    "Seal all available candidate results and failures before scoring cached truth; no true-function calls. Missing cached labels remain unknown.",
+    "Keep old results immutable. Report actual logical, reused, newly paid, failed and historical costs separately. Existing searches are charged once in the inherited global ledger."
+  ],
+  "decision": "Assess certification, signed quality and actual spending jointly. Do not adopt automatically from this opened cohort, fill missing values, or attribute generic terminal gains to prior propagation. No further patch screening in this batch.",
+  "inherited_failures": [
+    {
+      "replicate": 1,
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "status": "search_failed",
+      "logical_search_calls": 11,
+      "new_search_calls": 1,
+      "reason": "RuntimeError('Batched raw moment error exceeds frozen tolerance: 2.5773155986877152e-08')",
+      "failed_raw_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_raw_1792157276809918126.json",
+      "failed_state_file": "paper_artifacts/mainline_unseen_geometry_confirmation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026103018/legacy_role_point_only/failed_search_engine.pkl"
+    }
+  ],
+  "inherited_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_objective_contrast_exposure_v1/completion.json"
+  ],
+  "new_work_at_registration": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "registration_status": "complete",
+  "registration_completion": "paper_artifacts/mainline_terminal_two_comparison_development_v1/registration_completion.json",
+  "summary": "paper_artifacts/mainline_terminal_two_comparison_development_v1/summary.json",
+  "registration_summary": "paper_artifacts/mainline_terminal_two_comparison_development_v1/registration_summary.json",
+  "execution_preparation_started_utc": "2026-10-16T21:24:07.265547+00:00",
+  "execution_started_utc": "2026-10-16T21:29:05.585813+00:00",
+  "execution_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /usr/bin/python3 -m performance.run_mainline_two_comparison_development run",
+  "execution_checks": {
+    "reuse_unique_checks": 4,
+    "summary_unique_checks": 11,
+    "reuse_results": "paper_artifacts/mainline_terminal_two_comparison_development_v1/checks/reuse/results.json",
+    "summary_attempts": "paper_artifacts/mainline_terminal_two_comparison_development_v1/checks/summary/attempts.jsonl"
+  },
+  "execution_completed": true,
+  "completed_utc": "2026-10-16T21:33:16.813069+00:00",
+  "completion": "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+  "execution_seal": "paper_artifacts/mainline_terminal_two_comparison_development_v1/execution_status.json",
+  "results_document": "docs/mainline_terminal_two_comparison_development_results_20261017.md",
+  "decision_after_results": "Retain one frozen candidate for fresh-geometry confirmation; do not adopt or tune from this opened cohort. AFTER quality improves on three defined-baseline tasks, dominated by3021; certification unchanged and actual calls increase. OLD3024 loss retained."
+}

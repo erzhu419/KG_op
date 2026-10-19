@@ -1,0 +1,48 @@
+{
+  "scope": "This continuation only; previous ledgers retained unchanged.",
+  "source_rows_reused": 48,
+  "source_replicates_per_row": 3,
+  "source_identity_fits": 2,
+  "new_source_labels": 0,
+  "physical_target_calls": 5768,
+  "logical_target_calls": 5792,
+  "recorded_scientific_cpu_seconds": 221.697085873,
+  "stages": [
+    {
+      "stage": "joint_source_fit",
+      "cpu_seconds": 4.548784287,
+      "ledger": "paper_artifacts/mainline_joint_risk_source_v1/attempts.jsonl"
+    },
+    {
+      "stage": "saved_trajectory_replay",
+      "cpu_seconds": 43.132593976,
+      "ledger": "paper_artifacts/mainline_d1000_joint_risk_replay_v1/attempts.jsonl"
+    },
+    {
+      "stage": "new_geometry_experiment_and_representation_audit",
+      "cpu_seconds": 172.81934525699998,
+      "ledger": "paper_artifacts/mainline_d1000_joint_risk_v1/attempts.jsonl"
+    },
+    {
+      "stage": "post_verification_bias_summary",
+      "cpu_seconds": 0.17490168299999997,
+      "artifact": "paper_artifacts/mainline_d1000_joint_risk_v1/post_verification_risk_bias.json"
+    },
+    {
+      "stage": "selected_policy_risk_diagnostic",
+      "cpu_seconds": 1.0214606700000002,
+      "artifact": "paper_artifacts/mainline_d1000_joint_risk_v1/selected_risk_diagnostic.json"
+    }
+  ],
+  "failed_scientific_attempts": 0,
+  "server_downloads": 0,
+  "validation": {
+    "targeted_tests_passed": 9,
+    "tests": [
+      "tests.test_mainline_joint_risk_source (3)",
+      "tests.test_mainline_initialization_reuse + tests.test_mainline_candidate_release (6)"
+    ],
+    "additional": "zero-simulation runner ordering/embedding check; summary scripts executed successfully"
+  },
+  "timing_scope": "Process CPU recorded by stage. Initial untimed geometry exploration, imports, static inspection, tests and document work are not included; no estimate backfilled."
+}

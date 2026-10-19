@@ -1,0 +1,172 @@
+{
+  "status": "complete",
+  "utc": "2026-10-19T03:53:37.139803+00:00",
+  "task_ids": [
+    "t189905"
+  ],
+  "scheduler_tasks": [
+    {
+      "id": "t189905",
+      "status": "running",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": null,
+      "retry_count": 0,
+      "started_at": 1792381852.9001136,
+      "finished_at": null,
+      "last_block_reason": null
+    }
+  ],
+  "task_status_available": true,
+  "wrapper": {
+    "status": "complete",
+    "node": "node006",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-u",
+      "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_source_numerical_audit_cluster.py",
+      "--worker",
+      "--manifest",
+      "performance/manifests/mainline_source_numerical_executability_audit_v1.json"
+    ],
+    "started_utc": "2026-10-19T03:50:36.600006+00:00",
+    "subprocess_started": true,
+    "child_returncode": 0,
+    "completed_utc": "2026-10-19T03:50:38.488445+00:00",
+    "wall_seconds": 1.8884783908724785,
+    "log_file": "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.log",
+    "own_cpu_seconds": 0.07583999999999999,
+    "child_cpu_seconds": 1.100193,
+    "total_cpu_seconds": 1.1760329999999999,
+    "outer_exit_policy": "Saved child failure is not retried by scheduler"
+  },
+  "wrapper_duplicate_count": 0,
+  "audit_attempt_records": 1,
+  "checks": {
+    "status": "passed",
+    "returncode": 0,
+    "test_files": [
+      "tests/test_mainline_source_numerical_executability.py",
+      "tests/test_mainline_source_numerical_audit_cluster.py"
+    ],
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_source_numerical_executability.py",
+      "tests/test_mainline_source_numerical_audit_cluster.py"
+    ],
+    "test_counts": {
+      "passed": 16
+    },
+    "cpu_seconds": 0.7021069999999999,
+    "wall_seconds": 1.229063780978322,
+    "completed_utc": "2026-10-19T03:50:37.942317+00:00",
+    "automatic_retries": 0,
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0
+  },
+  "sequence": {
+    "status": "complete",
+    "started_utc": "2026-10-19T03:50:36.711979+00:00",
+    "phases": [
+      {
+        "phase": "substitute_checks",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "no:capture",
+          "-q",
+          "tests/test_mainline_source_numerical_executability.py",
+          "tests/test_mainline_source_numerical_audit_cluster.py"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "child_cpu_seconds": 0.7021069999999999,
+        "wall_seconds": 1.229063780978322
+      },
+      {
+        "phase": "saved_record_audit",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-u",
+          "-m",
+          "performance.audit_mainline_source_numerical_executability",
+          "--manifest",
+          "performance/manifests/mainline_source_numerical_executability_audit_v1.json",
+          "--checks",
+          "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/validation/stage97_attempt1/checks.json"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "child_cpu_seconds": 0.28408600000000006,
+        "wall_seconds": 0.5271669505164027
+      }
+    ],
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0,
+    "automatic_retries": 0,
+    "updated_utc": "2026-10-19T03:50:38.472052+00:00"
+  },
+  "completion_status": "complete",
+  "diagnosis": "cause_unidentified",
+  "input_issues": [],
+  "source_diagnostic_files": {
+    "registered": 12,
+    "read": 12
+  },
+  "failure_logs": {
+    "registered": 67,
+    "read": 67
+  },
+  "phase_counts": {
+    "initial_conditioning": 63,
+    "post_initial_own_update": 3,
+    "terminal_recommendation": 1
+  },
+  "controller_exit": {
+    "returncode": 0,
+    "pid": 82652,
+    "completed_utc": "2026-10-19T03:51:45.806878+00:00",
+    "child_cpu_seconds": 87.740775,
+    "supervisor_cpu_seconds": 0.019507,
+    "wall_seconds": 205.55763846298214,
+    "automatic_retries": 0
+  },
+  "manual_dispatch": {
+    "task_ids": [
+      "t189905"
+    ],
+    "cpu_seconds": 61.030089,
+    "wall_seconds": 124.34816562299966,
+    "new_submissions": 0,
+    "automatic_scientific_retries": 0
+  },
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "new_integrations": 0
+  },
+  "task_metadata_read_cpu_seconds": 4.148980773,
+  "scheduler_recovery_note": "Completion is based on saved successful wrapper; scheduler snapshot is retained without additional polling."
+}

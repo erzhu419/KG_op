@@ -1,0 +1,266 @@
+{
+  "domain": "FactorShockStatePolicyRZDT1",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "reuse": "Load the unchanged stage31 native prior and GP/structural bundle. Use original design80 physical policies with fresh paired initial raw on every new task. Stage36 training-fold refits are not used. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "name": "mainline_role_confirmation_v1",
+  "registered_utc": "2026-10-15T23:36:24.884570+00:00",
+  "status": "infrastructure_aborted",
+  "output_dir": "paper_artifacts/mainline_role_confirmation_v1",
+  "target_seeds": [
+    2026101691,
+    2026101692,
+    2026101693,
+    2026101694,
+    2026101695,
+    2026101696,
+    2026101697,
+    2026101698,
+    2026101699,
+    2026101700,
+    2026101701,
+    2026101702
+  ],
+  "geometry_seed": 2026101690,
+  "geometry_by_seed": {
+    "2026101691": {
+      "task_id": "role_confirmation_factorshock_00",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.005993137168914871,
+          -0.0010117869881530184,
+          -0.0332847975925112
+        ],
+        "task_geometry_radius_scale": 1.01497802307146
+      }
+    },
+    "2026101692": {
+      "task_id": "role_confirmation_factorshock_01",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.03220427863266545,
+          -0.020004116550306664,
+          0.03196141356907557
+        ],
+        "task_geometry_radius_scale": 1.0019300346577205
+      }
+    },
+    "2026101693": {
+      "task_id": "role_confirmation_factorshock_02",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.02689135397541429,
+          -0.010434888075503797,
+          -0.017076536524083526
+        ],
+        "task_geometry_radius_scale": 1.009722489467293
+      }
+    },
+    "2026101694": {
+      "task_id": "role_confirmation_factorshock_03",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.027910884533074845,
+          -6.228850383520335e-05,
+          -0.025731065151507596
+        ],
+        "task_geometry_radius_scale": 0.9672288583422503
+      }
+    },
+    "2026101695": {
+      "task_id": "role_confirmation_factorshock_04",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.03216484757477761,
+          -0.01670133297569378,
+          0.03170841318943647
+        ],
+        "task_geometry_radius_scale": 1.0324013143368815
+      }
+    },
+    "2026101696": {
+      "task_id": "role_confirmation_factorshock_05",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.023032346252010782,
+          0.03481501158712809,
+          -0.009502204496226449
+        ],
+        "task_geometry_radius_scale": 0.9983244162050671
+      }
+    },
+    "2026101697": {
+      "task_id": "role_confirmation_factorshock_06",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.01554687353218093,
+          0.0223077243399643,
+          0.013712644148295212
+        ],
+        "task_geometry_radius_scale": 0.9988999494570151
+      }
+    },
+    "2026101698": {
+      "task_id": "role_confirmation_factorshock_07",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.01755531236509868,
+          -0.023857167569860012,
+          -0.03284264406385984
+        ],
+        "task_geometry_radius_scale": 1.016714007664459
+      }
+    },
+    "2026101699": {
+      "task_id": "role_confirmation_factorshock_08",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.03466780920636415,
+          0.030578329790815803,
+          0.03156574066656552
+        ],
+        "task_geometry_radius_scale": 1.0420745422772795
+      }
+    },
+    "2026101700": {
+      "task_id": "role_confirmation_factorshock_09",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.025899327183623533,
+          0.018914406068304135,
+          0.02893032017188399
+        ],
+        "task_geometry_radius_scale": 0.9638121797802307
+      }
+    },
+    "2026101701": {
+      "task_id": "role_confirmation_factorshock_10",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.00482431063180698,
+          0.015592095909602845,
+          0.009502474761696057
+        ],
+        "task_geometry_radius_scale": 0.9875936478412264
+      }
+    },
+    "2026101702": {
+      "task_id": "role_confirmation_factorshock_11",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.012046406856947162,
+          0.013189047332989999,
+          -0.01563243208046685
+        ],
+        "task_geometry_radius_scale": 0.958095131586692
+      }
+    }
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "entrypoints": [
+    "performance/run_mainline_role_fresh.py",
+    "performance/summarize_mainline_role_fresh.py",
+    "performance/run_mainline_role_batch.py"
+  ],
+  "report": "docs/mainline_role_confirmation_results_20261016.md",
+  "geometry": "Exactly12 draws from unchanged shift U(-.035,.035)^3 followed by radius U(.95,1.05), native clipping unchanged. Seeds1690-1702 checked absent from previous manifests/docs/README before registration. Entire batch fixed before new observations; no outcome screening, replacement, additions or outcome-dependent stopping.",
+  "initialization": "Collect10 fresh paired raw on each of12 geometries using design80; share exactly within task across all6arms. Freeze all12 shared64-neighbor banks before any online search.",
+  "frontends": "All5 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Exactly stage28 frozen modular g source law with legacy latent_shared split, current f/eta marginal laws,8 identities/1024 nodes and raw update. No source reconditioning, refitting or precision adjustment.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "streams": "Same original search/proposal/TS and independent verifier namespaces, runseed per task. Each arm physically executes its own3 adaptive queries and verifier. Initial10 physically shared per task, logically charged to each arm.",
+  "barriers": {
+    "before_online": "All12 initial10 and shared64-neighbor banks frozen.",
+    "before_verify": "All72 shortlists and search histories frozen.",
+    "before_truth": "All72 independent verifications complete; truth cache remains separate per task.",
+    "failure": "Retain every attempt, consumed raw and CPU. Do not rerun partially consumed paid stages from zero; repair computation from saved state where possible."
+  },
+  "budget": {
+    "task_count": 12,
+    "recommendation_count": 72,
+    "online_case_count": 60,
+    "initial_only_case_count": 12,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 120,
+    "new_search_physical_calls_max": 180,
+    "new_verification_physical_calls_max": 25344,
+    "new_target_physical_calls_max": 25644,
+    "logical_target_calls_max": 26244,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "downloads": 0
+  },
+  "comparisons": "Primary: task-equal full-role minus point-only certified true-feasible quality gain relative to initial. Separately report certification-weighted initial quality and total safe reward, all12 paired outcomes, query behavior and same-source GP/native/original-structure/STOP. Prediction metrics use common unobserved policies across4 replacement backends and task-equal averaging; policy-weighted means secondary. No pooling with earlier development tasks.",
+  "continuation": "Stage37 fixed-model independent replication following the grouped source-policy holdout, which selected no correction. All stage31 scientific settings remain fixed, including online3 queries and original verifier. Freeze12 tasks once; no model, precision or batch-size search.",
+  "interruption_file": "paper_artifacts/mainline_role_confirmation_v1/interruption.json"
+}

@@ -1,0 +1,68 @@
+{
+  "complete": true,
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_screen_competition_v60.json",
+  "observations": 224,
+  "all_conditional_actions_closed": false,
+  "weighted_raw_best_admitted_contrast": 0.02113489044123799,
+  "weighted_projected_incumbent_contrast": 0.021766947126729635,
+  "native_choices_all_raw_referenced": true,
+  "missing_raw_references": [],
+  "admitted_joint_reference_groups": 541,
+  "retained_subset_probability_mass": 0.9999999999940982,
+  "raw_covered_grid_weight": 0.9999999999940982,
+  "weighted_subset_native_choice_contrast": 0.021092709536326228,
+  "weighted_raw_reward_of_native_incumbent_contrast": 0.021092709536326228,
+  "raw_recommendation": {
+    "selector": "core.raw_terminal_head_grid.select_raw_terminal_actions",
+    "candidate_pool": "Intersection of admitted raw and projected actions, identical for all four policies.",
+    "scoring": "Admitted raw conditional terminal reward; expected raw cost breaks ties.",
+    "validation": "Recorded joint risk validation rules; original matched objective heads and query128 references remain fixed. This is numerical rule validation, not held-out deployment.",
+    "policy_totals": {
+      "projected": {
+        "selection_contrast": 0.021092709536326228,
+        "validation_contrast": 0.021092738755475196,
+        "changed_heads": 0,
+        "validation_negative_mass_below1e4": 0.02427466595537416
+      },
+      "raw": {
+        "selection_contrast": 0.021134354149197246,
+        "validation_contrast": 0.02113435651091867,
+        "changed_heads": 64,
+        "validation_negative_mass_below1e4": 0.0
+      },
+      "raw_quality_projected_risk": {
+        "selection_contrast": 0.021092709536326228,
+        "validation_contrast": 0.021092738755475196,
+        "changed_heads": 0,
+        "validation_negative_mass_below1e4": 0.02427466595537416
+      },
+      "projected_quality_raw_risk": {
+        "selection_contrast": 0.021134354149197246,
+        "validation_contrast": 0.02113435651091867,
+        "changed_heads": 64,
+        "validation_negative_mass_below1e4": 0.0
+      }
+    },
+    "full_action_optimality": false,
+    "independent_confirmation": false
+  },
+  "maximum_omitted_utility_identity_mass": 1.3890696813615358e-09,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "action_count": 365,
+  "objective_heads_per_origin": 16,
+  "cpu_seconds": 23.205203118,
+  "charged_to_final_phase_cached_analysis_reserve": true,
+  "new_integrations": 0,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "full_posterior_restorations": 0,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "scope": "Registered positive risk grid with16objective heads perorigin. Choices maximize admitted native references;unresolved action uppers andcontinuous outer quadrature error remain separate. Raw reward is reported only where every chosen action has an admitted raw reference.",
+  "artifact_content": "decision_summary",
+  "full_replay_path": "paper_artifacts/historical_positive_risk_uppervariance_axis_competition_v60/incumbent_replay_final.json"
+}

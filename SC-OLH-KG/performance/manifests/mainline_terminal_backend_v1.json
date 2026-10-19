@@ -1,0 +1,45 @@
+{
+  "name": "mainline_terminal_backend_v1",
+  "registered_utc": "2026-10-16T00:58:43.224659+00:00",
+  "status": "complete",
+  "parent_manifest": "performance/manifests/mainline_role_after_init_v1.json",
+  "input_dir": "paper_artifacts/mainline_role_after_init_v1",
+  "output_dir": "paper_artifacts/mainline_terminal_backend_v1",
+  "report": "docs/mainline_terminal_backend_results_20261016.md",
+  "target_seeds": [
+    2026101731,
+    2026101732,
+    2026101733,
+    2026101734,
+    2026101735,
+    2026101736,
+    2026101737,
+    2026101738,
+    2026101739,
+    2026101740,
+    2026101741,
+    2026101742
+  ],
+  "history_arms": [
+    "legacy_native_neighbors",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only"
+  ],
+  "scope": "All12 Stage38 tasks. Replay original and native terminal on identical frozen paid histories, retaining all84 original arms as saved certificate context. Observed-policy terminal scope, models, source data, online queries, thresholds, shortlist construction rule, verifier budgets and objective guard unchanged.",
+  "checks": [
+    "Original primary, ordered shortlist, ranks, roles and challenger reconstruct before attributing differences.",
+    "Original paid raw reproduces all existing safety certificates and paired objective guards.",
+    "No simulator or truth function called; read cached truth only after all36 terminal comparisons are frozen."
+  ],
+  "decision_boundary": "Diagnostic on opened tasks, not unseen-task confirmation. No new deployment claims or copying certificates onto changed terminal decisions. Native terminal is the sole existing comparator; no threshold, budget, prior, representation, precision or candidate sweep.",
+  "new_calls": {
+    "simulation": 0,
+    "verification": 0,
+    "truth": 0,
+    "source_fit": 0,
+    "download_bytes": 0
+  },
+  "completed_utc": "2026-10-16T01:10:44.487708+00:00",
+  "completion_file": "paper_artifacts/mainline_terminal_backend_v1/completion.json",
+  "entrypoint": "performance/diagnose_mainline_terminal_backend.py"
+}

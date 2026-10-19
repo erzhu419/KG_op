@@ -1,0 +1,294 @@
+{
+  "status": "registered_preparation_only",
+  "completed_utc": "2026-10-17T14:37:49.030921+00:00",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "local_scientific_computation": false,
+  "independent_scientific_execution": false,
+  "tasks": [
+    {
+      "id": "t173089",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_preparation_v1/stage79/validation/attempt1/0-1"
+    },
+    {
+      "id": "t173091",
+      "status": "done",
+      "node": "node004",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_preparation_v1/stage79/validation/attempt2/0-1"
+    },
+    {
+      "id": "t173094",
+      "status": "done",
+      "node": "node006",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": 0,
+      "retry_count": 0,
+      "signature": "KG_op/mainline_reference_coverage_preparation_v1/stage79/validation/attempt3/0-1"
+    }
+  ],
+  "all_scheduler_tasks_done": true,
+  "scheduler_retries": 0,
+  "explicit_recovery_attempts": 2,
+  "validations": [
+    {
+      "status": "failed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_mainline_reference_coverage.py",
+        "tests/test_mainline_reference_coverage_registration.py",
+        "tests/test_mainline_two_comparison_terminal.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_reference_coverage.py",
+        "tests/test_mainline_reference_coverage_registration.py",
+        "tests/test_mainline_two_comparison_terminal.py"
+      ],
+      "test_counts": {},
+      "returncode": -11,
+      "cpu_seconds": 0.197572,
+      "wall_seconds": 0.23824308533221483,
+      "checked_utc": "2026-10-17T14:22:18.282456+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0,
+      "independent_scientific_execution": false
+    },
+    {
+      "status": "passed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_reference_coverage.py",
+        "tests/test_mainline_reference_coverage_registration.py",
+        "tests/test_mainline_two_comparison_terminal.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_reference_coverage.py",
+        "tests/test_mainline_reference_coverage_registration.py",
+        "tests/test_mainline_two_comparison_terminal.py"
+      ],
+      "test_counts": {
+        "passed": 64
+      },
+      "returncode": 0,
+      "cpu_seconds": 1.31593,
+      "wall_seconds": 1.5721514150500298,
+      "checked_utc": "2026-10-17T14:26:52.064756+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0,
+      "independent_scientific_execution": false
+    },
+    {
+      "status": "passed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_reference_coverage.py::test_saved_mixture_probability_roundoff_keeps_raw_order_without_clipping",
+        "tests/test_mainline_reference_coverage_registration.py::test_resume_reuses_completed_orders_and_wiring_without_reading_them_again"
+      ],
+      "test_files": [
+        "tests/test_mainline_reference_coverage.py::test_saved_mixture_probability_roundoff_keeps_raw_order_without_clipping",
+        "tests/test_mainline_reference_coverage_registration.py::test_resume_reuses_completed_orders_and_wiring_without_reading_them_again"
+      ],
+      "test_counts": {
+        "passed": 2
+      },
+      "returncode": 0,
+      "retained_passed_checks": "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/validation/attempt2/checks.json",
+      "retained_passed_instances": 64,
+      "cpu_seconds": 1.054341,
+      "wall_seconds": 1.2795489002019167,
+      "checked_utc": "2026-10-17T14:35:27.216617+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0,
+      "independent_scientific_execution": false
+    }
+  ],
+  "unique_passed_checks": 66,
+  "validation_cpu_seconds": 2.567843,
+  "registration_attempts": [
+    {
+      "attempt": 1,
+      "status": "preparation_incomplete",
+      "prepared_reference_orders": 41,
+      "wired_arm_inputs": 369,
+      "retained_variant_cells": 1728,
+      "reused_reference_orders": null,
+      "reused_wired_arm_inputs": null,
+      "newly_prepared_reference_orders": null,
+      "newly_wired_arm_inputs": null,
+      "cpu_seconds": 49.01430759,
+      "wall_seconds": 51.82509420439601
+    },
+    {
+      "attempt": 2,
+      "status": "registered_preparation_only",
+      "prepared_reference_orders": 48,
+      "wired_arm_inputs": 432,
+      "retained_variant_cells": 1728,
+      "reused_reference_orders": 41,
+      "reused_wired_arm_inputs": 369,
+      "newly_prepared_reference_orders": 7,
+      "newly_wired_arm_inputs": 63,
+      "cpu_seconds": 9.407498042,
+      "wall_seconds": 9.60660957545042
+    }
+  ],
+  "preparation_cpu_seconds": 58.421805632,
+  "small_metadata_inspection_cpu_seconds": 0.11532764699999999,
+  "preserved_failed_attempts": [
+    {
+      "task_id": "t173089",
+      "stage": "pytest_startup",
+      "checks": "cluster_control/validation/attempt1/checks.json",
+      "reason": "readline segfault in pytest capture startup",
+      "recovered_by": "t173091"
+    },
+    {
+      "task_id": "t173091",
+      "stage": "saved_input_admission",
+      "record": "registration_attempts/attempt_1.json",
+      "failed_orders": 7,
+      "failed_arm_inputs": 63,
+      "reason": "New strict probability range check rejected finite saved 1.0000000000000002 values",
+      "recovered_by": "t173094"
+    }
+  ],
+  "new_work": {
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "new_candidate_scores": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "new_raw_replays": 0,
+    "new_rng_draws": 0
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_retention_v1/completion.json",
+    "paper_artifacts/mainline_reference_retention_v1/scheduler_execution.json"
+  ],
+  "wrapper_records": [
+    {
+      "job": "validation/attempt1",
+      "status": "child_failed",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/run_stage79_validation_attempt1.py"
+      ],
+      "started_utc": "2026-10-17T14:22:17.982712+00:00",
+      "subprocess_started": true,
+      "child_returncode": 245,
+      "completed_utc": "2026-10-17T14:22:18.296062+00:00",
+      "wall_seconds": 0.313388604670763,
+      "log_file": "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/jobs/validation/attempt1/0_1.log",
+      "own_cpu_seconds": 0.09741699999999999,
+      "child_cpu_seconds": 0.293284,
+      "total_cpu_seconds": 0.39070099999999996,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    {
+      "job": "validation/attempt2",
+      "status": "child_failed",
+      "node": "node004",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/run_stage79_validation_attempt2.py"
+      ],
+      "started_utc": "2026-10-17T14:26:50.439836+00:00",
+      "subprocess_started": true,
+      "child_returncode": 1,
+      "completed_utc": "2026-10-17T14:27:44.135839+00:00",
+      "wall_seconds": 53.696047911420465,
+      "log_file": "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/jobs/validation/attempt2/0_1.log",
+      "own_cpu_seconds": 0.093369,
+      "child_cpu_seconds": 50.618221999999996,
+      "total_cpu_seconds": 50.711591,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    {
+      "job": "validation/attempt3",
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/run_stage79_validation_attempt3.py"
+      ],
+      "started_utc": "2026-10-17T14:35:25.875540+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-17T14:35:37.007472+00:00",
+      "wall_seconds": 11.131981885060668,
+      "log_file": "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/jobs/validation/attempt3/0_1.log",
+      "own_cpu_seconds": 0.092471,
+      "child_cpu_seconds": 10.722877,
+      "total_cpu_seconds": 10.815348,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    }
+  ],
+  "wrapper_accounting": "Wrapper total CPU includes the recorded children; do not add it to validation and preparation CPU.",
+  "raw_trajectory_model_checkpoint_downloads": 0,
+  "remote_only_artifacts": [
+    "reference_orders/",
+    "wiring.json",
+    "registration_attempts/prior_wiring_before_attempt_2.json"
+  ],
+  "timekeeping_note": "Use subprocess CPU and monotonic wall time. Scheduler started_at/finished_at from different machines are not elapsed-time estimates."
+}

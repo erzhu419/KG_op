@@ -1,0 +1,61 @@
+{
+  "scope": "This continuation only; prior stage artifacts and historical strict-HOLD ledgers are preserved.",
+  "recorded_cpu_seconds_by_stage": {
+    "saved_trajectory_attribution": 2.181746836,
+    "source_deletion_diagnostics_and_scalar_fits": 44.738415016,
+    "new_geometry_preparation_and_experiment": 200.488017896,
+    "successful_risk_bias_postprocessing": 0.15825565500000005
+  },
+  "known_cpu_seconds_total": 247.566435403,
+  "unrecorded_cpu": "Failed postprocessing, general code inspection, tests, summary generation and documentation have no process CPU measurement; no estimate or zero substituted.",
+  "physical_calls": {
+    "initialization": 8,
+    "search": 16,
+    "verification": 5744,
+    "total": 5768
+  },
+  "logical_calls": 5792,
+  "calls_per_arm": 362,
+  "new_scalar_source_fits": 2,
+  "diagnostic_training_fold_GLS_fits": 112,
+  "reused_parent_joint_source_fits": 2,
+  "parent_fits_charged_again": false,
+  "original_source_law_refits": 0,
+  "gp_refits": 0,
+  "new_source_labels": 0,
+  "new_eta_sampling_sweeps": 0,
+  "tests": {
+    "unique_tests_passed": 5,
+    "test_executions": 6,
+    "evidence": "../mainline_source_risk_calibration_v1/tests.json"
+  },
+  "failures": {
+    "simulation_or_source_fit_failures": 0,
+    "postprocessing_failures": 1,
+    "failed_wall_seconds": 0.982319765,
+    "failed_cpu_seconds": null,
+    "recovery": "Output Path was shadowed by a report dict; renamed report variable and reran only postprocessing successfully.",
+    "ledger": "postprocessing_attempts.jsonl"
+  },
+  "source_candidate_status": "Frozen exploratory likelihood candidate: conditional policy-deletion predictive log density improves slightly, MSE worsens 6.7%. No target outcomes selected the multiplier.",
+  "source_diagnostic_scope": "Fixed selector, common means and other hyperparameters learned from all48 source rows; deletion diagnostics are conditional, not nested independent source holdouts. Four task folds fail importance usability.",
+  "timestamp_note": {
+    "issue": "UTC timestamps are nonmonotonic within the sequential verify process; original timestamps retained.",
+    "verify_started_at": "2026-10-15T05:16:22.792858+00:00",
+    "first_verified_at": "2026-10-15T05:16:22.951538+00:00",
+    "second_verified_at": "2026-10-15T05:16:20.017285+00:00",
+    "results_completed_at": "2026-10-15T05:16:21.852244+00:00",
+    "verify_monotonic_wall_seconds": 2.1932608390052337,
+    "interpretation": "A roughly3-second wall-clock backward step is consistent with these records; the sequential runner finishes all16 verifications before truth scoring. Wall timestamps alone cannot establish ordering."
+  },
+  "server_downloads": 0,
+  "peak_memory_note": "Attempt maximum_rss_kib is an inherited high-water mark and is not interpreted as model-specific peak memory.",
+  "evidence": {
+    "attribution_attempts": "../mainline_decision_risk_attribution_v1/attempts.jsonl",
+    "source_cost": "../mainline_source_risk_calibration_v1/cost_summary.json",
+    "preparation": "preparation_audit.json",
+    "experiment_attempts": "attempts.jsonl",
+    "summary": "summary.json",
+    "risk_bias": "post_verification_risk_bias.json"
+  }
+}

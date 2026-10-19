@@ -1,0 +1,171 @@
+{
+  "status": "complete",
+  "cost": {
+    "cpu_seconds": 95.41691862900001,
+    "wall_seconds": 103.09402861600392,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 8,
+    "current_bundle_fits": 4,
+    "native_prior_fits": 4,
+    "download_bytes": 0,
+    "unique_reused_adaptation_raw_rows": 16,
+    "replayed_raw_rows": 24
+  },
+  "preparation_checks": {
+    "encoder_check": {
+      "check": "encoder-only fold-3 scope and boundary range",
+      "recorded_from_completed_check_without_rerun": true,
+      "training_rows": 96,
+      "probe": "96 training descriptors plus physical policy 0 descriptor; no held response used",
+      "shape": [
+        97,
+        10
+      ],
+      "mean_axis_max_abs_before": 256.4933578369627,
+      "mean_axis_max_abs_after": 1.0,
+      "boundary_mean_axes_before": [
+        39.10832793916756,
+        -256.4933578369627,
+        -0.9484207342857376,
+        -62.10278368797586
+      ],
+      "boundary_mean_axes_after": [
+        0.9999999935617997,
+        -1.0,
+        -0.23275961693236555,
+        -0.9999999999999346
+      ],
+      "eta_max_abs_difference": 0.0,
+      "temperature_by_head": {
+        "f_mean": 4.0,
+        "g_mean": 4.0
+      },
+      "mean_constructor_restored": true,
+      "variance_constructor_unchanged": true,
+      "encoder_fits": 2,
+      "full_source_fits": 0,
+      "native_fits": 0,
+      "new_calls": 0,
+      "cpu_seconds": 0.13334485499999998
+    },
+    "comparison_check": {
+      "status": "completed",
+      "mode": "Recorded from already executed in-memory comparator check; no rerun.",
+      "input": "paper_artifacts/mainline_role_source_holdout_v1 frozen forecasts and summary",
+      "checks": {
+        "identical_aggregate_comparison_all_deltas_zero": true,
+        "identical_forecast_comparison_direction_and_argmin_changes_zero": true,
+        "ordinary_scored_policy_family_pairs": 110,
+        "ordinary_preserves_both_anchors_in_all_eight_cases": true,
+        "ordinary_aggregate_rows": 27,
+        "boundary_policy0_cases": 2,
+        "boundary_g_raw_centering_absolute_error_below": 1e-14
+      },
+      "actual_cpu_seconds": 0.030287513000000044,
+      "new_source_fits": 0,
+      "new_source_calls": 0,
+      "new_target_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_calls": 0,
+      "download_bytes": 0
+    }
+  },
+  "attempts": 7,
+  "failed_attempts": [
+    {
+      "stage": "completion-accounting-after-successful-scoring",
+      "status": "failed",
+      "error": "KeyError('cpu_seconds'): comparator preparation check uses actual_cpu_seconds",
+      "finished_utc": "2026-10-16T03:55:09.876137+00:00",
+      "cpu_seconds_unknown": true,
+      "cpu_scope": "Only post-score completion aggregation CPU was unrecorded; successful fit and scoring attempts retain their measured cost.",
+      "new_source_fits": 0,
+      "new_source_calls": 0,
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_function_calls": 0,
+      "download_bytes": 0
+    }
+  ],
+  "source_low_ess_flags": [
+    {
+      "fold": 0,
+      "positive_components": 1024,
+      "weight_ess": 5.148508599892496,
+      "maximum_component_mass": 0.4351768119224671,
+      "split_log_normalizer_gap": 1.190075498302491,
+      "log_source_evidence": 0.2126674688589576,
+      "precision_certified": false,
+      "identity": [
+        "additive",
+        "head_specific",
+        "observed_task"
+      ],
+      "head": "f",
+      "joint_risk_fit": null,
+      "low_importance_ess": true
+    },
+    {
+      "fold": 0,
+      "positive_components": 1024,
+      "weight_ess": 5.202594248731772,
+      "maximum_component_mass": 0.43285544026244377,
+      "split_log_normalizer_gap": 1.1848379864847232,
+      "log_source_evidence": 0.2106894589076278,
+      "precision_certified": false,
+      "identity": [
+        "additive",
+        "head_specific",
+        "deconvolved_task"
+      ],
+      "head": "f",
+      "joint_risk_fit": null,
+      "low_importance_ess": true
+    },
+    {
+      "fold": 1,
+      "positive_components": 1024,
+      "weight_ess": 7.348511291769369,
+      "maximum_component_mass": 0.2835329899641833,
+      "split_log_normalizer_gap": 0.16872726410376515,
+      "log_source_evidence": -100.91752080624798,
+      "precision_certified": false,
+      "identity": [
+        "spectral",
+        "joint",
+        "observed_task"
+      ],
+      "head": "g",
+      "joint_risk_fit": null,
+      "low_importance_ess": true
+    },
+    {
+      "fold": 1,
+      "positive_components": 1024,
+      "weight_ess": 6.678877396459335,
+      "maximum_component_mass": 0.30058927832765964,
+      "split_log_normalizer_gap": 0.14613316190246906,
+      "log_source_evidence": -100.79343671188467,
+      "precision_certified": false,
+      "identity": [
+        "spectral",
+        "joint",
+        "deconvolved_task"
+      ],
+      "head": "g",
+      "joint_risk_fit": null,
+      "low_importance_ess": true
+    }
+  ],
+  "native_parity_max_absolute_error": 4.440892098500626e-16,
+  "roundoff_events": 0,
+  "deployed_model_changed": false,
+  "completed_utc": "2026-10-16T03:55:10.381071+00:00",
+  "total_recorded_cpu_seconds": 95.58055099700002,
+  "unknown_cpu_attempts": 1
+}

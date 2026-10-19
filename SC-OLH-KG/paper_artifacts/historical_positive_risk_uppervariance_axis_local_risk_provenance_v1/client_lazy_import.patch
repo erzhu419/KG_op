@@ -1,0 +1,8 @@
+--- /tmp/kg_round_remote.py (before)
++++ /tmp/kg_round_remote.py (after)
+@@
+-from performance.continue_historical_raw_axis_refinement import sync
+@@
+ if a.action=='sync':
++ from performance.continue_historical_raw_axis_refinement import sync
+  sync(a.args);print(json.dumps(dict(synced=a.args)))

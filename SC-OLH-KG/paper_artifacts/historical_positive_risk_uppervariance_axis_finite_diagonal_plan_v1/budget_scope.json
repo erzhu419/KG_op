@@ -1,0 +1,28 @@
+{
+  "conclusion": "Original600 support reserve has an independent settlement limit;remaining worker estimate capacity does not authorize support reads.",
+  "sources": [
+    {
+      "path": "performance/prepare_historical_positive_risk_screen.py",
+      "lines": [
+        147,
+        151
+      ],
+      "evidence": "Fixed600 shared reserve is included before admitting worker estimates under maximum_estimated_cpu_seconds."
+    },
+    {
+      "path": "paper_artifacts/historical_positive_risk_full_grid_continuation_v1/close_phase.py",
+      "line": 71,
+      "evidence": "assert reserve_charge <= 600"
+    },
+    {
+      "path": "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+      "lines": [
+        56,
+        285
+      ],
+      "evidence": "Unique600 reserve within3600 estimate;failure/recovery costs remain in the original phase."
+    }
+  ],
+  "local_audit_process_cpu_seconds": 0.052575761,
+  "server_access": false
+}

@@ -1,0 +1,245 @@
+{
+  "domain": "InventorySupplyChain",
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80
+  },
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_source_prior.pkl",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/InventorySupplyChain/design.json",
+    "reuse": "Load this heldout family own unchanged Stage31 source models and native prior; original design80. Target family is excluded from its source archive. No source fit/simulation/download."
+  },
+  "neighbor_count": 64,
+  "neighbor_radius": 0.08,
+  "neighbor_safe_margin_scale": 1.0,
+  "neighbor_rng": "default_rng(SeedSequence([run_seed, 0x4E454947]))",
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "arms": [
+    {
+      "name": "legacy_native_neighbors",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "legacy_role_full",
+      "online": true
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "online": true
+    },
+    {
+      "name": "legacy_role_point_only",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "initialization": "Reuse exact Stage73 initial10 physical policies; discard old raw values and generate10 fresh observations shared by the7 histories.",
+  "frontends": "All6 online arms get the same task-specific64-neighbor supplement, count/radius/safe gate unchanged; retain original native proposal model and routes using each arm own history. Only supplement is shared, not entire dynamic pool. No-cross control changes backend updates, not frontend proposal learning.",
+  "role_prior": "Unchanged modular operator applied to each family own frozen native source g coefficient law and structural f/eta marginals; original latent_shared split,8identities/1024nodes/raw update. No source reconditioning or fitting.",
+  "point_only": "From source0 including initialization, each physical policy uses only its own raw to update all4 marginal heads and its own identity/node weights. Unobserved marginals stay at source0. TS covariance retains source0 correlation with updated per-policy standard deviations C=D C_source D. This is a diagnostic moment control, not a jointly conditioned Bayesian posterior. Native proposal model still uses own arm history. Independent terminal verifier unchanged.",
+  "after_init_point_only": "All10 initialization raws condition the unchanged full role prior exactly once. Every later policy inherits its conditional node-level paired-response marginal and posterior identity/head-node masses. Only that physical policy subsequent raw updates its own four heads and identity/node masses. Never-observed policies stay at initial10. TS uses fixed initial10 correlations scaled by current marginal standard deviations, a diagnostic moment control. Original frontend still learns from own arm history.",
+  "prediction_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "same_source_gp",
+    "current_structural_mixture"
+  ],
+  "name": "observation_replica_2_InventorySupplyChain_search",
+  "status": "registered",
+  "output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2/InventorySupplyChain/search",
+  "target_seeds": [
+    2026107001,
+    2026107002,
+    2026107003,
+    2026107004,
+    2026107005,
+    2026107006,
+    2026107007,
+    2026107008
+  ],
+  "geometry_seed": 2026107000,
+  "geometry_by_seed": {
+    "2026107001": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_0",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.02233997178629179,
+          -0.005798966078076763,
+          0.025693955178565188
+        ],
+        "task_geometry_radius_scale": 0.9600854373752711
+      }
+    },
+    "2026107002": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_1",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.007198292816379685,
+          -0.034997720157765116,
+          0.006074505843033956
+        ],
+        "task_geometry_radius_scale": 0.9916537852938522
+      }
+    },
+    "2026107003": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_2",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.03225502828862007,
+          -0.00906345724431739,
+          0.019044182898163335
+        ],
+        "task_geometry_radius_scale": 0.9827135319442236
+      }
+    },
+    "2026107004": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_3",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.013004599147246353,
+          -0.013714639524307726,
+          0.007030341922848071
+        ],
+        "task_geometry_radius_scale": 0.9930162696520084
+      }
+    },
+    "2026107005": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_4",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.0076532283085756145,
+          -0.00908613747724095,
+          0.034335476466477804
+        ],
+        "task_geometry_radius_scale": 0.9736145828869284
+      }
+    },
+    "2026107006": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_5",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          0.024200377247249473,
+          -0.00033284803152733994,
+          0.03334374106344565
+        ],
+        "task_geometry_radius_scale": 1.0108300946204354
+      }
+    },
+    "2026107007": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_6",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.022240778199453696,
+          0.0008989972975610994,
+          0.0038248748812245437
+        ],
+        "task_geometry_radius_scale": 0.996618111478756
+      }
+    },
+    "2026107008": {
+      "task_id": "safe_unsampled_validation_InventorySupplyChain_7",
+      "problem_kwargs": {
+        "task_geometry_shift": [
+          -0.00983273514444494,
+          -0.021317363369578915,
+          -0.02013840416163551
+        ],
+        "task_geometry_radius_scale": 1.0347825382644062
+      }
+    }
+  },
+  "primary_reference": "legacy_role_point_only",
+  "continuation": "Replicate frozen AFTER cross-policy propagation versus POINT under a fresh observation/verification stream, while passively saving the complete existing terminal selection process.",
+  "streams": {
+    "optimizer_seed": "Keep geometry_task_seed and optimizer_seed2026107001..2026107024 as config.seed in both streams. Observation seeds do not replace optimizer seeds.",
+    "observation_stream": "SeedSequence([observation_seed, evaluation_index, SIMULATION_STREAM_TAG]); indices0..9 initialization and10..12 adaptive queries.",
+    "verification_stream": "Use registered independent verification_seed with unchanged slot/replication/safety/objective stream namespaces.",
+    "pairing": "Within each task/replicate all arms use matching observation and verification namespaces. Same evaluation index can query different policies; shared random numbers do not make responses identical.",
+    "limitation": "New observations can change adaptive pools, trajectories and RNG consumption. Fixed optimizer seed does not freeze every per-policy TS innovation.",
+    "reuse": "Never reuse old observations or certificates across the new streams. Only exactly matching new-stream physical observations may be shared with explicit accounting."
+  },
+  "geometry": "Exact Stage73 geometry vectors and optimizer seeds; exact initial10 and shared64 physical files. No geometry, initialization-policy or neighbor-bank draw.",
+  "barriers": {
+    "before_sampling": "Freeze both stream maps, source references, physical initial10/shared64 files and passive terminal recording before any new observation.",
+    "before_online": "Both streams must finish all48 shared initial histories and freeze all48 reused neighbor banks before any adaptive search.",
+    "before_verification": "Both streams must seal all336 histories or retained failures and both protocols of all432 paired terminal inputs before terminal simulation.",
+    "before_scoring": "Seal all864 old/new terminal outcomes or retained failures across both streams, then seal the complete saved action-pool physical inventory before any target-truth access or scoring.",
+    "failure": "Retain every failed arm, paid prefix, partial audit and CPU; no automatic resampling, seed replacement, task dropping or numerical model patch."
+  },
+  "registered_utc": "2026-10-17T05:41:21.775673+00:00",
+  "observation_seed_by_task": {
+    "2026107001": 2026109101,
+    "2026107002": 2026109102,
+    "2026107003": 2026109103,
+    "2026107004": 2026109104,
+    "2026107005": 2026109105,
+    "2026107006": 2026109106,
+    "2026107007": 2026109107,
+    "2026107008": 2026109108
+  },
+  "fixed_initialization_file_by_task": {
+    "2026107001": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107001/initialization.json",
+    "2026107002": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107002/initialization.json",
+    "2026107003": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107003/initialization.json",
+    "2026107004": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107004/initialization.json",
+    "2026107005": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107005/initialization.json",
+    "2026107006": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107006/initialization.json",
+    "2026107007": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107007/initialization.json",
+    "2026107008": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107008/initialization.json"
+  },
+  "fixed_neighbors_file_by_task": {
+    "2026107001": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107001/neighbors.npz",
+    "2026107002": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107002/neighbors.npz",
+    "2026107003": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107003/neighbors.npz",
+    "2026107004": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107004/neighbors.npz",
+    "2026107005": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107005/neighbors.npz",
+    "2026107006": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107006/neighbors.npz",
+    "2026107007": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107007/neighbors.npz",
+    "2026107008": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107008/neighbors.npz"
+  }
+}

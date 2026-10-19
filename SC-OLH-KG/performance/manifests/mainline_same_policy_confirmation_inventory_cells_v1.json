@@ -1,0 +1,101 @@
+{
+  "name": "mainline_same_policy_confirmation_inventory_cells_v1",
+  "status": "complete",
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/search",
+  "output_dir": "paper_artifacts/mainline_same_policy_confirmation_v1/InventorySupplyChain/terminal",
+  "target_seeds": [
+    2026102111,
+    2026102112,
+    2026102113,
+    2026102114
+  ],
+  "verification_seed_by_task": {
+    "2026102111": 2026102141,
+    "2026102112": 2026102142,
+    "2026102113": 2026102143,
+    "2026102114": 2026102144
+  },
+  "arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "protocols": {
+    "original": [
+      80,
+      128,
+      128
+    ]
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "terminal_candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "verification_method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "maximum_verification_calls_per_recommendation": 352,
+    "verification_updates_search_posterior": false,
+    "adaptive_model_or_precision_changes": false,
+    "objective_comparison_delta": 0.016666666666666666
+  },
+  "primary_comparisons": [
+    "Original-terminal paired control for the common frozen modified-terminal primary after-init-minus-source0-point comparison.",
+    "Preserve full-afterinit, original/native terminal crossing and all references; compare each unchanged original input to its frozen same-policy challenger transform."
+  ],
+  "statistical_unit": "Four fresh geometries in this target family, paired observation and independent verification streams; report family results and equal-family average over three known families.",
+  "truth_barrier": "All216 original/modified terminal verifications complete across all three families before opening any target truth or scoring outcomes.",
+  "scope": "Independent new-geometry confirmation of the single Stage49 terminal rule with frozen leave-one-family-out sources. All original and modified terminal inputs freeze before verification; no pooling with development cohorts.",
+  "registered_utc": "2026-10-16T08:41:57.789679+00:00",
+  "completed_utc": "2026-10-16T09:42:16.209247+00:00"
+}

@@ -1,0 +1,137 @@
+{
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "rules": [
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "F8",
+      32,
+      8,
+      101
+    ],
+    [
+      "L8",
+      16,
+      8,
+      0
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "primary_policy": 71,
+  "selected_records": [
+    "positive_full_n4_m4_v4_o4_h1_p24"
+  ],
+  "selected_kinds": [
+    "raw"
+  ],
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_full_n4_m4_v4_o4_h1_p24"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 90.4362117884,
+      "maximum_worker_cpu_seconds": 91
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_full_n4_m4_v4_o4_h1_p24"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 181.3108127432,
+      "maximum_worker_cpu_seconds": 182
+    }
+  ],
+  "shards": 1,
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v5.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v5/completion.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v4",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_screen_v4.json",
+  "estimated_cost_admitted": true,
+  "estimated_worker_cpu_seconds": 271.7470245316,
+  "source_phase_estimated_cpu_seconds": 3150.841133056,
+  "estimated_phase_cpu_seconds": 3422.5881575876,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "inherited_shared_reserve_charged_cpu_seconds": 390.94460059200003,
+  "new_phase_reserve_cpu_seconds": 0,
+  "previous_cap_refinement_recorded_cpu_seconds": 6849.916783463,
+  "pricing_basis": {
+    "h4_full71_E8": 15.633950259,
+    "h4_full71_F8": 15.716571186,
+    "h4_full71_L8": 7.099877206,
+    "h4_full71_E9": 35.246444506,
+    "h5_full71_E8": 31.703004094,
+    "h5_full71_F8": 31.232273628,
+    "h5_full71_L8": 14.282985301,
+    "h5_full71_E9": 72.207414263,
+    "scope": "Historical full71 raw E8/F8/L8/E9 maximum rule CPU, h4 E9 updated from settled full_o4p20;20percent margin+2setup perworker. Source caps_v5 fully settled worker receipts plus original600 reserve; prior admissions/failed/recovery/support fees retained."
+  },
+  "scope": "One previously named71/45 raw full_o4p24 selected after63 midmean_o5p16. Reuse historical_guard per-component seeds,E8/F8/L8/E9,actual3guarded budgets/family delta,full071 covariance,analytic incumbent mean,all512/1024components and8identity likelihoods,SD16. Only adopt validated pair caps; retain full statistics/costs server-side. All ancestor63/71/query/anchor/multilevel caps,references,precision holds,failed/recovery fees and original zero-candidate/overall-error gates retained. Carry the original600 support reserve,newreserve0. Source cost/admission uses exact settled caps_v5 completion; no new allowance.",
+  "integration_backend": "historical_guard",
+  "source_phase_registered_estimated_cpu_seconds": 3181.148103851,
+  "settled_source_worker_rows": [
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v2/completion.json",
+      "worker_process_cpu_seconds": 627.023444678
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_pilot_v1/completion.json",
+      "worker_process_cpu_seconds": 196.392364724
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v1/completion.json",
+      "worker_process_cpu_seconds": 192.08914189799998
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v3/completion.json",
+      "worker_process_cpu_seconds": 512.248573933
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v2/completion.json",
+      "worker_process_cpu_seconds": 195.17550887699997
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v4/completion.json",
+      "worker_process_cpu_seconds": 380.207746587
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v3/completion.json",
+      "worker_process_cpu_seconds": 205.8334523
+    },
+    {
+      "completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v5/completion.json",
+      "worker_process_cpu_seconds": 241.870900059
+    }
+  ],
+  "settled_source_worker_cpu_seconds": 2550.841133056
+}

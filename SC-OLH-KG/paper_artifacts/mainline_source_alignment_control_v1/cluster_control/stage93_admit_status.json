@@ -1,0 +1,78 @@
+{
+  "returncode": 0,
+  "result": {
+    "wrapper": {
+      "status": "complete",
+      "node": "node005",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_alignment_science",
+        "admit",
+        "--manifest",
+        "performance/manifests/mainline_source_alignment_targets_v1.json",
+        "--checks",
+        "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage92_attempt1/checks.json"
+      ],
+      "started_utc": "2026-10-18T10:56:00.519568+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-18T10:56:01.823808+00:00",
+      "wall_seconds": 1.304285418242216,
+      "log_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/jobs/stage93/admit/0_1.log",
+      "own_cpu_seconds": 0.07854799999999999,
+      "child_cpu_seconds": 1.093421,
+      "total_cpu_seconds": 1.171969,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "duplicate_wrapper_records": 0,
+    "manifest_file": "performance/manifests/mainline_source_alignment_targets_v1.json",
+    "manifest_bytes": 99411,
+    "cpu_seconds": 0.006343329000000009,
+    "manifest_summary": {
+      "name": "mainline_source_alignment_targets_v1",
+      "status": "registered_not_started",
+      "target_execution_authorized": true,
+      "target_execution_started": false,
+      "target_execution_preparation": {
+        "status": "validated",
+        "independent_scientific_execution": true,
+        "validation_file": "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/validation/stage92_attempt1/checks.json",
+        "entrypoint": "performance.run_mainline_source_alignment_science",
+        "remaining": "Admitted for nine histories, eleven old terminals, and post-global-seal five-role audit."
+      },
+      "budget": {
+        "geometry_count": 144,
+        "observation_replicates": 2,
+        "task_stream_units": 288,
+        "unique_search_histories": 2592,
+        "online_search_histories": 2304,
+        "registered_terminal_cells": 3168,
+        "terminal_cells": 3168,
+        "terminal_cells_per_protocol": 3168,
+        "maximum_verification_calls_per_cell": 352,
+        "verification_cap_per_cell": 352,
+        "reachable_successful_verification_calls_per_cell": 336,
+        "online_logical_cap": 365,
+        "initial_only_logical_cap": 362,
+        "initial_physical_calls": 2880,
+        "online_search_physical_calls": 6912,
+        "expanded_logical_search_calls": 40320,
+        "maximum_verification_physical_calls": 1115136,
+        "maximum_target_physical_calls": 1124928,
+        "reachable_successful_target_physical_calls": 1074240,
+        "maximum_expanded_logical_target_calls": 1155456,
+        "new_source_calls": 0,
+        "new_source_fits": 0
+      },
+      "tasks": 144,
+      "streams": 2,
+      "search_arms": 9,
+      "terminal_arms": 11
+    }
+  },
+  "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+  "payload_bytes": 18767,
+  "wall_seconds": 1.7137342489731964
+}

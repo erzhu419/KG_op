@@ -1,0 +1,136 @@
+{
+  "created_utc": "2026-10-17T14:21:22.408806+00:00",
+  "preflight": {
+    "old_test_exists": false,
+    "new_registration_exists": false,
+    "stage78_status": "complete"
+  },
+  "existing_stage79_tasks": [],
+  "uploads": [
+    {
+      "files": [
+        "SC-OLH-KG/performance/mainline_reference_coverage.py",
+        "SC-OLH-KG/performance/register_mainline_reference_coverage.py",
+        "SC-OLH-KG/tests/test_mainline_reference_coverage.py",
+        "SC-OLH-KG/tests/test_mainline_reference_coverage_registration.py",
+        "SC-OLH-KG/performance/manifests/mainline_reference_coverage_preparation_v1.json",
+        "SC-OLH-KG/docs/mainline_reference_coverage_protocol_20261017.md",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/run_stage79_validation_attempt1.py",
+        "SC-OLH-KG/tests/test_mainline_two_comparison_terminal.py"
+      ],
+      "payload_bytes": 70643
+    },
+    {
+      "files": [
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/run_stage79_validation_attempt2.py",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/recovery_attempt2.json"
+      ],
+      "payload_bytes": 3712
+    },
+    {
+      "files": [
+        "SC-OLH-KG/performance/mainline_reference_coverage.py",
+        "SC-OLH-KG/performance/register_mainline_reference_coverage.py",
+        "SC-OLH-KG/tests/test_mainline_reference_coverage.py",
+        "SC-OLH-KG/tests/test_mainline_reference_coverage_registration.py",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/run_stage79_validation_attempt3.py",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/recovery_attempt3.json",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/invalid_saved_score_inspection.json"
+      ],
+      "payload_bytes": 69058
+    },
+    {
+      "kind": "final_documents_and_scheduler_account",
+      "files": [
+        "SC-OLH-KG/docs/mainline_reference_coverage_preparation_results_20261017.md",
+        "SC-OLH-KG/docs/original_goal_and_mainline_contract_20261015.md",
+        "SC-OLH-KG/README.md",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/scheduler_execution.json",
+        "SC-OLH-KG/paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/stage79_state.json",
+        "scripts/run_mainline_reference_coverage_cluster.py"
+      ],
+      "payload_bytes": 421967
+    }
+  ],
+  "returns": [
+    {
+      "kind": "preflight",
+      "payload_bytes": 91
+    },
+    {
+      "kind": "registration_checks_and_manifest",
+      "payload_bytes": 15274,
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/validation/attempt1/checks.json",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/registration.json",
+        "performance/manifests/mainline_reference_coverage_preparation_v1.json"
+      ]
+    },
+    {
+      "kind": "failed_pytest_log",
+      "payload_bytes": 3213
+    },
+    {
+      "kind": "attempt2_checks_registration_manifest_log",
+      "payload_bytes": 15527,
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/validation/attempt2/checks.json",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/registration.json",
+        "performance/manifests/mainline_reference_coverage_preparation_v1.json",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/validation/attempt2/pytest.log"
+      ]
+    },
+    {
+      "kind": "completed_registration_and_manifest",
+      "payload_bytes": 71849,
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/registration.json",
+        "performance/manifests/mainline_reference_coverage_preparation_v1.json"
+      ]
+    },
+    {
+      "kind": "seven_invalid_saved_score_rows",
+      "payload_bytes": 8599
+    },
+    {
+      "kind": "seven_score_ranges_and_repr",
+      "payload_bytes": 7088
+    },
+    {
+      "kind": "attempt3_checks_registration_manifest_log",
+      "payload_bytes": 19327,
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/validation/attempt3/checks.json",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/registration.json",
+        "performance/manifests/mainline_reference_coverage_preparation_v1.json",
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/validation/attempt3/pytest.log"
+      ]
+    },
+    {
+      "kind": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/jobs/validation/attempt1/0_1.json"
+      ],
+      "payload_bytes": 883
+    },
+    {
+      "kind": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/jobs/validation/attempt2/0_1.json"
+      ],
+      "payload_bytes": 871
+    },
+    {
+      "kind": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_reference_coverage_preparation_v1/cluster_control/jobs/validation/attempt3/0_1.json"
+      ],
+      "payload_bytes": 858
+    }
+  ],
+  "raw_trajectory_model_checkpoint_downloads": 0,
+  "status": "complete",
+  "known_returned_payload_bytes": 143580,
+  "note": "Artifact and metadata payload bytes; transport protocol overhead is excluded. No raw, model, checkpoint or complete experiment directory was downloaded.",
+  "final_account_sync_utc": "2026-10-17T14:39:09.778591+00:00"
+}

@@ -1,0 +1,1153 @@
+{
+  "1": {
+    "coverage": {
+      "geometries": 24,
+      "registered_states": 216,
+      "captured_states": 216,
+      "invalid_replays": 0,
+      "task_statuses": {
+        "complete": 24
+      }
+    },
+    "prefix10": [
+      {
+        "arm": "legacy_role_after_init_point_only",
+        "unobserved_risk_table": {
+          "true_feasible_eligible": 76,
+          "true_feasible_excluded": 109,
+          "true_infeasible_eligible": 105,
+          "true_infeasible_excluded": 1770,
+          "truth_unknown_eligible": 0,
+          "truth_unknown_excluded": 0
+        },
+        "safe_competition_sizes": {
+          "zero": 7,
+          "multiple": 15,
+          "one": 2
+        },
+        "safe_competition_dispositions": {
+          "zero_safe_eligible_unobserved": 7,
+          "selected_in_safe_competition": 11,
+          "selected_true_infeasible": 3,
+          "one_safe_eligible_unobserved": 2,
+          "selected_previously_observed": 1
+        },
+        "mean_misorder_all": {
+          "n": 23,
+          "mean": 0.3701779394234638,
+          "descriptive_95pct_t_interval": [
+            0.2450166556470754,
+            0.49533922319985213
+          ],
+          "degrees_of_freedom": 22,
+          "positive": 21,
+          "negative": 0,
+          "zero": 2,
+          "positive_sum": 8.514092606739666,
+          "negative_sum": 0.0,
+          "largest_positive_share": 0.11745232829725279
+        }
+      },
+      {
+        "arm": "legacy_role_point_only",
+        "unobserved_risk_table": {
+          "true_feasible_eligible": 28,
+          "true_feasible_excluded": 157,
+          "true_infeasible_eligible": 336,
+          "true_infeasible_excluded": 1539,
+          "truth_unknown_eligible": 0,
+          "truth_unknown_excluded": 0
+        },
+        "safe_competition_sizes": {
+          "zero": 19,
+          "multiple": 4,
+          "one": 1
+        },
+        "safe_competition_dispositions": {
+          "zero_safe_eligible_unobserved": 19,
+          "selected_in_safe_competition": 1,
+          "selected_true_infeasible": 2,
+          "one_safe_eligible_unobserved": 1,
+          "selected_previously_observed": 1
+        },
+        "mean_misorder_all": {
+          "n": 23,
+          "mean": 0.2959377578942796,
+          "descriptive_95pct_t_interval": [
+            0.2176792114253077,
+            0.3741963043632516
+          ],
+          "degrees_of_freedom": 22,
+          "positive": 21,
+          "negative": 0,
+          "zero": 2,
+          "positive_sum": 6.806568431568432,
+          "negative_sum": 0.0,
+          "largest_positive_share": 0.10284183682829727
+        }
+      },
+      {
+        "arm": "legacy_role_full",
+        "unobserved_risk_table": {
+          "true_feasible_eligible": 76,
+          "true_feasible_excluded": 109,
+          "true_infeasible_eligible": 105,
+          "true_infeasible_excluded": 1770,
+          "truth_unknown_eligible": 0,
+          "truth_unknown_excluded": 0
+        },
+        "safe_competition_sizes": {
+          "zero": 7,
+          "multiple": 15,
+          "one": 2
+        },
+        "safe_competition_dispositions": {
+          "zero_safe_eligible_unobserved": 7,
+          "selected_in_safe_competition": 11,
+          "selected_true_infeasible": 3,
+          "one_safe_eligible_unobserved": 2,
+          "selected_previously_observed": 1
+        },
+        "mean_misorder_all": {
+          "n": 23,
+          "mean": 0.3701779394234638,
+          "descriptive_95pct_t_interval": [
+            0.2450166556470754,
+            0.49533922319985213
+          ],
+          "degrees_of_freedom": 22,
+          "positive": 21,
+          "negative": 0,
+          "zero": 2,
+          "positive_sum": 8.514092606739666,
+          "negative_sum": 0.0,
+          "largest_positive_share": 0.11745232829725279
+        }
+      }
+    ],
+    "AP_query_changes": 61,
+    "tasks": [
+      {
+        "seed": 2026107001,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107002,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107003,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0036",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0006036938602727582
+            },
+            "true_feasible": true
+          },
+          {
+            "arm": "legacy_role_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0036",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0006036938602727582
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107004,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107005,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107006,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107007,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.000341415069816442,
+          "G": 0.000341415069816442,
+          "P": 0.000341415069816442,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0075",
+            "origin": "dynamic",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107008,
+        "old_AP_delta": {
+          "A": 1,
+          "C": 1,
+          "false_certificate": 0,
+          "R": 0.8062811752957518,
+          "G": 0.001380486737845965,
+          "P": 0.001380486737845965,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 12,
+            "policy_id": "P0056",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "one_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107009,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": -0.0008268344957009788,
+          "G": -0.0008268344957009788,
+          "P": 0.0,
+          "L": 0.0008268344957009788
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0026",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0014774598006784267
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107010,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107011,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 1.0402363295414219e-05,
+          "G": 1.0402363295414219e-05,
+          "P": 1.0402363295414219e-05,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0020",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0005514116557079896
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107012,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": null,
+          "P": null,
+          "L": null
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107013,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107014,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107015,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.001915816662925729,
+          "G": 0.001915816662925729,
+          "P": 0.001915816662925729,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0039",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "one_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107016,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107017,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.012748682744290862,
+          "G": 0.012748682744290862,
+          "P": 0.012748682744290862,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0026",
+            "origin": "shared_neighbor",
+            "eligible": false,
+            "safe_competition": {
+              "status": "zero_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107018,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107019,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107020,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107021,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107022,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107023,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107024,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      }
+    ]
+  },
+  "2": {
+    "coverage": {
+      "geometries": 24,
+      "registered_states": 216,
+      "captured_states": 216,
+      "invalid_replays": 0,
+      "task_statuses": {
+        "complete": 24
+      }
+    },
+    "prefix10": [
+      {
+        "arm": "legacy_role_after_init_point_only",
+        "unobserved_risk_table": {
+          "true_feasible_eligible": 59,
+          "true_feasible_excluded": 126,
+          "true_infeasible_eligible": 123,
+          "true_infeasible_excluded": 1748,
+          "truth_unknown_eligible": 0,
+          "truth_unknown_excluded": 0
+        },
+        "safe_competition_sizes": {
+          "one": 4,
+          "zero": 12,
+          "multiple": 8
+        },
+        "safe_competition_dispositions": {
+          "one_safe_eligible_unobserved": 4,
+          "zero_safe_eligible_unobserved": 12,
+          "selected_in_safe_competition": 7,
+          "selected_true_infeasible": 1
+        },
+        "mean_misorder_all": {
+          "n": 23,
+          "mean": 0.3731153984586479,
+          "descriptive_95pct_t_interval": [
+            0.24836470147693718,
+            0.4978660954403586
+          ],
+          "degrees_of_freedom": 22,
+          "positive": 21,
+          "negative": 0,
+          "zero": 2,
+          "positive_sum": 8.581654164548901,
+          "negative_sum": 0.0,
+          "largest_positive_share": 0.11652765082646109
+        }
+      },
+      {
+        "arm": "legacy_role_point_only",
+        "unobserved_risk_table": {
+          "true_feasible_eligible": 9,
+          "true_feasible_excluded": 176,
+          "true_infeasible_eligible": 214,
+          "true_infeasible_excluded": 1657,
+          "truth_unknown_eligible": 0,
+          "truth_unknown_excluded": 0
+        },
+        "safe_competition_sizes": {
+          "zero": 21,
+          "multiple": 2,
+          "one": 1
+        },
+        "safe_competition_dispositions": {
+          "zero_safe_eligible_unobserved": 21,
+          "selected_in_safe_competition": 1,
+          "one_safe_eligible_unobserved": 1,
+          "selected_true_infeasible": 1
+        },
+        "mean_misorder_all": {
+          "n": 23,
+          "mean": 0.2988397630846143,
+          "descriptive_95pct_t_interval": [
+            0.2208505022768839,
+            0.3768290238923447
+          ],
+          "degrees_of_freedom": 22,
+          "positive": 21,
+          "negative": 0,
+          "zero": 2,
+          "positive_sum": 6.873314550946129,
+          "negative_sum": 0.0,
+          "largest_positive_share": 0.10184314930031002
+        }
+      },
+      {
+        "arm": "legacy_role_full",
+        "unobserved_risk_table": {
+          "true_feasible_eligible": 59,
+          "true_feasible_excluded": 126,
+          "true_infeasible_eligible": 123,
+          "true_infeasible_excluded": 1748,
+          "truth_unknown_eligible": 0,
+          "truth_unknown_excluded": 0
+        },
+        "safe_competition_sizes": {
+          "one": 4,
+          "zero": 12,
+          "multiple": 8
+        },
+        "safe_competition_dispositions": {
+          "one_safe_eligible_unobserved": 4,
+          "zero_safe_eligible_unobserved": 12,
+          "selected_in_safe_competition": 7,
+          "selected_true_infeasible": 1
+        },
+        "mean_misorder_all": {
+          "n": 23,
+          "mean": 0.3731153984586479,
+          "descriptive_95pct_t_interval": [
+            0.24836470147693718,
+            0.4978660954403586
+          ],
+          "degrees_of_freedom": 22,
+          "positive": 21,
+          "negative": 0,
+          "zero": 2,
+          "positive_sum": 8.581654164548901,
+          "negative_sum": 0.0,
+          "largest_positive_share": 0.11652765082646109
+        }
+      }
+    ],
+    "AP_query_changes": 64,
+    "tasks": [
+      {
+        "seed": 2026107001,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": -0.0023826676564192573,
+          "G": -0.0023826676564192573,
+          "P": -0.0023826676564192573,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 12,
+            "policy_id": "P0039",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0030615611072374316
+            },
+            "true_feasible": true
+          },
+          {
+            "arm": "legacy_role_point_only",
+            "paid_prefix": 11,
+            "policy_id": "P0023",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107002,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0007346621139326937,
+          "G": 0.0007346621139326937,
+          "P": 0.0007346621139326937,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 11,
+            "policy_id": "P0086",
+            "origin": "dynamic",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107003,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107004,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": -0.0006151183104560198,
+          "G": -0.0006151183104560198,
+          "P": -0.0006151183104560198,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0019",
+            "origin": "shared_neighbor",
+            "eligible": false,
+            "safe_competition": {
+              "status": "zero_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          },
+          {
+            "arm": "legacy_role_point_only",
+            "paid_prefix": 11,
+            "policy_id": "P0086",
+            "origin": "dynamic",
+            "eligible": true,
+            "safe_competition": {
+              "status": "one_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107005,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": -0.0006013312354240519,
+          "G": -0.0006013312354240519,
+          "P": -0.0006013312354240519,
+          "L": -0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_point_only",
+            "paid_prefix": 11,
+            "policy_id": "P0085",
+            "origin": "dynamic",
+            "eligible": true,
+            "safe_competition": {
+              "status": "one_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107006,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0028056297349015047,
+          "G": 0.0028056297349015047,
+          "P": 0.0028056297349015047,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 12,
+            "policy_id": "P0050",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107007,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107008,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107009,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107010,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": -0.0016819589005547808,
+          "G": -0.0016819589005547808,
+          "P": 0.0,
+          "L": 0.0016819589005547808
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 11,
+            "policy_id": "P0022",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0024991058880610706
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107011,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.00037801013376737025,
+          "G": 0.00037801013376737025,
+          "P": 0.00037801013376737025,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 12,
+            "policy_id": "P0084",
+            "origin": "dynamic",
+            "eligible": false,
+            "safe_competition": {
+              "status": "zero_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107012,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": null,
+          "P": null,
+          "L": null
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107013,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": -0.004137290947751837,
+          "G": -0.004137290947751837,
+          "P": 0.0,
+          "L": 0.004137290947751837
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 12,
+            "policy_id": "P0039",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.00013559417894382086
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107014,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 2.4465504767534618e-05,
+          "G": 2.4465504767534618e-05,
+          "P": 2.4465504767534618e-05,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0039",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.00022701833234756164
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107015,
+        "old_AP_delta": {
+          "A": 1,
+          "C": 1,
+          "false_certificate": 0,
+          "R": 0.8177300658503982,
+          "G": 0.001915816662925729,
+          "P": 0.001915816662925729,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0039",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "selected_in_safe_competition",
+              "objective_regret": 0.0
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107016,
+        "old_AP_delta": {
+          "A": -1,
+          "C": -1,
+          "false_certificate": 0,
+          "R": -0.8149750007235138,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107017,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.012748682744290862,
+          "G": 0.012748682744290862,
+          "P": 0.012748682744290862,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": [
+          {
+            "arm": "legacy_role_after_init_point_only",
+            "paid_prefix": 10,
+            "policy_id": "P0026",
+            "origin": "shared_neighbor",
+            "eligible": true,
+            "safe_competition": {
+              "status": "one_safe_eligible_unobserved",
+              "objective_regret": null
+            },
+            "true_feasible": true
+          }
+        ]
+      },
+      {
+        "seed": 2026107018,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107019,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107020,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107021,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107022,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107023,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      },
+      {
+        "seed": 2026107024,
+        "old_AP_delta": {
+          "A": 0,
+          "C": 0,
+          "false_certificate": 0,
+          "R": 0.0,
+          "G": 0.0,
+          "P": 0.0,
+          "L": 0.0
+        },
+        "newly_sampled_then_deployed": []
+      }
+    ]
+  }
+}

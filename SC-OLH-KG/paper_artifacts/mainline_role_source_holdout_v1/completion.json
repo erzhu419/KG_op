@@ -1,0 +1,64 @@
+{
+  "status": "complete",
+  "cost": {
+    "cpu_seconds": 378.366878816,
+    "wall_seconds": 408.6662075620261,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_fits": 8,
+    "current_bundle_fits": 4,
+    "native_prior_fits": 4,
+    "new_truth_function_calls": 0,
+    "download_bytes": 0,
+    "unique_reused_adaptation_raw_rows": 16,
+    "replayed_raw_rows": 24
+  },
+  "attempts": 5,
+  "failed_attempts": [],
+  "source_low_ess_flags": [
+    {
+      "fold": 0,
+      "identity": [
+        "additive",
+        "head_specific",
+        "observed_task"
+      ],
+      "head": "f",
+      "weight_ess": 4.916908219493967
+    },
+    {
+      "fold": 0,
+      "identity": [
+        "additive",
+        "head_specific",
+        "deconvolved_task"
+      ],
+      "head": "f",
+      "weight_ess": 4.970538891149974
+    },
+    {
+      "fold": 1,
+      "identity": [
+        "spectral",
+        "joint",
+        "observed_task"
+      ],
+      "head": "g",
+      "weight_ess": 7.371092109384664
+    },
+    {
+      "fold": 1,
+      "identity": [
+        "spectral",
+        "joint",
+        "deconvolved_task"
+      ],
+      "head": "g",
+      "weight_ess": 6.702217885925333
+    }
+  ],
+  "completed_utc": "2026-10-16T03:18:03.972013+00:00",
+  "deployed_model_changed": false
+}

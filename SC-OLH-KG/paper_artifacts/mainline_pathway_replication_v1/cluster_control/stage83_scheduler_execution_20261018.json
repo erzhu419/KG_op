@@ -1,0 +1,362 @@
+{
+  "status": "complete",
+  "updated_utc": "2026-10-17T23:32:18.706459+00:00",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "scheduler_task_count": 8,
+  "all_scheduler_tasks_done": true,
+  "jobs": [
+    {
+      "label": "validation/stage83_attempt1",
+      "status": "retained_child_failure",
+      "scheduler_tasks": [
+        {
+          "id": "t175928",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279291.6531656,
+          "finished_at": 1792279278.0,
+          "log_path": "/tmp/sched_t175928.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/validation/stage83_attempt1/0_1.json",
+          "status": "child_failed",
+          "node": "node002",
+          "child_returncode": 1,
+          "started_utc": "2026-10-17T23:21:14.744992+00:00",
+          "completed_utc": "2026-10-17T23:21:18.171345+00:00",
+          "wall_seconds": 3.426432783715427,
+          "own_cpu_seconds": 0.09344799999999999,
+          "child_cpu_seconds": 3.083472,
+          "total_cpu_seconds": 3.17692
+        }
+      ]
+    },
+    {
+      "label": "validation/stage83_attempt2",
+      "status": "complete",
+      "scheduler_tasks": [
+        {
+          "id": "t175929",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279488.6700559,
+          "finished_at": 1792279477.0,
+          "log_path": "/tmp/sched_t175929.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/validation/stage83_attempt2/0_1.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:24:30.957537+00:00",
+          "completed_utc": "2026-10-17T23:24:37.471233+00:00",
+          "wall_seconds": 6.513738649897277,
+          "own_cpu_seconds": 0.088595,
+          "child_cpu_seconds": 4.402786,
+          "total_cpu_seconds": 4.491381
+        }
+      ]
+    },
+    {
+      "label": "audit/tasks",
+      "status": "complete",
+      "scheduler_tasks": [
+        {
+          "id": "t175930",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 3,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279665.8391786,
+          "finished_at": 1792279652.0,
+          "log_path": "/tmp/sched_t175930.log"
+        },
+        {
+          "id": "t175931",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279665.9974852,
+          "finished_at": 1792279653.0,
+          "log_path": "/tmp/sched_t175931.log"
+        },
+        {
+          "id": "t175932",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279665.8879743,
+          "finished_at": 1792279653.0,
+          "log_path": "/tmp/sched_t175932.log"
+        },
+        {
+          "id": "t175933",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279665.997842,
+          "finished_at": 1792279653.0,
+          "log_path": "/tmp/sched_t175933.log"
+        },
+        {
+          "id": "t175934",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279665.8407605,
+          "finished_at": 1792279652.0,
+          "log_path": "/tmp/sched_t175934.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/audit/tasks/0_3.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:27:28.415812+00:00",
+          "completed_utc": "2026-10-17T23:27:32.924546+00:00",
+          "wall_seconds": 4.508772546425462,
+          "own_cpu_seconds": 0.084003,
+          "child_cpu_seconds": 2.749353,
+          "total_cpu_seconds": 2.833356
+        },
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/audit/tasks/3_9.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:27:28.567727+00:00",
+          "completed_utc": "2026-10-17T23:27:33.708327+00:00",
+          "wall_seconds": 5.140648514032364,
+          "own_cpu_seconds": 0.089067,
+          "child_cpu_seconds": 4.330532,
+          "total_cpu_seconds": 4.419599
+        },
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/audit/tasks/9_14.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:27:28.467666+00:00",
+          "completed_utc": "2026-10-17T23:27:33.728332+00:00",
+          "wall_seconds": 5.260713094845414,
+          "own_cpu_seconds": 0.080332,
+          "child_cpu_seconds": 3.759293,
+          "total_cpu_seconds": 3.839625
+        },
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/audit/tasks/14_19.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:27:28.574781+00:00",
+          "completed_utc": "2026-10-17T23:27:33.862357+00:00",
+          "wall_seconds": 5.28766671475023,
+          "own_cpu_seconds": 0.09542499999999998,
+          "child_cpu_seconds": 3.83394,
+          "total_cpu_seconds": 3.929365
+        },
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/audit/tasks/19_24.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:27:28.415469+00:00",
+          "completed_utc": "2026-10-17T23:27:32.911229+00:00",
+          "wall_seconds": 4.495806400664151,
+          "own_cpu_seconds": 0.07681199999999999,
+          "child_cpu_seconds": 3.6543789999999996,
+          "total_cpu_seconds": 3.731191
+        }
+      ]
+    },
+    {
+      "label": "audit/collect",
+      "status": "complete",
+      "scheduler_tasks": [
+        {
+          "id": "t175935",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "retry_count": 0,
+          "started_at": 1792279837.2264428,
+          "finished_at": 1792279823.0,
+          "log_path": "/tmp/sched_t175935.log"
+        }
+      ],
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/jobs/audit/collect/0_1.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T23:30:20.424037+00:00",
+          "completed_utc": "2026-10-17T23:30:23.111063+00:00",
+          "wall_seconds": 2.687072462402284,
+          "own_cpu_seconds": 0.072294,
+          "child_cpu_seconds": 2.427272,
+          "total_cpu_seconds": 2.4995659999999997
+        }
+      ]
+    }
+  ],
+  "automatic_scientific_retries": 0,
+  "analysis_failures": [],
+  "failed_analysis_attempts": [],
+  "recorded_analysis_cpu_seconds": 12.548780612,
+  "recorded_coordinator_cpu_seconds": 0.13799366999999996,
+  "validations": [
+    {
+      "file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/validation/stage83_attempt1/checks.json",
+      "status": "failed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_pathway_replication.py",
+        "tests/test_mainline_pathway_replication_summary.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_pathway_replication.py",
+        "tests/test_mainline_pathway_replication_summary.py"
+      ],
+      "test_counts": {
+        "failed": 1,
+        "passed": 15
+      },
+      "returncode": 1,
+      "cpu_seconds": 1.981214,
+      "wall_seconds": 2.150688473135233,
+      "checked_utc": "2026-10-17T23:21:18.049317+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0
+    },
+    {
+      "file": "paper_artifacts/mainline_pathway_replication_v1/cluster_control/validation/stage83_attempt2/checks.json",
+      "status": "passed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_pathway_replication.py",
+        "tests/test_mainline_pathway_replication_summary.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_pathway_replication.py",
+        "tests/test_mainline_pathway_replication_summary.py"
+      ],
+      "test_counts": {
+        "passed": 16
+      },
+      "returncode": 0,
+      "cpu_seconds": 1.787845,
+      "wall_seconds": 1.9208864504471421,
+      "checked_utc": "2026-10-17T23:24:34.016316+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0
+    }
+  ],
+  "validation_failures": 1,
+  "validation_cpu_seconds_all_attempts": 3.769059,
+  "preflight_separate": {
+    "file": "cluster_control/stage83_readonly_preflight_20261018.json",
+    "remote_inspection_cpu_seconds": 0.292603104,
+    "local_queue_inspection_cpu_seconds": 2.540948983,
+    "payload_bytes": 8999
+  },
+  "wrapper_cpu_seconds_including_children_not_additive": 28.921003,
+  "wrapper_own_cpu_seconds": 0.6799759999999999,
+  "new_work": {
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "raw_conditioning": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0,
+    "new_candidate_scores": 0,
+    "truth_problem_constructions": 0
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/completion.json",
+    "paper_artifacts/mainline_decision_path_attribution_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_retention_v1/completion.json",
+    "paper_artifacts/mainline_reference_retention_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_preparation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/stage81_execution_account_20261018.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/stage81_result_transfer_20261018.json",
+    "paper_artifacts/mainline_frozen_propagation_paths_v1/completion.json",
+    "paper_artifacts/mainline_frozen_propagation_paths_v1/cluster_control/stage82_scheduler_execution_20261018.json"
+  ],
+  "controller_metadata_payload_bytes": 7872,
+  "accounting_note": "First validation retained 15 passed / 1 false-positive text assertion failure; after a test-only correction and separate attempt2 path, all 16 passed. No registration or analysis ran before attempt2. Analysis, coordinator, both validations and preflight remain distinct. Wrapper CPU includes children/startup and is not additive. Scheduler done does not erase the retained attempt1 child failure.",
+  "scheduler_timestamp_note": "Scheduler started_at and finished_at include reversed ordering in this completed batch. These retained scheduler timestamps are not a reliable duration pair. Use recorded wrapper wall_seconds and attempt/coordinator/validation CPU; no negative duration is computed or charged."
+}

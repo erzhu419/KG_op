@@ -1,0 +1,50 @@
+{
+  "name": "mainline_target_noise_geometry_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T04:04:15.743280+00:00",
+  "source_manifest": "performance/manifests/mainline_terminal_confirmation_search_v1.json",
+  "source_output_dir": "paper_artifacts/mainline_terminal_confirmation_v1/search",
+  "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+  "source_archive": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+  "attribution_dir": "paper_artifacts/mainline_propagation_attribution_v1",
+  "output_dir": "paper_artifacts/mainline_target_noise_geometry_v1",
+  "entrypoint": "performance/diagnose_mainline_target_noise_geometry.py",
+  "report": "docs/mainline_target_noise_geometry_results_20261016.md",
+  "target_seeds": [
+    2026101901,
+    2026101902,
+    2026101903,
+    2026101904,
+    2026101905,
+    2026101906,
+    2026101907,
+    2026101908,
+    2026101909,
+    2026101910,
+    2026101911,
+    2026101912
+  ],
+  "history_arms": [
+    "legacy_role_full",
+    "legacy_role_after_init_point_only"
+  ],
+  "protocol": "Read the exact frozen full-source bundle and saved physical query banks for all12 Stage41 tasks. No source fit, raw replay, posterior update or new outcomes. Reconstruct full training eta designs and require parity with stored source_design before interpreting target projection. Include all query states and fixed Stage42 six first divergences/three missed full-only improving policies; join by physical policy, not unchecked arm-local IDs.",
+  "geometry": "Project target and source inputs through original frozen encoder and eta maps. Report every identity with its source mass, design norm relative to its own full-source training maximum, and source0 eta mean/variance/noise. Fullsource128 rows include source policy0, unlike Stage44 fold48; do not transplant its18.30 norm or thresholds into a different fitted model. Source0 variance decomposition is not a decomposition of paid-prefix posterior.",
+  "evidence": "Read saved paid10/11/12 risk mean, predicted noise, TS innovations and existing cached true sigma. Use Stage42 same-history component swaps without resampling. Keep focal terminal actual saved components separate; never use paid12 as paid13. Summaries use task-level views; expanded candidate arrays are descriptive and not independent tests.",
+  "decision": "No model change. Continue noise-interface correction only if the actual deployed model exhibits a shared extrapolation/noise mechanism at decision-relevant policies. Otherwise close this boundary-noise branch and retain initialization propagation plus point updates. Do not select parameters from these opened tasks.",
+  "new_budget": {
+    "source_fits": 0,
+    "target_calls": 0,
+    "source_calls": 0,
+    "verification_calls": 0,
+    "truth_calls": 0,
+    "saved_raw_rows_replayed": 0,
+    "downloads": 0
+  },
+  "limits": "Retrospective mechanism diagnosis of one known target family. Geometry and saved-score associations are not causal posterior ablations or new optimization gains. Truth coverage is cached only; unavailable truth remains unknown. No extra precision or candidate screening.",
+  "completed_utc": "2026-10-16T04:06:29.926007+00:00",
+  "branch_decision": "close_boundary_noise_repair",
+  "deployed_model_changed": false,
+  "decision_evidence": "Actual decisive points do not reproduce the held-source boundary design/eta-variance pathology. Mixed conditional noise biases and zero bidirectional noise-only choice recoveries do not support a uniform noise-interface patch.",
+  "next_step": "Preregister four fresh geometries in each of the three existing families. Freeze original source models/frontend/10+3 budget and verifier, retain all original references and terminal crossing. Primary: certified true quality of after-initialization point updates versus source0 point updates under the same original terminal; certification baseline and later propagation effects separate. Check existing per-family role/source interfaces before fixing the full batch; no tuning on opened target outcomes."
+}

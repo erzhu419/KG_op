@@ -1,0 +1,731 @@
+{
+  "status": "Frozen before new target observations; source-only shared proposals, two releases.",
+  "goal_contract": "docs/original_goal_and_mainline_contract_20261015.md",
+  "reuse_plan": "performance/manifests/historical_full_bank_development_v1.json",
+  "output": "paper_artifacts/mainline_d1000_dynamic_v1",
+  "cross_dimension_inputs": "paper_artifacts/mainline_d1000_dynamic_v1/bridge_inputs.json",
+  "query_coordinates": "paper_artifacts/mainline_d1000_dynamic_v1/query_coordinates.json",
+  "dimension_audit": "paper_artifacts/mainline_d1000_two_round_v1/dimension_audit.json",
+  "target_dimension": 1000,
+  "task_count": 4,
+  "target_tasks": [
+    {
+      "task_id": "original_d1000_dynamic_seed00",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    },
+    {
+      "task_id": "original_d1000_dynamic_seed01",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    },
+    {
+      "task_id": "original_d1000_dynamic_seed02",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    },
+    {
+      "task_id": "original_d1000_dynamic_seed03",
+      "family": "InventorySupplyChain",
+      "problem_kwargs": {}
+    }
+  ],
+  "pairing_unit": "independent observation seed on one fixed nominal problem, not independent geometry task",
+  "evaluation_scope": "Original nominal d1000 Inventory, four fresh observation seeds, same frozen sources and mean4/risk10. Shared source-only generator components with two scheduled releases, not the full adaptive V51 generator.",
+  "layout": "5",
+  "models": [
+    "source_structural_mixture",
+    "source_common_task_rbf"
+  ],
+  "policies": [
+    "stop_after_initialization",
+    "fixed_two_round_moment_kg"
+  ],
+  "initialization_indices": [
+    45,
+    10
+  ],
+  "rounds": 2,
+  "replicates_per_round": 1,
+  "candidate_count": 104,
+  "total_target_call_cap": 362,
+  "maximum_physical_calls": 5768,
+  "maximum_case_cpu_seconds": 120,
+  "task_seed": 2026101521,
+  "initialization_seed": 2026101522,
+  "search_seed": 2026101523,
+  "verification_seed": 2026101524,
+  "bootstrap_seed": 2026101525,
+  "bootstrap_draws": 10000,
+  "bank": "Original73 prefix plus two deterministic source-only proposal batches. Deduplicate integer policies; no target truth, observations or online-selected indices enter proposal generation. All four arms share the same final union.",
+  "representation": "Recompute real d1000 public control mean4 coordinates and common50-grid observable risk10 coordinates using the frozen layout5 source maps. Reconstruct the deterministic risk encoder from exactly its old training rows if no serialized encoder exists; first reproduce old73 coordinates. No new source labels, source-law fit, GP fit, or target-informed scaling.",
+  "response_units": "Identity mapping for f,g-tau,log sigma_f^2,log sigma_g^2. Formula uses normalized control-group means and global SD, not a dimension sum. L,sigma,alpha,weights,tau are identical; changes caused by actual policy/group geometry are not response-unit rescaling.",
+  "selection": "Same fixed order3 moment KG and actual native-mixture raw updates. Round1 query/terminal sees release1 prefix; round2 sees full union. Stop chooses from full union using initialization only. Full union is restored once; latent future-point predictions never enter round1 selection.",
+  "terminal": "Same fixed moment terminal utility as d50, direct single candidate, familywise delta.05. Stop uses360 independent verifier episodes and online358. Freeze all16 recommendations before any verifier, finish all verifiers before explicit truth scoring.",
+  "mechanism_diagnostic": "Before outcomes, each round additionally freezes a terminal-only counterfactual holding current unsampled policy marginals at their pre-observation values while retaining actual updates at observed policies. Compare its recommendation to the full update at the same remaining budget. Score both conditional safe rewards after all terminal verification; this is not a fifth optimizer or independent deployed outcome. Also freeze a terminal intervention on new generated unsampled marginals only; score new-point initial/final and prerelease propagation after all verifiers.",
+  "endpoints": "Four-arm actual certified safe reward; unsampled f/g/logvariance prediction errors; whether unsampled marginal propagation changes recommendation and its post-freeze conditional reward. Include negative transfers, rejected/false certificates, and non-contracting uncertainty.",
+  "randomness": "Fresh seeds separate from previous fixed73 development. Same source-only proposal union across four repetitions; common init per repetition and independent search/verification streams as before.",
+  "accounting": "New stage; old numerical HOLD and ledgers unchanged.8 shared initialization +16 search +5744 verification=5768 physical calls,5792 logical. Reuse saved raw observations after failure and retain all attempts. Single scientific CPU thread, serial source models, local existing artifacts only.",
+  "dynamic_candidates": {
+    "original_count": 73,
+    "round_end_indices": [
+      89,
+      104
+    ],
+    "origins": [
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 0
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 1
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 2
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 3
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 4
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 5
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 6
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 7
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 8
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 9
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 10
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 11
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 12
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 13
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 14
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 15
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 16
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 17
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 18
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 19
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 20
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 21
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 22
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 23
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 24
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 25
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 26
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 27
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 28
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 29
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 30
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 31
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 32
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 33
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 34
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 35
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 36
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 37
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 38
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 39
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 40
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 41
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 42
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 43
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 44
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 45
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 46
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 47
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 48
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 49
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 50
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 51
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 52
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 53
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 54
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 55
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 56
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 57
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 58
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 59
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 60
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 61
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 62
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 63
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 64
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 65
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 66
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 67
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 68
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 69
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 70
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 71
+      },
+      {
+        "birth_round": 0,
+        "route": "original_bank",
+        "original_index": 72
+      },
+      {
+        "birth_round": 1,
+        "route": "canonical_sobol"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "random"
+      },
+      {
+        "birth_round": 1,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 244,
+        "source_task": "related_inventory_04",
+        "source_row": 4,
+        "source_public_bank_index": 23
+      },
+      {
+        "birth_round": 1,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 246,
+        "source_task": "related_inventory_04",
+        "source_row": 6,
+        "source_public_bank_index": 19
+      },
+      {
+        "birth_round": 1,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 248,
+        "source_task": "related_inventory_05",
+        "source_row": 0,
+        "source_public_bank_index": 45
+      },
+      {
+        "birth_round": 1,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 250,
+        "source_task": "related_inventory_05",
+        "source_row": 2,
+        "source_public_bank_index": 51
+      },
+      {
+        "birth_round": 1,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 252,
+        "source_task": "related_inventory_05",
+        "source_row": 4,
+        "source_public_bank_index": 22
+      },
+      {
+        "birth_round": 1,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 254,
+        "source_task": "related_inventory_05",
+        "source_row": 6,
+        "source_public_bank_index": 53
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "lhs"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "random"
+      },
+      {
+        "birth_round": 2,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 244,
+        "source_task": "related_inventory_04",
+        "source_row": 4,
+        "source_public_bank_index": 23
+      },
+      {
+        "birth_round": 2,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 246,
+        "source_task": "related_inventory_04",
+        "source_row": 6,
+        "source_public_bank_index": 19
+      },
+      {
+        "birth_round": 2,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 248,
+        "source_task": "related_inventory_05",
+        "source_row": 0,
+        "source_public_bank_index": 45
+      },
+      {
+        "birth_round": 2,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 250,
+        "source_task": "related_inventory_05",
+        "source_row": 2,
+        "source_public_bank_index": 51
+      },
+      {
+        "birth_round": 2,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 252,
+        "source_task": "related_inventory_05",
+        "source_row": 4,
+        "source_public_bank_index": 22
+      },
+      {
+        "birth_round": 2,
+        "route": "source_profile_refinement",
+        "source_route": "LearnedMetaPrior._alignment_inverse_pool",
+        "source_pool_index": 254,
+        "source_task": "related_inventory_05",
+        "source_row": 6,
+        "source_public_bank_index": 53
+      }
+    ],
+    "seed": 2026101520,
+    "target_dimension": 1000,
+    "rounds": [
+      {
+        "round": 1,
+        "proposed_count": 16,
+        "added_by_route": {
+          "canonical_sobol": 1,
+          "lhs": 4,
+          "random": 5,
+          "source_profile_refinement": 6
+        },
+        "duplicates_by_route": {},
+        "source_pool_seed": 1158395989
+      },
+      {
+        "round": 2,
+        "proposed_count": 16,
+        "added_by_route": {
+          "lhs": 4,
+          "random": 5,
+          "source_profile_refinement": 6
+        },
+        "duplicates_by_route": {
+          "canonical_sobol": 1
+        },
+        "source_pool_seed": 4194981999
+      }
+    ],
+    "source": {
+      "source_inputs": "paper_artifacts/legacy_joint_population_f_inner_raw_contract_v1/layout5/risk_inputs.json",
+      "source_public_inputs": "paper_artifacts/legacy_related_inventory_source_v1/frozen_inputs.json",
+      "source_task_ids": [
+        "related_inventory_02",
+        "related_inventory_03",
+        "related_inventory_04",
+        "related_inventory_05"
+      ],
+      "source_site_indices_by_task": [
+        [
+          45,
+          10,
+          51,
+          31,
+          50,
+          57,
+          67,
+          36
+        ],
+        [
+          45,
+          10,
+          51,
+          31,
+          49,
+          62,
+          59,
+          34
+        ],
+        [
+          45,
+          10,
+          51,
+          31,
+          23,
+          65,
+          19,
+          13
+        ],
+        [
+          45,
+          10,
+          51,
+          31,
+          22,
+          20,
+          53,
+          33
+        ]
+      ],
+      "proposal_source_rows": 32,
+      "source_scope": "32 frozen encoder rows; a subset of the unchanged 48-row source-law training data"
+    },
+    "source_inverse_pool_size": 256,
+    "source_refinement_indices": [
+      244,
+      246,
+      248,
+      250,
+      252,
+      254
+    ],
+    "source_perturbation": "original five-knot Normal(0,.10); original every-fifth-row head randomization retained",
+    "canonical_rule": "same first unobserved Sobol point relative to shared initialization45/10 in both rounds",
+    "omitted_original_routes": [
+      "posterior expert allocation",
+      "latent-distance source ranker",
+      "constraint-uncertainty ranking",
+      "online feedback to shared proposals"
+    ],
+    "target_observations_used": false,
+    "target_truth_used": false,
+    "new_source_fits": 0,
+    "simulation_calls": 0
+  }
+}

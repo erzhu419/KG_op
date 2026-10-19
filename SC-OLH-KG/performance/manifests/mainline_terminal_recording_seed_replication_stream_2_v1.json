@@ -1,0 +1,812 @@
+{
+  "source_manifest": "performance/manifests/mainline_same_policy_confirmation_v1.json",
+  "search_arms": [
+    "legacy_native_neighbors",
+    "same_source_gp",
+    "current_structural_mixture",
+    "legacy_role_full",
+    "legacy_role_after_init_point_only",
+    "legacy_role_point_only",
+    "initialization_only"
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "old_protocol": "same_policy_distinct_challenger",
+  "candidate_protocol": "frozen_three_candidate_two_objective_comparisons",
+  "budget": {
+    "geometry_count": 24,
+    "observation_replicates": 1,
+    "unique_search_histories": 168,
+    "terminal_cells_per_protocol": 216,
+    "registered_terminal_cells": 432,
+    "initial_physical_calls": 240,
+    "online_search_physical_calls": 432,
+    "maximum_verification_calls_per_cell": 352,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "maximum_verification_logical_calls_per_protocol": 76032,
+    "expanded_logical_search_calls_per_protocol": 2736,
+    "maximum_logical_target_calls_both_protocols": 157536,
+    "maximum_unique_terminal_calls_per_paired_cell": 368,
+    "maximum_verification_physical_calls": 79488,
+    "maximum_target_physical_calls": 80160,
+    "bound_basis": "Same-cell union: safety80+128+128 and objective block0+block1 of16 each. Per-protocol352 cap remains; historical spending and unused old safety tails stay charged.",
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "download_bytes": 0,
+    "analytic_truth_function_call_bound": "3 times sealed distinct audit policy inventory N; account separately from target simulation and reused fields.",
+    "registration_target_calls": 0
+  },
+  "name": "mainline_terminal_recording_seed_replication_stream_2_v1",
+  "status": "registered_not_started",
+  "execution_started": false,
+  "registered_utc": "2026-10-17T05:41:21.775673+00:00",
+  "parent_manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+  "reference_manifest": "performance/manifests/mainline_safe_unsampled_validation_v1.json",
+  "output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2",
+  "protocol_document": "docs/mainline_terminal_recording_seed_replication_protocol_20261017.md",
+  "tasks": [
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107001,
+      "optimizer_seed": 2026107001,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.02233997178629179,
+            -0.005798966078076763,
+            0.025693955178565188
+          ],
+          "task_geometry_radius_scale": 0.9600854373752711
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107001/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107001/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107002,
+      "optimizer_seed": 2026107002,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.007198292816379685,
+            -0.034997720157765116,
+            0.006074505843033956
+          ],
+          "task_geometry_radius_scale": 0.9916537852938522
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107002/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107002/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107003,
+      "optimizer_seed": 2026107003,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.03225502828862007,
+            -0.00906345724431739,
+            0.019044182898163335
+          ],
+          "task_geometry_radius_scale": 0.9827135319442236
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107003/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107003/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107004,
+      "optimizer_seed": 2026107004,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.013004599147246353,
+            -0.013714639524307726,
+            0.007030341922848071
+          ],
+          "task_geometry_radius_scale": 0.9930162696520084
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107004/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107004/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107005,
+      "optimizer_seed": 2026107005,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.0076532283085756145,
+            -0.00908613747724095,
+            0.034335476466477804
+          ],
+          "task_geometry_radius_scale": 0.9736145828869284
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107005/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107005/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107006,
+      "optimizer_seed": 2026107006,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.024200377247249473,
+            -0.00033284803152733994,
+            0.03334374106344565
+          ],
+          "task_geometry_radius_scale": 1.0108300946204354
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107006/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107006/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107007,
+      "optimizer_seed": 2026107007,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.022240778199453696,
+            0.0008989972975610994,
+            0.0038248748812245437
+          ],
+          "task_geometry_radius_scale": 0.996618111478756
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107007/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107007/neighbors.npz"
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "geometry_task_seed": 2026107008,
+      "optimizer_seed": 2026107008,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_inventory_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_InventorySupplyChain_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.00983273514444494,
+            -0.021317363369578915,
+            -0.02013840416163551
+          ],
+          "task_geometry_radius_scale": 1.0347825382644062
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107008/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/InventorySupplyChain/search/seed_2026107008/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107009,
+      "optimizer_seed": 2026107009,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.010696308490344607,
+            0.02734554566883525,
+            0.002621192646948954
+          ],
+          "task_geometry_radius_scale": 0.9874994624961264
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107009/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107009/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107010,
+      "optimizer_seed": 2026107010,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.010137938278524751,
+            0.014100104113693154,
+            0.014301622579613815
+          ],
+          "task_geometry_radius_scale": 1.0022631710948795
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107010/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107010/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107011,
+      "optimizer_seed": 2026107011,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.017029284558905546,
+            -0.023658027527568643,
+            0.01413074791988947
+          ],
+          "task_geometry_radius_scale": 0.9963148666384744
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107011/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107011/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107012,
+      "optimizer_seed": 2026107012,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.028720646143081285,
+            -0.03223576758518275,
+            -0.029096572293720945
+          ],
+          "task_geometry_radius_scale": 0.9615223198975911
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107012/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107012/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107013,
+      "optimizer_seed": 2026107013,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.008222948823263868,
+            0.013857506757077476,
+            -0.0281150683448331
+          ],
+          "task_geometry_radius_scale": 0.9875802689351227
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107013/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107013/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107014,
+      "optimizer_seed": 2026107014,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.006581238167636741,
+            0.028340778562328542,
+            0.0032813215813134317
+          ],
+          "task_geometry_radius_scale": 0.9792130300444728
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107014/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107014/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107015,
+      "optimizer_seed": 2026107015,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.019183649524477285,
+            -0.009026222727644535,
+            0.028091407444450642
+          ],
+          "task_geometry_radius_scale": 1.0123717467227098
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107015/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107015/neighbors.npz"
+    },
+    {
+      "domain": "QueueResourceControl",
+      "geometry_task_seed": 2026107016,
+      "optimizer_seed": 2026107016,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_queue_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_QueueResourceControl_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.025793309519685788,
+            0.005209860839526639,
+            -0.024318736045297162
+          ],
+          "task_geometry_radius_scale": 1.00913780346738
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107016/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/QueueResourceControl/search/seed_2026107016/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107017,
+      "optimizer_seed": 2026107017,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_0",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.028166865037694222,
+            -0.028587809735596652,
+            0.0008516495867838536
+          ],
+          "task_geometry_radius_scale": 1.0455389815934855
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107017/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107017/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107018,
+      "optimizer_seed": 2026107018,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_1",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.014154118661343626,
+            0.026252597635749074,
+            -0.020491879317105288
+          ],
+          "task_geometry_radius_scale": 1.0135127483710222
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107018/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107018/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107019,
+      "optimizer_seed": 2026107019,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_2",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.029124069693808177,
+            -0.0065863032490641425,
+            0.025359356317746815
+          ],
+          "task_geometry_radius_scale": 0.9844064471146466
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107019/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107019/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107020,
+      "optimizer_seed": 2026107020,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_3",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.007977696150454489,
+            0.0196557642121565,
+            -0.019455653710302504
+          ],
+          "task_geometry_radius_scale": 0.9571178437812627
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107020/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107020/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107021,
+      "optimizer_seed": 2026107021,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_4",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.015187014882467396,
+            0.01957419686529785,
+            0.01776841150979689
+          ],
+          "task_geometry_radius_scale": 0.9578719252591406
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107021/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107021/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107022,
+      "optimizer_seed": 2026107022,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_5",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            -0.027733262454193525,
+            0.008308052122799961,
+            0.01637891080550733
+          ],
+          "task_geometry_radius_scale": 1.0312805291731346
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107022/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107022/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107023,
+      "optimizer_seed": 2026107023,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_6",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.003309357467566977,
+            -0.02008163110798805,
+            0.02577977325669452
+          ],
+          "task_geometry_radius_scale": 0.9922360467403973
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107023/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107023/neighbors.npz"
+    },
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "geometry_task_seed": 2026107024,
+      "optimizer_seed": 2026107024,
+      "source_search_manifest": "performance/manifests/mainline_same_policy_confirmation_factorshock_search_v1.json",
+      "geometry": {
+        "task_id": "safe_unsampled_validation_FactorShockStatePolicyRZDT1_7",
+        "problem_kwargs": {
+          "task_geometry_shift": [
+            0.017628983024079496,
+            -0.002314259898445234,
+            -0.03421391849440714
+          ],
+          "task_geometry_radius_scale": 0.9743448020350388
+        }
+      },
+      "initial_policy_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107024/initialization.json",
+      "shared_neighbors_file": "paper_artifacts/mainline_safe_unsampled_validation_v1/replicate_1/FactorShockStatePolicyRZDT1/search/seed_2026107024/neighbors.npz"
+    }
+  ],
+  "geometry_seed": 2026107000,
+  "observation_replicate": 2,
+  "replicates": [
+    {
+      "replicate": 2,
+      "output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/stream_2/replicate_2",
+      "seed_by_task": {
+        "2026107001": {
+          "observation_seed": 2026109101,
+          "verification_seed": 2026109201
+        },
+        "2026107002": {
+          "observation_seed": 2026109102,
+          "verification_seed": 2026109202
+        },
+        "2026107003": {
+          "observation_seed": 2026109103,
+          "verification_seed": 2026109203
+        },
+        "2026107004": {
+          "observation_seed": 2026109104,
+          "verification_seed": 2026109204
+        },
+        "2026107005": {
+          "observation_seed": 2026109105,
+          "verification_seed": 2026109205
+        },
+        "2026107006": {
+          "observation_seed": 2026109106,
+          "verification_seed": 2026109206
+        },
+        "2026107007": {
+          "observation_seed": 2026109107,
+          "verification_seed": 2026109207
+        },
+        "2026107008": {
+          "observation_seed": 2026109108,
+          "verification_seed": 2026109208
+        },
+        "2026107009": {
+          "observation_seed": 2026109109,
+          "verification_seed": 2026109209
+        },
+        "2026107010": {
+          "observation_seed": 2026109110,
+          "verification_seed": 2026109210
+        },
+        "2026107011": {
+          "observation_seed": 2026109111,
+          "verification_seed": 2026109211
+        },
+        "2026107012": {
+          "observation_seed": 2026109112,
+          "verification_seed": 2026109212
+        },
+        "2026107013": {
+          "observation_seed": 2026109113,
+          "verification_seed": 2026109213
+        },
+        "2026107014": {
+          "observation_seed": 2026109114,
+          "verification_seed": 2026109214
+        },
+        "2026107015": {
+          "observation_seed": 2026109115,
+          "verification_seed": 2026109215
+        },
+        "2026107016": {
+          "observation_seed": 2026109116,
+          "verification_seed": 2026109216
+        },
+        "2026107017": {
+          "observation_seed": 2026109117,
+          "verification_seed": 2026109217
+        },
+        "2026107018": {
+          "observation_seed": 2026109118,
+          "verification_seed": 2026109218
+        },
+        "2026107019": {
+          "observation_seed": 2026109119,
+          "verification_seed": 2026109219
+        },
+        "2026107020": {
+          "observation_seed": 2026109120,
+          "verification_seed": 2026109220
+        },
+        "2026107021": {
+          "observation_seed": 2026109121,
+          "verification_seed": 2026109221
+        },
+        "2026107022": {
+          "observation_seed": 2026109122,
+          "verification_seed": 2026109222
+        },
+        "2026107023": {
+          "observation_seed": 2026109123,
+          "verification_seed": 2026109223
+        },
+        "2026107024": {
+          "observation_seed": 2026109124,
+          "verification_seed": 2026109224
+        }
+      }
+    }
+  ],
+  "objective": "Replicate frozen AFTER cross-policy propagation versus POINT under a fresh observation/verification stream, while passively saving the complete existing terminal selection process.",
+  "scope": "One new stream on the same24 Stage73 geometries; it is one half of the registered two-stream replication, not24 new geometries.",
+  "geometry_description": "Exact Stage73 geometry vectors and optimizer seeds; exact initial10 and shared64 physical files. No geometry, initialization-policy or neighbor-bank draw.",
+  "primary_candidate": "legacy_role_after_init_point_only",
+  "primary_reference": "legacy_role_point_only",
+  "primary_terminal": "old",
+  "frozen": {
+    "d": 1000,
+    "source_models": "Unchanged family-specific Stage31 source models and native source priors from each source_search_manifest.",
+    "initial_policies": "Reuse exact Stage73 initial10 physical policies; discard old raw values and generate10 fresh observations shared by the7 histories.",
+    "shared_neighbors": "Reuse the exact Stage73 shared64 physical bank and metadata, without drawing a new bank.",
+    "frontend": "Unchanged original frontend and shared-neighbor supplement; adaptive proposals continue to learn from each arm own new history.",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "terminal": "Paired frozen old same_policy and new three-candidate/two-comparison rules; identical shortlist per history. No model, threshold or allocation adjustment.",
+    "candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "objective_comparison_budget_per_policy": 8,
+    "familywise_delta": 0.05,
+    "objective_comparison_delta": 0.016666666666666666,
+    "terminal_maximum_violation_probability": 0.5,
+    "verification_method": "normal_quantile_tolerance",
+    "model_changes": false,
+    "source_fits": 0,
+    "new_source_calls": 0,
+    "new_terminal": {
+      "name": "frozen_three_candidate_two_objective_comparisons",
+      "original_safety_budgets": [
+        80,
+        128,
+        128
+      ],
+      "proposed_safety_budgets": [
+        80,
+        120,
+        120
+      ],
+      "safety_familywise_delta": 0.05,
+      "objective_comparison_calls_per_policy": 8,
+      "maximum_objective_comparisons": 2,
+      "original_objective_delta": 0.016666666666666666,
+      "objective_delta_per_comparison": 0.008333333333333333,
+      "maximum_terminal_calls": 352,
+      "online_initial_plus_search_calls": 13,
+      "online_total_limit": 365,
+      "stop_initial_calls": 10,
+      "stop_total_limit": 362,
+      "allocation_basis": "Keep primary80; subtract8 symmetrically from the two original128 safety allocations to fund one additional16-call comparison. Divide the original objective error allowance equally between the two predetermined comparisons; no data-tuned threshold.",
+      "flow": [
+        "Safety-check the original primary and initial incumbent using their assigned budgets.",
+        "If both pass, compare primary against incumbent on comparison block0 and retain the incumbent unless the primary dominates under the existing paired statistic and the new delta. If only one passes, that policy is the current winner.",
+        "Safety-check the existing third candidate even when the first two produced a winner; apply no added risk filter or new candidate selection.",
+        "If third passes and a winner exists, compare third against that winner on independent comparison block1; switch only on paired objective dominance.",
+        "If the first two both fail and third passes, deploy third without a target comparison. If third fails, retain any certified winner. If all fail, report no certified deployment.",
+        "Preserve numerical execution failures and already used calls through the existing failure-accounting path; do not patch or retry the model."
+      ],
+      "independence": "Use the frozen comparison mapping: block0 SeedSequence([verification_seed, replication, TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG]); block1 appends1. Search and safety use their distinct namespaces; common random numbers are shared only within each compared pair.",
+      "reuse": "Use the existing core.terminal_two_comparison verifier and saved-block reuse implementation, including128-to120 safety prefixes and independent objective blocks0/1; retain the frozen old verifier as the default reference.",
+      "tradeoff": "Lower backup safety counts and stricter objective comparisons may reduce power. Original certificates cannot be inherited, and omissions cannot be counted as recovered successes."
+    },
+    "initial_design_seed": 80
+  },
+  "randomness": {
+    "optimizer_seed": "Keep geometry_task_seed and optimizer_seed2026107001..2026107024 as config.seed in both streams. Observation seeds do not replace optimizer seeds.",
+    "observation_stream": "SeedSequence([observation_seed, evaluation_index, SIMULATION_STREAM_TAG]); indices0..9 initialization and10..12 adaptive queries.",
+    "verification_stream": "Use registered independent verification_seed with unchanged slot/replication/safety/objective stream namespaces.",
+    "pairing": "Within each task/replicate all arms use matching observation and verification namespaces. Same evaluation index can query different policies; shared random numbers do not make responses identical.",
+    "limitation": "New observations can change adaptive pools, trajectories and RNG consumption. Fixed optimizer seed does not freeze every per-policy TS innovation.",
+    "reuse": "Never reuse old observations or certificates across the new streams. Only exactly matching new-stream physical observations may be shared with explicit accounting."
+  },
+  "barriers": {
+    "before_sampling": "Freeze both stream maps, source references, physical initial10/shared64 files and passive terminal recording before any new observation.",
+    "before_online": "Both streams must finish all48 shared initial histories and freeze all48 reused neighbor banks before any adaptive search.",
+    "before_verification": "Both streams must seal all336 histories or retained failures and both protocols of all432 paired terminal inputs before terminal simulation.",
+    "before_scoring": "Seal all864 old/new terminal outcomes or retained failures across both streams, then seal the complete saved action-pool physical inventory before any target-truth access or scoring.",
+    "failure": "Retain every failed arm, paid prefix, partial audit and CPU; no automatic resampling, seed replacement, task dropping or numerical model patch."
+  },
+  "analysis": {
+    "primary": "Old/default terminal AFTER-minus-POINT C and signedG: form each stream effect, then average the two new-stream effects within each of24 fixed geometries before between-geometry summaries.",
+    "metrics": {
+      "A": "actual certificate",
+      "C": "I(certified and true feasible)",
+      "R": "C*Qdeployed",
+      "G": "C*(Qdeployed-Qbest_true_feasible_initial10), signed",
+      "P": "max(G,0)",
+      "L": "max(-G,0)"
+    },
+    "secondary": "New-terminal AFTER-minus-POINT; FULL-minus-AFTER; all9 old/new controls, GP, OLD, STRUCT, STOP and native crosses. Paired new-minus-old terminal effects remain secondary.",
+    "fixed_size": "Exactly24 frozen geometries and2 new observation/verification streams; no interim scoring, optional expansion, filtering or model/threshold/terminal changes.",
+    "concentration": "Report all per-geometry effects, family directions, wins/ties/losses, positive and negative sums, largest positive contribution share. Also remove the single largest positive contribution for a labeled descriptive sensitivity only; never replace the full registered primary estimate.",
+    "uncertainty": "24 geometry units, not48 independent samples. Average the two streams within geometry before descriptive paired95%t intervals; also retain each stream separately.",
+    "missing": "An undefined baseline or failed effect remains null. If either stream effect is null, that geometry average is null; report full24 and explicitly defined-subset denominators separately.",
+    "truth": "Only after the864-outcome global seal, score every frozen action_ids candidate from all3 prefixes of FULL/AFTER/POINT, initial policies and all9-arm old/new terminal/deployment union. Reuse same-geometry exact-physical-policy deterministic truth; only missing fields require new analytic calls, accounted separately from simulation observations.",
+    "reference": "Opened Stage73 outcomes are historical reference only and never enter the new primary mean or stream-average denominator.",
+    "interpretation": "Discovery, shortlist inclusion, certification and comparison are distinct. A good omitted point is a loss candidate only relative to the actual deployed policy; true quality does not certify an unexecuted alternative."
+  },
+  "mechanism_audit": {
+    "arms": [
+      "legacy_role_after_init_point_only",
+      "legacy_role_point_only",
+      "legacy_role_full"
+    ],
+    "paid_prefixes": [
+      10,
+      11,
+      12
+    ],
+    "population": "Union of every saved action_ids point at all3 prefixes in all3 role histories, plus initial10 and all9-arm old/new terminal/deployed policy union; exact physical-policy dedup within geometry only. Freeze before truth; no shortlist/selected-only restriction.",
+    "observations": "Unobserved means absent from that arm history strictly before the current query; also track the same initially-unobserved set through all3 prefixes without replacing it by final survivors.",
+    "safety": "True feasibility is chance_margin<=0 from the analytic target functions after sealing; sampled search eligibility is saved sampled_margin<=0. Report all4 combinations. Source-terminal probability<=0.5 is a different quantity.",
+    "coverage": "For every arm/prefix/task record unobserved count, truly feasible unobserved count, sampled-eligible feasible unobserved count, safe improving count, and whether at least2 safe unobserved policies compete. Zero coverage and unavailable rows stay in the24-task report.",
+    "ranking": "Over all truly feasible currently-unobserved action candidates, retain all unordered objective-gap pairs, predicted objective-mean and sampled-objective misorder/tie counts and best-eligible choice regret. Aggregate within geometry before between-geometry summaries; shared-neighbor versus dynamic origin remains separate.",
+    "pairing": "At prefix10 compare common physical candidates and initial history, checking pool/order equality before fixed-state attribution. In the common pool, retain both-unobserved true-feasible pairs and distinguish both sampled-eligible, one eligible, neither eligible and zero/one-policy sets. Later own-history comparisons are trajectory associations; intersections never replace full-pool coverage.",
+    "selection": "Replay actual score argmax and fallback from saved arrays without model restoration or new draws; separate risk exclusion, mean ranking, sample reversal, repeated query and candidate absence. Keep every gain, tie and loss.",
+    "deployment": "Follow every queried initially-unobserved policy into observed pool, frozen shortlist, safety, objective comparison and final deployment; join C,R,G,P,L. Merely containing a good candidate is not deployed value.",
+    "attribution_limit": "Saved risk/objective substitutions describe fixed-state selection only; no causal mediation percentage, unseen alternative-history rewards, independent policy-pair sample count or restored posterior.",
+    "truth_account": "Reuse same-geometry exact-policy truth only. At most3 new analytic function calls per distinct uncached policy (objective, constraint mean, constraint sigma); inventory N is fixed before truth, planned bound3N, actual missing-field calls charged separately. No simulation in audit.",
+    "execution_gap": "A future execution adapter must enforce the two-stream864-outcome seal before all-pool scoring. Registration and family materialization do not run experiments.",
+    "terminal_recording": "Save already computed final observed-pool components and ranking, objective gate, safe fallback, pre/post incumbent and same-policy transformation, preserving physical points and repeated observation indices. No extra prediction, restoration, ranking or random draw."
+  },
+  "statistical_unit": "24 fixed Stage73 geometries. The two new-stream paired effects are averaged within each geometry; policies, prefixes, streams and terminal cells are not independent geometry samples.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json"
+  ],
+  "new_target_calls_at_registration": 0,
+  "truth_used_at_registration": false,
+  "execution_preparation": {
+    "status": "pending_global_two_stream_adapter",
+    "workers": null,
+    "entrypoint": null,
+    "metadata_materializer": "performance.run_mainline_observation_seed_replication.materialize",
+    "execution_policy": "scheduleurm submit-cpu-batch node001-node006; CPU-only vram=0; BLAS threads1.",
+    "inherited_preflight": "paper_artifacts/mainline_three_family_v1/preflight.json",
+    "inherited_seed_routing": "paper_artifacts/mainline_observation_seed_preparation_v1/validation.json",
+    "inherited_reuse_checks": {
+      "reuse_unique_checks": 4,
+      "summary_unique_checks": 11,
+      "reuse_results": "paper_artifacts/mainline_terminal_two_comparison_development_v1/checks/reuse/results.json",
+      "summary_attempts": "paper_artifacts/mainline_terminal_two_comparison_development_v1/checks/summary/attempts.jsonl"
+    },
+    "remaining": "Connect and validate a global two-stream execution/scoring adapter before any sampling; child-only run/finalize is not an admitted execution path."
+  }
+}

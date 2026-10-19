@@ -1,0 +1,74 @@
+{
+  "complete": true,
+  "new_integrations": 0,
+  "scope": "Only arithmetic recomposition of paid fixed-action per-head values; no new terminal evaluations or predictive draws.",
+  "source_plan": "performance/manifests/historical_observed_prediction_v3.json",
+  "source_output": "paper_artifacts/historical_observed_prediction_v1",
+  "source_state": "learned_prior_independent_02_source_structural_mixture_layout6",
+  "origins": [
+    4,
+    5
+  ],
+  "prior_weights": [
+    8.247422641515386e-36,
+    8.147272405766678e-36,
+    8.699083104064694e-24,
+    7.776162150486291e-24,
+    0.6964353220376637,
+    0.30356467795643505,
+    3.78501689544287e-12,
+    2.1161940857733974e-12
+  ],
+  "per_head_prefix_means": {
+    "4": {
+      "0": {
+        "16": 0.8001466498489166,
+        "2048": 0.800515856065561
+      },
+      "1": {
+        "16": 0.9057216522855752,
+        "2048": 0.9240241364948554
+      }
+    },
+    "5": {
+      "0": {
+        "16": 0.8000355244338464,
+        "2048": 0.8003997424043776
+      },
+      "1": {
+        "16": 0.9211020922571509,
+        "2048": 0.9413726069348894
+      }
+    }
+  },
+  "rows": [
+    {
+      "objective_prefix": 16,
+      "risk_prefix": 16,
+      "fixed_reward": 0.7284149248866445,
+      "tower_residual": -0.015405714657741654
+    },
+    {
+      "objective_prefix": 16,
+      "risk_prefix": 2048,
+      "fixed_reward": 0.7435369397505456,
+      "tower_residual": -0.000283699793840575
+    },
+    {
+      "objective_prefix": 2048,
+      "risk_prefix": 16,
+      "fixed_reward": 0.7287496519758999,
+      "tower_residual": -0.015070987568486238
+    },
+    {
+      "objective_prefix": 2048,
+      "risk_prefix": 2048,
+      "fixed_reward": 0.7438786141088687,
+      "tower_residual": 5.7974564482532465e-05
+    }
+  ],
+  "debited_prior_point": 0.7438206395443862,
+  "legacy_diagonal_prefixes_reproduced": true,
+  "saved_head_observation_match_error": 0.0,
+  "reader_process_cpu_seconds": 0.021662516
+}

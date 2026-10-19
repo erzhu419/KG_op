@@ -1,0 +1,294 @@
+{
+  "name": "mainline_decision_path_attribution_v1",
+  "status": "complete",
+  "output_dir": "paper_artifacts/mainline_decision_path_attribution_v1",
+  "protocol_document": "docs/mainline_decision_path_attribution_protocol_20261017.md",
+  "reference_manifest": "performance/manifests/mainline_terminal_recording_seed_replication_v1.json",
+  "reference_output_dir": "paper_artifacts/mainline_terminal_recording_seed_replication_v1",
+  "streams": [
+    {
+      "name": "observation_1",
+      "replicate": 1,
+      "manifest": "performance/manifests/mainline_terminal_recording_seed_replication_stream_1_v1.json",
+      "terminal_recording_file": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/observation_1/revision_1/details.json"
+    },
+    {
+      "name": "observation_2",
+      "replicate": 2,
+      "manifest": "performance/manifests/mainline_terminal_recording_seed_replication_stream_2_v1.json",
+      "terminal_recording_file": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/observation_2/revision_1/details.json"
+    }
+  ],
+  "tasks": [
+    {
+      "seed": 2026107001,
+      "geometry_task_seed": 2026107001,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107002,
+      "geometry_task_seed": 2026107002,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107003,
+      "geometry_task_seed": 2026107003,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107004,
+      "geometry_task_seed": 2026107004,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107005,
+      "geometry_task_seed": 2026107005,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107006,
+      "geometry_task_seed": 2026107006,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107007,
+      "geometry_task_seed": 2026107007,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107008,
+      "geometry_task_seed": 2026107008,
+      "domain": "InventorySupplyChain"
+    },
+    {
+      "seed": 2026107009,
+      "geometry_task_seed": 2026107009,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107010,
+      "geometry_task_seed": 2026107010,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107011,
+      "geometry_task_seed": 2026107011,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107012,
+      "geometry_task_seed": 2026107012,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107013,
+      "geometry_task_seed": 2026107013,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107014,
+      "geometry_task_seed": 2026107014,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107015,
+      "geometry_task_seed": 2026107015,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107016,
+      "geometry_task_seed": 2026107016,
+      "domain": "QueueResourceControl"
+    },
+    {
+      "seed": 2026107017,
+      "geometry_task_seed": 2026107017,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107018,
+      "geometry_task_seed": 2026107018,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107019,
+      "geometry_task_seed": 2026107019,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107020,
+      "geometry_task_seed": 2026107020,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107021,
+      "geometry_task_seed": 2026107021,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107022,
+      "geometry_task_seed": 2026107022,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107023,
+      "geometry_task_seed": 2026107023,
+      "domain": "FactorShockStatePolicyRZDT1"
+    },
+    {
+      "seed": 2026107024,
+      "geometry_task_seed": 2026107024,
+      "domain": "FactorShockStatePolicyRZDT1"
+    }
+  ],
+  "target_seeds": [
+    2026107001,
+    2026107002,
+    2026107003,
+    2026107004,
+    2026107005,
+    2026107006,
+    2026107007,
+    2026107008,
+    2026107009,
+    2026107010,
+    2026107011,
+    2026107012,
+    2026107013,
+    2026107014,
+    2026107015,
+    2026107016,
+    2026107017,
+    2026107018,
+    2026107019,
+    2026107020,
+    2026107021,
+    2026107022,
+    2026107023,
+    2026107024
+  ],
+  "terminal_arms": [
+    {
+      "name": "legacy_role_full",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_full_native_terminal",
+      "history_arm": "legacy_role_full",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_role_after_init_point_only",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "role"
+    },
+    {
+      "name": "legacy_role_after_init_point_only_native_terminal",
+      "history_arm": "legacy_role_after_init_point_only",
+      "terminal_backend": "native"
+    },
+    {
+      "name": "legacy_native_neighbors",
+      "history_arm": "legacy_native_neighbors",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "same_source_gp",
+      "history_arm": "same_source_gp",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "legacy_role_point_only",
+      "history_arm": "legacy_role_point_only",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "current_structural_mixture",
+      "history_arm": "current_structural_mixture",
+      "terminal_backend": "original"
+    },
+    {
+      "name": "initialization_only",
+      "history_arm": "initialization_only",
+      "terminal_backend": "original"
+    }
+  ],
+  "focus_seeds": [
+    2026107017,
+    2026107013
+  ],
+  "protocols": [
+    "old",
+    "new"
+  ],
+  "expected": {
+    "geometries": 24,
+    "streams": 2,
+    "task_streams": 48,
+    "arms": 9,
+    "terminal_pairs": 432,
+    "terminal_outcomes": 864
+  },
+  "frozen": {
+    "model": true,
+    "AFTER": true,
+    "search": true,
+    "terminal": true,
+    "thresholds": true,
+    "seeds": true,
+    "source_fits": 0,
+    "posterior_restorations": 0,
+    "new_simulations": 0,
+    "new_truth_calls": 0,
+    "new_candidate_scores": 0
+  },
+  "statistical_unit": "24 fixed geometries; average both registered streams within geometry before statistical summaries. All48 task-streams remain descriptive rows, not48 independent geometries.",
+  "primary": "Retain old/default AFTER-minus-POINT C and signed G from Stage76; diagnose the actual paths without redefining the primary or selecting tasks.",
+  "stages": [
+    "saved_own_candidate_pool",
+    "observed",
+    "shortlist",
+    "safety_attempted",
+    "true_safe_certified",
+    "true_safe_deployed"
+  ],
+  "opportunity_gaps": {
+    "search": "Q_pool-Q_observed",
+    "shortlist": "Q_observed-Q_shortlist",
+    "coverage": "Q_shortlist-Q_attempted",
+    "safety": "Q_attempted-Q_certified",
+    "comparison": "Q_certified-Q_deployed"
+  },
+  "quality_definition": "Q_stage is the maximum cached quality among truly feasible physical policies in that saved stage set. Pool includes its own recorded candidates plus initial and observed policies. Empty, unavailable, or any missing-truth set has Q=null. Never substitute zero for an unavailable maximum.",
+  "coverage": "Full candidate pool available only for FULL/AFTER/POINT histories and their same-history native terminal controls. Other arms retain observed/terminal paths; their missing search opportunities remain unknown. No borrowing another arm pool or truth evaluation.",
+  "attribution": "Five gaps telescope on complete nested chains only. Compare search and summed terminal gaps on the identical available task-stream set, then require both streams for geometry means. They are descriptive hindsight quality opportunities, not achievable deployment gains or causal mediation.",
+  "missing": "Retain all registered cells, ties, losses, failed audits, undefined7012 G, missing truth and no-certificate paths. A missing stream cannot be replaced by the other stream.",
+  "policy_paths": "For every observed physical policy retain first query, final saved scores, shortlist insertion, actual safety/comparison route, deployment and signed gain relative to baseline and actual deployment. An omitted point inferior to the actual deployment is not a deployment loss.",
+  "historical_accounts": [
+    "paper_artifacts/mainline_unseen_geometry_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_development_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_two_comparison_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_three_stream_attribution_v1/completion.json",
+    "paper_artifacts/mainline_source_neighbor_coverage_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_source_neighbor_propagation_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_registration_v1/scheduler_execution.json",
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_observed_terminal_attribution_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/attempt1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/terminal_recording/completion_before_revision_1.json"
+  ],
+  "limits": [
+    "No fitting, posterior restoration, simulation, verification, truth-function evaluation, scoring prediction, resampling or threshold changes.",
+    "Full-pool best policies are post-seal diagnostic bounds, never a new selector or a promise of certifiability.",
+    "Physical policy IDs are local to each task-stream; cross-stream IDs alone are not identities.",
+    "Source and previous confirmation data remain frozen; no new scientific cohort is started."
+  ],
+  "registered_utc": "2026-10-17T13:14:55.260882+00:00",
+  "completed_utc": "2026-10-17T13:36:59.743984+00:00",
+  "summary_file": "paper_artifacts/mainline_decision_path_attribution_v1/summary.json",
+  "completion_file": "paper_artifacts/mainline_decision_path_attribution_v1/completion.json"
+}

@@ -1,0 +1,764 @@
+{
+  "stage": 100,
+  "status": "complete",
+  "created_utc": "2026-10-19T08:17:04.235176+00:00",
+  "scope": "Completed twelve registered finite source probes once after ten new substitute checks; source-only execution, no target execution",
+  "local_editing_and_static_inspection_cpu_seconds": null,
+  "unmeasured_cpu_note": "Local editing/static inspections not separately measured; unknown, not zero.",
+  "metadata_reads": [
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_preflight.json",
+      "returncode": 0,
+      "local_control_cpu_seconds": 0.014977301999999998,
+      "wall_seconds": 2.4146650019974913,
+      "stdout_bytes": 6284,
+      "stderr_bytes": 461,
+      "utc": "2026-10-19T08:17:04.235176+00:00",
+      "local_stage100_state_exists": false,
+      "remote_cpu_seconds": 0.0010153929999999894
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_scheduler_snapshot.json",
+      "local_control_cpu_seconds": 4.83673136,
+      "scope": "One final local queue projection for only seven registered Stage100 tasks; no scheduler mutation"
+    }
+  ],
+  "transfers": [
+    {
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_code_upload_receipt.json",
+      "status": "completed",
+      "file_bytes": 55178,
+      "compressed_bytes": 13897,
+      "base64_bytes": 18532,
+      "local_control_cpu_seconds": 0.03354398200000003,
+      "remote_upload_cpu_seconds": 0.0016540680000000085,
+      "acknowledgement_download_bytes": 1404
+    },
+    {
+      "status": "completed",
+      "file_bytes": 559928,
+      "compressed_bytes": 172690,
+      "base64_bytes": 230256,
+      "local_control_cpu_seconds": 0.10404994099999992,
+      "remote_upload_cpu_seconds": 0.010603825000000011,
+      "acknowledgement_download_bytes": 5066,
+      "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_final_document_upload_20261019.json",
+      "scope": "Final six static documents plus two pre-upload completion/account records; final receipt retained locally without recursive upload"
+    }
+  ],
+  "scheduler_task_ids": [
+    "t195160",
+    "t195161",
+    "t195162",
+    "t195163",
+    "t195164",
+    "t195165",
+    "t195166"
+  ],
+  "controller": {
+    "launch_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_controller_launch.json",
+    "pid": 1713784,
+    "exit_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_controller_exit.json",
+    "status": "complete",
+    "returncode": 0,
+    "completed_utc": "2026-10-19T08:29:14.161497+00:00",
+    "child_cpu_seconds": 240.809218,
+    "supervisor_cpu_seconds": 0.021209,
+    "wall_seconds": 486.24746439701994,
+    "automatic_retries": 0
+  },
+  "new_forbidden_work": {
+    "simulator_calls": 0,
+    "target_scoring_calls": 0,
+    "source_fits": 0,
+    "target_posterior_restorations": 0,
+    "old_failed_target_query_retries": 0
+  },
+  "source_probe_work": {
+    "status": "complete",
+    "registered_cases": 12,
+    "cases_started": 12,
+    "cases_complete": 12,
+    "actual_source_counters": {
+      "source_model_file_load_attempts": {
+        "total": 24,
+        "known_subtotal": 24,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "source_model_file_loads": {
+        "total": 24,
+        "known_subtotal": 24,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "source_projection_attempts": {
+        "total": 12,
+        "known_subtotal": 12,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "source_projection_calls": {
+        "total": 12,
+        "known_subtotal": 12,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "source_conditioning_attempts": {
+        "total": 192,
+        "known_subtotal": 192,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "source_conditioning_calls": {
+        "total": 192,
+        "known_subtotal": 192,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "local_raw_moment_attempts": {
+        "total": 6144,
+        "known_subtotal": 6144,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "quad_vec_attempts": {
+        "total": 6144,
+        "known_subtotal": 6144,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "completed_calls": {
+        "total": 6144,
+        "known_subtotal": 6144,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "failed_calls": {
+        "total": 0,
+        "known_subtotal": 0,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "resource_stopped_calls": {
+        "total": 0,
+        "known_subtotal": 0,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "unreturned_calls": {
+        "total": 0,
+        "known_subtotal": 0,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "worker_process_cpu_seconds_inclusive": {
+        "total": 127.270687374,
+        "known_subtotal": 127.270687374,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      },
+      "worker_driver_cpu_seconds_excluding_case_attempt": {
+        "total": 0.0034124999999995964,
+        "known_subtotal": 0.0034124999999995964,
+        "known_count": 12,
+        "registered_count": 12,
+        "unknown_case_ids": []
+      }
+    },
+    "model_loads": 24,
+    "source_projection_calls": 12,
+    "source_conditioning_calls": 192,
+    "integrations": 6144,
+    "record_completeness": "complete"
+  },
+  "cost_policy": "Source attempt and case accounting are nested inside wrapper CPU. Control/transport and targeted substitute costs remain separately identified; source load/conditioning/integration costs are actual and must not be encoded as free.",
+  "historical_account_references": [
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage98_accounting.json",
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage99_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage91_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json",
+    "paper_artifacts/mainline_source_alignment_paths_v1/cluster_control/stage94_accounting.json",
+    "paper_artifacts/mainline_evidence_chain_update_v1/cluster_control/stage95_accounting.json",
+    "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage96_accounting.json",
+    "paper_artifacts/mainline_source_numerical_executability_audit_v1/cluster_control/stage97_accounting.json"
+  ],
+  "failures_retained": [],
+  "validation_wrapper_records": {
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/validation/stage100_attempt1/0_1.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_alignment_validation",
+        "--attempt",
+        "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/validation/stage100_attempt1",
+        "--test",
+        "tests/test_mainline_source_finite_probes.py",
+        "--test",
+        "tests/test_mainline_source_finite_probes_cluster.py"
+      ],
+      "started_utc": "2026-10-19T08:23:08.094566+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:23:08.734663+00:00",
+      "wall_seconds": 0.6401440305635333,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/validation/stage100_attempt1/0_1.log",
+      "own_cpu_seconds": 0.075884,
+      "child_cpu_seconds": 0.477446,
+      "total_cpu_seconds": 0.55333,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    }
+  },
+  "scheduled_substitute_checks": {
+    "status": "passed",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_source_finite_probes.py",
+      "tests/test_mainline_source_finite_probes_cluster.py"
+    ],
+    "test_files": [
+      "tests/test_mainline_source_finite_probes.py",
+      "tests/test_mainline_source_finite_probes_cluster.py"
+    ],
+    "test_counts": {
+      "passed": 10
+    },
+    "returncode": 0,
+    "launch_error": null,
+    "cpu_seconds": 0.370274,
+    "coordinator_cpu_seconds": 0.0024956920000000007,
+    "wall_seconds": 0.5321958623826504,
+    "started_utc": "2026-10-19T08:23:08.185821+00:00",
+    "completed_utc": "2026-10-19T08:23:08.718765+00:00",
+    "scope": "Explicit substitute checks only; no scientific runner or registration invoked",
+    "new_scientific_calls": 0,
+    "new_truth_calls": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0,
+    "registered_permutations_materialized_by_checks": false,
+    "registered_geometries_materialized_by_checks": false,
+    "automatic_retries": 0
+  },
+  "result_download": {
+    "receipt_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_result_download_receipt.json",
+    "local_control_cpu_seconds": 0.01481281499999998,
+    "remote_cpu_seconds": 0.0060497219999999935,
+    "stdout_bytes": 11221,
+    "stderr_bytes": 461,
+    "compressed_bytes": 7915,
+    "uncompressed_bytes": 108685
+  },
+  "completed_utc": "2026-10-19T08:27:45.156067+00:00",
+  "last_accounted_utc": "2026-10-19T08:38:40.394311+00:00",
+  "scheduler_snapshot_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_scheduler_snapshot.json",
+  "source_actual_accounting": {
+    "source_model_file_load_attempts": {
+      "total": 24,
+      "known_subtotal": 24,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_model_file_loads": {
+      "total": 24,
+      "known_subtotal": 24,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_projection_attempts": {
+      "total": 12,
+      "known_subtotal": 12,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_projection_calls": {
+      "total": 12,
+      "known_subtotal": 12,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_conditioning_attempts": {
+      "total": 192,
+      "known_subtotal": 192,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_conditioning_calls": {
+      "total": 192,
+      "known_subtotal": 192,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "local_raw_moment_attempts": {
+      "total": 6144,
+      "known_subtotal": 6144,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "quad_vec_attempts": {
+      "total": 6144,
+      "known_subtotal": 6144,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "completed_calls": {
+      "total": 6144,
+      "known_subtotal": 6144,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "failed_calls": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "resource_stopped_calls": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "unreturned_calls": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "process_cpu_seconds": {
+      "total": 127.26058849100001,
+      "known_subtotal": 127.26058849100001,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "case_attempt_cpu_seconds": {
+      "total": 127.26727487399998,
+      "known_subtotal": 127.26727487399998,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "worker_process_cpu_seconds_inclusive": {
+      "total": 127.270687374,
+      "known_subtotal": 127.270687374,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "worker_driver_cpu_seconds_excluding_case_attempt": {
+      "total": 0.0034124999999995964,
+      "known_subtotal": 0.0034124999999995964,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "batch_driver_cpu_seconds": 0.07733707000000001,
+    "scope": "Case result CPU is nested in case attempt CPU, which is nested in worker/wrapper CPU. Use leaf case attempts once; worker driver and batch/collection CPU are separate. Missing costs are null with known subtotals; retained historical fees are not charged again."
+  },
+  "confirmed_zero_new_work": {
+    "source_simulation": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "target_simulation": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "candidate_scores": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "truth_scores": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "source_fit": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "permutation_resampling": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "target_engine_restoration": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "target_posterior_restoration": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "old_failed_query_replay": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    },
+    "terminal_verification": {
+      "total": 0,
+      "known_subtotal": 0,
+      "known_count": 12,
+      "registered_count": 12,
+      "unknown_case_ids": []
+    }
+  },
+  "wrapper_records": {
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/validation/stage100_attempt1/0_1.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_alignment_validation",
+        "--attempt",
+        "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/validation/stage100_attempt1",
+        "--test",
+        "tests/test_mainline_source_finite_probes.py",
+        "--test",
+        "tests/test_mainline_source_finite_probes_cluster.py"
+      ],
+      "started_utc": "2026-10-19T08:23:08.094566+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:23:08.734663+00:00",
+      "wall_seconds": 0.6401440305635333,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/validation/stage100_attempt1/0_1.log",
+      "own_cpu_seconds": 0.075884,
+      "child_cpu_seconds": 0.477446,
+      "total_cpu_seconds": 0.55333,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/0_2.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_finite_probes",
+        "--action",
+        "batch",
+        "--manifest",
+        "performance/manifests/mainline_source_finite_numerical_validation_v1.json",
+        "--start",
+        "0",
+        "--end",
+        "2",
+        "--workers",
+        "2"
+      ],
+      "started_utc": "2026-10-19T08:25:34.316381+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:25:47.281994+00:00",
+      "wall_seconds": 12.965641986578703,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/0_2.log",
+      "own_cpu_seconds": 0.07958,
+      "child_cpu_seconds": 21.433035,
+      "total_cpu_seconds": 21.512615,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/2_3.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_finite_probes",
+        "--action",
+        "batch",
+        "--manifest",
+        "performance/manifests/mainline_source_finite_numerical_validation_v1.json",
+        "--start",
+        "2",
+        "--end",
+        "3",
+        "--workers",
+        "1"
+      ],
+      "started_utc": "2026-10-19T08:25:36.308940+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:25:48.030457+00:00",
+      "wall_seconds": 11.721553792245686,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/2_3.log",
+      "own_cpu_seconds": 0.066208,
+      "child_cpu_seconds": 10.860387,
+      "total_cpu_seconds": 10.926594999999999,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/3_6.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_finite_probes",
+        "--action",
+        "batch",
+        "--manifest",
+        "performance/manifests/mainline_source_finite_numerical_validation_v1.json",
+        "--start",
+        "3",
+        "--end",
+        "6",
+        "--workers",
+        "3"
+      ],
+      "started_utc": "2026-10-19T08:25:36.296853+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:25:47.681753+00:00",
+      "wall_seconds": 11.384939840063453,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/3_6.log",
+      "own_cpu_seconds": 0.051576,
+      "child_cpu_seconds": 31.299491000000003,
+      "total_cpu_seconds": 31.351067,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/6_8.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_finite_probes",
+        "--action",
+        "batch",
+        "--manifest",
+        "performance/manifests/mainline_source_finite_numerical_validation_v1.json",
+        "--start",
+        "6",
+        "--end",
+        "8",
+        "--workers",
+        "2"
+      ],
+      "started_utc": "2026-10-19T08:25:36.272948+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:25:48.417967+00:00",
+      "wall_seconds": 12.145059223286808,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/6_8.log",
+      "own_cpu_seconds": 0.084478,
+      "child_cpu_seconds": 21.995681,
+      "total_cpu_seconds": 22.080159000000002,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/8_12.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_finite_probes",
+        "--action",
+        "batch",
+        "--manifest",
+        "performance/manifests/mainline_source_finite_numerical_validation_v1.json",
+        "--start",
+        "8",
+        "--end",
+        "12",
+        "--workers",
+        "4"
+      ],
+      "started_utc": "2026-10-19T08:25:35.006914+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:25:48.937965+00:00",
+      "wall_seconds": 13.93109035026282,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/batch/8_12.log",
+      "own_cpu_seconds": 0.0658,
+      "child_cpu_seconds": 45.27916,
+      "total_cpu_seconds": 45.34496,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    },
+    "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/collect/0_1.json": {
+      "status": "complete",
+      "node": "node006",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.run_mainline_source_finite_probes",
+        "--action",
+        "collect",
+        "--manifest",
+        "performance/manifests/mainline_source_finite_numerical_validation_v1.json"
+      ],
+      "started_utc": "2026-10-19T08:27:44.893834+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T08:27:45.170088+00:00",
+      "wall_seconds": 0.27628256753087044,
+      "log_file": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/jobs/probes/collect/0_1.log",
+      "own_cpu_seconds": 0.062,
+      "child_cpu_seconds": 0.270103,
+      "total_cpu_seconds": 0.332103,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    }
+  },
+  "wrapper_cpu_seconds_by_phase": {
+    "validation/stage100_attempt1": 0.55333,
+    "probes/batch": 131.215396,
+    "probes/collect": 0.332103
+  },
+  "manual_dispatch_costs_nested_in_controller": {
+    "validation/stage100_attempt1": {
+      "task_ids": [
+        "t195160"
+      ],
+      "cpu_seconds": 46.05305799999999,
+      "wall_seconds": 84.67079211198143,
+      "new_submissions": 0,
+      "automatic_scientific_retries": 0
+    },
+    "probes/batch": {
+      "task_ids": [
+        "t195161",
+        "t195162",
+        "t195163",
+        "t195164",
+        "t195165"
+      ],
+      "cpu_seconds": 62.11311499999999,
+      "wall_seconds": 140.62057767697843,
+      "new_submissions": 0,
+      "automatic_scientific_retries": 0
+    },
+    "probes/collect": {
+      "task_ids": [
+        "t195166"
+      ],
+      "cpu_seconds": 50.01689900000002,
+      "wall_seconds": 102.78452912301873,
+      "new_submissions": 0,
+      "automatic_scientific_retries": 0
+    }
+  },
+  "collection_cpu_seconds_nested_in_collect_wrapper": 0.13541854599999997,
+  "scheduler_audit": {
+    "tasks": 7,
+    "status_counts": {
+      "done": 7
+    },
+    "retry_count_total": 0,
+    "wrapper_duplicate_rows_total": 0,
+    "wrapper_child_returncodes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "case_attempt_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "prior_running_recovery_snapshots_preserved_in_state": true
+  },
+  "historical_failure_fees_retained_not_recharged": "67 old failures and 8617.606060537 CPU seconds remain in the original Stage93 target ledger; do not add them twice.",
+  "accounting_compilation_cpu_seconds": 0.001216008000000001,
+  "known_new_cpu_seconds": {
+    "scheduler_wrapper_inclusive": 132.10082899999998,
+    "controller_inclusive": 240.830427,
+    "local_metadata_and_transfers": 5.0041154,
+    "remote_metadata_and_transfers": 0.019323008000000003,
+    "accounting_compilation": 0.001216008000000001,
+    "all_control_including_controller_and_transport": 245.855081416,
+    "total": 377.955910416,
+    "total_is_known_subtotal": true,
+    "unknown_local_editing_and_static_inspection_cpu_seconds": null,
+    "nested_not_added_again": [
+      "source process/case attempt/worker/driver CPU",
+      "pytest and validator coordinator CPU",
+      "collector CPU",
+      "manual-dispatch CPU"
+    ]
+  },
+  "scientific_scope_limits": {
+    "fixed_input_executability": "no_failure_on_fixed_inputs",
+    "numerical_accuracy": "not_assessed",
+    "target_d1000_decision_gain": "not_tested",
+    "diagnosis": "cause_unidentified"
+  },
+  "final_document_upload_status": "completed",
+  "final_document_upload_receipt": "paper_artifacts/mainline_source_finite_numerical_validation_v1/cluster_control/stage100_final_document_upload_20261019.json",
+  "final_document_upload_cpu_seconds": 0.11465376599999993
+}

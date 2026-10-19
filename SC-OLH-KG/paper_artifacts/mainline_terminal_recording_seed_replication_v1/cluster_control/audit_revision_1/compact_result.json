@@ -1,0 +1,101 @@
+{
+  "cluster_control/jobs/audit_revision_1/0_1.json": {
+    "status": "complete",
+    "node": "node006",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-u",
+      "-m",
+      "performance.refresh_mainline_terminal_recording_audit"
+    ],
+    "started_utc": "2026-10-17T12:17:05.499099+00:00",
+    "subprocess_started": true,
+    "child_returncode": 0,
+    "completed_utc": "2026-10-17T12:17:32.166630+00:00",
+    "wall_seconds": 26.667571548372507,
+    "log_file": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/jobs/audit_revision_1/0_1.log",
+    "own_cpu_seconds": 0.08285999999999999,
+    "child_cpu_seconds": 25.547387,
+    "total_cpu_seconds": 25.630247,
+    "outer_exit_policy": "Saved child failure is not retried by scheduler"
+  },
+  "cluster_control/validation/audit_revision_1/checks.json": {
+    "status": "complete",
+    "returncode": 0,
+    "cpu_seconds": 1.4757129999999998,
+    "wall_seconds": 1.5939377807080746,
+    "test": "tests/test_mainline_terminal_recording_audit.py::test_initial_safe_pool_uses_registered_atlas_without_relaxing_observed_pools",
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "download_bytes": 0,
+    "new_rng_draws": 0,
+    "truth_problem_constructions": 0
+  },
+  "terminal_recording/revision_1.json": {
+    "status": "complete",
+    "original_issue_pairs": [
+      188,
+      187
+    ],
+    "corrected_coverage": [
+      {
+        "registered_pairs": 216,
+        "sealed_pairs": 216,
+        "valid_records": 216,
+        "issue_pairs": 0
+      },
+      {
+        "registered_pairs": 216,
+        "sealed_pairs": 216,
+        "valid_records": 216,
+        "issue_pairs": 0
+      }
+    ],
+    "scientific_results_unchanged": true,
+    "checks_file": "paper_artifacts/mainline_terminal_recording_seed_replication_v1/cluster_control/validation/audit_revision_1/checks.json",
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "source_model_restorations": 0,
+    "engine_restorations": 0,
+    "posterior_restorations": 0,
+    "download_bytes": 0,
+    "new_rng_draws": 0,
+    "truth_problem_constructions": 0
+  },
+  "account": {
+    "status": "complete",
+    "completed_utc": "2026-10-17T12:17:29.782611+00:00",
+    "new_work": {
+      "new_source_fits": 0,
+      "new_verification_calls": 146296,
+      "new_source_calls": 0,
+      "new_truth_function_calls": 570,
+      "new_target_search_calls": 864,
+      "randomized_new_observations": true,
+      "new_target_initial_calls": 480,
+      "source_model_restorations": null,
+      "download_bytes": 0,
+      "new_rng_draws": null,
+      "search_engine_restorations": null,
+      "failed_simulation_calls_recorded": 0
+    },
+    "new_physical_target_calls": 147640,
+    "recorded_cpu_seconds": 68560.59144419592,
+    "recorded_child_cpu_seconds": 68502.29296185392,
+    "recorded_parent_cpu_seconds": 58.298482342,
+    "added_recorded_cpu_seconds": 19.730703120003454,
+    "science_calls_unchanged": true
+  },
+  "stdout_bytes": 2924
+}

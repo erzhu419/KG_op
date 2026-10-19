@@ -1,0 +1,469 @@
+{
+  "status": "complete_preparation_science_not_started",
+  "recorded_utc": "2026-10-18T00:11:24.085006+00:00",
+  "controller_status": "complete",
+  "jobs": [
+    {
+      "label": "validation/stage84_attempt1",
+      "task_ids": [
+        "t179079"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t179079",
+          "status": "done",
+          "node": "node001",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792281776.7495584,
+          "finished_at": 1792281764.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t179079.log"
+        }
+      ],
+      "records": [
+        {
+          "status": "child_failed",
+          "node": "node001",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-u",
+            "-m",
+            "performance.run_mainline_precision_confirmation_validation",
+            "--manifest",
+            "performance/manifests/mainline_precision_confirmation_preparation_v1.json"
+          ],
+          "started_utc": "2026-10-18T00:02:38.374230+00:00",
+          "subprocess_started": true,
+          "child_returncode": 1,
+          "completed_utc": "2026-10-18T00:02:44.459529+00:00",
+          "wall_seconds": 6.085424265824258,
+          "log_file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/jobs/validation/stage84_attempt1/0_1.log",
+          "own_cpu_seconds": 0.077802,
+          "child_cpu_seconds": 3.922667,
+          "total_cpu_seconds": 4.000469000000001,
+          "outer_exit_policy": "Saved child failure is not retried by scheduler"
+        }
+      ]
+    },
+    {
+      "label": "validation/stage84_attempt2",
+      "task_ids": [
+        "t179086"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t179086",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792282100.2085764,
+          "finished_at": 1792282087.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t179086.log"
+        }
+      ],
+      "records": [
+        {
+          "status": "complete",
+          "node": "node006",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-u",
+            "-m",
+            "performance.run_mainline_precision_confirmation_validation",
+            "--manifest",
+            "performance/manifests/mainline_precision_confirmation_preparation_v1.json"
+          ],
+          "started_utc": "2026-10-18T00:08:02.420286+00:00",
+          "subprocess_started": true,
+          "child_returncode": 0,
+          "completed_utc": "2026-10-18T00:08:07.255005+00:00",
+          "wall_seconds": 4.834767205640674,
+          "log_file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/jobs/validation/stage84_attempt2/0_1.log",
+          "own_cpu_seconds": 0.073628,
+          "child_cpu_seconds": 4.40133,
+          "total_cpu_seconds": 4.474958,
+          "outer_exit_policy": "Saved child failure is not retried by scheduler"
+        }
+      ]
+    }
+  ],
+  "manual_dispatch": [
+    {
+      "task_id": "t179079",
+      "returncode": 0,
+      "cpu_seconds": 40.599067000000005,
+      "wall_seconds": 73.84179321999545,
+      "started_utc": "2026-10-18T00:02:06.612252+00:00",
+      "finished_utc": "2026-10-18T00:03:16.486016+00:00"
+    },
+    {
+      "task_id": "t179086",
+      "returncode": 0,
+      "cpu_seconds": 42.165302,
+      "wall_seconds": 82.72953103200416,
+      "started_utc": "2026-10-18T00:07:15.433320+00:00",
+      "finished_utc": "2026-10-18T00:08:32.178453+00:00"
+    }
+  ],
+  "preparation": {
+    "selected_N": 144,
+    "geometry_uniform_draws": 576,
+    "scientific_execution_started": false,
+    "new_work": {
+      "new_source_calls": 0,
+      "new_target_initial_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "new_truth_function_calls": 0,
+      "new_candidate_scores": 0,
+      "new_source_fits": 0,
+      "source_model_restorations": 0,
+      "engine_restorations": 0,
+      "posterior_restorations": 0,
+      "raw_replays": 0,
+      "simulation_random_draws": 0
+    },
+    "attempts": [
+      {
+        "stage": "plan-frozen-confirmation-precision-cost",
+        "family": null,
+        "arm": null,
+        "started_utc": "2026-10-18T00:02:43.715647+00:00",
+        "status": "failed",
+        "new_source_calls": 0,
+        "new_target_search_calls": 0,
+        "new_verification_calls": 0,
+        "source_model_restorations": 0,
+        "new_target_initial_calls": 0,
+        "new_truth_function_calls": 0,
+        "new_candidate_scores": 0,
+        "new_source_fits": 0,
+        "engine_restorations": 0,
+        "posterior_restorations": 0,
+        "raw_replays": 0,
+        "simulation_random_draws": 0,
+        "geometry_uniform_draws": 0,
+        "error": "ValueError('Old-terminal CPU cannot be replaced by the two-terminal total')",
+        "cpu_seconds": 0.17948903800000005,
+        "wall_seconds": 0.3068643696606159,
+        "finished_utc": "2026-10-18T00:02:44.022508+00:00",
+        "ledger": "paper_artifacts/mainline_precision_confirmation_preparation_v1/planning/attempts.jsonl"
+      },
+      {
+        "stage": "plan-frozen-confirmation-precision-cost",
+        "family": null,
+        "arm": null,
+        "started_utc": "2026-10-18T00:08:06.280831+00:00",
+        "status": "completed",
+        "new_source_calls": 0,
+        "new_target_search_calls": 0,
+        "new_verification_calls": 0,
+        "source_model_restorations": 0,
+        "new_target_initial_calls": 0,
+        "new_truth_function_calls": 0,
+        "new_candidate_scores": 0,
+        "new_source_fits": 0,
+        "engine_restorations": 0,
+        "posterior_restorations": 0,
+        "raw_replays": 0,
+        "simulation_random_draws": 0,
+        "geometry_uniform_draws": 0,
+        "cpu_seconds": 0.287095184,
+        "wall_seconds": 0.3637730311602354,
+        "finished_utc": "2026-10-18T00:08:06.644600+00:00",
+        "ledger": "paper_artifacts/mainline_precision_confirmation_preparation_v1/planning/attempts.jsonl"
+      },
+      {
+        "stage": "register-precision-confirmation",
+        "family": null,
+        "arm": null,
+        "started_utc": "2026-10-18T00:08:06.649245+00:00",
+        "status": "completed",
+        "new_source_calls": 0,
+        "new_target_search_calls": 0,
+        "new_verification_calls": 0,
+        "source_model_restorations": 0,
+        "new_target_initial_calls": 0,
+        "new_source_fits": 0,
+        "new_truth_function_calls": 0,
+        "engine_restorations": 0,
+        "posterior_restorations": 0,
+        "new_candidate_scores": 0,
+        "new_raw_replays": 0,
+        "simulation_rng_draws": 0,
+        "download_bytes": 0,
+        "geometry_uniform_draws": 576,
+        "cpu_seconds": 0.07405651300000016,
+        "wall_seconds": 0.0961992796510458,
+        "finished_utc": "2026-10-18T00:08:06.745447+00:00",
+        "ledger": "paper_artifacts/mainline_precision_confirmation_preparation_v1/registration/attempts.jsonl"
+      }
+    ],
+    "preparation_cpu_seconds": 0.5406407350000002,
+    "failed_attempts": [
+      {
+        "stage": "plan-frozen-confirmation-precision-cost",
+        "family": null,
+        "arm": null,
+        "started_utc": "2026-10-18T00:02:43.715647+00:00",
+        "status": "failed",
+        "new_source_calls": 0,
+        "new_target_search_calls": 0,
+        "new_verification_calls": 0,
+        "source_model_restorations": 0,
+        "new_target_initial_calls": 0,
+        "new_truth_function_calls": 0,
+        "new_candidate_scores": 0,
+        "new_source_fits": 0,
+        "engine_restorations": 0,
+        "posterior_restorations": 0,
+        "raw_replays": 0,
+        "simulation_random_draws": 0,
+        "geometry_uniform_draws": 0,
+        "error": "ValueError('Old-terminal CPU cannot be replaced by the two-terminal total')",
+        "cpu_seconds": 0.17948903800000005,
+        "wall_seconds": 0.3068643696606159,
+        "finished_utc": "2026-10-18T00:02:44.022508+00:00",
+        "ledger": "paper_artifacts/mainline_precision_confirmation_preparation_v1/planning/attempts.jsonl"
+      }
+    ]
+  },
+  "validations": [
+    {
+      "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/validation/stage84_attempt1/checks.json",
+      "status": "passed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_confirmation_precision.py",
+        "tests/test_mainline_precision_confirmation_registration.py",
+        "tests/test_mainline_precision_confirmation_preparation.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_confirmation_precision.py",
+        "tests/test_mainline_precision_confirmation_registration.py",
+        "tests/test_mainline_precision_confirmation_preparation.py"
+      ],
+      "test_counts": {
+        "passed": 18
+      },
+      "returncode": 0,
+      "cpu_seconds": 1.621084,
+      "wall_seconds": 2.3372756531462073,
+      "checked_utc": "2026-10-18T00:02:42.892882+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0
+    },
+    {
+      "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/validation/stage84_attempt2/checks.json",
+      "status": "passed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_confirmation_precision.py",
+        "tests/test_mainline_precision_confirmation_registration.py",
+        "tests/test_mainline_precision_confirmation_preparation.py"
+      ],
+      "test_files": [
+        "tests/test_mainline_confirmation_precision.py",
+        "tests/test_mainline_precision_confirmation_registration.py",
+        "tests/test_mainline_precision_confirmation_preparation.py"
+      ],
+      "test_counts": {
+        "passed": 18
+      },
+      "returncode": 0,
+      "cpu_seconds": 1.839036,
+      "wall_seconds": 1.9593162285163999,
+      "checked_utc": "2026-10-18T00:08:05.385975+00:00",
+      "new_scientific_calls": 0,
+      "new_truth_calls": 0,
+      "new_fits": 0,
+      "new_posterior_restorations": 0
+    }
+  ],
+  "validation_cpu_seconds": 3.46012,
+  "wrapper_cpu_seconds": 8.475427,
+  "wrapper_accounting": "Wrapper CPU includes children and startup; do not add it to validation and preparation CPU.",
+  "control_accounts": {
+    "preflight": {
+      "remote_metadata_cpu_seconds": 0.077677052,
+      "local_queue_cpu_seconds": 4.3571878250000005,
+      "metadata_payload_bytes": 20922,
+      "metadata_wall_seconds": 6.554971889971057,
+      "costs_separate_from_preparation": true
+    },
+    "submission_queue_probe": {
+      "checked_utc": "2026-10-17T23:59:04.395783+00:00",
+      "jobs": [
+        {
+          "id": "t179079",
+          "status": "queued",
+          "node": null,
+          "command": null,
+          "signature": "KG_op/mainline_precision_confirmation_preparation_v1/stage84/validation/stage84_attempt1/0-1",
+          "created_at": null,
+          "started_at": null,
+          "finished_at": null,
+          "last_block_reason": null,
+          "exit_code": null
+        }
+      ],
+      "queue_inspection_cpu_seconds": 5.104383009
+    },
+    "manual_dispatch_cpu_seconds": 82.764369,
+    "metadata_projections": [
+      {
+        "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/stage84_completion_probe_20261018.json",
+        "cpu_seconds": 0.0004425269999999981,
+        "payload_bytes": 466
+      },
+      {
+        "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/stage84_attempt1_source_schema_20261018.json",
+        "cpu_seconds": 0.022389700999999998,
+        "payload_bytes": 2681
+      },
+      {
+        "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/stage84_completion_probe2_20261018.json",
+        "cpu_seconds": 0.0013257470000000021,
+        "payload_bytes": 1593
+      }
+    ],
+    "queue_why": {
+      "checked_utc": "2026-10-18T00:00:57.360445+00:00",
+      "task_id": "t179079",
+      "command": "scheduler.py why t179079 --lock-timeout 15",
+      "returncode": 1,
+      "output": "timed out after 15.0s waiting for scheduler state lock (why)",
+      "cpu_seconds": null,
+      "scientific_calls": 0
+    },
+    "unmetered_control_cpu": [
+      "controller polling and transport processes",
+      "failure log and target-file existence probes",
+      "why process CPU"
+    ]
+  },
+  "transfers": {
+    "initial_failed_uploads": [
+      {
+        "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/stage84_upload_attempt1_20261018.json",
+        "returncode": 143,
+        "reported_received_bytes": 0,
+        "sent_bytes": null
+      },
+      {
+        "file": "paper_artifacts/mainline_precision_confirmation_preparation_v1/cluster_control/stage84_upload_attempt2_20261018.json",
+        "returncode": 143,
+        "reported_received_bytes": 0,
+        "sent_bytes": null
+      }
+    ],
+    "successful_uploads": [
+      {
+        "listed_bytes": 113982,
+        "archive_bytes": 30495,
+        "base64_payload_bytes": 40660,
+        "remote_write_cpu_seconds": 0.005255696000000004
+      },
+      {
+        "listed_bytes": 33980,
+        "archive_bytes": 9149,
+        "base64_payload_bytes": 12200,
+        "remote_write_cpu_seconds": 0.0033594239999999997
+      }
+    ],
+    "result_transfer": {
+      "retrieved_utc": "2026-10-18T00:09:20.644517+00:00",
+      "files": [
+        {
+          "path": "paper_artifacts/mainline_precision_confirmation_preparation_v1/readout.json",
+          "bytes": 345006
+        },
+        {
+          "path": "paper_artifacts/mainline_precision_confirmation_preparation_v1/completion.json",
+          "bytes": 10321
+        },
+        {
+          "path": "performance/manifests/mainline_precision_confirmation_preparation_v1.json",
+          "bytes": 4220
+        },
+        {
+          "path": "performance/manifests/mainline_precision_confirmation_v1.json",
+          "bytes": 242452
+        },
+        {
+          "path": "performance/manifests/mainline_precision_confirmation_stream_1_v1.json",
+          "bytes": 118878
+        },
+        {
+          "path": "performance/manifests/mainline_precision_confirmation_stream_2_v1.json",
+          "bytes": 118878
+        },
+        {
+          "path": "paper_artifacts/mainline_precision_confirmation_v1/registration.json",
+          "bytes": 2757
+        }
+      ],
+      "payload_bytes": 899152,
+      "listed_bytes": 842512,
+      "wall_seconds": 3.087288148002699,
+      "remote_metadata_cpu_seconds": 0.0026140239999999995,
+      "scientific_calls": 0,
+      "raw_or_full_cases_pulled": false
+    },
+    "unit_note": "Logged payload/archive/file bytes are distinct from SSH wire overhead; failed-upload sent bytes were not measured."
+  },
+  "retained_events": [
+    {
+      "kind": "upload_transport_interruption",
+      "count": 2,
+      "scientific_failure": false,
+      "automatic_scientific_retry": false
+    },
+    {
+      "kind": "preparation_source_cost_schema_mismatch",
+      "task_id": "t179079",
+      "checks": "18 passed",
+      "detail": "Actual saved old-terminal stage is verify; corrected the cost reader and literal-schema test, included saved shortlist-preparation CPU.",
+      "new_science": 0,
+      "geometry_draws": 0
+    },
+    {
+      "kind": "explicit_preparation_attempt_after_fix",
+      "task_id": "t179086",
+      "checks": "18 passed",
+      "new_science": 0
+    }
+  ],
+  "scientific_manifest_statuses": {
+    "performance/manifests/mainline_precision_confirmation_v1.json": "registered_not_started",
+    "performance/manifests/mainline_precision_confirmation_stream_1_v1.json": "registered_not_started",
+    "performance/manifests/mainline_precision_confirmation_stream_2_v1.json": "registered_not_started"
+  },
+  "historical_accounts": [
+    "paper_artifacts/mainline_safe_unsampled_validation_v1/completion.json",
+    "paper_artifacts/mainline_terminal_recording_seed_replication_v1/completion.json",
+    "paper_artifacts/mainline_reference_coverage_confirmation_v1/completion.json",
+    "paper_artifacts/mainline_frozen_propagation_paths_v1/completion.json",
+    "paper_artifacts/mainline_pathway_replication_v1/completion.json",
+    "paper_artifacts/mainline_pathway_replication_v1/cluster_control/stage83_scheduler_execution_20261018.json"
+  ],
+  "scheduler_timestamp_note": "Retain scheduler timestamps as recorded. Duration and CPU use wrapper/attempt fields; scheduler started_at and finished_at are not used to derive elapsed charges.",
+  "automatic_scientific_retries": 0
+}

@@ -1,0 +1,101 @@
+{
+  "query_cap_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_query_caps_v1.json",
+  "anchor_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_anchor_joint_pilot_v1.json",
+  "pilot_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_pilot_v3.json",
+  "rules": [
+    [
+      "E8",
+      32,
+      8,
+      0
+    ],
+    [
+      "F8",
+      32,
+      8,
+      101
+    ],
+    [
+      "L8",
+      16,
+      8,
+      0
+    ],
+    [
+      "E9",
+      32,
+      9,
+      0
+    ]
+  ],
+  "seed": 202610147,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "numerical_padding": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "diagnostic_sources": [
+    "../markdown/GPT6_action_competition_diagnosis_20261013.md",
+    "../markdown/GPT_diagnosis_v4.md"
+  ],
+  "primary_policy": 71,
+  "selected_records": [
+    "positive_uppervariance_v1_n4_m4_localv_o5_h1_p81"
+  ],
+  "selected_kinds": [
+    "raw"
+  ],
+  "jobs": [
+    {
+      "identity": 4,
+      "shard": 0,
+      "records": [
+        "positive_uppervariance_v1_n4_m4_localv_o5_h1_p81"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 86.0889356072,
+      "maximum_worker_cpu_seconds": 87
+    },
+    {
+      "identity": 5,
+      "shard": 0,
+      "records": [
+        "positive_uppervariance_v1_n4_m4_localv_o5_h1_p81"
+      ],
+      "kinds": [
+        "raw"
+      ],
+      "estimated_cpu_seconds": 181.3108127432,
+      "maximum_worker_cpu_seconds": 182
+    }
+  ],
+  "shards": 1,
+  "source_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_screen_v3.json",
+  "source_phase_completion": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_caps_v3/completion.json",
+  "output": "paper_artifacts/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_v2",
+  "followup_bound_plan": "performance/manifests/historical_positive_risk_uppervariance_axis_primary_incumbent_71_component_pilot_screen_v2.json",
+  "estimated_cost_admitted": true,
+  "estimated_worker_cpu_seconds": 267.3997483504,
+  "source_phase_estimated_cpu_seconds": 2853.2185326439994,
+  "estimated_phase_cpu_seconds": 3120.6182809943994,
+  "shared_phase_reserve_cpu_seconds": 600,
+  "inherited_shared_reserve_charged_cpu_seconds": 204.33255745000002,
+  "new_phase_reserve_cpu_seconds": 0,
+  "previous_cap_refinement_recorded_cpu_seconds": 5640.217132498,
+  "pricing_basis": {
+    "h4_full71_E8": 15.633950259,
+    "h4_full71_F8": 15.716571186,
+    "h4_full71_L8": 7.099877206,
+    "h4_full71_E9": 31.623714355,
+    "h5_full71_E8": 31.703004094,
+    "h5_full71_F8": 31.232273628,
+    "h5_full71_L8": 14.282985301,
+    "h5_full71_E9": 72.207414263,
+    "scope": "Existing full71 raw E8/F8/L8/E9 maximum profile CPU;20percent margin+2setup perworker. Same single p73 observation; preserve initial failed71 estimate/cost and inherited600support reserve."
+  },
+  "scope": "One user-named71/45raw p81 selected after requested63raw refinement: group71 priority6.855e-5 exceeds63 4.825e-5. Use already validated historical_guard per-component scrambles E8/F8/L8/E9, full071 covariance, actual3guarded budgets/family delta,analytic incumbent mean,all512/1024components and8identity likelihoods,SD16. Adopt only pair caps; preserve full statistics/costs server-side. Retain all earlier failure/recovery fees and p21h5precisionHOLD (that raw record is already closed); extend cumulative phase estimate and same600support reserve,new reserve0.",
+  "integration_backend": "historical_guard"
+}

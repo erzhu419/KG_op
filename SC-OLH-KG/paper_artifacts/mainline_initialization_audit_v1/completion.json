@@ -1,0 +1,51 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-15T15:18:31.339047+00:00",
+  "initialization_cases": 6,
+  "posterior_snapshots": 66,
+  "common_bank_policy_counts": [
+    66,
+    66,
+    66,
+    66,
+    66,
+    66
+  ],
+  "pre_observation_records": 60,
+  "maximum_recorded_parity_absolute_error": 5.329070518200751e-15,
+  "native_partition_query_stages": 9,
+  "new_target_simulation_calls": 0,
+  "new_verification_calls": 0,
+  "new_source_simulation_calls": 0,
+  "new_source_fits": 0,
+  "new_analytical_truth_calls": 0,
+  "download_bytes": 0,
+  "recorded_cpu_seconds": 119.988578975,
+  "attempt_count": 10,
+  "model_or_analysis_failed_attempts": 0,
+  "retained_roundoff_event_count": 33,
+  "pre_python_launch_failures": [
+    {
+      "seed": 2026101641,
+      "arm": "same_source_gp",
+      "stage": "shell log redirection",
+      "error": "output directory absent before process launch",
+      "model_process_started": false,
+      "new_simulator_calls": 0,
+      "new_truth_calls": 0
+    },
+    {
+      "seed": 2026101641,
+      "arm": "current_structural_mixture",
+      "stage": "shell log redirection",
+      "error": "output directory absent before process launch",
+      "model_process_started": false,
+      "new_simulator_calls": 0,
+      "new_truth_calls": 0
+    }
+  ],
+  "scope": "Three observation seeds on one already-opened task geometry. All56 new neighbors per seed remain unsampled throughout initial10; aggregated168 entries are not168 independent tasks.",
+  "model_modified": false,
+  "report": "docs/mainline_initialization_audit_results_20261015.md",
+  "next_step": "One fixed representation contrast using the existing legacy channel-role representation and source prior; preserve raw likelihood and references. Validate source data and saved trajectories before fresh-task budgeted comparison."
+}

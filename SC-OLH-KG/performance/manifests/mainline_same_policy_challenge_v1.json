@@ -1,0 +1,58 @@
+{
+  "name": "mainline_same_policy_challenge_v1",
+  "status": "complete",
+  "registered_utc": "2026-10-16T08:27:49.325491+00:00",
+  "source_manifest": "performance/manifests/mainline_three_family_v1.json",
+  "output_dir": "paper_artifacts/mainline_same_policy_challenge_v1",
+  "report": "docs/mainline_same_policy_challenge_results_20261016.md",
+  "entrypoint": "performance/run_mainline_same_policy.py",
+  "summary_entrypoint": "performance/summarize_mainline_same_policy.py",
+  "task_count": 12,
+  "terminal_cells": 108,
+  "rule": "Use pre-verification frozen primary==empirical-initial-incumbent, never old verification status. Promote lowest saved posterior_rank distinct member of existing three-policy shortlist; incumbent second, remaining member third. Preserve all policies and posterior ranks; all reference arms receive same rule.",
+  "frozen": "Stage47 models, sources, search histories, task geometries, candidates, posterior scores, verification seeds and original verifier; no new source fits, target search, truth or downloads.",
+  "budget": {
+    "safety_slots": [
+      80,
+      128,
+      128
+    ],
+    "objective_comparison_per_policy": 8,
+    "familywise_delta": 0.05,
+    "objective_comparison_delta": 0.016666666666666666,
+    "maximum_verification_per_cell": 352,
+    "online_logical_cap": 365,
+    "stop_logical_cap": 362,
+    "maximum_new_physical_verification_calls": 16896
+  },
+  "observed_input_coverage": {
+    "applicable_cells": 48,
+    "unchanged_cells": 60,
+    "changed_complete_old_input_matches": 6,
+    "remaining_changed_cells": 42,
+    "all_remaining_have_existing_slot1_128_block": true
+  },
+  "reuse": "Recompute original certificates/decisions from raw blocks matching domain,task,geometry,verification seed,candidate slot,physical policy,budget and statistical parameters. Objective pairs require ordered policies and original paired stream. Reporting-only search counts and shortlist role labels regenerated per cell. New identical blocks may be shared across cells; save new raw compactly with provenance.",
+  "barriers": [
+    "Freeze all108 transformed inputs before any new terminal simulation.",
+    "All108 verifier results before opening cached truth or scoring modified outcomes."
+  ],
+  "primary": "Compare terminal change per arm, then initialization-after-point minus source0-point under common modified terminal, separating true certified quality from certification baseline. Preserve full/native/GP/structure/STOP controls.",
+  "limits": "Development-only on already-opened Stage47 tasks; not independent confirmation. New rule chosen before new terminal outcomes, not by truth per cell. Existing native certificate cannot be assigned across unmatched policy/slot/seed/budget. No further variant or precision search.",
+  "completed_utc": "2026-10-16T08:32:17.422577+00:00",
+  "decision": {
+    "conclusion": "positive_terminal_exposure_development_result_pending_independent_confirmation",
+    "deployed_model_changed": false,
+    "core_verifier_changed": false,
+    "frozen_terminal_candidate": "same_policy_distinct_challenger",
+    "certified_deployment_improvements": 5,
+    "quality_losses": 0,
+    "common_rule_after_minus_point_quality": 5.09951083855764e-05,
+    "common_rule_after_minus_point_wins_ties_losses": [
+      3,
+      9,
+      0
+    ],
+    "next_step": "Freeze this single rule for independent three-family4-per-family new-geometry confirmation. Pair original/modified terminals on same new frozen histories; retain all controls, sources and budget caps. Report actual cost as well as certified quality; do not tune on opened12tasks."
+  }
+}

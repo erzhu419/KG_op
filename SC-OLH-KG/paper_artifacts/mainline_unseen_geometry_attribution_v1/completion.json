@@ -1,0 +1,46 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-10-16T14:07:49.362091+00:00",
+  "registered_geometry_count": 24,
+  "reconstruction": {
+    "recorded_choices": 213,
+    "max_score_error": 0.0
+  },
+  "source_missing_query_histories": [
+    {
+      "replicate": 1,
+      "domain": "FactorShockStatePolicyRZDT1",
+      "seed": 2026103018,
+      "arm": "legacy_role_point_only",
+      "reason": "Registered search execution failure; saved complete query trajectory unavailable"
+    }
+  ],
+  "registered_terminal_cells": 216,
+  "completed_terminal_cells": 215,
+  "attempt_count": 6,
+  "failed_attempts": [],
+  "cost": {
+    "cpu_seconds": 5.675289586000001,
+    "wall_seconds": 5.7707939339989025,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 0,
+    "new_target_search_calls": 0,
+    "new_verification_calls": 0,
+    "new_source_fits": 0,
+    "new_truth_function_calls": 0,
+    "source_model_restorations": 0,
+    "posterior_restorations": 0,
+    "new_rng_draws": 0,
+    "raw_replays": 0,
+    "download_bytes": 0
+  },
+  "artifacts": {
+    "queries": "paper_artifacts/mainline_unseen_geometry_attribution_v1/query_diagnosis.json",
+    "coverage": "paper_artifacts/mainline_unseen_geometry_attribution_v1/coverage_diagnosis.json",
+    "terminal_source_support": "paper_artifacts/mainline_unseen_geometry_attribution_v1/terminal_order_support.json",
+    "focal_chains": "paper_artifacts/mainline_unseen_geometry_attribution_v1/focal_query_deployment_chains.json"
+  },
+  "source_failures_retained": true,
+  "model_or_terminal_changes": false,
+  "next_manifest": "performance/manifests/mainline_source_observed_ranking_v1.json"
+}

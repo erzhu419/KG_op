@@ -1,0 +1,41 @@
+{
+  "status": "complete",
+  "recommendations": 18,
+  "attempt_count": 41,
+  "failed_attempts": [
+    {
+      "stage": "search",
+      "family": "FactorShockStatePolicyRZDT1",
+      "arm": "initialization_only",
+      "started_utc": "2026-10-15T15:46:07.673918+00:00",
+      "status": "failed",
+      "new_source_calls": 0,
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "seed": 2026101651,
+      "new_target_initial_calls": 0,
+      "new_source_fits": 0,
+      "download_bytes": 0,
+      "error": "AttributeError(\"'ScalarizedProblem' object has no attribute 'task_geometry_shift'\")",
+      "cpu_seconds": 0.02630112999999995,
+      "wall_seconds": 0.026731896999990568,
+      "finished_utc": "2026-10-15T15:46:07.700649+00:00"
+    }
+  ],
+  "cost": {
+    "cpu_seconds": 2844.3112257919997,
+    "wall_seconds": 2891.5333194429695,
+    "new_source_calls": 0,
+    "new_target_initial_calls": 30,
+    "new_target_search_calls": 45,
+    "new_verification_calls": 3136,
+    "new_source_fits": 0,
+    "download_bytes": 0,
+    "new_truth_function_calls": 609
+  },
+  "role_filter_roundoff_events": 95,
+  "new_physical_target_calls": 3211,
+  "logical_target_calls": 3361,
+  "completed_utc": "2026-10-15T16:02:39.549588+00:00"
+}

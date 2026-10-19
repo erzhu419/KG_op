@@ -1,0 +1,181 @@
+{
+  "name": "mainline_local_noise_control_v1",
+  "status": "complete:15 frozen searches,15 independent verifications, all scored; paired diagnostics and observed headroom complete",
+  "registered_utc": "2026-10-15T13:14:12.767043+00:00",
+  "role": "Three fresh observation/search random streams on the already opened nominal FactorShock geometry; not unseen task geometries or a multi-family confirmation.",
+  "parent_manifest": "performance/manifests/mainline_legacy_backend_bridge_v1.json",
+  "diagnosis_manifest": "performance/manifests/mainline_factorshock_diagnosis_v1.json",
+  "output_dir": "paper_artifacts/mainline_local_noise_control_v1",
+  "entrypoint": "performance/run_mainline_local_noise_control.py",
+  "domain": "FactorShockStatePolicyRZDT1",
+  "domains": [
+    "FactorShockStatePolicyRZDT1"
+  ],
+  "task": {
+    "d": 1000,
+    "L": 100,
+    "sigma": 0.04,
+    "alpha": 0.05,
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "shared_shock_scale": 1.0
+  },
+  "source_dimension": 50,
+  "target_dimension": 1000,
+  "anchor": {
+    "variant": "v69_feasible_first_verified_incumbent",
+    "native_backend": "constrained_ts",
+    "native_terminal_rule": "feasible_first",
+    "search_calls": 13,
+    "n0": 10,
+    "adaptive_calls": 3,
+    "initial_design_seed": 80,
+    "native_scheduler": "../scripts/submit_scolhkg_v53_constrained_certificate_gate_scheduler.py"
+  },
+  "arms": [
+    {
+      "name": "legacy_native_v69",
+      "online": true
+    },
+    {
+      "name": "same_source_gp",
+      "online": true
+    },
+    {
+      "name": "current_structural_mixture",
+      "online": true
+    },
+    {
+      "name": "current_structural_local_noise",
+      "online": true
+    },
+    {
+      "name": "initialization_only",
+      "online": false
+    }
+  ],
+  "frozen_assets": {
+    "source_models_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/source_models.pkl",
+    "native_source_prior_file": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/FactorShockStatePolicyRZDT1/native_source_prior.pkl",
+    "source_archive_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/archive.json",
+    "initial_design_file": "paper_artifacts/legacy_joint_bridge_v1/inputs/FactorShockStatePolicyRZDT1/design.json",
+    "initial_design_key": "80",
+    "source_families": [
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "historical_source_calls": 384,
+    "reuse": "Load the saved zero-paid native prior and exact GP/structural source bundle, including encoder, centers/scales, eight identities, covariance laws, weights and1024-node source integration. Do not invoke source/encoder fitting or regenerate source data.",
+    "representation": "GP and structure retain shared public mean10 and learned risk10; native retains its historical representation/HVD."
+  },
+  "frontends": {
+    "initialization": "Reuse the original ten d1000 source-informed policies in design80 order. Execute ten fresh target observations once per seed using the native simulator stream, then replay the identical ten rows to all four online arms. The producing initialization-only run is the STOP baseline.",
+    "source_design_alias": "The saved design has only key80. Resolve that frozen design independently of the new run seed; assign the fresh seed before engine RNG construction. Design alias80 never aliases target raw, source refitting, or the run seed.",
+    "online": "Original complete V69 proposal and recommendation generator, with the native proposal posterior reading each arm own raw; selected backend scores the resulting pool. No frozen73/104-point restriction.",
+    "pairing": "Full structure runs its fresh three-query search once per seed. Because the intervention changes terminal noise only, load its saved engine/history/backend_trace for the local-noise arm, switch only terminal ordering, and freeze the new shortlist before any verification. Each arm has13 logical observations; local arm reuses13 raw rows including3 already-paid coupled-search rows. Independent raw verification is executed for both. This is a prospectively frozen terminal intervention, not a post-truth choice of replay."
+  },
+  "local_terminal_noise": {
+    "basis": "Frozen ahead of fresh observations from the previous seed80 fixed-path diagnosis.",
+    "query": "Exactly the full structural model, including coupled mean, covariance and noise posterior, drives constrained TS and candidate generation.",
+    "terminal": "Only constraint episode variance is replaced by E[exp(eta_g)] from each policy source-zero marginal updated with that policy own paid raw, including its initialization row and any repeats. Local joint f/g,eta likelihood and local identity reweighting are retained. Full structural objective/risk means, epistemic covariance and objective episode variance are unchanged.",
+    "local_scope": "A policy receives no other policy raw and no global target identity-weight updates in its local noise channel. Unsampled local channels remain at their saved source prior.",
+    "verification": "Observed-only primary and shortlist ranking may change through the constraint noise supplied to terminal calculations. Independent raw verifier and initial empirical-objective incumbent guard remain original.",
+    "not_a_refit": true
+  },
+  "decision_protocol": {
+    "decision_backend": "constrained_ts",
+    "terminal_rule": "feasible_first",
+    "terminal_maximum_violation_probability": 0.5,
+    "terminal_candidate_scope": "observed",
+    "new_backend_TS_projection": "joint Gaussian per response head from native raw posterior moments",
+    "episode_variance": "exact positive-mixture E[exp(eta)]",
+    "adaptive_rules_or_precision_changes": false
+  },
+  "streams": {
+    "base_seed_per_case": [
+      2026101631,
+      2026101632,
+      2026101633
+    ],
+    "native_search_rng": "default_rng(seed); recommendation RNG default_rng(seed+1000003); original proposal namespaces and decision_backend_seed_offset470003 retained.",
+    "initial_and_search_raw": "SeedSequence([seed, zero_based_paid_evaluation_index, 0x53434F4C]); indices0..9 shared initialization,10..12 separately executed per online arm.",
+    "verification_primary": "SeedSequence([seed, replication, 0x56455249])",
+    "verification_fallback": "SeedSequence([seed, candidate_index, replication, 0x56534C54])",
+    "paired_objective": "SeedSequence([seed, replication, 0x4F424A44]); both policies evaluated with the same draw as in original verifier.",
+    "paired_arms": "All arms share base seed for common random numbers. Native/GP/full structure execute their own online searches; the terminal-only local-noise control reuses the full structural13-row history. Every arm executes its own independent-of-search verifier, charged separately.",
+    "novelty_check": "Seeds81/82/83 already occur in FactorShock terminal_validations in paper_artifacts/paper_search_convergence_v1.json. New1631/32/33 had no match in current performance/manifests or docs before registration. Same nominal geometry and fixed source design remain deliberately reused."
+  },
+  "terminal": {
+    "candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "method": "normal_quantile_tolerance",
+    "objective_incumbent_guard": true,
+    "objective_comparison_budget_per_policy": 8,
+    "objective_comparison_delta": 0.016666666666666666,
+    "maximum_verification_calls_per_recommendation": 352,
+    "samples_update_search_posterior": false,
+    "support": "Frozen primary plus original initial empirical-objective incumbent and observed safe support, unique three-policy shortlist using original V69 machinery."
+  },
+  "barriers": {
+    "before_any_verification": "All15 searches and frozen shortlists, including three initialization-only runs, must exist. No verification result may affect any search.",
+    "before_any_new_truth_scoring": "All15 independent verifications must finish. Then score all registered seeds without outcome-based filtering. The nominal geometry was already opened historically; this barrier prevents new truth calls from entering fresh-stream decisions.",
+    "failure": "Preserve every failed attempt and spent call. Do not replace seeds, quietly restart target observations, tune the model or increase quadrature precision from a fresh result."
+  },
+  "budget": {
+    "seed_count": 3,
+    "online_case_count": 12,
+    "initial_only_case_count": 3,
+    "recommendation_count": 15,
+    "online_logical_cap": 365,
+    "initial_only_logical_cap": 362,
+    "new_initial_physical_calls": 30,
+    "new_search_physical_calls_max": 27,
+    "new_verification_physical_calls_max": 5280,
+    "new_target_physical_calls_max": 5337,
+    "logical_target_calls_max": 5466,
+    "initial_logical_calls_across_all_arms": 150,
+    "new_source_calls": 0,
+    "new_source_or_encoder_fits": 0,
+    "remote_downloads": 0,
+    "accounting": "Shared initialization costs30 physical and150 logical calls. Native/GP/full structure add27 physical online calls; local-noise control adds9 logical online calls by reusing structural histories. All15 verifiers execute and count their own raw calls. Report realized early exits, CPU and failures; historical ledgers unchanged.",
+    "independent_online_search_case_count": 9,
+    "terminal_only_control_case_count": 3,
+    "coupled_search_rows_reused_by_terminal_control": 9,
+    "terminal_control_replayed_raw_rows": 39
+  },
+  "comparisons": [
+    "Primary: current_structural_local_noise versus current_structural_mixture, paired by seed; compare primary safety/certification, deployed utility and verification expenditure under equal query budget.",
+    "Each online arm versus its seed initialization-only baseline; report real quality gains separately from safer primary or cheaper fallback.",
+    "Retain native V69 and same-source GP as fixed reference systems. Report all three seed blocks individually; do not pool seeds with old development case80."
+  ],
+  "limitations": [
+    "Three new random streams on one already opened geometry are a small prospective mechanism check, not cross-geometry or cross-family generalization.",
+    "The local noise rule is a terminal decision intervention with unchanged full query posterior; its paired effect does not separately identify the benefit of mean propagation.",
+    "Frozen source integration retains1024 nodes and previous overlap limitations, without new precision certification."
+  ],
+  "execution": {
+    "new_target_observations_started": true,
+    "new_source_fits": 0,
+    "source_simulations": 0,
+    "remote_downloads": 0,
+    "case_directory": "seed_{seed}/{arm}",
+    "completed_recommendations": 15
+  },
+  "target_seeds": [
+    2026101631,
+    2026101632,
+    2026101633
+  ],
+  "completion_file": "paper_artifacts/mainline_local_noise_control_v1/completion.json",
+  "report": "docs/mainline_local_noise_control_results_20261015.md",
+  "post_verification_diagnostics": [
+    "Same13-history full/local action parity and fixed never-observed policy prediction errors.",
+    "Complete analytical f/g/sigma scoring of29 unique paid policies after the verification barrier to measure observed feasible headroom; no task/model selection."
+  ]
+}

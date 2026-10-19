@@ -1,0 +1,190 @@
+{
+  "status": "complete",
+  "utc": "2026-10-16T23:25:38.914756+00:00",
+  "preflight": {
+    "doctor_ok": true,
+    "doctor_issues": [],
+    "healer_inbox_empty": true,
+    "active_pending_escalations": 0,
+    "historical_inactive_pending_escalations": 2946
+  },
+  "task_ids": [
+    "t166175",
+    "t166176",
+    "t166177",
+    "t166178",
+    "t166180"
+  ],
+  "tasks": [
+    {
+      "id": "t166175",
+      "signature": "KG_op/mainline_confirmation_attribution_v1/cases/0-6",
+      "status": "done",
+      "node": "node006",
+      "preferred_node": "node002",
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "est_ram_mb": null,
+      "started_at": 1792192814.0871344,
+      "finished_at": 1792192798.0,
+      "log_path": "/tmp/sched_t166175.log",
+      "exit_code": 0
+    },
+    {
+      "id": "t166176",
+      "signature": "KG_op/mainline_confirmation_attribution_v1/cases/6-12",
+      "status": "done",
+      "node": "node004",
+      "preferred_node": "node004",
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "est_ram_mb": null,
+      "started_at": 1792192817.537011,
+      "finished_at": 1792192801.0,
+      "log_path": "/tmp/sched_t166176.log",
+      "exit_code": 0
+    },
+    {
+      "id": "t166177",
+      "signature": "KG_op/mainline_confirmation_attribution_v1/cases/12-18",
+      "status": "done",
+      "node": "node002",
+      "preferred_node": "node005",
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "est_ram_mb": null,
+      "started_at": 1792192814.1207008,
+      "finished_at": 1792192798.0,
+      "log_path": "/tmp/sched_t166177.log",
+      "exit_code": 0
+    },
+    {
+      "id": "t166178",
+      "signature": "KG_op/mainline_confirmation_attribution_v1/cases/18-24",
+      "status": "done",
+      "node": "node005",
+      "preferred_node": "node006",
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "cpu_cores": 6,
+      "est_vram_mb": 0,
+      "est_ram_mb": null,
+      "started_at": 1792192814.1602437,
+      "finished_at": 1792192798.0,
+      "log_path": "/tmp/sched_t166178.log",
+      "exit_code": 0
+    },
+    {
+      "id": "t166180",
+      "signature": "KG_op/mainline_confirmation_attribution_v1/collect",
+      "status": "done",
+      "node": "node006",
+      "preferred_node": null,
+      "allowed_nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006"
+      ],
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "est_ram_mb": null,
+      "started_at": 1792192977.0531957,
+      "finished_at": 1792192959.0,
+      "log_path": "/tmp/sched_t166180.log",
+      "exit_code": 0
+    }
+  ],
+  "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "worker_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "explicit_node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "blas_threads": 1,
+  "scheduler_scientific_failures": [],
+  "metadata_read_failures": [
+    {
+      "operation": "remote find -printf file sizes",
+      "returncode": 1,
+      "reason": "Remote metadata command failed; scheduler stderr was locale warnings. Replaced with successful ls -l; no scientific rerun."
+    }
+  ],
+  "scheduler_timestamp_note": "finished_at precedes started_at by about 16-18 seconds; not used to calculate wall/CPU. Exit code 0 and application completion records are retained.",
+  "cpu_account_source": "completion.json",
+  "total_new_recorded_cpu_seconds": 43.40856251699999,
+  "downloaded_files": [
+    "summary.json",
+    "completion.json",
+    "query_details.json",
+    "terminal_focal_excerpt.json"
+  ],
+  "artifact_download_bytes": 862566,
+  "download_scope": "Selected JSON artifacts only; network protocol and log-display bytes not included. Raw trajectory and model files remain remote.",
+  "omitted_large_results": [
+    "terminal_details.json",
+    "recorded_inference.json",
+    "cases/"
+  ],
+  "terminal_excerpt": {
+    "source": "terminal_details.json",
+    "seeds": [
+      2026104001,
+      2026104002,
+      2026104006,
+      2026104007,
+      2026104016,
+      2026104017,
+      2026104022
+    ],
+    "arms": [
+      "legacy_role_full",
+      "legacy_role_after_init_point_only",
+      "legacy_role_point_only",
+      "legacy_role_full_native_terminal",
+      "legacy_role_after_init_point_only_native_terminal",
+      "legacy_native_neighbors"
+    ]
+  },
+  "submission_records": [
+    "scheduler_case_submission.json",
+    "scheduler_collect_submission.json"
+  ],
+  "local_multiprocess_experiments": 0
+}

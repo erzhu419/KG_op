@@ -1,0 +1,106 @@
+{
+  "families": [
+    {
+      "family": "FactorShockStatePolicyRZDT1",
+      "sourcefit_cpu_including_failures": 10.631013131,
+      "attempts": 1,
+      "minimum_ess": 4.320590208367608,
+      "maximum_component_mass": 0.4748066998677795,
+      "maximum_split_logz_gap": 1.2167641586154048,
+      "identity_weights": {
+        "spectral/head_specific/observed_task": 3.0812650234106577e-52,
+        "spectral/head_specific/deconvolved_task": 3.0782873120746188e-52,
+        "spectral/joint/observed_task": 0.4984959596563993,
+        "spectral/joint/deconvolved_task": 0.5015040403435999,
+        "additive/head_specific/observed_task": 5.887876696488185e-57,
+        "additive/head_specific/deconvolved_task": 5.915363253650468e-57,
+        "additive/joint/observed_task": 9.550178513418489e-23,
+        "additive/joint/deconvolved_task": 9.627736054938489e-23
+      },
+      "low_overlap_heads": [
+        {
+          "identity": [
+            "additive",
+            "joint",
+            "observed_task"
+          ],
+          "head": "g",
+          "weight_ess": 4.320590208367608,
+          "source_identity_mass": 9.550178513418489e-23
+        },
+        {
+          "identity": [
+            "additive",
+            "joint",
+            "deconvolved_task"
+          ],
+          "head": "g",
+          "weight_ess": 4.336782265234251,
+          "source_identity_mass": 9.627736054938489e-23
+        }
+      ]
+    },
+    {
+      "family": "InventorySupplyChain",
+      "sourcefit_cpu_including_failures": 13.285948344999998,
+      "attempts": 2,
+      "minimum_ess": 28.85391322854699,
+      "maximum_component_mass": 0.13156513815112683,
+      "maximum_split_logz_gap": 0.4268103663228082,
+      "identity_weights": {
+        "spectral/head_specific/observed_task": 9.716700537228482e-53,
+        "spectral/head_specific/deconvolved_task": 9.830523372005077e-53,
+        "spectral/joint/observed_task": 0.4945634567885272,
+        "spectral/joint/deconvolved_task": 0.5054365431958685,
+        "additive/head_specific/observed_task": 7.36310721700345e-58,
+        "additive/head_specific/deconvolved_task": 6.862774076815521e-58,
+        "additive/joint/observed_task": 8.242873446239206e-12,
+        "additive/joint/deconvolved_task": 7.359923438152582e-12
+      },
+      "low_overlap_heads": []
+    },
+    {
+      "family": "QueueResourceControl",
+      "sourcefit_cpu_including_failures": 10.692060276,
+      "attempts": 1,
+      "minimum_ess": 4.749146484578376,
+      "maximum_component_mass": 0.4072250872490859,
+      "maximum_split_logz_gap": 0.3686578179529789,
+      "identity_weights": {
+        "spectral/head_specific/observed_task": 7.163986687749241e-71,
+        "spectral/head_specific/deconvolved_task": 6.373434676497074e-71,
+        "spectral/joint/observed_task": 0.5413744107434858,
+        "spectral/joint/deconvolved_task": 0.4586255892559255,
+        "additive/head_specific/observed_task": 1.0960604476964013e-114,
+        "additive/head_specific/deconvolved_task": 1.0819189674934686e-114,
+        "additive/joint/observed_task": 3.572289973203055e-13,
+        "additive/joint/deconvolved_task": 2.4260994585957994e-13
+      },
+      "low_overlap_heads": [
+        {
+          "identity": [
+            "spectral",
+            "joint",
+            "observed_task"
+          ],
+          "head": "g",
+          "weight_ess": 4.749146484578376,
+          "source_identity_mass": 0.5413744107434858
+        },
+        {
+          "identity": [
+            "spectral",
+            "joint",
+            "deconvolved_task"
+          ],
+          "head": "g",
+          "weight_ess": 4.89541994459306,
+          "source_identity_mass": 0.4586255892559255
+        }
+      ]
+    }
+  ],
+  "precision_certified": false,
+  "new_simulator_calls": 0,
+  "postprocessing_cpu_seconds": 0.383983439
+}

@@ -1,0 +1,55 @@
+{
+  "scope": "This frozen-model five-arm continuation only; all earlier source-fit and failure ledgers retained.",
+  "recorded_cpu_seconds_by_stage": {
+    "public_geometry_preparation_and_experiment": 408.99883561799993,
+    "mechanism_tests": 2.931745393,
+    "postprocessing": 0.133512443,
+    "saved_utility_mechanism_audit": 0.1079526529999999,
+    "path_fixed_replay": 17.759245345
+  },
+  "total_recorded_cpu_seconds": 429.9312914519999,
+  "physical_calls": {
+    "initialization": 8,
+    "search": 24,
+    "verification": 7176,
+    "total": 7208
+  },
+  "logical_calls": 7240,
+  "calls_per_arm": 362,
+  "independent_geometries": 4,
+  "arms_per_task": 5,
+  "verified_recommendations": 20,
+  "source_fits": 0,
+  "gp_refits": 0,
+  "calibration_refits": 0,
+  "new_source_labels": 0,
+  "server_downloads": 0,
+  "frozen_calibration": "../mainline_source_risk_calibration_v1/calibration.json",
+  "tests": {
+    "unique_tests_passed": 2,
+    "evidence": "implementation_tests.json"
+  },
+  "failed_attempts": 0,
+  "failed_tests": 0,
+  "replay": {
+    "saved_raw_updates": 24,
+    "new_simulator_calls": 0,
+    "new_verifier_calls": 0,
+    "source_fits": 0,
+    "query_optimizer_calls": 0,
+    "new_post_verification_truth_policy_evaluations": 2,
+    "interpretation": "Conditional diagnostic on saved full-arm paths, not extra verified optimizer arms."
+  },
+  "unmeasured_cost_scope": "General inspection, compatibility-summary read, shell/import overhead not covered by per-script timers, and document writing are not assigned estimated CPU costs.",
+  "memory_scope": "Inherited maximum_rss_kib high-water values are not model-specific memory measurements.",
+  "evidence": [
+    "preparation_audit.json",
+    "attempts.jsonl",
+    "postprocessing_attempts.jsonl",
+    "path_replay_attempts.jsonl",
+    "implementation_tests.json",
+    "mechanism_audit.json",
+    "path_replay.json",
+    "summary.json"
+  ]
+}

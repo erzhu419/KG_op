@@ -1,0 +1,43 @@
+{
+  "name": "mainline_source_risk_channel_attribution_v1",
+  "status": "complete",
+  "started": true,
+  "registered_utc": "2026-10-16T14:51:11.660243+00:00",
+  "parent_manifest": "performance/manifests/mainline_source_observed_ranking_v1.json",
+  "output_dir": "paper_artifacts/mainline_source_risk_channel_attribution_v1",
+  "objective": "Separate frozen role terminal risk-mean, observation-noise and epistemic-variance effects, empty-eligible fallback saturation, and the saved source-boundary noise failure without changing the model.",
+  "inputs": {
+    "source_forecasts": "paper_artifacts/mainline_source_observed_ranking_v1",
+    "source_summary": "paper_artifacts/mainline_source_observed_ranking_v1/summary.json",
+    "terminal_components": "paper_artifacts/mainline_source_observed_ranking_v1/terminal_components.json",
+    "source_findings": "paper_artifacts/mainline_source_observed_ranking_v1/source_findings.json",
+    "target_trace_context": "performance/manifests/mainline_unseen_geometry_attribution_v1.json"
+  },
+  "scope": [
+    "Retain all24 overlapping source cases and complete FULL/AFTER/POINT/native reference outputs; never select only the two negative terminal cases.",
+    "Reconstruct the deployed role probability from saved centered g, aleatoric g variance and epistemic g variance with its unchanged1e-12 floor and original alpha. Require agreement with saved probabilities before interpreting any substitutions; native expert-mixture probabilities remain as saved.",
+    "For FULL versus AFTER compare all eight frozen combinations of the three risk channels, observed13 only. Keep original objective ordering, threshold0.5 and fallback; label all substitutions static diagnostics, not new optimizer arms.",
+    "For every empty eligible set, record p saturation/ties and the original standardized pre-CDF risk margin. Inspect whether probability rounding triggers objective tie-breaking; do not silently change ranking, precision or numerical tolerances.",
+    "Retain the never-observed boundary policy0 noise case and compare saved prefix10/13 eta moments and Eexpeta across source contexts. Aggregated moments do not identify unsaved component-level mechanisms; do not refit or replay to invent them.",
+    "Compare direction/reachability with existing d1000 trajectory and terminal evidence only where logged. Missing final posterior inputs remain unknown; source support-boundary behavior is not automatically a deployed-model failure."
+  ],
+  "budget": {
+    "new_source_calls": 0,
+    "new_target_calls": 0,
+    "new_verification_calls": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "posterior_restorations": 0,
+    "raw_replays": 0,
+    "new_rng_draws": 0,
+    "download_bytes": 0
+  },
+  "decision": "No model, threshold, precision or fallback change in this diagnostic. At most one mechanism-supported correction may be proposed for a separately frozen same-budget d1000 comparison; mixed evidence retains the current model.",
+  "statistical_unit": "Report each source-archive/fold/source-family case and family summaries. Source families and archives overlap;24fold-family cases are not24independent tasks. This d50 source-policy holdout does not establish d1000 task generalization.",
+  "started_utc": "2026-10-16T14:57:46.798699+00:00",
+  "finished_utc": "2026-10-16T15:11:26.539449+00:00",
+  "summary": "paper_artifacts/mainline_source_risk_channel_attribution_v1/summary.json",
+  "completion": "paper_artifacts/mainline_source_risk_channel_attribution_v1/completion.json",
+  "report": "docs/mainline_source_risk_channel_attribution_results_20261016.md",
+  "next_manifest": "performance/manifests/mainline_target_terminal_risk_reconstruction_v1.json"
+}

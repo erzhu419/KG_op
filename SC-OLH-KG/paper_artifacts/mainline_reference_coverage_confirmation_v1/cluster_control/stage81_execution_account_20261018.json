@@ -1,0 +1,1343 @@
+{
+  "status": "complete",
+  "updated_utc": "2026-10-17T17:27:16.900703+00:00",
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "cpu_only_vram0": true,
+  "automatic_scientific_retries": 0,
+  "jobs": [
+    {
+      "label": "validation/attempt1",
+      "status": "complete",
+      "task_ids": [
+        "t173116"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173116",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250017.4547057,
+          "finished_at": 1792250000.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173116.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": true,
+      "wrapper_records": []
+    },
+    {
+      "label": "validation/stage81_attempt1",
+      "status": "complete",
+      "task_ids": [
+        "t173118"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173118",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250268.4012432,
+          "finished_at": 1792250260.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173118.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/validation/stage81_attempt1/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:17:31.511045+00:00",
+          "completed_utc": "2026-10-17T15:17:40.932582+00:00",
+          "wall_seconds": 9.421581476926804,
+          "own_cpu_seconds": 0.072936,
+          "child_cpu_seconds": 9.099647,
+          "total_cpu_seconds": 9.172583
+        }
+      ]
+    },
+    {
+      "label": "initial/describe",
+      "status": "complete",
+      "task_ids": [
+        "t173129"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173129",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250485.1129818,
+          "finished_at": 1792250468.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173129.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/initial/describe/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:21:07.755194+00:00",
+          "completed_utc": "2026-10-17T15:21:08.949426+00:00",
+          "wall_seconds": 1.1942882193252444,
+          "own_cpu_seconds": 0.076796,
+          "child_cpu_seconds": 1.011082,
+          "total_cpu_seconds": 1.087878
+        }
+      ]
+    },
+    {
+      "label": "initial/workers",
+      "status": "complete",
+      "task_ids": [
+        "t173131",
+        "t173132",
+        "t173133",
+        "t173134"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173131",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250672.2339485,
+          "finished_at": 1792250722.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173131.log"
+        },
+        {
+          "id": "t173132",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250672.1836743,
+          "finished_at": 1792250724.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173132.log"
+        },
+        {
+          "id": "t173133",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250672.9007883,
+          "finished_at": 1792250724.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173133.log"
+        },
+        {
+          "id": "t173134",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250672.8554306,
+          "finished_at": 1792250725.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173134.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/initial/workers/0_6.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:24:14.839985+00:00",
+          "completed_utc": "2026-10-17T15:25:22.186445+00:00",
+          "wall_seconds": 67.34650989156216,
+          "own_cpu_seconds": 0.066997,
+          "child_cpu_seconds": 386.685537,
+          "total_cpu_seconds": 386.752534
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/initial/workers/6_12.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:24:14.833136+00:00",
+          "completed_utc": "2026-10-17T15:25:24.078632+00:00",
+          "wall_seconds": 69.24554048571736,
+          "own_cpu_seconds": 0.092265,
+          "child_cpu_seconds": 389.37102699999997,
+          "total_cpu_seconds": 389.46329199999997
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/initial/workers/12_18.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:24:15.524407+00:00",
+          "completed_utc": "2026-10-17T15:25:24.714412+00:00",
+          "wall_seconds": 69.19004672951996,
+          "own_cpu_seconds": 0.09084599999999998,
+          "child_cpu_seconds": 392.65691000000004,
+          "total_cpu_seconds": 392.74775600000004
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/initial/workers/18_24.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:24:15.486013+00:00",
+          "completed_utc": "2026-10-17T15:25:25.107344+00:00",
+          "wall_seconds": 69.62138236872852,
+          "own_cpu_seconds": 0.095381,
+          "child_cpu_seconds": 404.77255199999996,
+          "total_cpu_seconds": 404.86793299999994
+        }
+      ]
+    },
+    {
+      "label": "initial/finish",
+      "status": "complete",
+      "task_ids": [
+        "t173152"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173152",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792250964.360651,
+          "finished_at": 1792250950.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173152.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/initial/finish/0_1.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:29:07.135209+00:00",
+          "completed_utc": "2026-10-17T15:29:10.516191+00:00",
+          "wall_seconds": 3.3810314228758216,
+          "own_cpu_seconds": 0.07983399999999999,
+          "child_cpu_seconds": 2.861344,
+          "total_cpu_seconds": 2.941178
+        }
+      ]
+    },
+    {
+      "label": "neighbors/describe",
+      "status": "complete",
+      "task_ids": [
+        "t173153"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173153",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792251125.124414,
+          "finished_at": 1792251109.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173153.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/neighbors/describe/0_1.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:31:48.135090+00:00",
+          "completed_utc": "2026-10-17T15:31:49.401330+00:00",
+          "wall_seconds": 1.2662854362279177,
+          "own_cpu_seconds": 0.07079099999999999,
+          "child_cpu_seconds": 1.0634549999999998,
+          "total_cpu_seconds": 1.134246
+        }
+      ]
+    },
+    {
+      "label": "neighbors/workers",
+      "status": "complete",
+      "task_ids": [
+        "t173154",
+        "t173155",
+        "t173156",
+        "t173157"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t173154",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792251305.849187,
+          "finished_at": 1792251291.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173154.log"
+        },
+        {
+          "id": "t173155",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792251305.846411,
+          "finished_at": 1792251291.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173155.log"
+        },
+        {
+          "id": "t173156",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792251305.863116,
+          "finished_at": 1792251291.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173156.log"
+        },
+        {
+          "id": "t173157",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792251305.8188531,
+          "finished_at": 1792251291.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t173157.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/neighbors/workers/0_6.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:34:48.799404+00:00",
+          "completed_utc": "2026-10-17T15:34:51.477991+00:00",
+          "wall_seconds": 2.6786357946693897,
+          "own_cpu_seconds": 0.101171,
+          "child_cpu_seconds": 7.483097,
+          "total_cpu_seconds": 7.584268
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/neighbors/workers/6_12.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:34:48.766619+00:00",
+          "completed_utc": "2026-10-17T15:34:51.691559+00:00",
+          "wall_seconds": 2.9249832509085536,
+          "own_cpu_seconds": 0.080211,
+          "child_cpu_seconds": 7.581021,
+          "total_cpu_seconds": 7.661232
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/neighbors/workers/12_18.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:34:48.787921+00:00",
+          "completed_utc": "2026-10-17T15:34:51.390100+00:00",
+          "wall_seconds": 2.6022149194031954,
+          "own_cpu_seconds": 0.08777399999999999,
+          "child_cpu_seconds": 7.5291429999999995,
+          "total_cpu_seconds": 7.616916999999999
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/neighbors/workers/18_24.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:34:48.721075+00:00",
+          "completed_utc": "2026-10-17T15:34:51.305346+00:00",
+          "wall_seconds": 2.5843659434467554,
+          "own_cpu_seconds": 0.073631,
+          "child_cpu_seconds": 7.442003,
+          "total_cpu_seconds": 7.515634
+        }
+      ]
+    },
+    {
+      "label": "neighbors/finish",
+      "status": "complete",
+      "task_ids": [
+        "t175831"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175831",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792251668.7049298,
+          "finished_at": 1792251652.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175831.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/neighbors/finish/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:40:51.174615+00:00",
+          "completed_utc": "2026-10-17T15:40:52.231983+00:00",
+          "wall_seconds": 1.0574132027104497,
+          "own_cpu_seconds": 0.07309299999999999,
+          "child_cpu_seconds": 0.885705,
+          "total_cpu_seconds": 0.9587979999999998
+        }
+      ]
+    },
+    {
+      "label": "online/describe",
+      "status": "complete",
+      "task_ids": [
+        "t175843"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175843",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792252202.1796212,
+          "finished_at": 1792252186.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175843.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/describe/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:49:45.259323+00:00",
+          "completed_utc": "2026-10-17T15:49:46.772633+00:00",
+          "wall_seconds": 1.5133517235517502,
+          "own_cpu_seconds": 0.071836,
+          "child_cpu_seconds": 1.292093,
+          "total_cpu_seconds": 1.363929
+        }
+      ]
+    },
+    {
+      "label": "online/workers",
+      "status": "complete",
+      "task_ids": [
+        "t175851",
+        "t175852",
+        "t175853",
+        "t175854",
+        "t175855"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175851",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 25,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792252808.4695287,
+          "finished_at": 1792253240.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175851.log"
+        },
+        {
+          "id": "t175852",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 32,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792252805.206185,
+          "finished_at": 1792253222.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175852.log"
+        },
+        {
+          "id": "t175853",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 32,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792252808.4614148,
+          "finished_at": 1792253220.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175853.log"
+        },
+        {
+          "id": "t175854",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 29,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792252811.7946312,
+          "finished_at": 1792253233.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175854.log"
+        },
+        {
+          "id": "t175855",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 26,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792253167.4096177,
+          "finished_at": 1792253574.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175855.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/workers/0_25.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:59:48.933375+00:00",
+          "completed_utc": "2026-10-17T16:07:20.754492+00:00",
+          "wall_seconds": 451.82115713879466,
+          "own_cpu_seconds": 0.084857,
+          "child_cpu_seconds": 6963.645243,
+          "total_cpu_seconds": 6963.7301
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/workers/25_57.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:59:47.908689+00:00",
+          "completed_utc": "2026-10-17T16:07:02.555215+00:00",
+          "wall_seconds": 434.64657069928944,
+          "own_cpu_seconds": 0.054537999999999996,
+          "child_cpu_seconds": 8553.291164,
+          "total_cpu_seconds": 8553.345702
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/workers/57_89.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:59:48.809760+00:00",
+          "completed_utc": "2026-10-17T16:07:00.450259+00:00",
+          "wall_seconds": 431.6405326407403,
+          "own_cpu_seconds": 0.069765,
+          "child_cpu_seconds": 8754.028223,
+          "total_cpu_seconds": 8754.097988
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/workers/89_118.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T15:59:52.004865+00:00",
+          "completed_utc": "2026-10-17T16:07:13.750361+00:00",
+          "wall_seconds": 441.745532957837,
+          "own_cpu_seconds": 0.072907,
+          "child_cpu_seconds": 8131.122371,
+          "total_cpu_seconds": 8131.195278
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/workers/118_144.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:05:41.279186+00:00",
+          "completed_utc": "2026-10-17T16:12:54.261561+00:00",
+          "wall_seconds": 432.9824154563248,
+          "own_cpu_seconds": 0.06683599999999999,
+          "child_cpu_seconds": 7122.560635999999,
+          "total_cpu_seconds": 7122.627471999999
+        }
+      ]
+    },
+    {
+      "label": "online/finish",
+      "status": "complete",
+      "task_ids": [
+        "t175856"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175856",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792254057.0543542,
+          "finished_at": 1792254041.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175856.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/online/finish/0_1.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:20:40.058212+00:00",
+          "completed_utc": "2026-10-17T16:20:41.292676+00:00",
+          "wall_seconds": 1.234506937675178,
+          "own_cpu_seconds": 0.064941,
+          "child_cpu_seconds": 1.0037239999999998,
+          "total_cpu_seconds": 1.068665
+        }
+      ]
+    },
+    {
+      "label": "native/describe",
+      "status": "complete",
+      "task_ids": [
+        "t175857"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175857",
+          "status": "done",
+          "node": "node001",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792254573.9475553,
+          "finished_at": 1792254556.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175857.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/describe/0_1.json",
+          "status": "complete",
+          "node": "node001",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:29:14.683974+00:00",
+          "completed_utc": "2026-10-17T16:29:16.159970+00:00",
+          "wall_seconds": 1.4760279599577188,
+          "own_cpu_seconds": 0.08914899999999999,
+          "child_cpu_seconds": 1.086843,
+          "total_cpu_seconds": 1.175992
+        }
+      ]
+    },
+    {
+      "label": "native/workers",
+      "status": "complete",
+      "task_ids": [
+        "t175858",
+        "t175859",
+        "t175860",
+        "t175861",
+        "t175862"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175858",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256179.064456,
+          "finished_at": 1792256166.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175858.log"
+        },
+        {
+          "id": "t175859",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 12,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256179.127927,
+          "finished_at": 1792256167.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175859.log"
+        },
+        {
+          "id": "t175860",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 10,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256174.0661736,
+          "finished_at": 1792256164.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175860.log"
+        },
+        {
+          "id": "t175861",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 11,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256175.698814,
+          "finished_at": 1792256166.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175861.log"
+        },
+        {
+          "id": "t175862",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 9,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256339.872603,
+          "finished_at": 1792256329.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175862.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/workers/0_6.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:55:59.670719+00:00",
+          "completed_utc": "2026-10-17T16:56:06.562156+00:00",
+          "wall_seconds": 6.891471995040774,
+          "own_cpu_seconds": 0.064965,
+          "child_cpu_seconds": 30.285118,
+          "total_cpu_seconds": 30.350083
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/workers/6_18.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:55:59.522522+00:00",
+          "completed_utc": "2026-10-17T16:56:07.250841+00:00",
+          "wall_seconds": 7.7283636555075645,
+          "own_cpu_seconds": 0.066117,
+          "child_cpu_seconds": 59.917761999999996,
+          "total_cpu_seconds": 59.983878999999995
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/workers/18_28.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:55:57.232804+00:00",
+          "completed_utc": "2026-10-17T16:56:04.642633+00:00",
+          "wall_seconds": 7.409871723502874,
+          "own_cpu_seconds": 0.065774,
+          "child_cpu_seconds": 49.592347,
+          "total_cpu_seconds": 49.658120999999994
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/workers/28_39.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:55:58.851424+00:00",
+          "completed_utc": "2026-10-17T16:56:06.222614+00:00",
+          "wall_seconds": 7.3712295750156045,
+          "own_cpu_seconds": 0.063377,
+          "child_cpu_seconds": 52.337692,
+          "total_cpu_seconds": 52.401069
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/workers/39_48.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T16:58:42.770224+00:00",
+          "completed_utc": "2026-10-17T16:58:49.359285+00:00",
+          "wall_seconds": 6.589103723876178,
+          "own_cpu_seconds": 0.055869,
+          "child_cpu_seconds": 39.702026000000004,
+          "total_cpu_seconds": 39.757895000000005
+        }
+      ]
+    },
+    {
+      "label": "native/finish",
+      "status": "complete",
+      "task_ids": [
+        "t175863"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175863",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256714.3589613,
+          "finished_at": 1792256836.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175863.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/native/finish/0_1.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:04:56.879638+00:00",
+          "completed_utc": "2026-10-17T17:07:16.310262+00:00",
+          "wall_seconds": 139.43065885547549,
+          "own_cpu_seconds": 0.06791,
+          "child_cpu_seconds": 131.390127,
+          "total_cpu_seconds": 131.458037
+        }
+      ]
+    },
+    {
+      "label": "terminal/describe",
+      "status": "complete",
+      "task_ids": [
+        "t175864"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175864",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792256989.7427278,
+          "finished_at": 1792256971.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175864.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/describe/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:09:30.822818+00:00",
+          "completed_utc": "2026-10-17T17:09:31.849226+00:00",
+          "wall_seconds": 1.026454365812242,
+          "own_cpu_seconds": 0.09482299999999999,
+          "child_cpu_seconds": 0.87705,
+          "total_cpu_seconds": 0.971873
+        }
+      ]
+    },
+    {
+      "label": "terminal/workers",
+      "status": "complete",
+      "task_ids": [
+        "t175866",
+        "t175867",
+        "t175868",
+        "t175869",
+        "t175870"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175866",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 24,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257175.6557486,
+          "finished_at": 1792257216.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175866.log"
+        },
+        {
+          "id": "t175867",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 48,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257175.558513,
+          "finished_at": 1792257206.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175867.log"
+        },
+        {
+          "id": "t175868",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 48,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257175.6629856,
+          "finished_at": 1792257206.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175868.log"
+        },
+        {
+          "id": "t175869",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 48,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257176.4006543,
+          "finished_at": 1792257208.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175869.log"
+        },
+        {
+          "id": "t175870",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 48,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257175.5921605,
+          "finished_at": 1792257216.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175870.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/workers/0_24.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:12:38.823013+00:00",
+          "completed_utc": "2026-10-17T17:13:36.924871+00:00",
+          "wall_seconds": 58.10190109163523,
+          "own_cpu_seconds": 0.078598,
+          "child_cpu_seconds": 886.469084,
+          "total_cpu_seconds": 886.547682
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/workers/24_72.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:12:38.745411+00:00",
+          "completed_utc": "2026-10-17T17:13:26.379246+00:00",
+          "wall_seconds": 47.63387951999903,
+          "own_cpu_seconds": 0.072702,
+          "child_cpu_seconds": 1469.5818319999998,
+          "total_cpu_seconds": 1469.6545339999998
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/workers/72_120.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:12:38.840020+00:00",
+          "completed_utc": "2026-10-17T17:13:26.581047+00:00",
+          "wall_seconds": 47.741078823804855,
+          "own_cpu_seconds": 0.079264,
+          "child_cpu_seconds": 1519.274491,
+          "total_cpu_seconds": 1519.3537549999999
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/workers/120_168.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:12:39.569551+00:00",
+          "completed_utc": "2026-10-17T17:13:28.663712+00:00",
+          "wall_seconds": 49.094198582693934,
+          "own_cpu_seconds": 0.090843,
+          "child_cpu_seconds": 1657.6726879999999,
+          "total_cpu_seconds": 1657.7635309999998
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/workers/168_216.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:12:38.792816+00:00",
+          "completed_utc": "2026-10-17T17:13:35.995514+00:00",
+          "wall_seconds": 57.20274967793375,
+          "own_cpu_seconds": 0.09738799999999999,
+          "child_cpu_seconds": 1967.8595950000001,
+          "total_cpu_seconds": 1967.956983
+        }
+      ]
+    },
+    {
+      "label": "terminal/finish",
+      "status": "complete",
+      "task_ids": [
+        "t175871"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175871",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257374.433959,
+          "finished_at": 1792257360.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175871.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/terminal/finish/0_1.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:15:56.872946+00:00",
+          "completed_utc": "2026-10-17T17:16:00.668601+00:00",
+          "wall_seconds": 3.7957109389826655,
+          "own_cpu_seconds": 0.087298,
+          "child_cpu_seconds": 2.798506,
+          "total_cpu_seconds": 2.8858040000000003
+        }
+      ]
+    },
+    {
+      "label": "truth/freeze",
+      "status": "complete",
+      "task_ids": [
+        "t175872"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175872",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257551.2579556,
+          "finished_at": 1792257546.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175872.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/freeze/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:18:53.797870+00:00",
+          "completed_utc": "2026-10-17T17:19:06.082209+00:00",
+          "wall_seconds": 12.284386239945889,
+          "own_cpu_seconds": 0.08326,
+          "child_cpu_seconds": 10.284436,
+          "total_cpu_seconds": 10.367695999999999
+        }
+      ]
+    },
+    {
+      "label": "truth/tasks",
+      "status": "complete",
+      "task_ids": [
+        "t175873",
+        "t175874",
+        "t175875",
+        "t175876",
+        "t175877"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175873",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 3,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257739.8525755,
+          "finished_at": 1792257729.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175873.log"
+        },
+        {
+          "id": "t175874",
+          "status": "done",
+          "node": "node004",
+          "cpu_cores": 6,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257738.4361227,
+          "finished_at": 1792257729.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175874.log"
+        },
+        {
+          "id": "t175875",
+          "status": "done",
+          "node": "node002",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257738.989138,
+          "finished_at": 1792257730.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175875.log"
+        },
+        {
+          "id": "t175876",
+          "status": "done",
+          "node": "node005",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257738.7385764,
+          "finished_at": 1792257728.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175876.log"
+        },
+        {
+          "id": "t175877",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 5,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257737.94665,
+          "finished_at": 1792257727.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175877.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/tasks/0_3.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:22:02.300117+00:00",
+          "completed_utc": "2026-10-17T17:22:09.520606+00:00",
+          "wall_seconds": 7.220528192818165,
+          "own_cpu_seconds": 0.075801,
+          "child_cpu_seconds": 9.241816,
+          "total_cpu_seconds": 9.317617
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/tasks/3_9.json",
+          "status": "complete",
+          "node": "node004",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:22:01.156668+00:00",
+          "completed_utc": "2026-10-17T17:22:09.152924+00:00",
+          "wall_seconds": 7.996300311759114,
+          "own_cpu_seconds": 0.08835299999999999,
+          "child_cpu_seconds": 17.612947,
+          "total_cpu_seconds": 17.7013
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/tasks/9_14.json",
+          "status": "complete",
+          "node": "node002",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:22:01.510035+00:00",
+          "completed_utc": "2026-10-17T17:22:09.987654+00:00",
+          "wall_seconds": 8.477669866755605,
+          "own_cpu_seconds": 0.075289,
+          "child_cpu_seconds": 15.875129,
+          "total_cpu_seconds": 15.950417999999999
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/tasks/14_19.json",
+          "status": "complete",
+          "node": "node005",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:22:01.498550+00:00",
+          "completed_utc": "2026-10-17T17:22:08.559321+00:00",
+          "wall_seconds": 7.060814988799393,
+          "own_cpu_seconds": 0.07509199999999999,
+          "child_cpu_seconds": 15.199736,
+          "total_cpu_seconds": 15.274828
+        },
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/tasks/19_24.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:22:00.940216+00:00",
+          "completed_utc": "2026-10-17T17:22:07.064696+00:00",
+          "wall_seconds": 6.124526405707002,
+          "own_cpu_seconds": 0.071118,
+          "child_cpu_seconds": 14.057808,
+          "total_cpu_seconds": 14.128926
+        }
+      ]
+    },
+    {
+      "label": "truth/collect",
+      "status": "complete",
+      "task_ids": [
+        "t175878"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t175878",
+          "status": "done",
+          "node": "node006",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": 0,
+          "started_at": 1792257931.454957,
+          "finished_at": 1792257921.0,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t175878.log"
+        }
+      ],
+      "excluded_inherited_stage80_record": false,
+      "wrapper_records": [
+        {
+          "record_file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/jobs/truth/collect/0_1.json",
+          "status": "complete",
+          "node": "node006",
+          "child_returncode": 0,
+          "started_utc": "2026-10-17T17:25:12.507974+00:00",
+          "completed_utc": "2026-10-17T17:25:21.741727+00:00",
+          "wall_seconds": 9.23379887547344,
+          "own_cpu_seconds": 0.07608,
+          "child_cpu_seconds": 7.1546780000000005,
+          "total_cpu_seconds": 7.230758
+        }
+      ]
+    }
+  ],
+  "scheduler_task_count": 42,
+  "actual_stage81_check": {
+    "status": "passed",
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_reference_coverage_dispatch.py",
+      "tests/test_mainline_reference_coverage_confirmation_summary.py",
+      "tests/test_mainline_reference_coverage_science_cluster.py",
+      "tests/test_mainline_reference_coverage_end_to_end.py"
+    ],
+    "test_files": [
+      "tests/test_mainline_reference_coverage_dispatch.py",
+      "tests/test_mainline_reference_coverage_confirmation_summary.py",
+      "tests/test_mainline_reference_coverage_science_cluster.py",
+      "tests/test_mainline_reference_coverage_end_to_end.py"
+    ],
+    "test_counts": {
+      "passed": 31
+    },
+    "returncode": 0,
+    "cpu_seconds": 8.143925,
+    "wall_seconds": 8.31881939060986,
+    "checked_utc": "2026-10-17T15:17:40.839811+00:00",
+    "new_scientific_calls": 0,
+    "new_truth_calls": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0
+  },
+  "retained_infrastructure_event": {
+    "scheduler_task": "t173116",
+    "classification": "record_collision_duplicate_not_executed",
+    "scientific_calls": 0,
+    "validation_checks_executed": 0,
+    "cpu_seconds": 0.12537800000000002,
+    "source_file": "stage81_collision.json"
+  },
+  "scientific_attempt_cpu_seconds": 48197.63722554893,
+  "checks_separate": [
+    {
+      "file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/validation/attempt1/checks.json",
+      "status": "passed",
+      "cpu_seconds": 11.866515,
+      "wall_seconds": 12.191779347136617
+    },
+    {
+      "file": "paper_artifacts/mainline_reference_coverage_confirmation_v1/cluster_control/validation/stage81_attempt1/checks.json",
+      "status": "passed",
+      "cpu_seconds": 8.143925,
+      "wall_seconds": 8.31881939060986
+    }
+  ],
+  "wrapper_cpu_seconds_including_children_not_additive": 49106.824163999976,
+  "physical_call_accounting": {
+    "shared_initial_physical_calls": 240,
+    "shared_online_physical_calls": 432,
+    "unique_terminal_physical_calls": 88808,
+    "successful_target_physical_calls": 89480,
+    "call_accounting_complete": true,
+    "analytic_truth_field_calls": 1005,
+    "new_source_calls": 0,
+    "new_source_fits": 0,
+    "scoring_posterior_restorations": 0
+  },
+  "controller_metadata_payload_bytes": 43694,
+  "accounting_note": "Wrapper CPU includes child CPU and is never added to scientific attempt ledgers. Stage80 prior validation record is excluded from Stage81 wrapper accounting. Scheduler timestamps may use different host clocks; wrapper wall_seconds is measured monotonically."
+}
