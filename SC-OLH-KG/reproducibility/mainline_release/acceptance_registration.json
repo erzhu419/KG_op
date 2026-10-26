@@ -1,0 +1,58 @@
+{
+  "schema": "mainline_submission_acceptance_v1",
+  "registered_date": "2026-10-26",
+  "base_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "scope": "Release verification only; no new scientific cohort or algorithm change",
+  "statistical_inputs": [
+    "Stage85:2592 sealed cells",
+    "Stage93:3168 cells including 67 retained failures"
+  ],
+  "statistics": [
+    "original paired geometry t summaries; no multiplicity correction",
+    "Stage103 same-source GP and native comparisons: post hoc, not independent replication",
+    "source main effect and four-arm interaction on their original complete-pair supports"
+  ],
+  "sensitivity": {
+    "endpoint": "C",
+    "rule": "Each missing binary certification outcome ranges independently over [0,1]; aggregate by the original equal-weight registered geometry/stream design",
+    "interpretation": "finite registered sample completion range, not a confidence interval; original missing cells and all-registered point estimates remain null"
+  },
+  "real_case": {
+    "selection": "first registered Stage85 geometry and first observation stream, without outcome selection",
+    "domain": "InventorySupplyChain",
+    "geometry_task_seed": 2026120001,
+    "stream": "observation_1",
+    "reused_initial_calls": 10,
+    "new_search_call_cap": 3,
+    "terminal_call_cap": 352,
+    "logical_total_cap": 365,
+    "kind": "release acceptance, not an independent study"
+  },
+  "lean": {
+    "current_modules": 16,
+    "current_theorems": 94,
+    "project_olean_reuse": false,
+    "official_dependency_cache_reuse": true
+  },
+  "execution": {
+    "node_pool": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "vram": 0,
+    "threads_per_worker": 1,
+    "automatic_retries": 0,
+    "historical_cohorts_rerun": false
+  },
+  "accounting": "Preserve failures, recovery costs and unknown items; do not reset any historical reserve",
+  "licensing": {
+    "code": "MIT",
+    "generated_data": "CC-BY-4.0",
+    "authorization": "User delegated selection on 2026-10-26"
+  },
+  "manuscript_direction": "Integrated current mainline; historical Atlas results remain separately identified"
+}

@@ -1,0 +1,40 @@
+{
+  "stage": "saved_evidence",
+  "status": "complete",
+  "automatic_retries": 0,
+  "started_utc": "2026-10-26T12:38:32.912815+00:00",
+  "new_simulator_calls": 0,
+  "steps": [
+    {
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "reproducibility.mainline_release.export_cells",
+        "--root",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/cells.json.gz"
+      ],
+      "returncode": 0,
+      "wall_seconds": 32.72415550611913
+    },
+    {
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "reproducibility.mainline_release.statistics",
+        "--cells",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/cells.json.gz",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/statistics.json.gz"
+      ],
+      "returncode": 0,
+      "wall_seconds": 15.899799555540085
+    }
+  ],
+  "finished_utc": "2026-10-26T12:39:21.541009+00:00",
+  "wall_seconds": 48.628347656689584,
+  "child_cpu_seconds": 21.497026,
+  "cpu_accounting": "isolated item process children; includes nested steps",
+  "child_peak_rss_kib": 171944
+}

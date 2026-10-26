@@ -1,4 +1,15 @@
-# Reproducing the current Operations Research manuscript
+# Reproducing the current mainline
+
+The default October 26, 2026 entry is
+[`mainline_release/README.md`](mainline_release/README.md): fixed current-mainline
+sources/assets, Stage85/93 compact cells, paired statistical replay, the real
+AFTER/TS small case, and the current 16-module Lean closure. It has ordinary
+single-machine commands and separate acceptance receipts.
+
+## Historical Atlas / Operations Research reproduction
+
+The instructions below retain the earlier Atlas/OR protocol and evidence. They
+do not reproduce Stage85/93 or replace the current mainline release entry.
 
 All commands below start at the repository or unpacked attachment root.
 The current method is `profile_atlas_v2_method_spec.json`, read with

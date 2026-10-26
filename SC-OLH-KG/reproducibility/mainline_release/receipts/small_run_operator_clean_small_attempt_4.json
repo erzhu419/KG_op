@@ -1,0 +1,186 @@
+{
+  "schema": "mainline-clean-small-operator-v1",
+  "status": "failed",
+  "exit_code": 1,
+  "kind": "release_acceptance_only",
+  "source_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "automatic_retries": 0,
+  "scientific_cohort_overwritten": false,
+  "started_utc": "2026-10-26T13:17:25.072797+00:00",
+  "phases": [
+    {
+      "name": "reuse_completed_case",
+      "status": "complete",
+      "exit_code": 0,
+      "source_preparation_receipt": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case/preparation_receipt.json",
+      "source_preparation_unchanged": true,
+      "new_source_calls": 0,
+      "new_target_calls": 0,
+      "operator_cpu_seconds": 0.0005334150000000093,
+      "child_cpu_seconds": 0.0,
+      "wall_seconds": 0.0009620217606425285
+    },
+    {
+      "name": "build_candidate",
+      "status": "candidate_pending_small_acceptance",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/package.py",
+        "build",
+        "--root",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/candidate.tar.gz"
+      ],
+      "log_file": "build_candidate.log",
+      "exit_code": 2,
+      "operator_cpu_seconds": 0.0008401090000000055,
+      "child_cpu_seconds": 10.205832000000001,
+      "wall_seconds": 10.6246333187446,
+      "cumulative_child_peak_rss_bytes": 63016960
+    },
+    {
+      "name": "extract_candidate",
+      "status": "complete",
+      "exit_code": 0,
+      "operator_cpu_seconds": 2.628585248,
+      "child_cpu_seconds": 0.0,
+      "wall_seconds": 3.2101186644285917
+    },
+    {
+      "name": "create_venv",
+      "status": "complete",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "venv",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv"
+      ],
+      "log_file": "create_venv.log",
+      "exit_code": 0,
+      "operator_cpu_seconds": 0.0027048359999999327,
+      "child_cpu_seconds": 6.864617000000002,
+      "wall_seconds": 8.644721710123122,
+      "cumulative_child_peak_rss_bytes": 70352896
+    },
+    {
+      "name": "install_dependencies",
+      "status": "complete",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-input",
+        "--retries",
+        "0",
+        "--no-cache-dir",
+        "--only-binary=:all:",
+        "--no-index",
+        "--find-links",
+        "/home/zhengliang01/scheduleurm_work/wheelhouse/kg_op_release_20261026",
+        "--requirement",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/clean/SC-OLH-KG/reproducibility/mainline_release/requirements.txt"
+      ],
+      "log_file": "install_dependencies.log",
+      "exit_code": 0,
+      "operator_cpu_seconds": 0.001468597000000127,
+      "child_cpu_seconds": 13.534063000000002,
+      "wall_seconds": 18.610092944465578,
+      "cumulative_child_peak_rss_bytes": 85016576
+    },
+    {
+      "name": "check_environment",
+      "status": "complete",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv/bin/python",
+        "-I",
+        "-c",
+        "import importlib.metadata as m, json, pathlib, platform, site, sys\nimport numpy, scipy, requests\nrequirements = pathlib.Path(sys.argv[1]).read_text().splitlines()\nexpected = dict(line.strip().split('==') for line in requirements if line.strip() and not line.startswith('#'))\nactual = {name:m.version(name) for name in expected}\nassert actual == expected, (actual, expected)\nassert sys.prefix != sys.base_prefix and site.ENABLE_USER_SITE is False\nassert platform.python_version() == sys.argv[3], (platform.python_version(), sys.argv[3])\nvalue = dict(status='passed',python=platform.python_version(),prefix=sys.prefix,base_prefix=sys.base_prefix,user_site_enabled=site.ENABLE_USER_SITE,isolated=bool(sys.flags.isolated),versions=actual,sys_path=sys.path)\npathlib.Path(sys.argv[2]).write_text(json.dumps(value,indent=2)+'\\n')",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/clean/SC-OLH-KG/reproducibility/mainline_release/requirements.txt",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/environment.json",
+        "3.10.14"
+      ],
+      "log_file": "check_environment.log",
+      "exit_code": 0,
+      "operator_cpu_seconds": 0.0013545449999998738,
+      "child_cpu_seconds": 0.674904999999999,
+      "wall_seconds": 0.9236067421734333,
+      "cumulative_child_peak_rss_bytes": 85016576
+    },
+    {
+      "name": "real_small_case",
+      "status": "failed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv/bin/python",
+        "-I",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/clean/SC-OLH-KG/reproducibility/mainline_release/run_small.py",
+        "--case",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/clean/SC-OLH-KG/reproducibility/mainline_release/case/case.json",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/small_attempt"
+      ],
+      "log_file": "real_small_case.log",
+      "exit_code": 1,
+      "operator_cpu_seconds": 0.0013003529999999763,
+      "child_cpu_seconds": 3.8546910000000043,
+      "wall_seconds": 4.610288381576538,
+      "cumulative_child_peak_rss_bytes": 117706752
+    }
+  ],
+  "operator_work_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4",
+  "new_source_calls": 0,
+  "new_source_fits": 0,
+  "original_scientific_budgets_reset": false,
+  "phase": "real_small_case",
+  "candidate_archive": {
+    "path": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/candidate.tar.gz",
+    "build_exit_code": 2,
+    "missing": [
+      "SC-OLH-KG/reproducibility/mainline_release/receipts/small_run.json"
+    ],
+    "delivery_gate_passed": false,
+    "meaning": "Candidate for G3 only; final archive must include its acceptance receipt"
+  },
+  "dependency_source": {
+    "wheelhouse": "/home/zhengliang01/scheduleurm_work/wheelhouse/kg_op_release_20261026",
+    "network_used": false
+  },
+  "clean_environment": {
+    "status": "passed",
+    "python": "3.10.14",
+    "prefix": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv",
+    "base_prefix": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310",
+    "user_site_enabled": false,
+    "isolated": true,
+    "versions": {
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "requests": "2.33.1",
+      "urllib3": "2.6.3",
+      "certifi": "2026.2.25",
+      "idna": "3.3",
+      "charset-normalizer": "3.4.7"
+    },
+    "sys_path": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python310.zip",
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10",
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/lib-dynload",
+      "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv/lib/python3.10/site-packages"
+    ]
+  },
+  "error": "RuntimeError('Real small-case acceptance exited 1; the attempt is retained without retry')",
+  "new_target_search_calls": 0,
+  "new_verification_calls": 0,
+  "new_physical_target_calls": 0,
+  "reused_initial_calls": 0,
+  "logical_total_calls": 0,
+  "operator_cpu_seconds": 2.648105549,
+  "child_cpu_seconds": 35.134108000000005,
+  "wall_seconds": 46.641685088165104,
+  "operator_peak_rss_bytes": 10539008,
+  "child_peak_rss_bytes": 117706752,
+  "finished_utc": "2026-10-26T13:18:11.714174+00:00"
+}

@@ -1,0 +1,853 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "started_at_utc": "2026-10-26T12:38:33.012714+00:00",
+  "steps": [
+    {
+      "name": "lean_version",
+      "phase": "environment",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "00_lean_version.log",
+      "cpu_seconds": 0.24785,
+      "wall_seconds": 2.7016844488680363
+    },
+    {
+      "name": "lake_version",
+      "phase": "environment",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lake",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "01_lake_version.log",
+      "cpu_seconds": 0.135026,
+      "wall_seconds": 0.591017815284431
+    },
+    {
+      "name": "SCOLHKG.Real.GPRUpdate",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/GPRUpdate.olean",
+        "SCOLHKG/Real/GPRUpdate.lean"
+      ],
+      "exit_code": 0,
+      "log": "02_SCOLHKG.Real.GPRUpdate.log",
+      "cpu_seconds": 15.384226000000002,
+      "wall_seconds": 214.26986554730684
+    },
+    {
+      "name": "SCOLHKG.Real.ConditionalVariance",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/ConditionalVariance.olean",
+        "SCOLHKG/Real/ConditionalVariance.lean"
+      ],
+      "exit_code": 0,
+      "log": "03_SCOLHKG.Real.ConditionalVariance.log",
+      "cpu_seconds": 8.703367,
+      "wall_seconds": 11.050286438316107
+    },
+    {
+      "name": "SCOLHKG.Real.KG",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/KG.olean",
+        "SCOLHKG/Real/KG.lean"
+      ],
+      "exit_code": 0,
+      "log": "04_SCOLHKG.Real.KG.log",
+      "cpu_seconds": 8.005026999999998,
+      "wall_seconds": 9.409768598154187
+    },
+    {
+      "name": "SCOLHKG.Real.AdditiveApproxKG",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/AdditiveApproxKG.olean",
+        "SCOLHKG/Real/AdditiveApproxKG.lean"
+      ],
+      "exit_code": 0,
+      "log": "05_SCOLHKG.Real.AdditiveApproxKG.log",
+      "cpu_seconds": 8.384164000000006,
+      "wall_seconds": 9.980432840064168
+    },
+    {
+      "name": "SCOLHKG.Real.ExactKGImplementation",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/ExactKGImplementation.olean",
+        "SCOLHKG/Real/ExactKGImplementation.lean"
+      ],
+      "exit_code": 0,
+      "log": "06_SCOLHKG.Real.ExactKGImplementation.log",
+      "cpu_seconds": 6.880624999999995,
+      "wall_seconds": 7.875023069791496
+    },
+    {
+      "name": "SCOLHKG.Real.TaskPosterior",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/TaskPosterior.olean",
+        "SCOLHKG/Real/TaskPosterior.lean"
+      ],
+      "exit_code": 0,
+      "log": "07_SCOLHKG.Real.TaskPosterior.log",
+      "cpu_seconds": 11.842298,
+      "wall_seconds": 13.64062394760549
+    },
+    {
+      "name": "SCOLHKG.Real.CurrentPropagation",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentPropagation.olean",
+        "SCOLHKG/Real/CurrentPropagation.lean"
+      ],
+      "exit_code": 0,
+      "log": "08_SCOLHKG.Real.CurrentPropagation.log",
+      "cpu_seconds": 9.837090000000003,
+      "wall_seconds": 11.435131037607789
+    },
+    {
+      "name": "SCOLHKG.Real.CurrentCovariance",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentCovariance.olean",
+        "SCOLHKG/Real/CurrentCovariance.lean"
+      ],
+      "exit_code": 0,
+      "log": "09_SCOLHKG.Real.CurrentCovariance.log",
+      "cpu_seconds": 8.886489999999995,
+      "wall_seconds": 10.430355474352837
+    },
+    {
+      "name": "SCOLHKG.Real.GaussianReplicationCertificate",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/GaussianReplicationCertificate.olean",
+        "SCOLHKG/Real/GaussianReplicationCertificate.lean"
+      ],
+      "exit_code": 0,
+      "log": "10_SCOLHKG.Real.GaussianReplicationCertificate.log",
+      "cpu_seconds": 9.690663999999998,
+      "wall_seconds": 10.521979755721986
+    },
+    {
+      "name": "SCOLHKG.Measure.GaussianReplicationCertificate",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Measure/GaussianReplicationCertificate.olean",
+        "SCOLHKG/Measure/GaussianReplicationCertificate.lean"
+      ],
+      "exit_code": 0,
+      "log": "11_SCOLHKG.Measure.GaussianReplicationCertificate.log",
+      "cpu_seconds": 9.298476000000008,
+      "wall_seconds": 10.23067016992718
+    },
+    {
+      "name": "SCOLHKG.Measure.CurrentTerminalGate",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Measure/CurrentTerminalGate.olean",
+        "SCOLHKG/Measure/CurrentTerminalGate.lean"
+      ],
+      "exit_code": 0,
+      "log": "12_SCOLHKG.Measure.CurrentTerminalGate.log",
+      "cpu_seconds": 16.60978999999999,
+      "wall_seconds": 18.29996772389859
+    },
+    {
+      "name": "SCOLHKG.Real.CurrentRepresentationStability",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentRepresentationStability.olean",
+        "SCOLHKG/Real/CurrentRepresentationStability.lean"
+      ],
+      "exit_code": 0,
+      "log": "13_SCOLHKG.Real.CurrentRepresentationStability.log",
+      "cpu_seconds": 13.047940000000011,
+      "wall_seconds": 13.945477941073477
+    },
+    {
+      "name": "SCOLHKG.Real.CurrentQueryStability",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentQueryStability.olean",
+        "SCOLHKG/Real/CurrentQueryStability.lean"
+      ],
+      "exit_code": 0,
+      "log": "14_SCOLHKG.Real.CurrentQueryStability.log",
+      "cpu_seconds": 8.820971999999983,
+      "wall_seconds": 10.029127986170352
+    },
+    {
+      "name": "SCOLHKG.Real.CurrentSourceKernel",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentSourceKernel.olean",
+        "SCOLHKG/Real/CurrentSourceKernel.lean"
+      ],
+      "exit_code": 0,
+      "log": "15_SCOLHKG.Real.CurrentSourceKernel.log",
+      "cpu_seconds": 12.667316000000028,
+      "wall_seconds": 13.734229806810617
+    },
+    {
+      "name": "SCOLHKG.Real.CurrentAffineMismatch",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentAffineMismatch.olean",
+        "SCOLHKG/Real/CurrentAffineMismatch.lean"
+      ],
+      "exit_code": 0,
+      "log": "16_SCOLHKG.Real.CurrentAffineMismatch.log",
+      "cpu_seconds": 16.589000999999996,
+      "wall_seconds": 43.71598341502249
+    },
+    {
+      "name": "SCOLHKG.CurrentMainlineProofInterface",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "-o",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/acceptance_20261026/lean_cold/cold/source_snapshot/proof/.lake/build/lib/lean/SCOLHKG/CurrentMainlineProofInterface.olean",
+        "SCOLHKG/CurrentMainlineProofInterface.lean"
+      ],
+      "exit_code": 0,
+      "log": "17_SCOLHKG.CurrentMainlineProofInterface.log",
+      "cpu_seconds": 9.42391299999997,
+      "wall_seconds": 12.199209433980286
+    },
+    {
+      "name": "ReleaseAudit",
+      "phase": "proof",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+        "-j1",
+        "ReleaseAudit.lean"
+      ],
+      "exit_code": 0,
+      "log": "18_ReleaseAudit.log",
+      "cpu_seconds": 9.563174000000032,
+      "wall_seconds": 10.692625125870109
+    }
+  ],
+  "automatic_retries": 0,
+  "scientific_calls": 0,
+  "project_olean_reuse": false,
+  "official_dependency_cache_reused": true,
+  "all_mathlib_rebuilt_from_source": false,
+  "previous_failures_or_fees_modified": false,
+  "scheduler_and_transport_cpu_seconds": null,
+  "billing_currency_cost": null,
+  "interface": "SCOLHKG.CurrentMainlineProofInterface",
+  "lean_toolchain": "leanprover/lean4:v4.31.0",
+  "mathlib_revision": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+  "project_modules": [
+    "SCOLHKG.Real.GPRUpdate",
+    "SCOLHKG.Real.ConditionalVariance",
+    "SCOLHKG.Real.KG",
+    "SCOLHKG.Real.AdditiveApproxKG",
+    "SCOLHKG.Real.ExactKGImplementation",
+    "SCOLHKG.Real.TaskPosterior",
+    "SCOLHKG.Real.CurrentPropagation",
+    "SCOLHKG.Real.CurrentCovariance",
+    "SCOLHKG.Real.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.CurrentTerminalGate",
+    "SCOLHKG.Real.CurrentRepresentationStability",
+    "SCOLHKG.Real.CurrentQueryStability",
+    "SCOLHKG.Real.CurrentSourceKernel",
+    "SCOLHKG.Real.CurrentAffineMismatch",
+    "SCOLHKG.CurrentMainlineProofInterface"
+  ],
+  "module_imports": {
+    "SCOLHKG.CurrentMainlineProofInterface": [
+      "SCOLHKG.Real.CurrentPropagation",
+      "SCOLHKG.Real.CurrentCovariance",
+      "SCOLHKG.Measure.CurrentTerminalGate",
+      "SCOLHKG.Real.CurrentRepresentationStability",
+      "SCOLHKG.Real.CurrentQueryStability",
+      "SCOLHKG.Real.CurrentSourceKernel",
+      "SCOLHKG.Real.CurrentAffineMismatch"
+    ],
+    "SCOLHKG.Real.CurrentPropagation": [
+      "SCOLHKG.Real.GPRUpdate",
+      "SCOLHKG.Real.TaskPosterior"
+    ],
+    "SCOLHKG.Real.GPRUpdate": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega"
+    ],
+    "SCOLHKG.Real.TaskPosterior": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega",
+      "SCOLHKG.Real.ConditionalVariance",
+      "SCOLHKG.Real.ExactKGImplementation"
+    ],
+    "SCOLHKG.Real.ConditionalVariance": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega"
+    ],
+    "SCOLHKG.Real.ExactKGImplementation": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega",
+      "SCOLHKG.Real.AdditiveApproxKG",
+      "SCOLHKG.Real.KG"
+    ],
+    "SCOLHKG.Real.AdditiveApproxKG": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega",
+      "SCOLHKG.Real.KG"
+    ],
+    "SCOLHKG.Real.KG": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega"
+    ],
+    "SCOLHKG.Real.CurrentCovariance": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega"
+    ],
+    "SCOLHKG.Measure.CurrentTerminalGate": [
+      "SCOLHKG.Measure.GaussianReplicationCertificate"
+    ],
+    "SCOLHKG.Measure.GaussianReplicationCertificate": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega",
+      "SCOLHKG.Real.GaussianReplicationCertificate"
+    ],
+    "SCOLHKG.Real.GaussianReplicationCertificate": [
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Finiteness",
+      "Lean.Elab.Tactic.Omega"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability": [
+      "SCOLHKG.Real.CurrentPropagation"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability": [
+      "Mathlib.Data.Real.Basic",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.Linarith"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel": [
+      "SCOLHKG.Real.CurrentCovariance",
+      "Mathlib.Data.Fintype.BigOperators"
+    ],
+    "SCOLHKG.Real.CurrentAffineMismatch": [
+      "SCOLHKG.Real.CurrentCovariance",
+      "Mathlib.MeasureTheory.Integral.Bochner.Basic"
+    ]
+  },
+  "current_theorems": {
+    "SCOLHKG.Real.CurrentPropagation": [
+      "SCOLHKG.Real.CurrentPropagation.local_completion_contrast_mean",
+      "SCOLHKG.Real.CurrentPropagation.local_completion_contrast_variance",
+      "SCOLHKG.Real.CurrentPropagation.equal_local_load_preserves_contrast_mean",
+      "SCOLHKG.Real.CurrentPropagation.equal_local_load_preserves_contrast_variance",
+      "SCOLHKG.Real.CurrentPropagation.evidencePosterior_normalized",
+      "SCOLHKG.Real.CurrentPropagation.evidencePosterior_nonnegative",
+      "SCOLHKG.Real.CurrentPropagation.finite_mixture_reweighting_decomposition",
+      "SCOLHKG.Real.CurrentPropagation.evidence_local_completion_contrast_decomposition",
+      "SCOLHKG.Real.CurrentPropagation.rank_one_contrast_mean_change",
+      "SCOLHKG.Real.CurrentPropagation.rank_one_contrast_variance_decrement",
+      "SCOLHKG.Real.CurrentPropagation.rank_one_contrast_variance_nonincreasing",
+      "SCOLHKG.Real.CurrentPropagation.equal_kernel_relation_preserves_contrast_mean",
+      "SCOLHKG.Real.CurrentPropagation.equal_kernel_relation_preserves_contrast_variance"
+    ],
+    "SCOLHKG.Real.CurrentCovariance": [
+      "SCOLHKG.Real.CurrentCovariance.scaled_quadratic_form",
+      "SCOLHKG.Real.CurrentCovariance.scaled_covariance_psd",
+      "SCOLHKG.Real.CurrentCovariance.fixed_correlation_covariance_psd",
+      "SCOLHKG.Real.CurrentCovariance.fixed_correlation_diagonal",
+      "SCOLHKG.Real.CurrentCovariance.scaled_correlation_preserved",
+      "SCOLHKG.Real.CurrentCovariance.zero_local_variance_zero_row"
+    ],
+    "SCOLHKG.Measure.CurrentTerminalGate": [
+      "SCOLHKG.Measure.current_terminal_gates_disjoint",
+      "SCOLHKG.Measure.current_terminal_gate_mass_le_one",
+      "SCOLHKG.Measure.current_terminal_gated_errors_probability_le",
+      "SCOLHKG.Measure.current_terminal_joint_error_probability_le",
+      "SCOLHKG.Measure.current_terminal_five_percent",
+      "SCOLHKG.Measure.current_terminal_abstention",
+      "SCOLHKG.Measure.current_terminal_calls_exact",
+      "SCOLHKG.Measure.current_terminal_calls_le_registered_cap",
+      "SCOLHKG.Measure.current_terminal_calls_branch_identity",
+      "SCOLHKG.Measure.current_unsafe_certified_return_subset_issued_false_certificate",
+      "SCOLHKG.Measure.current_false_improvement_subset_comparison_gate",
+      "SCOLHKG.Measure.current_return_or_false_improvement_subset_joint_error",
+      "SCOLHKG.Measure.current_certified_return_or_false_improvement_five_percent"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability": [
+      "SCOLHKG.Real.CurrentRepresentationStability.common_reference_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.linearForm_error_le",
+      "SCOLHKG.Real.CurrentRepresentationStability.frozen_linear_map_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.positive_standardization_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.retained_spectral_scale_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.positive_standardization_uniform_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.product_feature_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.quadratic_features_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.clipped_radius_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.radial_normalization_coordinate_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.source_encoder_prediction_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.cross_dimension_source_prediction_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.bilinear_kernel_error",
+      "SCOLHKG.Real.CurrentRepresentationStability.positive_diagonal_reparameterization_mean",
+      "SCOLHKG.Real.CurrentRepresentationStability.positive_diagonal_reparameterization_kernel"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability": [
+      "SCOLHKG.Real.CurrentQueryStability.separated_pool_pair_order",
+      "SCOLHKG.Real.CurrentQueryStability.sampled_feasibility_iff",
+      "SCOLHKG.Real.CurrentQueryStability.sampled_feasible_set_eq",
+      "SCOLHKG.Real.CurrentQueryStability.empty_feasible_branch_preserved",
+      "SCOLHKG.Real.CurrentQueryStability.feasible_branch_selection_eq",
+      "SCOLHKG.Real.CurrentQueryStability.feasible_branch_query_stable",
+      "SCOLHKG.Real.CurrentQueryStability.fallback_loss_error_le",
+      "SCOLHKG.Real.CurrentQueryStability.minimum_violation_query_stable",
+      "SCOLHKG.Real.CurrentQueryStability.coupled_draw_error_le",
+      "SCOLHKG.Real.CurrentQueryStability.coupled_draw_pool_error_le",
+      "SCOLHKG.Real.CurrentQueryStability.chance_margin_error_le"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel": [
+      "SCOLHKG.Real.CurrentSourceKernel.zero_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.add_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.nonnegative_scale_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.finite_sum_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.projected_quadratic_form",
+      "SCOLHKG.Real.CurrentSourceKernel.projected_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.outer_quadratic_form",
+      "SCOLHKG.Real.CurrentSourceKernel.outer_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.mixture_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.white_quadratic_form",
+      "SCOLHKG.Real.CurrentSourceKernel.white_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.physical_white_eq_index_white",
+      "SCOLHKG.Real.CurrentSourceKernel.physical_white_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.source_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.projected_mean_restriction",
+      "SCOLHKG.Real.CurrentSourceKernel.projected_covariance_restriction",
+      "SCOLHKG.Real.CurrentSourceKernel.pullback_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.source_covariance_restriction",
+      "SCOLHKG.Real.CurrentSourceKernel.block_quadratic_form",
+      "SCOLHKG.Real.CurrentSourceKernel.block_covariance_psd",
+      "SCOLHKG.Real.CurrentSourceKernel.role_replacement_covariance_psd"
+    ],
+    "SCOLHKG.Real.CurrentAffineMismatch": [
+      "SCOLHKG.Real.CurrentAffineMismatch.quadratic_difference_expansion",
+      "SCOLHKG.Real.CurrentAffineMismatch.normal_equation_cross",
+      "SCOLHKG.Real.CurrentAffineMismatch.affine_risk_completed_square",
+      "SCOLHKG.Real.CurrentAffineMismatch.relationship_mismatch_nonnegative",
+      "SCOLHKG.Real.CurrentAffineMismatch.centered_integrable",
+      "SCOLHKG.Real.CurrentAffineMismatch.centered_integral_zero",
+      "SCOLHKG.Real.CurrentAffineMismatch.linearCombination_integrable",
+      "SCOLHKG.Real.CurrentAffineMismatch.integral_linearCombination",
+      "SCOLHKG.Real.CurrentAffineMismatch.linearCombination_square_moments",
+      "SCOLHKG.Real.CurrentAffineMismatch.linearCombination_cross_moments",
+      "SCOLHKG.Real.CurrentAffineMismatch.centered_residual_moments",
+      "SCOLHKG.Real.CurrentAffineMismatch.centered_scalar_bias",
+      "SCOLHKG.Real.CurrentAffineMismatch.covariance_symmetric",
+      "SCOLHKG.Real.CurrentAffineMismatch.covariance_psd",
+      "SCOLHKG.Real.CurrentAffineMismatch.fixed_affine_mse_decomposition"
+    ]
+  },
+  "current_theorem_count": 94,
+  "headline_axiom_checks": [
+    "SCOLHKG.Real.CurrentPropagation.evidence_local_completion_contrast_decomposition",
+    "SCOLHKG.Real.CurrentCovariance.fixed_correlation_covariance_psd",
+    "SCOLHKG.Measure.current_certified_return_or_false_improvement_five_percent",
+    "SCOLHKG.Real.CurrentRepresentationStability.bilinear_kernel_error",
+    "SCOLHKG.Real.CurrentRepresentationStability.radial_normalization_coordinate_error",
+    "SCOLHKG.Real.CurrentQueryStability.feasible_branch_query_stable",
+    "SCOLHKG.Real.CurrentQueryStability.minimum_violation_query_stable",
+    "SCOLHKG.Real.CurrentSourceKernel.source_covariance_psd",
+    "SCOLHKG.Real.CurrentSourceKernel.mixture_covariance_psd",
+    "SCOLHKG.Real.CurrentSourceKernel.role_replacement_covariance_psd",
+    "SCOLHKG.Real.CurrentAffineMismatch.covariance_psd",
+    "SCOLHKG.Real.CurrentAffineMismatch.fixed_affine_mse_decomposition"
+  ],
+  "external_import_roots": [
+    "Mathlib.Algebra.BigOperators.Field",
+    "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+    "Mathlib.Analysis.Real.Sqrt",
+    "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+    "Mathlib.Data.Fintype.Basic",
+    "Mathlib.Data.Fintype.BigOperators",
+    "Mathlib.Data.Real.Basic",
+    "Mathlib.MeasureTheory.Integral.Bochner.Basic",
+    "Mathlib.MeasureTheory.Measure.Real",
+    "Mathlib.Tactic.Common",
+    "Mathlib.Tactic.FieldSimp",
+    "Mathlib.Tactic.Finiteness",
+    "Mathlib.Tactic.GCongr",
+    "Mathlib.Tactic.Linarith",
+    "Mathlib.Tactic.NormNum",
+    "Mathlib.Tactic.Positivity",
+    "Mathlib.Tactic.Ring"
+  ],
+  "source_sha256": {
+    "SCOLHKG/CurrentMainlineProofInterface.lean": "6ef136986bff1d275c155531f5b9ce4c43afde516830aabe2164fbb212e86e72",
+    "SCOLHKG/Measure/CurrentTerminalGate.lean": "3f0b5231d7c1cccbba5e1ce636d39258f669a8395f18195b8f17a8b6f7cdaa5a",
+    "SCOLHKG/Measure/GaussianReplicationCertificate.lean": "ac5943d9a697def558faf3aa9d9a380017773726905fb24a59feef098113511c",
+    "SCOLHKG/Real/AdditiveApproxKG.lean": "4aa7fb7470d7a68ac45a95d11d5be6be8f0b5a5176aefa604d6e053423bf2590",
+    "SCOLHKG/Real/ConditionalVariance.lean": "b5129155c2e4c2b71a73c3a66bfd2b4b9b10057c49313be4ec31fb06bdef75ca",
+    "SCOLHKG/Real/CurrentAffineMismatch.lean": "ea470f2ff3a2d69255a6512595bff1bfbd1fc398ccea64c6556ba0aef144469e",
+    "SCOLHKG/Real/CurrentCovariance.lean": "96345e4ca9ea88b2ccb522fe8fa10b488a9e00e277cb39ec4c836d2be196f989",
+    "SCOLHKG/Real/CurrentPropagation.lean": "15ca61cc6900a638928d6ee975414e05a46a9d3c054690b9ccefb8b7d885e21d",
+    "SCOLHKG/Real/CurrentQueryStability.lean": "da468aa36e8e06bad044eb8b7147c776714e38f1b54a84016ac20759280859c7",
+    "SCOLHKG/Real/CurrentRepresentationStability.lean": "9574827b5190b63d999e9c5c0821c2b9f768f924da2ae5e8c8ac609bec3f017d",
+    "SCOLHKG/Real/CurrentSourceKernel.lean": "dce569b4bb02c1ed0c1924bf4a667e024ceb8466307ced69bb1ce072bac12ace",
+    "SCOLHKG/Real/ExactKGImplementation.lean": "9bd039b174c5bd430b579b755cfc7359746e7b0c3579bce05b25675d46175c22",
+    "SCOLHKG/Real/GPRUpdate.lean": "e19c6292e6f9e7d4991d20a9d7c0624c67d642f52b1a028a384fa98139518333",
+    "SCOLHKG/Real/GaussianReplicationCertificate.lean": "73917e1fc43ca0f6df51baf34aa3fc36a8b4b4d07245b14fbfb30898d1a6c4c1",
+    "SCOLHKG/Real/KG.lean": "8546a444fa21aca6ad169c7bb3d52fab70e15dde3c4fb86f7bdfd5e7a6002bb5",
+    "SCOLHKG/Real/TaskPosterior.lean": "4d4bc16052e2cc9a0ef2510d604e24372b6b41160e6d1836fe3e509cde4dc987",
+    "lake-manifest.json": "1c79ed5b82333f5d1b5ccd61e8caa0d74644c9ff220fbdb39a14c235b4f5ef25",
+    "lakefile.lean": "cd732846351d802109b077fc69ca44b29f34f6553943b5fbf85129582a6f1e9c",
+    "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee"
+  },
+  "source_tree_key_sha256": "4c0070e379051306445b617c34ccbe4fb045204bc6efc2cce4617f5b483a6b49",
+  "dependency_locks": {
+    "mathlib": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+    "plausible": "63045536fe95024e6c18fc7b48e03f506701c5bc",
+    "LeanSearchClient": "c5d5b8fe6e5158def25cd28eb94e4141ad97c843",
+    "importGraph": "5c7542ed018c78194f1e2b903eaf6a792b74c03d",
+    "proofwidgets": "24b0d9dc081c5423f8eec7e866c441e5184f29d9",
+    "aesop": "e3cb2f741431ce31bf73549fb52316a57368b06f",
+    "Qq": "f46324995fca5f0483b742e4eb4daec7f4ee50d2",
+    "batteries": "fa08db58b30eb033edcdab331bba000827f9f785",
+    "Cli": "92564e5770e4d09f2d86dfbf8ada1e9c715b384c"
+  },
+  "cpu_affinity": [
+    0
+  ],
+  "wall_seconds": 435.94736287463456,
+  "runner_cpu_seconds": 0.185069131,
+  "child_cpu_seconds": 184.01740900000001,
+  "peak_child_rss_kib": 1614456,
+  "proof_build_cpu_seconds": 183.634533,
+  "lean_version": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
+  "lake_version": "Lake version 5.0.0-src+68218e8 (Lean version 4.31.0)",
+  "dependency_source_identity": {
+    "mathlib": {
+      "locked_revision": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "6f226b135055dccff3e733abfc465a026f8ded1e6e235408365b54193186665d",
+        "lakefile.lean": "a2bffc44a8baa126d9098117dfc28d77040a8a4aee78fe4ba491274b97cba551"
+      }
+    },
+    "plausible": {
+      "locked_revision": "63045536fe95024e6c18fc7b48e03f506701c5bc",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "99a17603b60cd9af445e5689b572b8441aaeaed149f3760dc52595a0c4b128db",
+        "lakefile.toml": "4147957012320a3afe8f041662202b7a3453c8a0df4311c1698da029a3b4834f"
+      }
+    },
+    "LeanSearchClient": {
+      "locked_revision": "c5d5b8fe6e5158def25cd28eb94e4141ad97c843",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "194fcae7a59d3268baa175bd3e352dafab6954fe08a5b7caec13bedf36f80315",
+        "lake-manifest.json": "a9b5fc5e76254f415e49b04b7049f58c6cb42e76a0e31b0aed2ddf4af6882033",
+        "lakefile.toml": "cb5d6c80c4ffd4b3be99294a911ebf2f6a2fee4eb9f840d96f0f813bd484c05d"
+      }
+    },
+    "importGraph": {
+      "locked_revision": "5c7542ed018c78194f1e2b903eaf6a792b74c03d",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "53f5a56ce65cef7b34a6fb4d6d9d02ba65994d3394f39668b06bf79311d778b1",
+        "lakefile.toml": "c723042dd3bc34e8a974b60c42cb73945f89615659df2c10a82195b3d89dab6c"
+      }
+    },
+    "proofwidgets": {
+      "locked_revision": "24b0d9dc081c5423f8eec7e866c441e5184f29d9",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "cfa8a1535cd79fbd868bcc67eb22efdab57568248a437fa5dda567234f1f03e2",
+        "lakefile.lean": "0a319fffbf511dab4c3307dc105f8e8fdb4f6160020995cef5f442061cc0abca"
+      }
+    },
+    "aesop": {
+      "locked_revision": "e3cb2f741431ce31bf73549fb52316a57368b06f",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "7908ff805a9e4f06d7a6090f4e7e7039069bbc46fe1c53a290a288a73d968f4a",
+        "lakefile.toml": "388d00385a0c288759c3b78dbff933298b7eb0c2f969d5fa45dac7f7761c6c25"
+      }
+    },
+    "Qq": {
+      "locked_revision": "f46324995fca5f0483b742e4eb4daec7f4ee50d2",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "460e7ce76c58edfd8ba59428f23e908c5860e8bbca8883ff6c1262980e364d30",
+        "lakefile.toml": "42826e4e06221f41fcd863e19d937a0a68be7d54df90abd7800a3c09f4557a15"
+      }
+    },
+    "batteries": {
+      "locked_revision": "fa08db58b30eb033edcdab331bba000827f9f785",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "67a8bbfcd0c742e05e198714b2d0f3602a3103d838e7427d773a5587555f88a2",
+        "lakefile.toml": "fc669e938aab5d42b7fbab318f2881b210f36dcf57f59d8f5a2f3a00771fe4b4"
+      }
+    },
+    "Cli": {
+      "locked_revision": "92564e5770e4d09f2d86dfbf8ada1e9c715b384c",
+      "actual_git_revision": null,
+      "git_revision_verified": false,
+      "entrypoint_sha256": {
+        "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+        "lake-manifest.json": "f608bac5ccb22b59292584eb7fb4497c327e780a17e7afb8d584ce5d79ad0b70",
+        "lakefile.toml": "188aaec6ddb57f411c11b95c3ece85ff26ab9ae8085371fee47e1dc855c4e186"
+      }
+    }
+  },
+  "all_dependency_git_revisions_verified": false,
+  "headline_axiom_dependencies": {
+    "SCOLHKG.Real.CurrentPropagation.evidence_local_completion_contrast_decomposition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentCovariance.fixed_correlation_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Measure.current_certified_return_or_false_improvement_five_percent": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability.bilinear_kernel_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability.radial_normalization_coordinate_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability.feasible_branch_query_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability.minimum_violation_query_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel.source_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel.mixture_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel.role_replacement_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentAffineMismatch.covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentAffineMismatch.fixed_affine_mse_decomposition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "all_94_current_declarations_checked": true,
+  "all_16_project_modules_cold_compiled": true,
+  "finished_at_utc": "2026-10-26T12:45:48.959813+00:00"
+}

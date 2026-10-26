@@ -1,0 +1,80 @@
+{
+  "schema": "mainline-small-receipt-v1",
+  "kind": "release_acceptance_only",
+  "status": "failed",
+  "started_utc": "2026-10-26T13:18:07.303314+00:00",
+  "automatic_retries": 0,
+  "scientific_cohort_overwritten": false,
+  "truth_used": false,
+  "new_source_calls": 0,
+  "new_source_fits": 0,
+  "reused_initial_calls": 0,
+  "new_target_search_calls": 0,
+  "new_verification_calls": 0,
+  "source_model_restorations": 2,
+  "new_truth_function_calls": 0,
+  "versions": {
+    "python": "3.10.14",
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "requests": "2.33.1"
+  },
+  "stage": "source_restore_and_initialization",
+  "domain": "InventorySupplyChain",
+  "arm": "legacy_role_after_init_point_only",
+  "geometry_task_seed": 2026120001,
+  "observation_seed": 2026130001,
+  "verification_seed": 2026140001,
+  "source_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "audit_only_config_changes": {
+    "runtime_checkpoint_resume": {
+      "original": true,
+      "release": false
+    }
+  },
+  "source_identities": [
+    "spectral/head_specific/observed_task",
+    "spectral/head_specific/deconvolved_task",
+    "spectral/joint/observed_task",
+    "spectral/joint/deconvolved_task",
+    "additive/head_specific/observed_task",
+    "additive/head_specific/deconvolved_task",
+    "additive/joint/observed_task",
+    "additive/joint/deconvolved_task"
+  ],
+  "error": "KeyError('source_quadrature_nodes')",
+  "new_physical_target_calls": 0,
+  "logical_total_calls": 0,
+  "cpu_seconds": 2.8847401319999997,
+  "wall_seconds": 3.6142158191651106,
+  "peak_rss_bytes": 117637120,
+  "finished_utc": "2026-10-26T13:18:10.917545+00:00",
+  "exit_code": 1,
+  "clean_environment": {
+    "status": "passed",
+    "python": "3.10.14",
+    "prefix": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv",
+    "base_prefix": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310",
+    "user_site_enabled": false,
+    "isolated": true,
+    "versions": {
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "requests": "2.33.1",
+      "urllib3": "2.6.3",
+      "certifi": "2026.2.25",
+      "idna": "3.3",
+      "charset-normalizer": "3.4.7"
+    },
+    "sys_path": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python310.zip",
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10",
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/lib/python3.10/lib-dynload",
+      "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_4/venv/lib/python3.10/site-packages"
+    ]
+  },
+  "operator_receipt": "small_run_operator_clean_small_attempt_4.json",
+  "candidate_delivery_gate_passed": false,
+  "run_small_status": "failed",
+  "operator_error": "RuntimeError('Real small-case acceptance exited 1; the attempt is retained without retry')"
+}

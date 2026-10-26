@@ -1,0 +1,47 @@
+{
+  "schema": "mainline-clean-small-operator-v1",
+  "status": "failed",
+  "exit_code": 1,
+  "kind": "release_acceptance_only",
+  "source_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "automatic_retries": 0,
+  "scientific_cohort_overwritten": false,
+  "started_utc": "2026-10-26T12:56:13.308437+00:00",
+  "phases": [
+    {
+      "name": "prepare_case",
+      "status": "failed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/prepare_mainline_submission_small_case.py",
+        "--project-root",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case",
+        "--source-commit",
+        "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+        "--asset-prefix",
+        "../assets"
+      ],
+      "log_file": "prepare_case.log",
+      "exit_code": 1,
+      "error": "RuntimeError('prepare_case exited 1; see prepare_case.log')",
+      "operator_cpu_seconds": 0.0012868290000000032,
+      "child_cpu_seconds": 0.400369,
+      "wall_seconds": 0.6710242051631212,
+      "cumulative_child_peak_rss_bytes": 30412800
+    }
+  ],
+  "operator_work_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_1",
+  "new_source_calls": 0,
+  "new_source_fits": 0,
+  "original_scientific_budgets_reset": false,
+  "phase": "prepare_case",
+  "error": "RuntimeError('prepare_case exited 1; see prepare_case.log')",
+  "operator_cpu_seconds": 0.0030998209999999887,
+  "child_cpu_seconds": 0.400369,
+  "wall_seconds": 0.6740206331014633,
+  "operator_peak_rss_bytes": 9605120,
+  "child_peak_rss_bytes": 30412800,
+  "finished_utc": "2026-10-26T12:56:13.981987+00:00"
+}

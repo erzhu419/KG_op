@@ -1,0 +1,117 @@
+{
+  "schema": "mainline-clean-small-operator-v1",
+  "status": "failed",
+  "exit_code": 1,
+  "kind": "release_acceptance_only",
+  "source_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "automatic_retries": 0,
+  "scientific_cohort_overwritten": false,
+  "started_utc": "2026-10-26T13:11:57.009053+00:00",
+  "phases": [
+    {
+      "name": "reuse_completed_case",
+      "status": "complete",
+      "exit_code": 0,
+      "source_preparation_receipt": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case/preparation_receipt.json",
+      "source_preparation_unchanged": true,
+      "new_source_calls": 0,
+      "new_target_calls": 0,
+      "operator_cpu_seconds": 0.0008105720000000094,
+      "child_cpu_seconds": 0.0,
+      "wall_seconds": 0.001266496255993843
+    },
+    {
+      "name": "build_candidate",
+      "status": "candidate_pending_small_acceptance",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/package.py",
+        "build",
+        "--root",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_3/candidate.tar.gz"
+      ],
+      "log_file": "build_candidate.log",
+      "exit_code": 2,
+      "operator_cpu_seconds": 0.001303419,
+      "child_cpu_seconds": 10.163451,
+      "wall_seconds": 10.694666733965278,
+      "cumulative_child_peak_rss_bytes": 62902272
+    },
+    {
+      "name": "extract_candidate",
+      "status": "complete",
+      "exit_code": 0,
+      "operator_cpu_seconds": 2.618872099,
+      "child_cpu_seconds": 0.0,
+      "wall_seconds": 3.0308092748746276
+    },
+    {
+      "name": "create_venv",
+      "status": "complete",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "venv",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_3/venv"
+      ],
+      "log_file": "create_venv.log",
+      "exit_code": 0,
+      "operator_cpu_seconds": 0.0028603799999999957,
+      "child_cpu_seconds": 6.570638000000001,
+      "wall_seconds": 8.538291507400572,
+      "cumulative_child_peak_rss_bytes": 70377472
+    },
+    {
+      "name": "install_dependencies",
+      "status": "failed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_3/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-input",
+        "--retries",
+        "0",
+        "--no-cache-dir",
+        "--only-binary=:all:",
+        "--index-url",
+        "https://pypi.org/simple",
+        "--requirement",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_3/clean/SC-OLH-KG/reproducibility/mainline_release/requirements.txt"
+      ],
+      "log_file": "install_dependencies.log",
+      "exit_code": 1,
+      "error": "RuntimeError('install_dependencies exited 1; see install_dependencies.log')",
+      "operator_cpu_seconds": 0.0014674690000000545,
+      "child_cpu_seconds": 1.209105000000001,
+      "wall_seconds": 1.505028149113059,
+      "cumulative_child_peak_rss_bytes": 70377472
+    }
+  ],
+  "operator_work_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_3",
+  "new_source_calls": 0,
+  "new_source_fits": 0,
+  "original_scientific_budgets_reset": false,
+  "phase": "install_dependencies",
+  "candidate_archive": {
+    "path": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_3/candidate.tar.gz",
+    "build_exit_code": 2,
+    "missing": [
+      "SC-OLH-KG/reproducibility/mainline_release/receipts/small_run.json"
+    ],
+    "delivery_gate_passed": false,
+    "meaning": "Candidate for G3 only; final archive must include its acceptance receipt"
+  },
+  "dependency_source": "https://pypi.org/simple",
+  "error": "RuntimeError('install_dependencies exited 1; see install_dependencies.log')",
+  "operator_cpu_seconds": 2.632870113,
+  "child_cpu_seconds": 17.943194,
+  "wall_seconds": 23.782270696014166,
+  "operator_peak_rss_bytes": 10493952,
+  "child_peak_rss_bytes": 70377472,
+  "finished_utc": "2026-10-26T13:12:20.790729+00:00"
+}

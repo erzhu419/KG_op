@@ -1,5 +1,7 @@
 # Stage103：统一方法、已有证据与后续计划
 
+2026-10-26的投稿交付从[当前主线复现包](../reproducibility/mainline_release/README.md)进入，状态与回执集中见[投稿交付验收](mainline_submission_release_20261026.md)。当前16模块Lean冷构建、94条声明及12项依赖核对已通过；G3真实小例已完成3搜索＋224独立终验，封存行为比对与最终归档以对应回执为准。Stage85/93封存结果、全部失败及恢复费用继续保留，余量不重置。
+
 **统一主线是：来源数据在结构假设下帮助选择初始策略、学习策略之间的响应关系，再用少量目标观测改善查询与可验证部署。** 前端与后端可以放进同一方法和论证；不要求先证明四项prior各自增益或前后端协同交互，才允许整合。当前系统已经接回历史学习前端，整合首先是说明现有系统及证据，不是把三套算法重新串跑。
 
 本文件承接[原始目标](original_goal_and_mainline_contract_20261015.md)、[Stage101论证](mainline_research_argument_20261019.md)、[方法正文](mainline_methods_working_draft_20261019.md)和[实验正文](mainline_experiments_working_draft_20261019.md)。[三版本讨论](../../markdown/GPT_3version_merge.md)作为建议来源；其新实验建议按本文的先后顺序和条件保留，不自动执行。

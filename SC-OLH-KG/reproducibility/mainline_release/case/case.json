@@ -1,0 +1,40 @@
+{
+  "schema": "mainline-small-v1",
+  "kind": "release_acceptance_only",
+  "domain": "InventorySupplyChain",
+  "geometry_task_seed": 2026120001,
+  "stream": "observation_1",
+  "observation_seed": 2026130001,
+  "verification_seed": 2026140001,
+  "problem_kwargs": {
+    "task_geometry_shift": [
+      0.013025539521054876,
+      0.0026624249660980107,
+      -0.013975731800451453
+    ],
+    "task_geometry_radius_scale": 1.0140264328206297
+  },
+  "source_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "source_models_file": "../assets/InventorySupplyChain/source_models.pkl",
+  "native_source_prior_file": "../assets/InventorySupplyChain/native_source_prior.pkl",
+  "resolved_task_file": "resolved_task.json",
+  "initial_rows_file": "initial_rows.json",
+  "shared_neighbors_file": "neighbors.json",
+  "preselection": "First registered Stage85 Inventory geometry and first observation stream; no outcome screening",
+  "initialization_semantics": "Reuse these ten already paid paired raw rows; condition the real AFTER model",
+  "acceptance_semantics": "New release acceptance only: three fresh production search calls and independent old terminal; sealed scientific cohorts unchanged",
+  "provenance": {
+    "stage85_manifest": "performance/manifests/mainline_precision_confirmation_v1.json",
+    "execution_status": "paper_artifacts/mainline_precision_confirmation_v1/execution_status.json",
+    "source_case": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/search/seed_2026120001/legacy_role_after_init_point_only",
+    "search_manifest": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/search_plan.json",
+    "terminal_manifest": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/terminal_plan.json",
+    "old_input_file": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/terminal/seed_2026120001/legacy_role_after_init_point_only/same_policy_distinct_challenger/input.json",
+    "source_models_original": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/source_models.pkl",
+    "native_prior_original": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_source_prior.pkl",
+    "resolved_task_original": "paper_artifacts/mainline_legacy_backend_bridge_v1/source_models/InventorySupplyChain/native_resolved_task.json",
+    "initialization_original": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/search/seed_2026120001/initialization.json",
+    "neighbors_original": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/search/seed_2026120001/neighbors.npz",
+    "neighbor_metadata_original": "paper_artifacts/mainline_precision_confirmation_v1/stream_1/replicate_1/InventorySupplyChain/search/seed_2026120001/neighbors.json"
+  }
+}

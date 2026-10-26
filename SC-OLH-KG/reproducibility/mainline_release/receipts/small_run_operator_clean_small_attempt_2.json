@@ -1,0 +1,66 @@
+{
+  "schema": "mainline-clean-small-operator-v1",
+  "status": "failed",
+  "exit_code": 1,
+  "kind": "release_acceptance_only",
+  "source_commit": "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+  "automatic_retries": 0,
+  "scientific_cohort_overwritten": false,
+  "started_utc": "2026-10-26T13:03:58.121110+00:00",
+  "phases": [
+    {
+      "name": "prepare_case",
+      "status": "complete",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/prepare_mainline_submission_small_case.py",
+        "--project-root",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case",
+        "--source-commit",
+        "d3fac7622462d50c2a048833b91b33bdcccf2dab",
+        "--asset-prefix",
+        "../assets"
+      ],
+      "log_file": "prepare_case.log",
+      "exit_code": 0,
+      "operator_cpu_seconds": 0.0019384640000000009,
+      "child_cpu_seconds": 0.48213199999999995,
+      "wall_seconds": 0.5559534961357713,
+      "cumulative_child_peak_rss_bytes": 34344960
+    },
+    {
+      "name": "build_candidate",
+      "status": "failed",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/package.py",
+        "build",
+        "--root",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster",
+        "--output",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_2/candidate.tar.gz"
+      ],
+      "log_file": "build_candidate.log",
+      "exit_code": 1,
+      "error": "RuntimeError('build_candidate exited 1; see build_candidate.log')",
+      "operator_cpu_seconds": 0.0012351519999999894,
+      "child_cpu_seconds": 3.9581880000000003,
+      "wall_seconds": 6.828346065245569,
+      "cumulative_child_peak_rss_bytes": 62861312
+    }
+  ],
+  "operator_work_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_2",
+  "new_source_calls": 0,
+  "new_source_fits": 0,
+  "original_scientific_budgets_reset": false,
+  "phase": "build_candidate",
+  "error": "RuntimeError('build_candidate exited 1; see build_candidate.log')",
+  "operator_cpu_seconds": 0.0066690489999999825,
+  "child_cpu_seconds": 4.440320000000001,
+  "wall_seconds": 7.389953779056668,
+  "operator_peak_rss_bytes": 9609216,
+  "child_peak_rss_bytes": 62861312,
+  "finished_utc": "2026-10-26T13:04:05.510153+00:00"
+}

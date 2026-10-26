@@ -1,0 +1,152 @@
+{
+  "schema": "mainline-release-acceptance-accounting-v1",
+  "kind": "release_acceptance_only",
+  "original_scientific_reserves_reset": false,
+  "original_scientific_cohorts_overwritten": false,
+  "original_failed_cells_retried": false,
+  "automatic_retries": 0,
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "vram": 0,
+  "preceding_batch": {
+    "scheduler_task": "t211843",
+    "statistics_child_cpu_seconds": 21.497026,
+    "lean_child_cpu_seconds": 184.017409,
+    "lean_proof_build_cpu_seconds_included": 183.634533,
+    "receipts": [
+      "saved_evidence.json",
+      "lean_cold.json"
+    ]
+  },
+  "small_attempts": [
+    {
+      "attempt": 1,
+      "scheduler_task": "t211845",
+      "node": "node001",
+      "status": "failed",
+      "phase": "prepare_case",
+      "automatic_retries": 0,
+      "operator_receipt": "small_run_operator_clean_small_attempt_1.json",
+      "core_receipt": "small_run_failed_attempt1.json",
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "operator_cpu_seconds": 0.0030998209999999887,
+      "child_cpu_seconds": 0.400369,
+      "wall_seconds": 0.6740206331014633,
+      "child_peak_rss_bytes": 30412800,
+      "error": "RuntimeError('prepare_case exited 1; see prepare_case.log')"
+    },
+    {
+      "attempt": 2,
+      "scheduler_task": "t211847",
+      "node": "node001",
+      "status": "failed",
+      "phase": "build_candidate",
+      "automatic_retries": 0,
+      "operator_receipt": "small_run_operator_clean_small_attempt_2.json",
+      "core_receipt": "small_run_failed_attempt2.json",
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "operator_cpu_seconds": 0.0066690489999999825,
+      "child_cpu_seconds": 4.440320000000001,
+      "wall_seconds": 7.389953779056668,
+      "child_peak_rss_bytes": 62861312,
+      "error": "RuntimeError('build_candidate exited 1; see build_candidate.log')"
+    },
+    {
+      "attempt": 3,
+      "scheduler_task": "t211849",
+      "node": "node001",
+      "status": "failed",
+      "phase": "install_dependencies",
+      "automatic_retries": 0,
+      "operator_receipt": "small_run_operator_clean_small_attempt_3.json",
+      "core_receipt": "small_run_failed_attempt3.json",
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 0,
+      "operator_cpu_seconds": 2.632870113,
+      "child_cpu_seconds": 17.943194,
+      "wall_seconds": 23.782270696014166,
+      "child_peak_rss_bytes": 70377472,
+      "error": "RuntimeError('install_dependencies exited 1; see install_dependencies.log')"
+    },
+    {
+      "attempt": 4,
+      "scheduler_task": "t211850",
+      "node": "node001",
+      "status": "failed",
+      "phase": "real_small_case",
+      "automatic_retries": 0,
+      "operator_receipt": "small_run_operator_clean_small_attempt_4.json",
+      "core_receipt": "small_run_failed_attempt4.json",
+      "new_target_search_calls": 0,
+      "new_verification_calls": 0,
+      "source_model_restorations": 2,
+      "operator_cpu_seconds": 2.648105549,
+      "child_cpu_seconds": 35.134108000000005,
+      "wall_seconds": 46.641685088165104,
+      "child_peak_rss_bytes": 117706752,
+      "error": "RuntimeError('Real small-case acceptance exited 1; the attempt is retained without retry')"
+    },
+    {
+      "attempt": 5,
+      "scheduler_task": "t211851",
+      "node": "node001",
+      "status": "complete",
+      "phase": "complete",
+      "automatic_retries": 0,
+      "operator_receipt": "small_run_operator_clean_small_attempt_5.json",
+      "core_receipt": "small_run.json",
+      "new_target_search_calls": 3,
+      "new_verification_calls": 224,
+      "source_model_restorations": 2,
+      "operator_cpu_seconds": 2.6575978719999998,
+      "child_cpu_seconds": 288.24313199999995,
+      "wall_seconds": 303.39936644770205,
+      "child_peak_rss_bytes": 399966208,
+      "error": null
+    }
+  ],
+  "completed_case": {
+    "reused_initial_calls": 10,
+    "new_target_search_calls": 3,
+    "new_verification_calls": 224,
+    "new_physical_target_calls": 227,
+    "logical_total_calls": 237,
+    "logical_cap": 365,
+    "verification_cap": 352
+  },
+  "accounting": "Each attempt operator CPU and its child CPU are disjoint. Do not add nested phase/core/proof CPU again. Preserved failure receipts remain failures; new calls do not replace old cohorts.",
+  "dependency_recovery": {
+    "reused_existing_numpy_scipy_wheels": true,
+    "new_official_http_wheel_bytes_uploaded": 628305,
+    "official_download_index": "https://pypi.org/simple",
+    "old_environments_modified": false
+  },
+  "unknown_costs": {
+    "scheduler_and_transport_cpu_seconds": null,
+    "local_download_cpu_seconds": null,
+    "monetary_charges": null
+  },
+  "retained_transport_failure": {
+    "route": "original configured jump",
+    "exit_code": 255,
+    "scientific_calls": 0,
+    "cpu_seconds": null
+  },
+  "retained_cache_inspection_failure": {
+    "reason": "Initial wheel listing found only NumPy/SciPy; HTTP wheels were supplied separately",
+    "scientific_calls": 0,
+    "cpu_seconds": null
+  },
+  "final_assembly_account": "Final assembly and behavior-check job receipt is supplied alongside the archive; it cannot be embedded in its own completed archive."
+}
