@@ -1,0 +1,54 @@
+{
+  "schema": "mainline-final-archive-assembly-v1",
+  "status": "complete",
+  "exit_code": 0,
+  "publication_commit": "7384343edc88e91788418b0512cc9121525658e6",
+  "automatic_retries": 0,
+  "scientific_calls": 0,
+  "model_restorations": 0,
+  "historical_reserves_reset": false,
+  "phases": [
+    {
+      "name": "reuse_passed_frozen_behavior_parity",
+      "exit_code": 0
+    },
+    {
+      "name": "build",
+      "exit_code": 0
+    },
+    {
+      "name": "verify",
+      "exit_code": 0
+    }
+  ],
+  "archive_name": "current_mainline_review_20261026.tar.gz",
+  "archive_bytes": 82570414,
+  "payload_files": 225,
+  "acceptance_receipts": {
+    "saved_evidence.json": {
+      "status": "complete",
+      "exit_code": null,
+      "accepted": true
+    },
+    "lean_cold.json": {
+      "status": "passed",
+      "exit_code": 0,
+      "accepted": true
+    },
+    "small_run.json": {
+      "status": "complete",
+      "exit_code": 0,
+      "accepted": true
+    },
+    "frozen_behavior_parity.json": {
+      "status": "passed",
+      "exit_code": 0,
+      "accepted": true
+    }
+  },
+  "delivery_ready": true,
+  "operator_cpu_seconds": 1.439565395,
+  "child_cpu_seconds": 15.263299,
+  "wall_seconds": 18.1243182066828,
+  "child_peak_rss_bytes": 62926848
+}
