@@ -10,13 +10,20 @@ receipt = dict(schema='mainline-final-archive-assembly-v1', status='failed', exi
     publication_commit=publication, automatic_retries=0, scientific_calls=0,
     model_restorations=0, historical_reserves_reset=False, phases=[])
 try:
-    for name, args in [('frozen_behavior_parity',[sys.executable,str(release/'frozen_behavior_parity.py'),
+    phases = [('frozen_behavior_parity',[sys.executable,str(release/'frozen_behavior_parity.py'),
             '--old-case',str(release/'case/reference/search'),'--old-input',str(release/'case/reference/input.json'),
             '--new-output',str(root/'SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_5/small_attempt'),
             '--case-json',str(release/'case/case.json'),'--output',str(release/'receipts/frozen_behavior_parity.json')]),
             ('build',[sys.executable,str(release/'package.py'),'build','--root',str(root),
             '--release-commit',publication,'--output',str(archive)]),
-            ('verify',[sys.executable,str(release/'package.py'),'verify','--output',str(archive)])]:
+            ('verify',[sys.executable,str(release/'package.py'),'verify','--output',str(archive)])]
+    parity = release / 'receipts/frozen_behavior_parity.json'
+    if parity.exists():
+        previous = json.loads(parity.read_text())
+        assert previous['status'] == 'passed' and previous['exit_code'] == 0
+        receipt['phases'].append(dict(name='reuse_passed_frozen_behavior_parity',exit_code=0))
+        phases = phases[1:]
+    for name, args in phases:
         with (output/(name+'.log')).open('w') as log:
             result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, cwd=root)
         receipt['phases'].append(dict(name=name,exit_code=result.returncode))

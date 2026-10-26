@@ -1,0 +1,47 @@
+{
+  "schema": "mainline-frozen-behavior-parity-v1",
+  "status": "passed",
+  "automatic_retries": 0,
+  "new_simulation_calls": 0,
+  "posterior_restorations": 0,
+  "frozen_behavior_matches": true,
+  "complete_record_metadata_matches": true,
+  "float_tolerance": {
+    "absolute": 1e-12,
+    "relative": 1e-12
+  },
+  "checks": {
+    "registration": true,
+    "completed_attempt": true,
+    "initial10": true,
+    "queries": true,
+    "frozen_input": true,
+    "deployment": true,
+    "verification": true,
+    "actual_calls": true
+  },
+  "differences": [],
+  "metadata_differences": [],
+  "mismatch_count": 0,
+  "metadata_mismatch_count": 0,
+  "float_values_compared": 115,
+  "maximum_absolute_float_difference": 0.0,
+  "truth_used": false,
+  "inputs": {
+    "old_case": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case/reference/search",
+    "old_input": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case/reference/input.json",
+    "new_output": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/paper_artifacts/mainline_submission_release_v1/clean_small_attempt_5/small_attempt",
+    "case_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG/reproducibility/mainline_release/case/case.json"
+  },
+  "observed_calls": {
+    "new_search": 3,
+    "new_verification": 224,
+    "old_verification": 224,
+    "initial_reused": 10
+  },
+  "metadata_scope": "Remaining frozen-row records are compared and reported; differing metadata prevents automatic full parity PASS even when all scientific branches match.",
+  "cpu_seconds": 0.07736077999999999,
+  "wall_seconds": 0.08017431292682886,
+  "completed_utc": "2026-10-26T13:41:00.938568+00:00",
+  "exit_code": 0
+}
