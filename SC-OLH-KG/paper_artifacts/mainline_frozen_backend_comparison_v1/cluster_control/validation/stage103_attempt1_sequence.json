@@ -1,0 +1,43 @@
+{
+  "status": "complete",
+  "started_utc": "2026-10-19T12:23:18.835255+00:00",
+  "phases": [
+    {
+      "phase": "substitute_checks",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:capture",
+        "-q",
+        "tests/test_mainline_frozen_backend_comparison.py"
+      ],
+      "returncode": 0,
+      "launch_error": null,
+      "child_cpu_seconds": 2.932626,
+      "wall_seconds": 3.6108252378180623
+    },
+    {
+      "phase": "saved_record_audit",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "-m",
+        "performance.analyze_mainline_frozen_backend_comparison",
+        "--checks",
+        "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1/checks.json"
+      ],
+      "returncode": 0,
+      "launch_error": null,
+      "child_cpu_seconds": 3.836308,
+      "wall_seconds": 4.210643112659454
+    }
+  ],
+  "new_simulator_calls": 0,
+  "new_scores": 0,
+  "new_fits": 0,
+  "new_posterior_restorations": 0,
+  "automatic_retries": 0,
+  "updated_utc": "2026-10-19T12:23:26.661837+00:00"
+}

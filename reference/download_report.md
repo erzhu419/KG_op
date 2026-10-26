@@ -1,0 +1,181 @@
+# Reference Download Report
+
+- Source markdown files: GPT_plan.md, GPT_roadmap.md, GPT_answer_1.md, GPT_LLM_API_advice.md
+- Unique normalized URLs/DOIs: 90
+- PDF references downloaded: 53
+- Raw project/source files downloaded: 3
+- HTML landing snapshots saved: 11
+
+## Downloaded PDFs
+
+- `reference/pdfs/pdf_New_results_about_multi-band_uncertainty_in_Robust_Optimization_5865dd034b.pdf` — New results about multi-band uncertainty in Robust Optimization
+- `reference/pdfs/pdf_Stratified_Bayesian_Optimization_57e6d4eeed.pdf` — Stratified Bayesian Optimization
+- `reference/pdfs/pdf_Truncated_Variance_Reduction_A_Unified_Approach_to_Bayesian_Optimization_and_Level-Set_Estimatio_14afef8add.pdf` — Truncated Variance Reduction: A Unified Approach to Bayesian Optimization and Level-Set Estimation
+- `reference/pdfs/pdf_What_Uncertainties_Do_We_Need_in_Bayesian_Deep_Learning_for_Computer_Vision_962147368b.pdf` — What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
+- `reference/pdfs/pdf_1704.03651_Preferential_Bayesian_Optimization_7c9379db05.pdf` — [1704.03651] Preferential Bayesian Optimization
+- `reference/pdfs/pdf_High-Dimensional_Bayesian_Optimization_via_Additive_a62120d14d.pdf` — High-Dimensional Bayesian Optimization via Additive ...
+- `reference/pdfs/pdf_Meta-Learning_Acquisition_Functions_for_Transfer_Learning_in_Bayesian_Optimization_29937bf921.pdf` — Meta-Learning Acquisition Functions for Transfer Learning in Bayesian Optimization
+- `reference/pdfs/pdf_Bayesian_Optimisation_over_Multiple_Continuous_and_c8d89b1771.pdf` — Bayesian Optimisation over Multiple Continuous and ...
+- `reference/pdfs/pdf_Scalable_Global_Optimization_via_Local_Bayesian_Optimization_fea206f503.pdf` — Scalable Global Optimization via Local Bayesian Optimization
+- `reference/pdfs/pdf_High-Dimensional_Bayesian_Optimization_with_Sparse_Axis-Aligned_Subspaces_7297afcdab.pdf` — High-Dimensional Bayesian Optimization with Sparse Axis-Aligned Subspaces
+- `reference/pdfs/pdf_Decision_Transformer_Reinforcement_Learning_via_Sequence_Modeling_37573c9be9.pdf` — Decision Transformer: Reinforcement Learning via Sequence Modeling
+- `reference/pdfs/pdf_Offline_Reinforcement_Learning_as_One_Big_Sequence_b61b8fd9e0.pdf` — Offline Reinforcement Learning as One Big Sequence ...
+- `reference/pdfs/pdf_Risk-averse_Heteroscedastic_Bayesian_Optimization_f2ba47baa0.pdf` — Risk-averse Heteroscedastic Bayesian Optimization
+- `reference/pdfs/pdf_2112.10510_Transformers_Can_Do_Bayesian_Inference_fc3182ceb8.pdf` — [2112.10510] Transformers Can Do Bayesian Inference
+- `reference/pdfs/pdf_A_Survey_on_Transformers_in_Reinforcement_Learning_186e80a0fd.pdf` — A Survey on Transformers in Reinforcement Learning
+- `reference/pdfs/pdf_PFNs4BO_In-Context_Learning_for_Bayesian_Optimization_6179c4e65a.pdf` — PFNs4BO: In-Context Learning for Bayesian Optimization
+- `reference/pdfs/pdf_On_the_development_of_a_practical_Bayesian_optimisation_algorithm_for_expensive_experiments_and_1715674a48.pdf` — On the development of a practical Bayesian optimisation algorithm for expensive experiments and simulations with changing environmental conditions
+- `reference/pdfs/pdf_2402.03921_Large_Language_Models_to_Enhance_Bayesian_Optimization_2938ce06cb.pdf` — [2402.03921] Large Language Models to Enhance Bayesian Optimization
+- `reference/pdfs/pdf_2501.16224_Language-Based_Bayesian_Optimization_Research_Assistant_BORA_b35b8b7a0d.pdf` — [2501.16224] Language-Based Bayesian Optimization Research Assistant (BORA)
+- `reference/pdfs/pdf_Reducing_Aleatoric_and_Epistemic_Uncertainty_through_Multi-modal_Data_Acquisition_14fec4212e.pdf` — Reducing Aleatoric and Epistemic Uncertainty through Multi-modal Data Acquisition
+- `reference/pdfs/pdf_A_tutorial_on_kriging-based_stochastic_simulation_optimization_1b272be799.pdf` — A tutorial on kriging-based stochastic simulation optimization
+- `reference/pdfs/pdf_Sample_Complexity_of_Identifying_the_Nonredundancy_29aad27380.pdf` — Sample Complexity of Identifying the Nonredundancy ...
+- `reference/pdfs/pdf_2606.01730_Evidence-Gated_LLM_Priors_for_Multi-Objective_Bayesian_Optimization_cdcffe3949.pdf` — [2606.01730] Evidence-Gated LLM Priors for Multi-Objective Bayesian Optimization
+- `reference/pdfs/pdf_Mixtures_of_Gaussian_Process_Experts_with_SMC_2_f3bca84b65.pdf` — Mixtures of Gaussian Process Experts with SMC 2
+- `reference/pdfs/pdf_End-to-End_Meta-Bayesian_Optimisation_with_Transformer_47cb817f69.pdf` — End-to-End Meta-Bayesian Optimisation with Transformer ...
+- `reference/pdfs/pdf_OR-LLM-Agent_Automating_Modeling_and_Solving_of_Operations_Research_Optimization_Problem_with_Re_6845c51d17.pdf` — OR-LLM-Agent: Automating Modeling and Solving of Operations Research Optimization Problem with Reasoning Large Language Model
+- `reference/pdfs/pdf_Adaptive_Acquisition_Selection_for_Bayesian_Optimization_with_Large_Language_Models_64a24bd30e.pdf` — Adaptive Acquisition Selection for Bayesian Optimization with Large Language Models
+- `reference/pdfs/pdf_A_tutorial_on_bayesian_optimization_51e5bb57ae.pdf` — A tutorial on bayesian optimization
+- `reference/pdfs/pdf_hetGP.pdf_-_CRAN_15b0f90abf.pdf` — hetGP.pdf - CRAN
+- `reference/pdfs/html_DOI_10.1007_s00158-025-03987-z_43a1b8d6b2.pdf` — DOI 10.1007/s00158-025-03987-z
+- `reference/pdfs/html_DOI_10.1007_s10994-023-06491-x_4bdf7c7906.pdf` — DOI 10.1007/s10994-023-06491-x
+- `reference/pdfs/pdf_Bayesian_Optimization_for_Policy_Search_via_Online-Offline_1170c9baae.pdf` — Bayesian Optimization for Policy Search via Online-Offline ...
+- `reference/pdfs/pdf_Using_Trajectory_Data_to_Improve_Bayesian_Optimization_for_fd9fe2e384.pdf` — Using Trajectory Data to Improve Bayesian Optimization for ...
+- `reference/pdfs/pdf_Pre-trained_Gaussian_Processes_for_Bayesian_Optimization_12f75e56b7.pdf` — Pre-trained Gaussian Processes for Bayesian Optimization
+- `reference/pdfs/pdf_Using_Trajectory_Data_to_Improve_Bayesian_Optimization_for_c3bbb5777c.pdf` — Using Trajectory Data to Improve Bayesian Optimization for ...
+- `reference/pdfs/html_Fast_and_accurate_Bayesian_optimization_with_pre-trained_37480cb7e5.pdf` — Fast and accurate Bayesian optimization with pre-trained ...
+- `reference/pdfs/html_Fast_deep_mixtures_of_Gaussian_process_experts_a9cc2d02b0.pdf` — Fast deep mixtures of Gaussian process experts
+- `reference/pdfs/pdf_Scalable_Global_Optimization_via_Local_Bayesian_21058c803d.pdf` — Scalable Global Optimization via Local Bayesian ...
+- `reference/pdfs/pdf_Offline_Contextual_Bayesian_Optimization_a6fd9ec177.pdf` — Offline Contextual Bayesian Optimization
+- `reference/pdfs/pdf_A_survey_and_benchmark_of_high-dimensional_Bayesian_eba27ebdec.pdf` — A survey and benchmark of high-dimensional Bayesian ...
+- `reference/pdfs/pdf_Preference_Exploration_for_Efficient_Bayesian_Optimization_with_7cbf051733.pdf` — Preference Exploration for Efficient Bayesian Optimization with ...
+- `reference/pdfs/pdf_Learning_Inconsistent_Preferences_with_Gaussian_Processes_ea705a2af2.pdf` — Learning Inconsistent Preferences with Gaussian Processes
+- `reference/pdfs/pdf_High-dimensional_Bayesian_optimization_with_sparse_axis-aligned_ab11ea8c71.pdf` — High-dimensional Bayesian optimization with sparse axis-aligned ...
+- `reference/pdfs/pdf_PFNs4BO_In-Context_Learning_for_Bayesian_Optimization_a10ad5bbf4.pdf` — PFNs4BO: In-Context Learning for Bayesian Optimization
+- `reference/pdfs/pdf_High_Dimensional_Bayesian_Optimisation_and_Bandits_via_ab9f7c1e7b.pdf` — High Dimensional Bayesian Optimisation and Bandits via ...
+- `reference/pdfs/pdf_Decomposition_of_Uncertainty_in_Bayesian_Deep_Learning_for_8cbac66a1b.pdf` — Decomposition of Uncertainty in Bayesian Deep Learning for ...
+- `reference/pdfs/html_Risk-averse_Heteroscedastic_Bayesian_Optimization_2c9e51cf28.pdf` — Risk-averse Heteroscedastic Bayesian Optimization
+- `reference/pdfs/html_Local_policy_search_with_Bayesian_optimization_cfc0f6399e.pdf` — Local policy search with Bayesian optimization
+- `reference/pdfs/pdf_Local_Latent_Space_Bayesian_Optimization_over_Structured_9f745de1b7.pdf` — Local Latent Space Bayesian Optimization over Structured ...
+- `reference/pdfs/pdf_No_Free_Lunch_Theorems_For_Optimization_9ed426f20d.pdf` — No Free Lunch Theorems For Optimization
+- `reference/pdfs/pdf_Safe_Contextual_Bayesian_Optimization_for_Sustainable_3867fdc9b2.pdf` — Safe Contextual Bayesian Optimization for Sustainable ...
+- `reference/pdfs/direct_hetGP_Heteroskedastic_Gaussian_Process_Modeling_and_df80026c96.pdf` — hetGP: Heteroskedastic Gaussian Process Modeling and ...
+- `reference/pdfs/html_Mathematical_discoveries_from_program_search_with_large_language_models_Nature_e3f93b0f89.pdf` — Mathematical discoveries from program search with large language models | Nature
+
+## Non-PDF Snapshots / Metadata
+
+- `reference/html/html_The_one-shot_Knowledge_Gradient_acquisition_function_734c25d2f0.html` — The one-shot Knowledge Gradient acquisition function
+- `reference/html/html_Chance_Constrained_Optimization_-_Uncertainty_Quantification_3cd0be70d1.html` — Chance Constrained Optimization - Uncertainty Quantification
+- `reference/html/html_DOI_10.1023_A_1008349927281_45b67abd8d.html` — DOI 10.1023/A:1008349927281
+- `reference/html/html_Law_of_total_variance_1e04ac9c17.html` — Law of total variance
+- `reference/html/html_GitHub_-_erzhu419_KG_op_GitHub_21323c7380.html` — GitHub - erzhu419/KG_op · GitHub
+- `reference/html/html_The_Price_of_Robustness_e7860fa278.html` — The Price of Robustness
+- `reference/html/html_Simulation_Budget_Allocation_for_Further_Enhancing_the_8b9997b877.html` — Simulation Budget Allocation for Further Enhancing the ...
+- `reference/html/html_Preferential_Multi-Objective_Bayesian_Optimization_749b0cd748.html` — Preferential Multi-Objective Bayesian Optimization
+- `reference/html/html_PRIOR-GUIDED_BAYESIAN_OPTIMIZATION_674a85990e.html` — PRIOR-GUIDED BAYESIAN OPTIMIZATION
+- `reference/raw/raw_raw.githubusercontent.com_058b9dc28d.tex` — raw.githubusercontent.com
+- `reference/raw/raw_raw.githubusercontent.com_6b42cffebf.py` — raw.githubusercontent.com
+- `reference/raw/raw_raw.githubusercontent.com_642bddcbc5.md` — raw.githubusercontent.com
+- `reference/html/html_reference_afd712132b.html` — 什么是自监督学习？
+- `reference/html/html_What_is_Data_Leakage_in_Machine_Learning_bc51a9e853.html` — What is Data Leakage in Machine Learning?
+
+## PDF Attempts That Need Manual Follow-Up
+
+- DOI 10.1023/A:1008349927281: `not_pdf` from https://link.springer.com/article/10.1023/A:1008349927281 — text/html; charset=utf-8
+- Law of total variance: `failed` from http://projects.iq.harvard.edu/files/stat110/files/final_review.pdf — 403 Client Error: Forbidden for url: https://projects.iq.harvard.edu/files/stat110/files/final_review.pdf
+- GitHub - erzhu419/KG_op · GitHub: `not_pdf` from https://github.com/erzhu419/KG_op/blob/main/A%20stochastic%20simulation-based%20optimization%20method%20for%20equitable%20and%20efficient%20network-wide%20signal%20timing%20under%20uncertainties.pdf — text/html; charset=utf-8
+- Simulation Budget Allocation for Further Enhancing the ...: `not_pdf` from https://link.springer.com/article/10.1023/A:1008349927281 — text/html; charset=utf-8
+- Preferential Multi-Objective Bayesian Optimization: `not_pdf` from https://openreview.net/challenge?redirect=%2Fpdf%3Fid%3DmjsoESaWDH — text/html; charset=utf-8
+
+## All Normalized References
+
+- The one-shot Knowledge Gradient acquisition function — https://archive.botorch.org/v/0.3.2/tutorials/one_shot_kg
+- New results about multi-band uncertainty in Robust Optimization — https://arxiv.org/abs/1208.6322
+- Stratified Bayesian Optimization — https://arxiv.org/abs/1602.02338
+- Truncated Variance Reduction: A Unified Approach to Bayesian Optimization and Level-Set Estimation — https://arxiv.org/abs/1610.07379
+- What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision? — https://arxiv.org/abs/1703.04977
+- [1704.03651] Preferential Bayesian Optimization — https://arxiv.org/abs/1704.03651
+- High-Dimensional Bayesian Optimization via Additive ... — https://arxiv.org/abs/1802.07028
+- Meta-Learning Acquisition Functions for Transfer Learning in Bayesian Optimization — https://arxiv.org/abs/1904.02642
+- Bayesian Optimisation over Multiple Continuous and ... — https://arxiv.org/abs/1906.08878
+- Scalable Global Optimization via Local Bayesian Optimization — https://arxiv.org/abs/1910.01739
+- High-Dimensional Bayesian Optimization with Sparse Axis-Aligned Subspaces — https://arxiv.org/abs/2103.00349
+- Decision Transformer: Reinforcement Learning via Sequence Modeling — https://arxiv.org/abs/2106.01345
+- Offline Reinforcement Learning as One Big Sequence ... — https://arxiv.org/abs/2106.02039
+- Risk-averse Heteroscedastic Bayesian Optimization — https://arxiv.org/abs/2111.03637
+- [2112.10510] Transformers Can Do Bayesian Inference — https://arxiv.org/abs/2112.10510
+- A Survey on Transformers in Reinforcement Learning — https://arxiv.org/abs/2301.03044
+- PFNs4BO: In-Context Learning for Bayesian Optimization — https://arxiv.org/abs/2305.17535
+- On the development of a practical Bayesian optimisation algorithm for expensive experiments and simulations with changing environmental conditions — https://arxiv.org/abs/2402.03006
+- [2402.03921] Large Language Models to Enhance Bayesian Optimization — https://arxiv.org/abs/2402.03921
+- [2501.16224] Language-Based Bayesian Optimization Research Assistant (BORA) — https://arxiv.org/abs/2501.16224
+- Reducing Aleatoric and Epistemic Uncertainty through Multi-modal Data Acquisition — https://arxiv.org/abs/2501.18268
+- A tutorial on kriging-based stochastic simulation optimization — https://arxiv.org/abs/2502.05216
+- Sample Complexity of Identifying the Nonredundancy ... — https://arxiv.org/abs/2505.05014
+- [2606.01730] Evidence-Gated LLM Priors for Multi-Objective Bayesian Optimization — https://arxiv.org/abs/2606.01730
+- Mixtures of Gaussian Process Experts with SMC 2 — https://arxiv.org/html/2208.12830v3
+- End-to-End Meta-Bayesian Optimisation with Transformer ... — https://arxiv.org/html/2305.15930v4
+- OR-LLM-Agent: Automating Modeling and Solving of Operations Research Optimization Problem with Reasoning Large Language Model — https://arxiv.org/html/2503.10009v1
+- Adaptive Acquisition Selection for Bayesian Optimization with Large Language Models — https://arxiv.org/html/2602.07904v1
+- A tutorial on bayesian optimization — https://arxiv.org/pdf/1807.02811
+- hetGP.pdf - CRAN — https://cran.r-project.org/web/packages/hetGP/hetGP.pdf
+- Chance Constrained Optimization - Uncertainty Quantification — https://dictionary.helmholtz-uq.de/content/chance_constraint_optimization.html
+- Stochastic Kriging for Simulation Metamodeling — https://dl.acm.org/doi/abs/10.1287/opre.1090.0754
+- DOI 10.1007/s00158-025-03987-z — https://doi.org/10.1007/s00158-025-03987-z
+- DOI 10.1007/s10994-023-06491-x — https://doi.org/10.1007/s10994-023-06491-x
+- DOI 10.1023/A:1008349927281 — https://doi.org/10.1023/A:1008349927281
+- DOI 10.1080/0305215X.2022.2145604 — https://doi.org/10.1080/0305215X.2022.2145604
+- DOI 10.1080/10618600.2018.1458625 — https://doi.org/10.1080/10618600.2018.1458625
+- DOI 10.1137/070693424 — https://doi.org/10.1137/070693424
+- DOI 10.1137/100801275 — https://doi.org/10.1137/100801275
+- DOI 10.1287/ijoc.1080.0314 — https://doi.org/10.1287/ijoc.1080.0314
+- DOI 10.1287/ijoc.2023.0130 — https://doi.org/10.1287/ijoc.2023.0130
+- DOI 10.1287/opre.1090.0754 — https://doi.org/10.1287/opre.1090.0754
+- DOI 10.1287/trsc.2024.0840 — https://doi.org/10.1287/trsc.2024.0840
+- Law of total variance — https://en.wikipedia.org/wiki/Law_of_total_variance
+- A Knowledge-Gradient Policy for Sequential Information ... — https://epubs.siam.org/doi/10.1137/070693424
+- The Correlated Knowledge Gradient for Simulation ... — https://epubs.siam.org/doi/10.1137/100801275
+- GitHub - erzhu419/KG_op · GitHub — https://github.com/erzhu419/KG_op
+- The Price of Robustness — https://ideas.repec.org/a/inm/oropre/v52y2004i1p35-53.html
+- Bayesian Optimization for Policy Search via Online-Offline ... — https://jmlr.csail.mit.edu/papers/volume20/18-225/18-225.pdf
+- Using Trajectory Data to Improve Bayesian Optimization for ... — https://jmlr.org/papers/v15/wilson14a.html
+- Pre-trained Gaussian Processes for Bayesian Optimization — https://jmlr.org/papers/v25/23-0269.html
+- Using Trajectory Data to Improve Bayesian Optimization for ... — https://jmlr.org/papers/volume15/wilson14a/wilson14a.pdf
+- Fast and accurate Bayesian optimization with pre-trained ... — https://link.springer.com/article/10.1007/s00158-025-03987-z
+- Fast deep mixtures of Gaussian process experts — https://link.springer.com/article/10.1007/s10994-023-06491-x
+- Simulation Budget Allocation for Further Enhancing the ... — https://link.springer.com/article/10.1023/A%3A1008349927281
+- Preferential Multi-Objective Bayesian Optimization — https://openreview.net/forum?id=mjsoESaWDH
+- PRIOR-GUIDED BAYESIAN OPTIMIZATION — https://openreview.net/pdf?id=4SZ9Ft--pDl
+- Scalable Global Optimization via Local Bayesian ... — https://papers.neurips.cc/paper/8788-scalable-global-optimization-via-local-bayesian-optimization.pdf
+- Offline Contextual Bayesian Optimization — https://papers.nips.cc/paper/2019/file/7876acb66640bad41f1e1371ef30c180-Paper.pdf
+- A survey and benchmark of high-dimensional Bayesian ... — https://papers.nips.cc/paper_files/paper/2024/file/fe0007fcfd707673660ec0f9014bc48e-Paper-Datasets_and_Benchmarks_Track.pdf
+- Preference Exploration for Efficient Bayesian Optimization with ... — https://proceedings.mlr.press/v151/jerry-lin22a.html
+- Learning Inconsistent Preferences with Gaussian Processes — https://proceedings.mlr.press/v151/lun-chau22a/lun-chau22a.pdf
+- High-dimensional Bayesian optimization with sparse axis-aligned ... — https://proceedings.mlr.press/v161/eriksson21a.html
+- PFNs4BO: In-Context Learning for Bayesian Optimization — https://proceedings.mlr.press/v202/muller23a/muller23a.pdf
+- High Dimensional Bayesian Optimisation and Bandits via ... — https://proceedings.mlr.press/v37/kandasamy15.pdf
+- Decomposition of Uncertainty in Bayesian Deep Learning for ... — https://proceedings.mlr.press/v80/depeweg18a.html
+- Risk-averse Heteroscedastic Bayesian Optimization — https://proceedings.neurips.cc/paper/2021/hash/8f97d1d7e02158a83ceb2c14ff5372cd-Abstract.html
+- Local policy search with Bayesian optimization — https://proceedings.neurips.cc/paper/2021/hash/ad0f7a25211abc3889cb0f420c85e671-Abstract.html
+- Local Latent Space Bayesian Optimization over Structured ... — https://proceedings.neurips.cc/paper_files/paper/2022/file/ded98d28f82342a39f371c013dfb3058-Paper-Conference.pdf
+- The Knowledge-Gradient Policy for Correlated Normal Beliefs — https://pubsonline.informs.org/doi/10.1287/ijoc.1080.0314
+- Machine Learning-Assisted Stochastic Kriging Metamodel for ... — https://pubsonline.informs.org/doi/10.1287/ijoc.2023.0130
+- Stochastic Kriging for Simulation Metamodeling - PubsOnLine — https://pubsonline.informs.org/doi/10.1287/opre.1090.0754
+- A Heteroscedastic Robust Bayesian Optimization Method for ... — https://pubsonline.informs.org/doi/abs/10.1287/trsc.2024.0840
+- raw.githubusercontent.com — https://raw.githubusercontent.com/erzhu419/KG_op/main/Final_Submission/Final_Revised_Manuscript_OR.tex
+- raw.githubusercontent.com — https://raw.githubusercontent.com/erzhu419/KG_op/main/Final_Submission/GPR_KG_Code/gpr_kg.py
+- raw.githubusercontent.com — https://raw.githubusercontent.com/erzhu419/KG_op/main/Final_Submission/README_REPRODUCE.md
+- No Free Lunch Theorems For Optimization — https://www.cs.ubc.ca/~hutter/earg/papers07/00585893.pdf
+- 什么是自监督学习？ — https://www.ibm.com/cn-zh/think/topics/self-supervised-learning
+- What is Data Leakage in Machine Learning? — https://www.ibm.com/think/topics/data-leakage-machine-learning
+- Safe Contextual Bayesian Optimization for Sustainable ... — https://www.ijcai.org/proceedings/2019/0811.pdf
+- hetGP: Heteroskedastic Gaussian Process Modeling and ... — https://www.jstatsoft.org/article/view/v098i13/1430
+- Mathematical discoveries from program search with large language models | Nature — https://www.nature.com/articles/s41586-023-06924-6
+- The Knowledge-Gradient Policy for Correlated Normal ... — https://www.researchgate.net/publication/220668798_The_Knowledge-Gradient_Policy_for_Correlated_Normal_Beliefs
+- Gaussian Process Regression with Heteroscedastic or Non ... — https://www.researchgate.net/publication/233982342_Gaussian_Process_Regression_with_Heteroscedastic_or_Non-GaussianResiduals
+- Self-supervised contrastive representation learning for ... — https://www.sciencedirect.com/science/article/abs/pii/S0167739X23002376
+- Spatial variability-based sample size allocation for stratified ... — https://www.sciencedirect.com/science/article/abs/pii/S0341816221003672
+- Comparison of Kriging-based algorithms for simulation ... — https://www.sciencedirect.com/science/article/abs/pii/S037722171730070X
+- Violation-aware contextual Bayesian optimization for ... — https://www.sciencedirect.com/science/article/abs/pii/S0959152424000520
+- Practical Heteroscedastic Gaussian Process Modeling for ... — https://www.tandfonline.com/doi/abs/10.1080/10618600.2018.1458625
+- Using the knowledge gradient acquisition function in ... — https://www.tandfonline.com/doi/full/10.1080/0305215X.2022.2145604

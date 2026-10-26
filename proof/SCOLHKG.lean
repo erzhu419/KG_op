@@ -105,3 +105,4 @@ import SCOLHKG.Real.TransferGeneralization
 import SCOLHKG.Real.StratifiedExpertKG
 import SCOLHKG.Scalarization
 import SCOLHKG.Variance
+import SCOLHKG.CurrentMainlineProofInterface

@@ -1,0 +1,68 @@
+# GPT_meta_assumption Repo Manifest
+
+- `XZT008__Standard-GP-is-all-you-need-for-HDBO`
+  - paper: Standard GP HDBO
+  - url: https://github.com/XZT008/Standard-GP-is-all-you-need-for-HDBO.git
+  - status: cloned
+  - official: official/author
+  - path: repo/meta_assumption/clones/XZT008__Standard-GP-is-all-you-need-for-HDBO
+- `amzn__orthogonal-additive-gaussian-processes`
+  - paper: Additive Gaussian Processes Revisited / OAK
+  - url: https://github.com/amzn/orthogonal-additive-gaussian-processes.git
+  - status: cloned
+  - official: official
+  - path: repo/meta_assumption/clones/amzn__orthogonal-additive-gaussian-processes
+- `VirgiAgl__CausalBayesianOptimization`
+  - paper: Causal Bayesian Optimization
+  - url: https://github.com/VirgiAgl/CausalBayesianOptimization.git
+  - status: cloned
+  - official: official/author
+  - path: repo/meta_assumption/clones/VirgiAgl__CausalBayesianOptimization
+- `Fsoft-AIC__LassoBO`
+  - paper: High Dimensional BO using Lasso Variable Selection
+  - url: https://github.com/Fsoft-AIC/LassoBO.git
+  - status: cloned
+  - official: official/software_link
+  - path: repo/meta_assumption/clones/Fsoft-AIC__LassoBO
+- `gtboauthors__gtbo`
+  - paper: Group Testing Bayesian Optimization
+  - url: https://github.com/gtboauthors/gtbo.git
+  - status: cloned
+  - official: official/from_paper
+  - path: repo/meta_assumption/clones/gtboauthors__gtbo
+- `nasimrahaman__SpectralBias`
+  - paper: On the Spectral Bias of Neural Networks
+  - url: https://github.com/nasimrahaman/SpectralBias.git
+  - status: cloned
+  - official: official/author
+  - path: repo/meta_assumption/clones/nasimrahaman__SpectralBias
+- `google-research__spectral_bias`
+  - paper: Spectral Bias in Practice
+  - url: https://github.com/google-research/google-research.git
+  - status: cloned
+  - official: community_or_official_google_research_subdir
+  - path: repo/meta_assumption/clones/google-research__spectral_bias
+- `YyyyyyiZ__SMKBO`
+  - paper: Spectral Mixture Kernels for Bayesian Optimization
+  - url: https://github.com/YyyyyyiZ/SMKBO.git
+  - status: cloned
+  - official: likely_author_github_search
+  - path: repo/meta_assumption/clones/YyyyyyiZ__SMKBO
+- `dynamicslab__pysindy`
+  - paper: PySINDy / SINDy reference
+  - url: https://github.com/dynamicslab/pysindy.git
+  - status: cloned
+  - official: official
+  - path: repo/meta_assumption/clones/dynamicslab__pysindy
+- `CristianLopez85__WmSINDy`
+  - paper: Weak-form modified SINDy
+  - url: https://github.com/CristianLopez85/WmSINDy.git
+  - status: cloned
+  - official: official/from_sciencedirect
+  - path: repo/meta_assumption/clones/CristianLopez85__WmSINDy
+- `aandrewschwartzz__causal-bayesian-optimization`
+  - paper: CBO with Unknown Graphs
+  - url: https://github.com/aandrewschwartzz/causal-bayesian-optimization.git
+  - status: cloned
+  - official: unofficial_github_search
+  - path: repo/meta_assumption/clones/aandrewschwartzz__causal-bayesian-optimization

@@ -1,0 +1,889 @@
+{
+  "status": "passed",
+  "date": "2026-10-20",
+  "timezone": "Asia/Shanghai",
+  "recorded_at_utc": "2026-10-20T00:05:39.885050+00:00",
+  "interface": "proof/SCOLHKG/CurrentMainlineProofInterface.lean",
+  "lean_version": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
+  "mathlib_revision": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+  "reference_task": "t195341",
+  "checked_project_modules": [
+    "SCOLHKG.Real.GPRUpdate",
+    "SCOLHKG.Real.ConditionalVariance",
+    "SCOLHKG.Real.KG",
+    "SCOLHKG.Real.AdditiveApproxKG",
+    "SCOLHKG.Real.ExactKGImplementation",
+    "SCOLHKG.Real.TaskPosterior",
+    "SCOLHKG.Real.CurrentPropagation",
+    "SCOLHKG.Real.CurrentCovariance",
+    "SCOLHKG.Real.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.CurrentTerminalGate",
+    "SCOLHKG.Real.CurrentRepresentationStability",
+    "SCOLHKG.Real.CurrentQueryStability",
+    "SCOLHKG.Real.CurrentSourceKernel",
+    "SCOLHKG.Real.CurrentAffineMismatch",
+    "SCOLHKG.CurrentMainlineProofInterface"
+  ],
+  "new_modules": {
+    "proof/SCOLHKG/Real/CurrentSourceKernel.lean": {
+      "theorems": [
+        "zero_covariance_psd",
+        "add_covariance_psd",
+        "nonnegative_scale_covariance_psd",
+        "finite_sum_covariance_psd",
+        "projected_quadratic_form",
+        "projected_covariance_psd",
+        "outer_quadratic_form",
+        "outer_covariance_psd",
+        "mixture_covariance_psd",
+        "white_quadratic_form",
+        "white_covariance_psd",
+        "physical_white_eq_index_white",
+        "physical_white_covariance_psd",
+        "source_covariance_psd",
+        "projected_mean_restriction",
+        "projected_covariance_restriction",
+        "pullback_covariance_psd",
+        "source_covariance_restriction",
+        "block_quadratic_form",
+        "block_covariance_psd",
+        "role_replacement_covariance_psd"
+      ]
+    },
+    "proof/SCOLHKG/Real/CurrentAffineMismatch.lean": {
+      "theorems": [
+        "quadratic_difference_expansion",
+        "normal_equation_cross",
+        "affine_risk_completed_square",
+        "relationship_mismatch_nonnegative",
+        "centered_integrable",
+        "centered_integral_zero",
+        "linearCombination_integrable",
+        "integral_linearCombination",
+        "linearCombination_square_moments",
+        "linearCombination_cross_moments",
+        "centered_residual_moments",
+        "centered_scalar_bias",
+        "covariance_symmetric",
+        "covariance_psd",
+        "fixed_affine_mse_decomposition"
+      ]
+    }
+  },
+  "new_theorem_count": 36,
+  "cumulative_current_theorem_count": 94,
+  "headline_axiom_dependencies": {
+    "SCOLHKG.Real.CurrentPropagation.evidence_local_completion_contrast_decomposition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentCovariance.fixed_correlation_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Measure.current_certified_return_or_false_improvement_five_percent": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability.bilinear_kernel_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability.radial_normalization_coordinate_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability.feasible_branch_query_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability.minimum_violation_query_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel.source_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel.mixture_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentSourceKernel.role_replacement_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentAffineMismatch.covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentAffineMismatch.fixed_affine_mse_decomposition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "entire_legacy_library_rebuilt": false,
+  "scope": [
+    "Finite feature covariance projection, nonnegative white discrepancies, head blocks, source/role replacement and between-component mixture PSD.",
+    "Mean and covariance restriction identities; physical-policy white terms agree with index diagonals on the distinct-policy pools enforced by the implementation.",
+    "Fixed affine risk identity derived from actual Bochner integrals on any probability space, using explicit first and centered mixed second moments and aStar S = c.",
+    "The covariance of these centered observations is PSD by the integral of a square; relationship mismatch is consequently nonnegative."
+  ],
+  "external_assumptions": [
+    "Coefficient and task covariances are given symmetric PSD inputs; white variances and weights are nonnegative. A probability-mixture interpretation additionally requires normalized weights and their weighted mean.",
+    "The physical-policy index is injective where a white term is implemented by the index identity matrix.",
+    "Source affine coefficients and centers are fixed conditional on source assets. The covariance, cross moments and expectations in the MSE identity belong to the specified target law.",
+    "The MSE theorem assumes integrable U and Y, integrable centered pairwise products and target square, and the reference normal equations; it does not assume Gaussianity."
+  ],
+  "remaining_boundaries": [
+    "Finite Gaussian law construction, the Gaussian regression/sampling pivots and noncentral-t laws are not newly formalized here.",
+    "Floating-point source-fit validity, numerical moments/quantiles, reconstruction/encoder/loading error constants and nonlinear AFTER performance are outside these two modules.",
+    "The inverse-matrix expression aStar = c S^-1 remains the mathematical specialization when S is invertible; the Lean risk identity uses its normal equations directly."
+  ],
+  "dependency_reuse": {
+    "previous_mathlib_cache_files": 1942,
+    "required_mathlib_cache_files": 2435,
+    "additional_cache_files": 493,
+    "additional_cache_bytes": 26030038,
+    "new_external_leaf": "Mathlib.MeasureTheory.Integral.Bochner.Basic",
+    "source_kernel_external_leaf_already_cached": "Mathlib.Data.Fintype.BigOperators",
+    "toolchain_package_sources_and_locks_changed": false,
+    "cache_transfer": {
+      "config": "/tmp/kg_lean_source_mismatch_20261020/cache_delta.cfg",
+      "files": 493,
+      "status": "passed",
+      "download_bytes": 26030038,
+      "streamed_files": 493,
+      "automatic_retries": 0,
+      "local_lean_executed": false,
+      "payloads_saved_locally": false,
+      "server_cache": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache",
+      "log": "/tmp/kg_lean_source_mismatch_20261020/cache_transfer_20261019T234752.log",
+      "receiver_returncode": 0,
+      "wall_seconds": 52.701968286011834,
+      "client_cpu_seconds": 1.45388077,
+      "client_children_cpu_seconds": 0.039163
+    },
+    "final_reused_bootstrap_modules": [
+      "Batteries.Data.Array.Match",
+      "Batteries.Data.String.Basic",
+      "Batteries.Data.String.Matcher",
+      "Cache.Lean",
+      "Batteries.Tactic.OpenPrivate",
+      "Cache.IO",
+      "Cache.Hashing",
+      "Cache.Init",
+      "Cache.Requests",
+      "Cache.Main"
+    ],
+    "final_reused_proof_modules": [
+      "SCOLHKG.Real.GPRUpdate",
+      "SCOLHKG.Real.ConditionalVariance",
+      "SCOLHKG.Real.KG",
+      "SCOLHKG.Real.AdditiveApproxKG",
+      "SCOLHKG.Real.ExactKGImplementation",
+      "SCOLHKG.Real.TaskPosterior",
+      "SCOLHKG.Real.CurrentPropagation",
+      "SCOLHKG.Real.CurrentCovariance",
+      "SCOLHKG.Real.GaussianReplicationCertificate",
+      "SCOLHKG.Measure.GaussianReplicationCertificate",
+      "SCOLHKG.Measure.CurrentTerminalGate",
+      "SCOLHKG.Real.CurrentRepresentationStability",
+      "SCOLHKG.Real.CurrentQueryStability",
+      "SCOLHKG.Real.CurrentSourceKernel"
+    ],
+    "final_compiled_proof_modules": [
+      "SCOLHKG.Real.CurrentAffineMismatch",
+      "SCOLHKG.CurrentMainlineProofInterface"
+    ],
+    "source_deployment": "Only changed source files uploaded using rsync --no-times --ignore-times; unchanged source and successful olean modules remained in place."
+  },
+  "scheduler": {
+    "signature_prefix": "KG_op/source_mismatch_lean_20261020/",
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "cpu_per_task": 1,
+    "vram": 0,
+    "no_auto_requeue": true,
+    "manual_scheduler_execution_count": 4,
+    "cache_plan_count": 1,
+    "manual_proof_attempt_count": 3,
+    "failed_proof_attempt_count": 2,
+    "automatic_retry_count": 0,
+    "task_snapshot": {
+      "recorded_at_utc": "2026-10-20T00:07:28.273499+00:00",
+      "tasks": [
+        {
+          "id": "t195325",
+          "status": "done",
+          "signature": "KG_op/source_mismatch_lean_20261020/cache-plan1",
+          "node": "node001",
+          "no_auto_requeue": true,
+          "parent_id": null,
+          "retry_count": null,
+          "log_path": "/tmp/sched_t195325.log",
+          "last_block_reason": null,
+          "started_at": 1792453603.6437666,
+          "finished_at": 1792453592.0,
+          "exit_code": 0
+        },
+        {
+          "id": "t195326",
+          "status": "failed",
+          "signature": "KG_op/source_mismatch_lean_20261020/proof-check1",
+          "node": "node001",
+          "no_auto_requeue": true,
+          "parent_id": null,
+          "retry_count": null,
+          "log_path": "/tmp/sched_t195326.log",
+          "last_block_reason": "not auto-requeued: disabled for this task by --no-auto-requeue",
+          "started_at": 1792453857.8867857,
+          "finished_at": 1792453867.0,
+          "exit_code": 1
+        },
+        {
+          "id": "t195328",
+          "status": "failed",
+          "signature": "KG_op/source_mismatch_lean_20261020/proof-check2",
+          "node": "node001",
+          "no_auto_requeue": true,
+          "parent_id": null,
+          "retry_count": null,
+          "log_path": "/tmp/sched_t195328.log",
+          "last_block_reason": "not auto-requeued: disabled for this task by --no-auto-requeue",
+          "started_at": 1792454123.3428338,
+          "finished_at": 1792454129.0,
+          "exit_code": 1
+        },
+        {
+          "id": "t195341",
+          "status": "done",
+          "signature": "KG_op/source_mismatch_lean_20261020/proof-check3",
+          "node": "node005",
+          "no_auto_requeue": true,
+          "parent_id": null,
+          "retry_count": null,
+          "log_path": "/tmp/sched_t195341.log",
+          "last_block_reason": null,
+          "started_at": 1792454378.306363,
+          "finished_at": 1792454572.0,
+          "exit_code": 0
+        }
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "task_id": "t195325",
+      "role": "cache_plan",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T234626.645952Z_178135",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T234626.645952Z_178135/00_lean_version.log",
+            "wall_seconds": 0.06113395467400551,
+            "cpu_seconds": 0.05919200000000001
+          },
+          {
+            "name": "mathlib_cache_plan",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T234626.645952Z_178135/CachePlan.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T234626.645952Z_178135/01_mathlib_cache_plan.log",
+            "wall_seconds": 5.288871844299138,
+            "cpu_seconds": 3.515959
+          }
+        ],
+        "status": "passed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "cache-plan",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 5.373138561844826,
+        "runner_cpu_seconds": 0.015407723999999998,
+        "child_cpu_seconds": 3.575151,
+        "environment_cpu_seconds": 3.575151,
+        "proof_check_cpu_seconds": 0,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "external_roots": [
+          "Mathlib.Algebra.BigOperators.Field",
+          "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+          "Mathlib.Analysis.Real.Sqrt",
+          "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+          "Mathlib.Data.Fintype.Basic",
+          "Mathlib.Data.Real.Basic",
+          "Mathlib.MeasureTheory.Integral.Bochner.Basic",
+          "Mathlib.MeasureTheory.Measure.Real",
+          "Mathlib.Tactic.Common",
+          "Mathlib.Tactic.FieldSimp",
+          "Mathlib.Tactic.Finiteness",
+          "Mathlib.Tactic.GCongr",
+          "Mathlib.Tactic.Linarith",
+          "Mathlib.Tactic.NormNum",
+          "Mathlib.Tactic.Positivity",
+          "Mathlib.Tactic.Ring"
+        ],
+        "cache_download_config": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache_download.cfg"
+      }
+    },
+    {
+      "task_id": "t195326",
+      "role": "proof_check",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235041.452628Z_179262",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235041.452628Z_179262/00_lean_version.log",
+            "wall_seconds": 0.05980856344103813,
+            "cpu_seconds": 0.05778
+          },
+          {
+            "name": "mathlib_cache_unpack",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/Cache/Main.lean",
+              "unpack"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235041.452628Z_179262/01_mathlib_cache_unpack.log",
+            "wall_seconds": 19.523720256984234,
+            "cpu_seconds": 12.226137999999999
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentSourceKernel",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentSourceKernel.olean",
+              "SCOLHKG/Real/CurrentSourceKernel.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 1,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235041.452628Z_179262/02_SCOLHKG.Real.CurrentSourceKernel.log",
+            "wall_seconds": 6.322062112390995,
+            "cpu_seconds": 4.7298100000000005
+          }
+        ],
+        "status": "failed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "proof-check",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 25.935640641488135,
+        "runner_cpu_seconds": 0.020039577000000003,
+        "child_cpu_seconds": 17.013728,
+        "environment_cpu_seconds": 12.283917999999998,
+        "proof_check_cpu_seconds": 4.7298100000000005,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "proof_check_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.Real.CurrentSourceKernel",
+          "SCOLHKG.Real.CurrentAffineMismatch",
+          "SCOLHKG.CurrentMainlineProofInterface"
+        ],
+        "reused_proof_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability"
+        ],
+        "error": "SCOLHKG.Real.CurrentSourceKernel returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235041.452628Z_179262/02_SCOLHKG.Real.CurrentSourceKernel.log"
+      }
+    },
+    {
+      "task_id": "t195328",
+      "role": "proof_check",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235507.429141Z_180739",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235507.429141Z_180739/00_lean_version.log",
+            "wall_seconds": 0.061747471801936626,
+            "cpu_seconds": 0.05941299999999999
+          },
+          {
+            "name": "mathlib_cache_unpack",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/Cache/Main.lean",
+              "unpack"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235507.429141Z_180739/01_mathlib_cache_unpack.log",
+            "wall_seconds": 7.786209959536791,
+            "cpu_seconds": 5.1653839999999995
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentSourceKernel",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentSourceKernel.olean",
+              "SCOLHKG/Real/CurrentSourceKernel.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235507.429141Z_180739/02_SCOLHKG.Real.CurrentSourceKernel.log",
+            "wall_seconds": 6.3814642475917935,
+            "cpu_seconds": 4.848479
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentAffineMismatch",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentAffineMismatch.olean",
+              "SCOLHKG/Real/CurrentAffineMismatch.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 1,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235507.429141Z_180739/03_SCOLHKG.Real.CurrentAffineMismatch.log",
+            "wall_seconds": 7.746476621367037,
+            "cpu_seconds": 4.481202
+          }
+        ],
+        "status": "failed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "proof-check",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 22.006841521710157,
+        "runner_cpu_seconds": 0.020594285000000004,
+        "child_cpu_seconds": 14.554478,
+        "environment_cpu_seconds": 5.224797,
+        "proof_check_cpu_seconds": 9.329681,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "proof_check_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.Real.CurrentSourceKernel",
+          "SCOLHKG.Real.CurrentAffineMismatch",
+          "SCOLHKG.CurrentMainlineProofInterface"
+        ],
+        "reused_proof_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability"
+        ],
+        "error": "SCOLHKG.Real.CurrentAffineMismatch returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235507.429141Z_180739/03_SCOLHKG.Real.CurrentAffineMismatch.log"
+      }
+    },
+    {
+      "task_id": "t195341",
+      "role": "proof_check",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235921.586211Z_331667",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235921.586211Z_331667/00_lean_version.log",
+            "wall_seconds": 1.7456471044570208,
+            "cpu_seconds": 0.134438
+          },
+          {
+            "name": "mathlib_cache_unpack",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/Cache/Main.lean",
+              "unpack"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235921.586211Z_331667/01_mathlib_cache_unpack.log",
+            "wall_seconds": 110.34442333970219,
+            "cpu_seconds": 8.645852000000001
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentAffineMismatch",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentAffineMismatch.olean",
+              "SCOLHKG/Real/CurrentAffineMismatch.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235921.586211Z_331667/02_SCOLHKG.Real.CurrentAffineMismatch.log",
+            "wall_seconds": 91.75803680159152,
+            "cpu_seconds": 9.608567999999998
+          },
+          {
+            "name": "SCOLHKG.CurrentMainlineProofInterface",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/CurrentMainlineProofInterface.olean",
+              "SCOLHKG/CurrentMainlineProofInterface.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T235921.586211Z_331667/03_SCOLHKG.CurrentMainlineProofInterface.log",
+            "wall_seconds": 6.962582565844059,
+            "cpu_seconds": 4.690666
+          }
+        ],
+        "status": "passed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "proof-check",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 211.01061484310776,
+        "runner_cpu_seconds": 0.042469073999999996,
+        "child_cpu_seconds": 23.079524,
+        "environment_cpu_seconds": 8.78029,
+        "proof_check_cpu_seconds": 14.299233999999998,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "proof_check_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.Real.CurrentSourceKernel",
+          "SCOLHKG.Real.CurrentAffineMismatch",
+          "SCOLHKG.CurrentMainlineProofInterface"
+        ],
+        "reused_proof_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.Real.CurrentSourceKernel"
+        ]
+      }
+    }
+  ],
+  "accounting": {
+    "environment_cpu_seconds": 29.864155999999998,
+    "proof_check_cpu_seconds": 28.358725,
+    "runner_cpu_seconds": 0.09851066,
+    "measured_build_cpu_seconds": 58.32139166,
+    "cache_plan_cpu_seconds": 3.590558724,
+    "failed_proof_attempt_cpu_seconds": 31.608839861999996,
+    "successful_proof_attempt_cpu_seconds": 23.121993074,
+    "automatic_retry_cpu_seconds": 0,
+    "cache_transfer_client_cpu_seconds": 1.49304377,
+    "source_transfer_client_and_receiver_cpu_seconds": null,
+    "cache_receiver_cpu_seconds": null,
+    "scheduler_control_and_metadata_cpu_seconds": null,
+    "local_edit_cpu_seconds": null,
+    "prior_receipts": [
+      "SC-OLH-KG/paper_artifacts/mainline_lean_20261020_result.json",
+      "SC-OLH-KG/paper_artifacts/mainline_stability_lean_20261020_result.json"
+    ],
+    "prior_cumulative_measured_build_cpu_seconds": 203.68203697299998,
+    "cumulative_measured_build_cpu_seconds": 262.003428633,
+    "limits": [
+      "All four scheduled executions, both failed builds and the successful repair are included. Unmeasured transport, receiver, controller and local costs are unknown, not zero.",
+      "The previous 13 executions including 7 automatic retries and the next 3 manual stability builds retain their original receipts and fees.",
+      "t195325 has finished_at < started_at in scheduler metadata. Fees use runner rusage and monotonic wall records rather than subtracting those metadata timestamps. The timestamp reversal was not repaired in this proof task."
+    ]
+  },
+  "scientific_state": {
+    "new_numerical_integrations": 0,
+    "new_simulations": 0,
+    "new_source_fits": 0,
+    "new_posterior_restorations": 0,
+    "new_truth_scoring": 0,
+    "frozen_models_changed": false,
+    "historical_failures_preserved": true,
+    "scientific_fee_ledger_changed": false,
+    "remaining_budget_reset": false
+  }
+}

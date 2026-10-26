@@ -1,0 +1,223 @@
+{
+  "analysis_module": "performance.analyze_mainline_frozen_backend_comparison",
+  "status": "complete",
+  "stages": {},
+  "jobs": {
+    "audit/checks_and_saved_records": {
+      "submission_started": "2026-10-19T12:22:07.263076+00:00",
+      "task_ids": [
+        "t195236"
+      ],
+      "plan": {
+        "logical_items": 1,
+        "item_multiplier": 1,
+        "total_items": 1,
+        "plan": [
+          {
+            "node": "node001",
+            "physical_cores": 14,
+            "available_cores": 14,
+            "total_physical_cores": 96,
+            "items": 1,
+            "start": 0,
+            "end": 1,
+            "workers": 1,
+            "waves": 1,
+            "single_node_workers": 1,
+            "single_node_waves": 1,
+            "last_wave_items": 1,
+            "global_waves": 1,
+            "node_shard_index": 0,
+            "shard_index": 0,
+            "num_shards": 1,
+            "cmd": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=. PYTHONFAULTHANDLER=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python -u -m performance.run_mainline_safe_unsampled_cluster_job --record 'paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json' -- /home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python -u /home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_frozen_backend_comparison_cluster.py --worker",
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+            "signature": "KG_op/mainline_frozen_backend_comparison_v1/stage103/audit/checks_and_saved_records/0-1",
+            "description": "SC-OLH-KG Stage103 frozen AFTER versus saved backend comparison audit/checks_and_saved_records node001 [0,1)",
+            "env": {
+              "node": "node001",
+              "start": "0",
+              "end": "1",
+              "items": "1",
+              "shard_items": "1",
+              "total_items": "1",
+              "total_work_items": "1",
+              "logical_items": "1",
+              "base_items": "1",
+              "item_multiplier": "1",
+              "items_per_unit": "1",
+              "episodes_per_item": "1",
+              "workers": "1",
+              "n_workers": "1",
+              "num_workers": "1",
+              "waves": "1",
+              "rounds": "1",
+              "physical_cores": "14",
+              "available_cores": "14",
+              "total_physical_cores": "96",
+              "last_wave_items": "1",
+              "shard_index": "0",
+              "shard_id": "0",
+              "num_shards": "1"
+            }
+          }
+        ]
+      },
+      "record_paths": [
+        "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json"
+      ],
+      "manual_dispatch": {
+        "task_ids": [
+          "t195236"
+        ],
+        "cpu_seconds": 53.97971700000001,
+        "wall_seconds": 69.15106958901742,
+        "new_submissions": 0,
+        "automatic_scientific_retries": 0
+      },
+      "completion_basis": "existing successful wrapper records",
+      "scheduler_recovery_pending": [
+        "t195236"
+      ],
+      "scheduler_tasks": [
+        {
+          "id": "t195236",
+          "status": "running",
+          "node": "node005",
+          "cpu_cores": 1,
+          "est_vram_mb": 0,
+          "exit_code": null,
+          "started_at": 1792412614.0982625,
+          "finished_at": null,
+          "last_block_reason": null,
+          "log_path": "/tmp/sched_t195236.log"
+        }
+      ],
+      "records": {
+        "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json": {
+          "status": "complete",
+          "node": "node005",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+            "-u",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_frozen_backend_comparison_cluster.py",
+            "--worker"
+          ],
+          "started_utc": "2026-10-19T12:23:18.757378+00:00",
+          "subprocess_started": true,
+          "child_returncode": 0,
+          "completed_utc": "2026-10-19T12:23:26.672202+00:00",
+          "wall_seconds": 7.914861422032118,
+          "log_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.log",
+          "own_cpu_seconds": 0.07071899999999999,
+          "child_cpu_seconds": 6.877466,
+          "total_cpu_seconds": 6.9481850000000005,
+          "outer_exit_policy": "Saved child failure is not retried by scheduler"
+        }
+      },
+      "status": "complete"
+    }
+  },
+  "attempts": [
+    {
+      "label": "audit/checks_and_saved_records/submit",
+      "command": [
+        "/usr/bin/python3",
+        "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+        "submit-cpu-batch",
+        "--items",
+        "1",
+        "--nodes",
+        "node001,node002,node003,node004,node005,node006",
+        "--cmd-template",
+        "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=. PYTHONFAULTHANDLER=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python -u -m performance.run_mainline_safe_unsampled_cluster_job --record 'paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/{start}_{end}.json' -- /home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python -u /home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_frozen_backend_comparison_cluster.py --worker",
+        "--cwd",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+        "--signature",
+        "KG_op/mainline_frozen_backend_comparison_v1/stage103/audit/checks_and_saved_records/{start}-{end}",
+        "--description",
+        "SC-OLH-KG Stage103 frozen AFTER versus saved backend comparison audit/checks_and_saved_records {node} [{start},{end})",
+        "--ram-mb",
+        "32768",
+        "--project",
+        "KG_op",
+        "--skip-launch-staging",
+        "--env-spec",
+        "none",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"logical_items\": 1,\n  \"item_multiplier\": 1,\n  \"total_items\": 1,\n  \"plan\": [\n    {\n      \"node\": \"node001\",\n      \"physical_cores\": 14,\n      \"available_cores\": 14,\n      \"total_physical_cores\": 96,\n      \"items\": 1,\n      \"start\": 0,\n      \"end\": 1,\n      \"workers\": 1,\n      \"waves\": 1,\n      \"single_node_workers\": 1,\n      \"single_node_waves\": 1,\n      \"last_wave_items\": 1,\n      \"global_waves\": 1,\n      \"node_shard_index\": 0,\n      \"shard_index\": 0,\n      \"num_shards\": 1,\n      \"cmd\": \"env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=. PYTHONFAULTHANDLER=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python -u -m performance.run_mainline_safe_unsampled_cluster_job --record 'paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json' -- /home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python -u /home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_frozen_backend_comparison_cluster.py --worker\",\n      \"cwd\": \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG\",\n      \"signature\": \"KG_op/mainline_frozen_backend_comparison_v1/stage103/audit/checks_and_saved_records/0-1\",\n      \"description\": \"SC-OLH-KG Stage103 frozen AFTER versus saved backend comparison audit/checks_and_saved_records node001 [0,1)\",\n      \"env\": {\n        \"node\": \"node001\",\n        \"start\": \"0\",\n        \"end\": \"1\",\n        \"items\": \"1\",\n        \"shard_items\": \"1\",\n        \"total_items\": \"1\",\n        \"total_work_items\": \"1\",\n        \"logical_items\": \"1\",\n        \"base_items\": \"1\",\n        \"item_multiplier\": \"1\",\n        \"items_per_unit\": \"1\",\n        \"episodes_per_item\": \"1\",\n        \"workers\": \"1\",\n        \"n_workers\": \"1\",\n        \"num_workers\": \"1\",\n        \"waves\": \"1\",\n        \"rounds\": \"1\",\n        \"physical_cores\": \"14\",\n        \"available_cores\": \"14\",\n        \"total_physical_cores\": \"96\",\n        \"last_wave_items\": \"1\",\n        \"shard_index\": \"0\",\n        \"shard_id\": \"0\",\n        \"num_shards\": \"1\"\n      }\n    }\n  ]\n}\nsubmitted t195236  cpu=1 ram=32768MB vram=0MB  prio=normal  SC-OLH-KG Stage103 frozen AFTER versus saved backe\n  cpu-workers: items=1 physical=14 waves=1 workers=1 last_wave=1\nsubmitted 1 CPU batch shard(s) via one state-lock transaction\n",
+      "stderr": "",
+      "utc": "2026-10-19T12:22:48.783947+00:00"
+    },
+    {
+      "label": "audit/checks_and_saved_records/manual-dispatch",
+      "command": [
+        "/usr/bin/python3",
+        "/home/erzhu419/mine_code/scheduleurm/skill/scheduler.py",
+        "dispatch",
+        "--task-id",
+        "t195236"
+      ],
+      "returncode": 0,
+      "stdout": "=== nodes ===\n  local       GPU0=1.34GB/8.00GB(free=6.43GB, mem:17%, util:0%)  cpu=9/16(wsl_load 6.6, host 31%, stale_node_probe_cache)  ram_free=8.08GB(eff)\n  jtl110gpu   GPU0=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%), GPU1=0.00GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=3/12(load 9.2, stale_node_probe_cache)  ram_free=490.7GB  claims(active_claims=1, other_schedulers=1 owner=Liang)\n  jtl110gpu2  GPU0=0.16GB/12.0GB(free=11.6GB, mem:1%, util:0%), GPU1=0.01GB/12.0GB(free=11.8GB, mem:0%, util:0%)  cpu=2/12(load 9.5, stale_node_probe_cache)  ram_free=495.5GB  claims(active_claims=1, other_schedulers=1 owner=Liang)\n  jtl311linux GPU0=0.06GB/8.00GB(free=7.55GB, mem:1%, util:0%), GPU1=0.01GB/8.00GB(free=7.60GB, mem:0%, util:0%)  cpu=8/8(load 0.1, stale_node_probe_cache)  ram_free=42.5GB\n  node007     GPU0=8.30GB/11.0GB(free=2.45GB, mem:75%, util:0%), GPU1=8.30GB/11.0GB(free=2.45GB, mem:75%, util:39%), GPU2=8.30GB/11.0GB(free=2.45GB, mem:75%, util:59%), GPU3=8.30GB/11.0GB(free=2.45GB, mem:75%, util:62%)  cpu=40/64(load 23.7, stale_node_probe_cache)  ram_free=156.7GB\n  jtl110cpu   CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=472.8GB\n  jtl110cpu2  CPU-only  cpu=128/128(load 0.0, stale_node_probe_cache)  ram_free=487.4GB\n  node001     CPU-only  cpu=14/96(load 81.9, stale_node_probe_cache, reserve 1)  ram_free=136.9GB\n  node002     CPU-only  cpu=11/96(load 84.6, stale_node_probe_cache, reserve 1)  ram_free=141.1GB\n  node003     CPU-only  cpu=0/96(load 147.2, stale_node_probe_cache, reserve 1)  ram_free=128.6GB\n  node004     CPU-only  cpu=0/96(load 95.7, stale_node_probe_cache, reserve 1)  ram_free=132.9GB\n  node005     CPU-only  cpu=8/96(load 87.5, stale_node_probe_cache, reserve 1)  ram_free=143.1GB\n  node006     CPU-only  cpu=13/96(load 82.7, stale_node_probe_cache, reserve 1)  ram_free=128.4GB\n=== dispatch === (1 queued)\n  [t195236] LAUNCH on node005:CPU  pid=68763  log=/tmp/sched_t195236.log\n",
+      "stderr": "",
+      "utc": "2026-10-19T12:23:57.935953+00:00"
+    },
+    {
+      "label": "metadata/wrapper-completion",
+      "paths": [
+        "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json"
+      ],
+      "returncode": 0,
+      "payload_bytes": 217,
+      "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+      "remote_cpu_seconds": 0.0005018639999999908
+    },
+    {
+      "label": "metadata/full",
+      "paths": [
+        "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json"
+      ],
+      "returncode": 0,
+      "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+      "payload_bytes": 907,
+      "utc": "2026-10-19T12:24:06.947924+00:00"
+    }
+  ],
+  "node_pool": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "remote_cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/SC-OLH-KG",
+  "remote_python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+  "local_scientific_computation": false,
+  "automatic_scientific_retries": 0,
+  "saved_record_analysis_only": true,
+  "scheduled_items": 1,
+  "workers": 1,
+  "vram": 0,
+  "active_stage": "audit/checks_and_saved_records",
+  "updated_utc": "2026-10-19T12:24:06.949166+00:00",
+  "waiting_for": null,
+  "latest_tasks": [
+    {
+      "id": "t195236",
+      "status": "running",
+      "node": "node005",
+      "cpu_cores": 1,
+      "est_vram_mb": 0,
+      "exit_code": null,
+      "started_at": 1792412614.0982625,
+      "finished_at": null,
+      "last_block_reason": null,
+      "log_path": "/tmp/sched_t195236.log"
+    }
+  ],
+  "error": null
+}

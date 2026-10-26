@@ -1,4 +1,18 @@
-import Mathlib
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Fintype.Basic
+import Mathlib.MeasureTheory.Measure.Real
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Finiteness
+import Lean.Elab.Tactic.Omega
 import SCOLHKG.Real.KG
 
 namespace SCOLHKG.Real

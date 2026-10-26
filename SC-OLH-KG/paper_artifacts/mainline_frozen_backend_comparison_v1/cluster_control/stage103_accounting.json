@@ -1,0 +1,323 @@
+{
+  "stage": 103,
+  "status": "complete",
+  "scope": "Two separate sealed cohorts: geometry-paired AFTER versus same-source GP and old native-neighbor backend using saved scores only",
+  "created_utc": "2026-10-19T12:17:47.651977+00:00",
+  "local_editing_and_static_review_cpu_seconds": null,
+  "unmeasured_cpu_note": "Local editing/static reviews, unmeasured local launch/setup overhead and live-probe remote CPU were not separately measured; unknown, not zero.",
+  "metadata_reads": [
+    {
+      "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_capacity_preflight.json",
+      "local_control_cpu_seconds": 0.06068444299999999,
+      "remote_cpu_seconds": null,
+      "wall_seconds": 5.9163531480007805,
+      "scope": "One live six-node CPU capacity snapshot before a single saved-result analysis item"
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_capacity_preflight_projection_fix.json",
+      "local_control_cpu_seconds": 0.017794753,
+      "remote_cpu_seconds": null,
+      "wall_seconds": 7.77231223101262,
+      "scope": "Correct capacity projection after first read selected obsolete field names; first cost preserved separately"
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_input_preflight.json",
+      "local_control_cpu_seconds": 0.013995356999999998,
+      "remote_cpu_seconds": 0.696916458,
+      "wall_seconds": 3.0951810639817268,
+      "scope": "Metadata-only schema/seal/source-file availability and new-output duplicate preflight"
+    },
+    {
+      "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_scheduler_snapshot.json",
+      "scope": "One final targeted queue retry/exit snapshot after successful wrapper; no scheduler mutation",
+      "local_control_cpu_seconds": 4.688977451,
+      "remote_cpu_seconds": 0
+    }
+  ],
+  "transfers": [
+    {
+      "status": "completed",
+      "file_bytes": 61082,
+      "compressed_bytes": 20587,
+      "base64_bytes": 27452,
+      "local_control_cpu_seconds": 0.024738282,
+      "remote_upload_cpu_seconds": 0.002149437000000004,
+      "acknowledgement_download_bytes": 1360,
+      "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_code_upload_receipt.json",
+      "scope": "Exact analysis module/test/controller and registered plan upload; no model or data uploads"
+    },
+    {
+      "status": "completed",
+      "file_bytes": 566126,
+      "compressed_bytes": 190549,
+      "base64_bytes": 254068,
+      "local_control_cpu_seconds": 0.13360689899999997,
+      "remote_upload_cpu_seconds": 0.013387785999999978,
+      "acknowledgement_download_bytes": 5687,
+      "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_final_document_upload_20261019.json",
+      "scope": "Eight final Stage103 Markdown files and two pre-upload completed account/audit metadata; final self-accounting retained locally"
+    }
+  ],
+  "scheduler_task_ids": [
+    "t195236"
+  ],
+  "scheduled_substitute_checks": {
+    "status": "passed",
+    "returncode": 0,
+    "test_files": [
+      "tests/test_mainline_frozen_backend_comparison.py"
+    ],
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_frozen_backend_comparison.py"
+    ],
+    "test_counts": {
+      "passed": 13
+    },
+    "cpu_seconds": 2.932626,
+    "wall_seconds": 3.6108252378180623,
+    "completed_utc": "2026-10-19T12:23:22.447954+00:00",
+    "automatic_retries": 0,
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0
+  },
+  "saved_score_analysis": {
+    "status": "complete",
+    "cohorts": [
+      "stage85",
+      "stage93"
+    ],
+    "registered_geometries_per_cohort": 144,
+    "observation_streams_per_geometry": 2,
+    "analysis_attempt_rows": 1,
+    "attempt": {
+      "stage": "stage103_saved_backend_comparison",
+      "status": "complete",
+      "new_simulation_calls": 0,
+      "new_candidate_scores": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "model_or_posterior_restorations": 0,
+      "rng_draws": 0,
+      "cpu_seconds": 2.383959483,
+      "wall_seconds": 2.6706543127074838,
+      "completed_utc": "2026-10-19T12:23:26.280366+00:00",
+      "node": "node005"
+    },
+    "completion_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/completion.json"
+  },
+  "new_forbidden_work": {
+    "simulator_calls": 0,
+    "candidate_scores": 0,
+    "truth_scores": 0,
+    "source_fits": 0,
+    "source_model_loads": 0,
+    "posterior_restorations": 0,
+    "old_scientific_retries": 0
+  },
+  "historical_account_references": [
+    "paper_artifacts/mainline_precision_confirmation_v1/cluster_control/stage85_accounting.json",
+    "paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json",
+    "paper_artifacts/mainline_evidence_chain_update_v1/cluster_control/stage102_accounting.json"
+  ],
+  "historical_cost_policy": "Preserve original cohort fees, nine/eleven controls, failures and Queue warnings; references only, never recharge historical computation.",
+  "control_issue_retained": {
+    "first_capacity_projection_obsolete_field_names": true,
+    "correction": "One metadata-only projection correction; both read fees retained. No submitted task or scientific retry."
+  },
+  "automatic_retries": 0,
+  "known_new_cpu_seconds": {
+    "local_control": 4.95310739,
+    "remote_control": 0.721867161,
+    "scheduler_wrapper_inclusive": 6.9481850000000005,
+    "controller_inclusive": 82.580250465,
+    "total": 95.204608812,
+    "total_is_known_subtotal": true,
+    "unmeasured_local_editing_and_remote_probe_cpu_seconds": null,
+    "accounting_compilation_cpu_seconds": 0.0011987959999999985,
+    "nested_not_added_again": [
+      "analysis_attempt CPU is inside analysis child and wrapper CPU",
+      "pytest CPU is inside wrapper CPU",
+      "manual-dispatch CPU is inside controller child CPU"
+    ]
+  },
+  "last_accounted_utc": "2026-10-19T12:30:57.630284+00:00",
+  "code_upload_status": "completed",
+  "code_upload_receipt": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_code_upload_receipt.json",
+  "code_upload_cpu_seconds": 0.026887719000000004,
+  "controller": {
+    "launch_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_controller_launch.json",
+    "exit_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_controller_exit.json",
+    "supervisor_pid": 2805287,
+    "returncode": 0,
+    "pid": 2805287,
+    "completed_utc": "2026-10-19T12:24:07.020629+00:00",
+    "child_cpu_seconds": 82.579926,
+    "supervisor_cpu_seconds": 0.0003244649999999995,
+    "wall_seconds": 120.18639759504003,
+    "automatic_retries": 0,
+    "remote_metadata_cpu_seconds_not_nested_in_local_controller": 0.0005018639999999908
+  },
+  "completed_utc": "2026-10-19T12:23:26.280366+00:00",
+  "confirmed_zero_new_work": {
+    "new_simulation_calls": 0,
+    "new_candidate_scores": 0,
+    "new_truth_function_calls": 0,
+    "new_source_fits": 0,
+    "model_or_posterior_restorations": 0,
+    "rng_draws": 0
+  },
+  "wrapper_records": {
+    "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json": {
+      "status": "complete",
+      "node": "node005",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_frozen_backend_comparison_cluster.py",
+        "--worker"
+      ],
+      "started_utc": "2026-10-19T12:23:18.757378+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T12:23:26.672202+00:00",
+      "wall_seconds": 7.914861422032118,
+      "log_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.log",
+      "own_cpu_seconds": 0.07071899999999999,
+      "child_cpu_seconds": 6.877466,
+      "total_cpu_seconds": 6.9481850000000005,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    }
+  },
+  "phase_sequence": {
+    "status": "complete",
+    "started_utc": "2026-10-19T12:23:18.835255+00:00",
+    "phases": [
+      {
+        "phase": "substitute_checks",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "no:capture",
+          "-q",
+          "tests/test_mainline_frozen_backend_comparison.py"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "child_cpu_seconds": 2.932626,
+        "wall_seconds": 3.6108252378180623
+      },
+      {
+        "phase": "saved_record_audit",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-u",
+          "-m",
+          "performance.analyze_mainline_frozen_backend_comparison",
+          "--checks",
+          "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1/checks.json"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "child_cpu_seconds": 3.836308,
+        "wall_seconds": 4.210643112659454
+      }
+    ],
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0,
+    "automatic_retries": 0,
+    "updated_utc": "2026-10-19T12:23:26.661837+00:00"
+  },
+  "result_download": {
+    "returncode": 0,
+    "utc": "2026-10-19T12:25:15.455011+00:00",
+    "local_control_cpu_seconds": 0.013310204999999992,
+    "wall_seconds": 1.4599461140460335,
+    "stdout_bytes": 21823,
+    "stderr_bytes": 461,
+    "file_bytes": {
+      "paper_artifacts/mainline_frozen_backend_comparison_v1/headline.json": 88338,
+      "paper_artifacts/mainline_frozen_backend_comparison_v1/completion.json": 1069,
+      "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1/checks.json": 640,
+      "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1/pytest.log": 33,
+      "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1_sequence.json": 1262
+    },
+    "uncompressed_bytes": 98990,
+    "compressed_bytes": 15840,
+    "wrapper_duplicate_rows": 0,
+    "analysis_attempt_rows": 1,
+    "remote_cpu_seconds": 0.008911615999999997,
+    "receipt_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_result_download_receipt.json"
+  },
+  "manual_dispatch_cost_nested_in_controller": {
+    "task_ids": [
+      "t195236"
+    ],
+    "cpu_seconds": 53.97971700000001,
+    "wall_seconds": 69.15106958901742,
+    "new_submissions": 0,
+    "automatic_scientific_retries": 0
+  },
+  "retry_audit": {
+    "scheduler_tasks": [
+      {
+        "id": "t195236",
+        "status": "running",
+        "node": "node005",
+        "cpu_cores": 1,
+        "est_vram_mb": 0,
+        "exit_code": null,
+        "retry_count": 0,
+        "started_at": 1792412614.0982625,
+        "finished_at": null,
+        "last_block_reason": null
+      }
+    ],
+    "snapshot_utc": "2026-10-19T12:25:28.082592+00:00",
+    "wrapper_child_returncodes": [
+      0
+    ],
+    "wrapper_duplicate_rows": 0,
+    "analysis_attempt_rows": 1,
+    "automatic_scientific_retries": 0,
+    "completion_basis": "Successful wrapper child, complete analysis and complete phase sequence; scheduler recovery lag retained without further polling"
+  },
+  "cohort_coverage_preserved": [
+    {
+      "name": "stage85",
+      "registered_geometries": 144,
+      "registered_terminal_cells": 2592,
+      "sealed_terminal_counts": {
+        "complete": 2592
+      },
+      "scoring_failure_count": 0,
+      "source_warning_document": null
+    },
+    {
+      "name": "stage93",
+      "registered_geometries": 144,
+      "registered_terminal_cells": 3168,
+      "sealed_terminal_counts": {
+        "complete": 3101,
+        "missing": 67
+      },
+      "scoring_failure_count": 0,
+      "source_warning_document": "docs/mainline_source_alignment_fit_results_20261018.md"
+    }
+  ],
+  "cost_policy": "Count outer scheduled wrapper plus local controller and separately measured transfer/metadata CPU once. Analysis/test child/attempt costs are nested breakdowns. Original source/target/failed/historical charges are references only; missing measurements remain unknown.",
+  "final_document_upload_status": "completed",
+  "final_document_upload_receipt": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_final_document_upload_20261019.json",
+  "final_document_upload_cpu_seconds": 0.14699468499999996
+}

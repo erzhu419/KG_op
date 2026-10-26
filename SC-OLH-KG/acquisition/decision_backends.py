@@ -1621,9 +1621,9 @@ def score_decision_backend(
             total[sampled_feasible] = -sampled_objective[sampled_feasible]
             sampled_feasibility_mode = "feasible_objective"
         else:
-            # When this posterior draw contains no feasible policy, reduce
-            # sampled chance violation. Objective is only a deterministic
-            # numerical tie-break and cannot trade against feasibility.
+            # With no sampled-feasible policy, minimize the chance margin
+            # plus a machine-eps scaled objective term. This term can also
+            # change the order of margins separated by a tiny nonzero gap.
             objective_scale = max(
                 float(np.max(np.abs(sampled_objective))), 1.0)
             total = (

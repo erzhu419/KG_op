@@ -1,0 +1,72 @@
+# GPT_meta_assumption Reference Download Manifest
+
+- `orthogonal_sparse[1]` No Free Lunch Theorems For Optimization - Evolutionary Computation, IEEE Transactions on
+  - source: https://www.cs.ubc.ca/~hutter/earg/papers07/00585893.pdf
+  - html: direct_pdf_ref 
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_01_No_Free_Lunch_Theorems_For_Optimization_Evolutionary_Computation_IEEE_Transactions_on.pdf https://www.cs.ubc.ca/~hutter/earg/papers07/00585893.pdf
+- `orthogonal_sparse[2]` Standard Gaussian Process Can Be Excellent for High-Dimensional Bayesian Optimization
+  - source: https://arxiv.org/html/2402.02746v3
+  - html: downloaded reference/meta_assumption/html/orthogonal_sparse_02_Standard_Gaussian_Process_Can_Be_Excellent_for_High_Dimensional_Bayesian_Optimization.html
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_02_Standard_Gaussian_Process_Can_Be_Excellent_for_High_Dimensional_Bayesian_Optimization.pdf https://arxiv.org/pdf/2402.02746v3
+- `orthogonal_sparse[3]` Additive Gaussian Processes Revisited
+  - source: https://proceedings.mlr.press/v162/lu22b.html
+  - html: downloaded reference/meta_assumption/html/orthogonal_sparse_03_Additive_Gaussian_Processes_Revisited.html
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_03_Additive_Gaussian_Processes_Revisited.pdf https://proceedings.mlr.press/v162/lu22b/lu22b.pdf
+- `orthogonal_sparse[4]` Causal Bayesian Optimization
+  - source: https://proceedings.mlr.press/v108/aglietti20a/aglietti20a.pdf
+  - html: direct_pdf_ref 
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_04_Causal_Bayesian_Optimization.pdf https://proceedings.mlr.press/v108/aglietti20a/aglietti20a.pdf
+- `orthogonal_sparse[5]` Causal Bayesian Optimization with Unknown Graphs
+  - source: https://arxiv.org/abs/2503.19554
+  - html: downloaded reference/meta_assumption/html/orthogonal_sparse_05_Causal_Bayesian_Optimization_with_Unknown_Graphs.html
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_05_Causal_Bayesian_Optimization_with_Unknown_Graphs.pdf https://arxiv.org/pdf/2503.19554
+- `orthogonal_sparse[6]` High Dimensional Bayesian Optimization using Lasso Variable Selection
+  - source: https://proceedings.mlr.press/v258/hoang25a.html
+  - html: downloaded reference/meta_assumption/html/orthogonal_sparse_06_High_Dimensional_Bayesian_Optimization_using_Lasso_Variable_Selection.html
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_06_High_Dimensional_Bayesian_Optimization_using_Lasso_Variable_Selection.pdf https://raw.githubusercontent.com/mlresearch/v258/main/assets/hoang25a/hoang25a.pdf
+- `orthogonal_sparse[7]` Leveraging Axis-Aligned Subspaces for High-Dimensional Bayesian Optimization with Group Testing
+  - source: https://arxiv.org/html/2504.06111v1
+  - html: downloaded reference/meta_assumption/html/orthogonal_sparse_07_Leveraging_Axis_Aligned_Subspaces_for_High_Dimensional_Bayesian_Optimization_with_Group_Te.html
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_07_Leveraging_Axis_Aligned_Subspaces_for_High_Dimensional_Bayesian_Optimization_with_Group_Te.pdf https://arxiv.org/pdf/2504.06111v1
+- `orthogonal_sparse[8]` Iterative Sparse Identification of Nonlinear Dynamics
+  - source: https://arxiv.org/html/2406.03779v1
+  - html: downloaded reference/meta_assumption/html/orthogonal_sparse_08_Iterative_Sparse_Identification_of_Nonlinear_Dynamics.html
+  - pdf: downloaded reference/meta_assumption/pdfs/orthogonal_sparse_08_Iterative_Sparse_Identification_of_Nonlinear_Dynamics.pdf https://arxiv.org/pdf/2406.03779v1
+- `low_frequency[1]` Gaussian Process Optimization in the Bandit Setting
+  - source: https://icml.cc/Conferences/2010/papers/422.pdf
+  - html: direct_pdf_ref 
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_01_Gaussian_Process_Optimization_in_the_Bandit_Setting.pdf https://icml.cc/Conferences/2010/papers/422.pdf
+- `low_frequency[2]` On the Spectral Bias of Neural Networks
+  - source: https://proceedings.mlr.press/v97/rahaman19a.html
+  - html: downloaded reference/meta_assumption/html/low_frequency_02_On_the_Spectral_Bias_of_Neural_Networks.html
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_02_On_the_Spectral_Bias_of_Neural_Networks.pdf https://proceedings.mlr.press/v97/rahaman19a/rahaman19a.pdf
+- `low_frequency[3]` Spectral Bias in Practice: the Role of Function Frequency in ...
+  - source: https://papers.neurips.cc/paper_files/paper/2022/file/306264db5698839230be3642aafc849c-Paper-Conference.pdf
+  - html: direct_pdf_ref 
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_03_Spectral_Bias_in_Practice_the_Role_of_Function_Frequency_in.pdf https://papers.neurips.cc/paper_files/paper/2022/file/306264db5698839230be3642aafc849c-Paper-Conference.pdf
+- `low_frequency[4]` Advanced Gaussian Processes
+  - source: https://www.cs.cmu.edu/~epxing/Class/10708-15/slides/andrewgp2.pdf
+  - html: direct_pdf_ref 
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_04_Advanced_Gaussian_Processes.pdf https://www.cs.cmu.edu/~epxing/Class/10708-15/slides/andrewgp2.pdf
+- `low_frequency[5]` Spectral Mixture Kernels for Bayesian Optimization
+  - source: https://arxiv.org/html/2505.17393v1
+  - html: downloaded reference/meta_assumption/html/low_frequency_05_Spectral_Mixture_Kernels_for_Bayesian_Optimization.html
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_05_Spectral_Mixture_Kernels_for_Bayesian_Optimization.pdf https://arxiv.org/pdf/2505.17393v1
+- `low_frequency[6]` An introduction to Sparse Identification of Nonlinear ... - PySINDy
+  - source: https://pysindy.readthedocs.io/en/latest/summary.html
+  - html: downloaded reference/meta_assumption/html/low_frequency_06_An_introduction_to_Sparse_Identification_of_Nonlinear_PySINDy.html
+  - pdf: no_stable_open_pdf_url  None
+- `low_frequency[7]` Weak-form modified sparse identification of nonlinear ...
+  - source: https://www.sciencedirect.com/science/article/pii/S0021999125006928
+  - note: arXiv preprint 2410.17838 used because ScienceDirect returned HTTP 403 locally.
+  - html: failed 
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_07_Weak_form_modified_sparse_identification_of_nonlinear.pdf https://arxiv.org/pdf/2410.17838
+  - html_error: `<HTTPError 403: 'Forbidden'>`
+- `low_frequency[8]` Additive Gaussian Processes Revisited
+  - source: https://proceedings.mlr.press/v162/lu22b.html
+  - html: downloaded reference/meta_assumption/html/low_frequency_08_Additive_Gaussian_Processes_Revisited.html
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_08_Additive_Gaussian_Processes_Revisited.pdf https://proceedings.mlr.press/v162/lu22b/lu22b.pdf
+- `low_frequency[9]` [2206.09861] Additive Gaussian Processes Revisited
+  - source: https://arxiv.org/abs/2206.09861
+  - html: downloaded reference/meta_assumption/html/low_frequency_09_Additive_Gaussian_Processes_Revisited.html
+  - pdf: downloaded reference/meta_assumption/pdfs/low_frequency_09_Additive_Gaussian_Processes_Revisited.pdf https://arxiv.org/pdf/2206.09861

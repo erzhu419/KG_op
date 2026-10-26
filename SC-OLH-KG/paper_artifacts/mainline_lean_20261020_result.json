@@ -1,0 +1,1343 @@
+{
+  "status": "passed",
+  "date": "2026-10-20",
+  "timezone": "Asia/Shanghai",
+  "recorded_at_utc": "2026-10-19T17:29:10.555492+00:00",
+  "interface": "proof/SCOLHKG/CurrentMainlineProofInterface.lean",
+  "lean_version": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
+  "mathlib_revision": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+  "reference_task": "t195306",
+  "checked_project_modules": [
+    "SCOLHKG.Real.GPRUpdate",
+    "SCOLHKG.Real.ConditionalVariance",
+    "SCOLHKG.Real.KG",
+    "SCOLHKG.Real.AdditiveApproxKG",
+    "SCOLHKG.Real.ExactKGImplementation",
+    "SCOLHKG.Real.TaskPosterior",
+    "SCOLHKG.Real.CurrentPropagation",
+    "SCOLHKG.Real.CurrentCovariance",
+    "SCOLHKG.Real.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.CurrentTerminalGate",
+    "SCOLHKG.CurrentMainlineProofInterface"
+  ],
+  "new_modules": {
+    "proof/SCOLHKG/Real/CurrentPropagation.lean": {
+      "theorems": [
+        "local_completion_contrast_mean",
+        "local_completion_contrast_variance",
+        "equal_local_load_preserves_contrast_mean",
+        "equal_local_load_preserves_contrast_variance",
+        "evidencePosterior_normalized",
+        "evidencePosterior_nonnegative",
+        "finite_mixture_reweighting_decomposition",
+        "evidence_local_completion_contrast_decomposition",
+        "rank_one_contrast_mean_change",
+        "rank_one_contrast_variance_decrement",
+        "rank_one_contrast_variance_nonincreasing",
+        "equal_kernel_relation_preserves_contrast_mean",
+        "equal_kernel_relation_preserves_contrast_variance"
+      ]
+    },
+    "proof/SCOLHKG/Real/CurrentCovariance.lean": {
+      "theorems": [
+        "scaled_quadratic_form",
+        "scaled_covariance_psd",
+        "fixed_correlation_covariance_psd",
+        "fixed_correlation_diagonal",
+        "scaled_correlation_preserved",
+        "zero_local_variance_zero_row"
+      ]
+    },
+    "proof/SCOLHKG/Measure/CurrentTerminalGate.lean": {
+      "theorems": [
+        "current_terminal_gates_disjoint",
+        "current_terminal_gate_mass_le_one",
+        "current_terminal_gated_errors_probability_le",
+        "current_terminal_joint_error_probability_le",
+        "current_terminal_five_percent",
+        "current_terminal_abstention",
+        "current_terminal_calls_exact",
+        "current_terminal_calls_le_registered_cap",
+        "current_terminal_calls_branch_identity",
+        "current_unsafe_certified_return_subset_issued_false_certificate",
+        "current_false_improvement_subset_comparison_gate",
+        "current_return_or_false_improvement_subset_joint_error",
+        "current_certified_return_or_false_improvement_five_percent"
+      ]
+    }
+  },
+  "new_theorem_count": 32,
+  "headline_axiom_dependencies": {
+    "SCOLHKG.Real.CurrentPropagation.evidence_local_completion_contrast_decomposition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentCovariance.fixed_correlation_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Measure.current_certified_return_or_false_improvement_five_percent": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "entire_legacy_library_rebuilt": false,
+  "historical_paper_interface": "proof/SCOLHKG/PaperProofInterface.lean",
+  "scope": [
+    "local completed-moment contrast algebra and evidence reweighting",
+    "known-noise rank-one contrast response and variance decrement",
+    "D C D positive semidefiniteness, prescribed diagonal and correlation",
+    "terminal disjoint gates, joint 1/20 bound from local error bounds, return and call tree"
+  ],
+  "external_assumptions": [
+    "Gaussian regression identity and accuracy of local numerical moments",
+    "local certificate/test coverage, independent fresh sampling blocks and nct pivot laws",
+    "floating-point quantiles and arithmetic, multi-round approximation and source-transfer adequacy"
+  ],
+  "not_formalized_in_this_batch": [
+    "finite feature/mixture source-prior PSD construction",
+    "fixed affine mismatch MSE identity",
+    "cross-dimensional representation and constrained-TS stability"
+  ],
+  "scheduler": {
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "cpu_per_task": 1,
+    "vram": 0,
+    "manual_tasks": 6,
+    "automatic_retry_tasks": 7,
+    "observed_attempts": 13,
+    "queue_at_reconciliation": {
+      "t195291": "done",
+      "t195298": "failed",
+      "t195299": "failed",
+      "t195300": "failed",
+      "t195301": "failed",
+      "t195303": "failed",
+      "t195305": "failed",
+      "t195304": "failed",
+      "t195302": "done",
+      "t195306": "done",
+      "t195308": "done",
+      "t195307": "done",
+      "t195309": "done"
+    },
+    "queued_or_running_at_reconciliation": 0,
+    "note": "Runner retries are zero. Scheduler cloned failed tasks automatically; all clones and costs are retained."
+  },
+  "attempts": [
+    {
+      "task_id": "t195291",
+      "node": "node006",
+      "phase": "cache-plan",
+      "status": "passed",
+      "scheduler_retry_count": 0,
+      "scheduler_auto_retry": false,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/result.json",
+      "wall_seconds": 26.92778393253684,
+      "environment_cpu_seconds": 20.088152,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.033440696,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.23581451550126076,
+          "cpu_seconds": 0.140355,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/00_lean_version.log"
+        },
+        {
+          "name": "Batteries.Data.Array.Match",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 2.385851983912289,
+          "cpu_seconds": 1.588479,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/01_Batteries.Data.Array.Match.log"
+        },
+        {
+          "name": "Batteries.Data.String.Basic",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.6157302474603057,
+          "cpu_seconds": 0.5092699999999999,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/02_Batteries.Data.String.Basic.log"
+        },
+        {
+          "name": "Batteries.Data.String.Matcher",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.6556315533816814,
+          "cpu_seconds": 0.5264000000000002,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/03_Batteries.Data.String.Matcher.log"
+        },
+        {
+          "name": "Cache.Lean",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 1.4236871860921383,
+          "cpu_seconds": 0.9526349999999999,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/04_Cache.Lean.log"
+        },
+        {
+          "name": "Batteries.Tactic.OpenPrivate",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 2.3243871638551354,
+          "cpu_seconds": 1.686274,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/05_Batteries.Tactic.OpenPrivate.log"
+        },
+        {
+          "name": "Cache.IO",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 3.5530143417418003,
+          "cpu_seconds": 2.857275999999999,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/06_Cache.IO.log"
+        },
+        {
+          "name": "Cache.Hashing",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 2.078742769546807,
+          "cpu_seconds": 1.614916000000001,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/07_Cache.Hashing.log"
+        },
+        {
+          "name": "Cache.Init",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.603994669392705,
+          "cpu_seconds": 0.4744030000000006,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/08_Cache.Init.log"
+        },
+        {
+          "name": "Cache.Requests",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 3.8771763602271676,
+          "cpu_seconds": 3.5319480000000016,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/09_Cache.Requests.log"
+        },
+        {
+          "name": "Cache.Main",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 1.7479924969375134,
+          "cpu_seconds": 1.4823119999999985,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/10_Cache.Main.log"
+        },
+        {
+          "name": "mathlib_cache_plan",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 7.330097652040422,
+          "cpu_seconds": 4.723884,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T165608.567318Z_180949/11_mathlib_cache_plan.log"
+        }
+      ]
+    },
+    {
+      "task_id": "t195298",
+      "node": "node001",
+      "phase": "proof-check",
+      "status": "failed",
+      "scheduler_retry_count": 0,
+      "scheduler_auto_retry": false,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T170433.990651Z_87571/result.json",
+      "error": "SCOLHKG.Real.GPRUpdate returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T170433.990651Z_87571/02_SCOLHKG.Real.GPRUpdate.log",
+      "wall_seconds": 61.42579674627632,
+      "environment_cpu_seconds": 33.447049,
+      "proof_check_cpu_seconds": 2.9531940000000034,
+      "runner_cpu_seconds": 0.016088697,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.2199134547263384,
+          "cpu_seconds": 0.11069499999999999,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T170433.990651Z_87571/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_unpack",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 55.05281706247479,
+          "cpu_seconds": 33.336354,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T170433.990651Z_87571/01_mathlib_cache_unpack.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GPRUpdate",
+          "phase": "proof_check",
+          "returncode": 1,
+          "wall_seconds": 6.121389069594443,
+          "cpu_seconds": 2.9531940000000034,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T170433.990651Z_87571/02_SCOLHKG.Real.GPRUpdate.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+            "-j1",
+            "-o",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/GPRUpdate.olean",
+            "SCOLHKG/Real/GPRUpdate.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195299",
+      "node": "node001",
+      "phase": "cache-diagnose",
+      "status": "failed",
+      "scheduler_retry_count": 0,
+      "scheduler_auto_retry": false,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561211Z_90228/result.json",
+      "error": "mathlib_cache_diagnose returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561211Z_90228/01_mathlib_cache_diagnose.log",
+      "wall_seconds": 2.4244151301681995,
+      "environment_cpu_seconds": 0.928596,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.016717259999999998,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.10378673952072859,
+          "cpu_seconds": 0.049765000000000004,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561211Z_90228/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_diagnose",
+          "phase": "environment",
+          "returncode": 1,
+          "wall_seconds": 2.2918582297861576,
+          "cpu_seconds": 0.8788309999999999,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561211Z_90228/01_mathlib_cache_diagnose.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+            "-j1",
+            "--run",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561211Z_90228/CacheDiagnose.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195300",
+      "node": "node001",
+      "phase": "proof-check",
+      "status": "failed",
+      "scheduler_retry_count": 1,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561235Z_90222/result.json",
+      "error": "SCOLHKG.Real.GPRUpdate returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561235Z_90222/02_SCOLHKG.Real.GPRUpdate.log",
+      "wall_seconds": 11.370138962753117,
+      "environment_cpu_seconds": 4.506352,
+      "proof_check_cpu_seconds": 1.9320760000000003,
+      "runner_cpu_seconds": 0.015686209000000007,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.1036210898309946,
+          "cpu_seconds": 0.05124799999999999,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561235Z_90222/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_unpack",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 7.692118235863745,
+          "cpu_seconds": 4.4551039999999995,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561235Z_90222/01_mathlib_cache_unpack.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GPRUpdate",
+          "phase": "proof_check",
+          "returncode": 1,
+          "wall_seconds": 3.547717154957354,
+          "cpu_seconds": 1.9320760000000003,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171147.561235Z_90222/02_SCOLHKG.Real.GPRUpdate.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+            "-j1",
+            "-o",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/GPRUpdate.olean",
+            "SCOLHKG/Real/GPRUpdate.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195301",
+      "node": "node001",
+      "phase": "cache-diagnose",
+      "status": "failed",
+      "scheduler_retry_count": 0,
+      "scheduler_auto_retry": false,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171508.407083Z_91446/result.json",
+      "error": "mathlib_cache_diagnose returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171508.407083Z_91446/01_mathlib_cache_diagnose.log",
+      "wall_seconds": 5.534280589781702,
+      "environment_cpu_seconds": 3.663723,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.015017749999999996,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.06117949355393648,
+          "cpu_seconds": 0.058968000000000007,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171508.407083Z_91446/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_diagnose",
+          "phase": "environment",
+          "returncode": 1,
+          "wall_seconds": 5.451131065376103,
+          "cpu_seconds": 3.604755,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171508.407083Z_91446/01_mathlib_cache_diagnose.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+            "-j1",
+            "--run",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171508.407083Z_91446/CacheDiagnose.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195303",
+      "node": "node001",
+      "phase": "cache-diagnose",
+      "status": "failed",
+      "scheduler_retry_count": 1,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.037382Z_92962/result.json",
+      "error": "field_archive_contents returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.037382Z_92962/02_field_archive_contents.log",
+      "wall_seconds": 10.823609735816717,
+      "environment_cpu_seconds": 2.461915,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.016863075999999998,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.13739647157490253,
+          "cpu_seconds": 0.052823999999999996,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.037382Z_92962/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_diagnose",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 10.626875083893538,
+          "cpu_seconds": 2.408397,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.037382Z_92962/01_mathlib_cache_diagnose.log"
+        },
+        {
+          "name": "field_archive_contents",
+          "phase": "environment",
+          "returncode": 1,
+          "wall_seconds": 0.025271696038544178,
+          "cpu_seconds": 0.0006939999999997504,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.037382Z_92962/02_field_archive_contents.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/leantar",
+            "--jobs",
+            "1",
+            "-v",
+            "-x",
+            "-C",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.037382Z_92962/field_archive",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache/ec0c3ab1befd1d3a.ltar"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195305",
+      "node": "node001",
+      "phase": "cache-diagnose",
+      "status": "failed",
+      "scheduler_retry_count": 1,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.041006Z_92971/result.json",
+      "error": "field_archive_contents returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.041006Z_92971/02_field_archive_contents.log",
+      "wall_seconds": 10.818562551401556,
+      "environment_cpu_seconds": 2.4584119999999996,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.014884247000000003,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.13784841634333134,
+          "cpu_seconds": 0.045591999999999994,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.041006Z_92971/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_diagnose",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 10.631969964131713,
+          "cpu_seconds": 2.412276,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.041006Z_92971/01_mathlib_cache_diagnose.log"
+        },
+        {
+          "name": "field_archive_contents",
+          "phase": "environment",
+          "returncode": 1,
+          "wall_seconds": 0.022726084105670452,
+          "cpu_seconds": 0.0005439999999996559,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.041006Z_92971/02_field_archive_contents.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/leantar",
+            "--jobs",
+            "1",
+            "-v",
+            "-x",
+            "-C",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.041006Z_92971/field_archive",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache/ec0c3ab1befd1d3a.ltar"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195304",
+      "node": "node001",
+      "phase": "proof-check",
+      "status": "failed",
+      "scheduler_retry_count": 2,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.046549Z_92970/result.json",
+      "error": "SCOLHKG.Real.GPRUpdate returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.046549Z_92970/02_SCOLHKG.Real.GPRUpdate.log",
+      "wall_seconds": 16.150099337100983,
+      "environment_cpu_seconds": 3.6587579999999997,
+      "proof_check_cpu_seconds": 1.9384439999999996,
+      "runner_cpu_seconds": 0.012673498999999998,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.142897074110806,
+          "cpu_seconds": 0.042362999999999984,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.046549Z_92970/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_unpack",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 12.451103915460408,
+          "cpu_seconds": 3.616395,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.046549Z_92970/01_mathlib_cache_unpack.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GPRUpdate",
+          "phase": "proof_check",
+          "returncode": 1,
+          "wall_seconds": 3.528139523230493,
+          "cpu_seconds": 1.9384439999999996,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.046549Z_92970/02_SCOLHKG.Real.GPRUpdate.log",
+          "command": [
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+            "-j1",
+            "-o",
+            "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/GPRUpdate.olean",
+            "SCOLHKG/Real/GPRUpdate.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t195302",
+      "node": "node001",
+      "phase": "cache-plan",
+      "status": "passed",
+      "scheduler_retry_count": 0,
+      "scheduler_auto_retry": false,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.730616Z_93042/result.json",
+      "wall_seconds": 10.187703220173717,
+      "environment_cpu_seconds": 2.383428,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.014479169,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.08566472586244345,
+          "cpu_seconds": 0.046475,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.730616Z_93042/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_plan",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 10.077807616442442,
+          "cpu_seconds": 2.336953,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T171850.730616Z_93042/01_mathlib_cache_plan.log"
+        }
+      ]
+    },
+    {
+      "task_id": "t195306",
+      "node": "node001",
+      "phase": "proof-check",
+      "status": "passed",
+      "scheduler_retry_count": 0,
+      "scheduler_auto_retry": false,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/result.json",
+      "wall_seconds": 81.14958100859076,
+      "environment_cpu_seconds": 5.265529,
+      "proof_check_cpu_seconds": 37.93897100000001,
+      "runner_cpu_seconds": 0.02680425,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.061640664003789425,
+          "cpu_seconds": 0.059472,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_unpack",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 8.487825812771916,
+          "cpu_seconds": 5.2060569999999995,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/01_mathlib_cache_unpack.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GPRUpdate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 6.508941502310336,
+          "cpu_seconds": 4.305065000000001,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/02_SCOLHKG.Real.GPRUpdate.log"
+        },
+        {
+          "name": "SCOLHKG.Real.ConditionalVariance",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 3.666084268130362,
+          "cpu_seconds": 2.9720369999999985,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/03_SCOLHKG.Real.ConditionalVariance.log"
+        },
+        {
+          "name": "SCOLHKG.Real.KG",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 3.3413632130250335,
+          "cpu_seconds": 2.6611090000000015,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/04_SCOLHKG.Real.KG.log"
+        },
+        {
+          "name": "SCOLHKG.Real.AdditiveApproxKG",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 3.3095519468188286,
+          "cpu_seconds": 2.6737850000000005,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/05_SCOLHKG.Real.AdditiveApproxKG.log"
+        },
+        {
+          "name": "SCOLHKG.Real.ExactKGImplementation",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 7.351697514764965,
+          "cpu_seconds": 2.6654849999999968,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/06_SCOLHKG.Real.ExactKGImplementation.log"
+        },
+        {
+          "name": "SCOLHKG.Real.TaskPosterior",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 9.233099679462612,
+          "cpu_seconds": 3.6065480000000036,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/07_SCOLHKG.Real.TaskPosterior.log"
+        },
+        {
+          "name": "SCOLHKG.Real.CurrentPropagation",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.85140913631767,
+          "cpu_seconds": 2.909867999999996,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/08_SCOLHKG.Real.CurrentPropagation.log"
+        },
+        {
+          "name": "SCOLHKG.Real.CurrentCovariance",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.6912351585924625,
+          "cpu_seconds": 2.710835000000003,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/09_SCOLHKG.Real.CurrentCovariance.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GaussianReplicationCertificate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 6.133476475253701,
+          "cpu_seconds": 2.930517000000002,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/10_SCOLHKG.Real.GaussianReplicationCertificate.log"
+        },
+        {
+          "name": "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.93875836674124,
+          "cpu_seconds": 2.838307999999998,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/11_SCOLHKG.Measure.GaussianReplicationCertificate.log"
+        },
+        {
+          "name": "SCOLHKG.Measure.CurrentTerminalGate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 10.849527324549854,
+          "cpu_seconds": 5.384227000000003,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/12_SCOLHKG.Measure.CurrentTerminalGate.log"
+        },
+        {
+          "name": "SCOLHKG.CurrentMainlineProofInterface",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 4.676205134019256,
+          "cpu_seconds": 2.2811870000000027,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172137.222691Z_94114/13_SCOLHKG.CurrentMainlineProofInterface.log"
+        }
+      ]
+    },
+    {
+      "task_id": "t195308",
+      "node": "node001",
+      "phase": "proof-check",
+      "status": "passed",
+      "scheduler_retry_count": 3,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/result.json",
+      "wall_seconds": 72.34644089546055,
+      "environment_cpu_seconds": 3.079764,
+      "proof_check_cpu_seconds": 36.063557,
+      "runner_cpu_seconds": 0.03360394,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.12046403624117374,
+          "cpu_seconds": 0.050124,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_unpack",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 10.606349404901266,
+          "cpu_seconds": 3.02964,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/01_mathlib_cache_unpack.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GPRUpdate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.518890575505793,
+          "cpu_seconds": 2.725924,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/02_SCOLHKG.Real.GPRUpdate.log"
+        },
+        {
+          "name": "SCOLHKG.Real.ConditionalVariance",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.363538856618106,
+          "cpu_seconds": 2.608765,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/03_SCOLHKG.Real.ConditionalVariance.log"
+        },
+        {
+          "name": "SCOLHKG.Real.KG",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 4.915535237640142,
+          "cpu_seconds": 2.2786109999999997,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/04_SCOLHKG.Real.KG.log"
+        },
+        {
+          "name": "SCOLHKG.Real.AdditiveApproxKG",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.018764294683933,
+          "cpu_seconds": 2.292415000000002,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/05_SCOLHKG.Real.AdditiveApproxKG.log"
+        },
+        {
+          "name": "SCOLHKG.Real.ExactKGImplementation",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.5675004832446575,
+          "cpu_seconds": 2.497086999999997,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/06_SCOLHKG.Real.ExactKGImplementation.log"
+        },
+        {
+          "name": "SCOLHKG.Real.TaskPosterior",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 7.356849474832416,
+          "cpu_seconds": 3.625722000000003,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/07_SCOLHKG.Real.TaskPosterior.log"
+        },
+        {
+          "name": "SCOLHKG.Real.CurrentPropagation",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 5.874763900414109,
+          "cpu_seconds": 2.9063969999999983,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/08_SCOLHKG.Real.CurrentPropagation.log"
+        },
+        {
+          "name": "SCOLHKG.Real.CurrentCovariance",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 4.676268020644784,
+          "cpu_seconds": 2.6269129999999983,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/09_SCOLHKG.Real.CurrentCovariance.log"
+        },
+        {
+          "name": "SCOLHKG.Real.GaussianReplicationCertificate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 3.8552463529631495,
+          "cpu_seconds": 3.222573999999998,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/10_SCOLHKG.Real.GaussianReplicationCertificate.log"
+        },
+        {
+          "name": "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 4.145668241195381,
+          "cpu_seconds": 3.3040890000000047,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/11_SCOLHKG.Measure.GaussianReplicationCertificate.log"
+        },
+        {
+          "name": "SCOLHKG.Measure.CurrentTerminalGate",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 6.132733176462352,
+          "cpu_seconds": 5.461455999999998,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/12_SCOLHKG.Measure.CurrentTerminalGate.log"
+        },
+        {
+          "name": "SCOLHKG.CurrentMainlineProofInterface",
+          "phase": "proof_check",
+          "returncode": 0,
+          "wall_seconds": 3.1563185658305883,
+          "cpu_seconds": 2.513604000000001,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172204.205459Z_94480/13_SCOLHKG.CurrentMainlineProofInterface.log"
+        }
+      ]
+    },
+    {
+      "task_id": "t195307",
+      "node": "node001",
+      "phase": "cache-diagnose",
+      "status": "passed",
+      "scheduler_retry_count": 2,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.114906Z_94633/result.json",
+      "wall_seconds": 9.0366679020226,
+      "environment_cpu_seconds": 2.2024549999999996,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.013825354999999998,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.18921905010938644,
+          "cpu_seconds": 0.043029,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.114906Z_94633/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_diagnose",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 8.719523650594056,
+          "cpu_seconds": 2.1556729999999997,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.114906Z_94633/01_mathlib_cache_diagnose.log"
+        },
+        {
+          "name": "field_archive_contents",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.06908635050058365,
+          "cpu_seconds": 0.0037529999999996733,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.114906Z_94633/02_field_archive_contents.log"
+        }
+      ]
+    },
+    {
+      "task_id": "t195309",
+      "node": "node001",
+      "phase": "cache-diagnose",
+      "status": "passed",
+      "scheduler_retry_count": 2,
+      "scheduler_auto_retry": true,
+      "source_result_json": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.134187Z_94639/result.json",
+      "wall_seconds": 9.01695891842246,
+      "environment_cpu_seconds": 2.2057070000000003,
+      "proof_check_cpu_seconds": 0,
+      "runner_cpu_seconds": 0.014312992000000004,
+      "steps": [
+        {
+          "name": "lean_version",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.18938317522406578,
+          "cpu_seconds": 0.04246900000000001,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.134187Z_94639/00_lean_version.log"
+        },
+        {
+          "name": "mathlib_cache_diagnose",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 8.715877677313983,
+          "cpu_seconds": 2.159186,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.134187Z_94639/01_mathlib_cache_diagnose.log"
+        },
+        {
+          "name": "field_archive_contents",
+          "phase": "environment",
+          "returncode": 0,
+          "wall_seconds": 0.07221319619566202,
+          "cpu_seconds": 0.004052000000000167,
+          "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T172205.134187Z_94639/02_field_archive_contents.log"
+        }
+      ]
+    }
+  ],
+  "dependency_setup": {
+    "remote_root": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020",
+    "toolchain_upload": {
+      "source": "/home/erzhu419/.elan/toolchains/leanprover--lean4---v4.31.0",
+      "destination": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+      "steps": [
+        {
+          "command": [
+            "/usr/bin/python3",
+            "/home/erzhu419/mine_code/scheduleurm/skill/transport_exec.py",
+            "--",
+            "ssh",
+            "-n",
+            "-o",
+            "ConnectTimeout=30",
+            "-o",
+            "BatchMode=yes",
+            "-J",
+            "jtl110gpu",
+            "zhengliang01@202.197.46.16",
+            "mkdir -p /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain"
+          ],
+          "rc": 0
+        },
+        {
+          "command": [
+            "/usr/bin/python3",
+            "/home/erzhu419/mine_code/scheduleurm/skill/transport_exec.py",
+            "--bulk",
+            "--",
+            "rsync",
+            "-az",
+            "--stats",
+            "-e",
+            "ssh -o ConnectTimeout=30 -o BatchMode=yes -J jtl110gpu",
+            "/home/erzhu419/.elan/toolchains/leanprover--lean4---v4.31.0/",
+            "zhengliang01@202.197.46.16:/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/"
+          ],
+          "rc": 0
+        }
+      ],
+      "wall_seconds": 1573.5194632069906,
+      "client_self_cpu_seconds": 0.0012216190000000002,
+      "client_children_cpu_seconds": 79.119435,
+      "log": "/tmp/kg_lean_env_upload.log",
+      "lean_executed": false
+    },
+    "initial_cache_files": 1941,
+    "complete_cache_files": 1942,
+    "cache_transfers": [
+      {
+        "config": "/tmp/kg_lean_offline/cache_download.cfg",
+        "files": 1941,
+        "status": "passed",
+        "download_bytes": 124204346,
+        "streamed_files": 1941,
+        "automatic_retries": 0,
+        "local_lean_executed": false,
+        "payloads_saved_locally": false,
+        "server_cache": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache",
+        "log": "/tmp/kg_lean_offline/cache_transfer_20261019T165917.log",
+        "receiver_returncode": 0,
+        "wall_seconds": 267.26149629004067,
+        "client_cpu_seconds": 4.184080874,
+        "client_children_cpu_seconds": 0.034018999999999994
+      },
+      {
+        "config": "/tmp/kg_lean_offline/cache_delta.cfg",
+        "files": 1,
+        "status": "passed",
+        "download_bytes": 8246,
+        "streamed_files": 1,
+        "automatic_retries": 0,
+        "local_lean_executed": false,
+        "payloads_saved_locally": false,
+        "server_cache": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache",
+        "log": "/tmp/kg_lean_offline/cache_transfer_20261019T172006.log",
+        "receiver_returncode": 0,
+        "wall_seconds": 1.0336972760269418,
+        "client_cpu_seconds": 0.02398895899999999,
+        "client_children_cpu_seconds": 0.033077
+      }
+    ],
+    "network_head_failures": [
+      {
+        "variant": "network_heads",
+        "rows": [
+          {
+            "url": "https://lakecache.blob.core.windows.net/mathlib4/",
+            "returncode": 60,
+            "http_and_seconds": "000 0.654"
+          },
+          {
+            "url": "https://github.com/leanprover-community/static-curl/releases",
+            "returncode": 60,
+            "http_and_seconds": "000 0.200"
+          }
+        ]
+      },
+      {
+        "variant": "network_certifi_heads",
+        "rows": [
+          {
+            "url": "https://lakecache.blob.core.windows.net/mathlib4/",
+            "returncode": 60,
+            "http_and_seconds": "000 0.178"
+          },
+          {
+            "url": "https://github.com/leanprover-community/static-curl/releases",
+            "returncode": 60,
+            "http_and_seconds": "000 0.179"
+          }
+        ]
+      },
+      {
+        "variant": "network_static_heads",
+        "rows": [
+          {
+            "url": "https://lakecache.blob.core.windows.net/mathlib4/",
+            "returncode": 60,
+            "http_and_seconds": "000 0.175035"
+          },
+          {
+            "url": "https://github.com/leanprover-community/static-curl/releases",
+            "returncode": 60,
+            "http_and_seconds": "000 0.059255"
+          }
+        ]
+      }
+    ],
+    "retained_failures": [
+      "Initial run_on python3 PATH absent, rc127.",
+      "Remote /usr/bin/git absent; tool availability recorded.",
+      "System curl HEADs exit60 at both URLs.",
+      "System curl plus certifi HEADs exit60 at both URLs.",
+      "Official static curl plus certifi HEADs exit60 self-signed certificate at both URLs.",
+      "Initial dependency rsync returned 11 because destination parent was absent; mkdir then transfer succeeded.",
+      "Cache.IO.parseArgs expects a command at position zero; omission silently dropped Field. Fixed with get prefix; only one 8246-byte archive was added.",
+      "First generated cache diagnosis used reserved identifier exists; fixed to cachedPresent.",
+      "Terminal parameter unsafe was renamed isUnsafe before proof checking."
+    ],
+    "resolution": "Pinned toolchain upload and streamed TLS-verified upstream caches; no local Lean or persistent local payload cache.",
+    "metadata_inspections": {
+      "preflight": {
+        "log": "/tmp/kg_lean_env_preflight.json",
+        "client_measured_cpu_seconds": 0.0037136960000000163,
+        "remote_rc": 0,
+        "remote_summary": {
+          "cwd": "/home/zhengliang01/scheduleurm_work",
+          "df": {
+            "total": 270951309508608,
+            "used": 134637553319936,
+            "free": 122712004165632
+          },
+          "top_lean_names": [],
+          "glibc": {
+            "rc": 0,
+            "head": [
+              "ldd (GNU libc) 2.17",
+              "Copyright (C) 2012 Free Software Foundation, Inc."
+            ],
+            "stderr": "/usr/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n"
+          },
+          "git": {
+            "error": "[Errno 2] No such file or directory: '/usr/bin/git'"
+          },
+          "rsync": {
+            "rc": 0,
+            "head": [
+              "rsync  version 3.1.2  protocol version 31",
+              "Copyright (C) 1996-2015 by Andrew Tridgell, Wayne Davison, and others."
+            ],
+            "stderr": ""
+          }
+        }
+      },
+      "dep_tools": {
+        "log": "/tmp/kg_lean_env_dep_tools.json",
+        "client_measured_cpu_seconds": 0.02375329399999998,
+        "remote_rc": 0,
+        "remote_summary": {
+          "PATH": "/cm/local/apps/environment-modules/4.4.0//bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/cm/local/apps/environment-modules/4.4.0/bin",
+          "tools": {
+            "git": null,
+            "curl": "/usr/bin/curl",
+            "tar": "/usr/bin/tar",
+            "zstd": null
+          },
+          "paths": {
+            "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/git": false,
+            "/home/zhengliang01/miniconda3/bin/git": false,
+            "/home/zhengliang01/anaconda3/bin/git": false
+          }
+        }
+      },
+      "partial_ready": {
+        "log": "/tmp/kg_lean_env_partial_ready.json",
+        "client_measured_cpu_seconds": 0.004738814000000008,
+        "remote_rc": 0,
+        "remote_summary": {
+          "bin/lean": {
+            "exists": true,
+            "bytes": 9024
+          },
+          "bin/lake": {
+            "exists": true,
+            "bytes": 13840
+          },
+          "bin/leantar": {
+            "exists": true,
+            "bytes": 2653464
+          },
+          "lib/lean/Init.olean": {
+            "exists": true,
+            "bytes": 5888
+          },
+          "lib/lean/Lean.olean": {
+            "exists": true,
+            "bytes": 5984
+          },
+          "lib/lean/Lake.olean": {
+            "exists": true,
+            "bytes": 2024
+          },
+          "lib/lean/libInit_shared.so": {
+            "exists": true,
+            "bytes": 6232
+          },
+          "lib/lean/libleanshared.so": {
+            "exists": false,
+            "bytes": null
+          },
+          "lib/lean/libleanshared_1.so": {
+            "exists": false,
+            "bytes": null
+          },
+          "lib/lean/libleanshared_2.so": {
+            "exists": false,
+            "bytes": null
+          },
+          "lib/lean/libLake_shared.so": {
+            "exists": true,
+            "bytes": 11875896
+          }
+        }
+      },
+      "loader_ready": {
+        "log": "/tmp/kg_lean_env_loader_ready.json",
+        "client_measured_cpu_seconds": 0.0042246499999999965,
+        "remote_rc": 0,
+        "remote_summary": {
+          "lib/lean/libleanshared.so": {
+            "exists": true,
+            "bytes": 158116072
+          },
+          "lib/lean/libleanshared_1.so": {
+            "exists": true,
+            "bytes": 6232
+          },
+          "lib/lean/libleanshared_2.so": {
+            "exists": true,
+            "bytes": 6232
+          }
+        }
+      },
+      "network_heads": {
+        "log": "/tmp/kg_lean_env_network_heads.json",
+        "client_measured_cpu_seconds": 0.005815983999999996,
+        "remote_rc": 0,
+        "remote_summary": {
+          "rows": [
+            {
+              "url": "https://lakecache.blob.core.windows.net/mathlib4/",
+              "returncode": 60,
+              "http_and_seconds": "000 0.654",
+              "wall_seconds": 0.6737843444570899,
+              "stderr": "curl: (60) Issuer certificate is invalid.\nMore details here: http://curl.haxx.se/docs/sslcerts.html\n\ncurl performs SSL certificate verification by default, using a \"bundle\"\n of Certificate Authority (CA) public keys (CA certs). If the default\n bundle file isn't adequate, you can specify an alternate file\n using the --cacert option.\nIf this HTTPS se"
+            },
+            {
+              "url": "https://github.com/leanprover-community/static-curl/releases",
+              "returncode": 60,
+              "http_and_seconds": "000 0.200",
+              "wall_seconds": 0.22109807655215263,
+              "stderr": "curl: (60) Issuer certificate is invalid.\nMore details here: http://curl.haxx.se/docs/sslcerts.html\n\ncurl performs SSL certificate verification by default, using a \"bundle\"\n of Certificate Authority (CA) public keys (CA certs). If the default\n bundle file isn't adequate, you can specify an alternate file\n using the --cacert option.\nIf this HTTPS se"
+            }
+          ],
+          "server_self_cpu_seconds": 0.0067247520000000005,
+          "server_children_cpu_seconds": 0.25167599999999996,
+          "method": "HEAD only; discard response headers; no retries"
+        }
+      },
+      "network_certifi_heads": {
+        "log": "/tmp/kg_lean_env_network_certifi_heads.json",
+        "client_measured_cpu_seconds": 0.004267712000000007,
+        "remote_rc": 0,
+        "remote_summary": {
+          "bundle": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/lib/python3.10/site-packages/certifi/cacert.pem",
+          "bundle_exists": true,
+          "rows": [
+            {
+              "url": "https://lakecache.blob.core.windows.net/mathlib4/",
+              "returncode": 60,
+              "http_and_seconds": "000 0.178",
+              "wall_seconds": 0.1925124628469348,
+              "stderr": "curl: (60) Issuer certificate is invalid.\nMore details here: http://curl.haxx.se/docs/sslcerts.html\n\ncurl performs SSL certificate verification by default, using a \"bundle\"\n of Certificate Authority (CA) public keys (CA certs). If the default\n bundle file isn't adequate, you can specify an alternate file\n using the --cacert option.\nIf this HTTPS se"
+            },
+            {
+              "url": "https://github.com/leanprover-community/static-curl/releases",
+              "returncode": 60,
+              "http_and_seconds": "000 0.179",
+              "wall_seconds": 0.19167130067944527,
+              "stderr": "curl: (60) Issuer certificate is invalid.\nMore details here: http://curl.haxx.se/docs/sslcerts.html\n\ncurl performs SSL certificate verification by default, using a \"bundle\"\n of Certificate Authority (CA) public keys (CA certs). If the default\n bundle file isn't adequate, you can specify an alternate file\n using the --cacert option.\nIf this HTTPS se"
+            }
+          ],
+          "server_self_cpu_seconds": 0.007406375000000007,
+          "server_children_cpu_seconds": 0.24798399999999998,
+          "method": "HEAD only; explicit certifi CA; no automatic retries"
+        }
+      },
+      "network_static_heads": {
+        "log": "/tmp/kg_lean_env_network_static_heads.json",
+        "client_measured_cpu_seconds": 0.016087924000000003,
+        "remote_rc": 0,
+        "remote_summary": {
+          "curl": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/cache/curl-7.88.1",
+          "mode_before": "0o755",
+          "bundle": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/lib/python3.10/site-packages/certifi/cacert.pem",
+          "rows": [
+            {
+              "url": "https://lakecache.blob.core.windows.net/mathlib4/",
+              "returncode": 60,
+              "http_and_seconds": "000 0.175035",
+              "wall_seconds": 0.19811493065208197,
+              "stderr": "curl: (60) SSL certificate problem: self-signed certificate\nMore details here: https://curl.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and\nhow to fix it, please visit the web page mentioned above.\n"
+            },
+            {
+              "url": "https://github.com/leanprover-community/static-curl/releases",
+              "returncode": 60,
+              "http_and_seconds": "000 0.059255",
+              "wall_seconds": 0.08201579749584198,
+              "stderr": "curl: (60) SSL certificate problem: self-signed certificate\nMore details here: https://curl.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and\nhow to fix it, please visit the web page mentioned above.\n"
+            }
+          ],
+          "server_self_cpu_seconds": 0.0047613970000000005,
+          "server_children_cpu_seconds": 0.129605,
+          "method": "HEAD only; official static curl + certifi CA; no automatic retries"
+        }
+      }
+    },
+    "cache_metadata_inspections": {
+      "kg_lean_cache_unpack_diagnosis.json": {
+        "rc": 0,
+        "out": "{\"log\": \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T170433.990651Z_87571/01_mathlib_cache_unpack.log\", \"log_bytes\": 76, \"log_tail\": [\"Decompressing 1941 file(s)\", \"Decompressed in 43639 ms\", \"Completed successfully!\"], \"ltar_count\": 1941, \"ltar_count_matches_1941\": true, \"zero_byte_ltars\": [], \"exact_field\": {\"path\": \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Algebra/BigOperators/Field.olean\", \"exists\": false}, \"top_paths\": {\"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"build\", \"packages\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"SCOLHKG\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/Mathlib\": {\"stat\": {\"exists\": false}, \"names\": null}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"build\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"ir\", \"lib\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"lean\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"Cache\", \"Mathlib\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"names\": [\"Algebra\", \"Analysis\", \"Control\", \"Data\", \"Dynamics\", \"GroupTheory\", \"Init.ilean\", \"Init.ilean.hash\", \"Init.ir\", \"Init.ir.hash\", \"Init.olean\", \"Init.olean.hash\", \"Init.olean.private\", \"Init.olean.private.hash\", \"Init.olean.server\", \"Init.olean.server.hash\", \"Init.trace\", \"Lean\", \"LinearAlgebra\", \"Logic\", \"MeasureTheory\", \"NumberTheory\", \"Order\", \"RingTheory\", \"SetTheory\", \"Tactic\", \"Topology\", \"Util\"]}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/build/lib/lean\": {\"stat\": {\"exists\": false}, \"names\": null}}, \"field_olean_matches_within_proof_lake\": [\"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Tactic/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Topology/Algebra/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Topology/Algebra/Order/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Order/Filter/AtTopBot/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Data/Int/Cast/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Data/Nat/Cast/Order/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Algebra/Module/Torsion/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Algebra/Order/Nonneg/Field.olean\", \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Algebra/Order/Module/Field.olean\"], \"server_self_cpu_seconds\": 0.573267323}\n",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+        "client_self_cpu_seconds": 0.17331433000000002
+      },
+      "kg_lean_cache_field_metadata.json": {
+        "rc": 0,
+        "out": "{\"bigoperators\": {\"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Algebra/BigOperators\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"first_ten_names\": [\"Balance.ilean\", \"Balance.ilean.hash\", \"Balance.ir\", \"Balance.ir.hash\", \"Balance.olean\", \"Balance.olean.hash\", \"Balance.olean.private\", \"Balance.olean.private.hash\", \"Balance.olean.server\", \"Balance.olean.server.hash\"], \"field_files\": {}}, \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/.lake/build/ir/Mathlib/Algebra/BigOperators\": {\"stat\": {\"exists\": true, \"bytes\": 4096, \"is_dir\": true}, \"first_ten_names\": [\"Balance.c\", \"Balance.c.hash\", \"Expect.c\", \"Expect.c.hash\", \"Fin.c\", \"Fin.c.hash\", \"Finprod.c\", \"Finprod.c.hash\", \"Finsupp\", \"Group\"], \"field_files\": {}}}, \"mathlib_olean_count\": 1686, \"project_mathlib_build_dir\": {\"path\": \"/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/Mathlib\", \"exists\": false}, \"sample_ltar\": {\"name\": \"002c05d7c243e7f0.ltar\", \"bytes\": 4285, \"first16_hex\": \"4c5452338a0d29965c96d5de2e2f2e6c\"}, \"server_self_cpu_seconds\": 0.08790333399999999}\n",
+        "stderr": "bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\nbash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)\n",
+        "client_self_cpu_seconds": 0.15938719599999998
+      }
+    },
+    "external_roots": [
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Analysis.Real.Sqrt",
+      "Mathlib.Analysis.SpecialFunctions.Log.Basic",
+      "Mathlib.Data.Fintype.Basic",
+      "Mathlib.MeasureTheory.Measure.Real",
+      "Mathlib.Tactic.Common",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.Finiteness",
+      "Mathlib.Tactic.GCongr",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.Positivity",
+      "Mathlib.Tactic.Ring"
+    ]
+  },
+  "accounting": {
+    "environment_cpu_seconds": 86.34984,
+    "proof_check_cpu_seconds": 80.82624200000001,
+    "runner_cpu_seconds": 0.24439713999999998,
+    "measured_build_cpu_seconds": 167.42047914,
+    "included_scheduler_automatic_retry_cpu_seconds": 60.629289318,
+    "measured_network_head_server_cpu_seconds": 0.6481575239999999,
+    "setup_client_cpu_lower_bound_seconds": 79.19221653299999,
+    "cache_transfer_client_cpu_seconds": 4.275165833,
+    "remote_transfer_receiver_cpu_seconds": null,
+    "shared_ssh_control_master_cpu_seconds": null,
+    "scheduler_control_cpu_seconds": null,
+    "limits": [
+      "Wrapper and some import/metadata CPU were not measured; unknown fees are not zero.",
+      "Per-attempt wall times overlap under scheduler retries and are not summed.",
+      "Existing scientific fees and remaining budget were left unchanged."
+    ],
+    "measured_cache_metadata_server_cpu_seconds": 0.661170657,
+    "measured_cache_metadata_client_cpu_seconds": 0.332701526,
+    "measured_server_cpu_lower_bound_seconds": 168.729807321,
+    "measured_client_cpu_lower_bound_seconds": 83.80008389199999
+  },
+  "scientific_state": {
+    "new_simulations": 0,
+    "new_integrations": 0,
+    "new_source_fits": 0,
+    "new_posterior_restorations": 0,
+    "frozen_algorithms_changed": false,
+    "historical_failures_or_fees_deleted": false,
+    "remaining_budget_reset": false
+  },
+  "build_command_template": "lean -j1 -o <source>/.lake/build/lib/lean/<module>.olean <module>.lean; cwd=<source>"
+}

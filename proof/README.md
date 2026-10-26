@@ -7,7 +7,41 @@ external proof directory.
 Lean4 is the source of truth for formal proofs.  Markdown files are only the
 human-readable roadmap and code-to-theory map.
 
-## Current Claim Disposition
+## Current mainline interface (2026-10-20)
+
+`SCOLHKG/CurrentMainlineProofInterface.lean` is the current mainline interface.
+Its 16-module dependency closure passed Lean 4.31.0 on the scheduler. The seven
+current modules contain 94 theorems: 32 for propagation/covariance/terminal,
+26 for representation/query stability, and this batch's 21 source-kernel and
+15 fixed-affine-risk theorems. Twelve headline declarations depend only on
+`propext`, `Classical.choice` and `Quot.sound`, without placeholder proofs or
+added axioms.
+
+`CurrentSourceKernel` proves finite source, block, role and mixture PSD plus
+restriction identities; the physical-policy white term uses distinct policies.
+`CurrentAffineMismatch` derives its MSE identity from actual Bochner integrals,
+explicit moment integrability and normal equations. It applies to a fixed
+source affine rule on any probability space. Source matrix validity, Gaussian
+sampling laws, numerical and representation/loading error bounds retain their
+stated assumptions in the [proof plan](../SC-OLH-KG/docs/mainline_proof_gap_audit_and_plan_20261020.md).
+
+The [implementation-to-claim map](../SC-OLH-KG/docs/mainline_proof_gap_audit_and_plan_20261020.md#实现数学lean正文对应)
+connects the code, mathematical propositions and current declarations to the
+four conditional claims in the methods draft. It lists fixed-affine risk as
+an explanatory result, separately from the nonlinear AFTER implementation.
+
+The [current receipt](../SC-OLH-KG/paper_artifacts/mainline_source_kernel_mismatch_lean_20261020_result.json)
+retains one cache plan and three manual builds (two failures), 58.321 measured
+build CPU seconds and zero automatic retries. The final build reused 14 project
+modules. Existing 1,942 Mathlib cache files were reused; 493 missing dependency
+files were streamed directly to the cluster. The
+[first receipt](../SC-OLH-KG/paper_artifacts/mainline_lean_20261020_result.json)
+and [stability receipt](../SC-OLH-KG/paper_artifacts/mainline_stability_lean_20261020_result.json)
+keep all prior failures, recoveries and fees. See the
+[propagation proof](../SC-OLH-KG/docs/mainline_propagation_contrast_proof_20261020.md)
+and [terminal proof](../SC-OLH-KG/docs/mainline_terminal_gate_proof_20261020.md).
+
+## Historical Atlas claim disposition
 
 The final paper claim is the V2 source-scored structural initial design for
 ordered policy profiles. It does not require HVD, KG, SAASBO, historical V3
@@ -50,6 +84,24 @@ optimization contribution.  This empirical disposition changes the claim,
 not the validity of the Lean theorems.
 
 ## Build
+
+Run meaningful builds through scheduleurm on node001–node006, CPU-only.
+The current minimal checker is
+[`run_current_mainline_lean_cluster.py`](../scripts/run_current_mainline_lean_cluster.py):
+`--phase cache-plan` prepares the locked dependency list; the
+[streaming transfer helper](../scripts/transfer_current_mainline_lean_cache.py)
+supplies that cache when cluster HTTPS is unavailable; `--phase proof-check`
+unpacks cached dependencies and checks the current interface sequentially.
+Submit each attempt with scheduleurm's `--no-auto-requeue`; a failed attempt
+keeps its failure and fees, and a corrected proof is a separate manual attempt.
+Unchanged project modules reuse their compiled outputs when their source and
+project dependencies are older; the interface is always checked again.
+Upload changed Lean files with `--no-times --ignore-times` on those selected
+files: an edit made while an older build is queued can otherwise have an mtime
+older than that build's output. Leave unchanged cached sources in place.
+Local Lean execution is not part of this project's workflow.
+
+For the full historical target, run the following inside a scheduled cluster job:
 
 ```bash
 cd proof

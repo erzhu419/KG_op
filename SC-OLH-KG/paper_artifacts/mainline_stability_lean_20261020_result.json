@@ -1,0 +1,722 @@
+{
+  "status": "passed",
+  "date": "2026-10-20",
+  "timezone": "Asia/Shanghai",
+  "recorded_at_utc": "2026-10-19T23:41:13.209323+00:00",
+  "interface": "proof/SCOLHKG/CurrentMainlineProofInterface.lean",
+  "lean_version": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
+  "mathlib_revision": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+  "reference_task": "t195324",
+  "checked_project_modules": [
+    "SCOLHKG.Real.GPRUpdate",
+    "SCOLHKG.Real.ConditionalVariance",
+    "SCOLHKG.Real.KG",
+    "SCOLHKG.Real.AdditiveApproxKG",
+    "SCOLHKG.Real.ExactKGImplementation",
+    "SCOLHKG.Real.TaskPosterior",
+    "SCOLHKG.Real.CurrentPropagation",
+    "SCOLHKG.Real.CurrentCovariance",
+    "SCOLHKG.Real.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.GaussianReplicationCertificate",
+    "SCOLHKG.Measure.CurrentTerminalGate",
+    "SCOLHKG.Real.CurrentRepresentationStability",
+    "SCOLHKG.Real.CurrentQueryStability",
+    "SCOLHKG.CurrentMainlineProofInterface"
+  ],
+  "new_modules": {
+    "proof/SCOLHKG/Real/CurrentRepresentationStability.lean": {
+      "theorems": [
+        "common_reference_error",
+        "linearForm_error_le",
+        "frozen_linear_map_error",
+        "positive_standardization_error",
+        "retained_spectral_scale_error",
+        "positive_standardization_uniform_error",
+        "product_feature_error",
+        "quadratic_features_error",
+        "clipped_radius_error",
+        "radial_normalization_coordinate_error",
+        "source_encoder_prediction_error",
+        "cross_dimension_source_prediction_error",
+        "bilinear_kernel_error",
+        "positive_diagonal_reparameterization_mean",
+        "positive_diagonal_reparameterization_kernel"
+      ]
+    },
+    "proof/SCOLHKG/Real/CurrentQueryStability.lean": {
+      "theorems": [
+        "separated_pool_pair_order",
+        "sampled_feasibility_iff",
+        "sampled_feasible_set_eq",
+        "empty_feasible_branch_preserved",
+        "feasible_branch_selection_eq",
+        "feasible_branch_query_stable",
+        "fallback_loss_error_le",
+        "minimum_violation_query_stable",
+        "coupled_draw_error_le",
+        "coupled_draw_pool_error_le",
+        "chance_margin_error_le"
+      ]
+    }
+  },
+  "new_theorem_count": 26,
+  "cumulative_current_theorem_count": 58,
+  "headline_axiom_dependencies": {
+    "SCOLHKG.Real.CurrentPropagation.evidence_local_completion_contrast_decomposition": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentCovariance.fixed_correlation_covariance_psd": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Measure.current_certified_return_or_false_improvement_five_percent": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability.bilinear_kernel_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentRepresentationStability.radial_normalization_coordinate_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability.feasible_branch_query_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SCOLHKG.Real.CurrentQueryStability.minimum_violation_query_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "entire_legacy_library_rebuilt": false,
+  "scope": [
+    "Finite-coordinate common-reference, linear-map, positive-scale, quadratic and radial-normalization error propagation.",
+    "Source encoder and prediction/kernel perturbation bounds with explicit local error premises; positive diagonal reparameterization identities.",
+    "Same candidate pool and realized random vectors: sampled feasible-set and actual constrained-TS branch stability under strict score gaps.",
+    "Actual finite sentinel and normalized machine-epsilon fallback objective are retained; common-draw and chance-margin error bridges are explicit."
+  ],
+  "external_assumptions": [
+    "Profile reconstruction, quadrature and observable-control descriptor error bounds are premises, not newly estimated numerical certificates.",
+    "Encoder error constants are required only for the current input pair; positive scales, retained eigenvalues, coordinate and radius error bounds are explicit.",
+    "Actual Gaussian loading and noise-scale error bounds are premises; no covariance-to-square-root perturbation theorem is assumed automatically.",
+    "The pool, coupled random vectors and selected expert are fixed; strict feasibility/score gaps and feasible-branch sentinel dominance are required."
+  ],
+  "not_formalized_in_this_batch": [
+    "Arbitrary high-dimensional function sufficiency, changed adaptive pools or a global multi-round optimization guarantee.",
+    "Exact eigendecomposition/whitening implementation, floating-point errors, source-prior finite PSD construction and affine mismatch MSE identity."
+  ],
+  "dependency_reuse": {
+    "toolchain_and_all_package_sources": "reused without downloads or lock changes",
+    "additional_mathlib_cache_downloads": 0,
+    "final_reused_bootstrap_modules": [
+      "Batteries.Data.Array.Match",
+      "Batteries.Data.String.Basic",
+      "Batteries.Data.String.Matcher",
+      "Cache.Lean",
+      "Batteries.Tactic.OpenPrivate",
+      "Cache.IO",
+      "Cache.Hashing",
+      "Cache.Init",
+      "Cache.Requests",
+      "Cache.Main"
+    ],
+    "final_reused_proof_modules": [
+      "SCOLHKG.Real.GPRUpdate",
+      "SCOLHKG.Real.ConditionalVariance",
+      "SCOLHKG.Real.KG",
+      "SCOLHKG.Real.AdditiveApproxKG",
+      "SCOLHKG.Real.ExactKGImplementation",
+      "SCOLHKG.Real.TaskPosterior",
+      "SCOLHKG.Real.CurrentPropagation",
+      "SCOLHKG.Real.CurrentCovariance",
+      "SCOLHKG.Real.GaussianReplicationCertificate",
+      "SCOLHKG.Measure.GaussianReplicationCertificate",
+      "SCOLHKG.Measure.CurrentTerminalGate",
+      "SCOLHKG.Real.CurrentQueryStability"
+    ],
+    "final_compiled_proof_modules": [
+      "SCOLHKG.Real.CurrentRepresentationStability",
+      "SCOLHKG.CurrentMainlineProofInterface"
+    ],
+    "source_mtime_correction": {
+      "observed": "t195313 reused the earlier representation olean: its printed encoder premise still quantified over all inputs, although the newer local source used only the current input pair.",
+      "cause": "The local edit preceded completion of the older queued build; preserving its edit mtime made the newly deployed source older than the old olean.",
+      "correction": "Upload the selected changed Lean file with rsync --no-times --ignore-times; leave unchanged sources and cached modules in place.",
+      "verified": "t195324 compiled CurrentRepresentationStability and its interface again; the printed declaration has the current-pair encoder premise."
+    }
+  },
+  "scheduler": {
+    "signature_prefix": "KG_op/stability_lean_20261020/",
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "cpu_per_task": 1,
+    "vram": 0,
+    "task_field": "no_auto_requeue",
+    "required_value": true,
+    "manual_attempt_count": 3,
+    "automatic_retry_count": 0,
+    "failed_attempt_count": 1,
+    "controller_reload": {
+      "unit": "scheduler.service",
+      "main_pid": 16370,
+      "started_at_local": "2026-10-20 07:28:15 +08:00",
+      "kill_mode": "process"
+    },
+    "policy_regression": {
+      "cwd": "/home/erzhu419/mine_code/scheduleurm",
+      "command": "python3 -m pytest -q skill/tests/test_scheduler_cli.py skill/tests/test_scheduler_submit_task.py skill/tests/test_scheduler_bulk_submit.py skill/tests/test_scheduler_crash_requeue.py",
+      "result": "49 passed in 0.45s",
+      "exit_code": 0,
+      "coverage": "CLI and task-field wiring; repeated recovery calls cannot clone an opted-out failed task or change its existing failure/fee fields."
+    },
+    "task_records": [
+      {
+        "id": "t195311",
+        "status": "failed",
+        "signature": "KG_op/stability_lean_20261020/proof-check1",
+        "node": "node001",
+        "no_auto_requeue": true,
+        "parent_id": null,
+        "retry_count": null,
+        "log_path": "/tmp/sched_t195311.log",
+        "last_block_reason": "not auto-requeued: disabled for this task by --no-auto-requeue",
+        "started_at": 1792452628.443443,
+        "finished_at": 1792452631.0,
+        "exit_code": 1
+      },
+      {
+        "id": "t195313",
+        "status": "done",
+        "signature": "KG_op/stability_lean_20261020/proof-check2",
+        "node": "node001",
+        "no_auto_requeue": true,
+        "parent_id": null,
+        "retry_count": null,
+        "log_path": "/tmp/sched_t195313.log",
+        "last_block_reason": null,
+        "started_at": 1792452833.5644205,
+        "finished_at": 1792452834.0,
+        "exit_code": 0
+      },
+      {
+        "id": "t195324",
+        "status": "done",
+        "signature": "KG_op/stability_lean_20261020/proof-check3",
+        "node": "node001",
+        "no_auto_requeue": true,
+        "parent_id": null,
+        "retry_count": null,
+        "log_path": "/tmp/sched_t195324.log",
+        "last_block_reason": null,
+        "started_at": 1792453145.9111853,
+        "finished_at": 1792453147.0,
+        "exit_code": 0
+      }
+    ],
+    "snapshot_recorded_at_utc": "2026-10-19T23:42:05.309327+00:00"
+  },
+  "attempts": [
+    {
+      "task_id": "t195311",
+      "final_source_reference": false,
+      "note": "Initial Lean sum/section errors retained.",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233012.982301Z_173476",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233012.982301Z_173476/00_lean_version.log",
+            "wall_seconds": 0.06207999400794506,
+            "cpu_seconds": 0.060196999999999994
+          },
+          {
+            "name": "mathlib_cache_unpack",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/Cache/Main.lean",
+              "unpack"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233012.982301Z_173476/01_mathlib_cache_unpack.log",
+            "wall_seconds": 8.157078253105283,
+            "cpu_seconds": 4.989633
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentRepresentationStability",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentRepresentationStability.olean",
+              "SCOLHKG/Real/CurrentRepresentationStability.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233012.982301Z_173476/02_SCOLHKG.Real.CurrentRepresentationStability.log",
+            "wall_seconds": 6.742133910767734,
+            "cpu_seconds": 4.943306
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentQueryStability",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentQueryStability.olean",
+              "SCOLHKG/Real/CurrentQueryStability.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 1,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233012.982301Z_173476/03_SCOLHKG.Real.CurrentQueryStability.log",
+            "wall_seconds": 3.0945294741541147,
+            "cpu_seconds": 2.639985000000001
+          }
+        ],
+        "status": "failed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "proof-check",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 18.11969010718167,
+        "runner_cpu_seconds": 0.026190540999999998,
+        "child_cpu_seconds": 12.633121000000001,
+        "environment_cpu_seconds": 5.04983,
+        "proof_check_cpu_seconds": 7.583291000000001,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "proof_check_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.CurrentMainlineProofInterface"
+        ],
+        "reused_proof_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate"
+        ],
+        "error": "SCOLHKG.Real.CurrentQueryStability returned 1; see /home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233012.982301Z_173476/03_SCOLHKG.Real.CurrentQueryStability.log"
+      }
+    },
+    {
+      "task_id": "t195313",
+      "final_source_reference": false,
+      "note": "Passed, but stale representation olean required the final source recheck.",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233338.531008Z_174404",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233338.531008Z_174404/00_lean_version.log",
+            "wall_seconds": 0.06058958172798157,
+            "cpu_seconds": 0.058768
+          },
+          {
+            "name": "mathlib_cache_unpack",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/Cache/Main.lean",
+              "unpack"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233338.531008Z_174404/01_mathlib_cache_unpack.log",
+            "wall_seconds": 7.368983507156372,
+            "cpu_seconds": 4.922908
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentQueryStability",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentQueryStability.olean",
+              "SCOLHKG/Real/CurrentQueryStability.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233338.531008Z_174404/02_SCOLHKG.Real.CurrentQueryStability.log",
+            "wall_seconds": 4.306963515467942,
+            "cpu_seconds": 3.2887190000000004
+          },
+          {
+            "name": "SCOLHKG.CurrentMainlineProofInterface",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/CurrentMainlineProofInterface.olean",
+              "SCOLHKG/CurrentMainlineProofInterface.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233338.531008Z_174404/03_SCOLHKG.CurrentMainlineProofInterface.log",
+            "wall_seconds": 3.9042716715484858,
+            "cpu_seconds": 2.892541999999999
+          }
+        ],
+        "status": "passed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "proof-check",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 15.669005546718836,
+        "runner_cpu_seconds": 0.019051246999999993,
+        "child_cpu_seconds": 11.162937,
+        "environment_cpu_seconds": 4.981675999999999,
+        "proof_check_cpu_seconds": 6.181260999999999,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "proof_check_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.CurrentMainlineProofInterface"
+        ],
+        "reused_proof_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability"
+        ]
+      }
+    },
+    {
+      "task_id": "t195324",
+      "final_source_reference": true,
+      "note": "Final current source checked; previous successful dependencies reused.",
+      "runner_result": {
+        "attempt_directory": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233850.407899Z_176120",
+        "proof": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+        "toolchain": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain",
+        "steps": [
+          {
+            "name": "lean_version",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "--version"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233850.407899Z_176120/00_lean_version.log",
+            "wall_seconds": 0.061672854237258434,
+            "cpu_seconds": 0.059335999999999986
+          },
+          {
+            "name": "mathlib_cache_unpack",
+            "phase": "environment",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "--run",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib/Cache/Main.lean",
+              "unpack"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233850.407899Z_176120/01_mathlib_cache_unpack.log",
+            "wall_seconds": 7.127690464258194,
+            "cpu_seconds": 4.785312
+          },
+          {
+            "name": "SCOLHKG.Real.CurrentRepresentationStability",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/Real/CurrentRepresentationStability.olean",
+              "SCOLHKG/Real/CurrentRepresentationStability.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233850.407899Z_176120/02_SCOLHKG.Real.CurrentRepresentationStability.log",
+            "wall_seconds": 6.502832693979144,
+            "cpu_seconds": 4.9299800000000005
+          },
+          {
+            "name": "SCOLHKG.CurrentMainlineProofInterface",
+            "phase": "proof_check",
+            "command": [
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/toolchain/bin/lean",
+              "-j1",
+              "-o",
+              "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/build/lib/lean/SCOLHKG/CurrentMainlineProofInterface.olean",
+              "SCOLHKG/CurrentMainlineProofInterface.lean"
+            ],
+            "cwd": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+            "returncode": 0,
+            "log": "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/lean_attempts/20261019T233850.407899Z_176120/03_SCOLHKG.CurrentMainlineProofInterface.log",
+            "wall_seconds": 3.2814855175092816,
+            "cpu_seconds": 2.6224359999999987
+          }
+        ],
+        "status": "passed",
+        "scientific_computation": false,
+        "runner_automatic_retries": 0,
+        "phase": "proof-check",
+        "network_requests": false,
+        "cpu_affinity": [
+          0
+        ],
+        "source_roots": [
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/mathlib",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/plausible",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/LeanSearchClient",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/importGraph",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/proofwidgets",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/aesop",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Qq",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/batteries",
+          "/home/zhengliang01/scheduleurm_work/KG_op_mainline_lean_20261020/proof/.lake/packages/Cli"
+        ],
+        "wall_seconds": 17.004493253305554,
+        "runner_cpu_seconds": 0.023194045000000003,
+        "child_cpu_seconds": 12.397063999999999,
+        "environment_cpu_seconds": 4.844648,
+        "proof_check_cpu_seconds": 7.552415999999999,
+        "environment_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "reused_bootstrap_modules": [
+          "Batteries.Data.Array.Match",
+          "Batteries.Data.String.Basic",
+          "Batteries.Data.String.Matcher",
+          "Cache.Lean",
+          "Batteries.Tactic.OpenPrivate",
+          "Cache.IO",
+          "Cache.Hashing",
+          "Cache.Init",
+          "Cache.Requests",
+          "Cache.Main"
+        ],
+        "proof_check_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentRepresentationStability",
+          "SCOLHKG.Real.CurrentQueryStability",
+          "SCOLHKG.CurrentMainlineProofInterface"
+        ],
+        "reused_proof_modules": [
+          "SCOLHKG.Real.GPRUpdate",
+          "SCOLHKG.Real.ConditionalVariance",
+          "SCOLHKG.Real.KG",
+          "SCOLHKG.Real.AdditiveApproxKG",
+          "SCOLHKG.Real.ExactKGImplementation",
+          "SCOLHKG.Real.TaskPosterior",
+          "SCOLHKG.Real.CurrentPropagation",
+          "SCOLHKG.Real.CurrentCovariance",
+          "SCOLHKG.Real.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.GaussianReplicationCertificate",
+          "SCOLHKG.Measure.CurrentTerminalGate",
+          "SCOLHKG.Real.CurrentQueryStability"
+        ]
+      }
+    }
+  ],
+  "accounting": {
+    "environment_cpu_seconds": 14.876154,
+    "proof_check_cpu_seconds": 21.316968,
+    "runner_cpu_seconds": 0.068435833,
+    "measured_build_cpu_seconds": 36.261557833,
+    "included_failed_attempt_build_cpu_seconds": 12.659311541000001,
+    "subsequent_manual_check_cpu_seconds": 23.602246291999997,
+    "automatic_retry_cpu_seconds": 0,
+    "prior_receipt": "SC-OLH-KG/paper_artifacts/mainline_lean_20261020_result.json",
+    "prior_measured_build_cpu_seconds": 167.42047914,
+    "cumulative_measured_build_cpu_seconds": 203.68203697299998,
+    "source_transfer_client_and_receiver_cpu_seconds": null,
+    "scheduler_control_cpu_seconds": null,
+    "local_edit_and_policy_test_cpu_seconds": null,
+    "limits": [
+      "Build CPU includes all three attempts, environment work and runner overhead. Transfer, controller and unmeasured local costs are not zero; this is a measured lower bound.",
+      "Prior 13 executions and 7 automatic retries remain in the prior receipt; no historical charge is removed."
+    ]
+  },
+  "scientific_state": {
+    "new_integrations": 0,
+    "new_simulations": 0,
+    "new_source_fits": 0,
+    "new_posterior_restorations": 0,
+    "new_truth_scoring": 0,
+    "frozen_models_changed": false,
+    "historical_failures_preserved": true,
+    "scientific_fee_ledger_changed": false,
+    "remaining_budget_reset": false
+  }
+}

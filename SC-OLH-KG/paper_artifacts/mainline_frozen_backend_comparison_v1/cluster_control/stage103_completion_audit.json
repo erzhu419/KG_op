@@ -1,0 +1,210 @@
+{
+  "stage": 103,
+  "status": "complete",
+  "completed_utc": "2026-10-19T12:23:26.280366+00:00",
+  "task_ids": [
+    "t195236"
+  ],
+  "checks": {
+    "status": "passed",
+    "returncode": 0,
+    "test_files": [
+      "tests/test_mainline_frozen_backend_comparison.py"
+    ],
+    "command": [
+      "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+      "-m",
+      "pytest",
+      "-p",
+      "no:capture",
+      "-q",
+      "tests/test_mainline_frozen_backend_comparison.py"
+    ],
+    "test_counts": {
+      "passed": 13
+    },
+    "cpu_seconds": 2.932626,
+    "wall_seconds": 3.6108252378180623,
+    "completed_utc": "2026-10-19T12:23:22.447954+00:00",
+    "automatic_retries": 0,
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0
+  },
+  "phase_sequence": {
+    "status": "complete",
+    "started_utc": "2026-10-19T12:23:18.835255+00:00",
+    "phases": [
+      {
+        "phase": "substitute_checks",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "no:capture",
+          "-q",
+          "tests/test_mainline_frozen_backend_comparison.py"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "child_cpu_seconds": 2.932626,
+        "wall_seconds": 3.6108252378180623
+      },
+      {
+        "phase": "saved_record_audit",
+        "command": [
+          "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+          "-u",
+          "-m",
+          "performance.analyze_mainline_frozen_backend_comparison",
+          "--checks",
+          "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1/checks.json"
+        ],
+        "returncode": 0,
+        "launch_error": null,
+        "child_cpu_seconds": 3.836308,
+        "wall_seconds": 4.210643112659454
+      }
+    ],
+    "new_simulator_calls": 0,
+    "new_scores": 0,
+    "new_fits": 0,
+    "new_posterior_restorations": 0,
+    "automatic_retries": 0,
+    "updated_utc": "2026-10-19T12:23:26.661837+00:00"
+  },
+  "analysis_completion": {
+    "status": "complete",
+    "cohorts": [
+      "stage85",
+      "stage93"
+    ],
+    "validation": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/validation/stage103_attempt1/checks.json",
+    "new_work": {
+      "new_simulation_calls": 0,
+      "new_candidate_scores": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "model_or_posterior_restorations": 0,
+      "rng_draws": 0
+    },
+    "analysis_attempt": {
+      "stage": "stage103_saved_backend_comparison",
+      "status": "complete",
+      "new_simulation_calls": 0,
+      "new_candidate_scores": 0,
+      "new_truth_function_calls": 0,
+      "new_source_fits": 0,
+      "model_or_posterior_restorations": 0,
+      "rng_draws": 0,
+      "cpu_seconds": 2.383959483,
+      "wall_seconds": 2.6706543127074838,
+      "completed_utc": "2026-10-19T12:23:26.280366+00:00",
+      "node": "node005"
+    },
+    "analysis_ledger": "paper_artifacts/mainline_frozen_backend_comparison_v1/attempts.jsonl",
+    "headline_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/headline.json",
+    "detailed_summary_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/summary.json",
+    "geometry_csv_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/geometry_effects.csv"
+  },
+  "wrapper_records": {
+    "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.json": {
+      "status": "complete",
+      "node": "node005",
+      "command": [
+        "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
+        "-u",
+        "/home/zhengliang01/scheduleurm_work/KG_op_mainline_cluster/scripts/run_mainline_frozen_backend_comparison_cluster.py",
+        "--worker"
+      ],
+      "started_utc": "2026-10-19T12:23:18.757378+00:00",
+      "subprocess_started": true,
+      "child_returncode": 0,
+      "completed_utc": "2026-10-19T12:23:26.672202+00:00",
+      "wall_seconds": 7.914861422032118,
+      "log_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/jobs/audit/checks_and_saved_records/0_1.log",
+      "own_cpu_seconds": 0.07071899999999999,
+      "child_cpu_seconds": 6.877466,
+      "total_cpu_seconds": 6.9481850000000005,
+      "outer_exit_policy": "Saved child failure is not retried by scheduler"
+    }
+  },
+  "scheduler_final_single_snapshot": {
+    "utc": "2026-10-19T12:25:28.082592+00:00",
+    "task_id": "t195236",
+    "tasks": [
+      {
+        "id": "t195236",
+        "status": "running",
+        "node": "node005",
+        "cpu_cores": 1,
+        "est_vram_mb": 0,
+        "exit_code": null,
+        "retry_count": 0,
+        "started_at": 1792412614.0982625,
+        "finished_at": null,
+        "last_block_reason": null
+      }
+    ],
+    "local_control_cpu_seconds": 4.688977451,
+    "purpose": "One final targeted queue retry/exit snapshot after successful wrapper; no scheduler mutation"
+  },
+  "wrapper_duplicate_rows": 0,
+  "analysis_attempt_rows": 1,
+  "controller_exit": {
+    "returncode": 0,
+    "pid": 2805287,
+    "completed_utc": "2026-10-19T12:24:07.020629+00:00",
+    "child_cpu_seconds": 82.579926,
+    "supervisor_cpu_seconds": 0.0003244649999999995,
+    "wall_seconds": 120.18639759504003,
+    "automatic_retries": 0
+  },
+  "cohort_coverage_preserved": [
+    {
+      "name": "stage85",
+      "registered_geometries": 144,
+      "registered_terminal_cells": 2592,
+      "sealed_terminal_counts": {
+        "complete": 2592
+      },
+      "scoring_failure_count": 0,
+      "source_warning_document": null
+    },
+    {
+      "name": "stage93",
+      "registered_geometries": 144,
+      "registered_terminal_cells": 3168,
+      "sealed_terminal_counts": {
+        "complete": 3101,
+        "missing": 67
+      },
+      "scoring_failure_count": 0,
+      "source_warning_document": "docs/mainline_source_alignment_fit_results_20261018.md"
+    }
+  ],
+  "result_download_receipt": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_result_download_receipt.json",
+  "accounting_file": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_accounting.json",
+  "known_new_cpu_seconds": {
+    "local_control": 4.95310739,
+    "remote_control": 0.721867161,
+    "scheduler_wrapper_inclusive": 6.9481850000000005,
+    "controller_inclusive": 82.580250465,
+    "total": 95.204608812,
+    "total_is_known_subtotal": true,
+    "unmeasured_local_editing_and_remote_probe_cpu_seconds": null,
+    "accounting_compilation_cpu_seconds": 0.0011987959999999985,
+    "nested_not_added_again": [
+      "analysis_attempt CPU is inside analysis child and wrapper CPU",
+      "pytest CPU is inside wrapper CPU",
+      "manual-dispatch CPU is inside controller child CPU"
+    ]
+  },
+  "historic_results_unchanged": true,
+  "all_original_controls_failures_warnings_and_fees_retained": true,
+  "new_scientific_calls": 0,
+  "final_document_upload_receipt": "paper_artifacts/mainline_frozen_backend_comparison_v1/cluster_control/stage103_final_document_upload_20261019.json",
+  "final_document_upload_status": "completed"
+}

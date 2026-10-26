@@ -1,8 +1,8 @@
-# 来源先验跨策略传播的完整证据链：Stage87／Stage95整合，Stage101论证收束
+# 来源先验跨策略传播的完整证据链：Stage103统一方法与后端配对补充
 
 初版Stage87于2026-10-18形成；2026-10-19的Stage95将[Stage93独立来源关联验证](mainline_source_alignment_target_results_20261018.md)与[Stage94保存路径分析](mainline_source_alignment_paths_results_20261019.md)补入同一证据链。Stage94是对Stage93的事后解释，不是又一次独立复现。原Stage85/86和更早批次保留各自身份、分母与费用。 Stage101据此形成[研究论证稿](mainline_research_argument_20261019.md)，统一初始化后端干预、来源关联和传播交互的主张范围，保留原前端论文的独立身份；没有新增样本或重算统计。 Stage102将其展开为[方法正文](mainline_methods_working_draft_20261019.md)和[实验正文](mainline_experiments_working_draft_20261019.md)，沿用项目代码、术语和封存结果，原前端论文不变。
 
-本轮仅整理已有文档、封存结果及小摘要，冻结AFTER、来源模型、表示、前端、搜索、名单构造、旧终验和门槛。新增仿真、终验、真值/候选评分、拟合、模型/后验恢复、重放及随机抽样均0；没有新计算批次，也没有新的独立样本，未重跑失败或筛选补丁。
+Stage95/101/102仅整理已有文档、封存结果及小摘要，没有新增统计计算。Stage103依[统一方法与完整计划](mainline_unified_method_and_plan_20261019.md)补齐四类结构的实际分工，并通过scheduler只读封存指标，补充AFTER对同源GP与旧native邻域后端的几何配对分析。AFTER、来源模型、表示、前端、搜索、名单构造、旧终验和门槛冻结；新增仿真、终验、真值/候选评分、拟合、模型/后验恢复、重放及随机抽样均0，没有新的独立样本，未重跑失败或筛选补丁。
 
 **当前支持三个层次的主张：**
 
@@ -11,6 +11,16 @@
 3. 同一四臂配对子集上，正确来源关联增强初始化传播的获证作用；净质量交互尚未确认。新发现策略的正质量增加与新增损失同时存在，获证增加不能替代质量改善。
 
 这回到[原始目标](original_goal_and_mainline_contract_20261015.md)：用来源学到的prior建立跨策略响应关系，让少量观测改善预算内决策。来源预测、共同状态查询、独立部署和保存路径分别承担证据链中的不同环节。
+
+## 已有前后端融合与证据身份
+
+当前算法已将旧LearnedMetaPrior组合前端与来源系数prior、AFTER、约束TS和独立旧终验连接。历史[前端组件研究](../manuscript/meta_prior_legacy_frontend.tex)的通用形状＋来源模板组合为60/60，来源模板单独40/60、形状单独23/60；这是固定家族下的算法种子重复，历史终验合同单列。它不同于后来64策略的SourceScoredProfileAtlas，也不替代V51完整在线后验/HVD/KG的历史结果。
+
+当前AFTER−POINT在共同原学习前端上识别初始化后端传播增量。因此，“前端有贡献，固定该前端后后端传播继续带来收益”已有对应证据；“四类prior逐项必要”或“前后端具有额外协同交互”是更强的另一问题。四类prior的实际作用、冻结前端低频配置、后端谱／加性身份及native风险边际替换见[实际作用表](mainline_unified_method_and_plan_20261019.md)。本轮补充后端比较保留两批144几何各自分母，旧24批仍按下表与原报告分别保留。
+
+[Stage103配对补充已完成](mainline_frozen_backend_comparison_results_20261019.md)。AFTER−同源GP在Stage85/93的C分别+3.819〔0.577,7.062〕、+5.556〔2.166,8.945〕个百分点，G为+0.000457473〔0.000184753,0.000730194〕（134几何）和+0.000395234〔0.000125037,0.000665431〕（136几何）；四个单流G及去最大正几何后的G区间均正。Queue主要贡献获证优势、FactorShock主要贡献质量优势，Inventory等负例和未知量保留。AFTER−旧native邻域在旧批C为正、G跨0，新批G为正、C跨0；不构成全面支配。这是封存指标的事后补充比较，不是新独立样本、四prior逐项消融或前后端协同识别。
+
+该分析直接读取已有R，三项实际比较的C/R均覆盖144几何，G仍分别缺10／8个初始可行基线；来源对照105/97及全144null不变。两批全部9/11臂和67失败、Queue警告与历史账保留。t195236/node005的13项替身通过，单次分析CPU2.383959483秒嵌套于6.948185秒wrapper内，控制费用另列；无新增仿真、评分、拟合、恢复或失败重跑。原AFTER−POINT全部指标行和区间一致。
 
 ## 被检验的prior与对照
 
@@ -163,6 +173,8 @@ Stage93的41任务和Stage94的8任务已有零retry/重复的完成证据；原
 账目入口：[旧批历史账](../paper_artifacts/mainline_precision_propagation_paths_v1/cluster_control/stage86_completion_compact_20261018.json)、[Stage93分层账](../paper_artifacts/mainline_source_alignment_control_v1/cluster_control/stage93_accounting.json)、[Stage94分层账](../paper_artifacts/mainline_source_alignment_paths_v1/cluster_control/stage94_accounting.json)。Stage95仅文档传输与控制费用单列在[本轮回执](../paper_artifacts/mainline_evidence_chain_update_v1/cluster_control/stage95_accounting.json)，不改历史账，不拉取服务器轨迹或模型。
 
 ## 当前决定
+
+Stage104补充：[统一方法证明审查与计划](mainline_proof_gap_audit_and_plan_20261020.md)已建立当前四项条件命题、固定仿射失配解释及实现—Lean映射，三批共94条定理、16模块依赖闭包通过既有构建。现已与封存配对结果接入[论文核心论证](mainline_research_argument_20261019.md#条件命题与封存证据如何共同支持主张)：理论说明工作矩、目标差、一步查询及终验事件，部署收益由原Stage85/93配对端点支持。旧Atlas／KG适用对象保留；本次仅本地文档连接，未新增统计重算、科学计算、构建或服务器读取，以下实证主张、分母、全部失败及恢复费用和余量不变。
 
 **保留AFTER与旧终端，来源—查询—部署证据链完成本轮整合。** 真实prior下初始化传播的决策收益已在两批独立几何分别复现；来源关联对AFTER的条件部署价值及获证交互得到支持；全144来源效应、净质量交互、来源学习相对无来源的必要性及纯协方差机制仍是未确认的主张。当前证据足以支撑有边界的主线结论，无需以筛补丁、扩大同类样本或单query精算作为收束前置条件。
 
