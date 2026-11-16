@@ -1,0 +1,658 @@
+{
+  "campaign_name": "v2_or_live_sumo_v1",
+  "manifest_relpath": "v2_or/manifests/v2_or_live_sumo_v1.json",
+  "stage": "search_and_verify",
+  "created_utc": "2026-11-16T09:35:40.573885+00:00",
+  "n_jobs": 40,
+  "jobs": [
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s901_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 901,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s901_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 901,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s901_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 901,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s901_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 901,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s901_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 901,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s902_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 902,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s902_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 902,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s902_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 902,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s902_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 902,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t00_s902_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 0,
+      "seed": 902,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s901_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10908,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s901_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10908,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s901_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10908,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s901_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10908,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s901_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10908,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s902_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10909,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s902_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10909,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s902_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10909,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s902_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10909,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t01_s902_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 1,
+      "seed": 10909,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s901_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20915,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s901_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20915,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s901_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20915,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s901_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20915,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s901_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20915,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s902_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20916,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s902_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20916,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s902_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20916,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s902_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20916,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t02_s902_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 2,
+      "seed": 20916,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s901_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30922,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s901_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30922,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s901_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30922,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s901_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30922,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s901_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30922,
+      "rep_seed": 901,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s902_TLS-OLH-KG",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30923,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s902_STOP",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30923,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s902_SCBO",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30923,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s902_RGPE",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30923,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_N15_t03_s902_Target-SPSA",
+      "family": "Ingolstadt21_LiveSUMO",
+      "target_task_idx": 3,
+      "seed": 30923,
+      "rep_seed": 902,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    }
+  ],
+  "truth_used": false
+}

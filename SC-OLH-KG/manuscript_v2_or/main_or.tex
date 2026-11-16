@@ -1,0 +1,95 @@
+\pdfminorversion=7
+\documentclass[opre,dblanonrev]{informs4}
+
+\RequirePackage{tgtermes}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
+\RequirePackage{bm}
+\RequirePackage{endnotes}
+
+\OneAndAHalfSpacedXI
+
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{microtype}
+\usepackage{placeins}
+\usepackage{natbib}
+\bibpunct[, ]{(}{)}{,}{a}{}{,}
+\def\bibfont{\small}
+\def\bibsep{\smallskipamount}
+\def\bibhang{24pt}
+\def\newblock{\ }
+\def\BIBand{and}
+\usepackage[hidelinks]{hyperref}
+
+\EquationsNumberedThrough
+\TheoremsNumberedThrough
+\ECRepeatTheorems
+
+\setlength{\emergencystretch}{2em}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{18pt}
+\def\theARTICLEABSTRACT{%
+  \HOOKb
+  \vspace*{12pt}
+  \begin{minipage}[t]{\dimexpr\textwidth-2pt\relax}\parindent1em
+    \ABSfont
+    \noindent\theABSTRACT\endgraf
+    \vskip5pt
+    \theFUNDING
+    \theKEYWORDS
+    \theSUBJECTCLASS
+    \theAREAOFREVIEW
+    \theMSCCLASS
+    \theORMSCLASS
+    \if@BLINDREV\else\theHISTORY\fi
+    \noindent\hrulefill
+  \end{minipage}
+}
+\makeatother
+
+\MANUSCRIPTNO{}
+\RUNAUTHOR{Authors' names blinded for peer review}
+\RUNTITLE{Safe Functional Meta-Priors from Legacy Optimization Logs}
+\TITLE{Learning Safe Functional Meta-Priors from Legacy Optimization Logs for High-Dimensional Chance-Constrained Simulation Optimization}
+\ARTICLEAUTHORS{\AUTHOR{Authors omitted for double-anonymous peer review}}
+
+\ABSTRACT{Organizations solving high-dimensional chance-constrained simulation optimization problems routinely accumulate historical evaluation logs generated on related systems by legacy derivative-free solvers (such as SPSA, CMA-ES, NSGA-II, or operational heuristics). Reusing these logs to accelerate sequential search on a new, potentially higher-dimensional target problem faces three fundamental obstacles: non-conformable policy dimensions across horizons ($d_s \neq d_t$), severe adaptive selection bias toward elite basins in legacy trajectories, and catastrophic heteroscedastic variance blow-up when source--target constraint mean shifts leak into posterior noise estimates. We propose \emph{Tempered Legacy-Trajectory State-Coupled Orthogonal Heteroscedastic Knowledge Gradient} (\textbf{TLS-OLH-KG}), a closed-form transfer-and-certification framework. Offline, policies of arbitrary dimension map through public nominal system dynamics onto a dimension-invariant state-risk exposure manifold, where bounded inverse-occupancy debiasing, graph-Laplacian low-pass filtering, Gram whitening, and cross-task invariance sparsity extract a low-dimensional orthogonal prior alongside an explicit residual safety floor. Online, we prove that untempered joint mean--variance transfer suffers exponential variance inflation under task shift while post-initialization freezing stagnates; we resolve this dichotomy by updating Heteroscedastic Variance Decomposition (HVD) parameters strictly from shift-invariant within-policy replication dispersion, coupled with marginal-likelihood-tempered semiparametric Gaussian processes and millisecond-scale joint Verification-Aware Knowledge Gradient (\texttt{V-KG}) lookahead. Deployment is guarded by an independent feasible-aware three-slot exact binomial/noncentral-$t$ verifier with machine-checked Lean~4 finite-sample familywise safety ($\le \delta$). Across multi-period inventory, nonstationary queueing, 18 real-world European electricity markets, and Ingolstadt-21 urban signal control, \textbf{TLS-OLH-KG} achieves zero false safety certificates while significantly outperforming cold-start and transfer Bayesian optimization baselines.}
+
+\KEYWORDS{simulation optimization; chance constraints; knowledge gradient; heteroscedastic metamodeling; transfer learning; legacy optimization logs}
+\SUBJECTCLASS{Simulation: efficiency and statistical analysis; Programming: stochastic, chance-constrained.}
+\AREAOFREVIEW{Simulation}
+
+\begin{document}
+\maketitle
+
+\input{sections/01_introduction}
+\input{sections/02_literature}
+\input{sections/03_problem_and_legacy_logs}
+\input{sections/04_tempered_hvd_vkg}
+\input{sections/05_theory}
+\input{sections/06_experimental_design}
+\input{sections/07_results}
+\input{sections/08_conclusion}
+
+\clearpage
+\bibliographystyle{informs2014}
+\bibliography{references_v2}
+
+\clearpage
+\input{sections/09_electronic_companion}
+
+\end{document}

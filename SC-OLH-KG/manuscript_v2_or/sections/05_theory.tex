@@ -1,0 +1,63 @@
+\section{Theoretical Guarantees}\label{sec:theory}
+
+We establish three main theoretical results characterizing (i) debiased functional subspace recovery from adaptive legacy solver logs, (ii) the variance blow-up dichotomy and oracle optimality of prequential tempering under source--target shift, and (iii) exact finite-sample safety, information monotonicity, and cross-task source-cost amortization. Core algebraic, measure-theoretic, and probability-event pillars of all three theorems are machine-verified in Lean~4.31.0 (\texttt{SCOLHKG.V2ORProofInterface}; Electronic Companion~\ref{ec:lean_map}).
+
+\subsection{Debiased Subspace Recovery and Pruned Residual Envelope}
+
+Let $\nu$ denote the target reference measure on the public exposure manifold $\mathcal{M}_\psi$ and $q$ the adaptive occupancy distribution induced by legacy source solvers, with Radon--Nikodym ratio $\rho(\psi) = \frac{\mathrm{d}\nu}{\mathrm{d}q}(\psi)$.
+
+\begin{theorem}[Debiased Functional Orthogonalization \& Pruned Residual Safety]\label{thm:subspace}
+Suppose $q(\psi) > 0$ on $\mathcal{M}_\psi$ and clipped inverse-occupancy weights $\tilde{w}(\psi) = \min\{\bar{w}, \rho(\psi)\}$ define the reweighted measure $\nu_{\bar{w}}(\mathrm{d}\psi) = \tilde{w}(\psi)q(\psi)\mathrm{d}\psi$. Then:
+\begin{enumerate}
+  \item \emph{(Debiasing Exactness and Clipping Bias)} For any $f, h \in L^2(\nu)$, if $\sup_{\psi} \rho(\psi) \le \bar{w}$, then $\langle f, h \rangle_{\nu_{\bar{w}}} = \langle f, h \rangle_\nu$ with zero selection bias; more generally,
+  \begin{equation}\label{eq:thm1_clip}
+    \big|\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu\big|
+    \;\le\; \int_{\mathcal{M}_\psi} \max\{0,\, \rho(\psi) - \bar{w}\}\, |f(\psi)h(\psi)|\, q(\mathrm{d}\psi).
+  \end{equation}
+  \item \emph{(Active--Pruned Parseval Separation \& Pointwise Residual Floor)} Let $\{\tilde{\varphi}_k\}_{k=1}^{M_+}$ be $\nu_{\bar{w}}$-orthonormal low-pass basis functions partitioned into active coordinates $S_{\mathrm{act}}$ ($|S_{\mathrm{act}}| = r$) and pruned coordinates $S_{\mathrm{act}}^c$. For any response $h(x) = \theta_0 + \sum_{k=1}^{M_+} \theta_k \tilde{\varphi}_k(\psi(x)) + r_{\mathrm{hf}}(x)$ with $r_{\mathrm{hf}} \perp \operatorname{span}(1, \tilde{\varphi})$,
+  \begin{equation}\label{eq:thm1_parseval}
+    \|h - \theta_0\|_{L^2(\nu_{\bar{w}})}^2
+    = \sum_{j \in S_{\mathrm{act}}} \theta_j^2 + \sum_{k \in S_{\mathrm{act}}^c} \theta_k^2 + \|r_{\mathrm{hf}}\|_{L^2(\nu_{\bar{w}})}^2,
+  \end{equation}
+  and whenever $|S_{\mathrm{act}}^c|\theta_k^2 \le \bar{e}_k$ ($\forall k \in S_{\mathrm{act}}^c$) and $r_{\mathrm{hf}}(x)^2 \le \tfrac{1}{2}\sigma_{\mathrm{hf}}^2$, the truncated discrepancy satisfies $\big(\sum_{k \in S_{\mathrm{act}}^c} \theta_k \tilde{\varphi}_k(\psi(x))\big)^2 + r_{\mathrm{hf}}(x)^2 \le R_\perp(x)$ pointwise. Moreover, under sub-Gaussian noise across $M_{\mathrm{src}}$ tasks of average effective sample size $\bar{n}_{\mathrm{eff}}$, empirical-Bayes estimation over $S_{\mathrm{act}}$ achieves $L^2(\nu_{\bar{w}})$ error $\mathcal{O}\!\left(\frac{r \log M_+}{M_{\mathrm{src}}\bar{n}_{\mathrm{eff}}}\right) + \sum_{k \notin S_{\mathrm{act}}} \theta_k^2 + \|r_{\mathrm{hf}}\|_{L^2}^2$, independent of ambient policy dimension $d_t$.
+\end{enumerate}
+\end{theorem}
+
+\subsection{The Variance Blow-Up Dichotomy and Oracle Optimality of Prequential Tempering}
+
+Theorem~\ref{thm:tempering} explains formally why naive joint mean--variance transfer explodes under task shift while post-initialization freezing stagnates, and proves that sufficient-statistic decoupling plus tempering achieves the best of both worlds.
+
+\begin{theorem}[Mean-Shift Leakage vs.\ Decoupled Prequential Tempering]\label{thm:tempering}
+Consider evaluating policy $x$ on target task $t$ where $Y_{t,g,\ell}(x) = \mu_{0,g}(x) + \Delta_g(x) + \varepsilon_\ell$ with $\E[\varepsilon_\ell] = 0$, $\E[\varepsilon_\ell^2] = v_t(x)$, and source--target constraint mean shift $\Delta_g(x) \in \R$.
+\begin{enumerate}
+  \item \emph{(Exponential Variance Blow-Up of Untempered Conditioning)} An untempered prior-centered squared residual has exact second moment $\E[(Y_{t,g,\ell}(x) - \mu_{0,g}(x))^2] = \Delta_g(x)^2 + v_t(x)$. Under any log-normal variance posterior $\eta_g \mid \mathcal{D}_n \sim \mathcal{N}(\mu_{\eta,n}, \sigma_{\eta,n}^2)$ whose posterior mean absorbs prior-residual squares with sensitivity $\gamma > 0$ ($\mu_{\eta,n} \ge \mu_{\eta,0} + \gamma \Delta_g(x)^2$), the posterior expected noise variance satisfies
+  \begin{equation}\label{eq:thm2_blowup}
+    \E\big[\exp(\eta_g) \mid \mathcal{D}_n\big] = \exp\!\big(\mu_{\eta,n} + \tfrac{1}{2}\sigma_{\eta,n}^2\big) \;\ge\; \exp(\mu_{\eta,0})\exp\!\big(\gamma \Delta_g(x)^2\big).
+  \end{equation}
+  Conversely, any post-initialization frozen subspace rule (\texttt{AFTER}) with local orthogonal residual $|\delta_{t,\perp}(x^\star)| \ge \underline{\delta} > 0$ on a region of measure $w(x^\star) > 0$ incurs non-vanishing $L^2(w)$ error $\ge w(x^\star)\underline{\delta}^2$ for all budgets $N \ge 1$.
+  \item \emph{(Exact Shift Invariance \& Oracle Risk of Tempered HVD)} For any replication count $r \ge 2$ and \emph{arbitrary} shift $\Delta_g(x) \in \R$, the within-policy dispersion $S_{t,g}^2(x) = \sum_{\ell=1}^r (Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x))^2 \equiv \sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2$ is algebraically invariant to $\Delta_g(x)$, yielding unbiased variance moment $\E[S_{t,g}^2(x)/(r-1)] = v_t(x)$. Furthermore, for scalar/orthogonal projection estimation with data precision $\rho_N = N / v_t > 0$ and tempered prior precision $\tau = \beta / \sigma_0^2 > 0$, the posterior mean squared error $\operatorname{MSE}(\tau; \Delta) = \frac{\tau^2\Delta^2 + \rho_N}{(\tau + \rho_N)^2}$ strictly dominates target-only estimation ($\operatorname{MSE}(\tau; 0) < \rho_N^{-1}$) when $\Delta = 0$, while at oracle empirical-Bayes precision $\tau^\star = \Delta^{-2}$ ($\Delta \neq 0$) it satisfies
+  \begin{equation}\label{eq:thm2_oracle}
+    \operatorname{MSE}(\tau^\star; \Delta) = \frac{1}{\rho_N + \Delta^{-2}} \;\le\; \min\!\left\{\Delta^2,\; \frac{v_t}{N}\right\},
+  \end{equation}
+  uniformly eliminating negative transfer across all shift magnitudes.
+\end{enumerate}
+\end{theorem}
+
+\subsection{Verification-Aware KG, Exact Finite-Sample Safety, and Amortization}
+
+\begin{theorem}[Information Monotonicity, Objective-Guarded FWER Safety, \& Amortization]\label{thm:vkg_safety}
+Under the \textbf{TLS-OLH-KG} sequential search and three-slot verification protocol:
+\begin{enumerate}
+  \item \emph{(Nonnegativity of \texttt{V-KG})} For any finite evaluation set $\mathcal{E}_n$ and integrable one-step lookahead utilities $\{V_{n+1}(x')\}_{x' \in \mathcal{E}_n}$ satisfying the posterior martingale identity $\E_n[V_{n+1}(x')] = V_n(x')$, $\operatorname{V\text{-}KG}_n(x) = \E_n[\max_{x' \in \mathcal{E}_n} V_{n+1}(x')] - \max_{x' \in \mathcal{E}_n} V_n(x') \ge 0$.
+  \item \emph{(Exact Finite-Sample Deployment FWER $\le \delta$ Without Tie-Breaker Inflation)} Let $(x^{(0)}, x^{(1)}, x^{(2)})$ be any shortlist frozen prior to verification, and let $\mathcal{U} \subseteq \{0,1,2\}$ denote the (unknown) subset of truly chance-infeasible candidates ($\Prob_\xi(Y_{t,g}(x^{(i)}) > 0) > \alpha$). Under fresh verification replications using \texttt{exact\_binomial} (for arbitrary outcome distributions) or \texttt{gaussian\_noncentral\_t} (for i.i.d.\ Gaussian noise) with slot budgets $\delta_0 + \delta_1 + \delta_2 \le \delta$, the three-slot deployment rule with Slot-0/Slot-1 empirical objective tie-breaking satisfies
+  \begin{equation}\label{eq:thm3_fwer}
+    \Prob\big(\text{protocol certifies and deploys } x^{(i)} \text{ for some } i \in \mathcal{U}\big)
+    \;\le\; \sum_{i \in \mathcal{U}} \delta_i \;\le\; \delta,
+  \end{equation}
+  using at most $K_0 + K_1 + K_2$ verification calls.
+  \item \emph{(Exact Cross-Task Amortization Threshold $M_{\mathrm{break}}$)} Let $B_{\mathrm{src}}$ denote total simulation calls expended by offline legacy solvers to construct $\mathcal{D}_{\mathrm{src}}$, and suppose \textbf{TLS-OLH-KG} attains target deployed utility using $B_{\mathrm{TLS}} < B_{\mathrm{cold}}$ target simulation calls relative to a cold-start baseline. Across $M \ge 1$ target tasks, the all-in amortized per-task cost $B_{\mathrm{TLS}} + B_{\mathrm{src}}/M$ is no greater than $B_{\mathrm{cold}}$ if and only if
+  \begin{equation}\label{eq:m_break}
+    M \;\ge\; M_{\mathrm{break}} \coloneqq \frac{B_{\mathrm{src}}}{B_{\mathrm{cold}} - B_{\mathrm{TLS}}}.
+  \end{equation}
+\end{enumerate}
+\end{theorem}

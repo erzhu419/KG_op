@@ -1,0 +1,66 @@
+\section{Problem Formulation and Debiased Legacy-Trajectory Meta-Prior}\label{sec:prior}
+
+\subsection{Dynamic Stochastic Simulation Optimization and Public Nominal Exposure}
+
+Consider a family of related multi-period stochastic operational environments indexed by $m \in \{1, \dots, M_{\mathrm{src}}\}$ (historical source tasks) and $t$ (an unseen target task). In task $k \in \{1, \dots, M_{\mathrm{src}}\} \cup \{t\}$, a policy $x \in \cX_k = [0,1]^{d_k}$ specifies time-varying or network-wide operational controls over horizon/dimension $d_k$—where $d_m$ and $d_t$ need not coincide ($d_m \neq d_t$). Evaluating policy $x$ for $r \ge 1$ replications executes stochastic state-action dynamics $\cT_{k,\ell}(x) = (S_{k,0}, A_{k,0}, \dots, S_{k,H_k}, A_{k,H_k})$ driven by private exogenous disturbances $\xi_{k,\ell} \sim \mathbb{Q}_k$ ($\ell = 1,\dots,r$), yielding noisy objective and centered constraint outputs
+\begin{equation}\label{eq:obs_model}
+  Y_{k,f,\ell}(x) = J_k(x) + \varepsilon_{k,f,\ell}(x),
+  \qquad
+  Y_{k,g,\ell}(x) = g_k(x) + \varepsilon_{k,g,\ell}(x),
+\end{equation}
+with $\E[\varepsilon_{k,c,\ell}(x)] = 0$ and policy-dependent aleatoric variances $v_{k,f}(x) = \Var(Y_{k,f,\ell}(x))$, $v_{k,g}(x) = \Var(Y_{k,g,\ell}(x))$. On target task $t$, the decision maker is allocated a search simulation budget $B_{\mathrm{search}}$ followed by an independent terminal verification budget $B_{\mathrm{ver}}$ to deploy a policy $\hat{x}_t$ satisfying the finite-sample safety guarantee $\Prob(\Prob_\xi(Y_{t,g}(\hat{x}_t) > 0) > \alpha \text{ and } \hat{x}_t \text{ certified}) \le \delta$.
+
+\paragraph{Strict Zero-Leakage Information Boundary.}
+Before running paid simulations on task $k$, the learner observes only \emph{public planning inputs} $\cI_k^{\mathrm{pub}}$ (day-ahead demand/arrival forecasts, published road capacities, physical storage efficiencies)—never the private stochastic law $\mathbb{Q}_k$ or hidden cost parameters. Rolling out policy $x \in [0,1]^{d_k}$ deterministically under $\cI_k^{\mathrm{pub}}$ produces a nominal trajectory $\cT_k^{\mathrm{nom}}(x)$, from which a deterministic, dimension-invariant operator extracts a fixed-dimensional state-risk exposure tuple:
+\begin{equation}\label{eq:nominal_exposure}
+  x \in [0,1]^{d_k} \;\longmapsto\; \cT_k^{\mathrm{nom}}(x) \;\longmapsto\;
+  \mathcal{E}_k(x) = \big(\psi(x),\, A_{\mathrm{local}}(x),\, N_{\mathrm{shared}}(x)\big) \in \R^{p_\psi} \times \R_+^{p_A} \times \R_+^{p_N},
+\end{equation}
+where $\psi(x)$ summarizes aggregate utilization, buffer headroom, and flow balance; $A_{\mathrm{local}}(x)$ measures root-mean-square local volatility exposures; and $N_{\mathrm{shared}}(x)$ measures cumulative regime occupancies across off-peak, shoulder, and rush/peak periods. Because $(p_\psi, p_A, p_N)$ is invariant to $d_k$, policies across distinct horizons ($d_m \neq d_t$) map into a single common functional coordinate space without accessing any target outcomes.
+
+\paragraph{Decoupled Within-Policy Sufficient Statistics.}
+Whenever policy $x$ is evaluated with $r \ge 1$ replications on task $k$, we record the sufficient-statistic tuple
+\begin{equation}\label{eq:suff_stats}
+  \bar{Y}_{k,c}(x) = \frac{1}{r}\sum_{\ell=1}^r Y_{k,c,\ell}(x),
+  \qquad
+  S_{k,c}^2(x) = \sum_{\ell=1}^r \big(Y_{k,c,\ell}(x) - \bar{Y}_{k,c}(x)\big)^2
+  \quad (c \in \{f, g\}),
+\end{equation}
+together with violation count $V_k(x) = \sum_{\ell=1}^r \mathbb{I}\{Y_{k,g,\ell}(x) > 0\}$. When a policy is queried multiple times sequentially, batches are combined losslessly via parallel variance merging.
+
+\subsection{Extracting Debiased Low-Frequency Orthogonal Sparse Priors from Legacy Logs}
+
+Suppose historical tasks $m \in \{1,\dots,M_{\mathrm{src}}\}$ were solved offline by legacy optimization routines—such as Penalty-SPSA \citep{spall1992multivariate}, Constrained CMA-ES \citep{hansen2006cma}, NSGA-II \citep{deb2002fast}, or practitioner pattern search—yielding an archive $\mathcal{D}_{\mathrm{src}} = \{(m_a, x_a, r_a, \bar{Y}_{f,a}, S_{f,a}^2, \bar{Y}_{g,a}, S_{g,a}^2, \mathcal{E}(x_a))\}_{a=1}^{N_{\mathrm{src}}}$. Because legacy solvers concentrate queries around elite basins, the empirical exposure distribution $\hat{q}(\psi)$ is highly non-uniform. We construct the functional meta-prior in four closed-form steps:
+
+\begin{enumerate}
+  \item \textbf{Inverse-Occupancy Manifold Debiasing.} Let $\tilde{\psi}_a = \operatorname{diag}(\hat{\sigma}_\psi)^{-1}(\psi_a - \hat{\mu}_\psi)$ denote standardized exposures and $W_{ab} = \exp(-\|\tilde{\psi}_a - \tilde{\psi}_b\|_2^2 / (2 h_q^2))$ the Gaussian affinity matrix. Estimating local occupancy density $\hat{q}_a = N_{\mathrm{src}}^{-1}\sum_{b=1}^{N_{\mathrm{src}}} W_{ab}$, we assign bounded inverse-occupancy weights
+  \begin{equation}\label{eq:inv_occ_weights}
+    w_a = \frac{\min\{\bar{w},\; \operatorname{med}(\hat{q}^{-1})^{-1}\hat{q}_a^{-1}\}}{\sum_{b=1}^{N_{\mathrm{src}}} \min\{\bar{w},\; \operatorname{med}(\hat{q}^{-1})^{-1}\hat{q}_b^{-1}\}},
+    \qquad \sum_{a=1}^{N_{\mathrm{src}}} w_a = 1,
+  \end{equation}
+  defining a debiased empirical reference measure $\hat{\nu}_w = \sum_{a=1}^{N_{\mathrm{src}}} w_a \delta_{\tilde{\psi}_a}$ that prevents dense late-stage solver clusters from dominating inner products.
+
+  \item \textbf{Candidate Functional Dictionary \& Graph-Laplacian Low-Pass Filtering.} Over $\tilde{\psi} \in \R^{p_\psi}$, we form a smooth candidate dictionary $\varphi(\tilde{\psi}) \in \R^M$ comprising linear exposures $\tilde{\psi}_j$, second-order Legendre terms $(\tilde{\psi}_j^2 - 1)/\sqrt{2}$, bounded trigonometric modes $\sin(\frac{\pi}{2}\operatorname{clip}(\tilde{\psi}_j/2.5, -1, 1))$, and low-order action--regime cross-interactions $\tilde{\psi}_j \tilde{\psi}_k$. Letting $L_{\mathrm{sym}} = I - D^{-1/2} W D^{-1/2}$ ($D_{aa} = \sum_b W_{ab}$) be the normalized graph Laplacian on $\mathcal{D}_{\mathrm{src}}$, each centered candidate column $\bar{\varphi}_j$ is scored by its spectral Dirichlet roughness
+  \begin{equation}\label{eq:spectral_roughness}
+    \mathcal{R}_{\mathrm{spec}}(\bar{\varphi}_j) = \frac{\bar{\varphi}_j^\top L_{\mathrm{sym}} \bar{\varphi}_j}{\|\bar{\varphi}_j\|_2^2 + \epsilon_0}.
+  \end{equation}
+  High-frequency candidates exceeding the $\rho_{\mathrm{lp}}$-quantile of $\mathcal{R}_{\mathrm{spec}}$ are filtered out prior to regression so finite-sample noise cannot masquerade as sparse signal.
+
+  \item \textbf{Truncated-Spectral Gram Whitening \& Cross-Task Invariance Sparsity.} Centering the $M_{\mathrm{lp}}$ surviving low-pass features as $\mathring{\varphi}(\tilde{\psi}) = \varphi_{\mathrm{lp}}(\tilde{\psi}) - \E_{\hat{\nu}_w}[\varphi_{\mathrm{lp}}]$, we compute the weighted Gram matrix $G_w = \sum_{a=1}^{N_{\mathrm{src}}} w_a \mathring{\varphi}(\tilde{\psi}_a)\mathring{\varphi}(\tilde{\psi}_a)^\top = U \Lambda U^\top$. Retaining the positive eigenspace $\Lambda_+ > \tau_{\mathrm{eig}}$ yields the whitening operator $Q_{\mathrm{orth}} = \Lambda_+^{-1/2} U_+^\top$, producing strictly $\hat{\nu}_w$-orthonormal coordinates $\tilde{\varphi}(\psi) = Q_{\mathrm{orth}}\mathring{\varphi}(\tilde{\psi}) \in \R^{M_+}$ satisfying $\langle \tilde{\varphi}_j, \tilde{\varphi}_k \rangle_{\hat{\nu}_w} = \delta_{jk}$.
+
+  On each source task $m$, weighted ridge-GLS yields task coefficients $(\hat{\theta}_{m,f}, \hat{\theta}_{m,g}) \in \R^{1+M_+}$. Each coordinate $k \in \{1,\dots,M_+\}$ is ranked by its cross-task signal-to-variance invariance score
+  \begin{equation}\label{eq:invariance_score}
+    \mathcal{I}_k = \sum_{c \in \{f, g\}} \omega_c \left( \frac{\bar{\theta}_{k,c}^2}{\Var_m(\hat{\theta}_{m,k,c}) + \epsilon_0} + \frac{1}{2}\E_m[\hat{\theta}_{m,k,c}^2] \right).
+  \end{equation}
+  We retain only the top $r \ll d_t$ active coordinates $S_{\mathrm{act}}$ ($|S_{\mathrm{act}}| = r$, forming $\tilde{\phi}(x) = [1, \tilde{\varphi}_{S_{\mathrm{act}}}(\psi(x))^\top]^\top \in \R^{1+r}$) to fit empirical-Bayes hyperpriors $(\mu_{0,c}, \Sigma_{0,c})$, while routing all pruned coordinates $k \notin S_{\mathrm{act}}$ into a conservative pointwise residual floor:
+  \begin{equation}\label{eq:r_perp}
+    R_{\perp,c}(x) = \sum_{k \notin S_{\mathrm{act}}} \bar{e}_{k,c} \, \tilde{\varphi}_k(\psi(x))^2 + \sigma_{\mathrm{hf},c}^2,
+  \end{equation}
+  where $\bar{e}_{k,c}$ is the upper empirical quantile of $\hat{\theta}_{m,k,c}^2$ across source tasks and $\sigma_{\mathrm{hf},c}^2$ captures unmodeled high-frequency residual variance.
+
+  \item \textbf{Mean-Shift-Invariant HVD Hyperprior \& Two-Channel DCT Policy Profiles.} Motivated by cumulative trajectory variance decomposition $v_{k,g}(x) = \sigma_0^2 + A_{\mathrm{local}}(x)^\top \Lambda A_{\mathrm{local}}(x) + N_{\mathrm{shared}}(x)^\top B N_{\mathrm{shared}}(x) + N_{\mathrm{shared}}(x)^\top \omega$, we construct the nonnegative HVD feature map
+  \begin{equation}\label{eq:u_hvd}
+    u_{\mathrm{HVD}}(x) = \Big[1,\; A_{\mathrm{local}}(x)^{\odot 2},\; \big\{\tfrac{1}{2}(N_i(x)+N_j(x))^2\big\}_{i \le j},\; N_{\mathrm{shared}}(x)\Big]^\top \in \R_+^{p_{\mathrm{HVD}}}.
+  \end{equation}
+  Using \emph{exclusively} multi-replication within-policy unbiased variance estimates $\hat{s}_{a,c}^2 = S_{c,a}^2 / (r_a - 1)$ ($r_a \ge 2$), nonnegative least squares (NNLS) yields source variance hyperpriors $\gamma_{0,f}, \gamma_{0,g} \in \R_+^{p_{\mathrm{HVD}}}$. Finally, elite feasible source policies are compressed via a two-channel (even/odd interleaved) orthonormal Discrete Cosine Transform (DCT-II) into $K_{\mathrm{dct}}$ low-frequency spectral coefficients, allowing smooth warm-start candidate reconstruction at any target dimension $d_t$ via inverse DCT.
+\end{enumerate}

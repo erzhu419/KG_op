@@ -1,0 +1,4611 @@
+{
+  "campaign_name": "v2_or_confirm_v1",
+  "generated_utc": "2026-11-16T09:25:31.150495+00:00",
+  "total_evaluated_cells": 4128,
+  "total_certified_deployments": 3392,
+  "total_false_certificates": 2,
+  "prior_diagnostics": {
+    "Inventory_CrossHorizon": {
+      "source_simulation_calls": 1428,
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 3175518.8221791624,
+          "debiased_orth_gram_cond": 1.00000000000768,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6868786321762783,
+          "effective_sample_size_ratio": 0.6764204282908031
+        },
+        "no_debias": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 3175518.8221791624,
+          "debiased_orth_gram_cond": 1.0000000000044869,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6868786321762783,
+          "effective_sample_size_ratio": 0.9999999999999998
+        },
+        "no_orth_dense": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 3175518.8221791624,
+          "debiased_orth_gram_cond": 971064.1892672377,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 52,
+          "active_rank": 52,
+          "mean_lowfreq_energy_ratio": 0.658276469763821,
+          "effective_sample_size_ratio": 0.6764204282908031
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "source_simulation_calls": 1428,
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 5550032.829462232,
+          "debiased_orth_gram_cond": 1.0000000000041425,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.7228259782298176,
+          "effective_sample_size_ratio": 0.6716036576984028
+        },
+        "no_debias": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 5550032.829462232,
+          "debiased_orth_gram_cond": 1.000000000007541,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.7228259782298176,
+          "effective_sample_size_ratio": 0.9999999999999998
+        },
+        "no_orth_dense": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 5550032.829462232,
+          "debiased_orth_gram_cond": 3066314.4943387625,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 52,
+          "active_rank": 52,
+          "mean_lowfreq_energy_ratio": 0.6863350266829062,
+          "effective_sample_size_ratio": 0.6716036576984028
+        }
+      }
+    },
+    "OPSD_EuroGrid": {
+      "source_simulation_calls": 1428,
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 15346744.919577248,
+          "debiased_orth_gram_cond": 1.0000000000057512,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6600750952400222,
+          "effective_sample_size_ratio": 0.6784109717937913
+        },
+        "no_debias": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 15346744.919577248,
+          "debiased_orth_gram_cond": 1.0000000000063067,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6600750952400222,
+          "effective_sample_size_ratio": 0.9999999999999998
+        },
+        "no_orth_dense": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 15346744.919577248,
+          "debiased_orth_gram_cond": 7113654.503150523,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 52,
+          "active_rank": 52,
+          "mean_lowfreq_energy_ratio": 0.6433613577253237,
+          "effective_sample_size_ratio": 0.6784109717937913
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "source_simulation_calls": 1428,
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 85146593.41863135,
+          "debiased_orth_gram_cond": 1.0000000000063622,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6424482070044828,
+          "effective_sample_size_ratio": 0.6651524558882341
+        },
+        "no_debias": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 85146593.41863135,
+          "debiased_orth_gram_cond": 1.0000000000186884,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6424482070044828,
+          "effective_sample_size_ratio": 0.9999999999999998
+        },
+        "no_orth_dense": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 85146593.41863135,
+          "debiased_orth_gram_cond": 34102277.35619241,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 52,
+          "active_rank": 52,
+          "mean_lowfreq_energy_ratio": 0.618280116390072,
+          "effective_sample_size_ratio": 0.6651524558882341
+        }
+      }
+    }
+  },
+  "families": {
+    "Inventory_CrossHorizon": {
+      "source_simulation_calls": 1428,
+      "budgets": {
+        "15": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8764721983283306,
+              "se_deployed_cost": 0.07918417634293319,
+              "median_deployed_cost": 1.7998518834550974,
+              "mean_raw_true_obj": 1.8555394174955027,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.003208333333333334,
+              "mean_target_calls": 286.5,
+              "mean_wall_sec": 2.505971476008805,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8621961577015356,
+              "se_deployed_cost": 0.07420449583758174,
+              "median_deployed_cost": 1.7679715716770388,
+              "mean_raw_true_obj": 1.8621961577015356,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0034270833333333328,
+              "mean_target_calls": 298.1666666666667,
+              "mean_wall_sec": 2.7589495255767056,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.0055897186916276,
+              "se_deployed_cost": 0.09871401542019492,
+              "median_deployed_cost": 1.8117491042425966,
+              "mean_raw_true_obj": 2.0055897186916276,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00037500000000000006,
+              "mean_target_calls": 280.6666666666667,
+              "mean_wall_sec": 2.4743389704963192,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8868880399492216,
+              "se_deployed_cost": 0.06387032140849369,
+              "median_deployed_cost": 1.8117491042425966,
+              "mean_raw_true_obj": 1.8868880399492216,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00115625,
+              "mean_target_calls": 211.33333333333334,
+              "mean_wall_sec": 6.596353290214513,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9010565239683965,
+              "se_deployed_cost": 0.06493943610978689,
+              "median_deployed_cost": 1.8236463250300958,
+              "mean_raw_true_obj": 1.9010565239683965,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0013854166666666667,
+              "mean_target_calls": 259.3333333333333,
+              "mean_wall_sec": 0.43158820547008264,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9085717135124556,
+              "se_deployed_cost": 0.06634077982190675,
+              "median_deployed_cost": 1.82697157614721,
+              "mean_raw_true_obj": 1.9085717135124556,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00103125,
+              "mean_target_calls": 238.5,
+              "mean_wall_sec": 16.306782425031997,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9268929764474196,
+              "se_deployed_cost": 0.06968031864405681,
+              "median_deployed_cost": 1.8267043770845257,
+              "mean_raw_true_obj": 1.892979654489895,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.004333333333333334,
+              "mean_target_calls": 238.5,
+              "mean_wall_sec": 0.6355473677782962,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.923303311055528,
+              "se_deployed_cost": 0.06893417302327531,
+              "median_deployed_cost": 1.8305939020492485,
+              "mean_raw_true_obj": 1.8891986685798108,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0028645833333333336,
+              "mean_target_calls": 287.0,
+              "mean_wall_sec": 0.643393689688916,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9161867115103075,
+              "se_deployed_cost": 0.08249228741847525,
+              "median_deployed_cost": 1.7679715716770388,
+              "mean_raw_true_obj": 1.8841472753731836,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0028541666666666667,
+              "mean_target_calls": 256.5,
+              "mean_wall_sec": 0.1337437458569184,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9138996394951204,
+              "se_deployed_cost": 0.09470289173909391,
+              "median_deployed_cost": 1.7302947757465634,
+              "mean_raw_true_obj": 1.9138996394951204,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0013541666666666667,
+              "mean_target_calls": 280.6666666666667,
+              "mean_wall_sec": 2.708239943953231,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.297206194061433,
+              "se_deployed_cost": 0.11197453517182221,
+              "median_deployed_cost": 2.205755179377107,
+              "mean_raw_true_obj": 2.001031590281108,
+              "certified_rate": 0.375,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.05892708333333333,
+              "mean_target_calls": 347.3333333333333,
+              "mean_wall_sec": 0.12369503317556034,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9097458901969544,
+              "se_deployed_cost": 0.07706884055778626,
+              "median_deployed_cost": 1.9200474682812263,
+              "mean_raw_true_obj": 1.9097458901969544,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0009479166666666667,
+              "mean_target_calls": 286.5,
+              "mean_wall_sec": 2.4670378317435584,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.952970077622089,
+              "se_deployed_cost": 0.08542027793720465,
+              "median_deployed_cost": 1.8391035947686265,
+              "mean_raw_true_obj": 1.9213017052690813,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0035520833333333337,
+              "mean_target_calls": 174.5,
+              "mean_wall_sec": 0.10669361264444888,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.886302323404356,
+              "se_deployed_cost": 0.077098637853474,
+              "median_deployed_cost": 1.733193017822772,
+              "mean_raw_true_obj": 1.886302323404356,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0025520833333333333,
+              "mean_target_calls": 280.6666666666667,
+              "mean_wall_sec": 2.684093807125464,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.1422616348864376,
+              "se_deployed_cost": 0.10731036513630347,
+              "median_deployed_cost": 1.9980870168207328,
+              "mean_raw_true_obj": 2.1422616348864376,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.001572916666666667,
+              "mean_target_calls": 286.0,
+              "mean_wall_sec": 2.5340463837686307,
+              "mean_inflation_factor": 21.759556036087247
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.037427441166789525,
+              "mean_relative_improvement_pct": -1.8132431696804605,
+              "wins_losses_ties": [
+                10,
+                9,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.6180283471874181,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.05170348179358475,
+              "mean_relative_improvement_pct": -2.6383836736019486,
+              "wins_losses_ties": [
+                8,
+                16,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.9359864592552185,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0916900791965072,
+              "mean_relative_improvement_pct": 4.0861791191023205,
+              "wins_losses_ties": [
+                17,
+                3,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.0021275634383986814,
+              "holm_adjusted_p": 0.025530761260784178
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.02701159954589909,
+              "mean_relative_improvement_pct": -0.6626676166718287,
+              "wins_losses_ties": [
+                15,
+                4,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.0665989644545579,
+              "holm_adjusted_p": 0.4043855667114258
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.012843115526723523,
+              "mean_relative_improvement_pct": 0.03602328367749476,
+              "wins_losses_ties": [
+                19,
+                5,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.05054819583892822,
+              "holm_adjusted_p": 0.4043855667114258
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.005327925982664748,
+              "mean_relative_improvement_pct": 0.3742750575602627,
+              "wins_losses_ties": [
+                17,
+                6,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.059718285873057546,
+              "holm_adjusted_p": 0.4043855667114258
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.012993336952299336,
+              "mean_relative_improvement_pct": 1.3778406979297209,
+              "wins_losses_ties": [
+                18,
+                6,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.018324613571166992,
+              "holm_adjusted_p": 0.16492152214050293
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.009403671560407953,
+              "mean_relative_improvement_pct": 1.2111918217204116,
+              "wins_losses_ties": [
+                19,
+                5,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.013463854789733887,
+              "holm_adjusted_p": 0.13463854789733887
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.002287072015187112,
+              "mean_relative_improvement_pct": 0.4320662452005901,
+              "wins_losses_ties": [
+                12,
+                6,
+                6
+              ],
+              "wilcoxon_one_sided_p": 0.05608061380855933,
+              "holm_adjusted_p": 0.4043855667114258
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.3833065545663126,
+              "mean_relative_improvement_pct": 15.976181534701572,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 9.098693107393172e-06,
+              "holm_adjusted_p": 0.0001273817035035044
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.004153749298165967,
+              "mean_relative_improvement_pct": 0.19393610102984374,
+              "wins_losses_ties": [
+                13,
+                10,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.3085375387259869,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.03907043812696879,
+              "mean_relative_improvement_pct": 2.170694767525394,
+              "wins_losses_ties": [
+                20,
+                4,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.006889641284942627,
+              "holm_adjusted_p": 0.0757860541343689
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.02759731609076438,
+              "mean_relative_improvement_pct": -1.4613928605384414,
+              "wins_losses_ties": [
+                10,
+                11,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.5680703624768353,
+              "holm_adjusted_p": 1.0
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.22836199539131719,
+              "mean_relative_improvement_pct": 9.790389662065667,
+              "wins_losses_ties": [
+                18,
+                2,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.00019655535940261428,
+              "holm_adjusted_p": 0.0025552196722339856
+            }
+          }
+        },
+        "30": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8329267806129692,
+              "se_deployed_cost": 0.07080724897323214,
+              "median_deployed_cost": 1.7171833469214235,
+              "mean_raw_true_obj": 1.8329267806129692,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00325,
+              "mean_target_calls": 316.0,
+              "mean_wall_sec": 5.0192827846622095,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.852277493671587,
+              "se_deployed_cost": 0.07111545420191039,
+              "median_deployed_cost": 1.755183994630097,
+              "mean_raw_true_obj": 1.852277493671587,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.004135416666666667,
+              "mean_target_calls": 322.3333333333333,
+              "mean_wall_sec": 5.585980887291953,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9899578470600918,
+              "se_deployed_cost": 0.10069583952294671,
+              "median_deployed_cost": 1.7998518834550974,
+              "mean_raw_true_obj": 1.9899578470600918,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00037500000000000006,
+              "mean_target_calls": 310.6666666666667,
+              "mean_wall_sec": 4.961234448943287,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9149375103191835,
+              "se_deployed_cost": 0.0677447810241091,
+              "median_deployed_cost": 1.8236463250300958,
+              "mean_raw_true_obj": 1.9149375103191835,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0014687499999999998,
+              "mean_target_calls": 257.8333333333333,
+              "mean_wall_sec": 14.361950802461555,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9432364186953344,
+              "se_deployed_cost": 0.08313085579454868,
+              "median_deployed_cost": 1.8236463250300958,
+              "mean_raw_true_obj": 1.9181584689611677,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0038541666666666668,
+              "mean_target_calls": 322.8333333333333,
+              "mean_wall_sec": 0.9483134001881505,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9087534644803317,
+              "se_deployed_cost": 0.06647955628745039,
+              "median_deployed_cost": 1.8306876349973198,
+              "mean_raw_true_obj": 1.9087534644803317,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0012083333333333332,
+              "mean_target_calls": 289.8333333333333,
+              "mean_wall_sec": 27.34784084399386,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.912059492541948,
+              "se_deployed_cost": 0.06479129354359268,
+              "median_deployed_cost": 1.8389736498990015,
+              "mean_raw_true_obj": 1.8944218028874509,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.004447916666666667,
+              "mean_target_calls": 301.0,
+              "mean_wall_sec": 1.9776277942971017,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9074438837840308,
+              "se_deployed_cost": 0.0643960236661842,
+              "median_deployed_cost": 1.8305939020492485,
+              "mean_raw_true_obj": 1.8896164459311713,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.002979166666666667,
+              "mean_target_calls": 327.6666666666667,
+              "mean_wall_sec": 1.9997668541036546,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.89991107920728,
+              "se_deployed_cost": 0.07870988621075133,
+              "median_deployed_cost": 1.7679715716770388,
+              "mean_raw_true_obj": 1.8841472753731836,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0028541666666666667,
+              "mean_target_calls": 256.5,
+              "mean_wall_sec": 0.1337437458569184,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.887252010061294,
+              "se_deployed_cost": 0.09219367831698284,
+              "median_deployed_cost": 1.6918043962180378,
+              "mean_raw_true_obj": 1.887252010061294,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00159375,
+              "mean_target_calls": 316.0,
+              "mean_wall_sec": 5.53985074981271,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.3262908117422834,
+              "se_deployed_cost": 0.11343479990154133,
+              "median_deployed_cost": 2.205755179377107,
+              "mean_raw_true_obj": 2.006948162408771,
+              "certified_rate": 0.3333333333333333,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.06275,
+              "mean_target_calls": 377.3333333333333,
+              "mean_wall_sec": 0.22358411771710962,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8687369117955022,
+              "se_deployed_cost": 0.07863614279871643,
+              "median_deployed_cost": 1.802613997566041,
+              "mean_raw_true_obj": 1.8687369117955022,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0015416666666666667,
+              "mean_target_calls": 316.5,
+              "mean_wall_sec": 4.9773295328874765,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.953942425376245,
+              "se_deployed_cost": 0.08574006966530928,
+              "median_deployed_cost": 1.8258117541992167,
+              "mean_raw_true_obj": 1.9196796612403715,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0034895833333333337,
+              "mean_target_calls": 204.5,
+              "mean_wall_sec": 0.1967721643547217,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8391735292115055,
+              "se_deployed_cost": 0.06784823091608319,
+              "median_deployed_cost": 1.7280435586553207,
+              "mean_raw_true_obj": 1.8391735292115055,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0028854166666666668,
+              "mean_target_calls": 310.6666666666667,
+              "mean_wall_sec": 5.462274449178949,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.102763703230089,
+              "se_deployed_cost": 0.1088670100876522,
+              "median_deployed_cost": 1.9612681650375126,
+              "mean_raw_true_obj": 2.102763703230089,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0015833333333333335,
+              "mean_target_calls": 316.0,
+              "mean_wall_sec": 5.096598699650106,
+              "mean_inflation_factor": 24.018679372293118
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.054325229448324526,
+              "mean_relative_improvement_pct": -2.6032260788625248,
+              "wins_losses_ties": [
+                11,
+                13,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.5612964630126953,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.03497451638970662,
+              "mean_relative_improvement_pct": -1.9070940541602497,
+              "wins_losses_ties": [
+                8,
+                16,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.9430193901062012,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.10270583699879814,
+              "mean_relative_improvement_pct": 4.647018400360705,
+              "wins_losses_ties": [
+                19,
+                4,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.002915443546120934,
+              "holm_adjusted_p": 0.03206987900733027
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.027685500257889562,
+              "mean_relative_improvement_pct": 2.1598789736044677,
+              "wins_losses_ties": [
+                17,
+                3,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.014907579992468955,
+              "holm_adjusted_p": 0.0873938798904419
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.055984408634040674,
+              "mean_relative_improvement_pct": 2.822338024103847,
+              "wins_losses_ties": [
+                19,
+                4,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.009940890568517583,
+              "holm_adjusted_p": 0.06958623397962307
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.021501454419037853,
+              "mean_relative_improvement_pct": 1.73977711670046,
+              "wins_losses_ties": [
+                19,
+                5,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.014565646648406982,
+              "holm_adjusted_p": 0.0873938798904419
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.024807482480654442,
+              "mean_relative_improvement_pct": 2.007969970608634,
+              "wins_losses_ties": [
+                19,
+                4,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.002915443546120934,
+              "holm_adjusted_p": 0.03206987900733027
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.020191873722737324,
+              "mean_relative_improvement_pct": 1.7760608797251582,
+              "wins_losses_ties": [
+                20,
+                3,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.0024442878858223632,
+              "holm_adjusted_p": 0.02933145462986836
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.012659069145986126,
+              "mean_relative_improvement_pct": 0.8479265554130503,
+              "wins_losses_ties": [
+                16,
+                4,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.007553339815057032,
+              "holm_adjusted_p": 0.06770217418670654
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.4390388016809898,
+              "mean_relative_improvement_pct": 17.819235087032936,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 9.098693107393172e-06,
+              "holm_adjusted_p": 0.0001273817035035044
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.018515098265791802,
+              "mean_relative_improvement_pct": -0.8448744683281155,
+              "wins_losses_ties": [
+                11,
+                12,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.3820885778110474,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.06669041531495112,
+              "mean_relative_improvement_pct": 3.363883262772255,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.007522463798522949,
+              "holm_adjusted_p": 0.06770217418670654
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.048078480849788045,
+              "mean_relative_improvement_pct": -2.1892570735226777,
+              "wins_losses_ties": [
+                12,
+                10,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.4943007276424256,
+              "holm_adjusted_p": 1.0
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.21551169316879557,
+              "mean_relative_improvement_pct": 9.129863844601518,
+              "wins_losses_ties": [
+                20,
+                3,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.00043646308761880473,
+              "holm_adjusted_p": 0.005674020139044462
+            }
+          }
+        },
+        "60": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.812800001804231,
+              "se_deployed_cost": 0.06943318259428206,
+              "median_deployed_cost": 1.713685327215165,
+              "mean_raw_true_obj": 1.812800001804231,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0026354166666666665,
+              "mean_target_calls": 370.6666666666667,
+              "mean_wall_sec": 9.97138490426975,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8565424915036057,
+              "se_deployed_cost": 0.0766282384175342,
+              "median_deployed_cost": 1.6933091734208288,
+              "mean_raw_true_obj": 1.8565424915036057,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00434375,
+              "mean_target_calls": 388.1666666666667,
+              "mean_wall_sec": 11.0533046136455,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.0396886773834333,
+              "se_deployed_cost": 0.09906302964145676,
+              "median_deployed_cost": 1.8621272552948214,
+              "mean_raw_true_obj": 2.0396886773834333,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00018750000000000003,
+              "mean_target_calls": 370.6666666666667,
+              "mean_wall_sec": 9.202928767423145,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9809642182513942,
+              "se_deployed_cost": 0.09832874948009508,
+              "median_deployed_cost": 1.8236463250300958,
+              "mean_raw_true_obj": 1.926318560420409,
+              "certified_rate": 0.9166666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.008114583333333333,
+              "mean_target_calls": 340.1666666666667,
+              "mean_wall_sec": 30.998906340566464,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.0146614333542874,
+              "se_deployed_cost": 0.1055666692913055,
+              "median_deployed_cost": 1.831801647253677,
+              "mean_raw_true_obj": 1.9380727241724296,
+              "certified_rate": 0.875,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.009729166666666667,
+              "mean_target_calls": 399.3333333333333,
+              "mean_wall_sec": 2.7255431488932422,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9139327229084957,
+              "se_deployed_cost": 0.06735458302226159,
+              "median_deployed_cost": 1.8292229593426952,
+              "mean_raw_true_obj": 1.9139327229084957,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0015833333333333333,
+              "mean_target_calls": 349.3333333333333,
+              "mean_wall_sec": 54.827321107809745,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9318392796168788,
+              "se_deployed_cost": 0.07016623146900186,
+              "median_deployed_cost": 1.8353180929880946,
+              "mean_raw_true_obj": 1.8964076401562637,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.004604166666666667,
+              "mean_target_calls": 360.5,
+              "mean_wall_sec": 9.954487002571113,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.925016984891096,
+              "se_deployed_cost": 0.06950041023156603,
+              "median_deployed_cost": 1.8306017444005314,
+              "mean_raw_true_obj": 1.8894190471614536,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0030624999999999997,
+              "mean_target_calls": 387.6666666666667,
+              "mean_wall_sec": 9.744611209297242,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.917705029013398,
+              "se_deployed_cost": 0.08299924592519635,
+              "median_deployed_cost": 1.7679715716770388,
+              "mean_raw_true_obj": 1.8841472753731836,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0028541666666666667,
+              "mean_target_calls": 256.5,
+              "mean_wall_sec": 0.1337437458569184,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8449590484141665,
+              "se_deployed_cost": 0.07933494465504183,
+              "median_deployed_cost": 1.6918043962180378,
+              "mean_raw_true_obj": 1.8449590484141665,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00121875,
+              "mean_target_calls": 376.0,
+              "mean_wall_sec": 10.704914331630183,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.351715582450604,
+              "se_deployed_cost": 0.1086177667276809,
+              "median_deployed_cost": 2.4294516962046697,
+              "mean_raw_true_obj": 2.0254450059679474,
+              "certified_rate": 0.375,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.06599999999999999,
+              "mean_target_calls": 431.5,
+              "mean_wall_sec": 0.36951206616746884,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.8748225784318537,
+              "se_deployed_cost": 0.07150374120456314,
+              "median_deployed_cost": 1.782206796926233,
+              "mean_raw_true_obj": 1.8748225784318537,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0018958333333333334,
+              "mean_target_calls": 376.0,
+              "mean_wall_sec": 9.62605991148545,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.9210285609435582,
+              "se_deployed_cost": 0.06849902181535207,
+              "median_deployed_cost": 1.8258117541992167,
+              "mean_raw_true_obj": 1.9210285609435582,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.003552083333333333,
+              "mean_target_calls": 269.8333333333333,
+              "mean_wall_sec": 0.3363480865955353,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.823912226556829,
+              "se_deployed_cost": 0.0672677125412088,
+              "median_deployed_cost": 1.7065698570975096,
+              "mean_raw_true_obj": 1.823912226556829,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00165625,
+              "mean_target_calls": 370.6666666666667,
+              "mean_wall_sec": 10.947326215876577,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.0735159652399027,
+              "se_deployed_cost": 0.10853425208038087,
+              "median_deployed_cost": 1.978365929555524,
+              "mean_raw_true_obj": 2.0735159652399027,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.001625,
+              "mean_target_calls": 376.0,
+              "mean_wall_sec": 10.116049793160832,
+              "mean_inflation_factor": 27.15798479884404
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.032159046609935425,
+              "mean_relative_improvement_pct": -1.5847038838859209,
+              "wins_losses_ties": [
+                10,
+                14,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.7720628380775452,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.01158344308943913,
+              "mean_relative_improvement_pct": 0.20237083969443104,
+              "wins_losses_ties": [
+                8,
+                16,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.7969439625740051,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.1947296289692666,
+              "mean_relative_improvement_pct": 8.437241219298835,
+              "wins_losses_ties": [
+                21,
+                2,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.00010779973347738823,
+              "holm_adjusted_p": 0.0010158418387939585
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.13600516983722757,
+              "mean_relative_improvement_pct": 5.987364766948335,
+              "wins_losses_ties": [
+                19,
+                3,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.0015517615261020682,
+              "holm_adjusted_p": 0.009310569156612408
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.16970238494012083,
+              "mean_relative_improvement_pct": 7.196135623355245,
+              "wins_losses_ties": [
+                21,
+                2,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.0009676032132183563,
+              "holm_adjusted_p": 0.0077408257057468505
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.06897367449432923,
+              "mean_relative_improvement_pct": 3.955589263837437,
+              "wins_losses_ties": [
+                21,
+                2,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.0017026179106473802,
+              "holm_adjusted_p": 0.009310569156612408
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.08688023120271242,
+              "mean_relative_improvement_pct": 4.74199544618901,
+              "wins_losses_ties": [
+                22,
+                2,
+                0
+              ],
+              "wilcoxon_one_sided_p": 4.5418739318847656e-05,
+              "holm_adjusted_p": 0.0005450248718261719
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.08005793647692969,
+              "mean_relative_improvement_pct": 4.420769928889562,
+              "wins_losses_ties": [
+                22,
+                2,
+                0
+              ],
+              "wilcoxon_one_sided_p": 6.35385513305664e-05,
+              "holm_adjusted_p": 0.0006989240646362305
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07274598059923146,
+              "mean_relative_improvement_pct": 3.6431652900332505,
+              "wins_losses_ties": [
+                18,
+                3,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.00010158418387939585,
+              "holm_adjusted_p": 0.0010158418387939585
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.5067565340364375,
+              "mean_relative_improvement_pct": 20.54334343200787,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 9.098693107393172e-06,
+              "holm_adjusted_p": 0.00011828301039611124
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.029863530017687306,
+              "mean_relative_improvement_pct": 1.5168073819943066,
+              "wins_losses_ties": [
+                13,
+                11,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.2111707329750061,
+              "holm_adjusted_p": 0.8446829319000244
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07606951252939159,
+              "mean_relative_improvement_pct": 4.325031394854541,
+              "wins_losses_ties": [
+                22,
+                2,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.001122891902923584,
+              "holm_adjusted_p": 0.007860243320465088
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.021046821857337566,
+              "mean_relative_improvement_pct": -0.9536003013407613,
+              "wins_losses_ties": [
+                11,
+                13,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.7546007037162781,
+              "holm_adjusted_p": 1.0
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.2285569168257362,
+              "mean_relative_improvement_pct": 9.58204805607384,
+              "wins_losses_ties": [
+                22,
+                2,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.1324882507324219e-06,
+              "holm_adjusted_p": 1.5854835510253906e-05
+            }
+          }
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "source_simulation_calls": 1428,
+      "budgets": {
+        "15": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5475220859012473,
+              "se_deployed_cost": 0.07225094552161054,
+              "median_deployed_cost": 2.4055870082806763,
+              "mean_raw_true_obj": 2.5475220859012473,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005416666666666668,
+              "mean_target_calls": 270.5,
+              "mean_wall_sec": 2.3664075257256627,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.501390450870115,
+              "se_deployed_cost": 0.05104024014111296,
+              "median_deployed_cost": 2.45381139037336,
+              "mean_raw_true_obj": 2.501390450870115,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.002395833333333333,
+              "mean_target_calls": 271.0,
+              "mean_wall_sec": 2.8062254995650924,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.592379769685751,
+              "se_deployed_cost": 0.06284062422782005,
+              "median_deployed_cost": 2.495040700253845,
+              "mean_raw_true_obj": 2.592379769685751,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 4.1666666666666665e-05,
+              "mean_target_calls": 227.33333333333334,
+              "mean_wall_sec": 2.39355139217029,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.9550957339943635,
+              "se_deployed_cost": 0.06287742296525324,
+              "median_deployed_cost": 2.9184605817679556,
+              "mean_raw_true_obj": 2.9550957339943635,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00021874999999999998,
+              "mean_target_calls": 195.33333333333334,
+              "mean_wall_sec": 7.656450315339801,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.0064513871207144,
+              "se_deployed_cost": 0.07333506410718499,
+              "median_deployed_cost": 2.949009436172865,
+              "mean_raw_true_obj": 3.0064513871207144,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.000125,
+              "mean_target_calls": 280.6666666666667,
+              "mean_wall_sec": 0.5146692688576877,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.995632478019734,
+              "se_deployed_cost": 0.06796271966487506,
+              "median_deployed_cost": 2.949009436172865,
+              "mean_raw_true_obj": 2.995632478019734,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 7.291666666666667e-05,
+              "mean_target_calls": 216.66666666666666,
+              "mean_wall_sec": 15.432229212524058,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.968687730985986,
+              "se_deployed_cost": 0.06462362734749529,
+              "median_deployed_cost": 2.922588054224667,
+              "mean_raw_true_obj": 2.968687730985986,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0003854166666666667,
+              "mean_target_calls": 265.6666666666667,
+              "mean_wall_sec": 0.7580278764556473,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.970524464477265,
+              "se_deployed_cost": 0.06265909147474095,
+              "median_deployed_cost": 2.927041070509976,
+              "mean_raw_true_obj": 2.970524464477265,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00025,
+              "mean_target_calls": 281.1666666666667,
+              "mean_wall_sec": 0.7249449369652817,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.626516744722141,
+              "se_deployed_cost": 0.059353582048752095,
+              "median_deployed_cost": 2.495133561656746,
+              "mean_raw_true_obj": 2.626516744722141,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 4.1666666666666665e-05,
+              "mean_target_calls": 197.33333333333334,
+              "mean_wall_sec": 0.16118713413986066,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.4954300890560135,
+              "se_deployed_cost": 0.05351484138415811,
+              "median_deployed_cost": 2.4171917426007408,
+              "mean_raw_true_obj": 2.4954300890560135,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0011145833333333333,
+              "mean_target_calls": 275.3333333333333,
+              "mean_wall_sec": 2.7616560618237904,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.2691198700966684,
+              "se_deployed_cost": 0.08602071833241659,
+              "median_deployed_cost": 3.1934838136283528,
+              "mean_raw_true_obj": 3.0775170821344324,
+              "certified_rate": 0.5,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.07382291666666667,
+              "mean_target_calls": 324.0,
+              "mean_wall_sec": 0.19177261154012135,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.695276476460984,
+              "se_deployed_cost": 0.08537638262367149,
+              "median_deployed_cost": 2.6116554914271646,
+              "mean_raw_true_obj": 2.695276476460984,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0016875,
+              "mean_target_calls": 270.0,
+              "mean_wall_sec": 2.410991999437101,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.1577332190072886,
+              "se_deployed_cost": 0.05900860309830589,
+              "median_deployed_cost": 3.0500791815208768,
+              "mean_raw_true_obj": 3.1577332190072886,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 2.0833333333333333e-05,
+              "mean_target_calls": 158.0,
+              "mean_wall_sec": 0.18757691738816598,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5525457838602,
+              "se_deployed_cost": 0.06296902043704108,
+              "median_deployed_cost": 2.439223708386227,
+              "mean_raw_true_obj": 2.5525457838602,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00171875,
+              "mean_target_calls": 281.1666666666667,
+              "mean_wall_sec": 2.5976042094795653,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5757079491502277,
+              "se_deployed_cost": 0.05681982781225951,
+              "median_deployed_cost": 2.4794130609547427,
+              "mean_raw_true_obj": 2.5757079491502277,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 7.291666666666667e-05,
+              "mean_target_calls": 280.6666666666667,
+              "mean_wall_sec": 2.3733845286381743,
+              "mean_inflation_factor": 17.92655786622437
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.05209199684523369,
+              "mean_relative_improvement_pct": 1.6290709003153492,
+              "wins_losses_ties": [
+                15,
+                8,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.06318536175112367,
+              "holm_adjusted_p": 0.12637072350224735
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0059603618141012005,
+              "mean_relative_improvement_pct": 0.22525538332190606,
+              "wins_losses_ties": [
+                12,
+                11,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.3289345340666109,
+              "holm_adjusted_p": 0.3289345340666109
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.09694968062973741,
+              "mean_relative_improvement_pct": 3.5414004082542387,
+              "wins_losses_ties": [
+                19,
+                2,
+                3
+              ],
+              "wilcoxon_one_sided_p": 9.069351394608635e-05,
+              "holm_adjusted_p": 0.0005441610836765181
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.4596656449383501,
+              "mean_relative_improvement_pct": 15.389568952339062,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.5110212980647004,
+              "mean_relative_improvement_pct": 16.66335138176661,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.5002023889637198,
+              "mean_relative_improvement_pct": 16.494732814167726,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.47325764192997305,
+              "mean_relative_improvement_pct": 15.78690533955778,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.47509437542125116,
+              "mean_relative_improvement_pct": 15.831815919280952,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.13108665566612726,
+              "mean_relative_improvement_pct": 4.892902511238776,
+              "wins_losses_ties": [
+                21,
+                0,
+                3
+              ],
+              "wilcoxon_one_sided_p": 1.3295301808510313e-05,
+              "holm_adjusted_p": 9.306711265957219e-05
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.7736897810406546,
+              "mean_relative_improvement_pct": 23.183367269514545,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.1998463874049705,
+              "mean_relative_improvement_pct": 6.209864380770167,
+              "wins_losses_ties": [
+                19,
+                5,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.0006189942359924316,
+              "holm_adjusted_p": 0.002673561639836702
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.6623031299512752,
+              "mean_relative_improvement_pct": 21.01766187894654,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.05711569480418679,
+              "mean_relative_improvement_pct": 1.9578770328835784,
+              "wins_losses_ties": [
+                18,
+                5,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.005276793321893184,
+              "holm_adjusted_p": 0.015830379965679552
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.08027786009421439,
+              "mean_relative_improvement_pct": 2.997405723229545,
+              "wins_losses_ties": [
+                19,
+                3,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.0005347123279673404,
+              "holm_adjusted_p": 0.002673561639836702
+            }
+          }
+        },
+        "30": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.495231192893391,
+              "se_deployed_cost": 0.053415135725509245,
+              "median_deployed_cost": 2.3812092558741673,
+              "mean_raw_true_obj": 2.495231192893391,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 7.291666666666667e-05,
+              "mean_target_calls": 305.3333333333333,
+              "mean_wall_sec": 4.625812548950004,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5055642327625285,
+              "se_deployed_cost": 0.0509337580301429,
+              "median_deployed_cost": 2.4435881028086994,
+              "mean_raw_true_obj": 2.5055642327625285,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006458333333333333,
+              "mean_target_calls": 306.3333333333333,
+              "mean_wall_sec": 5.290568545538311,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5887230812622204,
+              "se_deployed_cost": 0.06386668844011531,
+              "median_deployed_cost": 2.495133561656746,
+              "mean_raw_true_obj": 2.5887230812622204,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 4.1666666666666665e-05,
+              "mean_target_calls": 268.0,
+              "mean_wall_sec": 4.580335956804144,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.9550957339943635,
+              "se_deployed_cost": 0.06287742296525324,
+              "median_deployed_cost": 2.9184605817679556,
+              "mean_raw_true_obj": 2.9550957339943635,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00021874999999999998,
+              "mean_target_calls": 220.0,
+              "mean_wall_sec": 15.328188709798269,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.0313803188479027,
+              "se_deployed_cost": 0.08033012989978659,
+              "median_deployed_cost": 2.977915813449362,
+              "mean_raw_true_obj": 3.0313803188479027,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00040625,
+              "mean_target_calls": 311.1666666666667,
+              "mean_wall_sec": 1.089368309515218,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.0059840943088187,
+              "se_deployed_cost": 0.06913187699348176,
+              "median_deployed_cost": 2.9722558502455403,
+              "mean_raw_true_obj": 3.0059840943088187,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 8.333333333333333e-05,
+              "mean_target_calls": 268.5,
+              "mean_wall_sec": 28.620043482903082,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.959098475876653,
+              "se_deployed_cost": 0.06237673267732506,
+              "median_deployed_cost": 2.9157053056775313,
+              "mean_raw_true_obj": 2.959098475876653,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006666666666666666,
+              "mean_target_calls": 284.5,
+              "mean_wall_sec": 2.351094575598836,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.967481443537436,
+              "se_deployed_cost": 0.06247862233322459,
+              "median_deployed_cost": 2.927041070509976,
+              "mean_raw_true_obj": 2.967481443537436,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005104166666666667,
+              "mean_target_calls": 321.8333333333333,
+              "mean_wall_sec": 2.1297320825591064,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.626516744722141,
+              "se_deployed_cost": 0.059353582048752095,
+              "median_deployed_cost": 2.495133561656746,
+              "mean_raw_true_obj": 2.626516744722141,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 4.1666666666666665e-05,
+              "mean_target_calls": 197.33333333333334,
+              "mean_wall_sec": 0.16118713413986066,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.498647737848159,
+              "se_deployed_cost": 0.052649785275694846,
+              "median_deployed_cost": 2.4280043886173206,
+              "mean_raw_true_obj": 2.498647737848159,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006354166666666666,
+              "mean_target_calls": 294.6666666666667,
+              "mean_wall_sec": 5.207465253537521,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.2213222771007053,
+              "se_deployed_cost": 0.08182404812152502,
+              "median_deployed_cost": 3.167527161921705,
+              "mean_raw_true_obj": 3.0779935291750764,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.08402083333333332,
+              "mean_target_calls": 354.0,
+              "mean_wall_sec": 0.3295097349522014,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5352994992012445,
+              "se_deployed_cost": 0.05111072861719284,
+              "median_deployed_cost": 2.472897641643237,
+              "mean_raw_true_obj": 2.5352994992012445,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006875000000000001,
+              "mean_target_calls": 294.6666666666667,
+              "mean_wall_sec": 4.579434299725108,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.161764609443934,
+              "se_deployed_cost": 0.05862721902880784,
+              "median_deployed_cost": 3.053561103779722,
+              "mean_raw_true_obj": 3.161764609443934,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 2.0833333333333333e-05,
+              "mean_target_calls": 188.0,
+              "mean_wall_sec": 0.26446720589107525,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.566855020899807,
+              "se_deployed_cost": 0.06477594040134056,
+              "median_deployed_cost": 2.4612844553574105,
+              "mean_raw_true_obj": 2.566855020899807,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0010729166666666667,
+              "mean_target_calls": 289.3333333333333,
+              "mean_wall_sec": 5.089390148408711,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5715935537616708,
+              "se_deployed_cost": 0.05664861219752252,
+              "median_deployed_cost": 2.4794130609547427,
+              "mean_raw_true_obj": 2.5715935537616708,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00059375,
+              "mean_target_calls": 305.3333333333333,
+              "mean_wall_sec": 4.705637382188191,
+              "mean_inflation_factor": 15.139445666429404
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.003416544954767342,
+              "mean_relative_improvement_pct": -0.18437387575164285,
+              "wins_losses_ties": [
+                11,
+                13,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.472053587436676,
+              "holm_adjusted_p": 0.944107174873352
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.006916494914369464,
+              "mean_relative_improvement_pct": 0.1491204441774303,
+              "wins_losses_ties": [
+                9,
+                14,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.7014486076408699,
+              "holm_adjusted_p": 0.944107174873352
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.09007534341406148,
+              "mean_relative_improvement_pct": 3.2405958880310615,
+              "wins_losses_ties": [
+                17,
+                4,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.00017702607534975193,
+              "holm_adjusted_p": 0.0010621564520985117
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.45644799614620496,
+              "mean_relative_improvement_pct": 15.216095701156762,
+              "wins_losses_ties": [
+                23,
+                1,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.1920928955078125e-07,
+              "holm_adjusted_p": 1.3113021850585938e-06
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.5327325809997442,
+              "mean_relative_improvement_pct": 17.05539762668582,
+              "wins_losses_ties": [
+                23,
+                1,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.1920928955078125e-07,
+              "holm_adjusted_p": 1.3113021850585938e-06
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.50733635646066,
+              "mean_relative_improvement_pct": 16.589961427983326,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.4604507380284942,
+              "mean_relative_improvement_pct": 15.397774887418217,
+              "wins_losses_ties": [
+                23,
+                1,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.1920928955078125e-07,
+              "holm_adjusted_p": 1.3113021850585938e-06
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.4688337056892773,
+              "mean_relative_improvement_pct": 15.573536290618428,
+              "wins_losses_ties": [
+                23,
+                1,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.1920928955078125e-07,
+              "holm_adjusted_p": 1.3113021850585938e-06
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.1278690068739821,
+              "mean_relative_improvement_pct": 4.745794885589896,
+              "wins_losses_ties": [
+                21,
+                0,
+                3
+              ],
+              "wilcoxon_one_sided_p": 1.3295301808510313e-05,
+              "holm_adjusted_p": 9.306711265957219e-05
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.7226745392525463,
+              "mean_relative_improvement_pct": 22.188240055190693,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.036651761353086044,
+              "mean_relative_improvement_pct": 1.3769349581355594,
+              "wins_losses_ties": [
+                16,
+                8,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.07167518138885498,
+              "holm_adjusted_p": 0.2256082740694748
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.6631168715957753,
+              "mean_relative_improvement_pct": 20.998473004680072,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.06820728305164826,
+              "mean_relative_improvement_pct": 2.2067961455271004,
+              "wins_losses_ties": [
+                16,
+                7,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.0564020685173687,
+              "holm_adjusted_p": 0.2256082740694748
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07294581591351214,
+              "mean_relative_improvement_pct": 2.6995433343755453,
+              "wins_losses_ties": [
+                18,
+                4,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.0015517615261020682,
+              "holm_adjusted_p": 0.007758807630510341
+            }
+          }
+        },
+        "60": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.4761800279519446,
+              "se_deployed_cost": 0.053605846586162006,
+              "median_deployed_cost": 2.369043034959218,
+              "mean_raw_true_obj": 2.4761800279519446,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00032291666666666666,
+              "mean_target_calls": 376.0,
+              "mean_wall_sec": 9.348921314929612,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.4718303079466186,
+              "se_deployed_cost": 0.04999511268635956,
+              "median_deployed_cost": 2.3996952982130457,
+              "mean_raw_true_obj": 2.4718303079466186,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0008333333333333334,
+              "mean_target_calls": 377.0,
+              "mean_wall_sec": 11.00615871406626,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5835070840669343,
+              "se_deployed_cost": 0.06289380260230773,
+              "median_deployed_cost": 2.4794130609547427,
+              "mean_raw_true_obj": 2.5835070840669343,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 8.333333333333333e-05,
+              "mean_target_calls": 322.6666666666667,
+              "mean_wall_sec": 8.925127370011372,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.9550957339943635,
+              "se_deployed_cost": 0.06287742296525324,
+              "median_deployed_cost": 2.9184605817679556,
+              "mean_raw_true_obj": 2.9550957339943635,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00021874999999999998,
+              "mean_target_calls": 290.6666666666667,
+              "mean_wall_sec": 42.97358704653258,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.02617002406213,
+              "se_deployed_cost": 0.07267741909008009,
+              "median_deployed_cost": 2.9924553252134833,
+              "mean_raw_true_obj": 3.02617002406213,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0008229166666666667,
+              "mean_target_calls": 371.1666666666667,
+              "mean_wall_sec": 3.759959872967253,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.0109253346902793,
+              "se_deployed_cost": 0.0662867914972939,
+              "median_deployed_cost": 2.983216602698721,
+              "mean_raw_true_obj": 3.0109253346902793,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 9.375000000000002e-05,
+              "mean_target_calls": 355.6666666666667,
+              "mean_wall_sec": 66.5942697468369,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.958231237462906,
+              "se_deployed_cost": 0.06384364337906023,
+              "median_deployed_cost": 2.892043852883738,
+              "mean_raw_true_obj": 2.958231237462906,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 2.0833333333333333e-05,
+              "mean_target_calls": 372.1666666666667,
+              "mean_wall_sec": 15.335704917786643,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.9703579153879853,
+              "se_deployed_cost": 0.06264960277306234,
+              "median_deployed_cost": 2.9263105082740006,
+              "mean_raw_true_obj": 2.9703579153879853,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005104166666666667,
+              "mean_target_calls": 381.8333333333333,
+              "mean_wall_sec": 14.421385244543975,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.626516744722141,
+              "se_deployed_cost": 0.059353582048752095,
+              "median_deployed_cost": 2.495133561656746,
+              "mean_raw_true_obj": 2.626516744722141,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 4.1666666666666665e-05,
+              "mean_target_calls": 197.33333333333334,
+              "mean_wall_sec": 0.16118713413986066,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.475086551260428,
+              "se_deployed_cost": 0.05247972348318613,
+              "median_deployed_cost": 2.3874099679804743,
+              "mean_raw_true_obj": 2.475086551260428,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0004062500000000001,
+              "mean_target_calls": 360.0,
+              "mean_wall_sec": 10.412279017580053,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.2097039677598462,
+              "se_deployed_cost": 0.06667381783411166,
+              "median_deployed_cost": 3.1994437998049525,
+              "mean_raw_true_obj": 3.0828569368735894,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.07178125,
+              "mean_target_calls": 430.5,
+              "mean_wall_sec": 0.5557426853726307,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.5199486572069323,
+              "se_deployed_cost": 0.05524262303635046,
+              "median_deployed_cost": 2.40838731779204,
+              "mean_raw_true_obj": 2.5199486572069323,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00047916666666666664,
+              "mean_target_calls": 376.5,
+              "mean_wall_sec": 9.337076733703725,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 3.1497097989956586,
+              "se_deployed_cost": 0.0564171341430479,
+              "median_deployed_cost": 3.053561103779722,
+              "mean_raw_true_obj": 3.1497097989956586,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 3.125e-05,
+              "mean_target_calls": 248.0,
+              "mean_wall_sec": 0.4826634026831016,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.522168393138123,
+              "se_deployed_cost": 0.05549422108604889,
+              "median_deployed_cost": 2.4202853849144494,
+              "mean_raw_true_obj": 2.522168393138123,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00014583333333333335,
+              "mean_target_calls": 376.5,
+              "mean_wall_sec": 10.545812890787298,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 2.559940821745624,
+              "se_deployed_cost": 0.0558961839196689,
+              "median_deployed_cost": 2.4714466262710273,
+              "mean_raw_true_obj": 2.559940821745624,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00059375,
+              "mean_target_calls": 370.6666666666667,
+              "mean_wall_sec": 9.546171427471563,
+              "mean_inflation_factor": 14.20255057684802
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0010934766915164744,
+              "mean_relative_improvement_pct": 0.01726625427426505,
+              "wins_losses_ties": [
+                11,
+                13,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.7080969214439392,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.003256243313809748,
+              "mean_relative_improvement_pct": -0.11462128688384751,
+              "wins_losses_ties": [
+                7,
+                17,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.9494518041610718,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.10842053280650604,
+              "mean_relative_improvement_pct": 3.9847616113983566,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.4901161193847656e-06,
+              "holm_adjusted_p": 8.940696716308594e-06
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.48000918273393545,
+              "mean_relative_improvement_pct": 16.054697789265134,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.5510834728017017,
+              "mean_relative_improvement_pct": 17.827089847238955,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.5358387834298505,
+              "mean_relative_improvement_pct": 17.59150904835152,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.4831446862024773,
+              "mean_relative_improvement_pct": 16.183827589192585,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.49527136412755707,
+              "mean_relative_improvement_pct": 16.490318316625867,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.15143019346171252,
+              "mean_relative_improvement_pct": 5.669616379036676,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.734617416499418,
+              "mean_relative_improvement_pct": 22.79446993597066,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.044862105946504284,
+              "mean_relative_improvement_pct": 1.607696877107392,
+              "wins_losses_ties": [
+                16,
+                8,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.09375065565109253,
+              "holm_adjusted_p": 0.2812519669532776
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.6746232477352301,
+              "mean_relative_improvement_pct": 21.478490147707483,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.047081841877695006,
+              "mean_relative_improvement_pct": 1.7113714999718421,
+              "wins_losses_ties": [
+                18,
+                6,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.003258049488067627,
+              "holm_adjusted_p": 0.013032197952270508
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.08485427048519549,
+              "mean_relative_improvement_pct": 3.2252720908262305,
+              "wins_losses_ties": [
+                20,
+                3,
+                1
+              ],
+              "wilcoxon_one_sided_p": 7.663384700224491e-05,
+              "holm_adjusted_p": 0.00038316923501122456
+            }
+          }
+        }
+      }
+    },
+    "OPSD_EuroGrid": {
+      "source_simulation_calls": 1428,
+      "budgets": {
+        "15": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05686488899339753,
+              "se_deployed_cost": 0.005986691896563739,
+              "median_deployed_cost": 0.05010748153232802,
+              "mean_raw_true_obj": 0.05686488899339753,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0017552083333333332,
+              "mean_target_calls": 286.0,
+              "mean_wall_sec": 3.302610571651409,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.058940445406119486,
+              "se_deployed_cost": 0.006318738109680671,
+              "median_deployed_cost": 0.051933632820069076,
+              "mean_raw_true_obj": 0.058940445406119486,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0018854166666666665,
+              "mean_target_calls": 259.8333333333333,
+              "mean_wall_sec": 3.63874491424455,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05747865128497154,
+              "se_deployed_cost": 0.005938295357821342,
+              "median_deployed_cost": 0.047992733111972725,
+              "mean_raw_true_obj": 0.05747865128497154,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005625000000000001,
+              "mean_target_calls": 232.66666666666666,
+              "mean_wall_sec": 3.345010139474956,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06610768829395787,
+              "se_deployed_cost": 0.004653166054965757,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06610768829395787,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 195.33333333333334,
+              "mean_wall_sec": 13.274201224558055,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06628206711642814,
+              "se_deployed_cost": 0.004687108478895724,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06628206711642814,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006354166666666666,
+              "mean_target_calls": 249.16666666666666,
+              "mean_wall_sec": 1.388343465165235,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06743465602233993,
+              "se_deployed_cost": 0.005624211191487984,
+              "median_deployed_cost": 0.06074034685736289,
+              "mean_raw_true_obj": 0.06524408808296037,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0048125,
+              "mean_target_calls": 249.66666666666666,
+              "mean_wall_sec": 32.76102816084555,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06680935278399829,
+              "se_deployed_cost": 0.0046287951567590795,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06680935278399829,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 243.33333333333334,
+              "mean_wall_sec": 1.769809306288759,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06716584377276463,
+              "se_deployed_cost": 0.00469375998550098,
+              "median_deployed_cost": 0.06022331103954045,
+              "mean_raw_true_obj": 0.06716584377276463,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0007083333333333334,
+              "mean_target_calls": 286.0,
+              "mean_wall_sec": 1.8221147552054997,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.058100780234737866,
+              "se_deployed_cost": 0.00582257264505981,
+              "median_deployed_cost": 0.05163919187169233,
+              "mean_raw_true_obj": 0.058100780234737866,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005520833333333334,
+              "mean_target_calls": 240.0,
+              "mean_wall_sec": 0.46732129641653347,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05656813755067716,
+              "se_deployed_cost": 0.00575404203133747,
+              "median_deployed_cost": 0.047992733111972725,
+              "mean_raw_true_obj": 0.05656813755067716,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0011145833333333333,
+              "mean_target_calls": 275.8333333333333,
+              "mean_wall_sec": 3.534780103053587,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.09916982255446179,
+              "se_deployed_cost": 0.004120130987123587,
+              "median_deployed_cost": 0.08966718308615346,
+              "mean_raw_true_obj": 0.09916982255446179,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0003177083333333333,
+              "mean_target_calls": 158.0,
+              "mean_wall_sec": 0.7610918957119187,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06137778710266298,
+              "se_deployed_cost": 0.005588678145476941,
+              "median_deployed_cost": 0.054065357614801926,
+              "mean_raw_true_obj": 0.06137778710266298,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0020260416666666664,
+              "mean_target_calls": 238.5,
+              "mean_wall_sec": 3.338207953493111,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.08095876386441626,
+              "se_deployed_cost": 0.004095355632179355,
+              "median_deployed_cost": 0.07204738992235626,
+              "mean_raw_true_obj": 0.08095876386441626,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 158.0,
+              "mean_wall_sec": 0.7366003758118799,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.058837499506331804,
+              "se_deployed_cost": 0.006025639178621641,
+              "median_deployed_cost": 0.05520161972053737,
+              "mean_raw_true_obj": 0.058837499506331804,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0011458333333333336,
+              "mean_target_calls": 259.3333333333333,
+              "mean_wall_sec": 3.4784461517895884,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05749762587561407,
+              "se_deployed_cost": 0.005843023645409684,
+              "median_deployed_cost": 0.051933632820069076,
+              "mean_raw_true_obj": 0.05749762587561407,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005208333333333333,
+              "mean_target_calls": 254.0,
+              "mean_wall_sec": 3.278178625740111,
+              "mean_inflation_factor": 1.9298147187277859
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.00029675144272037153,
+              "mean_relative_improvement_pct": -0.6831583605174318,
+              "wins_losses_ties": [
+                10,
+                9,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.5171097509568038,
+              "holm_adjusted_p": 0.9859433844504009
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.002372307855442323,
+              "mean_relative_improvement_pct": 2.357877740336778,
+              "wins_losses_ties": [
+                9,
+                9,
+                6
+              ],
+              "wilcoxon_one_sided_p": 0.3286477948168003,
+              "holm_adjusted_p": 0.9859433844504009
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0009105137342943766,
+              "mean_relative_improvement_pct": 1.29890902918714,
+              "wins_losses_ties": [
+                7,
+                7,
+                10
+              ],
+              "wilcoxon_one_sided_p": 0.3811134182032528,
+              "holm_adjusted_p": 0.9859433844504009
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.009539550743280703,
+              "mean_relative_improvement_pct": 18.76879585944618,
+              "wins_losses_ties": [
+                20,
+                3,
+                1
+              ],
+              "wilcoxon_one_sided_p": 3.792578605407815e-05,
+              "holm_adjusted_p": 0.0003034062884326252
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.009713929565750982,
+              "mean_relative_improvement_pct": 18.966739348908213,
+              "wins_losses_ties": [
+                21,
+                2,
+                1
+              ],
+              "wilcoxon_one_sided_p": 2.6401897561882172e-05,
+              "holm_adjusted_p": 0.00023761707805693955
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010866518471662761,
+              "mean_relative_improvement_pct": 18.3337823834523,
+              "wins_losses_ties": [
+                22,
+                2,
+                0
+              ],
+              "wilcoxon_one_sided_p": 4.172325134277344e-07,
+              "holm_adjusted_p": 5.0067901611328125e-06
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010241215233321105,
+              "mean_relative_improvement_pct": 19.70722299076868,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.4901161193847656e-06,
+              "holm_adjusted_p": 1.4901161193847656e-05
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010597706222087472,
+              "mean_relative_improvement_pct": 20.118881643696902,
+              "wins_losses_ties": [
+                22,
+                2,
+                0
+              ],
+              "wilcoxon_one_sided_p": 8.344650268554688e-07,
+              "holm_adjusted_p": 9.179115295410156e-06
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0015326426840606942,
+              "mean_relative_improvement_pct": 2.8562078129613004,
+              "wins_losses_ties": [
+                10,
+                6,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.11406765251223855,
+              "holm_adjusted_p": 0.5703382625611928
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.04260168500378462,
+              "mean_relative_improvement_pct": 45.83231474390416,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.004809649551985811,
+              "mean_relative_improvement_pct": 9.628811732477256,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.0002149343490600586,
+              "holm_adjusted_p": 0.0015045404434204102
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0243906263137391,
+              "mean_relative_improvement_pct": 33.78491810148498,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0022693619556546436,
+              "mean_relative_improvement_pct": 3.2465214776201186,
+              "wins_losses_ties": [
+                10,
+                6,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.08872478529809708,
+              "holm_adjusted_p": 0.5323487117885825
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0009294883249368974,
+              "mean_relative_improvement_pct": 1.4741049931653685,
+              "wins_losses_ties": [
+                9,
+                7,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.21924189704996855,
+              "holm_adjusted_p": 0.8769675881998742
+            }
+          }
+        },
+        "30": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05600800184431661,
+              "se_deployed_cost": 0.005769767335049812,
+              "median_deployed_cost": 0.048592075842579435,
+              "mean_raw_true_obj": 0.05600800184431661,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0021145833333333333,
+              "mean_target_calls": 305.3333333333333,
+              "mean_wall_sec": 6.098460906224015,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05950011716065362,
+              "se_deployed_cost": 0.006275294079294751,
+              "median_deployed_cost": 0.05598901350693668,
+              "mean_raw_true_obj": 0.05950011716065362,
+              "certified_rate": 1.0,
+              "false_certificates": 1,
+              "mean_true_violation_prob": 0.005348958333333334,
+              "mean_target_calls": 301.0,
+              "mean_wall_sec": 6.61837627851249,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.058602854997565824,
+              "se_deployed_cost": 0.005969306366310652,
+              "median_deployed_cost": 0.047992733111972725,
+              "mean_raw_true_obj": 0.058602854997565824,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.001265625,
+              "mean_target_calls": 269.0,
+              "mean_wall_sec": 6.23345743061509,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06610768829395787,
+              "se_deployed_cost": 0.004653166054965757,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06610768829395787,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 236.0,
+              "mean_wall_sec": 27.355186767914955,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06712650010765471,
+              "se_deployed_cost": 0.0048945935603761734,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06712650010765471,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006354166666666666,
+              "mean_target_calls": 295.1666666666667,
+              "mean_wall_sec": 2.769189319224097,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.0672412540630447,
+              "se_deployed_cost": 0.0056554423572542905,
+              "median_deployed_cost": 0.06062702819862597,
+              "mean_raw_true_obj": 0.06508378777250737,
+              "certified_rate": 0.9583333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.005718749999999999,
+              "mean_target_calls": 285.5,
+              "mean_wall_sec": 59.822223014663905,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06691812901637816,
+              "se_deployed_cost": 0.004623718350724542,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06691812901637816,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 294.6666666666667,
+              "mean_wall_sec": 4.758458566619083,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06726584350414411,
+              "se_deployed_cost": 0.004676594175485095,
+              "median_deployed_cost": 0.06025186597095196,
+              "mean_raw_true_obj": 0.06726584350414411,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0007031250000000001,
+              "mean_target_calls": 316.0,
+              "mean_wall_sec": 4.566523437815097,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.058100780234737866,
+              "se_deployed_cost": 0.00582257264505981,
+              "median_deployed_cost": 0.05163919187169233,
+              "mean_raw_true_obj": 0.058100780234737866,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005520833333333334,
+              "mean_target_calls": 240.0,
+              "mean_wall_sec": 0.46732129641653347,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.056721006173428644,
+              "se_deployed_cost": 0.005818115089739174,
+              "median_deployed_cost": 0.047992733111972725,
+              "mean_raw_true_obj": 0.056721006173428644,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0008541666666666666,
+              "mean_target_calls": 279.1666666666667,
+              "mean_wall_sec": 6.60044562316034,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.09989579160049744,
+              "se_deployed_cost": 0.004108178651110752,
+              "median_deployed_cost": 0.09276383152931597,
+              "mean_raw_true_obj": 0.09989579160049744,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.000796875,
+              "mean_target_calls": 188.0,
+              "mean_wall_sec": 1.3466381151229143,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.061546172275891264,
+              "se_deployed_cost": 0.005692708017786136,
+              "median_deployed_cost": 0.05191144101906833,
+              "mean_raw_true_obj": 0.061546172275891264,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0021458333333333334,
+              "mean_target_calls": 317.0,
+              "mean_wall_sec": 6.526991554885171,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.0804407089592722,
+              "se_deployed_cost": 0.00428999203482331,
+              "median_deployed_cost": 0.06929729765267123,
+              "mean_raw_true_obj": 0.0804407089592722,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 188.0,
+              "mean_wall_sec": 1.217086848647644,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.0575958699987271,
+              "se_deployed_cost": 0.0057021408031622456,
+              "median_deployed_cost": 0.05245738849019632,
+              "mean_raw_true_obj": 0.0575958699987271,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005677083333333334,
+              "mean_target_calls": 305.3333333333333,
+              "mean_wall_sec": 6.420875034411438,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05653314554990538,
+              "se_deployed_cost": 0.0057145967466057405,
+              "median_deployed_cost": 0.05346534315943339,
+              "mean_raw_true_obj": 0.05653314554990538,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0008333333333333334,
+              "mean_target_calls": 289.8333333333333,
+              "mean_wall_sec": 6.079755214042962,
+              "mean_inflation_factor": 1.9354672535103894
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.0007130043291120159,
+              "mean_relative_improvement_pct": -1.4641606725760523,
+              "wins_losses_ties": [
+                7,
+                13,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.8850492665266338,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.002779110987224983,
+              "mean_relative_improvement_pct": 1.9212353165984712,
+              "wins_losses_ties": [
+                10,
+                11,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.48860087378090966,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.00188184882413719,
+              "mean_relative_improvement_pct": 3.3689609837362307,
+              "wins_losses_ties": [
+                11,
+                6,
+                7
+              ],
+              "wilcoxon_one_sided_p": 0.04546126128098198,
+              "holm_adjusted_p": 0.27276756768589183
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.009386682120529236,
+              "mean_relative_improvement_pct": 18.72939378540109,
+              "wins_losses_ties": [
+                19,
+                4,
+                1
+              ],
+              "wilcoxon_one_sided_p": 6.080513084507525e-05,
+              "holm_adjusted_p": 0.000486441046760602
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010405493934226078,
+              "mean_relative_improvement_pct": 19.746898333135896,
+              "wins_losses_ties": [
+                21,
+                2,
+                1
+              ],
+              "wilcoxon_one_sided_p": 2.336284542897068e-05,
+              "holm_adjusted_p": 0.00021026560886073611
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010520247889616065,
+              "mean_relative_improvement_pct": 17.46262986063316,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.4901161193847656e-06,
+              "holm_adjusted_p": 1.7881393432617188e-05
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010197122842949507,
+              "mean_relative_improvement_pct": 19.812363194679865,
+              "wins_losses_ties": [
+                20,
+                4,
+                0
+              ],
+              "wilcoxon_one_sided_p": 3.2782554626464844e-06,
+              "holm_adjusted_p": 3.2782554626464844e-05
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010544837330715465,
+              "mean_relative_improvement_pct": 20.192881282841743,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.4901161193847656e-06,
+              "holm_adjusted_p": 1.7881393432617188e-05
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0013797740613092262,
+              "mean_relative_improvement_pct": 2.66889319151833,
+              "wins_losses_ties": [
+                10,
+                8,
+                6
+              ],
+              "wilcoxon_one_sided_p": 0.17612495872621198,
+              "holm_adjusted_p": 0.7044998349048479
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.04317478542706882,
+              "mean_relative_improvement_pct": 46.07814894040978,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0048251661024626274,
+              "mean_relative_improvement_pct": 9.62208200420746,
+              "wins_losses_ties": [
+                20,
+                4,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.0006189942359924316,
+              "holm_adjusted_p": 0.0043329596519470215
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.023719702785843563,
+              "mean_relative_improvement_pct": 33.289193173104195,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0008748638252984604,
+              "mean_relative_improvement_pct": 2.1928864501142713,
+              "wins_losses_ties": [
+                12,
+                7,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.1354213094884083,
+              "holm_adjusted_p": 0.6771065474420415
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.0001878606235232597,
+              "mean_relative_improvement_pct": -0.28909257216225026,
+              "wins_losses_ties": [
+                6,
+                12,
+                6
+              ],
+              "wilcoxon_one_sided_p": 0.8086654290837427,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        },
+        "60": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05668319881696695,
+              "se_deployed_cost": 0.005731606985741662,
+              "median_deployed_cost": 0.05126072001244102,
+              "mean_raw_true_obj": 0.05668319881696695,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0023125,
+              "mean_target_calls": 370.6666666666667,
+              "mean_wall_sec": 11.507024539712196,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05942377573198198,
+              "se_deployed_cost": 0.006272694460950797,
+              "median_deployed_cost": 0.05470516900859888,
+              "mean_raw_true_obj": 0.05942377573198198,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.003265625,
+              "mean_target_calls": 371.6666666666667,
+              "mean_wall_sec": 13.071105556368517,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05823572938138866,
+              "se_deployed_cost": 0.005908965965304221,
+              "median_deployed_cost": 0.047992733111972725,
+              "mean_raw_true_obj": 0.05823572938138866,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0013385416666666667,
+              "mean_target_calls": 338.6666666666667,
+              "mean_wall_sec": 11.003140571410768,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06610768829395787,
+              "se_deployed_cost": 0.004653166054965757,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06610768829395787,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 296.0,
+              "mean_wall_sec": 77.04473337965707,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06712650010765471,
+              "se_deployed_cost": 0.0048945935603761734,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06712650010765471,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006354166666666666,
+              "mean_target_calls": 365.8333333333333,
+              "mean_wall_sec": 7.3549738476673765,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06865095314823912,
+              "se_deployed_cost": 0.00566325645192777,
+              "median_deployed_cost": 0.0655036280691065,
+              "mean_raw_true_obj": 0.0643172656163256,
+              "certified_rate": 0.9166666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.008526041666666666,
+              "mean_target_calls": 361.5,
+              "mean_wall_sec": 128.38235779832272,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.06722035586930224,
+              "se_deployed_cost": 0.004572235078606592,
+              "median_deployed_cost": 0.05985765136424108,
+              "mean_raw_true_obj": 0.06722035586930224,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 365.3333333333333,
+              "mean_wall_sec": 23.878555939688038,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.0672903665764056,
+              "se_deployed_cost": 0.004664915107664862,
+              "median_deployed_cost": 0.060267617318152444,
+              "mean_raw_true_obj": 0.0672903665764056,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0007031250000000001,
+              "mean_target_calls": 376.0,
+              "mean_wall_sec": 22.253113519012306,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.058100780234737866,
+              "se_deployed_cost": 0.00582257264505981,
+              "median_deployed_cost": 0.05163919187169233,
+              "mean_raw_true_obj": 0.058100780234737866,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0005520833333333334,
+              "mean_target_calls": 240.0,
+              "mean_wall_sec": 0.46732129641653347,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05710223943143746,
+              "se_deployed_cost": 0.005839297137494874,
+              "median_deployed_cost": 0.049279421522223824,
+              "mean_raw_true_obj": 0.05710223943143746,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0008645833333333332,
+              "mean_target_calls": 322.6666666666667,
+              "mean_wall_sec": 12.67846981342882,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.09974549229016018,
+              "se_deployed_cost": 0.004083348782711329,
+              "median_deployed_cost": 0.09276383152931597,
+              "mean_raw_true_obj": 0.09974549229016018,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0003177083333333333,
+              "mean_target_calls": 253.33333333333334,
+              "mean_wall_sec": 2.1603258508645617,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.059233615175561166,
+              "se_deployed_cost": 0.00536034792922112,
+              "median_deployed_cost": 0.05583277498611422,
+              "mean_raw_true_obj": 0.059233615175561166,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0035677083333333338,
+              "mean_target_calls": 376.5,
+              "mean_wall_sec": 11.701132354947427,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.08087753782170261,
+              "se_deployed_cost": 0.0042588601528077245,
+              "median_deployed_cost": 0.07010072366817191,
+              "mean_raw_true_obj": 0.08087753782170261,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0,
+              "mean_target_calls": 248.0,
+              "mean_wall_sec": 1.984552942876083,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.05767131740294706,
+              "se_deployed_cost": 0.005574494794724333,
+              "median_deployed_cost": 0.055097553673126694,
+              "mean_raw_true_obj": 0.05767131740294706,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.0006041666666666666,
+              "mean_target_calls": 360.0,
+              "mean_wall_sec": 12.624357187227966,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 0.057801791662328295,
+              "se_deployed_cost": 0.006137738176638895,
+              "median_deployed_cost": 0.051933632820069076,
+              "mean_raw_true_obj": 0.057801791662328295,
+              "certified_rate": 1.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.00084375,
+              "mean_target_calls": 360.5,
+              "mean_wall_sec": 11.92766328031818,
+              "mean_inflation_factor": 2.1479521051080006
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.00041904061447051367,
+              "mean_relative_improvement_pct": -0.8528935749783371,
+              "wins_losses_ties": [
+                8,
+                13,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.7798201816369722,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0023215363005445193,
+              "mean_relative_improvement_pct": 0.9165419344151102,
+              "wins_losses_ties": [
+                7,
+                16,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.8159398746532405,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0011334899499511936,
+              "mean_relative_improvement_pct": 1.9531070086361648,
+              "wins_losses_ties": [
+                11,
+                8,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.1763097282160931,
+              "holm_adjusted_p": 1.0
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.00900544886252041,
+              "mean_relative_improvement_pct": 18.14775734520575,
+              "wins_losses_ties": [
+                19,
+                5,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.233816146850586e-05,
+              "holm_adjusted_p": 9.870529174804688e-05
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010024260676217252,
+              "mean_relative_improvement_pct": 19.165261892940553,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 2.562999725341797e-06,
+              "holm_adjusted_p": 2.8192996978759766e-05
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.011548713716801655,
+              "mean_relative_improvement_pct": 18.121056020749972,
+              "wins_losses_ties": [
+                21,
+                3,
+                0
+              ],
+              "wilcoxon_one_sided_p": 1.9669532775878906e-06,
+              "holm_adjusted_p": 2.3603439331054688e-05
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.01011811643786478,
+              "mean_relative_improvement_pct": 19.65386322680675,
+              "wins_losses_ties": [
+                20,
+                4,
+                0
+              ],
+              "wilcoxon_one_sided_p": 4.172325134277344e-06,
+              "holm_adjusted_p": 3.7550926208496094e-05
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.010188127144968128,
+              "mean_relative_improvement_pct": 19.6749636324796,
+              "wins_losses_ties": [
+                20,
+                4,
+                0
+              ],
+              "wilcoxon_one_sided_p": 3.2782554626464844e-06,
+              "holm_adjusted_p": 3.2782554626464844e-05
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0009985408033004008,
+              "mean_relative_improvement_pct": 1.7855652960023287,
+              "wins_losses_ties": [
+                12,
+                8,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.26470975950878856,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.042643252858722724,
+              "mean_relative_improvement_pct": 45.602954762353214,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0021313757441237054,
+              "mean_relative_improvement_pct": 4.686484824403183,
+              "wins_losses_ties": [
+                14,
+                10,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.26352953910827637,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.023775298390265154,
+              "mean_relative_improvement_pct": 33.161892251741314,
+              "wins_losses_ties": [
+                24,
+                0,
+                0
+              ],
+              "wilcoxon_one_sided_p": 5.960464477539063e-08,
+              "holm_adjusted_p": 8.344650268554688e-07
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0005690779715095928,
+              "mean_relative_improvement_pct": 1.7178500612538556,
+              "wins_losses_ties": [
+                12,
+                10,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.40405323350621225,
+              "holm_adjusted_p": 1.0
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0006995522308908352,
+              "mean_relative_improvement_pct": -0.40300431932637615,
+              "wins_losses_ties": [
+                8,
+                11,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.6180283471874181,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "source_simulation_calls": 1428,
+      "budgets": {
+        "15": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.0812613495400933,
+              "se_deployed_cost": 0.02626172629332569,
+              "median_deployed_cost": 1.039155871350734,
+              "mean_raw_true_obj": 1.044247132441873,
+              "certified_rate": 0.8333333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.026979166666666665,
+              "mean_target_calls": 315.6666666666667,
+              "mean_wall_sec": 8.711390706788128,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1880909391215206,
+              "se_deployed_cost": 0.037292048889151684,
+              "median_deployed_cost": 1.0726442822848856,
+              "mean_raw_true_obj": 1.072635673724435,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.03289583333333334,
+              "mean_target_calls": 340.0,
+              "mean_wall_sec": 8.840495853025155,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1912591487928788,
+              "se_deployed_cost": 0.03473772223638476,
+              "median_deployed_cost": 1.2245185992232812,
+              "mean_raw_true_obj": 1.0601122118843274,
+              "certified_rate": 0.4583333333333333,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.038437500000000006,
+              "mean_target_calls": 362.3333333333333,
+              "mean_wall_sec": 8.576037500946162,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.260445259975355,
+              "se_deployed_cost": 0.029841844403251293,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1456976205459144,
+              "certified_rate": 0.16666666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.21928124999999998,
+              "mean_target_calls": 386.6666666666667,
+              "mean_wall_sec": 1.636857349309139,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2611423677545046,
+              "se_deployed_cost": 0.029571074774959724,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.130869220247486,
+              "certified_rate": 0.16666666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.22684374999999998,
+              "mean_target_calls": 386.6666666666667,
+              "mean_wall_sec": 0.87501361380176,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2536168500587788,
+              "se_deployed_cost": 0.030219729999725945,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1168076920763423,
+              "certified_rate": 0.25,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.09969791666666668,
+              "mean_target_calls": 392.0,
+              "mean_wall_sec": 2.792168060899712,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2443802669685846,
+              "se_deployed_cost": 0.03258109640664075,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.126335778041845,
+              "certified_rate": 0.25,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.18884375,
+              "mean_target_calls": 381.3333333333333,
+              "mean_wall_sec": 0.9698341140368333,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2603535735534963,
+              "se_deployed_cost": 0.02987492539382541,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1669698811044749,
+              "certified_rate": 0.16666666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.26407291666666666,
+              "mean_target_calls": 408.5,
+              "mean_wall_sec": 0.9430579262552783,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1703843408440688,
+              "se_deployed_cost": 0.0359575427745431,
+              "median_deployed_cost": 1.0500932456286423,
+              "mean_raw_true_obj": 1.0578930844781513,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.03673958333333333,
+              "mean_target_calls": 321.1666666666667,
+              "mean_wall_sec": 0.47296578766933334,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1812610717714025,
+              "se_deployed_cost": 0.03553757871312008,
+              "median_deployed_cost": 1.1448891568179802,
+              "mean_raw_true_obj": 1.064046175261383,
+              "certified_rate": 0.5,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.03716666666666667,
+              "mean_target_calls": 329.3333333333333,
+              "mean_wall_sec": 9.13085758080706,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2971474667879404,
+              "se_deployed_cost": 0.022082658882279078,
+              "median_deployed_cost": 1.2584827703297081,
+              "mean_raw_true_obj": 1.5064972998619577,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.7050729166666666,
+              "mean_target_calls": 426.0,
+              "mean_wall_sec": 0.7873353745089844,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.0837288320453797,
+              "se_deployed_cost": 0.027009515546849296,
+              "median_deployed_cost": 1.0355244788616031,
+              "mean_raw_true_obj": 1.039142284138557,
+              "certified_rate": 0.7916666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.015479166666666664,
+              "mean_target_calls": 316.1666666666667,
+              "mean_wall_sec": 8.768308690361058,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2971474667879404,
+              "se_deployed_cost": 0.022082658882279078,
+              "median_deployed_cost": 1.2584827703297081,
+              "mean_raw_true_obj": 1.6452462905348904,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.8194583333333334,
+              "mean_target_calls": 426.0,
+              "mean_wall_sec": 0.7559558849704141,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1827964595073264,
+              "se_deployed_cost": 0.03458414415138972,
+              "median_deployed_cost": 1.150960692119492,
+              "mean_raw_true_obj": 1.0669197608763212,
+              "certified_rate": 0.5,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.04284374999999999,
+              "mean_target_calls": 351.6666666666667,
+              "mean_wall_sec": 8.942568292259239,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1722562754685792,
+              "se_deployed_cost": 0.03634036149348145,
+              "median_deployed_cost": 1.0500932456286423,
+              "mean_raw_true_obj": 1.0594788546109182,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.039864583333333335,
+              "mean_target_calls": 340.5,
+              "mean_wall_sec": 8.970984813796045,
+              "mean_inflation_factor": 8.178931701394326
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.09999972223130893,
+              "mean_relative_improvement_pct": -9.588911033724216,
+              "wins_losses_ties": [
+                4,
+                14,
+                6
+              ],
+              "wilcoxon_one_sided_p": 0.9968663343825056,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.00682986735011817,
+              "mean_relative_improvement_pct": 0.09972542097116815,
+              "wins_losses_ties": [
+                6,
+                4,
+                14
+              ],
+              "wilcoxon_one_sided_p": 0.30431583933065653,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.009998077021476403,
+              "mean_relative_improvement_pct": 0.6788362111451505,
+              "wins_losses_ties": [
+                3,
+                4,
+                17
+              ],
+              "wilcoxon_one_sided_p": 0.5651833424962541,
+              "holm_adjusted_p": 1.0
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07918418820395272,
+              "mean_relative_improvement_pct": 5.7131429940627365,
+              "wins_losses_ties": [
+                10,
+                3,
+                11
+              ],
+              "wilcoxon_one_sided_p": 0.023079495655922457,
+              "holm_adjusted_p": 0.2369963668803149
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07988129598310212,
+              "mean_relative_improvement_pct": 5.783176179721691,
+              "wins_losses_ties": [
+                10,
+                3,
+                11
+              ],
+              "wilcoxon_one_sided_p": 0.021545124261846807,
+              "holm_adjusted_p": 0.2369963668803149
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07235577828737623,
+              "mean_relative_improvement_pct": 5.1457625272526695,
+              "wins_losses_ties": [
+                11,
+                3,
+                10
+              ],
+              "wilcoxon_one_sided_p": 0.015907788928078915,
+              "holm_adjusted_p": 0.190893467136947
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.06311919519718229,
+              "mean_relative_improvement_pct": 4.438863269176778,
+              "wins_losses_ties": [
+                10,
+                3,
+                11
+              ],
+              "wilcoxon_one_sided_p": 0.02642520074342202,
+              "holm_adjusted_p": 0.2369963668803149
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.07909250178209375,
+              "mean_relative_improvement_pct": 5.70427356355282,
+              "wins_losses_ties": [
+                10,
+                3,
+                11
+              ],
+              "wilcoxon_one_sided_p": 0.023079495655922457,
+              "holm_adjusted_p": 0.2369963668803149
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.010876730927333456,
+              "mean_relative_improvement_pct": -1.3919428024295468,
+              "wins_losses_ties": [
+                3,
+                6,
+                15
+              ],
+              "wilcoxon_one_sided_p": 0.795010454731254,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.11588639501653791,
+              "mean_relative_improvement_pct": 9.002065299674237,
+              "wins_losses_ties": [
+                12,
+                0,
+                12
+              ],
+              "wilcoxon_one_sided_p": 0.0006433878471795923,
+              "holm_adjusted_p": 0.00900742986051429
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.09753223972602271,
+              "mean_relative_improvement_pct": -10.078395686917634,
+              "wins_losses_ties": [
+                6,
+                15,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.9880148092269987,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.11588639501653791,
+              "mean_relative_improvement_pct": 9.002065299674237,
+              "wins_losses_ties": [
+                12,
+                0,
+                12
+              ],
+              "wilcoxon_one_sided_p": 0.0006433878471795923,
+              "holm_adjusted_p": 0.00900742986051429
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0015353877359239737,
+              "mean_relative_improvement_pct": -0.33376966583191414,
+              "wins_losses_ties": [
+                5,
+                4,
+                15
+              ],
+              "wilcoxon_one_sided_p": 0.4184022488833324,
+              "holm_adjusted_p": 1.0
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.009004796302823026,
+              "mean_relative_improvement_pct": -1.0759568666626909,
+              "wins_losses_ties": [
+                2,
+                5,
+                17
+              ],
+              "wilcoxon_one_sided_p": 0.8106523818855369,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        },
+        "30": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.10538522620224,
+              "se_deployed_cost": 0.03472359924007452,
+              "median_deployed_cost": 1.0439664248462144,
+              "mean_raw_true_obj": 1.0399371634851355,
+              "certified_rate": 0.7916666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.025010416666666663,
+              "mean_target_calls": 351.5,
+              "mean_wall_sec": 16.500993549202878,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1588726650800958,
+              "se_deployed_cost": 0.03431347493596528,
+              "median_deployed_cost": 1.051320380488738,
+              "mean_raw_true_obj": 1.064165227703849,
+              "certified_rate": 0.5833333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.033364583333333336,
+              "mean_target_calls": 358.3333333333333,
+              "mean_wall_sec": 16.964065480666857,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1840899277207517,
+              "se_deployed_cost": 0.03493149524585961,
+              "median_deployed_cost": 1.1443114571058204,
+              "mean_raw_true_obj": 1.065456537623681,
+              "certified_rate": 0.5,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.04057291666666666,
+              "mean_target_calls": 375.8333333333333,
+              "mean_wall_sec": 16.09397248690948,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2535250151049162,
+              "se_deployed_cost": 0.0314091125968481,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1458962489224707,
+              "certified_rate": 0.20833333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.22146874999999996,
+              "mean_target_calls": 416.6666666666667,
+              "mean_wall_sec": 3.362773077795282,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2521270653638825,
+              "se_deployed_cost": 0.03105369371751603,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1304580070466936,
+              "certified_rate": 0.20833333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.226125,
+              "mean_target_calls": 411.3333333333333,
+              "mean_wall_sec": 1.3682094173661123,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2531615261759812,
+              "se_deployed_cost": 0.03036207453983756,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1179055372943392,
+              "certified_rate": 0.25,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.10460416666666666,
+              "mean_target_calls": 422.0,
+              "mean_wall_sec": 5.47728668692677,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2621573858702826,
+              "se_deployed_cost": 0.029289726580550752,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1230103567331775,
+              "certified_rate": 0.16666666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.18546875,
+              "mean_target_calls": 416.6666666666667,
+              "mean_wall_sec": 1.7045797757649173,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.244187806595389,
+              "se_deployed_cost": 0.03270145758983878,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.164159790545833,
+              "certified_rate": 0.25,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.25465625000000003,
+              "mean_target_calls": 432.6666666666667,
+              "mean_wall_sec": 1.7127408966965352,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1703843408440688,
+              "se_deployed_cost": 0.0359575427745431,
+              "median_deployed_cost": 1.0500932456286423,
+              "mean_raw_true_obj": 1.0578930844781513,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.03673958333333333,
+              "mean_target_calls": 321.1666666666667,
+              "mean_wall_sec": 0.47296578766933334,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1581858064337005,
+              "se_deployed_cost": 0.03548505052585372,
+              "median_deployed_cost": 1.0528898042997887,
+              "mean_raw_true_obj": 1.0640573394547002,
+              "certified_rate": 0.625,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.038781249999999996,
+              "mean_target_calls": 358.8333333333333,
+              "mean_wall_sec": 17.1778049711138,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2985973442198258,
+              "se_deployed_cost": 0.021696686348186358,
+              "median_deployed_cost": 1.2584827703297081,
+              "mean_raw_true_obj": 1.4758314426172967,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.6566666666666666,
+              "mean_target_calls": 456.0,
+              "mean_wall_sec": 1.195576595258899,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.0942870536990672,
+              "se_deployed_cost": 0.03134796203183931,
+              "median_deployed_cost": 1.0324535479493329,
+              "mean_raw_true_obj": 1.029634243708422,
+              "certified_rate": 0.7916666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.011125000000000001,
+              "mean_target_calls": 357.3333333333333,
+              "mean_wall_sec": 16.815823210480932,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2985973442198258,
+              "se_deployed_cost": 0.021696686348186358,
+              "median_deployed_cost": 1.2584827703297081,
+              "mean_raw_true_obj": 1.6047870176719767,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.7780416666666667,
+              "mean_target_calls": 456.0,
+              "mean_wall_sec": 1.10967418004293,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1921459076474363,
+              "se_deployed_cost": 0.03412951596447142,
+              "median_deployed_cost": 1.1906348112428964,
+              "mean_raw_true_obj": 1.0938819510405493,
+              "certified_rate": 0.4583333333333333,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.059,
+              "mean_target_calls": 376.3333333333333,
+              "mean_wall_sec": 17.182516937415738,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2075725263942354,
+              "se_deployed_cost": 0.036590616233939104,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.0683337754537068,
+              "certified_rate": 0.4166666666666667,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.045875,
+              "mean_target_calls": 376.3333333333333,
+              "mean_wall_sec": 17.145344199690346,
+              "mean_inflation_factor": 8.314413329818938
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.05280058023146058,
+              "mean_relative_improvement_pct": -5.637590500955239,
+              "wins_losses_ties": [
+                6,
+                14,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.9815459527565007,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0006868586463954681,
+              "mean_relative_improvement_pct": -0.24625430823756386,
+              "wins_losses_ties": [
+                5,
+                7,
+                12
+              ],
+              "wilcoxon_one_sided_p": 0.6469020446247633,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.025904121287051173,
+              "mean_relative_improvement_pct": 2.013479587372373,
+              "wins_losses_ties": [
+                4,
+                4,
+                16
+              ],
+              "wilcoxon_one_sided_p": 0.4063518430642181,
+              "holm_adjusted_p": 1.0
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.09533920867121577,
+              "mean_relative_improvement_pct": 6.815960700568555,
+              "wins_losses_ties": [
+                13,
+                4,
+                7
+              ],
+              "wilcoxon_one_sided_p": 0.010145407330218294,
+              "holm_adjusted_p": 0.09130866597196464
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.09394125893018208,
+              "mean_relative_improvement_pct": 6.876111249442883,
+              "wins_losses_ties": [
+                13,
+                3,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.005327329435356313,
+              "holm_adjusted_p": 0.05327329435356313
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.09497571974228075,
+              "mean_relative_improvement_pct": 6.976919141926128,
+              "wins_losses_ties": [
+                14,
+                2,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.0018767849990714612,
+              "holm_adjusted_p": 0.022521419988857535
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.10397157943658213,
+              "mean_relative_improvement_pct": 7.675959055368472,
+              "wins_losses_ties": [
+                13,
+                3,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.004511057586377133,
+              "holm_adjusted_p": 0.049621633450148465
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.08600200016168873,
+              "mean_relative_improvement_pct": 6.094542171639405,
+              "wins_losses_ties": [
+                13,
+                4,
+                7
+              ],
+              "wilcoxon_one_sided_p": 0.01179876041814338,
+              "holm_adjusted_p": 0.09439008334514704
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.012198534410368481,
+              "mean_relative_improvement_pct": 0.8803597813572777,
+              "wins_losses_ties": [
+                2,
+                4,
+                18
+              ],
+              "wilcoxon_one_sided_p": 0.7008052576538891,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.14041153778612522,
+              "mean_relative_improvement_pct": 10.916460251497853,
+              "wins_losses_ties": [
+                15,
+                0,
+                9
+              ],
+              "wilcoxon_one_sided_p": 0.00012349193224553735,
+              "holm_adjusted_p": 0.0017288870514375228
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.06389875273463301,
+              "mean_relative_improvement_pct": -6.772102335178178,
+              "wins_losses_ties": [
+                6,
+                14,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.9828005857579405,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.14041153778612522,
+              "mean_relative_improvement_pct": 10.916460251497853,
+              "wins_losses_ties": [
+                15,
+                0,
+                9
+              ],
+              "wilcoxon_one_sided_p": 0.00012349193224553735,
+              "holm_adjusted_p": 0.0017288870514375228
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.03396010121373575,
+              "mean_relative_improvement_pct": 2.5340438269339054,
+              "wins_losses_ties": [
+                6,
+                5,
+                13
+              ],
+              "wilcoxon_one_sided_p": 0.2850897179424667,
+              "holm_adjusted_p": 1.0
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.04938671996053484,
+              "mean_relative_improvement_pct": 3.4677489740110063,
+              "wins_losses_ties": [
+                6,
+                4,
+                14
+              ],
+              "wilcoxon_one_sided_p": 0.1940323721488425,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        },
+        "60": {
+          "methods": {
+            "Constrained-TS-Acq": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.0785994951793805,
+              "se_deployed_cost": 0.029210521861662297,
+              "median_deployed_cost": 1.02916151494103,
+              "mean_raw_true_obj": 1.0283253539023491,
+              "certified_rate": 0.8333333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.016770833333333336,
+              "mean_target_calls": 411.0,
+              "mean_wall_sec": 30.21879281840908,
+              "mean_inflation_factor": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1272027393914106,
+              "se_deployed_cost": 0.03282338901774086,
+              "median_deployed_cost": 1.0290910980893473,
+              "mean_raw_true_obj": 1.0412595086434284,
+              "certified_rate": 0.6666666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.025541666666666667,
+              "mean_target_calls": 406.6666666666667,
+              "mean_wall_sec": 30.89330056755959,
+              "mean_inflation_factor": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1783646222696509,
+              "se_deployed_cost": 0.03469217747990864,
+              "median_deployed_cost": 1.082116681723825,
+              "mean_raw_true_obj": 1.068762458178109,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.03526041666666667,
+              "mean_target_calls": 425.1666666666667,
+              "mean_wall_sec": 28.93192412952582,
+              "mean_inflation_factor": 1.0
+            },
+            "HetGP-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2530417226276211,
+              "se_deployed_cost": 0.03146888975106669,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1616553812256731,
+              "certified_rate": 0.20833333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.22924999999999998,
+              "mean_target_calls": 476.6666666666667,
+              "mean_wall_sec": 7.790130427107215,
+              "mean_inflation_factor": 1.0
+            },
+            "HyperBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2599474451944312,
+              "se_deployed_cost": 0.029978724888142228,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1579861582481656,
+              "certified_rate": 0.16666666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.23613541666666663,
+              "mean_target_calls": 476.6666666666667,
+              "mean_wall_sec": 2.408582542091608,
+              "mean_inflation_factor": 1.0
+            },
+            "RGPE": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2588392772525978,
+              "se_deployed_cost": 0.02887284500003788,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1230144642310704,
+              "certified_rate": 0.20833333333333334,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.10717708333333333,
+              "mean_target_calls": 482.0,
+              "mean_wall_sec": 9.637855024814295,
+              "mean_inflation_factor": 1.0
+            },
+            "SAAS-CBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2348174558375993,
+              "se_deployed_cost": 0.03371992478590034,
+              "median_deployed_cost": 1.2503476200270396,
+              "mean_raw_true_obj": 1.1192164601448624,
+              "certified_rate": 0.2916666666666667,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.18467708333333335,
+              "mean_target_calls": 476.6666666666667,
+              "mean_wall_sec": 3.899547622034637,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2442570953341432,
+              "se_deployed_cost": 0.03260779393433379,
+              "median_deployed_cost": 1.258402387203666,
+              "mean_raw_true_obj": 1.1715022736305798,
+              "certified_rate": 0.25,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.24229166666666666,
+              "mean_target_calls": 492.6666666666667,
+              "mean_wall_sec": 3.844452931351649,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1703843408440688,
+              "se_deployed_cost": 0.0359575427745431,
+              "median_deployed_cost": 1.0500932456286423,
+              "mean_raw_true_obj": 1.0578930844781513,
+              "certified_rate": 0.5416666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.03673958333333333,
+              "mean_target_calls": 321.1666666666667,
+              "mean_wall_sec": 0.47296578766933334,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1526223433096014,
+              "se_deployed_cost": 0.036345956020577934,
+              "median_deployed_cost": 1.0377846040790932,
+              "mean_raw_true_obj": 1.0524060762268908,
+              "certified_rate": 0.625,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.027968749999999997,
+              "mean_target_calls": 418.8333333333333,
+              "mean_wall_sec": 32.77332478788836,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-CMAES": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2971474667879404,
+              "se_deployed_cost": 0.022082658882279078,
+              "median_deployed_cost": 1.2584827703297081,
+              "mean_raw_true_obj": 1.3689407309371306,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.5736875,
+              "mean_target_calls": 516.0,
+              "mean_wall_sec": 1.9112639635956536,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-Only-Psi-KG": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.0978565345831284,
+              "se_deployed_cost": 0.031085629483794522,
+              "median_deployed_cost": 1.034314851126812,
+              "mean_raw_true_obj": 1.0314596721872629,
+              "certified_rate": 0.7916666666666666,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.010677083333333335,
+              "mean_target_calls": 405.6666666666667,
+              "mean_wall_sec": 30.201678919567104,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.2971474667879404,
+              "se_deployed_cost": 0.022082658882279078,
+              "median_deployed_cost": 1.2584827703297081,
+              "mean_raw_true_obj": 1.5474862008167662,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.6858958333333334,
+              "mean_target_calls": 516.0,
+              "mean_wall_sec": 1.7698686765118812,
+              "mean_inflation_factor": 1.0
+            },
+            "Undebiased-Prior": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.175300503757766,
+              "se_deployed_cost": 0.03195627155978714,
+              "median_deployed_cost": 1.150960692119492,
+              "mean_raw_true_obj": 1.0780539048669986,
+              "certified_rate": 0.5,
+              "false_certificates": 1,
+              "mean_true_violation_prob": 0.043770833333333335,
+              "mean_target_calls": 435.8333333333333,
+              "mean_wall_sec": 32.538989145153515,
+              "mean_inflation_factor": 1.0
+            },
+            "Untempered-FULL": {
+              "n_runs": 24,
+              "mean_deployed_cost": 1.1895213566260725,
+              "se_deployed_cost": 0.035136669267165584,
+              "median_deployed_cost": 1.2245185992232812,
+              "mean_raw_true_obj": 1.0701622141273102,
+              "certified_rate": 0.4583333333333333,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 0.041625,
+              "mean_target_calls": 441.1666666666667,
+              "mean_wall_sec": 32.83481407095678,
+              "mean_inflation_factor": 8.442971549128243
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "Constrained-TS-Acq": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.07402284813022096,
+              "mean_relative_improvement_pct": -7.207600454914719,
+              "wins_losses_ties": [
+                7,
+                13,
+                4
+              ],
+              "wilcoxon_one_sided_p": 0.9897063160376107,
+              "holm_adjusted_p": 1.0
+            },
+            "Dense-Unorth-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.025419603918191026,
+              "mean_relative_improvement_pct": -2.6896841408324756,
+              "wins_losses_ties": [
+                6,
+                11,
+                7
+              ],
+              "wilcoxon_one_sided_p": 0.8910435270429886,
+              "holm_adjusted_p": 1.0
+            },
+            "Frozen-AFTER": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.0257422789600493,
+              "mean_relative_improvement_pct": 2.0099294279397455,
+              "wins_losses_ties": [
+                7,
+                4,
+                13
+              ],
+              "wilcoxon_one_sided_p": 0.1439405777544085,
+              "holm_adjusted_p": 0.8282125096572165
+            },
+            "HetGP-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.10041937931801966,
+              "mean_relative_improvement_pct": 7.390085212643294,
+              "wins_losses_ties": [
+                14,
+                2,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.0022502211794943033,
+              "holm_adjusted_p": 0.022502211794943033
+            },
+            "HyperBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.10732510188482973,
+              "mean_relative_improvement_pct": 7.950002332998361,
+              "wins_losses_ties": [
+                14,
+                2,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.0022502211794943033,
+              "holm_adjusted_p": 0.022502211794943033
+            },
+            "RGPE": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.10621693394299643,
+              "mean_relative_improvement_pct": 7.873796912075881,
+              "wins_losses_ties": [
+                15,
+                2,
+                7
+              ],
+              "wilcoxon_one_sided_p": 0.0015821892650827037,
+              "holm_adjusted_p": 0.017404081915909742
+            },
+            "SAAS-CBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.08219511252799788,
+              "mean_relative_improvement_pct": 5.984903257582682,
+              "wins_losses_ties": [
+                15,
+                1,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.0007986106044715632,
+              "holm_adjusted_p": 0.00958332725365876
+            },
+            "SCBO": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.09163475202454163,
+              "mean_relative_improvement_pct": 6.709259277854297,
+              "wins_losses_ties": [
+                14,
+                2,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.00246113057994116,
+              "holm_adjusted_p": 0.022502211794943033
+            },
+            "STOP": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.017761997534467486,
+              "mean_relative_improvement_pct": 1.3232488132511866,
+              "wins_losses_ties": [
+                4,
+                4,
+                16
+              ],
+              "wilcoxon_one_sided_p": 0.4294774613687412,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-CMAES": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.14452512347833887,
+              "mean_relative_improvement_pct": 11.257343436121714,
+              "wins_losses_ties": [
+                15,
+                0,
+                9
+              ],
+              "wilcoxon_one_sided_p": 0.00012349193224553735,
+              "holm_adjusted_p": 0.0017288870514375228
+            },
+            "Target-Only-Psi-KG": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": -0.05476580872647307,
+              "mean_relative_improvement_pct": -6.022462186336088,
+              "wins_losses_ties": [
+                8,
+                13,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.914922905680297,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.14452512347833887,
+              "mean_relative_improvement_pct": 11.257343436121714,
+              "wins_losses_ties": [
+                15,
+                0,
+                9
+              ],
+              "wilcoxon_one_sided_p": 0.00012349193224553735,
+              "holm_adjusted_p": 0.0017288870514375228
+            },
+            "Undebiased-Prior": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.022678160448164477,
+              "mean_relative_improvement_pct": 1.5855444765314721,
+              "wins_losses_ties": [
+                8,
+                4,
+                12
+              ],
+              "wilcoxon_one_sided_p": 0.0959641144065993,
+              "holm_adjusted_p": 0.6717488008461951
+            },
+            "Untempered-FULL": {
+              "n_pairs": 24,
+              "mean_cost_saving_vs_baseline": 0.03689901331647105,
+              "mean_relative_improvement_pct": 2.933930648414557,
+              "wins_losses_ties": [
+                5,
+                2,
+                17
+              ],
+              "wilcoxon_one_sided_p": 0.13803541827620275,
+              "holm_adjusted_p": 0.8282125096572165
+            }
+          }
+        }
+      }
+    }
+  }
+}

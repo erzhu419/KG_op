@@ -1,0 +1,280 @@
+{
+  "campaign_name": "v2_or_confirm_v1",
+  "role": "preregistered_heldout_confirmation_across_4_families_and_3_budgets",
+  "output_dir": "paper_artifacts/v2_or_confirm_v1",
+  "sealed_complete": false,
+  "families": [
+    {
+      "name": "Inventory_CrossHorizon",
+      "kind": "inventory",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5101,
+        "horizons": [36, 48],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 8,
+        "seed": 6101,
+        "horizons": [96, 120],
+        "shift_scale": 1.30
+      },
+      "source_archive_protocol": {
+        "solvers": ["penalty_spsa", "constrained_cmaes", "constrained_nsga2", "heuristic_powell"],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7101
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_orth_dense": {
+          "active_rank": 24,
+          "enable_debiasing": true,
+          "enable_lowpass": false,
+          "enable_orthogonalization": false,
+          "enable_sparse_pruning": false
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [15, 30, 60],
+      "target_eval_seeds": [801, 802, 803],
+      "audit_replications": 4000,
+      "audit_seed_base": 951001,
+      "arms": [
+        {"name": "TLS-OLH-KG", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "STOP", "kind": "stop", "model_mode": "tempered", "prior_variant": "default"},
+        {"name": "Untempered-FULL", "kind": "tls_olh_kg", "model_mode": "untempered_full", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Frozen-AFTER", "kind": "tls_olh_kg", "model_mode": "frozen_after_init", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Undebiased-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_debias"},
+        {"name": "Dense-Unorth-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_orth_dense"},
+        {"name": "Constrained-TS-Acq", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "constrained_ts", "prior_variant": "default"},
+        {"name": "Target-Only-Psi-KG", "kind": "target_only_psi_kg"},
+        {"name": "SCBO", "kind": "scbo"},
+        {"name": "SAAS-CBO", "kind": "saasbo"},
+        {"name": "HetGP-KG", "kind": "hetgp_kg"},
+        {"name": "RGPE", "kind": "rgpe"},
+        {"name": "HyperBO", "kind": "hyperbo"},
+        {"name": "Target-SPSA", "kind": "direct_legacy", "solver_name": "penalty_spsa"},
+        {"name": "Target-CMAES", "kind": "direct_legacy", "solver_name": "constrained_cmaes"}
+      ]
+    },
+    {
+      "name": "Queueing_CrossHorizon",
+      "kind": "queueing",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5201,
+        "horizons": [36, 48],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 8,
+        "seed": 6201,
+        "horizons": [96, 120],
+        "shift_scale": 1.30
+      },
+      "source_archive_protocol": {
+        "solvers": ["penalty_spsa", "constrained_cmaes", "constrained_nsga2", "heuristic_powell"],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7201
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_orth_dense": {
+          "active_rank": 24,
+          "enable_debiasing": true,
+          "enable_lowpass": false,
+          "enable_orthogonalization": false,
+          "enable_sparse_pruning": false
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [15, 30, 60],
+      "target_eval_seeds": [801, 802, 803],
+      "audit_replications": 4000,
+      "audit_seed_base": 952001,
+      "arms": [
+        {"name": "TLS-OLH-KG", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "STOP", "kind": "stop", "model_mode": "tempered", "prior_variant": "default"},
+        {"name": "Untempered-FULL", "kind": "tls_olh_kg", "model_mode": "untempered_full", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Frozen-AFTER", "kind": "tls_olh_kg", "model_mode": "frozen_after_init", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Undebiased-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_debias"},
+        {"name": "Dense-Unorth-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_orth_dense"},
+        {"name": "Constrained-TS-Acq", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "constrained_ts", "prior_variant": "default"},
+        {"name": "Target-Only-Psi-KG", "kind": "target_only_psi_kg"},
+        {"name": "SCBO", "kind": "scbo"},
+        {"name": "SAAS-CBO", "kind": "saasbo"},
+        {"name": "HetGP-KG", "kind": "hetgp_kg"},
+        {"name": "RGPE", "kind": "rgpe"},
+        {"name": "HyperBO", "kind": "hyperbo"},
+        {"name": "Target-SPSA", "kind": "direct_legacy", "solver_name": "penalty_spsa"},
+        {"name": "Target-CMAES", "kind": "direct_legacy", "solver_name": "constrained_cmaes"}
+      ]
+    },
+    {
+      "name": "OPSD_EuroGrid",
+      "kind": "opsd",
+      "source_config": {
+        "markets": ["DK_1", "NO_1", "NO_2", "SE_1", "IT_CNOR", "IT_CSUD"],
+        "horizons": [168, 240]
+      },
+      "target_config": {
+        "markets": ["DK_2", "GB_GBN", "IT_NORD", "IT_SUD", "NO_3", "NO_4", "SE_3", "SE_4"],
+        "horizons": [336]
+      },
+      "source_archive_protocol": {
+        "solvers": ["penalty_spsa", "constrained_cmaes", "constrained_nsga2", "heuristic_powell"],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7301
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_orth_dense": {
+          "active_rank": 24,
+          "enable_debiasing": true,
+          "enable_lowpass": false,
+          "enable_orthogonalization": false,
+          "enable_sparse_pruning": false
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [15, 30, 60],
+      "target_eval_seeds": [801, 802, 803],
+      "audit_replications": 8000,
+      "audit_seed_base": 953001,
+      "arms": [
+        {"name": "TLS-OLH-KG", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "STOP", "kind": "stop", "model_mode": "tempered", "prior_variant": "default"},
+        {"name": "Untempered-FULL", "kind": "tls_olh_kg", "model_mode": "untempered_full", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Frozen-AFTER", "kind": "tls_olh_kg", "model_mode": "frozen_after_init", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Undebiased-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_debias"},
+        {"name": "Dense-Unorth-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_orth_dense"},
+        {"name": "Constrained-TS-Acq", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "constrained_ts", "prior_variant": "default"},
+        {"name": "Target-Only-Psi-KG", "kind": "target_only_psi_kg"},
+        {"name": "SCBO", "kind": "scbo"},
+        {"name": "SAAS-CBO", "kind": "saasbo"},
+        {"name": "HetGP-KG", "kind": "hetgp_kg"},
+        {"name": "RGPE", "kind": "rgpe"},
+        {"name": "HyperBO", "kind": "hyperbo"},
+        {"name": "Target-SPSA", "kind": "direct_legacy", "solver_name": "penalty_spsa"},
+        {"name": "Target-CMAES", "kind": "direct_legacy", "solver_name": "constrained_cmaes"}
+      ]
+    },
+    {
+      "name": "Traffic_Ingolstadt",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5401,
+        "tls_counts": [11, 15],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 8,
+        "seed": 6401,
+        "tls_counts": [21],
+        "shift_scale": 1.30
+      },
+      "source_archive_protocol": {
+        "solvers": ["penalty_spsa", "constrained_cmaes", "constrained_nsga2", "heuristic_powell"],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7401
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_orth_dense": {
+          "active_rank": 24,
+          "enable_debiasing": true,
+          "enable_lowpass": false,
+          "enable_orthogonalization": false,
+          "enable_sparse_pruning": false
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [15, 30, 60],
+      "target_eval_seeds": [801, 802, 803],
+      "audit_replications": 4000,
+      "audit_seed_base": 954001,
+      "arms": [
+        {"name": "TLS-OLH-KG", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "STOP", "kind": "stop", "model_mode": "tempered", "prior_variant": "default"},
+        {"name": "Untempered-FULL", "kind": "tls_olh_kg", "model_mode": "untempered_full", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Frozen-AFTER", "kind": "tls_olh_kg", "model_mode": "frozen_after_init", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "Undebiased-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_debias"},
+        {"name": "Dense-Unorth-Prior", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "no_orth_dense"},
+        {"name": "Constrained-TS-Acq", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "constrained_ts", "prior_variant": "default"},
+        {"name": "Target-Only-Psi-KG", "kind": "target_only_psi_kg"},
+        {"name": "SCBO", "kind": "scbo"},
+        {"name": "SAAS-CBO", "kind": "saasbo"},
+        {"name": "HetGP-KG", "kind": "hetgp_kg"},
+        {"name": "RGPE", "kind": "rgpe"},
+        {"name": "HyperBO", "kind": "hyperbo"},
+        {"name": "Target-SPSA", "kind": "direct_legacy", "solver_name": "penalty_spsa"},
+        {"name": "Target-CMAES", "kind": "direct_legacy", "solver_name": "constrained_cmaes"}
+      ]
+    }
+  ]
+}

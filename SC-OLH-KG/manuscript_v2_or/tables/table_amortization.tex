@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\caption{Conservative End-to-End Source-Archive Amortization (Theorem~\ref{thm:vkg_safety}(3)): \textbf{TLS-OLH-KG} at $N=15$ Strictly Dominates Cold-Start \texttt{SCBO} at $N=60$ Across All Four Families, Yielding Exact Break-Even Upper Bounds $M_{\mathrm{break}}^{\mathrm{upper}} = \lceil B_{\mathrm{src}} / (B_{\mathrm{SCBO,60}} - B_{\mathrm{TLS,15}}) \rceil$}\label{tab:amortization}
+\scriptsize
+\setlength{\tabcolsep}{4.8pt}
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Family} & \textbf{Archive $B_{\mathrm{src}}$} & \textbf{TLS ($N\!=\!15$) Cost} & \textbf{\texttt{SCBO} ($N\!=\!60$) Cost} & \textbf{$B_{\mathrm{TLS,15}}$ Calls} & \textbf{$B_{\mathrm{SCBO,60}}$ Calls} & \textbf{Min Saving $\Delta B$} & \textbf{$M_{\mathrm{break}}^{\mathrm{upper}}$} \\
+\midrule
+Inventory & 1,428 & $\mathbf{1.914}$ & $1.925$ & 281 & 388 & $\ge 107$ & $\mathbf{\le 14}$ \\
+Queueing & 1,428 & $\mathbf{2.495}$ & $2.970$ & 275 & 382 & $\ge 107$ & $\mathbf{\le 14}$ \\
+OPSD Grid & 1,428 & $\mathbf{0.0566}$ & $0.0673$ & 276 & 376 & $\ge 100$ & $\mathbf{\le 15}$ \\
+Traffic-21 & 1,428 & $\mathbf{1.181}$ & $1.244$ & 329 & 493 & $\ge 164$ & $\mathbf{\le 9}$ \\
+\bottomrule
+\end{tabular}
+\end{table}

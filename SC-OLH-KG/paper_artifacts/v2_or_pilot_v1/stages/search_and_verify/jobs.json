@@ -1,0 +1,3970 @@
+{
+  "campaign_name": "v2_or_pilot_v1",
+  "manifest_relpath": "v2_or/manifests/v2_or_pilot_v1.json",
+  "stage": "search_and_verify",
+  "created_utc": "2026-11-16T05:05:23.715368+00:00",
+  "n_jobs": 242,
+  "jobs": [
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_TLS-OLH-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_STOP",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_Untempered-FULL",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_Frozen-AFTER",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_Undebiased-Prior",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_SCBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_SAAS-CBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_HetGP-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_RGPE",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_HyperBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s401_Target-SPSA",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_TLS-OLH-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_STOP",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_Untempered-FULL",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_Frozen-AFTER",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_Undebiased-Prior",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_SCBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_SAAS-CBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_HetGP-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_RGPE",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_HyperBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t00_s402_Target-SPSA",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_TLS-OLH-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_STOP",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_Untempered-FULL",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_Frozen-AFTER",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_Undebiased-Prior",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_SCBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_SAAS-CBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_HetGP-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_RGPE",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_HyperBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s401_Target-SPSA",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_TLS-OLH-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_STOP",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_Untempered-FULL",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_Frozen-AFTER",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_Undebiased-Prior",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_SCBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_SAAS-CBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_HetGP-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_RGPE",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_HyperBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t01_s402_Target-SPSA",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_TLS-OLH-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_STOP",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_Untempered-FULL",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_Frozen-AFTER",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_Undebiased-Prior",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_SCBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_SAAS-CBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_HetGP-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_RGPE",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_HyperBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s401_Target-SPSA",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_TLS-OLH-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_STOP",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_Untempered-FULL",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_Frozen-AFTER",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_Undebiased-Prior",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_SCBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_SAAS-CBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_HetGP-KG",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_RGPE",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_HyperBO",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Dev_N30_t02_s402_Target-SPSA",
+      "family": "Inventory_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_TLS-OLH-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_STOP",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_Untempered-FULL",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_Frozen-AFTER",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_Undebiased-Prior",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_SCBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_SAAS-CBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_HetGP-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_RGPE",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_HyperBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s401_Target-SPSA",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_TLS-OLH-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_STOP",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_Untempered-FULL",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_Frozen-AFTER",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_Undebiased-Prior",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_SCBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_SAAS-CBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_HetGP-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_RGPE",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_HyperBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t00_s402_Target-SPSA",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_TLS-OLH-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_STOP",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_Untempered-FULL",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_Frozen-AFTER",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_Undebiased-Prior",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_SCBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_SAAS-CBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_HetGP-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_RGPE",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_HyperBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s401_Target-SPSA",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_TLS-OLH-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_STOP",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_Untempered-FULL",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_Frozen-AFTER",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_Undebiased-Prior",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_SCBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_SAAS-CBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_HetGP-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_RGPE",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_HyperBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t01_s402_Target-SPSA",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_TLS-OLH-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_STOP",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_Untempered-FULL",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_Frozen-AFTER",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_Undebiased-Prior",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_SCBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_SAAS-CBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_HetGP-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_RGPE",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_HyperBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s401_Target-SPSA",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_TLS-OLH-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_STOP",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_Untempered-FULL",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_Frozen-AFTER",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_Undebiased-Prior",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_SCBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_SAAS-CBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_HetGP-KG",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_RGPE",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_HyperBO",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Queueing_CrossHorizon_Dev_N30_t02_s402_Target-SPSA",
+      "family": "Queueing_CrossHorizon_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_TLS-OLH-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_STOP",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_Untempered-FULL",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_Frozen-AFTER",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_Undebiased-Prior",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_SCBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_SAAS-CBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_HetGP-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_RGPE",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_HyperBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s401_Target-SPSA",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_TLS-OLH-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_STOP",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_Untempered-FULL",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_Frozen-AFTER",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_Undebiased-Prior",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_SCBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_SAAS-CBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_HetGP-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_RGPE",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_HyperBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t00_s402_Target-SPSA",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_TLS-OLH-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_STOP",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_Untempered-FULL",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_Frozen-AFTER",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_Undebiased-Prior",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_SCBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_SAAS-CBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_HetGP-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_RGPE",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_HyperBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s401_Target-SPSA",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_TLS-OLH-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_STOP",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_Untempered-FULL",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_Frozen-AFTER",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_Undebiased-Prior",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_SCBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_SAAS-CBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_HetGP-KG",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_RGPE",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_HyperBO",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_OPSD_EuroGrid_Dev_N30_t01_s402_Target-SPSA",
+      "family": "OPSD_EuroGrid_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_TLS-OLH-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_STOP",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_Untempered-FULL",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_Frozen-AFTER",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_Undebiased-Prior",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_SCBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_SAAS-CBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_HetGP-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_RGPE",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_HyperBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s401_Target-SPSA",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 401,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_TLS-OLH-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_STOP",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_Untempered-FULL",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_Frozen-AFTER",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_Undebiased-Prior",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_SCBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_SAAS-CBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_HetGP-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_RGPE",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_HyperBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t00_s402_Target-SPSA",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 0,
+      "seed": 402,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_TLS-OLH-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_STOP",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_Untempered-FULL",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_Frozen-AFTER",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_Undebiased-Prior",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_SCBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_SAAS-CBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_HetGP-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_RGPE",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_HyperBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s401_Target-SPSA",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10408,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_TLS-OLH-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_STOP",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_Untempered-FULL",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_Frozen-AFTER",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_Undebiased-Prior",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_SCBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_SAAS-CBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_HetGP-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_RGPE",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_HyperBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t01_s402_Target-SPSA",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 1,
+      "seed": 10409,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_TLS-OLH-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_STOP",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_Untempered-FULL",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_Frozen-AFTER",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_Undebiased-Prior",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_SCBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_SAAS-CBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_HetGP-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_RGPE",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_HyperBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s401_Target-SPSA",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20415,
+      "rep_seed": 401,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_TLS-OLH-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "TLS-OLH-KG",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_STOP",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_Untempered-FULL",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Untempered-FULL",
+        "kind": "tls_olh_kg",
+        "model_mode": "untempered_full",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_Frozen-AFTER",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Frozen-AFTER",
+        "kind": "tls_olh_kg",
+        "model_mode": "frozen_after_init",
+        "acquisition": "v_kg",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_Undebiased-Prior",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Undebiased-Prior",
+        "kind": "tls_olh_kg",
+        "model_mode": "tempered",
+        "acquisition": "v_kg",
+        "prior_variant": "no_debias"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_SCBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_SAAS-CBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "SAAS-CBO",
+        "kind": "saasbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_HetGP-KG",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HetGP-KG",
+        "kind": "hetgp_kg"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_RGPE",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_HyperBO",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "HyperBO",
+        "kind": "hyperbo"
+      }
+    },
+    {
+      "job_id": "sv_Traffic_Ingolstadt_Dev_N30_t02_s402_Target-SPSA",
+      "family": "Traffic_Ingolstadt_Dev",
+      "target_task_idx": 2,
+      "seed": 20416,
+      "rep_seed": 402,
+      "n_online_steps": 30,
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "arm": {
+        "name": "Target-SPSA",
+        "kind": "direct_legacy",
+        "solver_name": "penalty_spsa"
+      }
+    }
+  ],
+  "truth_used": false
+}

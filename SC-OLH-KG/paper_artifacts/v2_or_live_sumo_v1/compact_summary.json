@@ -1,0 +1,155 @@
+{
+  "campaign_name": "v2_or_live_sumo_v1",
+  "generated_utc": "2026-11-16T15:15:19.083849+00:00",
+  "total_evaluated_cells": 40,
+  "total_certified_deployments": 0,
+  "total_false_certificates": 0,
+  "prior_diagnostics": {
+    "Traffic_Subnetwork_Archive": {
+      "source_simulation_calls": 1428,
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 68276264.99850716,
+          "debiased_orth_gram_cond": 1.000000000011092,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6423827758197104,
+          "effective_sample_size_ratio": 0.6755218394920366
+        }
+      }
+    }
+  },
+  "families": {
+    "Traffic_Subnetwork_Archive": {
+      "source_simulation_calls": 1428,
+      "budgets": {}
+    },
+    "Ingolstadt21_LiveSUMO": {
+      "source_simulation_calls": 1428,
+      "budgets": {
+        "15": {
+          "methods": {
+            "RGPE": {
+              "n_runs": 8,
+              "mean_deployed_cost": 1.2961834241427024,
+              "se_deployed_cost": 0.002145848454302286,
+              "median_deployed_cost": 1.2967376042506666,
+              "mean_raw_true_obj": 0.9888125532986882,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 1.0,
+              "mean_target_calls": 422.0,
+              "mean_wall_sec": 10637.632872742717,
+              "mean_inflation_factor": 1.0
+            },
+            "SCBO": {
+              "n_runs": 8,
+              "mean_deployed_cost": 1.2961834241427024,
+              "se_deployed_cost": 0.002145848454302286,
+              "median_deployed_cost": 1.2967376042506666,
+              "mean_raw_true_obj": 0.9826451383730841,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 1.0,
+              "mean_target_calls": 422.0,
+              "mean_wall_sec": 10826.122356312699,
+              "mean_inflation_factor": 1.0
+            },
+            "STOP": {
+              "n_runs": 8,
+              "mean_deployed_cost": 1.2961834241427024,
+              "se_deployed_cost": 0.002145848454302286,
+              "median_deployed_cost": 1.2967376042506666,
+              "mean_raw_true_obj": 0.9875683231563448,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 1.0,
+              "mean_target_calls": 392.0,
+              "mean_wall_sec": 11804.072068772162,
+              "mean_inflation_factor": 1.0
+            },
+            "TLS-OLH-KG": {
+              "n_runs": 8,
+              "mean_deployed_cost": 1.2961834241427024,
+              "se_deployed_cost": 0.002145848454302286,
+              "median_deployed_cost": 1.2967376042506666,
+              "mean_raw_true_obj": 0.9642303449302434,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 1.0,
+              "mean_target_calls": 422.0,
+              "mean_wall_sec": 11354.181475662743,
+              "mean_inflation_factor": 1.0
+            },
+            "Target-SPSA": {
+              "n_runs": 8,
+              "mean_deployed_cost": 1.2961834241427024,
+              "se_deployed_cost": 0.002145848454302286,
+              "median_deployed_cost": 1.2967376042506666,
+              "mean_raw_true_obj": 0.9645321681129695,
+              "certified_rate": 0.0,
+              "false_certificates": 0,
+              "mean_true_violation_prob": 1.0,
+              "mean_target_calls": 422.0,
+              "mean_wall_sec": 10027.200368381571,
+              "mean_inflation_factor": 1.0
+            }
+          },
+          "paired_vs_tls_olh_kg": {
+            "RGPE": {
+              "n_pairs": 8,
+              "mean_cost_saving_vs_baseline": 0.0,
+              "mean_relative_improvement_pct": 0.0,
+              "wins_losses_ties": [
+                0,
+                0,
+                8
+              ],
+              "wilcoxon_one_sided_p": 1.0,
+              "holm_adjusted_p": 1.0
+            },
+            "SCBO": {
+              "n_pairs": 8,
+              "mean_cost_saving_vs_baseline": 0.0,
+              "mean_relative_improvement_pct": 0.0,
+              "wins_losses_ties": [
+                0,
+                0,
+                8
+              ],
+              "wilcoxon_one_sided_p": 1.0,
+              "holm_adjusted_p": 1.0
+            },
+            "STOP": {
+              "n_pairs": 8,
+              "mean_cost_saving_vs_baseline": 0.0,
+              "mean_relative_improvement_pct": 0.0,
+              "wins_losses_ties": [
+                0,
+                0,
+                8
+              ],
+              "wilcoxon_one_sided_p": 1.0,
+              "holm_adjusted_p": 1.0
+            },
+            "Target-SPSA": {
+              "n_pairs": 8,
+              "mean_cost_saving_vs_baseline": 0.0,
+              "mean_relative_improvement_pct": 0.0,
+              "wins_losses_ties": [
+                0,
+                0,
+                8
+              ],
+              "wilcoxon_one_sided_p": 1.0,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "campaign_name": "v2_or_live_sumo_v1",
+  "role": "live_microscopic_libsumo_ingolstadt21_validation",
+  "output_dir": "paper_artifacts/v2_or_live_sumo_v1",
+  "sealed_complete": false,
+  "families": [
+    {
+      "name": "Traffic_Subnetwork_Archive",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 8401,
+        "tls_counts": [11, 15],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 0,
+        "seed": 8499,
+        "tls_counts": [21],
+        "shift_scale": 1.0
+      },
+      "source_archive_protocol": {
+        "solvers": ["penalty_spsa", "constrained_cmaes", "constrained_nsga2", "heuristic_powell"],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 8501
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "online_step_budgets": [],
+      "target_eval_seeds": [],
+      "arms": []
+    },
+    {
+      "name": "Ingolstadt21_LiveSUMO",
+      "kind": "traffic_live_sumo",
+      "reuse_archive_from_family": "Traffic_Subnetwork_Archive",
+      "source_config": {
+        "n_tasks": 0
+      },
+      "target_config": {
+        "n_tasks": 4,
+        "taus": [1.015, 1.020, 1.015, 1.025],
+        "weights_list": [[0.65, 0.35], [0.50, 0.50], [0.80, 0.20], [0.60, 0.40]]
+      },
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "online_step_budgets": [15],
+      "target_eval_seeds": [901, 902],
+      "audit_replications": 40,
+      "audit_seed_base": 984001,
+      "arms": [
+        {"name": "TLS-OLH-KG", "kind": "tls_olh_kg", "model_mode": "tempered", "acquisition": "v_kg", "prior_variant": "default"},
+        {"name": "STOP", "kind": "stop", "model_mode": "tempered", "prior_variant": "default"},
+        {"name": "SCBO", "kind": "scbo"},
+        {"name": "RGPE", "kind": "rgpe"},
+        {"name": "Target-SPSA", "kind": "direct_legacy", "solver_name": "penalty_spsa"}
+      ]
+    }
+  ]
+}

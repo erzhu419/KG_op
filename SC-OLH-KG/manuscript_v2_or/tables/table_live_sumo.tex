@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Cross-Fidelity Microscopic \texttt{libsumo} Validation on Full 21-Intersection \texttt{Ingolstadt21} Corridor ($d_t=44$, 4,283 Trips, Tight HBEFA3 $\mathrm{CO}_2$ Cap $\tau \in [1.015, 1.025]$; Transfer from Subnetwork DES Archive $d_s \in \{22, 30\}$, $N=15$)}\label{tab:live_sumo}
+\scriptsize
+\setlength{\tabcolsep}{5.0pt}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Method} & \textbf{Challenger True Obj.\ $J_t(x^{(0)})$ ($\downarrow$)} & \textbf{Reduction vs.\ Fixed Plan} & \textbf{True Viol.\ $\Prob(g>0)$} & \textbf{Cert.\%} & \textbf{False Cert.} \\
+\midrule
+\textbf{TLS-OLH-KG (Ours)} & $\mathbf{0.9642}$ & $\mathbf{-3.58\%}$ & 100.0\% & 0.0\% & 0 \\
+\texttt{SCBO} & $0.9826$ & $-1.74\%$ & 100.0\% & 0.0\% & 0 \\
+\texttt{STOP} & $0.9876$ & $-1.24\%$ & 100.0\% & 0.0\% & 0 \\
+\texttt{RGPE} & $0.9888$ & $-1.12\%$ & 100.0\% & 0.0\% & 0 \\
+\texttt{Target-SPSA} & $0.9645$ & $-3.55\%$ & 100.0\% & 0.0\% & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}

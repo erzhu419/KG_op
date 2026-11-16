@@ -1,0 +1,66 @@
+\section{Tempered Hierarchical HVD Posterior and Verification-Aware KG}\label{sec:model}\label{sec:vkg}
+
+\subsection{Eliminating Heteroscedastic Variance Blow-Up via Sufficient-Statistic Decoupling}
+
+When transferring a source prior to a shifted target environment $t$ where $g_t(x) = \tilde{\phi}(x)^\top \mu_{0,g} + \Delta_g(x)$, joint raw-observation updates conflate epistemic task shift $\Delta_g(x)^2$ with aleatoric noise $v_{t,g}(x)$ (formalized in Theorem~\ref{thm:tempering}). \textbf{TLS-OLH-KG} eliminates this pathology structurally by decoupling variance estimation from mean residuals and tempering cross-policy functional covariance:
+
+\paragraph{1. Mean-Shift-Immune HVD Posterior.}
+Given $n$ unique evaluated target policies $\{x_1, \dots, x_n\}$ with sufficient statistics $\{(\bar{Y}_{t,c,i}, S_{t,c,i}^2, r_i)\}_{i=1}^n$, let $\mathcal{I}_{\mathrm{rep}} = \{i : r_i \ge 2\}$. Because $S_{t,c,i}^2 / (r_i - 1)$ depends solely on within-policy noise differences $Y_{t,c,\ell}(x_i) - \bar{Y}_{t,c}(x_i)$, we update the nonnegative HVD parameter vector $\hat{\gamma}_{t,c} \in \R_+^{p_{\mathrm{HVD}}}$ via degrees-of-freedom-weighted MAP NNLS shrinkage toward $\gamma_{0,c}$:
+\begin{equation}\label{eq:hvd_map}
+  \hat{\gamma}_{t,c} = \arg\min_{\gamma \ge 0} \;
+  \sum_{i \in \mathcal{I}_{\mathrm{rep}}} (r_i - 1) \left( \frac{S_{t,c,i}^2}{r_i - 1} - u_{\mathrm{HVD}}(x_i)^\top \gamma \right)^2
+  + \lambda_{\mathrm{HVD}} \|\gamma - \gamma_{0,c}\|_2^2.
+\end{equation}
+The predicted aleatoric variance is $\hat{v}_{n,c}(x) = \max\{u_{\mathrm{HVD}}(x)^\top \hat{\gamma}_{t,c},\, \underline{\sigma}^2\}$, and for conservative safety certification we form the finite-sample upper envelope
+\begin{equation}\label{eq:ucb_var}
+  \hat{v}_{n,g}^{\mathrm{UCB}}(x) = \hat{v}_{n,g}(x)\left(1 + \frac{\kappa_v}{\sqrt{\max\{1,\, \sum_{i=1}^n (r_i - 1)\}}}\right) + \underline{v}_{\perp,g}.
+\end{equation}
+
+\paragraph{2. Prequentially Tempered Semiparametric Mean and Constraint GPs.}
+To allow rapid low-sample transfer when source and target align while preventing negative transfer or finite-rank saturation as budget $N$ grows, we model both $J_t$ and $g_t$ ($c \in \{f, g\}$) as hierarchical semiparametric Gaussian processes:
+\begin{equation}\label{eq:semiparam_gp}
+  h_{t,c}(x) = \tilde{\phi}(x)^\top \theta_{t,c} + \delta_{t,c}(x), \;\;
+  \theta_{t,c} \sim \mathcal{N}\!\big(\mu_{0,c}, \beta_{n,c}^{-1}\Sigma_{0,c} + \tau_{\mathrm{shift},c}^2 I\big), \;\;
+  \delta_{t,c} \sim \mathcal{GP}\!\big(0, \sigma_{\perp,c}^2 k_{\frac{5}{2}}(\tilde{\psi}(x), \tilde{\psi}(x'); \ell_\perp)\big).
+\end{equation}
+Integrating out $\theta_{t,c}$ analytically yields a single exact Gaussian process with prior mean $m_{0,c}(x) = \tilde{\phi}(x)^\top \mu_{0,c}$ and composite covariance kernel
+\begin{equation}\label{eq:composite_kernel}
+  K_{0,c}(x, x'; \vartheta_c) = \beta_{n,c}^{-1}\tilde{\phi}(x)^\top \Sigma_{0,c}\tilde{\phi}(x') + \tau_{\mathrm{shift},c}^2 \tilde{\phi}(x)^\top\tilde{\phi}(x') + \sigma_{\perp,c}^2 k_{\nu=5/2}(\tilde{\psi}(x), \tilde{\psi}(x'); \ell_\perp).
+\end{equation}
+At each online step $n$, the hyperparameter vector $\vartheta_c = (\beta_{n,c}, \tau_{\mathrm{shift},c}^2, \sigma_{\perp,c}^2, \ell_\perp)$ is adapted by maximizing the regularized Gaussian log-marginal likelihood of the observed batch means $\bar{Y}_{t,c,1:n}$ under heteroscedastic observation covariance $D_{n,c} = \operatorname{diag}(\hat{v}_{n,c}(x_i)/r_i)$. Exact Cholesky conditioning over $n \le 100$ policies requires $\mathcal{O}(n^3)$ operations ($<3\text{ ms}$), completely eliminating high-dimensional numerical quadrature.
+
+\subsection{Millisecond Joint Verification-Aware Knowledge Gradient (\texttt{V-KG})}
+
+Let $\mathcal{C}_n = \{x'_1, \dots, x'_M\}$ denote a dynamic candidate pool combining already-evaluated policies (eligible for additional replications), multi-scale two-channel DCT and coordinate perturbations around current elites, DCT-adapted source templates, and global exploratory designs. Given posterior moments $(\mu_{n,c}, \Sigma_{n,c})$ on $\mathcal{C}_n$, the conservatively estimated $(1-\alpha)$-quantile margin at $x' \in \mathcal{C}_n$ is $q_n(x') = \mu_{n,g}(x') + z_{1-\alpha}\sqrt{\hat{v}_{n,g}^{\mathrm{UCB}}(x')}$, and the probability that $x'$ passes a terminal verification gate of $K_{\mathrm{ver}}$ replications is approximated by
+\begin{equation}\label{eq:pass_prob}
+  p_n^{\mathrm{pass}}(x') = \Phi\!\left(\frac{-q_n(x')}{\sqrt{s_{n,g}(x')^2 + \tfrac{1}{4}R_{\perp,g}(x') + \hat{v}_{n,g}(x')/K_{\mathrm{ver}}}}\right),
+\end{equation}
+where $s_{n,g}(x')^2 = \Sigma_{n,g}(x', x')$. Relative to a conservative safe reference cost $J_n^{\mathrm{ref}}$, the expected deployable utility of candidate $x'$ is $V_n(x') = (J_n^{\mathrm{ref}} - \mu_{n,f}(x'))_+ \cdot p_n^{\mathrm{pass}}(x')$.
+
+If the next batch allocates $m_{\mathrm{batch}}$ replications to candidate $x \in \mathcal{C}_n$, standard normal conditioning updates the posterior means across all evaluation targets $x' \in \mathcal{E}_n \subseteq \mathcal{C}_n$ simultaneously via closed-form rank-one vectors:
+\begin{equation}\label{eq:rank1_fantasy}
+  \mu_{n+1,c}(x'; x, Z_c) = \mu_{n,c}(x') + \tilde{\sigma}_{n,c}(x', x) Z_c,
+  \qquad
+  \tilde{\sigma}_{n,c}(x', x) = \frac{\Sigma_{n,c}(x', x)}{\sqrt{\Sigma_{n,c}(x, x) + \hat{v}_{n,c}(x)/m_{\mathrm{batch}}}},
+\end{equation}
+for $(Z_f, Z_g) \sim \mathcal{N}(0, I_2)$, while shrinking epistemic constraint variance to $s_{n+1,g}(x' \mid x)^2 = \max\{s_{n,g}(x')^2 - \tilde{\sigma}_{n,g}(x', x)^2, 0\}$. Evaluating the expectation via two-dimensional Gauss--Hermite quadrature $\{(z_{f,q}, z_{g,q}, \varpi_q)\}_{q=1}^{Q}$ ($Q=25$) yields the Verification-Aware Knowledge Gradient augmented by an orthogonal-complement boundary safeguard:
+\begin{equation}\label{eq:vkg_acq}
+  \operatorname{Acq}_n(x) = \underbrace{\sum_{q=1}^{Q} \varpi_q \max_{x' \in \mathcal{E}_n} V_{n+1}\big(x'; x, z_{f,q}, z_{g,q}\big) - \max_{x' \in \mathcal{E}_n} V_n(x')}_{\operatorname{V\text{-}KG}_n(x)}
+  \;+\; \lambda_\perp \operatorname{UCB}_\perp(x),
+\end{equation}
+where $\operatorname{UCB}_\perp(x) = \big(\tfrac{1}{4} + 4 p_n^{\mathrm{pass}}(x)(1 - p_n^{\mathrm{pass}}(x))\big)\big(s_{n,f}(x) + s_{n,g}(x) + \sqrt{R_{\perp,g}(x)}\big)$ guards against unmodeled local residuals near the active chance boundary. Notice that~\eqref{eq:vkg_acq} naturally arbitrates between \emph{exploration} (querying an unvisited policy $x$) and \emph{replication} (re-querying an evaluated boundary contender to shrink $s_{n+1,g}$ and secure certification).
+
+\subsection{Feasible-Aware Three-Slot Shortlist and Distribution-Adaptive Exact Certification}
+
+Upon exhausting $B_{\mathrm{search}}$, all model parameters are frozen before accessing verification streams. Evaluating terminal recommendations strictly over the set of simulated target policies $\mathcal{X}_N^{\mathrm{eval}} = \{x_1, \dots, x_n\}$ (preventing unverified surrogate corner extrapolation while fusing tempered prior shrinkage with empirical replications), we construct a frozen three-slot shortlist $(x^{(0)}, x^{(1)}, x^{(2)}) \in (\mathcal{X}_N^{\mathrm{eval}})^3$:
+\begin{itemize}
+  \item \textbf{Slot 0 (Posterior Primary Challenger):} minimizes $\mu_{N,f}(x)$ over $x \in \mathcal{X}_N^{\mathrm{eval}}$ satisfying $\mu_{N,g}(x) + \kappa_s\sqrt{s_{N,g}(x)^2 + \tfrac{1}{4}R_{\perp,g}(x)} + z_{1-\alpha}\sqrt{\hat{v}_{N,g}^{\mathrm{UCB}}(x)} \le 0$.
+  \item \textbf{Slot 1 (Feasible-Aware Empirical Incumbent Guard):} selects the lowest-$\bar{Y}_f$ policy in $\mathcal{X}_N^{\mathrm{eval}}$ satisfying empirical zero-violation margin safety ($\bar{Y}_g + 0.85 z_{1-\alpha}\hat{s}_g \le 0$ and $V(x)=0$, falling back to minimal empirical margin if empty), which strictly includes the initial anchor and warm-start design.
+  \item \textbf{Slot 2 (Posterior Safe-Interior Fallback):} maximizes posterior safety buffer in $\mathcal{X}_N^{\mathrm{eval}}$.
+\end{itemize}
+Splitting the familywise error budget $\delta = 0.05$ asymmetrically as $(\delta_0, \delta_1, \delta_2) = (0.025, 0.015, 0.010)$ with fresh verification sample sizes $(K_0, K_1, K_2) = (112, 128, 140)$, each queried slot $i$ is tested on fresh replications $\{Y^{\mathrm{ver}}_{g,\ell}(x^{(i)})\}_{\ell=1}^{K_i}$ using:
+\begin{enumerate}
+  \item \textbf{Distribution-Free Exact Binomial Gate} (default for general/non-Gaussian DES): certifies $x^{(i)}$ iff $F_{\mathrm{Binom}}\big(\sum_{\ell=1}^{K_i}\mathbb{I}\{Y^{\mathrm{ver}}_{g,\ell}(x^{(i)}) > 0\};\, K_i, \alpha\big) \le \delta_i$; or
+  \item \textbf{Exact Noncentral-$t$ Quantile Gate} (for i.i.d.\ Gaussian constraint noise): certifies $x^{(i)}$ iff $\bar{Y}^{\mathrm{ver}}_g + K_i^{-1/2} t_{K_i-1, 1-\delta_i}(z_{1-\alpha}\sqrt{K_i}) \hat{S}^{\mathrm{ver}}_g \le 0$.
+\end{enumerate}
+If both Slot~0 and Slot~1 certify safety, the policy with lower verified sample mean objective $\bar{Y}^{\mathrm{ver}}_f$ is deployed; if only one certifies, that certified policy is deployed; only if both fail is Slot~2 invoked, abstaining safely if all three fail.
