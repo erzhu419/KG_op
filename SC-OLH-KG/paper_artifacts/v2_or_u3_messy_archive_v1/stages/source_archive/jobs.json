@@ -1,0 +1,972 @@
+{
+  "campaign_name": "v2_or_u3_messy_archive_v1",
+  "manifest_relpath": "v2_or/manifests/v2_or_u3_messy_archive_v1.json",
+  "manifest_sha256": "add8c7eef7bfae8c14879359ce3d41895524fb923411b0786ea4220f3934d6f5",
+  "execution_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a",
+  "stage": "source_archive",
+  "created_utc": "2026-11-17T02:42:50.949359+00:00",
+  "n_jobs": 60,
+  "jobs": [
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t00_penalty_spsa",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7601,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t00_heuristic_powell",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7638,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t01_constrained_cmaes",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8610,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t01_constrained_nsga2",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8647,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t02_penalty_spsa",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9619,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t02_constrained_cmaes",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9656,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t02_constrained_nsga2",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9693,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t02_heuristic_powell",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9730,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t03_penalty_spsa",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10628,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t03_constrained_cmaes",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10665,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t04_penalty_spsa",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 4,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11637,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t04_constrained_nsga2",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 4,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11674,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t04_heuristic_powell",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 4,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11711,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t05_constrained_cmaes",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 5,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12646,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Inventory_CrossHorizon_Messy_t05_heuristic_powell",
+      "family": "Inventory_CrossHorizon_Messy",
+      "source_task_idx": 5,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12683,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t00_penalty_spsa",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7701,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t00_heuristic_powell",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7738,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t01_constrained_cmaes",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8710,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t01_constrained_nsga2",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8747,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t02_penalty_spsa",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9719,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t02_constrained_cmaes",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9756,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t02_constrained_nsga2",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9793,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t02_heuristic_powell",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9830,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t03_penalty_spsa",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10728,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t03_constrained_cmaes",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10765,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t04_penalty_spsa",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 4,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11737,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t04_constrained_nsga2",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 4,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11774,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t04_heuristic_powell",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 4,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11811,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t05_constrained_cmaes",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 5,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12746,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Queueing_CrossHorizon_Messy_t05_heuristic_powell",
+      "family": "Queueing_CrossHorizon_Messy",
+      "source_task_idx": 5,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12783,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t00_penalty_spsa",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7801,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t00_heuristic_powell",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7838,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t01_constrained_cmaes",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8810,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t01_constrained_nsga2",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8847,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t02_penalty_spsa",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9819,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t02_constrained_cmaes",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9856,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t02_constrained_nsga2",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9893,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t02_heuristic_powell",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9930,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t03_penalty_spsa",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10828,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t03_constrained_cmaes",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10865,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t04_penalty_spsa",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 4,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11837,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t04_constrained_nsga2",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 4,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11874,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t04_heuristic_powell",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 4,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11911,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t05_constrained_cmaes",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 5,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12846,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_OPSD_EuroGrid_Messy_t05_heuristic_powell",
+      "family": "OPSD_EuroGrid_Messy",
+      "source_task_idx": 5,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12883,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t00_penalty_spsa",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7901,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t00_heuristic_powell",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 26,
+      "reps_per_eval": 3,
+      "seed": 7938,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.02
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t01_constrained_cmaes",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8910,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t01_constrained_nsga2",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 44,
+      "reps_per_eval": 3,
+      "seed": 8947,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t02_penalty_spsa",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9919,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t02_constrained_cmaes",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9956,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t02_constrained_nsga2",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 9993,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t02_heuristic_powell",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 88,
+      "reps_per_eval": 3,
+      "seed": 10030,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.05
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t03_penalty_spsa",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10928,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t03_constrained_cmaes",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 34,
+      "reps_per_eval": 3,
+      "seed": 10965,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.08
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t04_penalty_spsa",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 4,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11937,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t04_constrained_nsga2",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 4,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 11974,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t04_heuristic_powell",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 4,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 96,
+      "reps_per_eval": 3,
+      "seed": 12011,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.03
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t05_constrained_cmaes",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 5,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12946,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    },
+    {
+      "job_id": "src_Traffic_Ingolstadt_Messy_t05_heuristic_powell",
+      "family": "Traffic_Ingolstadt_Messy",
+      "source_task_idx": 5,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 52,
+      "reps_per_eval": 3,
+      "seed": 12983,
+      "reps_schedule": [
+        1,
+        1,
+        2,
+        4
+      ],
+      "solver_alpha": 0.1
+    }
+  ],
+  "truth_used": false
+}

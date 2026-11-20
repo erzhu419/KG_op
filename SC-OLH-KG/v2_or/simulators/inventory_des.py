@@ -96,6 +96,7 @@ class DynamicInventoryNetworkDES(BaseDynamicORProblem):
     """Multi-period stochastic dual-sourcing inventory discrete-event simulator."""
 
     family_name = "DynamicInventoryDES"
+    num_control_channels = 2
     is_gaussian_constraint_noise = False
 
     def __init__(

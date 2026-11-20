@@ -1,0 +1,2076 @@
+{
+  "campaign_name": "v2_or_p2_live_sumo_v1",
+  "manifest_relpath": "v2_or/manifests/v2_or_p2_live_sumo_v1.json",
+  "manifest_sha256": "418486da06c0ea3ddd79f943d6517dd2c99cd4a3fe35c0dd656631e0dd9b159a",
+  "execution_code_sha256": "3970fb7f2b34a299f8e4420911e4a4a3df86ca07ee4fffef41091996f31ecf63",
+  "stage": "search_and_verify",
+  "created_utc": "2026-11-16T20:26:01.566155+00:00",
+  "n_jobs": 112,
+  "jobs": [
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 911,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 0,
+      "seed": 912,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10918,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 1,
+      "seed": 10919,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20925,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t02_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 2,
+      "seed": 20926,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30932,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t03_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 3,
+      "seed": 30933,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40939,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t04_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 4,
+      "seed": 40940,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50946,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t05_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 5,
+      "seed": 50947,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60953,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t06_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 6,
+      "seed": 60954,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s911_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70960,
+      "rep_seed": 911,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_TLS-BGP-KG",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-BGP-KG",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_vkg",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_TLS-GatePower-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "TLS-GatePower-TS",
+        "kind": "tls_olh_kg",
+        "load_prior": true,
+        "model_mode": "tempered_adaptive",
+        "init_mode": "source_warmstart",
+        "proposal_mode": "source_templates",
+        "use_source_basis": true,
+        "use_source_coef_prior": true,
+        "use_source_hvd_prior": true,
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_PublicPsi-TargetGP-TS",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "PublicPsi-TargetGP-TS",
+        "kind": "target_only_psi",
+        "acquisition": "gate_power_ts",
+        "nomination_mode": "binomial_gate_power"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_WarmStart-PatternSearch",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "WarmStart-PatternSearch",
+        "kind": "warmstart_pattern_search"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_STOP",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "STOP",
+        "kind": "stop",
+        "model_mode": "tempered_adaptive",
+        "prior_variant": "default"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_SCBO",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "SCBO",
+        "kind": "scbo"
+      }
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t07_s912_RGPE",
+      "family": "Ingolstadt21_LiveSUMO_Calibrated",
+      "target_task_idx": 7,
+      "seed": 70961,
+      "rep_seed": 912,
+      "n_online_steps": 15,
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "arm": {
+        "name": "RGPE",
+        "kind": "rgpe"
+      }
+    }
+  ],
+  "truth_used": false
+}

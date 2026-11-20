@@ -1,0 +1,433 @@
+{
+  "campaign_name": "v2_or_p2_live_sumo_v1",
+  "contract_version": "v2.1_roster_invariant",
+  "generated_utc": "2026-11-16T23:48:02.424418+00:00",
+  "execution_code_sha256": "3970fb7f2b34a299f8e4420911e4a4a3df86ca07ee4fffef41091996f31ecf63",
+  "manifest_sha256": "418486da06c0ea3ddd79f943d6517dd2c99cd4a3fe35c0dd656631e0dd9b159a",
+  "per_run_ledger_csv_sha256": "0341478d09c7f3fc7f30ff2ed57160e1b8696b2c798339a92d7f0b9bf1cb92af",
+  "per_slot_certificates_csv_sha256": "4fa60ea66d2a2606444a92d623a6ff71fdc4e028385935b956fff20f34864fd3",
+  "total_evaluated_cells": 112,
+  "total_certified_deployments": 18,
+  "total_abstentions": 94,
+  "safety_audit_summary": {
+    "abstained_not_deployed": 94,
+    "confidently_safe": 8,
+    "boundary_ambiguous": 10
+  },
+  "prior_diagnostics": {
+    "Traffic_Subnetwork_Archive_P2": {
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "source_simulation_calls": 1428,
+      "source_solver_wall_sec": 5.489828030578792,
+      "archive_sha256": "f046f5f63a0c9ab2416f0bdcafe26b76ed0149bbedb2d765a986c289b25ae93f",
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 142612588.52144265,
+          "debiased_orth_gram_cond": 1.0000000000031821,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6831100488621402,
+          "effective_sample_size_ratio": 0.6277935599897005,
+          "prior_fit_wall_sec": 0.0420575775206089
+        }
+      }
+    }
+  },
+  "families": {
+    "Ingolstadt21_LiveSUMO_Calibrated": {
+      "reference_arm": "TLS-BGP-KG",
+      "source_simulation_calls": 1428,
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "budgets": {
+        "15": {
+          "methods": {
+            "PublicPsi-TargetGP-TS": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.5,
+              "abstention_rate": 0.5,
+              "task_certified_rate_mean": 0.5,
+              "conditional_certified_obj_mean": 0.896426283482579,
+              "conditional_certified_obj_se": 0.014658094954393344,
+              "primary_slot0_obj_mean": 0.940233065304811,
+              "status_quo_loss_task_mean": 0.9454362033055406,
+              "status_quo_loss_task_se": 0.014058377598364638,
+              "status_quo_loss_run_mean": 0.9454362033055405,
+              "status_quo_loss_run_se": 0.0145122156599692,
+              "fixed_reject_loss_10pct_task_mean": 0.9951585094619655,
+              "deployed_mc_viol_prob_mean": 0.003125,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "boundary_ambiguous": 2,
+                "abstained_not_deployed": 8,
+                "confidently_safe": 6
+              },
+              "selected_role_breakdown": {
+                "conservative_posterior_interior": 2,
+                "abstained_uncertified": 8,
+                "posterior_primary": 4,
+                "empirical_feasible_incumbent": 2
+              },
+              "mean_search_calls": 42.0,
+              "mean_verification_calls": 310.75,
+              "mean_total_target_calls": 352.75,
+              "mean_online_wall_sec": 5577.325126626762,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "RGPE": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.0,
+              "abstention_rate": 1.0,
+              "task_certified_rate_mean": 0.0,
+              "conditional_certified_obj_mean": null,
+              "conditional_certified_obj_se": null,
+              "primary_slot0_obj_mean": 1.0128686430543108,
+              "status_quo_loss_task_mean": 0.9941395006350879,
+              "status_quo_loss_task_se": 0.0012264465484012226,
+              "status_quo_loss_run_mean": 0.9941395006350879,
+              "status_quo_loss_run_se": 0.000837822493236561,
+              "fixed_reject_loss_10pct_task_mean": 1.0935534506985969,
+              "deployed_mc_viol_prob_mean": null,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "abstained_not_deployed": 16
+              },
+              "selected_role_breakdown": {
+                "abstained_uncertified": 16
+              },
+              "mean_search_calls": 42.0,
+              "mean_verification_calls": 380.0,
+              "mean_total_target_calls": 422.0,
+              "mean_online_wall_sec": 6851.422641964804,
+              "mean_source_pretrain_wall_sec": 0.22838862537173554
+            },
+            "SCBO": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.0,
+              "abstention_rate": 1.0,
+              "task_certified_rate_mean": 0.0,
+              "conditional_certified_obj_mean": null,
+              "conditional_certified_obj_se": null,
+              "primary_slot0_obj_mean": 0.9926591580116398,
+              "status_quo_loss_task_mean": 0.9941395006350879,
+              "status_quo_loss_task_se": 0.0012264465484012226,
+              "status_quo_loss_run_mean": 0.9941395006350879,
+              "status_quo_loss_run_se": 0.000837822493236561,
+              "fixed_reject_loss_10pct_task_mean": 1.0935534506985969,
+              "deployed_mc_viol_prob_mean": null,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "abstained_not_deployed": 16
+              },
+              "selected_role_breakdown": {
+                "abstained_uncertified": 16
+              },
+              "mean_search_calls": 42.0,
+              "mean_verification_calls": 380.0,
+              "mean_total_target_calls": 422.0,
+              "mean_online_wall_sec": 6749.211725784757,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "STOP": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.0,
+              "abstention_rate": 1.0,
+              "task_certified_rate_mean": 0.0,
+              "conditional_certified_obj_mean": null,
+              "conditional_certified_obj_se": null,
+              "primary_slot0_obj_mean": 0.997242186722382,
+              "status_quo_loss_task_mean": 0.9941395006350879,
+              "status_quo_loss_task_se": 0.0012264465484012226,
+              "status_quo_loss_run_mean": 0.9941395006350879,
+              "status_quo_loss_run_se": 0.000837822493236561,
+              "fixed_reject_loss_10pct_task_mean": 1.0935534506985969,
+              "deployed_mc_viol_prob_mean": null,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "abstained_not_deployed": 16
+              },
+              "selected_role_breakdown": {
+                "abstained_uncertified": 16
+              },
+              "mean_search_calls": 12.0,
+              "mean_verification_calls": 380.0,
+              "mean_total_target_calls": 392.0,
+              "mean_online_wall_sec": 6541.1049894654425,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "TLS-BGP-KG": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.375,
+              "abstention_rate": 0.625,
+              "task_certified_rate_mean": 0.375,
+              "conditional_certified_obj_mean": 0.9274125167363704,
+              "conditional_certified_obj_se": 0.012563202103163649,
+              "primary_slot0_obj_mean": 0.9816126597802608,
+              "status_quo_loss_task_mean": 0.968467927648975,
+              "status_quo_loss_task_se": 0.00909645740459691,
+              "status_quo_loss_run_mean": 0.968467927648975,
+              "status_quo_loss_run_se": 0.009354929771921346,
+              "fixed_reject_loss_10pct_task_mean": 1.0305367510362586,
+              "deployed_mc_viol_prob_mean": 0.020833333333333332,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "abstained_not_deployed": 10,
+                "boundary_ambiguous": 5,
+                "confidently_safe": 1
+              },
+              "selected_role_breakdown": {
+                "abstained_uncertified": 10,
+                "posterior_primary": 2,
+                "empirical_feasible_incumbent": 2,
+                "conservative_posterior_interior": 2
+              },
+              "mean_search_calls": 42.0,
+              "mean_verification_calls": 328.25,
+              "mean_total_target_calls": 370.25,
+              "mean_online_wall_sec": 5566.351576764311,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "TLS-GatePower-TS": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.125,
+              "abstention_rate": 0.875,
+              "task_certified_rate_mean": 0.125,
+              "conditional_certified_obj_mean": 0.9615331344904847,
+              "conditional_certified_obj_se": 0.03275698713573549,
+              "primary_slot0_obj_mean": 1.0026155625295212,
+              "status_quo_loss_task_mean": 0.9904150314516239,
+              "status_quo_loss_task_se": 0.004548628900238939,
+              "status_quo_loss_run_mean": 0.9904150314516239,
+              "status_quo_loss_run_se": 0.004183387588761258,
+              "fixed_reject_loss_10pct_task_mean": 1.0774373704156552,
+              "deployed_mc_viol_prob_mean": 0.0125,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 1,
+                "abstained_not_deployed": 14,
+                "boundary_ambiguous": 1
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 1,
+                "abstained_uncertified": 14,
+                "conservative_posterior_interior": 1
+              },
+              "mean_search_calls": 42.0,
+              "mean_verification_calls": 371.25,
+              "mean_total_target_calls": 413.25,
+              "mean_online_wall_sec": 6741.489271532162,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "WarmStart-PatternSearch": {
+              "n_runs": 16,
+              "n_independent_tasks": 8,
+              "certified_rate": 0.125,
+              "abstention_rate": 0.875,
+              "task_certified_rate_mean": 0.125,
+              "conditional_certified_obj_mean": 0.9038278444009624,
+              "conditional_certified_obj_se": 0.04454204690881269,
+              "primary_slot0_obj_mean": 0.9870104007806322,
+              "status_quo_loss_task_mean": 0.9824911439993883,
+              "status_quo_loss_task_se": 0.008399915135164396,
+              "status_quo_loss_run_mean": 0.9824911439993883,
+              "status_quo_loss_run_se": 0.008715218095333578,
+              "fixed_reject_loss_10pct_task_mean": 1.0694424103443152,
+              "deployed_mc_viol_prob_mean": 0.018750000000000003,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "abstained_not_deployed": 14,
+                "boundary_ambiguous": 2
+              },
+              "selected_role_breakdown": {
+                "abstained_uncertified": 14,
+                "posterior_primary": 2
+              },
+              "mean_search_calls": 42.0,
+              "mean_verification_calls": 346.5,
+              "mean_total_target_calls": 388.5,
+              "mean_online_wall_sec": 6106.760525939753,
+              "mean_source_pretrain_wall_sec": 0.0
+            }
+          },
+          "paired_task_level_vs_ref": {
+            "PublicPsi-TargetGP-TS": {
+              "n_tasks": 8,
+              "mean_saving_status_quo_loss": -0.02303172434343459,
+              "se_saving_status_quo_loss": 0.014459487311692032,
+              "mean_rel_improvement_pct": -2.568963040369894,
+              "task_wins_losses_ties": [
+                2,
+                5,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.921875,
+              "paired_t_one_sided_p": 0.9223885508073331,
+              "holm_adjusted_p": 0.921875
+            },
+            "RGPE": {
+              "n_tasks": 8,
+              "mean_saving_status_quo_loss": 0.025671572986112903,
+              "se_saving_status_quo_loss": 0.009632956798427806,
+              "mean_rel_improvement_pct": 2.5782247841119377,
+              "task_wins_losses_ties": [
+                5,
+                0,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.03125,
+              "paired_t_one_sided_p": 0.016116886471300072,
+              "holm_adjusted_p": 0.1875
+            },
+            "SCBO": {
+              "n_tasks": 8,
+              "mean_saving_status_quo_loss": 0.025671572986112903,
+              "se_saving_status_quo_loss": 0.009632956798427806,
+              "mean_rel_improvement_pct": 2.5782247841119377,
+              "task_wins_losses_ties": [
+                5,
+                0,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.03125,
+              "paired_t_one_sided_p": 0.016116886471300072,
+              "holm_adjusted_p": 0.1875
+            },
+            "STOP": {
+              "n_tasks": 8,
+              "mean_saving_status_quo_loss": 0.025671572986112903,
+              "se_saving_status_quo_loss": 0.009632956798427806,
+              "mean_rel_improvement_pct": 2.5782247841119377,
+              "task_wins_losses_ties": [
+                5,
+                0,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.03125,
+              "paired_t_one_sided_p": 0.016116886471300072,
+              "holm_adjusted_p": 0.1875
+            },
+            "TLS-GatePower-TS": {
+              "n_tasks": 8,
+              "mean_saving_status_quo_loss": 0.02194710380264886,
+              "se_saving_status_quo_loss": 0.01161644211994433,
+              "mean_rel_improvement_pct": 2.189645797391159,
+              "task_wins_losses_ties": [
+                6,
+                1,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.0390625,
+              "paired_t_one_sided_p": 0.05038848715146511,
+              "holm_adjusted_p": 0.1875
+            },
+            "WarmStart-PatternSearch": {
+              "n_tasks": 8,
+              "mean_saving_status_quo_loss": 0.014023216350413259,
+              "se_saving_status_quo_loss": 0.01214557165912685,
+              "mean_rel_improvement_pct": 1.3771223426729313,
+              "task_wins_losses_ties": [
+                3,
+                2,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.21875,
+              "paired_t_one_sided_p": 0.14307278069330046,
+              "holm_adjusted_p": 0.4375
+            }
+          },
+          "paired_run_level_vs_ref": {
+            "PublicPsi-TargetGP-TS": {
+              "n_pairs": 16,
+              "mean_saving_status_quo_loss": -0.02303172434343459,
+              "mean_rel_improvement_pct": -2.803362230470957,
+              "run_wins_losses_ties": [
+                3,
+                8,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.91259765625,
+              "holm_adjusted_p": 0.91259765625
+            },
+            "RGPE": {
+              "n_pairs": 16,
+              "mean_saving_status_quo_loss": 0.02567157298611291,
+              "mean_rel_improvement_pct": 2.5782247841119386,
+              "run_wins_losses_ties": [
+                6,
+                0,
+                10
+              ],
+              "wilcoxon_one_sided_p": 0.015625,
+              "holm_adjusted_p": 0.09375
+            },
+            "SCBO": {
+              "n_pairs": 16,
+              "mean_saving_status_quo_loss": 0.02567157298611291,
+              "mean_rel_improvement_pct": 2.5782247841119386,
+              "run_wins_losses_ties": [
+                6,
+                0,
+                10
+              ],
+              "wilcoxon_one_sided_p": 0.015625,
+              "holm_adjusted_p": 0.09375
+            },
+            "STOP": {
+              "n_pairs": 16,
+              "mean_saving_status_quo_loss": 0.02567157298611291,
+              "mean_rel_improvement_pct": 2.5782247841119386,
+              "run_wins_losses_ties": [
+                6,
+                0,
+                10
+              ],
+              "wilcoxon_one_sided_p": 0.015625,
+              "holm_adjusted_p": 0.09375
+            },
+            "TLS-GatePower-TS": {
+              "n_pairs": 16,
+              "mean_saving_status_quo_loss": 0.021947103802648867,
+              "mean_rel_improvement_pct": 2.176440773624474,
+              "run_wins_losses_ties": [
+                7,
+                1,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.02734375,
+              "holm_adjusted_p": 0.09375
+            },
+            "WarmStart-PatternSearch": {
+              "n_pairs": 16,
+              "mean_saving_status_quo_loss": 0.014023216350413266,
+              "mean_rel_improvement_pct": 1.258614024829078,
+              "run_wins_losses_ties": [
+                6,
+                2,
+                8
+              ],
+              "wilcoxon_one_sided_p": 0.19140625,
+              "holm_adjusted_p": 0.3828125
+            }
+          }
+        }
+      }
+    }
+  }
+}

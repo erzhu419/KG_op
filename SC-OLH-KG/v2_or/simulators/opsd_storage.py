@@ -4,18 +4,18 @@ Self-contained implementation on the pinned Open Power System Data archive
 (`10.25832/time_series/2020-10-06`, `SC-OLH-KG/data/external/opsd_time_series_extended_v2.npz`),
 with ZERO imports from legacy `SC-OLH-KG` representation/algorithm modules.
 
-Supports:
-- Multi-market within-family transfer across 18 complete European bidding zones
-  (`DK_1`, `DK_2`, `GB_GBN`, `IT_NORD`, `IT_CNOR`, `IT_CSUD`, `IT_SUD`,
-   `IT_SARD`, `IT_SICI`, `NO_1..5`, `SE_1..4`);
-- Cross-horizon transfer (`d_s = 168` weekly hourly dispatch -> `d_t = 336` or `720`);
-- Strict disjoint calendar split isolation:
-    * `search`:       2017 hourly windows
-    * `audit`:        2018 hourly windows (post-hoc ground-truth evaluation)
-    * `verification`: 2019 hourly windows (independent terminal certification)
-- Zero-leakage `nominal_exposure(x)`: rolls out battery SOC dynamics purely under
-  public day-ahead load forecasts & day-ahead price profiles, never reading
-  realized `load_actual` forecast errors.
+Contract & physical specification:
+- Single-channel hourly reserve / state-of-charge target trajectory `x in [0, 1]^d`
+  where `d` is the number of hours (e.g., `d_s in {168, 240}` -> `d_t = 336` hours = 14 days);
+- Realized stochastic disturbance is normalized day-ahead load forecast error
+  `(load_actual - load_forecast) / median_search_forecast`, with optional Winsorization
+  threshold `clamp_limit` (`None` preserves raw tails) and logged `tail_clamped_fraction`;
+- Temporal block partition separates non-overlapping 48-hour blocks across `[year-1, year+2)`
+  with an explicit `buffer_hours` isolation gap (`default = 24` hours between consecutive blocks)
+  into `search`, `verification` (frozen empirical distribution certified by the binomial gate),
+  and `audit` (held-out out-of-sample temporal block distribution).
+- Zero-leakage `nominal_exposure(x)` (`psi in R^12`) rolls out battery SOC dynamics purely under
+  search-split public day-ahead load forecasts & price profiles.
 """
 
 from __future__ import annotations
@@ -58,6 +58,7 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
     """Real-data European electricity market storage reserve & reliability problem."""
 
     family_name = "OPSDGridStorage"
+    num_control_channels = 1
     is_gaussian_constraint_noise = False
 
     def __init__(
@@ -67,6 +68,8 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         d: int = 168,
         year: int = 2018,
         alpha: float = 0.05,
+        buffer_hours: int = 24,
+        clamp_limit: float | None = 0.20,
         physics: StorageAssetPhysics | None = None,
         data_path: Path | str = DEFAULT_OPSD_NPZ,
     ) -> None:
@@ -75,6 +78,8 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         self.d = int(d)
         self.year = int(year)
         self.alpha = float(alpha)
+        self.buffer_hours = max(int(buffer_hours), 0)
+        self.clamp_limit = None if clamp_limit is None else float(clamp_limit)
         self.physics = physics or StorageAssetPhysics()
         self.data_path = Path(data_path)
         self.task_id = f"opsd_{self.market}_d{self.d}"
@@ -82,22 +87,16 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         series: OPSDMarketSeries = load_opsd_market(
             self.data_path, self.market, include_outcomes=True
         )
-        # Strictly disjoint 48-hour diurnal block partition across [year-1, year+2):
-        # Every 48-hour real ENTSO-E historical block belongs to AT MOST ONE of
-        # `search`, `verification`, or `audit` (zero shared timestamps across splits),
-        # and each `d`-hour replication draws independent 48-hour diurnal blocks from
-        # that split's private pool, preserving diurnal autocorrelation and non-Gaussian
-        # forecast-error tails while guaranteeing genuine i.i.d. replications for exact
-        # finite-sample binomial certification.
         self._block_len = 48
         span_start = f"{self.year - 1:04d}-01-01T00"
         span_stop = f"{self.year + 2:04d}-01-01T00"
         raw_blocks = series.valid_window_starts(self._block_len, span_start, span_stop)
         disjoint_blocks: list[int] = []
         last_hour = -10**12
+        min_stride = self._block_len + self.buffer_hours
         for st_idx in raw_blocks:
             h_val = int(series.timestamp_hour[int(st_idx)])
-            if h_val >= last_hour + self._block_len:
+            if h_val >= last_hour + min_stride:
                 disjoint_blocks.append(int(st_idx))
                 last_hour = h_val
         blk_arr = np.asarray(disjoint_blocks, dtype=np.int64)
@@ -107,8 +106,8 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
             "audit": blk_arr[2::3],
         }
         for split, starts in self._starts.items():
-            if len(starts) < 24:
-                raise ValueError(f"Market {self.market} split {split} has <24 disjoint blocks ({len(starts)})")
+            if len(starts) < 20:
+                raise ValueError(f"Market {self.market} split {split} has <20 disjoint blocks ({len(starts)})")
 
         # Mark strictly search-split hourly indices for public profile calibration (zero leakage)
         s_mask = np.zeros(series.timestamp_hour.size, dtype=bool)
@@ -118,12 +117,17 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         if not np.isfinite(load_scale) or load_scale <= 0.0:
             raise ValueError(f"Invalid load_scale for {self.market}")
 
-        # Private realized forecast error (strictly isolated to _evaluate_block_trajectories; clamp meter drops)
-        self._net_error = np.clip(
-            np.asarray(series.load_actual - series.load_forecast, dtype=float) / load_scale,
-            -0.20,
-            0.20,
-        )
+        raw_rel_error = np.asarray(series.load_actual - series.load_forecast, dtype=float) / load_scale
+        all_eval_mask = np.zeros(series.timestamp_hour.size, dtype=bool)
+        for starts in self._starts.values():
+            for st in starts:
+                all_eval_mask[int(st) : int(st) + self._block_len] = True
+        if self.clamp_limit is not None:
+            self.tail_clamped_fraction = float(np.mean(np.abs(raw_rel_error[all_eval_mask]) > self.clamp_limit))
+            self._net_error = np.clip(raw_rel_error, -self.clamp_limit, self.clamp_limit)
+        else:
+            self.tail_clamped_fraction = 0.0
+            self._net_error = raw_rel_error.copy()
 
         # Public day-ahead exogenous profiles fit strictly on search-split forecasts & prices
         price_scale = max(float(np.median(np.abs(series.price[s_mask]))), 1.0)
@@ -350,8 +354,11 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         *,
         n_eval: int = 4000,
         seed: int = 20261116,
+        split: str = "audit",
     ) -> dict:
-        """High-precision Monte Carlo audit over strictly disjoint audit-split diurnal blocks."""
+        """High-precision Monte Carlo audit on `split` (`"verification"` IID law or `"audit"` OOD blocks)."""
+        from v2_or.contracts import clopper_pearson_interval
+
         x_clean = self.clip_policy(x_norm)
         rng = np.random.default_rng(int(seed))
         total_eval = max(int(n_eval), 2000)
@@ -359,15 +366,32 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         rem = total_eval
         while rem > 0:
             b_sz = min(rem, 512)
-            idx_mat = self._sample_split_hour_matrix(b_sz, rng, "audit")
+            idx_mat = self._sample_split_hour_matrix(b_sz, rng, str(split))
             batches.append(self._evaluate_hour_index_matrix(x_clean, idx_mat))
             rem -= b_sz
         samples = np.vstack(batches)
         self.audit_calls += int(total_eval)
         obj = samples[:, 0]
         con = samples[:, 1]
-        viol_prob = float(np.mean(con > 0.0))
+        k_viol = int(np.sum(con > 0.0))
+        viol_prob = float(k_viol / float(total_eval))
+        ci_lo, ci_hi = clopper_pearson_interval(k_viol, int(total_eval), conf=0.95)
+        if ci_hi <= self.alpha:
+            safety_class = "confidently_safe"
+        elif ci_lo > self.alpha:
+            safety_class = "confidently_unsafe"
+        else:
+            safety_class = "boundary_ambiguous"
         return {
+            "mc_objective_mean": float(np.mean(obj)),
+            "mc_objective_se": float(np.std(obj, ddof=1) / np.sqrt(total_eval)),
+            "mc_constraint_mean": float(np.mean(con)),
+            "mc_constraint_std": float(np.std(con, ddof=1)),
+            "mc_violation_count": k_viol,
+            "mc_violation_prob": viol_prob,
+            "mc_viol_ci95_lo": ci_lo,
+            "mc_viol_ci95_hi": ci_hi,
+            "safety_audit_class": safety_class,
             "true_objective": float(np.mean(obj)),
             "true_objective_se": float(np.std(obj, ddof=1) / np.sqrt(total_eval)),
             "true_constraint_mean": float(np.mean(con)),
@@ -376,6 +400,10 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
             "true_quantile_1_minus_alpha": float(np.quantile(con, 1.0 - self.alpha)),
             "is_truly_feasible": bool(viol_prob <= self.alpha),
             "n_audit_samples": int(total_eval),
+            "audit_split": str(split),
+            "buffer_hours": int(self.buffer_hours),
+            "clamp_limit": self.clamp_limit,
+            "tail_clamped_fraction": float(self.tail_clamped_fraction),
         }
 
 

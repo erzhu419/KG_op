@@ -1,0 +1,48 @@
+{
+  "generated_utc": "2026-11-16T17:48:29.740081+00:00",
+  "cohorts": {
+    "v2_or_pilot_v1": {
+      "total_unique_runs": 242,
+      "total_certified_deployments": 176,
+      "safety_audit_summary": {
+        "confidently_safe": 176,
+        "abstained_not_deployed": 66
+      },
+      "p0_invariant_checks": {
+        "stop_identical_across_budgets": true,
+        "roster_invariant_across_arm_subsets": true
+      },
+      "ledger_csv_sha256": "544f1859f112a2ac7a456e15c90bff056f1f6e7fa9bcee2879792a301df68d42",
+      "summary_json_sha256": "bba3447984c4a8cb2539071b6f2829652f4fac002a322dbababe2515192c7332"
+    },
+    "v2_or_confirm_v1": {
+      "total_unique_runs": 4128,
+      "total_certified_deployments": 3392,
+      "safety_audit_summary": {
+        "confidently_safe": 3390,
+        "abstained_not_deployed": 736,
+        "confidently_unsafe": 1,
+        "boundary_ambiguous": 1
+      },
+      "p0_invariant_checks": {
+        "stop_identical_across_budgets": true,
+        "roster_invariant_across_arm_subsets": true
+      },
+      "ledger_csv_sha256": "eb89e9c478afb8fda94cc1568abd590afa4c049fbb628a605e73aa230462b0c7",
+      "summary_json_sha256": "2977c23f56cc639370f12005f7e53f43eb9baf2d1dd7a831505166c11f3c6b39"
+    },
+    "v2_or_live_sumo_v1": {
+      "total_unique_runs": 40,
+      "total_certified_deployments": 0,
+      "safety_audit_summary": {
+        "abstained_not_deployed": 40
+      },
+      "p0_invariant_checks": {
+        "stop_identical_across_budgets": true,
+        "roster_invariant_across_arm_subsets": true
+      },
+      "ledger_csv_sha256": "7d8d6715e8c09ac46da7cb5df7be71bf1d00a0a980fefcc5e51f843c9f79222b",
+      "summary_json_sha256": "7f3d36f405b3b933836a1d117b80f6f0c0af6e6a00b05dde73a90755de2b24e9"
+    }
+  }
+}

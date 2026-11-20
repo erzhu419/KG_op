@@ -2,6 +2,18 @@
 
 Execution policy (2026-10-17): substantive computation now uses scheduler CPU batches on node001–node006, with single-threaded BLAS and the existing global stage barriers. [Environment and entry points](docs/mainline_cluster_execution.md); local work is limited to small inspections and wiring checks. Large outputs remain on the server.
 
+## GP-FTA manuscript and replication
+
+The [current manuscript](manuscript_v2_or/main_or.pdf) reports frozen U3 reruns on the shared P2 panel, including PublicPsi-BO, verification-law checks and separate deployment audits. The [remediation record](docs/gp_fta_or_remediation_20261120.md) describes the KG quadrature correction and the evidence available for each version. [Current implementation](v2_or/) · [Lean interface](../proof/SCOLHKG/V2ORProofInterface.lean)
+
+The [independent panel results](docs/gp_fta_corrected_kg_confirmation_results_20261120.md) report 72 new simulated tasks with paired comparisons against GP-FTA-TS and PublicPsi. The [historical replay record](docs/gp_fta_u3_historical_replay_20261120.md) links the regenerated U3 ledger evidence and the staged reviewer-input archive.
+
+The OR submission files are available as the [anonymous manuscript](../OR_Submission_GP_FTA_20261120/upload/manuscript.pdf), [electronic companion](../OR_Submission_GP_FTA_20261120/upload/electronic_companion.pdf), and [code and data supplement](../OR_Submission_GP_FTA_20261120/upload/code_and_data.zip). The [provenance and rights audit](docs/gp_fta_rights_audit_20261120.md) describes the pinned upstream inputs.
+
+The sealed P0–P3 and U3 run artifacts remain in [paper_artifacts](paper_artifacts/). Earlier protocol receipts and model results retain their original version and budget.
+
+---
+
 Latest continuation (2026-10-20): the [current Lean interface](../proof/SCOLHKG/CurrentMainlineProofInterface.lean) now covers 94 current theorems and a 16-module dependency closure checked by Lean 4.31.0. This batch adds 21 finite source-kernel PSD/restriction results and 15 fixed-affine MSE results derived from actual expectations with explicit integrability and normal equations. The [receipt](paper_artifacts/mainline_source_kernel_mismatch_lean_20261020_result.json) retains one cache plan, three manual builds (two failures), 58.321 measured build CPU seconds and zero automatic retries. Prior receipts, scientific models, failures, fees and remaining budgets are preserved. Next: align implementation, mathematical statements, Lean declarations and main-text claims in the [proof plan](docs/mainline_proof_gap_audit_and_plan_20261020.md).
 
 Previous continuation (2026-10-19): [unified method and complete plan](docs/mainline_unified_method_and_plan_20261019.md), with [frozen backend paired supplements](docs/mainline_frozen_backend_comparison_results_20261019.md). Stage103 documents the already integrated legacy frontend and AFTER backend, including the four structural priors' actual roles. Separate Stage85/93 saved-record comparisons support AFTER versus same-source GP in overall certification and defined signed quality; old-native comparisons remain mixed across endpoints and cohorts. All9/11 arms,67 failures, missing baselines, Queue warnings, negative cases and historical fees remain. One scheduler item t195236/node005 passed13 substitutes and completed analysis with no retry or duplicate; analysis CPU2.384s is nested within the6.948s wrapper. No new simulation, scoring, fitting or restoration; original AFTER-minus-POINT rows and intervals are unchanged. Next consolidate the unified paper argument, without replacing the frozen algorithm or reopening single-query precision work.

@@ -1,0 +1,588 @@
+{
+  "campaign_name": "v2_or_u1_dev_check_v2",
+  "manifest_relpath": "v2_or/manifests/v2_or_u1_dev_check_v2.json",
+  "manifest_sha256": "b6e4514c57c103f39b7219ef9c9086a658a0256fe29119a10690928d76d52838",
+  "execution_code_sha256": "cf5a3374cae4b0361ac17845047ea3b9ab7b2cbdebb0aa3b5c5be392e98970a7",
+  "stage": "source_archive",
+  "created_utc": "2026-11-17T01:38:57.228836+00:00",
+  "n_jobs": 64,
+  "jobs": [
+    {
+      "job_id": "src_Inventory_U1_Dev_t00_penalty_spsa",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3101
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t00_constrained_cmaes",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3138
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t00_constrained_nsga2",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3175
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t00_heuristic_powell",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3212
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t01_penalty_spsa",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4110
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t01_constrained_cmaes",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4147
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t01_constrained_nsga2",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4184
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t01_heuristic_powell",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4221
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t02_penalty_spsa",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5119
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t02_constrained_cmaes",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5156
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t02_constrained_nsga2",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5193
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t02_heuristic_powell",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5230
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t03_penalty_spsa",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6128
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t03_constrained_cmaes",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6165
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t03_constrained_nsga2",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6202
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t03_heuristic_powell",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6239
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t04_penalty_spsa",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7137
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t04_constrained_cmaes",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7174
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t04_constrained_nsga2",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7211
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t04_heuristic_powell",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7248
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t05_penalty_spsa",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8146
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t05_constrained_cmaes",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8183
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t05_constrained_nsga2",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8220
+    },
+    {
+      "job_id": "src_Inventory_U1_Dev_t05_heuristic_powell",
+      "family": "Inventory_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8257
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t00_penalty_spsa",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3301
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t00_constrained_cmaes",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3338
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t00_constrained_nsga2",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3375
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t00_heuristic_powell",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3412
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t01_penalty_spsa",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4310
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t01_constrained_cmaes",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4347
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t01_constrained_nsga2",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4384
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t01_heuristic_powell",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4421
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t02_penalty_spsa",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5319
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t02_constrained_cmaes",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5356
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t02_constrained_nsga2",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5393
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t02_heuristic_powell",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5430
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t03_penalty_spsa",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6328
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t03_constrained_cmaes",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6365
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t03_constrained_nsga2",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6402
+    },
+    {
+      "job_id": "src_OPSD_U1_Dev_t03_heuristic_powell",
+      "family": "OPSD_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6439
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t00_penalty_spsa",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3401
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t00_constrained_cmaes",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3438
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t00_constrained_nsga2",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3475
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t00_heuristic_powell",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 0,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 3512
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t01_penalty_spsa",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4410
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t01_constrained_cmaes",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4447
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t01_constrained_nsga2",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4484
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t01_heuristic_powell",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 1,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 4521
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t02_penalty_spsa",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5419
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t02_constrained_cmaes",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5456
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t02_constrained_nsga2",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5493
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t02_heuristic_powell",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 2,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 5530
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t03_penalty_spsa",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6428
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t03_constrained_cmaes",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6465
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t03_constrained_nsga2",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6502
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t03_heuristic_powell",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 3,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 6539
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t04_penalty_spsa",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7437
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t04_constrained_cmaes",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7474
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t04_constrained_nsga2",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7511
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t04_heuristic_powell",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 4,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 7548
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t05_penalty_spsa",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "penalty_spsa",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8446
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t05_constrained_cmaes",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "constrained_cmaes",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8483
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t05_constrained_nsga2",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "constrained_nsga2",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8520
+    },
+    {
+      "job_id": "src_Traffic_U1_Dev_t05_heuristic_powell",
+      "family": "Traffic_U1_Dev",
+      "source_task_idx": 5,
+      "solver_name": "heuristic_powell",
+      "per_solver_budget": 60,
+      "reps_per_eval": 3,
+      "seed": 8557
+    }
+  ],
+  "truth_used": false
+}

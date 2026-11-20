@@ -1,0 +1,52 @@
+\begin{table}[htbp]
+\centering
+\caption{Heterogeneous simulated source archives on the shared U3 target panel ($2{,}108$ runs). Logs combine single replications, unequal budgets, incomplete solver coverage, and heterogeneous historical risk tolerances. Two-sided $p$ values compare status-quo loss with frozen GP-FTA-KG and are unadjusted. Online wall time is for $N=60$.}\label{tab:messy_archive}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Family} & \textbf{Method} & \textbf{$N=15$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{10\%}$} & \textbf{$N=60$ Cert.\%} & \textbf{Two-Sided $p$ ($N=60$)} & \textbf{Online Wall (s)} \\
+\midrule
+\multirow{9}{*}{Inventory} & \textbf{GP-FTA-KG} & $1.941$ & $1.910$ & $1.910$ & 100.0\% & --- & 41.6 \\
+ & \textbf{GP-FTA-TS} & $1.937$ & $1.914$ & $1.920$ & 96.9\% & $0.669$ & 10.0 \\
+ & \texttt{GP-FTA-NoDebias} & $1.947$ & $1.901$ & $1.901$ & 100.0\% & $0.632$ & 44.2 \\
+ & \texttt{RGPE-on-Psi} & $1.932$ & $1.926$ & $1.983$ & 71.9\% & $0.231$ & 12.4 \\
+ & \texttt{WarmStart-PatternSearch} & $1.949$ & $1.943$ & $2.036$ & 53.1\% & $0.016$ & 0.3 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.909}$ & $\mathbf{1.883}$ & $\mathbf{1.895}$ & 93.8\% & $0.0004$ & 7.9 \\
+ & \texttt{RGPE} & $1.963$ & $1.976$ & $1.989$ & 93.8\% & $0.002$ & 72.6 \\
+ & \texttt{HyperBO-EB} & $1.974$ & $1.987$ & $1.987$ & 100.0\% & $0.0008$ & 2.1 \\
+ & \texttt{STOP} & $1.996$ & $1.996$ & $1.996$ & 100.0\% & $0.003$ & 0.1 \\
+\midrule
+\multirow{9}{*}{Queueing} & \textbf{GP-FTA-KG} & $2.647$ & $\mathbf{2.518}$ & $\mathbf{2.518}$ & 100.0\% & --- & 44.5 \\
+ & \textbf{GP-FTA-TS} & $2.627$ & $2.527$ & $2.527$ & 100.0\% & $0.375$ & 8.8 \\
+ & \texttt{GP-FTA-NoDebias} & $\mathbf{2.584}$ & $2.519$ & $2.519$ & 100.0\% & $1.000$ & 44.9 \\
+ & \texttt{RGPE-on-Psi} & $2.715$ & $2.688$ & $2.727$ & 87.5\% & $<10^{-4}$ & 10.5 \\
+ & \texttt{WarmStart-PatternSearch} & $2.775$ & $2.864$ & $2.955$ & 71.9\% & $<10^{-4}$ & 0.4 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $2.704$ & $2.596$ & $2.607$ & 96.9\% & $0.003$ & 6.8 \\
+ & \texttt{RGPE} & $3.047$ & $3.012$ & $3.042$ & 90.6\% & $<10^{-4}$ & 53.5 \\
+ & \texttt{HyperBO-EB} & $3.056$ & $3.069$ & $3.085$ & 93.8\% & $<10^{-4}$ & 2.8 \\
+ & \texttt{STOP} & $2.864$ & $2.864$ & $2.864$ & 100.0\% & $<10^{-4}$ & 0.1 \\
+\midrule
+\multirow{9}{*}{OPSD Grid} & \textbf{GP-FTA-KG} & $0.0606$ & $0.0568$ & $0.0572$ & 92.9\% & --- & 49.1 \\
+ & \textbf{GP-FTA-TS} & $0.0582$ & $0.0566$ & $\mathbf{0.0570}$ & 92.9\% & $0.855$ & 11.1 \\
+ & \texttt{GP-FTA-NoDebias} & $0.0589$ & $0.0569$ & $0.0573$ & 92.9\% & $0.903$ & 46.5 \\
+ & \texttt{RGPE-on-Psi} & $\mathbf{0.0574}$ & $\mathbf{0.0562}$ & $0.0588$ & 64.3\% & $0.715$ & 13.6 \\
+ & \texttt{WarmStart-PatternSearch} & $0.0609$ & $0.0614$ & $0.0635$ & 64.3\% & $0.004$ & 2.0 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $0.0607$ & $0.0583$ & $0.0590$ & 85.7\% & $0.358$ & 9.0 \\
+ & \texttt{RGPE} & $0.0619$ & $0.0641$ & $0.0643$ & 96.4\% & $0.002$ & 173.9 \\
+ & \texttt{HyperBO-EB} & $0.0607$ & $0.0618$ & $0.0626$ & 85.7\% & $0.005$ & 6.1 \\
+ & \texttt{STOP} & $0.0639$ & $0.0639$ & $0.0639$ & 100.0\% & $0.0009$ & 0.4 \\
+\midrule
+\multirow{9}{*}{Traffic-21} & \textbf{GP-FTA-KG} & $1.102$ & $1.082$ & $1.110$ & 78.1\% & --- & 76.4 \\
+ & \textbf{GP-FTA-TS} & $1.088$ & $1.061$ & $1.078$ & 87.5\% & $0.135$ & 37.4 \\
+ & \texttt{GP-FTA-NoDebias} & $1.088$ & $1.034$ & $1.043$ & 93.8\% & $0.003$ & 78.2 \\
+ & \texttt{RGPE-on-Psi} & $1.090$ & $1.055$ & $1.072$ & 87.5\% & $0.252$ & 45.3 \\
+ & \texttt{WarmStart-PatternSearch} & $1.106$ & $1.096$ & $1.135$ & 68.8\% & $0.241$ & 2.1 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.050}$ & $\mathbf{1.007}$ & $\mathbf{1.007}$ & 100.0\% & $0.001$ & 34.3 \\
+ & \texttt{RGPE} & $1.112$ & $1.094$ & $1.126$ & 75.0\% & $0.188$ & 13.1 \\
+ & \texttt{HyperBO-EB} & $1.138$ & $1.137$ & $1.202$ & 46.9\% & $0.005$ & 2.7 \\
+ & \texttt{STOP} & $1.088$ & $1.088$ & $1.113$ & 81.2\% & $0.524$ & 0.4 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

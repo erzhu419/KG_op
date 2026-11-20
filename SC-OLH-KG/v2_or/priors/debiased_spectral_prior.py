@@ -68,15 +68,22 @@ def hvd_nonneg_feature_vector(A_local: np.ndarray, N_shared: np.ndarray) -> np.n
     ])
 
 
-def policy_to_dct_profile(x_norm: np.ndarray, k_modes: int = 12) -> np.ndarray:
-    """Compress `x in [0, 1]^d` via 2-channel (even/odd interleaved) DCT-II modes.
-
-    Handles both single-channel temporal curves (smooth even/odd hours) and
-    two-channel operational policies (e.g., regular vs. expedited order, staffing
-    vs. surge threshold, or arterial vs. cross-street signal phases) across arbitrary `d`.
-    """
+def policy_to_dct_profile(
+    x_norm: np.ndarray,
+    k_modes: int = 12,
+    num_channels: int = 2,
+) -> np.ndarray:
+    """Compress `x in [0, 1]^d` via `num_channels`-aware DCT-II modes."""
     arr = np.asarray(x_norm, dtype=float).reshape(-1)
-    k_half = max(int(k_modes) // 2, 1)
+    k_tot = max(int(k_modes), 2)
+    if int(num_channels) == 1 or arr.size <= 1:
+        ch = arr - 0.5
+        c = dct(ch, type=2, norm="ortho") / np.sqrt(max(ch.size, 1))
+        out = np.zeros(k_tot, dtype=float)
+        out[: min(k_tot, c.size)] = c[: min(k_tot, c.size)]
+        return out
+
+    k_half = max(k_tot // 2, 1)
     ch0 = arr[0::2] - 0.5
     ch1 = arr[1::2] - 0.5 if arr.size > 1 else ch0
 
@@ -84,16 +91,27 @@ def policy_to_dct_profile(x_norm: np.ndarray, k_modes: int = 12) -> np.ndarray:
     c1 = dct(ch1, type=2, norm="ortho") / np.sqrt(max(ch1.size, 1))
 
     out0 = np.zeros(k_half, dtype=float)
-    out1 = np.zeros(int(k_modes) - k_half, dtype=float)
+    out1 = np.zeros(k_tot - k_half, dtype=float)
     out0[: min(k_half, c0.size)] = c0[: min(k_half, c0.size)]
     out1[: min(out1.size, c1.size)] = c1[: min(out1.size, c1.size)]
     return np.concatenate([out0, out1])
 
 
-def dct_profile_to_policy(profile: np.ndarray, target_d: int) -> np.ndarray:
-    """Reconstruct a `[0, 1]^{target_d}` policy from 2-channel DCT modes."""
+def dct_profile_to_policy(
+    profile: np.ndarray,
+    target_d: int,
+    num_channels: int = 2,
+) -> np.ndarray:
+    """Reconstruct a `[0, 1]^{target_d}` policy from `num_channels`-aware DCT modes."""
     d = int(target_d)
     prof = np.asarray(profile, dtype=float).reshape(-1)
+    if int(num_channels) == 1 or d <= 1:
+        pad = np.zeros(max(d, 1), dtype=float)
+        t = min(prof.size, pad.size)
+        pad[:t] = prof[:t] * np.sqrt(max(d, 1))
+        rec = 0.5 + idct(pad, type=2, norm="ortho")
+        return np.clip(rec[:d], 0.0, 1.0)
+
     k_half = max(prof.size // 2, 1)
     p0, p1 = prof[:k_half], prof[k_half:]
 
@@ -120,12 +138,22 @@ def sample_smooth_dct_delta(
     target_d: int,
     radius: float,
     k_modes: int = 12,
+    num_channels: int = 2,
 ) -> np.ndarray:
-    """Sample a zero-centered 2-channel smooth DCT perturbation preserving parent profiles."""
+    """Sample a zero-centered smooth DCT perturbation preserving channel semantics."""
     d = int(target_d)
-    k_half = max(int(k_modes) // 2, 1)
+    k_tot = max(int(k_modes), 2)
+    if int(num_channels) == 1 or d <= 1:
+        decay = float(radius) / np.sqrt(np.arange(1, k_tot + 1, dtype=float))
+        p = rng.normal(0.0, decay)
+        pad = np.zeros(max(d, 1), dtype=float)
+        t = min(p.size, pad.size)
+        pad[:t] = p[:t] * np.sqrt(max(d, 1))
+        return idct(pad, type=2, norm="ortho")[:d]
+
+    k_half = max(k_tot // 2, 1)
     decay0 = float(radius) / np.sqrt(np.arange(1, k_half + 1, dtype=float))
-    decay1 = float(radius) / np.sqrt(np.arange(1, int(k_modes) - k_half + 1, dtype=float))
+    decay1 = float(radius) / np.sqrt(np.arange(1, k_tot - k_half + 1, dtype=float))
     p0 = rng.normal(0.0, decay0)
     p1 = rng.normal(0.0, decay1)
 
@@ -208,6 +236,7 @@ class DebiasedSpectralMetaPrior:
         self.gamma_0_obj_: np.ndarray = np.empty(0)
         self.gamma_0_con_: np.ndarray = np.empty(0)
         self.hvd_residual_floor_con_: float = 1e-4
+        self.hvd_prior_n_multirep_: int = 0
 
         # DCT elite profile bank for cross-horizon candidate warm-starting
         self.elite_dct_profiles_: np.ndarray = np.empty((0, 0))
@@ -370,12 +399,15 @@ class DebiasedSpectralMetaPrior:
 
         cov_f = np.atleast_2d(cov_f)
         cov_g = np.atleast_2d(cov_g)
-        # Shrinkage stabilization so Empirical-Bayes covariance is strictly PD
+        # Include finite-source-task meta-mean uncertainty `(1 + 1/M_src) * Cov_s(theta)`
+        # plus diagonal shrinkage stabilization so predictive prior covariance is PD
+        m_src_eff = max(len(theta_obj_mat), 1)
+        meta_infl = 1.0 + 1.0 / float(m_src_eff)
         shrink = 0.15
         diag_f = np.diag(np.maximum(np.diag(cov_f), 1e-3))
         diag_g = np.diag(np.maximum(np.diag(cov_g), 1e-3))
-        self.cov_0_obj_ = (1.0 - shrink) * cov_f + shrink * diag_f + 1e-4 * np.eye(keep_cols.size)
-        self.cov_0_con_ = (1.0 - shrink) * cov_g + shrink * diag_g + 1e-4 * np.eye(keep_cols.size)
+        self.cov_0_obj_ = meta_infl * ((1.0 - shrink) * cov_f + shrink * diag_f) + 1e-4 * np.eye(keep_cols.size)
+        self.cov_0_con_ = meta_infl * ((1.0 - shrink) * cov_g + shrink * diag_g) + 1e-4 * np.eye(keep_cols.size)
 
         if self.pruned_indices_.size > 0:
             pruned_cols = 1 + self.pruned_indices_
@@ -385,20 +417,23 @@ class DebiasedSpectralMetaPrior:
             self.pruned_energy_obj_ = np.empty(0, dtype=float)
             self.pruned_energy_con_ = np.empty(0, dtype=float)
 
-        self.highfreq_floor_obj_ = max(float(np.median(res_var_obj)) * 0.25, 1e-5)
-        self.highfreq_floor_con_ = max(float(np.median(res_var_con)) * 0.25, 1e-5)
+        self.highfreq_floor_obj_ = max(float(np.median(res_var_obj)) * 0.25, 1e-10)
+        self.highfreq_floor_con_ = max(float(np.median(res_var_con)) * 0.25, 1e-10)
 
         # 5. Mean-Shift-Invariant Nonnegative HVD Variance Hyperprior
         rep_mask = np.array([r.n_reps > 1 for r in records], dtype=bool)
+        self.hvd_prior_n_multirep_ = int(np.sum(rep_mask))
         hvd_feats = np.array(
             [hvd_nonneg_feature_vector(np.asarray(r.A_local), np.asarray(r.N_shared)) for r in records],
             dtype=float,
         )
-        if int(np.sum(rep_mask)) >= 6:
+        if self.hvd_prior_n_multirep_ >= 6:
             U_rep = hvd_feats[rep_mask]
             dof = np.array([r.n_reps - 1 for r in records], dtype=float)[rep_mask]
             s2_obj = np.array([r.ssq_obj for r in records], dtype=float)[rep_mask] / dof
             s2_con = np.array([r.ssq_con for r in records], dtype=float)[rep_mask] / dof
+            med_s2_obj = max(float(np.median(s2_obj)), 1e-10)
+            med_s2_con = max(float(np.median(s2_con)), 1e-10)
             w_sqrt = np.sqrt(weights[rep_mask] * dof)
             w_sqrt = w_sqrt / max(float(np.mean(w_sqrt)), 1e-8)
 
@@ -406,34 +441,50 @@ class DebiasedSpectralMetaPrior:
             aug_U = np.vstack([U_rep * w_sqrt[:, None], reg_block])
             gamma_f, _ = nnls(aug_U, np.r_[s2_obj * w_sqrt, np.zeros(U_rep.shape[1])])
             gamma_g, _ = nnls(aug_U, np.r_[s2_con * w_sqrt, np.zeros(U_rep.shape[1])])
-            gamma_f[0] = max(gamma_f[0], 1e-5)
-            gamma_g[0] = max(gamma_g[0], 1e-5)
+            gamma_f[0] = max(gamma_f[0], 0.02 * med_s2_obj, 1e-10)
+            gamma_g[0] = max(gamma_g[0], 0.02 * med_s2_con, 1e-10)
             pred_con = U_rep @ gamma_g
             pos_resid = np.maximum(s2_con - pred_con, 0.0)
-            self.hvd_residual_floor_con_ = max(float(np.quantile(pos_resid, 0.75)) * 0.25, 1e-5)
+            self.hvd_residual_floor_con_ = max(float(np.quantile(pos_resid, 0.75)) * 0.25, 0.02 * med_s2_con, 1e-10)
         else:
             p_hvd = hvd_feats.shape[1]
-            gamma_f = np.r_[1e-3, np.zeros(p_hvd - 1)]
-            gamma_g = np.r_[1e-3, np.zeros(p_hvd - 1)]
-            self.hvd_residual_floor_con_ = 1e-4
+            med_s2_con = max(float(np.median(res_var_con)) if res_var_con else 1e-4, 1e-8)
+            med_s2_obj = max(float(np.median(res_var_obj)) if res_var_obj else 1e-4, 1e-8)
+            gamma_f = np.r_[med_s2_obj, np.zeros(p_hvd - 1)]
+            gamma_g = np.r_[med_s2_con, np.zeros(p_hvd - 1)]
+            self.hvd_residual_floor_con_ = 0.05 * med_s2_con
 
         self.gamma_0_obj_ = gamma_f
         self.gamma_0_con_ = gamma_g
 
-        # 6. Extract DCT-Compressed Elite Source Templates per Source Task
+        # 6. Extract DCT-Compressed Elite Source Templates per Source Task (both 2ch and 1ch)
+        def _elite_margin(rec_item: LegacyTrajectoryRecord) -> float:
+            if rec_item.n_reps > 1:
+                sd_emp = float(np.sqrt(max(rec_item.ssq_con / float(rec_item.n_reps - 1), 1e-8)))
+                u_vec = hvd_nonneg_feature_vector(np.asarray(rec_item.A_local), np.asarray(rec_item.N_shared))
+                sd_hvd = float(np.sqrt(max(float(u_vec @ gamma_g), 1e-8)))
+                sd_eff = max(sd_emp, 0.5 * sd_hvd)
+            else:
+                u_vec = hvd_nonneg_feature_vector(np.asarray(rec_item.A_local), np.asarray(rec_item.N_shared))
+                sd_eff = 1.25 * float(np.sqrt(max(float(u_vec @ gamma_g), med_s2_con, 1e-6)))
+            return float(rec_item.mean_con + 1.645 * sd_eff)
+
         elite_profiles = []
+        elite_profiles_1ch = []
         for tid in task_ids:
             t_recs = [r for r in records if r.task_id == tid]
-            # Rank by empirical margin feasibility then objective
             t_recs.sort(
                 key=lambda r: (
-                    0 if (r.mean_con + 1.645 * np.sqrt(max(r.ssq_con / max(r.n_reps - 1, 1), 1e-8))) <= 0.0 else 1,
-                    r.mean_con if (r.mean_con + 1.645 * np.sqrt(max(r.ssq_con / max(r.n_reps - 1, 1), 1e-8))) > 0.0 else r.mean_obj,
+                    0 if (_elite_margin(r) <= 0.0 and r.violation_count == 0) else 1,
+                    _elite_margin(r) if (_elite_margin(r) > 0.0 or r.violation_count > 0) else r.mean_obj,
                 )
             )
             for top_r in t_recs[:2]:
-                elite_profiles.append(policy_to_dct_profile(np.asarray(top_r.x_norm), self.dct_modes))
+                arr_x = np.asarray(top_r.x_norm)
+                elite_profiles.append(policy_to_dct_profile(arr_x, self.dct_modes, num_channels=2))
+                elite_profiles_1ch.append(policy_to_dct_profile(arr_x, self.dct_modes, num_channels=1))
         self.elite_dct_profiles_ = np.asarray(elite_profiles, dtype=float)
+        self.elite_dct_profiles_1ch_ = np.asarray(elite_profiles_1ch, dtype=float)
 
         self.diagnostics_ = PriorDiagnostics(
             n_source_tasks=len(task_ids),
@@ -480,34 +531,60 @@ class DebiasedSpectralMetaPrior:
         )
         return phi_active, psi_std, u_hvd, r_perp_obj, r_perp_con
 
+    def transform_pruned_features(
+        self,
+        exposures: Sequence[NominalTrajectoryExposure],
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Return energy-weighted pruned basis features `(W_perp_obj, W_perp_con)` for Bayesian kernel conditioning."""
+        if not self.is_fitted or self.pruned_indices_.size == 0:
+            z = np.zeros((len(exposures), 0), dtype=float)
+            return z, z
+        psi_mat = np.array([e.psi for e in exposures], dtype=float)
+        psi_std = (psi_mat - self.psi_mean_[None, :]) / self.psi_std_[None, :]
+        raw_dict = _build_raw_dictionary(psi_std)
+        dict_lp_c = raw_dict[:, self.lowpass_mask_] - self.dict_center_[None, :]
+        orth_all = np.clip(dict_lp_c @ self.whitening_mat_.T, -5.0, 5.0)
+        orth_p = orth_all[:, self.pruned_indices_]
+        w_f = 0.5 * orth_p * np.sqrt(np.maximum(self.pruned_energy_obj_, 0.0))[None, :]
+        w_g = 0.5 * orth_p * np.sqrt(np.maximum(self.pruned_energy_con_, 0.0))[None, :]
+        return w_f, w_g
+
     def warmstart_candidates(
         self,
         target_d: int,
         n_candidates: int,
         rng: np.random.Generator,
         anchor: np.ndarray | None = None,
+        num_channels: int = 2,
     ) -> list[np.ndarray]:
         """Generate dimension-adapted initial candidates via DCT source templates + anchor modulations."""
         cands: list[np.ndarray] = []
         anc = np.clip(np.asarray(anchor, dtype=float).reshape(-1), 0.0, 1.0) if anchor is not None else None
         if anc is not None:
             cands.append(anc)
-        if self.elite_dct_profiles_.size > 0:
-            n_from_src = min(max((n_candidates * 2) // 3, 2), len(self.elite_dct_profiles_))
-            chosen = rng.choice(len(self.elite_dct_profiles_), size=n_from_src, replace=False)
+        elite_bank = getattr(self, "elite_dct_profiles_1ch_", None) if int(num_channels) == 1 else None
+        if elite_bank is None or elite_bank.size == 0:
+            elite_bank = self.elite_dct_profiles_
+            bank_ch = 2
+        else:
+            bank_ch = 1
+        if elite_bank.size > 0:
+            n_from_src = min(max((n_candidates * 2) // 3, 2), len(elite_bank))
+            chosen = rng.choice(len(elite_bank), size=n_from_src, replace=False)
             for k_i, idx in enumerate(chosen):
-                base = dct_profile_to_policy(self.elite_dct_profiles_[idx], target_d)
+                base = dct_profile_to_policy(elite_bank[idx], target_d, num_channels=bank_ch)
                 if anc is not None and k_i % 2 == 0:
-                    # Preserve target-specific public forecast shape while shifting channel levels/tilts to source elite
                     shift = base - 0.50
                     cands.append(np.clip(0.55 * anc + 0.45 * base + 0.25 * shift, 0.0, 1.0))
                 else:
                     cands.append(base)
         while len(cands) < n_candidates:
             if anc is not None and len(cands) % 2 == 0:
-                delta = sample_smooth_dct_delta(rng, target_d, radius=0.14, k_modes=self.dct_modes)
+                delta = sample_smooth_dct_delta(
+                    rng, target_d, radius=0.14, k_modes=self.dct_modes, num_channels=int(num_channels)
+                )
                 cands.append(np.clip(anc + delta, 0.0, 1.0))
             else:
                 prof = rng.normal(0.0, 0.22 / np.arange(1, self.dct_modes + 1), size=self.dct_modes)
-                cands.append(dct_profile_to_policy(prof, target_d))
+                cands.append(dct_profile_to_policy(prof, target_d, num_channels=int(num_channels)))
         return cands[:n_candidates]

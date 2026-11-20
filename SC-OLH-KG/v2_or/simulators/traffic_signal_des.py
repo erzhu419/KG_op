@@ -150,9 +150,10 @@ def sample_traffic_tasks(
 
 
 class IngolstadtSignalNetworkDES(BaseDynamicORProblem):
-    """Multi-intersection signal-timing queue, spillback & CO2 emission network DES."""
+    """Stylized multi-intersection signal-timing queue, spillback & CO2 network DES."""
 
     family_name = "IngolstadtTrafficDES"
+    num_control_channels = 2
     is_gaussian_constraint_noise = False
 
     def __init__(
@@ -213,6 +214,24 @@ class IngolstadtSignalNetworkDES(BaseDynamicORProblem):
     def domain_heuristic_anchor(self) -> np.ndarray:
         """Published RESCO fixed-time signal plan (`defaults`) normalized to `[0, 1]^d`."""
         return np.clip((self.defaults - self.lo) / np.maximum(self.hi - self.lo, 1e-6), 0.0, 1.0)
+
+    def warp_source_policy(self, x_src: np.ndarray) -> np.ndarray:
+        """Subnetwork-prefix + arterial/side-street parity-preserving policy adapter."""
+        arr = np.asarray(x_src, dtype=float).reshape(-1)
+        if arr.size == self.d:
+            return np.clip(arr.copy(), 0.0, 1.0)
+        anc = self.domain_heuristic_anchor()
+        if arr.size > self.d:
+            return np.clip(arr[: self.d].copy(), 0.0, 1.0)
+        out = anc.copy()
+        k = arr.size
+        out[:k] = arr
+        # Propagate average arterial (even) and cross-street (odd) relative adjustment to downstream TLS
+        delta_even = float(np.mean(arr[0:k:2] - anc[0:k:2])) if k >= 1 else 0.0
+        delta_odd = float(np.mean(arr[1:k:2] - anc[1:k:2])) if k >= 2 else delta_even
+        for j in range(k, self.d):
+            out[j] = anc[j] + (delta_even if (j % 2 == 0) else delta_odd)
+        return np.clip(out, 0.0, 1.0)
 
     def _deterministic_metrics(self, x_norm: np.ndarray) -> tuple[float, float]:
         greens, var_cycles = self._greens_and_cycles(x_norm)
@@ -394,6 +413,7 @@ class IngolstadtLiveSUMOBenchmark(BaseDynamicORProblem):
     """Live microscopic `libsumo` RESCO `ingolstadt21` benchmark for cluster validation."""
 
     family_name = "IngolstadtLiveSUMO"
+    num_control_channels = 2
     is_gaussian_constraint_noise = False
 
     def __init__(
@@ -403,6 +423,7 @@ class IngolstadtLiveSUMOBenchmark(BaseDynamicORProblem):
         weights: tuple[float, float] = (0.5, 0.5),
         tau_emission: float = 1.0,
         alpha: float = 0.05,
+        baseline_override: dict[str, float] | None = None,
     ) -> None:
         super().__init__()
         self.task_id = str(task_id)
@@ -410,6 +431,7 @@ class IngolstadtLiveSUMOBenchmark(BaseDynamicORProblem):
         self.weights = self.weights / np.sum(self.weights)
         self.tau_emission = float(tau_emission)
         self.alpha = float(alpha)
+        self.baseline_override = dict(baseline_override) if baseline_override is not None else None
 
         lo, hi, defaults, var_tls, fixed_ov = _load_ingolstadt_phase_spec(max_tls=None)
         self.lo = lo
@@ -452,11 +474,22 @@ class IngolstadtLiveSUMOBenchmark(BaseDynamicORProblem):
             if str(gpr_dir) not in sys.path:
                 sys.path.insert(0, str(gpr_dir))
             from experiments.ingolstadt21.ingolstadt21_problem import Ingolstadt21Problem
-            self._live_problem = Ingolstadt21Problem(tau=self.tau_emission, alpha=self.alpha)
+            prob = Ingolstadt21Problem(tau=self.tau_emission, alpha=self.alpha)
+            if self.baseline_override is not None:
+                if "T0" in self.baseline_override:
+                    prob.T0 = float(self.baseline_override["T0"])
+                if "A0" in self.baseline_override:
+                    prob.A0 = float(self.baseline_override["A0"])
+                if "E0" in self.baseline_override:
+                    prob.E0 = float(self.baseline_override["E0"])
+            self._live_problem = prob
         return self._live_problem
 
     def domain_heuristic_anchor(self) -> np.ndarray:
         return self._nominal_helper.domain_heuristic_anchor()
+
+    def warp_source_policy(self, x_src: np.ndarray) -> np.ndarray:
+        return self._nominal_helper.warp_source_policy(x_src)
 
     def nominal_exposure(self, x_norm: np.ndarray) -> NominalTrajectoryExposure:
         return self._nominal_helper.nominal_exposure(x_norm)

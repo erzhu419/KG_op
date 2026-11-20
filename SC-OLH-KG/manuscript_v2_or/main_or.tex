@@ -38,6 +38,9 @@
 \newcommand{\cT}{\mathcal{T}}
 \newcommand{\cI}{\mathcal{I}}
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\calL}{\mathcal{L}}
+
+\input{macros_autogen}
 
 \makeatletter
 \setlength{\@fptop}{0pt}
@@ -63,13 +66,13 @@
 
 \MANUSCRIPTNO{}
 \RUNAUTHOR{Authors' names blinded for peer review}
-\RUNTITLE{Safe Functional Meta-Priors from Legacy Optimization Logs}
-\TITLE{Learning Safe Functional Meta-Priors from Legacy Optimization Logs for High-Dimensional Chance-Constrained Simulation Optimization}
+\RUNTITLE{Gate-Power-Aligned Functional Transfer from Legacy Simulation Logs}
+\TITLE{Gate-Power-Aligned Functional Transfer for Chance-Constrained Dynamic Simulation Optimization from Legacy Logs}
 \ARTICLEAUTHORS{\AUTHOR{Authors omitted for double-anonymous peer review}}
 
-\ABSTRACT{Organizations solving high-dimensional chance-constrained simulation optimization problems routinely accumulate historical evaluation logs generated on related systems by legacy derivative-free solvers (such as SPSA, CMA-ES, NSGA-II, or operational heuristics). Reusing these logs to accelerate sequential search on a new, potentially higher-dimensional target problem faces three fundamental obstacles: non-conformable policy dimensions across horizons ($d_s \neq d_t$), severe adaptive selection bias toward elite basins in legacy trajectories, and catastrophic heteroscedastic variance blow-up when source--target constraint mean shifts leak into posterior noise estimates. We propose \emph{Tempered Legacy-Trajectory State-Coupled Orthogonal Heteroscedastic Knowledge Gradient} (\textbf{TLS-OLH-KG}), a closed-form transfer-and-certification framework. Offline, policies of arbitrary dimension map through public nominal system dynamics onto a dimension-invariant state-risk exposure manifold, where bounded inverse-occupancy debiasing, graph-Laplacian low-pass filtering, Gram whitening, and cross-task invariance sparsity extract a low-dimensional orthogonal prior alongside an explicit residual safety floor. Online, we prove that untempered joint mean--variance transfer suffers exponential variance inflation under task shift while post-initialization freezing stagnates; we resolve this dichotomy by updating Heteroscedastic Variance Decomposition (HVD) parameters strictly from shift-invariant within-policy replication dispersion, coupled with marginal-likelihood-tempered semiparametric Gaussian processes and millisecond-scale joint Verification-Aware Knowledge Gradient (\texttt{V-KG}) lookahead. Deployment is guarded by an independent feasible-aware three-slot exact binomial/noncentral-$t$ verifier with machine-checked Lean~4 finite-sample familywise safety ($\le \delta$). Across multi-period inventory, nonstationary queueing, 18 real-world European electricity markets, and Ingolstadt-21 urban signal control, \textbf{TLS-OLH-KG} achieves zero false safety certificates while significantly outperforming cold-start and transfer Bayesian optimization baselines.}
+\ABSTRACT{Historical simulation logs can guide which policies to evaluate and replicate when a new system must meet a chance constraint. Gate-Power-Aligned Functional Transfer (GP-FTA) learns a prior from adaptive solver logs using summaries of simulated system states. It estimates simulation noise from repeated runs at the same policy and adapts transfer using a predictive score. Two query rules use the probability of passing a binomial verification test. A separate terminal procedure verifies policies on fresh data and abstains if none pass. Under the registered independent sampling law, the chance of returning an unsafe policy is at most the allocated error level. On a previously evaluated task panel, frozen GP-FTA lookahead reduced loss relative to six raw-space comparators across four simulation families. Its clearest gains were in queueing. A simpler target-only method using the same representation achieved lower loss in inventory and traffic simulation. On 72 new simulated tasks with a common call cap, corrected lookahead used fewer calls in inventory and queueing. The same-representation target-only method had lower loss and more certifications in traffic. None of the six loss comparisons reached the adjusted 5 percent level.}
 
-\KEYWORDS{simulation optimization; chance constraints; knowledge gradient; heteroscedastic metamodeling; transfer learning; legacy optimization logs}
+\KEYWORDS{simulation optimization; chance constraints; knowledge gradient; empirical Bayes; heteroscedastic metamodeling; clean-up verification}
 \SUBJECTCLASS{Simulation: efficiency and statistical analysis; Programming: stochastic, chance-constrained.}
 \AREAOFREVIEW{Simulation}
 
@@ -85,9 +88,24 @@
 \input{sections/07_results}
 \input{sections/08_conclusion}
 
+\paragraph{Acknowledgments.}
+Google Gemini, OpenAI ChatGPT, and OpenAI Codex assisted with software development, methodological review, analysis scripts, reproducibility checks, and drafting and editing manuscript text. The reported numerical results were obtained from the logged experiments and checked against the archived records.
+
+\paragraph{Data and code availability.}
+The reproducibility attachment contains the scientific source for U3 and the independent panel, the sealed ledgers, and instructions for rebuilding the tables, manuscript, and formal declarations. It gives the pinned upstream versions and preparation steps for external benchmark inputs. A separate archive contains the U3 source trajectories, fitted priors, and search and audit receipts. The editorial office can request it for confidential review. Replay from these receipts reproduced the six U3 statistical ledgers. Experiment identities, the portability checks and the numerical correction are described in Electronic Companion~\ref{ec:provenance}.
+
 \clearpage
 \bibliographystyle{informs2014}
 \bibliography{references_v2}
+
+\clearpage
+\input{tables/table_main}
+\input{tables/table_ablations}
+\input{tables/table_verification_audit}
+\input{tables/table_messy_archive}
+\input{tables/table_live_sumo}
+\input{tables/table_amortization}
+\input{tables/table_independent_panel}
 
 \clearpage
 \input{sections/09_electronic_companion}

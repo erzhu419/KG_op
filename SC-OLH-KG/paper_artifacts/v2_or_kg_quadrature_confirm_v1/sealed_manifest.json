@@ -1,0 +1,288 @@
+{
+  "campaign_name": "v2_or_kg_quadrature_confirm_v1",
+  "role": "preregistered_corrected_kg_independent_generated_target_confirmation",
+  "output_dir": "paper_artifacts/v2_or_kg_quadrature_confirm_v1",
+  "reference_arm": "GP-FTA-KG",
+  "reuse_source_campaign": "v2_or_u3_confirm_v1",
+  "reuse_source_execution_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a",
+  "families": [
+    {
+      "name": "Inventory_CrossHorizon",
+      "kind": "inventory",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5101,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 2611201,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7101
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2026112001,
+        2026112002
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 2036112001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "Inventory_CrossHorizon",
+      "target_call_cap": 516
+    },
+    {
+      "name": "Queueing_CrossHorizon",
+      "kind": "queueing",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5201,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 2611202,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7201
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2027112001,
+        2027112002
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 2037112001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "Queueing_CrossHorizon",
+      "target_call_cap": 516
+    },
+    {
+      "name": "Traffic_Ingolstadt",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5401,
+        "tls_counts": [
+          11,
+          15
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 2611203,
+        "tls_counts": [
+          21
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7401
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2028112001,
+        2028112002
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 2038112001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "Traffic_Ingolstadt",
+      "target_call_cap": 516
+    }
+  ],
+  "sealed_complete": true,
+  "sealed_utc": "2026-11-20T02:39:00.535120+00:00",
+  "sealed_execution_code_sha256": "c76f162df1f878398927b5afacf105081a985491a25b66780fbecc385c1bf75f"
+}

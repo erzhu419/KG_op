@@ -1,47 +1,62 @@
 \begin{table}[htbp]
 \centering
-\caption{Mechanistic Ablations Validating Theorems~\ref{thm:subspace}--\ref{thm:vkg_safety} and Multi-Horizon Scaling ($N \in \{15, 30, 60\}$)}\label{tab:ablations}
+\caption{Frozen U3 controls sharing the public representation and unclipped grid sensitivity. Two-sided $p$ values compare $N=60$ status-quo loss with GP-FTA-KG and are unadjusted. STOP is the same zero-step run throughout.}\label{tab:ablations}
 \scriptsize
-\setlength{\tabcolsep}{4.8pt}
-\begin{tabular}{llccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccc}
 \toprule
-\textbf{Family} & \textbf{Ablation Arm} & \textbf{$N=15$ Cost} & \textbf{$N=30$ Cost} & \textbf{$N=60$ Cost} & \textbf{$N=60$ Cert.\%} & \textbf{Var.\ Infl.\ ($\kappa_{\mathrm{infl}}$)} \\
+\textbf{Family} & \textbf{Mechanism / Same-$\psi$ Control} & \textbf{$N=8$} & \textbf{$N=15$} & \textbf{$N=30$} & \textbf{$N=60$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{10\%}$} & \textbf{$N=60$ Cert.\%} & \textbf{Two-Sided $p$} \\
 \midrule
-\multirow{8}{*}{Inventory} & \textbf{TLS-OLH-KG} & $1.914$ & $1.887$ & $1.845$ & 100.0\% & $1.00\times$ \\
- & \texttt{Untempered-FULL} & $2.142$ & $2.103$ & $2.074$ & 100.0\% & $27.16\times$ \\
- & \texttt{Frozen-AFTER} & $2.006$ & $1.990$ & $2.040$ & 100.0\% & $1.00\times$ \\
- & \texttt{Undebiased-Prior} & $1.886$ & $1.839$ & $1.824$ & 100.0\% & $1.00\times$ \\
- & \texttt{Dense-Unorth-Prior} & $\mathbf{1.862}$ & $1.852$ & $1.857$ & 100.0\% & $1.00\times$ \\
- & \texttt{Constrained-TS-Acq} & $1.876$ & $\mathbf{1.833}$ & $\mathbf{1.813}$ & 100.0\% & $1.00\times$ \\
- & \texttt{Target-Only-Psi-KG} & $1.910$ & $1.869$ & $1.875$ & 100.0\% & $1.00\times$ \\
- & \texttt{STOP} & $1.916$ & $1.900$ & $1.918$ & 95.8\% & $1.00\times$ \\
+\multirow{9}{*}{Inventory} & \textbf{GP-FTA-KG} & $1.939$ & $1.927$ & $1.915$ & $1.897$ & $1.904$ & 96.9\% & --- \\
+ & \textbf{GP-FTA-TS} & $1.931$ & $1.915$ & $1.896$ & $1.894$ & $1.906$ & 93.8\% & $0.632$ \\
+ & \texttt{RGPE-on-Psi} & $\mathbf{1.887}$ & $\mathbf{1.887}$ & $\mathbf{1.896}$ & $1.884$ & $1.959$ & 62.5\% & $0.175$ \\
+ & \texttt{SCBO-on-Psi} & $1.942$ & $1.924$ & $1.935$ & $1.930$ & $2.000$ & 65.6\% & $0.025$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $1.951$ & $1.909$ & $1.904$ & $\mathbf{1.883}$ & $\mathbf{1.895}$ & 93.8\% & $0.495$ \\
+ & \texttt{WarmStart-PatternSearch} & $1.931$ & $1.925$ & $1.930$ & $1.938$ & $2.043$ & 46.9\% & $0.039$ \\
+ & \texttt{Untempered-PriorResid} & $2.027$ & $2.034$ & $1.980$ & $1.951$ & $1.951$ & 100.0\% & $0.013$ \\
+ & \texttt{Frozen-AFTER} & $1.979$ & $1.975$ & $1.974$ & $1.955$ & $1.955$ & 100.0\% & $0.0004$ \\
+ & \texttt{STOP} & $1.942$ & $1.942$ & $1.942$ & $1.942$ & $1.942$ & 100.0\% & $0.001$ \\
 \midrule
-\multirow{8}{*}{Queueing} & \textbf{TLS-OLH-KG} & $\mathbf{2.495}$ & $2.499$ & $2.475$ & 100.0\% & $1.00\times$ \\
- & \texttt{Untempered-FULL} & $2.576$ & $2.572$ & $2.560$ & 100.0\% & $14.20\times$ \\
- & \texttt{Frozen-AFTER} & $2.592$ & $2.589$ & $2.584$ & 100.0\% & $1.00\times$ \\
- & \texttt{Undebiased-Prior} & $2.553$ & $2.567$ & $2.522$ & 100.0\% & $1.00\times$ \\
- & \texttt{Dense-Unorth-Prior} & $2.501$ & $2.506$ & $\mathbf{2.472}$ & 100.0\% & $1.00\times$ \\
- & \texttt{Constrained-TS-Acq} & $2.548$ & $\mathbf{2.495}$ & $2.476$ & 100.0\% & $1.00\times$ \\
- & \texttt{Target-Only-Psi-KG} & $2.695$ & $2.535$ & $2.520$ & 100.0\% & $1.00\times$ \\
- & \texttt{STOP} & $2.627$ & $2.627$ & $2.627$ & 100.0\% & $1.00\times$ \\
+\multirow{9}{*}{Queueing} & \textbf{GP-FTA-KG} & $\mathbf{2.554}$ & $\mathbf{2.535}$ & $\mathbf{2.520}$ & $\mathbf{2.506}$ & $\mathbf{2.506}$ & 100.0\% & --- \\
+ & \textbf{GP-FTA-TS} & $2.562$ & $2.544$ & $2.528$ & $2.533$ & $2.544$ & 96.9\% & $0.744$ \\
+ & \texttt{RGPE-on-Psi} & $2.731$ & $2.598$ & $2.585$ & $2.590$ & $2.611$ & 93.8\% & $<10^{-4}$ \\
+ & \texttt{SCBO-on-Psi} & $2.870$ & $2.870$ & $2.914$ & $2.903$ & $3.010$ & 65.6\% & $<10^{-4}$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $2.872$ & $2.704$ & $2.614$ & $2.596$ & $2.607$ & 96.9\% & $0.002$ \\
+ & \texttt{WarmStart-PatternSearch} & $2.693$ & $2.691$ & $2.734$ & $2.716$ & $2.756$ & 87.5\% & $<10^{-4}$ \\
+ & \texttt{Untempered-PriorResid} & $3.043$ & $3.027$ & $3.078$ & $3.027$ & $3.027$ & 100.0\% & $<10^{-4}$ \\
+ & \texttt{Frozen-AFTER} & $2.646$ & $2.645$ & $2.638$ & $2.631$ & $2.631$ & 100.0\% & $<10^{-4}$ \\
+ & \texttt{STOP} & $2.720$ & $2.720$ & $2.720$ & $2.720$ & $2.720$ & 100.0\% & $<10^{-4}$ \\
 \midrule
-\multirow{8}{*}{OPSD Grid} & \textbf{TLS-OLH-KG} & $\mathbf{0.0566}$ & $0.0567$ & $0.0571$ & 100.0\% & $1.00\times$ \\
- & \texttt{Untempered-FULL} & $0.0575$ & $0.0565$ & $0.0578$ & 100.0\% & $2.15\times$ \\
- & \texttt{Frozen-AFTER} & $0.0575$ & $0.0586$ & $0.0582$ & 100.0\% & $1.00\times$ \\
- & \texttt{Undebiased-Prior} & $0.0588$ & $0.0576$ & $0.0577$ & 100.0\% & $1.00\times$ \\
- & \texttt{Dense-Unorth-Prior} & $0.0589$ & $0.0595$ & $0.0594$ & 100.0\% & $1.00\times$ \\
- & \texttt{Constrained-TS-Acq} & $0.0569$ & $\mathbf{0.0560}$ & $\mathbf{0.0567}$ & 100.0\% & $1.00\times$ \\
- & \texttt{Target-Only-Psi-KG} & $0.0614$ & $0.0615$ & $0.0592$ & 100.0\% & $1.00\times$ \\
- & \texttt{STOP} & $0.0581$ & $0.0581$ & $0.0581$ & 100.0\% & $1.00\times$ \\
+\multirow{9}{*}{OPSD Grid} & \textbf{GP-FTA-KG} & $0.0591$ & $0.0587$ & $0.0582$ & $\mathbf{0.0567}$ & $\mathbf{0.0571}$ & 92.9\% & --- \\
+ & \textbf{GP-FTA-TS} & $0.0591$ & $0.0590$ & $0.0582$ & $0.0575$ & $0.0584$ & 82.1\% & $0.626$ \\
+ & \texttt{RGPE-on-Psi} & $0.0576$ & $0.0568$ & $0.0581$ & $0.0573$ & $0.0607$ & 50.0\% & $0.391$ \\
+ & \texttt{SCBO-on-Psi} & $0.0618$ & $0.0621$ & $0.0618$ & $0.0630$ & $0.0655$ & 53.6\% & $0.005$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $0.0620$ & $0.0607$ & $0.0579$ & $0.0583$ & $0.0590$ & 85.7\% & $0.542$ \\
+ & \texttt{WarmStart-PatternSearch} & $\mathbf{0.0570}$ & $0.0576$ & $0.0589$ & $0.0606$ & $0.0629$ & 57.1\% & $0.068$ \\
+ & \texttt{Untempered-PriorResid} & $0.0608$ & $0.0607$ & $0.0597$ & $0.0589$ & $0.0589$ & 100.0\% & $0.326$ \\
+ & \texttt{Frozen-AFTER} & $0.0575$ & $\mathbf{0.0566}$ & $\mathbf{0.0573}$ & $0.0579$ & $0.0579$ & 100.0\% & $0.241$ \\
+ & \texttt{STOP} & $0.0576$ & $0.0576$ & $0.0576$ & $0.0576$ & $0.0576$ & 100.0\% & $0.296$ \\
 \midrule
-\multirow{8}{*}{Traffic-21} & \textbf{TLS-OLH-KG} & $1.181$ & $1.158$ & $1.153$ & 62.5\% & $1.00\times$ \\
- & \texttt{Untempered-FULL} & $1.172$ & $1.208$ & $1.190$ & 45.8\% & $8.44\times$ \\
- & \texttt{Frozen-AFTER} & $1.191$ & $1.184$ & $1.178$ & 54.2\% & $1.00\times$ \\
- & \texttt{Undebiased-Prior} & $1.183$ & $1.192$ & $1.175$ & 50.0\% & $1.00\times$ \\
- & \texttt{Dense-Unorth-Prior} & $1.188$ & $1.159$ & $1.127$ & 66.7\% & $1.00\times$ \\
- & \texttt{Constrained-TS-Acq} & $\mathbf{1.081}$ & $1.105$ & $\mathbf{1.079}$ & 83.3\% & $1.00\times$ \\
- & \texttt{Target-Only-Psi-KG} & $1.084$ & $\mathbf{1.094}$ & $1.098$ & 79.2\% & $1.00\times$ \\
- & \texttt{STOP} & $1.170$ & $1.170$ & $1.170$ & 54.2\% & $1.00\times$ \\
+\multirow{9}{*}{Traffic-21} & \textbf{GP-FTA-KG} & $1.126$ & $1.108$ & $1.093$ & $1.078$ & $1.106$ & 78.1\% & --- \\
+ & \textbf{GP-FTA-TS} & $1.079$ & $1.081$ & $1.064$ & $1.057$ & $1.074$ & 87.5\% & $0.330$ \\
+ & \texttt{RGPE-on-Psi} & $1.083$ & $1.067$ & $1.080$ & $1.058$ & $1.075$ & 87.5\% & $0.277$ \\
+ & \texttt{SCBO-on-Psi} & $1.126$ & $1.129$ & $1.121$ & $1.128$ & $1.183$ & 56.2\% & $0.0009$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.063}$ & $\mathbf{1.050}$ & $\mathbf{1.015}$ & $\mathbf{1.007}$ & $\mathbf{1.007}$ & 100.0\% & $0.002$ \\
+ & \texttt{WarmStart-PatternSearch} & $1.098$ & $1.106$ & $1.105$ & $1.105$ & $1.141$ & 71.9\% & $0.173$ \\
+ & \texttt{Untempered-PriorResid} & $1.124$ & $1.128$ & $1.135$ & $1.149$ & $1.200$ & 59.4\% & $0.0002$ \\
+ & \texttt{Frozen-AFTER} & $1.123$ & $1.122$ & $1.114$ & $1.107$ & $1.136$ & 78.1\% & $0.151$ \\
+ & \texttt{STOP} & $1.112$ & $1.112$ & $1.112$ & $1.112$ & $1.148$ & 71.9\% & $0.110$ \\
+\midrule
+\multirow{9}{*}{OPSD Raw Tails} & \textbf{GP-FTA-KG} & --- & $0.0619$ & --- & $0.0610$ & $\mathbf{0.0637}$ & 60.7\% & --- \\
+ & \textbf{GP-FTA-TS} & --- & $0.0612$ & --- & $0.0616$ & $0.0641$ & 64.3\% & $0.067$ \\
+ & \texttt{RGPE-on-Psi} & --- & $\mathbf{0.0609}$ & --- & $\mathbf{0.0610}$ & $0.0646$ & 46.4\% & $0.831$ \\
+ & \texttt{SCBO-on-Psi} & --- & $0.0651$ & --- & $0.0655$ & $0.0703$ & 25.0\% & $0.067$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & --- & $0.0637$ & --- & $0.0621$ & $0.0643$ & 67.9\% & $0.206$ \\
+ & \texttt{WarmStart-PatternSearch} & --- & $0.0622$ & --- & $0.0654$ & $0.0702$ & 25.0\% & $0.054$ \\
+ & \texttt{SCBO} & --- & $0.0643$ & --- & $0.0645$ & $0.0682$ & 46.4\% & $0.102$ \\
+ & \texttt{RGPE} & --- & $0.0652$ & --- & $0.0668$ & $0.0705$ & 39.3\% & $0.005$ \\
+ & \texttt{STOP} & --- & $0.0642$ & --- & $0.0642$ & $0.0662$ & 75.0\% & $0.067$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}

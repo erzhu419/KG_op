@@ -1,0 +1,725 @@
+{
+  "dataset": "Open Power System Data time_series",
+  "doi": "10.25832/time_series/2020-10-06",
+  "interpolation_limit_hours": 6,
+  "market_metadata": {
+    "AT": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "AT_load_actual_entsoe_transparency",
+        "load_forecast": "AT_load_forecast_entsoe_transparency",
+        "price": "AT_price_day_ahead",
+        "solar": "AT_solar_generation_actual",
+        "wind": "AT_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 4,
+        "solar": 0,
+        "wind": 0
+      },
+      "last_timestamp_hour": 427365,
+      "missing_after_interpolation": {
+        "price": 10922,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 10926,
+        "solar": 0,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 15358,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "DE_LU": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "DE_LU_load_actual_entsoe_transparency",
+        "load_forecast": "DE_LU_load_forecast_entsoe_transparency",
+        "price": "DE_LU_price_day_ahead",
+        "solar": "DE_LU_solar_generation_actual",
+        "wind": "DE_LU_wind_generation_actual"
+      },
+      "first_timestamp_hour": 427320,
+      "interpolated_counts": {
+        "price": 2,
+        "solar": 0,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 15311,
+        "solar": 15317,
+        "wind": 15310
+      },
+      "missing_before_interpolation": {
+        "price": 15313,
+        "solar": 15317,
+        "wind": 15310
+      },
+      "non_hourly_gap_count": 26,
+      "row_count": 10060,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "DK_1": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "DK_1_load_actual_entsoe_transparency",
+        "load_forecast": "DK_1_load_forecast_entsoe_transparency",
+        "price": "DK_1_price_day_ahead",
+        "solar": "DK_1_solar_generation_actual",
+        "wind": "DK_1_wind_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 0,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 0,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "DK_2": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "DK_2_load_actual_entsoe_transparency",
+        "load_forecast": "DK_2_load_forecast_entsoe_transparency",
+        "price": "DK_2_price_day_ahead",
+        "solar": "DK_2_solar_generation_actual",
+        "wind": "DK_2_wind_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 0,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 0,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "GB_GBN": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "GB_GBN_load_actual_entsoe_transparency",
+        "load_forecast": "GB_GBN_load_forecast_entsoe_transparency",
+        "price": "GB_GBN_price_day_ahead",
+        "solar": "GB_GBN_solar_generation_actual",
+        "wind": "GB_GBN_wind_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 18,
+        "solar": 32,
+        "wind": 32
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 12,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 30,
+        "solar": 32,
+        "wind": 32
+      },
+      "non_hourly_gap_count": 5,
+      "row_count": 26193,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IE_sem": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "IE_sem_load_actual_entsoe_transparency",
+        "load_forecast": "IE_sem_load_forecast_entsoe_transparency",
+        "price": "IE_sem_price_day_ahead",
+        "wind": "IE_sem_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 427319,
+      "interpolated_counts": {
+        "price": 14,
+        "wind": 46
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 15324,
+        "wind": 11
+      },
+      "missing_before_interpolation": {
+        "price": 15338,
+        "wind": 57
+      },
+      "non_hourly_gap_count": 6,
+      "row_count": 10815,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IT_CNOR": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "IT_CNOR_load_actual_entsoe_transparency",
+        "load_forecast": "IT_CNOR_load_forecast_entsoe_transparency",
+        "price": "IT_CNOR_price_day_ahead",
+        "solar": "IT_CNOR_solar_generation_actual",
+        "wind": "IT_CNOR_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 9,
+        "wind": 15
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 9,
+        "wind": 15
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IT_CSUD": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "IT_CSUD_load_actual_entsoe_transparency",
+        "load_forecast": "IT_CSUD_load_forecast_entsoe_transparency",
+        "price": "IT_CSUD_price_day_ahead",
+        "solar": "IT_CSUD_solar_generation_actual",
+        "wind": "IT_CSUD_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 9,
+        "wind": 9
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 9,
+        "wind": 9
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IT_NORD": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "IT_NORD_load_actual_entsoe_transparency",
+        "load_forecast": "IT_NORD_load_forecast_entsoe_transparency",
+        "price": "IT_NORD_price_day_ahead",
+        "solar": "IT_NORD_solar_generation_actual",
+        "wind": "IT_NORD_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 8,
+        "solar": 9,
+        "wind": 32
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 2
+      },
+      "missing_before_interpolation": {
+        "price": 8,
+        "solar": 9,
+        "wind": 34
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IT_SARD": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "IT_SARD_load_actual_entsoe_transparency",
+        "load_forecast": "IT_SARD_load_forecast_entsoe_transparency",
+        "price": "IT_SARD_price_day_ahead",
+        "solar": "IT_SARD_solar_generation_actual",
+        "wind": "IT_SARD_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 9,
+        "wind": 9
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 9,
+        "wind": 9
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IT_SICI": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "IT_SICI_load_actual_entsoe_transparency",
+        "load_forecast": "IT_SICI_load_forecast_entsoe_transparency",
+        "price": "IT_SICI_price_day_ahead",
+        "solar": "IT_SICI_solar_generation_actual",
+        "wind": "IT_SICI_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 9,
+        "wind": 147
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 8
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 9,
+        "wind": 155
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "IT_SUD": {
+      "absent_optional_fields": [],
+      "columns": {
+        "load_actual": "IT_SUD_load_actual_entsoe_transparency",
+        "load_forecast": "IT_SUD_load_forecast_entsoe_transparency",
+        "price": "IT_SUD_price_day_ahead",
+        "solar": "IT_SUD_solar_generation_actual",
+        "wind": "IT_SUD_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "solar": 9,
+        "wind": 9
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "solar": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "solar": 9,
+        "wind": 9
+      },
+      "non_hourly_gap_count": 0,
+      "row_count": 26280,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "NO_1": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "NO_1_load_actual_entsoe_transparency",
+        "load_forecast": "NO_1_load_forecast_entsoe_transparency",
+        "price": "NO_1_price_day_ahead",
+        "wind": "NO_1_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 18264
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 18264
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26184,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "NO_2": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "NO_2_load_actual_entsoe_transparency",
+        "load_forecast": "NO_2_load_forecast_entsoe_transparency",
+        "price": "NO_2_price_day_ahead",
+        "wind": "NO_2_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 12
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 60
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 72
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26184,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "NO_3": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "NO_3_load_actual_entsoe_transparency",
+        "load_forecast": "NO_3_load_forecast_entsoe_transparency",
+        "price": "NO_3_price_day_ahead",
+        "wind": "NO_3_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 12
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 60
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 72
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26184,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "NO_4": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "NO_4_load_actual_entsoe_transparency",
+        "load_forecast": "NO_4_load_forecast_entsoe_transparency",
+        "price": "NO_4_price_day_ahead",
+        "wind": "NO_4_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 12
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 60
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 72
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26184,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "NO_5": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "NO_5_load_actual_entsoe_transparency",
+        "load_forecast": "NO_5_load_forecast_entsoe_transparency",
+        "price": "NO_5_price_day_ahead",
+        "wind": "NO_5_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 26280
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 26280
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26184,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "SE_1": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "SE_1_load_actual_entsoe_transparency",
+        "load_forecast": "SE_1_load_forecast_entsoe_transparency",
+        "price": "SE_1_price_day_ahead",
+        "wind": "SE_1_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26256,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "SE_2": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "SE_2_load_actual_entsoe_transparency",
+        "load_forecast": "SE_2_load_forecast_entsoe_transparency",
+        "price": "SE_2_price_day_ahead",
+        "wind": "SE_2_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26256,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "SE_3": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "SE_3_load_actual_entsoe_transparency",
+        "load_forecast": "SE_3_load_forecast_entsoe_transparency",
+        "price": "SE_3_price_day_ahead",
+        "wind": "SE_3_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26256,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    },
+    "SE_4": {
+      "absent_optional_fields": [
+        "solar"
+      ],
+      "columns": {
+        "load_actual": "SE_4_load_actual_entsoe_transparency",
+        "load_forecast": "SE_4_load_forecast_entsoe_transparency",
+        "price": "SE_4_price_day_ahead",
+        "wind": "SE_4_wind_onshore_generation_actual"
+      },
+      "first_timestamp_hour": 412008,
+      "interpolated_counts": {
+        "price": 6,
+        "wind": 0
+      },
+      "last_timestamp_hour": 438287,
+      "missing_after_interpolation": {
+        "price": 0,
+        "wind": 0
+      },
+      "missing_before_interpolation": {
+        "price": 6,
+        "wind": 0
+      },
+      "non_hourly_gap_count": 1,
+      "row_count": 26256,
+      "unused_optional_fields": [
+        "solar",
+        "wind"
+      ]
+    }
+  },
+  "markets": [
+    "AT",
+    "DE_LU",
+    "DK_1",
+    "DK_2",
+    "GB_GBN",
+    "IE_sem",
+    "IT_CNOR",
+    "IT_CSUD",
+    "IT_NORD",
+    "IT_SARD",
+    "IT_SICI",
+    "IT_SUD",
+    "NO_1",
+    "NO_2",
+    "NO_3",
+    "NO_4",
+    "NO_5",
+    "SE_1",
+    "SE_2",
+    "SE_3",
+    "SE_4"
+  ],
+  "official_url": "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv",
+  "outcome_dependent_filtering": false,
+  "output": {
+    "content_length": 5865439,
+    "path": "SC-OLH-KG/data/external/opsd_time_series_extended_v2.npz",
+    "sha256": "b4c35b0c2ddf8e4fc1902bcc6b513d70524a1a5b1f346db90d60866316ad5fa6"
+  },
+  "schema_version": 2,
+  "source": {
+    "content_length": 130339665,
+    "etag": "\"7c4d351-5b0f0bf1710b5;5ca85501df26a",
+    "kind": "https",
+    "last_modified": "Mon, 05 Oct 2020 18:35:28 GMT",
+    "sha256": "6a7f2bc571314cbf9c321cc03437691cd4be95c3a6f075e60ff99e8035c704c8",
+    "source": "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv"
+  },
+  "version": "2020-10-06",
+  "years": [
+    2017,
+    2018,
+    2019
+  ]
+}

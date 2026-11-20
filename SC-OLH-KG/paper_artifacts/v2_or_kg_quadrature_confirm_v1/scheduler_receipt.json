@@ -1,0 +1,200 @@
+{
+  "campaign": "v2_or_kg_quadrature_confirm_v1",
+  "allowed_nodes": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "automatic_requeues": false,
+  "staged_budget": {
+    "source_simulation_calls_new": 0,
+    "source_refits_new": 0,
+    "search_calls_used": 58752,
+    "terminal_verification_calls_used": 107112,
+    "target_call_cap_total": 222912,
+    "anchor_audit_calls_used": 144000,
+    "policy_audit_calls_used": 1176000,
+    "verification_law_audit_calls_used": 0
+  },
+  "completed_stages": {
+    "search_and_verify": [
+      {
+        "scheduler_task": "t224832",
+        "planned_node": "node001",
+        "start": 0,
+        "end": 19,
+        "workers": 10
+      },
+      {
+        "scheduler_task": "t224833",
+        "planned_node": "node002",
+        "start": 19,
+        "end": 101,
+        "workers": 41
+      },
+      {
+        "scheduler_task": "t224834",
+        "planned_node": "node003",
+        "start": 101,
+        "end": 187,
+        "workers": 43
+      },
+      {
+        "scheduler_task": "t224835",
+        "planned_node": "node004",
+        "start": 187,
+        "end": 276,
+        "workers": 45
+      },
+      {
+        "scheduler_task": "t224836",
+        "planned_node": "node005",
+        "start": 276,
+        "end": 356,
+        "workers": 40
+      },
+      {
+        "scheduler_task": "t224837",
+        "planned_node": "node006",
+        "start": 356,
+        "end": 432,
+        "workers": 38
+      }
+    ],
+    "audit_anchors": [
+      {
+        "scheduler_task": "t224838",
+        "planned_node": "node001",
+        "start": 0,
+        "end": 3,
+        "workers": 3
+      },
+      {
+        "scheduler_task": "t224839",
+        "planned_node": "node002",
+        "start": 3,
+        "end": 17,
+        "workers": 14
+      },
+      {
+        "scheduler_task": "t224840",
+        "planned_node": "node003",
+        "start": 17,
+        "end": 31,
+        "workers": 14
+      },
+      {
+        "scheduler_task": "t224841",
+        "planned_node": "node004",
+        "start": 31,
+        "end": 46,
+        "workers": 15
+      },
+      {
+        "scheduler_task": "t224842",
+        "planned_node": "node005",
+        "start": 46,
+        "end": 59,
+        "workers": 13
+      },
+      {
+        "scheduler_task": "t224843",
+        "planned_node": "node006",
+        "start": 59,
+        "end": 72,
+        "workers": 13
+      }
+    ],
+    "audit_and_summarize": [
+      {
+        "scheduler_task": "t224845",
+        "planned_node": "node001",
+        "start": 0,
+        "end": 19,
+        "workers": 10
+      },
+      {
+        "scheduler_task": "t224846",
+        "planned_node": "node002",
+        "start": 19,
+        "end": 101,
+        "workers": 41
+      },
+      {
+        "scheduler_task": "t224847",
+        "planned_node": "node003",
+        "start": 101,
+        "end": 187,
+        "workers": 43
+      },
+      {
+        "scheduler_task": "t224848",
+        "planned_node": "node004",
+        "start": 187,
+        "end": 276,
+        "workers": 45
+      },
+      {
+        "scheduler_task": "t224849",
+        "planned_node": "node005",
+        "start": 276,
+        "end": 356,
+        "workers": 40
+      },
+      {
+        "scheduler_task": "t224850",
+        "planned_node": "node006",
+        "start": 356,
+        "end": 432,
+        "workers": 38
+      }
+    ]
+  },
+  "recorded_worker_fees": {
+    "source_archive": {
+      "attempt_status": {},
+      "attempted_calls_recorded": {},
+      "cpu_time_sec_recorded": 0,
+      "wall_time_sec_recorded": 0,
+      "unfinished_attempts": []
+    },
+    "search_and_verify": {
+      "attempt_status": {
+        "ok": 432
+      },
+      "attempted_calls_recorded": {
+        "search": 58752,
+        "verification": 107112
+      },
+      "cpu_time_sec_recorded": 6939.101979256997,
+      "wall_time_sec_recorded": 7114.332578542642,
+      "unfinished_attempts": []
+    },
+    "audit_anchors": {
+      "attempt_status": {
+        "ok": 72
+      },
+      "attempted_calls_recorded": {
+        "audit": 144000
+      },
+      "cpu_time_sec_recorded": 23.904595808000003,
+      "wall_time_sec_recorded": 24.49659962579608,
+      "unfinished_attempts": []
+    },
+    "audit_and_summarize": {
+      "attempt_status": {
+        "ok": 432
+      },
+      "attempted_calls_recorded": {
+        "audit": 1176000
+      },
+      "cpu_time_sec_recorded": 233.01891228699998,
+      "wall_time_sec_recorded": 242.80204996280372,
+      "unfinished_attempts": []
+    }
+  },
+  "historical_budget_reset": false
+}

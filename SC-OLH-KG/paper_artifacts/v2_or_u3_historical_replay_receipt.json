@@ -1,0 +1,195 @@
+{
+  "scheduler_transport": "scheduleurm.run_on",
+  "read_node": "node002",
+  "scientific_calls": 0,
+  "historical_reserves_reset": false,
+  "automatic_requeues": 0,
+  "readout_json_bytes": 3973,
+  "measured_aggregation_cpu_seconds": 5.486188192,
+  "measured_aggregation_and_packaging_cpu_seconds": 43.851837082,
+  "historical_runtime_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a",
+  "campaigns": {
+    "v2_or_u3_confirm_v1": {
+      "manifest_sha256": "c7acb444b7ff73e0a28c9c4c34a72f0a80e092ebb5b1e9af754050942efbf785",
+      "source_items": 120,
+      "search_items": 7544,
+      "audit_items": 7544,
+      "source_archives": 5,
+      "fitted_prior_files": 5
+    },
+    "v2_or_u3_messy_archive_v1": {
+      "manifest_sha256": "add8c7eef7bfae8c14879359ce3d41895524fb923411b0786ea4220f3934d6f5",
+      "source_items": 60,
+      "search_items": 2108,
+      "audit_items": 2108,
+      "source_archives": 4,
+      "fitted_prior_files": 8
+    },
+    "v2_or_u3_live_sumo_v1": {
+      "manifest_sha256": "01a21e97ed1a239d885ba3b551d176a89ede73f41e20b0907a2822529f53c9c7",
+      "source_items": 24,
+      "search_items": 144,
+      "audit_items": 144,
+      "source_archives": 1,
+      "fitted_prior_files": 1
+    }
+  },
+  "selected_replays": [
+    {
+      "job_id": "sv_Inventory_CrossHorizon_N8_t09_s901_GP-FTA-KG",
+      "passing_slots": [
+        0,
+        1
+      ],
+      "incumbent_guard": true,
+      "selected_slot": 1,
+      "verification_calls": 240,
+      "total_target_calls": 272,
+      "audit_calls": 4000,
+      "status_quo_loss": 2.092340691390149
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_N8_t00_s901_GP-FTA-KG",
+      "passing_slots": [
+        0
+      ],
+      "incumbent_guard": false,
+      "selected_slot": 0,
+      "verification_calls": 112,
+      "total_target_calls": 144,
+      "audit_calls": 4000,
+      "status_quo_loss": 2.294333637235856
+    },
+    {
+      "job_id": "sv_Inventory_CrossHorizon_Messy_N60_t00_s901_GP-FTA-KG",
+      "passing_slots": [
+        2
+      ],
+      "incumbent_guard": false,
+      "selected_slot": 2,
+      "verification_calls": 380,
+      "total_target_calls": 516,
+      "audit_calls": 8000,
+      "status_quo_loss": 2.3904280167924683
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t00_s911_GP-FTA-KG",
+      "passing_slots": [],
+      "incumbent_guard": true,
+      "selected_slot": null,
+      "verification_calls": 380,
+      "total_target_calls": 422,
+      "audit_calls": 160,
+      "status_quo_loss": 0.9901172000267767
+    },
+    {
+      "job_id": "sv_Ingolstadt21_LiveSUMO_Calibrated_N15_t01_s911_GP-FTA-KG",
+      "passing_slots": [
+        2
+      ],
+      "incumbent_guard": false,
+      "selected_slot": 2,
+      "verification_calls": 380,
+      "total_target_calls": 422,
+      "audit_calls": 240,
+      "status_quo_loss": 0.9508988033915076
+    }
+  ],
+  "sumo": {
+    "historical_pythonpath_runtime": "runtimes/cfcmt-sumo122-py310-v1",
+    "historical_scheduler_records_observed": {
+      "source_archive": 4,
+      "search_and_verify": 5,
+      "audit_and_summarize": 12
+    },
+    "observed_engine": "SUMO 1.22.0",
+    "observed_api": 21,
+    "observed_python": "3.10.14",
+    "observed_distributions": {
+      "libsumo": "1.22.0",
+      "traci": "1.22.0",
+      "sumolib": "1.22.0",
+      "eclipse-sumo": "1.22.0"
+    }
+  },
+  "aggregation_attempts": [
+    {
+      "task_ids": [
+        "t224826",
+        "t224827",
+        "t224828"
+      ],
+      "status": "cancelled_while_queued",
+      "reason": "The initial command was over-escaped for scheduler template substitution.",
+      "workers_started": 0,
+      "worker_cpu_seconds": 0,
+      "control_client_cpu_seconds": null
+    },
+    {
+      "task_ids": [
+        "t224829",
+        "t224830",
+        "t224831"
+      ],
+      "status": "passed",
+      "scheduler_terminal_status": "done",
+      "node": "node004",
+      "control_client_cpu_seconds": null,
+      "timestamp_field_excluded": "generated_utc",
+      "readouts": [
+        {
+          "task_id": "t224829",
+          "campaign": "v2_or_u3_confirm_v1",
+          "receipt_rows": 7544,
+          "ledger_fingerprints_match": true,
+          "summary_fields_match": 12,
+          "aggregation_cpu_seconds": 4.191221542
+        },
+        {
+          "task_id": "t224830",
+          "campaign": "v2_or_u3_messy_archive_v1",
+          "receipt_rows": 2108,
+          "ledger_fingerprints_match": true,
+          "summary_fields_match": 12,
+          "aggregation_cpu_seconds": 1.161541707
+        },
+        {
+          "task_id": "t224831",
+          "campaign": "v2_or_u3_live_sumo_v1",
+          "receipt_rows": 144,
+          "ledger_fingerprints_match": true,
+          "summary_fields_match": 12,
+          "aggregation_cpu_seconds": 0.13342494299999985
+        }
+      ]
+    }
+  ],
+  "private_reviewer_archive": {
+    "status": "passed",
+    "scheduler_task": "t224844",
+    "node": "node003",
+    "compressed_bytes": 107850921,
+    "uncompressed_member_bytes": 387250819,
+    "file_members": 19914,
+    "file_categories": {
+      "sealed_manifests": 3,
+      "compact_summaries": 3,
+      "stage_descriptors_and_completions": 18,
+      "source_archive_items": 204,
+      "search_and_verify_items": 9796,
+      "audit_and_summarize_items": 9796,
+      "source_archives": 10,
+      "fitted_priors": 14,
+      "baseline_pretraining_caches": 36,
+      "frozen_python": 28,
+      "support_and_provenance": 4,
+      "readme_and_replay_entry": 2
+    },
+    "gzip_integrity": "passed",
+    "member_names_and_lengths": "exact_match",
+    "worker_cpu_seconds": 38.36564889,
+    "control_client_cpu_seconds": null,
+    "archive_download_bytes": 0,
+    "externally_published": false
+  }
+}

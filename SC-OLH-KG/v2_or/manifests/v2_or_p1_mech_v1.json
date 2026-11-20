@@ -1,0 +1,345 @@
+{
+  "campaign_name": "v2_or_p1_mech_v1",
+  "role": "p1_sequential_mechanism_decomposition_on_dev_tasks",
+  "output_dir": "paper_artifacts/v2_or_p1_mech_v1",
+  "reference_arm": "E_Add_TemplateProposals_TS",
+  "sealed_complete": true,
+  "families": [
+    {
+      "name": "Inventory_P1_Dev",
+      "kind": "inventory",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 1101,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 2101,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.25
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3101
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        15,
+        30,
+        60
+      ],
+      "target_eval_seeds": [
+        201,
+        202
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 710001,
+      "arms": [
+        {
+          "name": "A_PublicPsi_TargetGP_TS",
+          "kind": "tls_olh_kg",
+          "load_prior": false,
+          "model_mode": "target_only",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": false,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "B_Add_SourceWarmStart",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "target_only",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": false,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "C_Add_SourceBasis_WeakPrior",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "source_basis_weak_prior",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "D_Add_FuncMetaPrior",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "Dhvd_Add_SourceNoisePrior",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "E_Add_TemplateProposals_TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "F1_Swap_LegacyVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "v_kg_legacy",
+          "nomination_mode": "legacy_margin"
+        },
+        {
+          "name": "F2_Swap_GatePowerVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "G_WarmStart_PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered",
+          "prior_variant": "default"
+        }
+      ]
+    },
+    {
+      "name": "Queueing_P1_Dev",
+      "kind": "queueing",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 1201,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 2201,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.25
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3201
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        15,
+        30,
+        60
+      ],
+      "target_eval_seeds": [
+        201,
+        202
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 720001,
+      "arms": [
+        {
+          "name": "A_PublicPsi_TargetGP_TS",
+          "kind": "tls_olh_kg",
+          "load_prior": false,
+          "model_mode": "target_only",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": false,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "B_Add_SourceWarmStart",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "target_only",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": false,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "C_Add_SourceBasis_WeakPrior",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "source_basis_weak_prior",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "D_Add_FuncMetaPrior",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": false,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "Dhvd_Add_SourceNoisePrior",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "E_Add_TemplateProposals_TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts"
+        },
+        {
+          "name": "F1_Swap_LegacyVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "v_kg_legacy",
+          "nomination_mode": "legacy_margin"
+        },
+        {
+          "name": "F2_Swap_GatePowerVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "G_WarmStart_PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered",
+          "prior_variant": "default"
+        }
+      ]
+    }
+  ],
+  "sealed_utc": "2026-11-16T18:53:42.763238+00:00",
+  "sealed_execution_code_sha256": "6867d1c041b8bf44a6706d722ddd0fe69be9cd6c17f0dd56bab7a6ace64c281b"
+}

@@ -1,0 +1,300 @@
+{
+  "campaign_name": "v2_or_u1_dev_check_v2",
+  "role": "u1_dev_verification_v2_scale_equivariant_hvd_and_loopll_release",
+  "output_dir": "paper_artifacts/v2_or_u1_dev_check_v2",
+  "reference_arm": "GP-FTA-KG",
+  "families": [
+    {
+      "name": "Inventory_U1_Dev",
+      "kind": "inventory",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 1101,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 8,
+        "seed": 2101,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.25
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3101
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        60
+      ],
+      "target_eval_seeds": [
+        301,
+        302
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 751001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "SCBO-on-Psi",
+          "kind": "scbo_on_psi"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release"
+        }
+      ]
+    },
+    {
+      "name": "OPSD_U1_Dev",
+      "kind": "opsd",
+      "source_config": {
+        "markets": [
+          "DK_1",
+          "NO_1",
+          "NO_2",
+          "SE_1"
+        ],
+        "horizons": [
+          168,
+          240
+        ],
+        "buffer_hours": 24,
+        "clamp_limit": 0.2
+      },
+      "target_config": {
+        "markets": [
+          "IT_CNOR",
+          "IT_CSUD",
+          "DK_1",
+          "NO_1",
+          "NO_2",
+          "SE_1"
+        ],
+        "horizons": [
+          288
+        ],
+        "buffer_hours": 24,
+        "clamp_limit": 0.2
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3301
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        60
+      ],
+      "target_eval_seeds": [
+        301,
+        302
+      ],
+      "audit_replications": 6000,
+      "audit_seed_base": 753001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "SCBO-on-Psi",
+          "kind": "scbo_on_psi"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release"
+        }
+      ]
+    },
+    {
+      "name": "Traffic_U1_Dev",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 1401,
+        "tls_counts": [
+          11,
+          15
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 8,
+        "seed": 2401,
+        "tls_counts": [
+          21
+        ],
+        "shift_scale": 1.35
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3401
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        60
+      ],
+      "target_eval_seeds": [
+        301,
+        302
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 754001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "SCBO-on-Psi",
+          "kind": "scbo_on_psi"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release"
+        }
+      ]
+    }
+  ],
+  "sealed_complete": true,
+  "sealed_utc": "2026-11-17T01:59:55.653195+00:00",
+  "sealed_execution_code_sha256": "cf5a3374cae4b0361ac17845047ea3b9ab7b2cbdebb0aa3b5c5be392e98970a7"
+}

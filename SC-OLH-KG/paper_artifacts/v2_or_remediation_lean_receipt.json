@@ -1,0 +1,148 @@
+{
+  "status": "passed",
+  "scope": "Lean 4 standalone project module rebuild using the pinned third-party dependency cache",
+  "public_lake_fetch_and_build_checked": false,
+  "historical_mathlib_materialization_restored": true,
+  "scientific_calls": 0,
+  "automatic_requeues": 0,
+  "measured_lean_and_recovery_cpu_seconds": 84.830603558,
+  "historical_reserves_reset": false,
+  "attempts": [
+    {
+      "scheduler_task": "t224805",
+      "status": "failed",
+      "proof_module": "SCOLHKG.V2ORProofInterface",
+      "project_olean_reuse": false,
+      "dependency_cache_reused": true,
+      "historical_reserves_reset": false,
+      "scientific_calls": 0,
+      "steps": [
+        {
+          "step": "lean_version",
+          "exit_code": 0,
+          "output_tail": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)\n",
+          "axiom_lines": 0
+        },
+        {
+          "step": "lake_build",
+          "exit_code": 1,
+          "output_tail": "info: mathlib: URL has changed; deleting '[execution-cluster path]' and cloning again\ninfo: mathlib: cloning https://github.com/leanprover-community/mathlib4.git\ninfo: stderr:\ncould not execute external process 'git'\nerror: external command 'git' exited with code 255\n",
+          "axiom_lines": 0
+        }
+      ],
+      "requested_locked_dependencies": {
+        "mathlib": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+        "plausible": "63045536fe95024e6c18fc7b48e03f506701c5bc",
+        "LeanSearchClient": "c5d5b8fe6e5158def25cd28eb94e4141ad97c843",
+        "importGraph": "5c7542ed018c78194f1e2b903eaf6a792b74c03d",
+        "proofwidgets": "24b0d9dc081c5423f8eec7e866c441e5184f29d9",
+        "aesop": "e3cb2f741431ce31bf73549fb52316a57368b06f",
+        "Qq": "f46324995fca5f0483b742e4eb4daec7f4ee50d2",
+        "batteries": "fa08db58b30eb033edcdab331bba000827f9f785",
+        "Cli": "92564e5770e4d09f2d86dfbf8ada1e9c715b384c"
+      },
+      "error": "RuntimeError('lake_build exited 1')",
+      "cpu_seconds": 4.734268,
+      "runner_cpu_seconds": 0.0025379250000000034,
+      "wall_seconds": 33.60863870289177,
+      "child_peak_rss_kib": 451164,
+      "node": "node003"
+    },
+    {
+      "scheduler_task": "t224809",
+      "status": "failed",
+      "node": "node004",
+      "error": "env: /usr/bin/python3: No such file or directory",
+      "proof_process_started": false,
+      "scientific_calls": 0,
+      "dispatch_client_error": "30-second scheduler state lock timeout; background watcher had picked up the task",
+      "launch_client_cpu_seconds": null
+    },
+    {
+      "scheduler_task": "t224813",
+      "status": "failed",
+      "node": "node004",
+      "scientific_calls": 0,
+      "automatic_retries": 0,
+      "historical_reserves_reset": false,
+      "previous_attempt": "t224805",
+      "steps": [
+        {
+          "step": "restore_mathlib_sources",
+          "exit_code": 0,
+          "cpu_seconds": 2.6817130000000002,
+          "wall_seconds": 4.5720844296738505,
+          "output_tail": ""
+        },
+        {
+          "step": "restore_mathlib_oleans",
+          "exit_code": 101,
+          "cpu_seconds": 0.0017920000000000158,
+          "wall_seconds": 0.006348103284835815,
+          "output_tail": "\nthread 'main' (480000) panicked at src/tar.rs:143:73:\ncalled `Result::unwrap()` on an `Err` value: Error(\"expected value\", line: 1, column: 1)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+        }
+      ],
+      "archived_dependency_objects": 2435,
+      "error": "CalledProcessError(101, ['[execution-cluster path]', '--jobs', '1', '-C', '[execution-cluster path]', '-x', '-'], None, None)",
+      "child_cpu_seconds": 2.715313,
+      "runner_cpu_seconds": 0.053294021999999996,
+      "wall_seconds": 4.651902383193374,
+      "child_peak_rss_kib": 9248
+    },
+    {
+      "scheduler_task": "t224814",
+      "status": "passed",
+      "node": "node004",
+      "scientific_calls": 0,
+      "automatic_retries": 0,
+      "historical_reserves_reset": false,
+      "previous_attempt": "t224813",
+      "extracted_source_reused": true,
+      "steps": [
+        {
+          "step": "restore_mathlib_oleans",
+          "exit_code": 0,
+          "cpu_seconds": 36.725079,
+          "wall_seconds": 64.99507276248187,
+          "output_tail": ""
+        },
+        {
+          "step": "rebuild_standalone_declarations",
+          "exit_code": 0,
+          "cpu_seconds": 40.530337,
+          "wall_seconds": 47.492813372053206,
+          "output_tail": "211 \\u03c9f, wf \\u03c9f * muNextF \\u03c9f x = muCurrF x)\\n  (hGateTower : \\u2200 x \\u2208 S, \\u2211 \\u03c9g, wg \\u03c9g * pGateNext \\u03c9g x = pGateCurr x) (hGateNonneg : \\u2200 x \\u2208 S, 0 \\u2264 pGateCurr x) (x : \\u03b1) :\\n  x \\u2208 S \\u2192\\n    max (jRef - muCurrF x) 0 * pGateCurr x \\u2264\\n      \\u2211 \\u03c9f, \\u2211 \\u03c9g, wf \\u03c9f * wg \\u03c9g * S.sup' hne fun x' => max (jRef - muNextF \\u03c9f x') 0 * pGateNext \\u03c9g x'\\nSCOLHKG.V2OR.SequentialTheory.bgp_kg_lipschitz_in_step_innovations.{u_1, u_2} {\\u03a9 : Type u_1} {\\u03b1 : Type u_2} [Fintype \\u03a9]\\n  (S : Finset \\u03b1) (hne : S.Nonempty) (w : \\u03a9 \\u2192 \\u211d) (muNext pNext : \\u03a9 \\u2192 \\u03b1 \\u2192 \\u211d) (jRef epsF epsG Bf : \\u211d)\\n  (muCurr pCurr : \\u03b1 \\u2192 \\u211d) (hWNonneg : \\u2200 (\\u03c9 : \\u03a9), 0 \\u2264 w \\u03c9) (hWSum : \\u2211 \\u03c9, w \\u03c9 = 1)\\n  (hMuStep : \\u2200 (\\u03c9 : \\u03a9), \\u2200 x' \\u2208 S, |muNext \\u03c9 x' - muCurr x'| \\u2264 epsF)\\n  (hPStep : \\u2200 (\\u03c9 : \\u03a9), \\u2200 x' \\u2208 S, |pNext \\u03c9 x' - pCurr x'| \\u2264 epsG) (hPNext0 : \\u2200 (\\u03c9 : \\u03a9), \\u2200 x' \\u2208 S, 0 \\u2264 pNext \\u03c9 x')\\n  (hPNext1 : \\u2200 (\\u03c9 : \\u03a9), \\u2200 x' \\u2208 S, pNext \\u03c9 x' \\u2264 1) (hBfBound : \\u2200 x' \\u2208 S, max (jRef - muCurr x') 0 \\u2264 Bf)\\n  (hEpsF0 : 0 \\u2264 epsF) (hEpsG0 : 0 \\u2264 epsG) :\\n  ((\\u2211 \\u03c9, w \\u03c9 * S.sup' hne fun x' => max (jRef - muNext \\u03c9 x') 0 * pNext \\u03c9 x') -\\n      S.sup' hne fun x' => max (jRef - muCurr x') 0 * pCurr x') \\u2264\\n    epsF + Bf * epsG\\nSCOLHKG.V2OR.SequentialTheory.greedy_bgp_kg_cannot_starve_informative_arm.{u_1} {\\u03b1 : Type u_1} (acq : \\u03b1 \\u2192 \\u211d)\\n  (visits : \\u03b1 \\u2192 \\u2115) (xUnder xChosen : \\u03b1) (gamma : \\u211d) (M_cap : \\u2115) (hInformative : gamma \\u2264 acq xUnder)\\n  (hGreedy : acq xUnder \\u2264 acq xChosen) (hHighVisitsVanish : \\u2200 (x : \\u03b1), M_cap \\u2264 visits x \\u2192 acq x < gamma) :\\n  visits xChosen < M_cap\\nSCOLHKG.V2OR.SequentialTheory.three_slot_cascade_bellman_identity (p0 J0 p1 J1 p2 J2 Jsq : \\u211d) :\\n  SCOLHKG.V2OR.SequentialTheory.threeSlotCascadeLoss p0 J0 p1 J1 p2 J2 Jsq =\\n    SCOLHKG.V2OR.SequentialTheory.slotOneContinuationLoss p1 J1 p2 J2 Jsq -\\n      p0 * (SCOLHKG.V2OR.SequentialTheory.slotOneContinuationLoss p1 J1 p2 J2 Jsq - J0)\\nSCOLHKG.V2OR.SequentialTheory.bellman_slot0_minimizes_expected_deployed_loss (p0 J0 p0' J0' p1 J1 p2 J2 Jsq : \\u211d)\\n  (hImprove0 : J0 \\u2264 SCOLHKG.V2OR.SequentialTheory.slotOneContinuationLoss p1 J1 p2 J2 Jsq)\\n  (hImprove0' : J0' \\u2264 SCOLHKG.V2OR.SequentialTheory.slotOneContinuationLoss p1 J1 p2 J2 Jsq) :\\n  SCOLHKG.V2OR.SequentialTheory.threeSlotCascadeLoss p0 J0 p1 J1 p2 J2 Jsq \\u2264\\n      SCOLHKG.V2OR.SequentialTheory.threeSlotCascadeLoss p0' J0' p1 J1 p2 J2 Jsq \\u2194\\n    max (SCOLHKG.V2OR.SequentialTheory.slotOneContinuationLoss p1 J1 p2 J2 Jsq - J0') 0 * p0' \\u2264\\n      max (SCOLHKG.V2OR.SequentialTheory.slotOneContinuationLoss p1 J1 p2 J2 Jsq - J0) 0 * p0\\n'SCOLHKG.V2OR.FunctionalTransferRisk.effective_mismatch_second_moment_with_finite_sources' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.FunctionalTransferRisk.transfer_dominates_target_only_iff' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.FunctionalTransferRisk.grid_with_release_bounded_by_target_only' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.FunctionalTransferRisk.binomial_one_violation_gate_power_bound' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.SequentialTheory.sure_selector_uniform_shift_excess_loss_bound' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.SequentialTheory.expected_unit_projection_noise_le_sigma_div_rank' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.SequentialTheory.bgp_kg_nonneg_from_posterior_tower' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.SequentialTheory.bgp_kg_lipschitz_in_step_innovations' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.SequentialTheory.greedy_bgp_kg_cannot_starve_informative_arm' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.SequentialTheory.bellman_slot0_minimizes_expected_deployed_loss' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.TemperedHVD.within_policy_ssq_shift_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]\\n'SCOLHKG.V2OR.VerificationKGAmortization.v2_terminal_five_percent_asymmetric_spend' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n'SCOLHKG.V2OR.VerificationKGAmortization.amortized_cost_le_cold_start_iff' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\\n\",\n  \"error\": null,\n  \"result_json\": \"[execution-cluster path]\"\n}\n"
+        }
+      ],
+      "archived_dependency_objects": 2435,
+      "original_mathlib_cache_restored": true,
+      "project_olean_reuse": false,
+      "lock": {
+        "mathlib": "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f",
+        "plausible": "63045536fe95024e6c18fc7b48e03f506701c5bc",
+        "LeanSearchClient": "c5d5b8fe6e5158def25cd28eb94e4141ad97c843",
+        "importGraph": "5c7542ed018c78194f1e2b903eaf6a792b74c03d",
+        "proofwidgets": "24b0d9dc081c5423f8eec7e866c441e5184f29d9",
+        "aesop": "e3cb2f741431ce31bf73549fb52316a57368b06f",
+        "Qq": "f46324995fca5f0483b742e4eb4daec7f4ee50d2",
+        "batteries": "fa08db58b30eb033edcdab331bba000827f9f785",
+        "Cli": "92564e5770e4d09f2d86dfbf8ada1e9c715b384c"
+      },
+      "lean_version": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
+      "fresh_modules": [
+        "SCOLHKG.V2OR.DebiasedSubspace",
+        "SCOLHKG.V2OR.TemperedHVD",
+        "SCOLHKG.V2OR.VerificationKGAmortization",
+        "SCOLHKG.V2OR.FunctionalTransferRisk",
+        "SCOLHKG.V2OR.SequentialTheory",
+        "SCOLHKG.V2ORProofInterface"
+      ],
+      "axiom_declarations": 13,
+      "proof_cpu_seconds": 40.466423,
+      "child_cpu_seconds": 77.286832,
+      "runner_cpu_seconds": 0.038358611,
+      "wall_seconds": 112.52686522249132,
+      "child_peak_rss_kib": 1428948
+    }
+  ]
+}

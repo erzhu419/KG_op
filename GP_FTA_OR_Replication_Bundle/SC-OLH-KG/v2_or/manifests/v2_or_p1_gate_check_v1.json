@@ -1,0 +1,277 @@
+{
+  "campaign_name": "v2_or_p1_gate_check_v1",
+  "role": "p1_dev_decision_gate_scale_equivariant_release_and_prior_ablations",
+  "output_dir": "paper_artifacts/v2_or_p1_gate_check_v1",
+  "reference_arm": "H1_ScaleEquiv_LocalDCT_GateVKG",
+  "sealed_complete": true,
+  "families": [
+    {
+      "name": "Inventory_P1_Dev",
+      "kind": "inventory",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 1101,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 2101,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.25
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3101
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        15,
+        30,
+        60
+      ],
+      "target_eval_seeds": [
+        201,
+        202
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 710001,
+      "arms": [
+        {
+          "name": "H1_ScaleEquiv_LocalDCT_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "H2_ScaleEquiv_Templates_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "H3_ScaleEquiv_LocalDCT_GateTS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "Abl_Undebiased_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "prior_variant": "no_debias",
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "Abl_NoEmpRperp_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "use_empirical_r_perp": false,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        }
+      ]
+    },
+    {
+      "name": "Queueing_P1_Dev",
+      "kind": "queueing",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 1201,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 2201,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.25
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 3201
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        8,
+        15,
+        30,
+        60
+      ],
+      "target_eval_seeds": [
+        201,
+        202
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 720001,
+      "arms": [
+        {
+          "name": "H1_ScaleEquiv_LocalDCT_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "H2_ScaleEquiv_Templates_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "source_templates",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "H3_ScaleEquiv_LocalDCT_GateTS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "Abl_Undebiased_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "prior_variant": "no_debias",
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        },
+        {
+          "name": "Abl_NoEmpRperp_GateVKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_adaptive",
+          "init_mode": "source_warmstart",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "use_empirical_r_perp": false,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "binomial_gate_power"
+        }
+      ]
+    }
+  ],
+  "sealed_utc": "2026-11-16T19:42:21.345539+00:00",
+  "sealed_execution_code_sha256": "75f633b6f2de6467cb2d9c79dc4756cfd8ff2a86d6146ea8983d958c62c2d236"
+}

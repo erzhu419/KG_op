@@ -51,12 +51,13 @@ def _add_sumo_tools_to_path() -> None:
             sys.path.insert(0, path)
 
 
-_add_sumo_tools_to_path()
-
 # ── TraCI backend import ──────────────────────────────────────────────────────
 _BACKEND_PREF = os.environ.get("INGOLSTADT21_SUMO_BACKEND", "auto").strip().lower()
 if _BACKEND_PREF not in {"auto", "libsumo", "traci"}:
     raise ValueError("INGOLSTADT21_SUMO_BACKEND must be auto, libsumo, or traci")
+
+if _BACKEND_PREF != "libsumo":
+    _add_sumo_tools_to_path()
 
 _BACKEND = None
 if _BACKEND_PREF in {"auto", "libsumo"}:
@@ -65,7 +66,10 @@ if _BACKEND_PREF in {"auto", "libsumo"}:
         _BACKEND = "libsumo"
     except ImportError:
         if _BACKEND_PREF == "libsumo":
-            raise
+            # Allow an installed wheel to select its own version ahead of system tools.
+            _add_sumo_tools_to_path()
+            import libsumo as traci
+            _BACKEND = "libsumo"
 
 if _BACKEND is None:
     try:

@@ -1,0 +1,771 @@
+{
+  "campaign_name": "v2_or_u3_messy_archive_v1",
+  "role": "preregistered_stage_u3_industrial_messy_archive_robustness",
+  "output_dir": "paper_artifacts/v2_or_u3_messy_archive_v1",
+  "reference_arm": "GP-FTA-KG",
+  "families": [
+    {
+      "name": "Inventory_CrossHorizon_Messy",
+      "kind": "inventory",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5101,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 8101,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7601,
+        "per_task_budgets": [
+          26,
+          44,
+          88,
+          34,
+          96,
+          52
+        ],
+        "solver_subsets_per_task": [
+          [
+            "penalty_spsa",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "constrained_nsga2"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "heuristic_powell"
+          ]
+        ],
+        "mixed_reps_choices": [
+          1,
+          1,
+          2,
+          4
+        ],
+        "source_alpha_overrides": [
+          0.02,
+          0.1,
+          0.05,
+          0.08,
+          0.03,
+          0.1
+        ]
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        15,
+        60
+      ],
+      "target_eval_seeds": [
+        901,
+        902
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 961001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-NoDebias",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "no_debias"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "WarmStart-PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "RGPE",
+          "kind": "rgpe"
+        },
+        {
+          "name": "HyperBO-EB",
+          "kind": "hyperbo_eb"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release",
+          "prior_variant": "default"
+        }
+      ]
+    },
+    {
+      "name": "Queueing_CrossHorizon_Messy",
+      "kind": "queueing",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5201,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 8201,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7701,
+        "per_task_budgets": [
+          26,
+          44,
+          88,
+          34,
+          96,
+          52
+        ],
+        "solver_subsets_per_task": [
+          [
+            "penalty_spsa",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "constrained_nsga2"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "heuristic_powell"
+          ]
+        ],
+        "mixed_reps_choices": [
+          1,
+          1,
+          2,
+          4
+        ],
+        "source_alpha_overrides": [
+          0.02,
+          0.1,
+          0.05,
+          0.08,
+          0.03,
+          0.1
+        ]
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        15,
+        60
+      ],
+      "target_eval_seeds": [
+        901,
+        902
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 962001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-NoDebias",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "no_debias"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "WarmStart-PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "RGPE",
+          "kind": "rgpe"
+        },
+        {
+          "name": "HyperBO-EB",
+          "kind": "hyperbo_eb"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release",
+          "prior_variant": "default"
+        }
+      ]
+    },
+    {
+      "name": "OPSD_EuroGrid_Messy",
+      "kind": "opsd",
+      "source_config": {
+        "markets": [
+          "DK_1",
+          "NO_1",
+          "NO_2",
+          "SE_1",
+          "IT_CNOR",
+          "IT_CSUD"
+        ],
+        "horizons": [
+          168,
+          240
+        ],
+        "buffer_hours": 24,
+        "clamp_limit": 0.2
+      },
+      "target_config": {
+        "markets": [
+          "DK_2",
+          "GB_GBN",
+          "IT_NORD",
+          "IT_SUD",
+          "IT_SARD",
+          "IT_SICI",
+          "NO_3",
+          "NO_4",
+          "NO_5",
+          "SE_2",
+          "SE_3",
+          "SE_4",
+          "IE_sem",
+          "AT"
+        ],
+        "horizons": [
+          336
+        ],
+        "buffer_hours": 24,
+        "clamp_limit": 0.2
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7801,
+        "per_task_budgets": [
+          26,
+          44,
+          88,
+          34,
+          96,
+          52
+        ],
+        "solver_subsets_per_task": [
+          [
+            "penalty_spsa",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "constrained_nsga2"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "heuristic_powell"
+          ]
+        ],
+        "mixed_reps_choices": [
+          1,
+          1,
+          2,
+          4
+        ],
+        "source_alpha_overrides": [
+          0.02,
+          0.1,
+          0.05,
+          0.08,
+          0.03,
+          0.1
+        ]
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        15,
+        60
+      ],
+      "target_eval_seeds": [
+        901,
+        902
+      ],
+      "audit_replications": 8000,
+      "audit_seed_base": 963001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-NoDebias",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "no_debias"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "WarmStart-PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "RGPE",
+          "kind": "rgpe"
+        },
+        {
+          "name": "HyperBO-EB",
+          "kind": "hyperbo_eb"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release",
+          "prior_variant": "default"
+        }
+      ]
+    },
+    {
+      "name": "Traffic_Ingolstadt_Messy",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5401,
+        "tls_counts": [
+          11,
+          15
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 16,
+        "seed": 8401,
+        "tls_counts": [
+          21
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7901,
+        "per_task_budgets": [
+          26,
+          44,
+          88,
+          34,
+          96,
+          52
+        ],
+        "solver_subsets_per_task": [
+          [
+            "penalty_spsa",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "constrained_nsga2"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_cmaes"
+          ],
+          [
+            "penalty_spsa",
+            "constrained_nsga2",
+            "heuristic_powell"
+          ],
+          [
+            "constrained_cmaes",
+            "heuristic_powell"
+          ]
+        ],
+        "mixed_reps_choices": [
+          1,
+          1,
+          2,
+          4
+        ],
+        "source_alpha_overrides": [
+          0.02,
+          0.1,
+          0.05,
+          0.08,
+          0.03,
+          0.1
+        ]
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        },
+        "no_debias": {
+          "active_rank": 8,
+          "enable_debiasing": false,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        15,
+        60
+      ],
+      "target_eval_seeds": [
+        901,
+        902
+      ],
+      "audit_replications": 4000,
+      "audit_seed_base": 964001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-NoDebias",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "no_debias"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "WarmStart-PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "RGPE",
+          "kind": "rgpe"
+        },
+        {
+          "name": "HyperBO-EB",
+          "kind": "hyperbo_eb"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release",
+          "prior_variant": "default"
+        }
+      ]
+    }
+  ],
+  "sealed_complete": true,
+  "sealed_utc": "2026-11-17T10:02:04.698219+00:00",
+  "sealed_execution_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a"
+}

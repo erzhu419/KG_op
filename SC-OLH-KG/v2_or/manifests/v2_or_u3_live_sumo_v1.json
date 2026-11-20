@@ -1,0 +1,189 @@
+{
+  "campaign_name": "v2_or_u3_live_sumo_v1",
+  "role": "preregistered_stage_u3_calibrated_live_sumo_with_on_psi_controls",
+  "output_dir": "paper_artifacts/v2_or_u3_live_sumo_v1",
+  "reference_arm": "GP-FTA-KG",
+  "families": [
+    {
+      "name": "Traffic_Subnetwork_Archive_P2",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 8501,
+        "tls_counts": [
+          11,
+          15
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 0,
+        "seed": 8599,
+        "tls_counts": [
+          21
+        ],
+        "shift_scale": 1.0
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 8601
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "online_step_budgets": [],
+      "target_eval_seeds": [],
+      "arms": []
+    },
+    {
+      "name": "Ingolstadt21_LiveSUMO_Calibrated",
+      "kind": "traffic_live_sumo",
+      "reuse_archive_from_family": "Traffic_Subnetwork_Archive_P2",
+      "source_config": {
+        "n_tasks": 0
+      },
+      "target_config": {
+        "n_tasks": 8,
+        "taus": [
+          1.032,
+          1.038,
+          1.044,
+          1.05,
+          1.035,
+          1.042,
+          1.048,
+          1.054
+        ],
+        "weights_list": [
+          [
+            0.5,
+            0.5
+          ],
+          [
+            0.65,
+            0.35
+          ],
+          [
+            0.35,
+            0.65
+          ],
+          [
+            0.55,
+            0.45
+          ],
+          [
+            0.6,
+            0.4
+          ],
+          [
+            0.45,
+            0.55
+          ],
+          [
+            0.7,
+            0.3
+          ],
+          [
+            0.5,
+            0.5
+          ]
+        ],
+        "baseline_override": {
+          "T0": 299.444003424391,
+          "A0": 0.26785757370870295,
+          "E0": 3631.295889103507
+        }
+      },
+      "n0_init": 6,
+      "batch_reps": 2,
+      "pool_size": 120,
+      "online_step_budgets": [
+        15
+      ],
+      "target_eval_seeds": [
+        911,
+        912
+      ],
+      "audit_replications": 80,
+      "audit_seed_base": 994001,
+      "arms": [
+        {
+          "name": "GP-FTA-KG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-TS",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "hybrid_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "SCBO-on-Psi",
+          "kind": "scbo_on_psi"
+        },
+        {
+          "name": "RGPE-on-Psi",
+          "kind": "rgpe_on_psi"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "WarmStart-PatternSearch",
+          "kind": "warmstart_pattern_search"
+        },
+        {
+          "name": "STOP",
+          "kind": "stop",
+          "model_mode": "tempered_full_release",
+          "prior_variant": "default"
+        },
+        {
+          "name": "SCBO",
+          "kind": "scbo"
+        },
+        {
+          "name": "RGPE",
+          "kind": "rgpe"
+        }
+      ]
+    }
+  ],
+  "sealed_complete": true,
+  "sealed_utc": "2026-11-19T16:54:11.393437+00:00",
+  "sealed_execution_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a"
+}

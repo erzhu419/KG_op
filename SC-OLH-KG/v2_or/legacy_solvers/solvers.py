@@ -101,24 +101,44 @@ class TrajectoryArchiveRecorder:
         return min(self.records, key=lambda r: _deb_feasible_key(r, self.problem.alpha))
 
 
+def _draw_reps(
+    rng: np.random.Generator,
+    default_reps: int,
+    reps_schedule: Sequence[int] | None,
+    rem_budget: int,
+) -> int:
+    if rem_budget <= 0:
+        return 0
+    if reps_schedule is not None and len(reps_schedule) > 0:
+        chosen = int(rng.choice(np.asarray(reps_schedule, dtype=int)))
+        return max(1, min(chosen, int(rem_budget)))
+    return max(1, min(int(default_reps), int(rem_budget)))
+
+
 def run_penalty_spsa(
     problem: BaseDynamicORProblem,
     *,
     budget_calls: int,
     seed: int,
     reps_per_eval: int = 3,
+    reps_schedule: Sequence[int] | None = None,
+    solver_alpha: float | None = None,
 ) -> TrajectoryArchiveRecorder:
     """Spall (1992) SPSA with adaptive chance-constraint exterior penalty."""
     rng = np.random.default_rng(seed)
     rec = TrajectoryArchiveRecorder(problem, "penalty_spsa")
     d = problem.d
+    eff_alpha = float(solver_alpha) if solver_alpha is not None else float(problem.alpha)
     # Start from a jittered operational anchor or mid-box point
     x = np.clip(problem.domain_heuristic_anchor() + rng.normal(0.0, 0.12, size=d), 0.05, 0.95)
-    rec.evaluate(x, min(reps_per_eval, budget_calls), rng)
+    r0 = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls)
+    if r0 >= 1:
+        rec.evaluate(x, r0, rng)
 
     penalty_weight = 6.0
     k = 0
-    while rec.total_calls + 2 * reps_per_eval <= budget_calls:
+    min_pair = 2 if (reps_schedule is not None and min(reps_schedule) == 1) else 2 * reps_per_eval
+    while rec.total_calls + min_pair <= budget_calls:
         k += 1
         ck = min(0.14 / ((k + 1.0) ** 0.101), 0.15)
         ak = 0.08 / ((k + 8.0) ** 0.602)
@@ -126,11 +146,13 @@ def run_penalty_spsa(
         x_plus = np.clip(x + ck * delta, 0.0, 1.0)
         x_minus = np.clip(x - ck * delta, 0.0, 1.0)
 
-        r_plus = rec.evaluate(x_plus, reps_per_eval, rng)
-        r_minus = rec.evaluate(x_minus, reps_per_eval, rng)
+        rp = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls - 1)
+        rm = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls - rp)
+        r_plus = rec.evaluate(x_plus, rp, rng)
+        r_minus = rec.evaluate(x_minus, rm, rng)
 
-        m_plus = max(_empirical_chance_margin(r_plus, problem.alpha), 0.0)
-        m_minus = max(_empirical_chance_margin(r_minus, problem.alpha), 0.0)
+        m_plus = max(_empirical_chance_margin(r_plus, eff_alpha), 0.0)
+        m_minus = max(_empirical_chance_margin(r_minus, eff_alpha), 0.0)
         L_plus = r_plus.mean_obj + penalty_weight * (m_plus + 2.0 * m_plus ** 2)
         L_minus = r_minus.mean_obj + penalty_weight * (m_minus + 2.0 * m_minus ** 2)
 
@@ -141,8 +163,9 @@ def run_penalty_spsa(
             penalty_weight = min(penalty_weight * 1.20, 60.0)
 
         # Periodically evaluate current center with slightly higher replication count
-        if k % 3 == 0 and rec.total_calls + (reps_per_eval + 2) <= budget_calls:
-            rec.evaluate(x, reps_per_eval + 2, rng)
+        rc = (reps_per_eval + 2) if reps_schedule is None else _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls)
+        if k % 3 == 0 and rc >= 1 and rec.total_calls + rc <= budget_calls:
+            rec.evaluate(x, rc, rng)
 
     rem = budget_calls - rec.total_calls
     if rem >= 1:
@@ -157,11 +180,14 @@ def run_constrained_cmaes(
     seed: int,
     reps_per_eval: int = 3,
     pop_size: int = 8,
+    reps_schedule: Sequence[int] | None = None,
+    solver_alpha: float | None = None,
 ) -> TrajectoryArchiveRecorder:
     """Diagonal/low-ranksep-CMA-ES with Deb's stochastic feasibility ranking."""
     rng = np.random.default_rng(seed)
     rec = TrajectoryArchiveRecorder(problem, "constrained_cmaes")
     d = problem.d
+    eff_alpha = float(solver_alpha) if solver_alpha is not None else float(problem.alpha)
     mu = max(pop_size // 2, 2)
     weights = np.log(mu + 0.5) - np.log(np.arange(1, mu + 1))
     weights /= np.sum(weights)
@@ -175,20 +201,24 @@ def run_constrained_cmaes(
     c_sigma = (mu_eff + 2.0) / (d + mu_eff + 5.0)
     c_c = 4.0 / (d + 4.0)
     c_cov = 2.0 / ((d + 1.4) ** 2)
+    min_step = 1 if (reps_schedule is not None and min(reps_schedule) == 1) else reps_per_eval
 
-    while rec.total_calls + reps_per_eval <= budget_calls:
+    while rec.total_calls + min_step <= budget_calls:
         gen_evals: list[tuple[np.ndarray, np.ndarray, SufficientStatsRecord]] = []
         for _ in range(pop_size):
-            if rec.total_calls + reps_per_eval > budget_calls:
+            if rec.total_calls + min_step > budget_calls:
+                break
+            r_draw = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls)
+            if r_draw < 1:
                 break
             z = rng.normal(0.0, 1.0, size=d)
             cand = np.clip(mean + sigma * diag_std * z, 0.0, 1.0)
-            ev = rec.evaluate(cand, reps_per_eval, rng)
+            ev = rec.evaluate(cand, r_draw, rng)
             gen_evals.append((cand, z, ev))
         if len(gen_evals) < mu:
             break
 
-        gen_evals.sort(key=lambda item: _deb_feasible_key(item[2], problem.alpha))
+        gen_evals.sort(key=lambda item: _deb_feasible_key(item[2], eff_alpha))
         elites = gen_evals[:mu]
         old_mean = mean.copy()
         mean = np.sum([w * item[0] for w, item in zip(weights, elites)], axis=0)
@@ -214,11 +244,15 @@ def run_constrained_nsga2(
     seed: int,
     reps_per_eval: int = 3,
     pop_size: int = 10,
+    reps_schedule: Sequence[int] | None = None,
+    solver_alpha: float | None = None,
 ) -> TrajectoryArchiveRecorder:
     """SBX + polynomial-mutation evolutionary optimizer with feasibility tournament."""
     rng = np.random.default_rng(seed)
     rec = TrajectoryArchiveRecorder(problem, "constrained_nsga2")
     d = problem.d
+    eff_alpha = float(solver_alpha) if solver_alpha is not None else float(problem.alpha)
+    min_step = 1 if (reps_schedule is not None and min(reps_schedule) == 1) else reps_per_eval
 
     pop: list[SufficientStatsRecord] = []
     # Seed population with Sobol-like stratified points + jittered domain heuristic
@@ -229,29 +263,31 @@ def run_constrained_nsga2(
         init_pts.append(np.clip(base, 0.0, 1.0))
 
     for x0 in init_pts:
-        if rec.total_calls + reps_per_eval > budget_calls:
+        if rec.total_calls + min_step > budget_calls:
             break
-        pop.append(rec.evaluate(x0, reps_per_eval, rng))
+        r_draw = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls)
+        pop.append(rec.evaluate(x0, r_draw, rng))
 
-    while len(pop) >= 4 and rec.total_calls + reps_per_eval <= budget_calls:
+    while len(pop) >= 4 and rec.total_calls + min_step <= budget_calls:
         offspring: list[SufficientStatsRecord] = []
         for _ in range(pop_size // 2):
-            if rec.total_calls + reps_per_eval > budget_calls:
+            if rec.total_calls + min_step > budget_calls:
                 break
+            r_draw = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls)
             idx_a, idx_b = rng.choice(len(pop), size=2, replace=False)
-            p1 = pop[idx_a] if _deb_feasible_key(pop[idx_a], problem.alpha) <= _deb_feasible_key(pop[idx_b], problem.alpha) else pop[idx_b]
+            p1 = pop[idx_a] if _deb_feasible_key(pop[idx_a], eff_alpha) <= _deb_feasible_key(pop[idx_b], eff_alpha) else pop[idx_b]
             idx_c, idx_d = rng.choice(len(pop), size=2, replace=False)
-            p2 = pop[idx_c] if _deb_feasible_key(pop[idx_c], problem.alpha) <= _deb_feasible_key(pop[idx_d], problem.alpha) else pop[idx_d]
+            p2 = pop[idx_c] if _deb_feasible_key(pop[idx_c], eff_alpha) <= _deb_feasible_key(pop[idx_d], eff_alpha) else pop[idx_d]
 
             alpha_blend = rng.uniform(-0.15, 1.15, size=d)
             child = np.clip(alpha_blend * p1.x_norm + (1.0 - alpha_blend) * p2.x_norm, 0.0, 1.0)
             mut_mask = rng.uniform(0.0, 1.0, size=d) < max(2.0 / d, 0.08)
             if np.any(mut_mask):
                 child[mut_mask] = np.clip(child[mut_mask] + rng.normal(0.0, 0.12, size=int(np.sum(mut_mask))), 0.0, 1.0)
-            offspring.append(rec.evaluate(child, reps_per_eval, rng))
+            offspring.append(rec.evaluate(child, r_draw, rng))
 
         combined = pop + offspring
-        combined.sort(key=lambda r: _deb_feasible_key(r, problem.alpha))
+        combined.sort(key=lambda r: _deb_feasible_key(r, eff_alpha))
         pop = combined[:pop_size]
 
     return rec
@@ -263,13 +299,18 @@ def run_heuristic_powell(
     budget_calls: int,
     seed: int,
     reps_per_eval: int = 4,
+    reps_schedule: Sequence[int] | None = None,
+    solver_alpha: float | None = None,
 ) -> TrajectoryArchiveRecorder:
     """Practitioner operational heuristic + low-frequency block pattern search."""
     rng = np.random.default_rng(seed)
     rec = TrajectoryArchiveRecorder(problem, "heuristic_powell")
     d = problem.d
+    eff_alpha = float(solver_alpha) if solver_alpha is not None else float(problem.alpha)
+    min_step = 1 if (reps_schedule is not None and min(reps_schedule) == 1) else reps_per_eval
     anchor = problem.domain_heuristic_anchor()
-    best_rec = rec.evaluate(anchor, reps_per_eval, rng)
+    r0 = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls)
+    best_rec = rec.evaluate(anchor, r0, rng)
     best_x = anchor.copy()
 
     # Construct practitioner low-dimensional adjustment directions (level, tilt, peak boost, smoothing)
@@ -289,16 +330,17 @@ def run_heuristic_powell(
 
     step_size = 0.14
     dir_idx = 0
-    while rec.total_calls + reps_per_eval <= budget_calls:
+    while rec.total_calls + min_step <= budget_calls:
         vec = directions[dir_idx % len(directions)]
         vec = vec / max(np.linalg.norm(vec) / np.sqrt(d), 1e-8)
         improved = False
         for sign in (1.0, -1.0):
-            if rec.total_calls + reps_per_eval > budget_calls:
+            if rec.total_calls + min_step > budget_calls:
                 break
+            r_draw = _draw_reps(rng, reps_per_eval, reps_schedule, budget_calls - rec.total_calls)
             cand = np.clip(best_x + sign * step_size * vec + rng.normal(0.0, 0.015, size=d), 0.0, 1.0)
-            ev = rec.evaluate(cand, reps_per_eval, rng)
-            if _deb_feasible_key(ev, problem.alpha) < _deb_feasible_key(best_rec, problem.alpha):
+            ev = rec.evaluate(cand, r_draw, rng)
+            if _deb_feasible_key(ev, eff_alpha) < _deb_feasible_key(best_rec, eff_alpha):
                 best_rec = ev
                 best_x = cand
                 improved = True

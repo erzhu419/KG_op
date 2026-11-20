@@ -1,17 +1,28 @@
 \begin{table}[htbp]
 \centering
-\caption{Cross-Fidelity Microscopic \texttt{libsumo} Validation on Full 21-Intersection \texttt{Ingolstadt21} Corridor ($d_t=44$, 4,283 Trips, Tight HBEFA3 $\mathrm{CO}_2$ Cap $\tau \in [1.015, 1.025]$; Transfer from Subnetwork DES Archive $d_s \in \{22, 30\}$, $N=15$)}\label{tab:live_sumo}
+\caption{Microscopic \texttt{Ingolstadt21} SUMO evaluation ($N=15$). The calibrated U3 panel has eight threshold and weight configurations of one network and route, with two simulation streams per configuration. The 40 uncalibrated stress runs were retained from the earlier experiment.}\label{tab:live_sumo}
 \scriptsize
-\setlength{\tabcolsep}{5.0pt}
-\begin{tabular}{lccccc}
+\setlength{\tabcolsep}{4.6pt}
+\begin{tabular}{llccccc}
 \toprule
-\textbf{Method} & \textbf{Challenger True Obj.\ $J_t(x^{(0)})$ ($\downarrow$)} & \textbf{Reduction vs.\ Fixed Plan} & \textbf{True Viol.\ $\Prob(g>0)$} & \textbf{Cert.\%} & \textbf{False Cert.} \\
+\textbf{Regime} & \textbf{Method} & \textbf{Status-Quo Loss} & \textbf{Challenger $J_t^{\ddagger}$} & \textbf{Cert./runs} & \textbf{S/A/U$^*$} & \textbf{Actual Calls} \\
 \midrule
-\textbf{TLS-OLH-KG (Ours)} & $\mathbf{0.9642}$ & $\mathbf{-3.58\%}$ & 100.0\% & 0.0\% & 0 \\
-\texttt{SCBO} & $0.9826$ & $-1.74\%$ & 100.0\% & 0.0\% & 0 \\
-\texttt{STOP} & $0.9876$ & $-1.24\%$ & 100.0\% & 0.0\% & 0 \\
-\texttt{RGPE} & $0.9888$ & $-1.12\%$ & 100.0\% & 0.0\% & 0 \\
-\texttt{Target-SPSA} & $0.9645$ & $-3.55\%$ & 100.0\% & 0.0\% & 0 \\
+\multirow{9}{*}{Calibrated ($144$ runs)} & \textbf{GP-FTA-KG} & $\mathbf{0.9439} \pm 0.0181$ & $0.9340$ & 8/16 & 3/5/0 & 344.8 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $0.9696 \pm 0.0088$ & $0.9661$ & 5/16 & 3/2/0 & 387.8 \\
+ & \textbf{GP-FTA-TS} & $0.9737 \pm 0.0090$ & $0.9647$ & 5/16 & 1/4/0 & 362.2 \\
+ & \texttt{SCBO-on-Psi} & $0.9829 \pm 0.0050$ & $0.9735$ & 3/16 & 2/1/0 & 379.8 \\
+ & \texttt{RGPE-on-Psi} & $0.9850 \pm 0.0058$ & $1.0247$ & 2/16 & 0/2/0 & 396.5 \\
+ & \texttt{WarmStart-PatternSearch} & $0.9871 \pm 0.0037$ & $0.9898$ & 3/16 & 1/2/0 & 379.8 \\
+ & \texttt{RGPE} & $0.9941 \pm 0.0012$ & $1.0164$ & 0/16 & --- & 422.0 \\
+ & \texttt{SCBO} & $0.9941 \pm 0.0012$ & $0.9909$ & 0/16 & --- & 422.0 \\
+ & \texttt{STOP} & $0.9941 \pm 0.0012$ & $0.9878$ & 0/16 & --- & 392.0 \\
+\midrule
+\multirow{5}{*}{Stress Test ($40$ runs)} & \texttt{TLS-OLH-KG} (Legacy) & $0.9876$ & $0.9642$ & 0/8 & --- & 422.0 \\
+ & \texttt{SCBO} & $0.9876$ & $0.9826$ & 0/8 & --- & 422.0 \\
+ & \texttt{RGPE} & $0.9876$ & $0.9888$ & 0/8 & --- & 422.0 \\
+ & \texttt{Target-SPSA} & $0.9876$ & $0.9645$ & 0/8 & --- & 422.0 \\
+ & \texttt{STOP} & $0.9876$ & $0.9876$ & 0/8 & --- & 392.0 \\
 \bottomrule
 \end{tabular}
+\par\smallskip\parbox{\textwidth}{\scriptsize $^*$S/A/U counts certified deployments classified as confidently safe, boundary-ambiguous, or confidently unsafe by an independent audit. A dash indicates no audited deployment. $^{\ddagger}$Calibrated runs use the frozen primary. Stress runs use the saved uncertified candidate.}
 \end{table}

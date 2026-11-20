@@ -1,0 +1,347 @@
+{
+  "campaign_name": "v2_or_kg_quadrature_confirm_v1",
+  "primary_measure": "Status-quo loss, where lower is better",
+  "interval": "Family-level paired t interval, equal weight per task, individual 95% coverage",
+  "families": {
+    "Inventory_CrossHorizon": {
+      "independent_tasks": 24,
+      "streams_per_task": 2,
+      "arm_results": {
+        "GP-FTA-KG": {
+          "runs": 48,
+          "certified": 48,
+          "safety_audit_classes": {
+            "confidently_safe": 48
+          },
+          "audited_deployments": 48,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 1.922362569293745,
+          "mean_status_quo_loss_with_abstention_surcharge": 1.922362569293745,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 233,
+          "sum_target_calls": 17712,
+          "mean_total_target_calls": 369,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 132000,
+          "mean_online_wall_seconds": 15.5200335868091
+        },
+        "GP-FTA-TS": {
+          "runs": 48,
+          "certified": 46,
+          "safety_audit_classes": {
+            "confidently_safe": 46,
+            "abstained_not_deployed": 2
+          },
+          "audited_deployments": 46,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 1.9199837964193471,
+          "mean_status_quo_loss_with_abstention_surcharge": 1.9279897070253775,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 250,
+          "sum_target_calls": 18528,
+          "mean_total_target_calls": 386,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 138000,
+          "mean_online_wall_seconds": 9.787211606104393
+        },
+        "PublicPsi-TargetGP-TS": {
+          "runs": 48,
+          "certified": 47,
+          "safety_audit_classes": {
+            "confidently_safe": 47,
+            "abstained_not_deployed": 1
+          },
+          "audited_deployments": 47,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 1.9223378680738554,
+          "mean_status_quo_loss_with_abstention_surcharge": 1.9257479835378808,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 260.4166666666667,
+          "sum_target_calls": 19028,
+          "mean_total_target_calls": 396.4166666666667,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 134000,
+          "mean_online_wall_seconds": 7.973401533517365
+        }
+      },
+      "paired_loss": {
+        "GP-FTA-TS": {
+          "n_tasks": 24,
+          "comparator_minus_kg_mean": -0.0023787728743978886,
+          "ci95": [
+            -0.01305564963180207,
+            0.008298103883006292
+          ],
+          "paired_t_p_two_sided": 0.6492059742679102,
+          "kg_wins_losses_ties": [
+            10,
+            14,
+            0
+          ],
+          "paired_t_p_holm_six_tests": 1.0
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_tasks": 24,
+          "comparator_minus_kg_mean": -2.470121988956686e-05,
+          "ci95": [
+            -0.014876257606037585,
+            0.014826855166258451
+          ],
+          "paired_t_p_two_sided": 0.9972844668570553,
+          "kg_wins_losses_ties": [
+            6,
+            18,
+            0
+          ],
+          "paired_t_p_holm_six_tests": 1.0
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "independent_tasks": 24,
+      "streams_per_task": 2,
+      "arm_results": {
+        "GP-FTA-KG": {
+          "runs": 48,
+          "certified": 48,
+          "safety_audit_classes": {
+            "confidently_safe": 48
+          },
+          "audited_deployments": 48,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 2.5285389189554683,
+          "mean_status_quo_loss_with_abstention_surcharge": 2.5285389189554683,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 216.25,
+          "sum_target_calls": 16908,
+          "mean_total_target_calls": 352.25,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 122000,
+          "mean_online_wall_seconds": 14.638056342684044
+        },
+        "GP-FTA-TS": {
+          "runs": 48,
+          "certified": 48,
+          "safety_audit_classes": {
+            "confidently_safe": 48
+          },
+          "audited_deployments": 48,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 2.53140686904222,
+          "mean_status_quo_loss_with_abstention_surcharge": 2.53140686904222,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 229.58333333333334,
+          "sum_target_calls": 17548,
+          "mean_total_target_calls": 365.5833333333333,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 130000,
+          "mean_online_wall_seconds": 8.976397367795775
+        },
+        "PublicPsi-TargetGP-TS": {
+          "runs": 48,
+          "certified": 48,
+          "safety_audit_classes": {
+            "confidently_safe": 48
+          },
+          "audited_deployments": 48,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 2.561055020978026,
+          "mean_status_quo_loss_with_abstention_surcharge": 2.561055020978026,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 238.58333333333334,
+          "sum_target_calls": 17980,
+          "mean_total_target_calls": 374.5833333333333,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 136000,
+          "mean_online_wall_seconds": 6.987645457130081
+        }
+      },
+      "paired_loss": {
+        "GP-FTA-TS": {
+          "n_tasks": 24,
+          "comparator_minus_kg_mean": 0.002867950086751688,
+          "ci95": [
+            -0.015091865419396349,
+            0.020827765592899724
+          ],
+          "paired_t_p_two_sided": 0.7441348903634132,
+          "kg_wins_losses_ties": [
+            14,
+            10,
+            0
+          ],
+          "paired_t_p_holm_six_tests": 1.0
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_tasks": 24,
+          "comparator_minus_kg_mean": 0.03251610202255776,
+          "ci95": [
+            0.004720388116239104,
+            0.06031181592887641
+          ],
+          "paired_t_p_two_sided": 0.02382789764835012,
+          "kg_wins_losses_ties": [
+            19,
+            5,
+            0
+          ],
+          "paired_t_p_holm_six_tests": 0.11913948824175061
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "independent_tasks": 24,
+      "streams_per_task": 2,
+      "arm_results": {
+        "GP-FTA-KG": {
+          "runs": 48,
+          "certified": 32,
+          "safety_audit_classes": {
+            "abstained_not_deployed": 16,
+            "confidently_safe": 29,
+            "boundary_ambiguous": 2,
+            "confidently_unsafe": 1
+          },
+          "audited_deployments": 32,
+          "audit_viol_prob_point_estimates_over_threshold": 1,
+          "mean_status_quo_loss": 1.0970905940370985,
+          "mean_status_quo_loss_with_abstention_surcharge": 1.138560608323808,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 281.5833333333333,
+          "sum_target_calls": 20044,
+          "mean_total_target_calls": 417.5833333333333,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 136000,
+          "mean_online_wall_seconds": 31.616359943407588
+        },
+        "GP-FTA-TS": {
+          "runs": 48,
+          "certified": 37,
+          "safety_audit_classes": {
+            "confidently_safe": 35,
+            "abstained_not_deployed": 11,
+            "boundary_ambiguous": 2
+          },
+          "audited_deployments": 37,
+          "audit_viol_prob_point_estimates_over_threshold": 1,
+          "mean_status_quo_loss": 1.0748418418399786,
+          "mean_status_quo_loss_with_abstention_surcharge": 1.1032370399729572,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 264.3333333333333,
+          "sum_target_calls": 19216,
+          "mean_total_target_calls": 400.3333333333333,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 120000,
+          "mean_online_wall_seconds": 26.849955732526723
+        },
+        "PublicPsi-TargetGP-TS": {
+          "runs": 48,
+          "certified": 42,
+          "safety_audit_classes": {
+            "confidently_safe": 42,
+            "abstained_not_deployed": 6
+          },
+          "audited_deployments": 42,
+          "audit_viol_prob_point_estimates_over_threshold": 0,
+          "mean_status_quo_loss": 1.0515737105546785,
+          "mean_status_quo_loss_with_abstention_surcharge": 1.0668943670836897,
+          "search_calls_per_run": 136,
+          "mean_verification_calls": 257.75,
+          "sum_target_calls": 18900,
+          "mean_total_target_calls": 393.75,
+          "max_total_target_calls": 516,
+          "sum_policy_audit_calls": 128000,
+          "mean_online_wall_seconds": 25.38243812834844
+        }
+      },
+      "paired_loss": {
+        "GP-FTA-TS": {
+          "n_tasks": 24,
+          "comparator_minus_kg_mean": -0.02224875219711987,
+          "ci95": [
+            -0.06584777247306772,
+            0.021350268078827988
+          ],
+          "paired_t_p_two_sided": 0.3020939371013192,
+          "kg_wins_losses_ties": [
+            9,
+            14,
+            1
+          ],
+          "paired_t_p_holm_six_tests": 1.0
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_tasks": 24,
+          "comparator_minus_kg_mean": -0.045516883482420036,
+          "ci95": [
+            -0.08089137887292872,
+            -0.010142388091911356
+          ],
+          "paired_t_p_two_sided": 0.013933947881527197,
+          "kg_wins_losses_ties": [
+            11,
+            13,
+            0
+          ],
+          "paired_t_p_holm_six_tests": 0.08360368728916318
+        }
+      }
+    }
+  },
+  "total_cells": 432,
+  "execution_code_sha256": "c76f162df1f878398927b5afacf105081a985491a25b66780fbecc385c1bf75f",
+  "manifest_sha256": "4babe1859a10e488636bc3897194e05bc2a48bbfe541777ddaba7c09d9c535b0",
+  "call_accounting": {
+    "source_simulation_calls_new": 0,
+    "source_refits_new": 0,
+    "search_calls_used": 58752,
+    "terminal_verification_calls_used": 107112,
+    "target_call_cap_total": 222912,
+    "anchor_audit_calls_used": 144000,
+    "policy_audit_calls_used": 1176000,
+    "verification_law_audit_calls_used": 0
+  },
+  "stage_attempt_fees": {
+    "source_archive": {
+      "attempt_status": {},
+      "attempted_calls_recorded": {},
+      "cpu_time_sec_recorded": 0,
+      "wall_time_sec_recorded": 0,
+      "unfinished_attempts": []
+    },
+    "search_and_verify": {
+      "attempt_status": {
+        "ok": 432
+      },
+      "attempted_calls_recorded": {
+        "search": 58752,
+        "verification": 107112
+      },
+      "cpu_time_sec_recorded": 6939.101979256997,
+      "wall_time_sec_recorded": 7114.332578542642,
+      "unfinished_attempts": []
+    },
+    "audit_anchors": {
+      "attempt_status": {
+        "ok": 72
+      },
+      "attempted_calls_recorded": {
+        "audit": 144000
+      },
+      "cpu_time_sec_recorded": 23.904595808000003,
+      "wall_time_sec_recorded": 24.49659962579608,
+      "unfinished_attempts": []
+    },
+    "audit_and_summarize": {
+      "attempt_status": {
+        "ok": 432
+      },
+      "attempted_calls_recorded": {
+        "audit": 1176000
+      },
+      "cpu_time_sec_recorded": 233.01891228699998,
+      "wall_time_sec_recorded": 242.80204996280372,
+      "unfinished_attempts": []
+    }
+  }
+}

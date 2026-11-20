@@ -103,6 +103,7 @@ class DynamicQueueingStaffingDES(BaseDynamicORProblem):
     """Nonstationary multi-server stochastic queueing & surge-diversion DES."""
 
     family_name = "DynamicQueueingDES"
+    num_control_channels = 2
     is_gaussian_constraint_noise = False
 
     def __init__(

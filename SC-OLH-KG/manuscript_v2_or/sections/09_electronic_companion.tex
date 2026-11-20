@@ -1,98 +1,88 @@
 \ECSwitch
-\ECHead{Electronic Companion: Mathematical Proofs and Lean~4 Formalization Map}
+\ECHead{Electronic Companion: Mathematical Proofs, Lean~4 Audit Map, and Provenance}
 
 \section{Complete Mathematical Proofs}\label{ec:proofs}
 
-\subsection{Proof of Theorem~\ref{thm:subspace} (Debiased Orthogonalization \& Pruned Residual Envelope)}
+\subsection{Proof of Proposition~\ref{prop:subspace} (Occupancy Clipping Bias \& Parseval Separation)}
 
-\proof{Proof of Theorem~\ref{thm:subspace}.}
-\emph{Part 1 (Debiasing Exactness and Clipping Bias).}
-By definition of $\nu_{\bar{w}}(\mathrm{d}\psi) = \min\{\bar{w}, \rho(\psi)\}q(\psi)\mathrm{d}\psi$ and $\rho(\psi) = \frac{\mathrm{d}\nu}{\mathrm{d}q}(\psi)$ where $q(\psi) > 0$, we have
-\[
-  \langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu
-  = \int_{\mathcal{M}_\psi} \big(\min\{\bar{w}, \rho(\psi)\}q(\psi) - \rho(\psi)q(\psi)\big) f(\psi)h(\psi)\,\mathrm{d}\psi.
-\]
-When $\sup_\psi \rho(\psi) \le \bar{w}$, $\min\{\bar{w}, \rho(\psi)\} = \rho(\psi)$ everywhere, so the integrand vanishes identically and $\langle f, h \rangle_{\nu_{\bar{w}}} = \langle f, h \rangle_\nu$. In the general case, observe that for $q(\psi) > 0$,
-\[
-  \big|\min\{\bar{w}, \rho(\psi)\} - \rho(\psi)\big| = \max\{0,\, \rho(\psi) - \bar{w}\}.
-\]
-Applying the triangle inequality under the integral immediately yields~\eqref{eq:thm1_clip}. (Finite-manifold discretization mechanized as \texttt{debiased\_inner\_exact\_when\_bounded} and \texttt{debiased\_inner\_clipping\_bias\_le} in \texttt{SCOLHKG/V2OR/DebiasedSubspace.lean}.)
-
-\emph{Part 2 (Parseval Separation, Pointwise Residual Floor, and Finite-Sample Rate).}
-Because $r_{\mathrm{hf}} \perp \operatorname{span}(1, \tilde{\varphi}_1, \dots, \tilde{\varphi}_{M_+})$ and $\langle 1, \tilde{\varphi}_k \rangle_{\nu_{\bar{w}}} = 0$, $\langle \tilde{\varphi}_j, \tilde{\varphi}_k \rangle_{\nu_{\bar{w}}} = \delta_{jk}$, expanding $h(x) - \theta_0 = \sum_{j \in S_{\mathrm{act}}} \theta_j \tilde{\varphi}_j(\psi(x)) + \sum_{k \in S_{\mathrm{act}}^c} \theta_k \tilde{\varphi}_k(\psi(x)) + r_{\mathrm{hf}}(x)$ in $L^2(\nu_{\bar{w}})$ eliminates all cross-inner products, establishing~\eqref{eq:thm1_parseval} (mechanized as \texttt{active\_pruned\_orthogonal\_decomposition}).
-
-For the pointwise safety floor, apply Cauchy--Schwarz over $P = S_{\mathrm{act}}^c$:
-\[
-  \left(\sum_{k \in P} 1 \cdot \theta_k \tilde{\varphi}_k(\psi(x))\right)^2
-  \le |P| \sum_{k \in P} \theta_k^2 \tilde{\varphi}_k(\psi(x))^2
-  \le \sum_{k \in P} \bar{e}_k \tilde{\varphi}_k(\psi(x))^2,
-\]
-using $|P|\theta_k^2 \le \bar{e}_k$. Adding $r_{\mathrm{hf}}(x)^2 \le \sigma_{\mathrm{hf}}^2$ yields domination by $R_\perp(x)$ in~\eqref{eq:r_perp} (mechanized as \texttt{pruned\_residual\_pointwise\_square\_bound}). Finally, across $M_{\mathrm{src}}$ tasks with sub-Gaussian observation noise and $\nu_{\bar{w}}$-orthonormal design over $M_+$ candidates, standard sub-Gaussian projection concentration gives $\max_{1 \le k \le M_+} |\hat{\bar{\theta}}_k - \bar{\theta}_k^\star| = \mathcal{O}\big(\sqrt{\log(M_+)/(M_{\mathrm{src}}\bar{n}_{\mathrm{eff}})}\big)$ with high probability; summing squared estimation errors over $|S_{\mathrm{act}}| = r$ active coordinates plus the exact Parseval tail $\sum_{k \notin S_{\mathrm{act}}} \theta_k^2 + \|r_{\mathrm{hf}}\|_{L^2}^2$ yields the stated $d_t$-independent bound.
+\proof{Proof of Proposition~\ref{prop:subspace}.}
+For $q(\psi) > 0$ and $\rho(\psi) = \frac{\mathrm{d}\nu}{\mathrm{d}q}(\psi)$, $|\min\{\bar{w}, \rho(\psi)\} - \rho(\psi)| = \max\{0, \rho(\psi) - \bar{w}\}$. Applying the triangle inequality to $\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu = \int_{\mathcal{M}_\psi} (\min\{\bar{w}, \rho(\psi)\} - \rho(\psi)) f(\psi)h(\psi) q(\mathrm{d}\psi)$ yields Part~(1), vanishing identically when $\sup_\psi \rho(\psi) \le \bar{w}$ (mechanized on finite supports as \texttt{debiased\_inner\_exact\_when\_bounded} and \texttt{debiased\_inner\_clipping\_bias\_le} in \texttt{SCOLHKG/V2OR/DebiasedSubspace.lean}). Part~(2) follows by expanding $h - \theta_0$ in the $\nu_{\bar{w}}$-orthogonal decomposition $\operatorname{span}(\tilde{\varphi}_{S_{\mathrm{act}}}) \oplus \operatorname{span}(\tilde{\varphi}_{S_{\mathrm{act}}^c}) \oplus \{r_{\mathrm{hf}}\}$ (\texttt{active\_pruned\_orthogonal\_decomposition}).
 \Halmos\endproof
 
-\subsection{Proof of Theorem~\ref{thm:tempering} (Mean-Shift Leakage vs.\ Decoupled Tempering)}
+\subsection{Proof of Theorem~\ref{thm:transfer_boundary} (Shift Invariance \& Exact Transfer Dominance Boundary)}
 
-\proof{Proof of Theorem~\ref{thm:tempering}.}
-\emph{Part 1 (Untempered Variance Blow-Up and Frozen-Subspace Lower Bound).}
-Since $Y_{t,g,\ell}(x) - \mu_{0,g}(x) = \Delta_g(x) + \varepsilon_\ell$ with $\E[\varepsilon_\ell] = 0$, linearity of the Bochner integral gives
+\proof{Proof of Theorem~\ref{thm:transfer_boundary}.}
+\emph{Part 1.} Expanding $(\Delta_g(x)+\varepsilon_\ell)^2$ and taking expectations gives the residual second moment. Subtracting the within-policy sample mean cancels the common mean exactly. Independence and centering then give $\E[\sum_\ell(\varepsilon_\ell-\bar\varepsilon)^2]=(r-1)v_t(x)$.
+
+\emph{Part 2.} Substituting $\theta_t - \hat{\mu}_0 = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}}) - \xi_{\mathrm{meta}}$ and using $\E[\xi_{\mathrm{meta}}] = 0$, $\E[\xi_{\mathrm{meta}}^2] = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$ yields $\E[(\theta_t - \hat{\mu}_0)^2] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$. Module \texttt{FunctionalTransferRisk} checks the second-moment identity.
+
+\emph{Part 3.} For $\tau > 0$ and $\rho_N > 0$, $(\tau + \rho_N)^2 > 0$ and exact algebraic factoring gives
 \[
-  \E\big[(Y_{t,g,\ell}(x) - \mu_{0,g}(x))^2\big]
-  = \Delta_g(x)^2 + 2\Delta_g(x)\E[\varepsilon_\ell] + \E[\varepsilon_\ell^2]
-  = \Delta_g(x)^2 + v_t(x)
+  \frac{1}{\rho_N} - \frac{\tau^2\Delta_{\mathrm{eff}}^2 + \rho_N}{(\tau + \rho_N)^2}
+  = \frac{(\tau + \rho_N)^2 - \rho_N(\tau^2\Delta_{\mathrm{eff}}^2 + \rho_N)}{\rho_N(\tau + \rho_N)^2}
+  = \frac{\tau^2\big(1 + 2\rho_N/\tau - \rho_N\Delta_{\mathrm{eff}}^2\big)}{\rho_N(\tau + \rho_N)^2}.
 \]
-(mechanized as \texttt{untempered\_raw\_residual\_second\_moment}). Under $\eta_g \mid \mathcal{D}_n \sim \mathcal{N}(\mu_{\eta,n}, \sigma_{\eta,n}^2)$ with $\sigma_{\eta,n}^2 \ge 0$ and $\mu_{\eta,n} \ge \mu_{\eta,0} + \gamma\Delta_g(x)^2$, the log-normal moment generating function satisfies $\E[\exp(\eta_g)\mid\mathcal{D}_n] = \exp(\mu_{\eta,n} + \tfrac{1}{2}\sigma_{\eta,n}^2) \ge \exp(\mu_{\eta,0} + \gamma\Delta_g(x)^2) = \exp(\mu_{\eta,0})\exp(\gamma\Delta_g(x)^2)$ by monotonicity of $\exp$ (mechanized as \texttt{untempered\_exponential\_variance\_blowup}). For any frozen post-initialization predictor with error $|e_N(x^\star)| \ge \underline{\delta}$ on mass $w(x^\star) \ge 0$, nonnegativity of remaining terms gives $\sum_x w(x)e_N(x)^2 \ge w(x^\star)\underline{\delta}^2$ for all $N$ (mechanized as \texttt{frozen\_after\_nonvanishing\_error\_lower\_bound}).
-
-\emph{Part 2 (Shift Invariance of $S_{t,g}^2(x)$ and Oracle Risk Inequality).}
-Write $Y_{t,g,\ell}(x) = c + \varepsilon_\ell$ where $c = \mu_{0,g}(x) + \Delta_g(x)$. Then $\bar{Y}_{t,g}(x) = c + \bar{\varepsilon}$, so $Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x) = \varepsilon_\ell - \bar{\varepsilon}$ for every $\ell = 1,\dots,r$, whence $S_{t,g}^2(x) = \sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2$ identically for all $\Delta_g(x) \in \R$ (mechanized as \texttt{within\_policy\_ssq\_shift\_invariant}). Standard degrees-of-freedom calculation yields $\E[\sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2] = (r - 1)v_t(x)$.
-
-For precision-weighted posterior shrinkage $\hat{\theta}_N(\tau) = \frac{\tau \mu_0 + \rho_N \bar{Y}_N}{\tau + \rho_N}$ where $\bar{Y}_N = (\mu_0 + \Delta) + \bar{\xi}_N$ with $\E[\bar{\xi}_N]=0$, $\Var(\bar{\xi}_N) = \rho_N^{-1} = v_t / N$, the estimation bias is $-\frac{\tau\Delta}{\tau + \rho_N}$ and variance is $\frac{\rho_N}{(\tau + \rho_N)^2}$, giving exact MSE $\operatorname{MSE}(\tau; \Delta) = \frac{\tau^2\Delta^2 + \rho_N}{(\tau + \rho_N)^2}$. At $\Delta = 0$ and $\tau > 0$, $\frac{\rho_N}{(\tau+\rho_N)^2} < \frac{1}{\rho_N}$ because $(\tau + \rho_N)^2 > \rho_N^2$ (mechanized as \texttt{tempered\_strictly\_beats\_target\_only\_at\_zero\_shift}). For $\Delta \neq 0$, substituting $\tau^\star = \Delta^{-2}$ yields numerator $\Delta^{-4}\Delta^2 + \rho_N = \Delta^{-2} + \rho_N$ and denominator $(\Delta^{-2} + \rho_N)^2$, so $\operatorname{MSE}(\tau^\star; \Delta) = (\Delta^{-2} + \rho_N)^{-1} \le \min\{\Delta^2, \rho_N^{-1}\}$ since $\Delta^{-2} > 0$ and $\rho_N > 0$ (mechanized as \texttt{optimal\_tempering\_oracle\_inequality}).
+Since $\tau^2 / [\rho_N(\tau + \rho_N)^2] > 0$, the difference is strictly positive if and only if $1 + 2\rho_N/\tau - \rho_N\Delta_{\mathrm{eff}}^2 > 0$, which upon dividing by $\rho_N > 0$ is equivalent to $\Delta_{\mathrm{eff}}^2 < \rho_N^{-1} + 2/\tau$ (\texttt{transfer\_dominates\_target\_only\_iff}).
 \Halmos\endproof
 
-\subsection{Proof of Theorem~\ref{thm:vkg_safety} (\texttt{V-KG} Monotonicity, Objective-Guarded FWER, \& $M_{\mathrm{break}}$)}
+\subsection{Proof of Theorem~\ref{thm:sure_uniform} (Self-Normalized \texttt{SURE} Uniform Shift Excess-Risk Bound)}
+
+\proof{Proof of Theorem~\ref{thm:sure_uniform}.}
+\emph{Part 1.} Set $u = 1 - \lambda$. For each coordinate $k \in \mathcal{I}$ with $R_k = D_k + \xi_k$, expanding $(u D_k - (1 - u)\xi_k)^2 - \xi_k^2 = u^2 D_k^2 - 2u(1 - u)D_k\xi_k + (u^2 - 2u)\xi_k^2$ and $\frac{3}{2}[(u^2(D_k + \xi_k)^2 + (1 - 2u)\sigma_k^2) - \sigma_k^2] = \frac{3}{2}u^2 D_k^2 + 3u^2 D_k\xi_k + \frac{3}{2}u^2 \xi_k^2 - 3u\sigma_k^2$, subtracting the second expression from the first yields the exact per-coordinate polynomial identity $-\frac{1}{2}u^2 D_k^2 - u(2 + u)D_k\xi_k - (2u + \frac{1}{2}u^2)\xi_k^2 + 3u\sigma_k^2$. Averaging over $k \in \mathcal{I}$ ($r = |\mathcal{I}| > 0$) establishes~\eqref{eq:sure_identity} (\texttt{sure\_excess\_loss\_minus\_three\_halves\_empirical\_gap} in \texttt{SCOLHKG/V2OR/SequentialTheory.lean}).
+
+\emph{Part 2.} Since $\hat{\lambda} \in [0, 1]$, $\hat{u} = 1 - \hat{\lambda} \in [0, 1]$ and $\widehat{R}_{\mathcal{I}}(\hat{\lambda}) \le \widehat{R}_{\mathcal{I}}(1)$ implies $\frac{3}{2}(\widehat{R}_{\mathcal{I}}(\hat{\lambda}) - \widehat{R}_{\mathcal{I}}(1)) \le 0$. Moreover, $(2\hat{u} + \frac{1}{2}\hat{u}^2)\frac{1}{r}\sum_{k \in \mathcal{I}}\xi_k^2 \ge 0$ and $3\hat{u}\bar{\sigma}^2 \le 3\bar{\sigma}^2$ because $\bar{\sigma}^2 \ge 0$ and $\hat{u} \le 1$. If $\bar{D}^2 = 0$, $D_k = 0$ for all $k \in \mathcal{I}$, giving $L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1) \le 3\bar{\sigma}^2$ (\texttt{sure\_selector\_zero\_shift\_excess\_loss\_bound}). If $\bar{D}^2 > 0$, since $0 \le 2 + \hat{u} \le 3$, $-\hat{u}(2 + \hat{u})\bar{C} \le 3\hat{u}|\bar{C}|$; completing the square over $\hat{u} \in \R$ gives
+\[
+  -\frac{1}{2}\hat{u}^2 \bar{D}^2 + 3\hat{u}|\bar{C}|
+  = \frac{9\bar{C}^2}{2\bar{D}^2} - \frac{(\hat{u}\bar{D}^2 - 3|\bar{C}|)^2}{2\bar{D}^2}
+  \;\le\; \frac{9\bar{C}^2}{2\bar{D}^2},
+\]
+yielding~\eqref{eq:sure_uniform_path} uniformly over all $D \neq 0$ and any selector grid $\mathcal{G} \ni 1$ (\texttt{sure\_selector\_uniform\_shift\_excess\_loss\_bound}).
+
+\emph{Part 3.} Under pairwise orthogonality with $\E[\xi_k^2] \le \sigma_{\max}^2$, $\E[(\sum_{k \in \mathcal{I}} D_k\xi_k)^2] = \sum_{k \in \mathcal{I}} D_k^2 \E[\xi_k^2] \le \sigma_{\max}^2 \sum_{k \in \mathcal{I}} D_k^2 = r\sigma_{\max}^2 \bar{D}^2$. Substituting $\bar{C} = \frac{1}{r}\sum_{k \in \mathcal{I}} D_k\xi_k$ yields $\E\big[\frac{9\bar{C}^2}{2\bar{D}^2}\big] = \frac{9}{2 r^2 \bar{D}^2}\E\big[(\sum_{k \in \mathcal{I}} D_k\xi_k)^2\big] \le \frac{9\sigma_{\max}^2}{2r}$ identically cancelling $\bar{D}^2 > 0$ (\texttt{expected\_unit\_projection\_noise\_le\_sigma\_div\_rank}). Combining with $3\bar{\sigma}^2 \le 3\sigma_{\max}^2$ completes the proof.
+\Halmos\endproof
+
+\subsection{Proof of Theorem~\ref{thm:sequential_bgpkg}}
+
+\proof{Proof of Theorem~\ref{thm:sequential_bgpkg}.}
+\emph{Part 1.} For fixed $x' \in \mathcal{E}_n$, convexity of $z \mapsto (\hat{J}^{\mathrm{ref}} - z)_+$ and posterior mean martingale conservation $\E_{\Omega_f}[\mu_{n+1,f}(x')] = \mu_{n,f}(x')$ imply $\E_{\Omega_f}[(\hat{J}^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+] \ge (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+$ (\texttt{hinge\_submartingale\_step}). On the product fantasy space $\Omega_f \times \Omega_g$, factoring the expectation and invoking gate-power tower conservation $\E_{\Omega_g}[p_{n+1}^{\mathrm{gate}}(x')] = p_n^{\mathrm{gate}}(x') \ge 0$ yields $\E_n[V_{n+1}(x')] = \E_{\Omega_f}[(\hat{J}^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+]\cdot \E_{\Omega_g}[p_{n+1}^{\mathrm{gate}}(x')] \ge (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ p_n^{\mathrm{gate}}(x') = V_n(x')$ (\texttt{factored\_gate\_utility\_submartingale}). Since $\max_{\tilde{x} \in \mathcal{E}_n} V_{n+1}(\tilde{x}) \ge V_{n+1}(x')$ pointwise, $\E_n[\max_{\tilde{x} \in \mathcal{E}_n} V_{n+1}(\tilde{x})] \ge V_n(x')$ for every $x' \in \mathcal{E}_n$, hence $\operatorname{Acq}_n^{\mathrm{BGP-KG}}(x) \ge 0$ (\texttt{bgp\_kg\_nonneg\_from\_posterior\_tower}).
+
+\emph{Part 2.} When $|\mu_{n+1,f}(x') - \mu_{n,f}(x')| \le \varepsilon_f$, $|p_{n+1}^{\mathrm{gate}}(x') - p_n^{\mathrm{gate}}(x')| \le \varepsilon_g$, $p_{n+1}^{\mathrm{gate}}(x') \in [0, 1]$, and $(\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ \le B_f$, subadditivity of $(\cdot)_+$ gives $(\hat{J}^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+ \le (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ + \varepsilon_f$. Multiplying by $p_{n+1}^{\mathrm{gate}}(x') \in [0,1]$ gives $V_{n+1}(x') \le (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ [p_n^{\mathrm{gate}}(x') + (p_{n+1}^{\mathrm{gate}}(x') - p_n^{\mathrm{gate}}(x'))] + \varepsilon_f \le V_n(x') + B_f\varepsilon_g + \varepsilon_f \le \max_{\tilde{x} \in \mathcal{E}_n} V_n(\tilde{x}) + \varepsilon_f + B_f\varepsilon_g$ (\texttt{gate\_utility\_step\_perturbation\_le}). Taking maxima over $x' \in \mathcal{E}_n$ and expectations yields~\eqref{eq:bgpkg_lipschitz} (\texttt{bgp\_kg\_lipschitz\_in\_step\_innovations}). \Halmos\endproof
+
+\subsection{Finite-rule alignment in the corrected KG implementation}\label{ec:kg_correction}
+
+For each query and evaluated candidate, let $p$ be its current nine-node approximation and $q_g\in[0,1]$ the raw conditional power at constraint fantasy node $g$, using the seven-node inner rule. Write $m=\sum_g w_g q_g$ with positive weights summing to one. We replace the conditional power with
+\[
+ \tilde p_g=\begin{cases}
+    (p/m) q_g, & m>p,\\
+    1-[(1-p)/(1-m)](1-q_g), & m<p,\\
+    q_g, & m=p.
+ \end{cases}
+\]
+The denominators are positive in the branches where they are used. This affine map preserves the weak order of fantasy powers, keeps them in $[0,1]$ and gives $\sum_g w_g\tilde p_g=p$. For zero constraint innovation the code uses $p$ directly at all nodes.
+
+Let $b$ be the current best evaluation candidate and $s_b=\hat J^{\mathrm{ref}}-\mu_{n,f}(b)$. If $I_b$ is the symmetric objective innovation for $b$, then $\E[(s_b-I_b)_+]-(s_b)_+=\E[(I_b-|s_b|)_+]$ under the symmetric rule. The corrected discrete score sums the expected nonnegative switch gain $\E[\max_j V_{n+1}(j)-V_{n+1}(b)]$ and $p_b\E[(I_b-|s_b|)_+]$. This equals the corrected rule's expected maximum minus the current maximum by factorization. When the query induces zero innovation in both heads for all evaluated candidates, both terms vanish. The score is computed without subtracting two large, nearly equal expected utilities.
+
+This calibration enforces finite-rule mean conservation for a fixed one-step model. It does not estimate the resulting error against an exact joint posterior or the actual verification cascade. The archived U3 implementation uses~\eqref{eq:bgpkg_acq}; the correction changes decisions in a deterministic regression example. The prospectively registered panel in Section~\ref{sec:independent_design} uses the corrected implementation.
+
+\subsection{Proof of Theorem~\ref{thm:vkg_safety} and Corollary~\ref{cor:amortization}}
 
 \proof{Proof of Theorem~\ref{thm:vkg_safety}.}
-\emph{Part 1 (\texttt{V-KG} Nonnegativity).}
-For every $x' \in \mathcal{E}_n$ and fantasy realization $\omega$, $V_{n+1}(x'; \omega) \le \max_{\tilde{x} \in \mathcal{E}_n} V_{n+1}(\tilde{x}; \omega)$. Integrating with respect to $\Prob_n$ and applying the martingale tower identity $V_n(x') = \E_n[V_{n+1}(x')]$ gives $V_n(x') \le \E_n[\max_{\tilde{x} \in \mathcal{E}_n} V_{n+1}(\tilde{x})]$ for all $x' \in \mathcal{E}_n$. Taking the maximum over $x' \in \mathcal{E}_n$ establishes $\operatorname{V\text{-}KG}_n(x) \ge 0$ (mechanized as \texttt{v\_kg\_information\_value\_nonneg}).
+For a fixed unsafe slot $i$ with $p_i>\alpha$, a block of fresh IID draws gives a binomial count with probability $p_i$. The lower-tail probability is nonincreasing in $p_i$ by coupling counts with shared uniform variates. Hence the chance that it passes its test is at most $\delta_i$. With the three registered budgets the critical count is one in every slot, and the same claim follows from the polynomial bound mechanized in \texttt{FunctionalTransferRisk}. Each deployed policy has itself passed a test, even if both guard slots pass and the objective sample means determine selection. Each unattempted gate can be defined on its potential fresh block for the event argument. The unsafe certified return event is contained in the union of the unsafe-slot pass events, of probability at most $\sum_i\delta_i$. The three-slot guard uses 240 calls when at least one of the first two passes, and 380 after both fail. The first-pass branch uses the sum of attempted slot budgets. Deduplication can shorten the list and the reallocated levels still sum to $\delta$. Averaging the conditional bound over the search history gives the same bound.
 
-\emph{Part 2 (Objective-Guarded Three-Slot FWER Bound).}
-Let $A_i$ denote the event that frozen candidate $x^{(i)}$ passes its independent verification safety gate ($i \in \{0,1,2\}$), and let $B_{0 \preceq 1}$ denote the empirical objective tie-breaker $\{\bar{Y}^{\mathrm{ver}}_f(x^{(0)}) \le \bar{Y}^{\mathrm{ver}}_f(x^{(1)})\}$. Examining every branch of the deployment decision tree:
-\begin{itemize}
-  \item $x^{(0)}$ is certified and deployed only on $(A_0 \cap A_1 \cap B_{0 \preceq 1}) \cup (A_0 \cap A_1^c) \subseteq A_0$;
-  \item $x^{(1)}$ is certified and deployed only on $(A_0 \cap A_1 \cap B_{0 \preceq 1}^c) \cup (A_0^c \cap A_1) \subseteq A_1$;
-  \item $x^{(2)}$ is certified and deployed only on $A_0^c \cap A_1^c \cap A_2 \subseteq A_2$;
-  \item on $A_0^c \cap A_1^c \cap A_2^c$, the protocol abstains ($\text{certified} = \text{false}$).
-\end{itemize}
-Consequently, the event that \emph{any} unsafe candidate $i \in \mathcal{U}$ is certified and deployed is a subset of $\bigcup_{i \in \mathcal{U}} A_i$, completely eliminating $B_{0 \preceq 1}$ without spending additional error budget! For any $i \in \mathcal{U}$ ($\Prob_\xi(Y_{t,g}(x^{(i)}) > 0) = p_i > \alpha$): under \texttt{exact\_binomial}, $V_i \sim \operatorname{Binomial}(K_i, p_i)$ stochastically dominates $\operatorname{Binomial}(K_i, \alpha)$, so $\Prob(F_{\mathrm{Binom}}(V_i; K_i, \alpha) \le \delta_i) \le \Prob_{p=\alpha}(F_{\mathrm{Binom}}(V_i; K_i, \alpha) \le \delta_i) \le \delta_i$; under \texttt{gaussian\_noncentral\_t} for i.i.d.\ Gaussian noise, $\sqrt{K_i}(\mu_g + z_{1-\alpha}\sigma_g - \bar{Y}^{\mathrm{ver}}_g)/\hat{S}^{\mathrm{ver}}_g \sim t_{K_i-1}(z_{1-\alpha}\sqrt{K_i})$, so $\Prob(A_i) \le \delta_i$ whenever $\mu_g + z_{1-\alpha}\sigma_g > 0$. By subadditivity of probability measure, $\Prob(\bigcup_{i \in \mathcal{U}} A_i) \le \sum_{i \in \mathcal{U}} \delta_i \le \delta$ (mechanized as \texttt{v2\_objective\_guarded\_unsafe\_deployment\_subset}, \texttt{v2\_terminal\_deployment\_fwer\_le\_delta}, and \texttt{v2\_terminal\_five\_percent\_asymmetric\_spend}).
-
-\emph{Part 3 (Amortization Break-Even Threshold).}
-For $M > 0$ and $B_{\mathrm{cold}} - B_{\mathrm{TLS}} > 0$, rearranging $B_{\mathrm{TLS}} + B_{\mathrm{src}}/M \le B_{\mathrm{cold}}$ gives $B_{\mathrm{src}}/M \le B_{\mathrm{cold}} - B_{\mathrm{TLS}}$, which is equivalent to $M \ge B_{\mathrm{src}}/(B_{\mathrm{cold}} - B_{\mathrm{TLS}})$ (mechanized as \texttt{amortized\_cost\_le\_cold\_start\_iff}).
+For the corollary, solving $B_{\mathrm{FTA}}+B_{\mathrm{src}}/M\le B_{\mathrm{cold}}$ for positive $M$ gives the call break-even threshold when the per-task saving is positive. The cost comparison is conditional on the assumed deployment loss comparison.
 \Halmos\endproof
 
-\section{Bidirectional Code--Theory--Lean~4 Verification Map}\label{ec:lean_map}
+\section{Code, mathematical claims, and proof scope}\label{ec:lean_map}
 
-Table~\ref{tab:lean_map} links each theoretical claim in Section~\ref{sec:theory} to its Python implementation in \texttt{SC-OLH-KG/v2\_or/} and its machine-checked Lean~4.31.0 theorem in \texttt{proof/SCOLHKG/V2OR/}.
+The saved Lean~4.31.0 interface receipt covers the algebraic and event statements below. The attachment supplies a dependency lock and standalone build instructions. The terminal branch tests exercise the actual Python return rule, including shorter lists, the first-pass branch, ties, and double certification.
 
-\begin{table}[htbp]
-\centering
-\caption{Bidirectional Mapping Between Paper Theorems, Clean Python Modules, and Lean~4 Declarations}\label{tab:lean_map}
-\scriptsize
-\begin{tabular}{>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{7.8cm}}
-\toprule
-\textbf{Paper Claim} & \textbf{Python Module (\texttt{v2\_or/})} & \textbf{Verified Lean~4.31.0 Declarations (\texttt{SCOLHKG.V2OR})} \\
-\midrule
-Theorem~\ref{thm:subspace}(1): Debiasing \& clipping bias & \texttt{priors/}\allowbreak\texttt{debiased\_spectral\_prior.py} (\texttt{fit}) & \texttt{DebiasedSubspace.}\allowbreak\texttt{debiased\_inner\_exact\_when\_bounded}, \texttt{debiased\_inner\_clipping\_bias\_le} \\
-\addlinespace
-Theorem~\ref{thm:subspace}(2): Orthonormal Parseval \& $R_\perp$ floor & \texttt{priors/}\allowbreak\texttt{debiased\_spectral\_prior.py} (\texttt{transform\_exposures}) & \texttt{DebiasedSubspace.}\allowbreak\texttt{orthonormal\_subset\_parseval}, \texttt{active\_pruned\_orthogonal\_decomposition}, \texttt{pruned\_residual\_pointwise\_square\_bound} \\
-\addlinespace
-Theorem~\ref{thm:tempering}(1): Untempered blow-up \& \texttt{AFTER} floor & \texttt{models/}\allowbreak\texttt{tempered\_hvd\_posterior.py} (\texttt{untempered\_full}, \texttt{frozen\_after\_init}) & \texttt{TemperedHVD.}\allowbreak\texttt{untempered\_raw\_residual\_second\_moment}, \texttt{untempered\_exponential\_variance\_blowup}, \texttt{frozen\_after\_nonvanishing\_error\_lower\_bound} \\
-\addlinespace
-Theorem~\ref{thm:tempering}(2): $S^2$ shift invariance \& oracle MSE & \texttt{contracts.py} (\texttt{SufficientStatsRecord}), \texttt{tempered\_hvd\_posterior.py} & \texttt{TemperedHVD.}\allowbreak\texttt{within\_policy\_ssq\_shift\_invariant}, \texttt{tempered\_strictly\_beats\_target\_only\_at\_zero\_shift}, \texttt{optimal\_tempering\_oracle\_inequality} \\
-\addlinespace
-Theorem~\ref{thm:vkg_safety}(1): \texttt{V-KG} $\ge 0$ monotonicity & \texttt{acquisition/}\allowbreak\texttt{verification\_kg.py} (\texttt{score\_verification\_kg}) & \texttt{VerificationKGAmortization.}\allowbreak\texttt{v\_kg\_information\_value\_nonneg} \\
-\addlinespace
-Theorem~\ref{thm:vkg_safety}(2): 3-slot FWER $\le 0.05$ safety & \texttt{verification/}\allowbreak\texttt{gated\_verifier\_v2.py} (\texttt{verify\_and\_deploy\_shortlist}) & \texttt{VerificationKGAmortization.}\allowbreak\texttt{v2\_objective\_guarded\_unsafe\_deployment\_subset}, \texttt{v2\_terminal\_deployment\_fwer\_le\_delta}, \texttt{v2\_terminal\_five\_percent\_asymmetric\_spend}, \texttt{binomial\_zero\_violation\_power\_bound}, \texttt{v2\_terminal\_calls\_le\_cap} \\
-\addlinespace
-Theorem~\ref{thm:vkg_safety}(3): Amortization $M_{\mathrm{break}}$ & \texttt{dispatch/}\allowbreak\texttt{campaign\_runner.py} (\texttt{\_compile\_statistical\_summary}) & \texttt{VerificationKGAmortization.}\allowbreak\texttt{amortized\_cost\_le\_cold\_start\_iff} \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{description}
+\item[Source representation.] \texttt{DebiasedSubspace} proves clipping and orthogonal decomposition results with given weights and exact orthogonality. The Python occupancy weights are empirical and the pruned-mode energies are estimated.
+\item[Transfer risk.] \texttt{TemperedHVD} proves invariance of the centered sum. \texttt{FunctionalTransferRisk} checks the fixed scalar MSE boundary and \texttt{SequentialTheory} bounds a selector satisfying the scalar SURE condition. Python uses a separate multivariate plug-in predictive criterion.
+\item[One-step score.] \texttt{SequentialTheory} checks the factored one-step inequality with tower assumptions. The finite-rule alignment above supplies its own discrete mean relationship. The earlier first-pass Bellman and greedy threshold lemmas describe separate mathematical special cases.
+\item[Terminal safety.] \texttt{VerificationKGAmortization} checks the unsafe-return event inclusion and error bound for the three-slot guarded tree. The executed Python protocol additionally allows a first-pass branch and shorter lists. Fresh verification data and validity of each test are required for the statistical inequality.
+\end{description}
+
+\section{Sealed Artifact Provenance and Standalone Replication Package}\label{ec:provenance}
+
+The attachment separates frozen U3 execution source (SHA-256 \texttt{5965482dba30}\ldots) from the corrected implementation. U3 reuses the P2 target panel and evaluation streams. It contains 7,544 main and raw-tail evaluations, 2,108 archive sensitivity evaluations, and 144 calibrated microscopic simulator evaluations. These are run counts across methods, budgets and streams. The appendix and main tables retain the archived outcomes. The corrected score has deterministic regression evidence and is evaluated separately on the independent panel. The included manifest ties its paired results to a distinct code and task configuration. The U3 replay tools can reconstruct the historical statistical ledgers from retained audit receipts without running simulations. The package manifest records the files and the README describes the archived inputs and runtime provenance. Retained ledgers and earlier receipts preserve their original cost and failure records.

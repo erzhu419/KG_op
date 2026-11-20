@@ -1,0 +1,634 @@
+{
+  "v2_or_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a",
+  "verifier_contract": {
+    "alpha_chance_tolerance": 0.05,
+    "familywise_delta": 0.05,
+    "slot_roles": [
+      "posterior_primary",
+      "empirical_feasible_incumbent",
+      "conservative_posterior_interior"
+    ],
+    "slot_budgets": [
+      112,
+      128,
+      140
+    ],
+    "slot_deltas": [
+      0.025,
+      0.015,
+      0.01
+    ],
+    "slot_critical_violations_at_alpha_005": [
+      1,
+      1,
+      1
+    ],
+    "max_verification_calls": 380,
+    "abstention_deployed_policy": null
+  },
+  "prior_contract": {
+    "psi_dim": 12,
+    "raw_dictionary_size": 52,
+    "lowpass_roughness_quantile": 0.75,
+    "active_rank": 8,
+    "max_occupancy_weight_cap": 6.0,
+    "dct_modes": 12
+  },
+  "manifests": {
+    "v2_or_u3_confirm_v1": {
+      "manifest_relpath": "v2_or/manifests/v2_or_u3_confirm_v1.json",
+      "sealed_complete": true,
+      "families": {
+        "Inventory_CrossHorizon": {
+          "kind": "inventory",
+          "n_source_tasks": 6,
+          "source_dims": [
+            72,
+            96
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            192,
+            240
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            8,
+            15,
+            30,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "SCBO-on-Psi",
+            "RGPE-on-Psi",
+            "PublicPsi-TargetGP-TS",
+            "WarmStart-PatternSearch",
+            "Untempered-PriorResid",
+            "Frozen-AFTER",
+            "STOP",
+            "SCBO",
+            "MAP-SAAS-CBO",
+            "HetGP-KG",
+            "RGPE",
+            "HyperBO-EB",
+            "Target-SPSA"
+          ]
+        },
+        "Queueing_CrossHorizon": {
+          "kind": "queueing",
+          "n_source_tasks": 6,
+          "source_dims": [
+            72,
+            96
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            192,
+            240
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            8,
+            15,
+            30,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "SCBO-on-Psi",
+            "RGPE-on-Psi",
+            "PublicPsi-TargetGP-TS",
+            "WarmStart-PatternSearch",
+            "Untempered-PriorResid",
+            "Frozen-AFTER",
+            "STOP",
+            "SCBO",
+            "MAP-SAAS-CBO",
+            "HetGP-KG",
+            "RGPE",
+            "HyperBO-EB",
+            "Target-SPSA"
+          ]
+        },
+        "OPSD_EuroGrid": {
+          "kind": "opsd",
+          "n_source_tasks": 6,
+          "source_dims": [
+            168,
+            240
+          ],
+          "source_channels": 1,
+          "source_psi_dim": 12,
+          "source_markets": [
+            "DK_1",
+            "NO_1",
+            "NO_2",
+            "SE_1",
+            "IT_CNOR",
+            "IT_CSUD"
+          ],
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 14,
+          "target_dims": [
+            336
+          ],
+          "target_channels": 1,
+          "target_psi_dim": 12,
+          "target_markets": [
+            "DK_2",
+            "GB_GBN",
+            "IT_NORD",
+            "IT_SUD",
+            "IT_SARD",
+            "IT_SICI",
+            "NO_3",
+            "NO_4",
+            "NO_5",
+            "SE_2",
+            "SE_3",
+            "SE_4",
+            "IE_sem",
+            "AT"
+          ],
+          "opsd_buffer_hours": 24,
+          "opsd_clamp_limit": 0.2,
+          "opsd_mean_clamped_hour_pct": 1.7974912433818884,
+          "online_step_budgets": [
+            8,
+            15,
+            30,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 8000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "SCBO-on-Psi",
+            "RGPE-on-Psi",
+            "PublicPsi-TargetGP-TS",
+            "WarmStart-PatternSearch",
+            "Untempered-PriorResid",
+            "Frozen-AFTER",
+            "STOP",
+            "SCBO",
+            "MAP-SAAS-CBO",
+            "HetGP-KG",
+            "RGPE",
+            "HyperBO-EB",
+            "Target-SPSA"
+          ]
+        },
+        "Traffic_Ingolstadt": {
+          "kind": "traffic_des",
+          "n_source_tasks": 6,
+          "source_dims": [
+            23,
+            32
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            44
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            8,
+            15,
+            30,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "SCBO-on-Psi",
+            "RGPE-on-Psi",
+            "PublicPsi-TargetGP-TS",
+            "WarmStart-PatternSearch",
+            "Untempered-PriorResid",
+            "Frozen-AFTER",
+            "STOP",
+            "SCBO",
+            "MAP-SAAS-CBO",
+            "HetGP-KG",
+            "RGPE",
+            "HyperBO-EB",
+            "Target-SPSA"
+          ]
+        },
+        "OPSD_EuroGrid_Unclamped": {
+          "kind": "opsd",
+          "n_source_tasks": 6,
+          "source_dims": [
+            168,
+            240
+          ],
+          "source_channels": 1,
+          "source_psi_dim": 12,
+          "source_markets": [
+            "DK_1",
+            "NO_1",
+            "NO_2",
+            "SE_1",
+            "IT_CNOR",
+            "IT_CSUD"
+          ],
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 14,
+          "target_dims": [
+            336
+          ],
+          "target_channels": 1,
+          "target_psi_dim": 12,
+          "target_markets": [
+            "DK_2",
+            "GB_GBN",
+            "IT_NORD",
+            "IT_SUD",
+            "IT_SARD",
+            "IT_SICI",
+            "NO_3",
+            "NO_4",
+            "NO_5",
+            "SE_2",
+            "SE_3",
+            "SE_4",
+            "IE_sem",
+            "AT"
+          ],
+          "opsd_buffer_hours": 24,
+          "opsd_clamp_limit": null,
+          "opsd_mean_clamped_hour_pct": 0.0,
+          "online_step_budgets": [
+            15,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 8000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "SCBO-on-Psi",
+            "RGPE-on-Psi",
+            "PublicPsi-TargetGP-TS",
+            "WarmStart-PatternSearch",
+            "STOP",
+            "SCBO",
+            "RGPE"
+          ]
+        }
+      }
+    },
+    "v2_or_u3_messy_archive_v1": {
+      "manifest_relpath": "v2_or/manifests/v2_or_u3_messy_archive_v1.json",
+      "sealed_complete": true,
+      "families": {
+        "Inventory_CrossHorizon_Messy": {
+          "kind": "inventory",
+          "n_source_tasks": 6,
+          "source_dims": [
+            72,
+            96
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            192,
+            240
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            15,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "GP-FTA-NoDebias",
+            "RGPE-on-Psi",
+            "WarmStart-PatternSearch",
+            "PublicPsi-TargetGP-TS",
+            "RGPE",
+            "HyperBO-EB",
+            "STOP"
+          ]
+        },
+        "Queueing_CrossHorizon_Messy": {
+          "kind": "queueing",
+          "n_source_tasks": 6,
+          "source_dims": [
+            72,
+            96
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            192,
+            240
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            15,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "GP-FTA-NoDebias",
+            "RGPE-on-Psi",
+            "WarmStart-PatternSearch",
+            "PublicPsi-TargetGP-TS",
+            "RGPE",
+            "HyperBO-EB",
+            "STOP"
+          ]
+        },
+        "OPSD_EuroGrid_Messy": {
+          "kind": "opsd",
+          "n_source_tasks": 6,
+          "source_dims": [
+            168,
+            240
+          ],
+          "source_channels": 1,
+          "source_psi_dim": 12,
+          "source_markets": [
+            "DK_1",
+            "NO_1",
+            "NO_2",
+            "SE_1",
+            "IT_CNOR",
+            "IT_CSUD"
+          ],
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 14,
+          "target_dims": [
+            336
+          ],
+          "target_channels": 1,
+          "target_psi_dim": 12,
+          "target_markets": [
+            "DK_2",
+            "GB_GBN",
+            "IT_NORD",
+            "IT_SUD",
+            "IT_SARD",
+            "IT_SICI",
+            "NO_3",
+            "NO_4",
+            "NO_5",
+            "SE_2",
+            "SE_3",
+            "SE_4",
+            "IE_sem",
+            "AT"
+          ],
+          "opsd_buffer_hours": 24,
+          "opsd_clamp_limit": 0.2,
+          "opsd_mean_clamped_hour_pct": 1.7974912433818884,
+          "online_step_budgets": [
+            15,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 8000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "GP-FTA-NoDebias",
+            "RGPE-on-Psi",
+            "WarmStart-PatternSearch",
+            "PublicPsi-TargetGP-TS",
+            "RGPE",
+            "HyperBO-EB",
+            "STOP"
+          ]
+        },
+        "Traffic_Ingolstadt_Messy": {
+          "kind": "traffic_des",
+          "n_source_tasks": 6,
+          "source_dims": [
+            23,
+            32
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            44
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            15,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "GP-FTA-NoDebias",
+            "RGPE-on-Psi",
+            "WarmStart-PatternSearch",
+            "PublicPsi-TargetGP-TS",
+            "RGPE",
+            "HyperBO-EB",
+            "STOP"
+          ]
+        }
+      }
+    },
+    "v2_or_u3_live_sumo_v1": {
+      "manifest_relpath": "v2_or/manifests/v2_or_u3_live_sumo_v1.json",
+      "sealed_complete": true,
+      "families": {
+        "Traffic_Subnetwork_Archive_P2": {
+          "kind": "traffic_des",
+          "n_source_tasks": 6,
+          "source_dims": [
+            23,
+            32
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60
+        },
+        "Ingolstadt21_LiveSUMO_Calibrated": {
+          "kind": "traffic_live_sumo",
+          "n_target_tasks": 8,
+          "target_dims": [
+            44
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            15
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 6,
+          "batch_reps": 2,
+          "audit_replications": 80,
+          "arms": [
+            "GP-FTA-KG",
+            "GP-FTA-TS",
+            "SCBO-on-Psi",
+            "RGPE-on-Psi",
+            "PublicPsi-TargetGP-TS",
+            "WarmStart-PatternSearch",
+            "STOP",
+            "SCBO",
+            "RGPE"
+          ]
+        }
+      }
+    },
+    "v2_or_p1_mech_v1": {
+      "manifest_relpath": "v2_or/manifests/v2_or_p1_mech_v1.json",
+      "sealed_complete": true,
+      "families": {
+        "Inventory_P1_Dev": {
+          "kind": "inventory",
+          "n_source_tasks": 6,
+          "source_dims": [
+            72,
+            96
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            192,
+            240
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            8,
+            15,
+            30,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "A_PublicPsi_TargetGP_TS",
+            "B_Add_SourceWarmStart",
+            "C_Add_SourceBasis_WeakPrior",
+            "D_Add_FuncMetaPrior",
+            "Dhvd_Add_SourceNoisePrior",
+            "E_Add_TemplateProposals_TS",
+            "F1_Swap_LegacyVKG",
+            "F2_Swap_GatePowerVKG",
+            "G_WarmStart_PatternSearch",
+            "STOP"
+          ]
+        },
+        "Queueing_P1_Dev": {
+          "kind": "queueing",
+          "n_source_tasks": 6,
+          "source_dims": [
+            72,
+            96
+          ],
+          "source_channels": 2,
+          "source_psi_dim": 12,
+          "n_solver_trajectories": 24,
+          "per_solver_budget_calls": 60,
+          "n_target_tasks": 16,
+          "target_dims": [
+            192,
+            240
+          ],
+          "target_channels": 2,
+          "target_psi_dim": 12,
+          "online_step_budgets": [
+            8,
+            15,
+            30,
+            60
+          ],
+          "n_rep_seeds": 2,
+          "n0_init": 8,
+          "batch_reps": 2,
+          "audit_replications": 4000,
+          "arms": [
+            "A_PublicPsi_TargetGP_TS",
+            "B_Add_SourceWarmStart",
+            "C_Add_SourceBasis_WeakPrior",
+            "D_Add_FuncMetaPrior",
+            "Dhvd_Add_SourceNoisePrior",
+            "E_Add_TemplateProposals_TS",
+            "F1_Swap_LegacyVKG",
+            "F2_Swap_GatePowerVKG",
+            "G_WarmStart_PatternSearch",
+            "STOP"
+          ]
+        }
+      }
+    }
+  }
+}

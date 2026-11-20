@@ -1,16 +1,17 @@
 \begin{table}[htbp]
 \centering
-\caption{Conservative End-to-End Source-Archive Amortization (Theorem~\ref{thm:vkg_safety}(3)): \textbf{TLS-OLH-KG} at $N=15$ Strictly Dominates Cold-Start \texttt{SCBO} at $N=60$ Across All Four Families, Yielding Exact Break-Even Upper Bounds $M_{\mathrm{break}}^{\mathrm{upper}} = \lceil B_{\mathrm{src}} / (B_{\mathrm{SCBO,60}} - B_{\mathrm{TLS,15}}) \rceil$}\label{tab:amortization}
+\caption{Illustrative simulation-call amortization against raw-policy SCBO. The table compares observed losses and search-plus-verification calls, charging $1{,}428$ source calls per family in the full-cost scenario. Intervals quantify uncertainty in the paired mean call savings.}\label{tab:amortization}
 \scriptsize
-\setlength{\tabcolsep}{4.8pt}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccccc}
 \toprule
-\textbf{Family} & \textbf{Archive $B_{\mathrm{src}}$} & \textbf{TLS ($N\!=\!15$) Cost} & \textbf{\texttt{SCBO} ($N\!=\!60$) Cost} & \textbf{$B_{\mathrm{TLS,15}}$ Calls} & \textbf{$B_{\mathrm{SCBO,60}}$ Calls} & \textbf{Min Saving $\Delta B$} & \textbf{$M_{\mathrm{break}}^{\mathrm{upper}}$} \\
+\textbf{Family} & \textbf{GP-FTA ($N\!=\!15$)} & \textbf{\texttt{SCBO} ($N\!=\!60$)} & \textbf{$B_{\mathrm{FTA},15}$} & \textbf{$B_{\mathrm{SCBO},60}$} & \textbf{Call Saving $\Delta B$ ($95\%$ CI)} & \textbf{$M_{\mathrm{break}}^{\mathrm{sunk}}$} & \textbf{$M_{\mathrm{break}}^{\mathrm{full}}$ ($95\%$ UB)} \\
 \midrule
-Inventory & 1,428 & $\mathbf{1.914}$ & $1.925$ & 281 & 388 & $\ge 107$ & $\mathbf{\le 14}$ \\
-Queueing & 1,428 & $\mathbf{2.495}$ & $2.970$ & 275 & 382 & $\ge 107$ & $\mathbf{\le 14}$ \\
-OPSD Grid & 1,428 & $\mathbf{0.0566}$ & $0.0673$ & 276 & 376 & $\ge 100$ & $\mathbf{\le 15}$ \\
-Traffic-21 & 1,428 & $\mathbf{1.181}$ & $1.244$ & 329 & 493 & $\ge 164$ & $\mathbf{\le 9}$ \\
+Inventory & $\mathbf{1.927}$ & $1.960$ & 238.8 & 350.2 & $+111.5$ $[+54.2, +168.8]$ & $1$ & $\mathbf{13}$ ($\le 27$) \\
+Queueing & $\mathbf{2.535}$ & $3.052$ & 254.4 & 312.4 & $+58.0$ $[+16.0, +100.0]$ & $1$ & $\mathbf{25}$ ($\le 90$) \\
+OPSD Grid & $\mathbf{0.0587}$ & $0.0610$ & 260.3 & 406.4 & $+146.1$ $[+106.2, +186.1]$ & $1$ & $\mathbf{10}$ ($\le 14$) \\
+Traffic-21 & $\mathbf{1.108}$ & $1.145$ & 285.4 & 426.8 & $+141.4$ $[+103.2, +179.5]$ & $1$ & $\mathbf{11}$ ($\le 14$) \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}

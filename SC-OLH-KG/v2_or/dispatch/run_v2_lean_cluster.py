@@ -149,6 +149,8 @@ def main() -> int:
             "SCOLHKG.V2OR.DebiasedSubspace",
             "SCOLHKG.V2OR.TemperedHVD",
             "SCOLHKG.V2OR.VerificationKGAmortization",
+            "SCOLHKG.V2OR.FunctionalTransferRisk",
+            "SCOLHKG.V2OR.SequentialTheory",
             "SCOLHKG.V2ORProofInterface",
         ]
 
