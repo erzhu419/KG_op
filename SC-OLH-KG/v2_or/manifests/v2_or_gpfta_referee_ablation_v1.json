@@ -1,0 +1,253 @@
+{
+  "reuse_source_campaign": "v2_or_u3_confirm_v1",
+  "reuse_source_execution_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a",
+  "campaign_name": "v2_or_gpfta_referee_ablation_v1",
+  "role": "preregistered_matched_coefficient_and_acquisition_ablation",
+  "output_dir": "paper_artifacts/v2_or_gpfta_referee_ablation_v1",
+  "reference_arm": "HistoryFull-GateKG",
+  "families": [
+    {
+      "name": "Queueing_CrossHorizon",
+      "kind": "queueing",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5201,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 3627421,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7201
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        35012013,
+        35012017
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 40621001,
+      "arms": [
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "TargetWeak-GateKG",
+          "coefficient_prior": "weak_target",
+          "acquisition": "gate_power_vkg"
+        },
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "HistoryDiag-GateKG",
+          "coefficient_prior": "historical_diagonal",
+          "acquisition": "gate_power_vkg"
+        },
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "HistoryFull-GateKG",
+          "coefficient_prior": "historical_full",
+          "acquisition": "gate_power_vkg"
+        },
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "HistoryFull-FeasibleKG",
+          "coefficient_prior": "historical_full",
+          "acquisition": "chance_feasibility_kg"
+        }
+      ],
+      "reuse_archive_from_family": "Queueing_CrossHorizon",
+      "target_call_cap": 516
+    },
+    {
+      "name": "Traffic_Ingolstadt",
+      "kind": "traffic_des",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5401,
+        "tls_counts": [
+          11,
+          15
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 3627459,
+        "tls_counts": [
+          21
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7401
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        36011119,
+        36011123
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 41631003,
+      "arms": [
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "TargetWeak-GateKG",
+          "coefficient_prior": "weak_target",
+          "acquisition": "gate_power_vkg"
+        },
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "HistoryDiag-GateKG",
+          "coefficient_prior": "historical_diagonal",
+          "acquisition": "gate_power_vkg"
+        },
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "HistoryFull-GateKG",
+          "coefficient_prior": "historical_full",
+          "acquisition": "gate_power_vkg"
+        },
+        {
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "matched_coefficients",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "variance_estimator": "within_ssq",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default",
+          "name": "HistoryFull-FeasibleKG",
+          "coefficient_prior": "historical_full",
+          "acquisition": "chance_feasibility_kg"
+        }
+      ],
+      "reuse_archive_from_family": "Traffic_Ingolstadt",
+      "target_call_cap": 516
+    }
+  ]
+}

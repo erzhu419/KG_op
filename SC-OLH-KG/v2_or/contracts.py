@@ -114,9 +114,9 @@ class NominalTrajectoryExposure:
 class SufficientStatsRecord:
     """Decoupled within-policy sufficient statistics invariant to common mean shifts.
 
-    Given `m >= 2` replications at policy `x`, the within-policy sum of squared
-    deviations `ssq_con = sum_{r=1}^m (Y_{g,r} - mean_con)^2` satisfies
-    `E[ssq_con] = (m - 1) * v_g(x)` identically for all common mean shifts `Delta_g(x)`.
+    For a fixed batch of `m >= 2` IID replications at policy `x`, the within-
+    batch sum of squares satisfies `E[ssq_con] = (m - 1) * v_g(x)`.
+    Merging adaptively selected batches preserves translation invariance.
     """
 
     x_norm: np.ndarray

@@ -458,6 +458,7 @@ def _execute_single_item(
                 pool_size=p_size,
                 method_label=arm["name"],
                 gate_mode=gate_mode,
+                coefficient_prior=arm.get("coefficient_prior"),
             )
         elif arm_kind == "target_only_psi":
             res = run_tls_olh_kg(
@@ -638,6 +639,8 @@ def _execute_single_item(
         }
         if fresh:
             payload["target_call_cap"] = sum(prob.call_limits.values())
+        if res.mechanism_receipt is not None:
+            payload["mechanism_receipt"] = res.mechanism_receipt
         _write_json(item_path, payload)
         return {"job_id": job["job_id"], "status": "ok"}
 
@@ -731,6 +734,22 @@ def _execute_single_item(
         }
         if fresh:
             payload["verification_law_audit_calls_used"] = prob.verification_calls
+        if "mechanism_receipt" in payload:
+            variances = payload["mechanism_receipt"]["variance"]
+            for policy, audited in (("primary", primary_audit), ("deployed", deployed_audit)):
+                if audited is None:
+                    continue
+                audit_variance = {
+                    "obj_var": audited["mc_objective_se"] ** 2 * audited["n_audit_samples"],
+                    "con_var": audited["mc_constraint_std"] ** 2,
+                    "n_samples": audited["n_audit_samples"],
+                }
+                variances[policy]["audit"] = audit_variance
+                variances[policy]["squared_error_vs_audit"] = {
+                    estimator: {f"{head}_var": (variances[policy][estimator][f"{head}_var"] - audit_variance[f"{head}_var"]) ** 2
+                                for head in ("obj", "con")}
+                    for estimator in ("fixed_batch", "pooled") if variances[policy][estimator]["dof"] > 0
+                }
         _write_json(item_path, payload)
         return {"job_id": job["job_id"], "status": "ok"}
 
@@ -852,6 +871,7 @@ def _one_sided_paired_t(diffs_pos_better: np.ndarray) -> float:
 
 
 def _export_ledgers(out_dir: Path, rows: list[dict[str, Any]]) -> dict[str, str]:
+    has_mechanism = any("mechanism_receipt" in r for r in rows)
     ledger_rows = []
     cert_rows = []
     for r in rows:
@@ -895,6 +915,9 @@ def _export_ledgers(out_dir: Path, rows: list[dict[str, Any]]) -> dict[str, str]
             "safety_audit_class": r["safety_audit_class"],
             "execution_code_sha256": r["execution_code_sha256"],
             "manifest_sha256": r["manifest_sha256"],
+            **({"n_replication_queries": r["n_replication_queries"],
+                "mechanism_receipt_json": json.dumps(r.get("mechanism_receipt"), separators=(",", ":"), sort_keys=True)}
+               if has_mechanism else {}),
         })
         for c in r.get("slot_certificates", []):
             cert_rows.append({

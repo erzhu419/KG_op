@@ -6,10 +6,11 @@ certificates, compact summaries, and available records of historical expenditure
 are copied verbatim. The U3 Python snapshot in `frozen_u3/` matches the execution
 fingerprint cited by each U3 compact summary. That fingerprint covers `v2_or`
 Python files. The live traffic cohort also used the external SUMO runtime, legacy
-adapter, and scenario inputs. `SC-OLH-KG/v2_or/` is the corrected implementation
-used by the independent `v2_or_kg_quadrature_confirm_v1` panel. The integrity
-check binds its summary to the bundled Python and the preregistered manifest,
-and matches P1, P2, U1, U3, and independent-panel CSVs to their recorded hashes.
+adapter, and scenario inputs. `frozen_independent/SC-OLH-KG/v2_or` preserves the
+implementation used by the 432-cell independent panel.
+`SC-OLH-KG/v2_or/` is the implementation used by the 384-cell referee study.
+The integrity check binds each summary to its own bundled Python and preregistered
+manifest. It also matches the historical and current CSVs to their recorded hashes.
 When a local CSV uses LF, it checks the original CRLF form in memory and keeps
 the packaged file byte-for-byte. `LICENSES.md` records the asset provenance.
 
@@ -88,6 +89,7 @@ lake env lean SCOLHKG/V2ORProofInterface.lean
 The package supports independent table regeneration, deterministic code checks,
 LaTeX compilation, and Lean compilation. The independent panel's compact
 summary and paired readout are in `SC-OLH-KG/paper_artifacts/v2_or_kg_quadrature_confirm_v1/`.
+The referee study ledgers and readout are in `SC-OLH-KG/paper_artifacts/v2_or_gpfta_referee_ablation_v1/`.
 Each arm has the same search allocation and terminal cap. The ledgers record
 actual terminal calls under early stopping and keep independent audit calls
 separate. The frozen U3 source archives and fitted priors were reused.

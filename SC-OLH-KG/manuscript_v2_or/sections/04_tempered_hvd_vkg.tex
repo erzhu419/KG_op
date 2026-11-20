@@ -7,13 +7,15 @@ Within our unified \emph{Gate-Power-Aligned Functional Transfer} (\textbf{GP-FTA
 When transferring to a shifted target task $t$ where $g_t(x) = \tilde{\phi}(x)^\top \mu_{0,g} + \Delta_g(x)$, conditioning variance parameters on prior residuals $(Y_{t,g,\ell}(x) - \tilde{\phi}(x)^\top\mu_{0,g})^2$ leaks epistemic shift $\Delta_g(x)^2$ directly into aleatoric noise estimates, and persistent post-hoc uncertainty buffers can affect nominations. GP-FTA separates the dispersion statistic from the mean model and includes pruned-mode uncertainty in the GP covariance.
 
 \paragraph{1. Within-policy dispersion.}
-Given $n$ unique evaluated target policies $\{x_1,\dots,x_n\}$ with replicated subset $\mathcal{I}_{\mathrm{rep}} = \{i : r_i \ge 2\}$ and total degrees of freedom $D_n = \sum_{i \in \mathcal{I}_{\mathrm{rep}}} (r_i - 1)$, we estimate $\hat{\gamma}_{t,c} \in \R_+^{14}$ strictly from unbiased within-policy variances:
+Given $n$ unique evaluated target policies $\{x_1,\dots,x_n\}$ with replicated subset $\mathcal{I}_{\mathrm{rep}} = \{i : r_i \ge 2\}$ and total degrees of freedom $D_n = \sum_{i \in \mathcal{I}_{\mathrm{rep}}} (r_i - 1)$, we estimate $\hat{\gamma}_{t,c} \in \R_+^{14}$ from centered within-policy sums of squares:
 \begin{equation}\label{eq:hvd_map}
   \hat{\gamma}_{t,c} = \arg\min_{\gamma \ge 0} \;
   \sum_{i \in \mathcal{I}_{\mathrm{rep}}} (r_i - 1)\left(\frac{S_{t,c,i}^2}{r_i - 1} - u_{\mathrm{HVD}}(x_i)^\top \gamma\right)^2
   + \lambda_{n,\mathrm{HVD}} \|\gamma - \gamma_{0,c}\|_2^2,
 \end{equation}
 where $\lambda_{n,\mathrm{HVD}} = \min\{3,\, 0.5 + 2.5 N_{\mathrm{src}}^{\mathrm{rep}}/36\} / (1 + 0.10 D_n)$ decays smoothly with target degrees of freedom $D_n$ (and switches to target-only regularization once the prior is released). The intercept and variance-envelope adjustments use the empirical median target variance $\hat{m}_{v,c} = \operatorname{med}_{i \in \mathcal{I}_{\mathrm{rep}}}(S_{t,c,i}^2/(r_i - 1))$. The code also uses absolute numerical floors. The resulting prediction uses $\hat{v}_{n,c}(x) = \max\{u_{\mathrm{HVD}}(x)^\top \hat{\gamma}_{t,c},\, 10^{-10}\}$ and $\hat{v}_{n,g}^{\mathrm{UCB}}(x) = \hat{v}_{n,g}(x)\big(1 + 0.35 / \sqrt{\max\{1, D_n\}}\big) + \min\{\underline{v}_{0,g},\, 0.20\,\hat{m}_{v,g}\}$.
+
+Centering removes an additive policy mean exactly. Unbiasedness of $S_{t,c,i}^2/(r_i-1)$ holds for fixed-size IID policy samples, including a fresh batch with size chosen before its outcomes. Data-dependent revisits can bias the pooled statistic. Section~\ref{sec:theory} states the distinction, and the matched experiment reports a diagnostic comparing fixed-batch and pooled variance estimates against independent audits.
 
 \paragraph{2. Pruned-mode conditioning and adaptive release.}
 Setting empirical target scale $\hat{s}_{y,c}^2 = \max\{\widehat{\Var}(\bar{Y}_{t,c,1:n}),\, \operatorname{med}(\hat{v}_{n,c,1:n}/r_{1:n}),\, 10^{-8}\}$, each head $c \in \{f, g\}$ evaluates two candidate branches using the analytic fixed-parameter leave-one-out negative log predictive density \citep[\texttt{LOO-PLL}, Eq.~5.12 of][]{rasmussen2006gaussian}:

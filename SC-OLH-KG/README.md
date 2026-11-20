@@ -8,7 +8,9 @@ The [current manuscript](manuscript_v2_or/main_or.pdf) reports frozen U3 reruns 
 
 The [independent panel results](docs/gp_fta_corrected_kg_confirmation_results_20261120.md) report 72 new simulated tasks with paired comparisons against GP-FTA-TS and PublicPsi. The [historical replay record](docs/gp_fta_u3_historical_replay_20261120.md) links the regenerated U3 ledger evidence and the staged reviewer-input archive.
 
-The OR submission files are available as the [anonymous manuscript](../OR_Submission_GP_FTA_20261120/upload/manuscript.pdf), [electronic companion](../OR_Submission_GP_FTA_20261120/upload/electronic_companion.pdf), and [code and data supplement](../OR_Submission_GP_FTA_20261120/upload/code_and_data.zip). The [provenance and rights audit](docs/gp_fta_rights_audit_20261120.md) describes the pinned upstream inputs.
+The [matched referee-study results](docs/gp_fta_referee_ablation_results_20261120.md) report 48 additional queueing and traffic tasks, a common-basis comparison of coefficient priors, and an independent assessment of gate-power weighting and early release. The report also accounts for unsafe traffic anchors retained on abstention.
+
+The OR submission files are available as the [anonymous manuscript](../OR_Submission_GP_FTA_Rev1_20261120/upload/manuscript.pdf), [electronic companion](../OR_Submission_GP_FTA_Rev1_20261120/upload/electronic_companion.pdf), and [code and data supplement](../OR_Submission_GP_FTA_Rev1_20261120/upload/code_and_data.zip). The [provenance and rights audit](docs/gp_fta_rights_audit_20261120.md) describes the pinned upstream inputs.
 
 The sealed P0–P3 and U3 run artifacts remain in [paper_artifacts](paper_artifacts/). Earlier protocol receipts and model results retain their original version and budget.
 

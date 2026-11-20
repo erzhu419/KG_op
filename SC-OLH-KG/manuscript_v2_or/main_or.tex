@@ -23,7 +23,7 @@
 \def\bibhang{24pt}
 \def\newblock{\ }
 \def\BIBand{and}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
 
 \EquationsNumberedThrough
 \TheoremsNumberedThrough
@@ -70,7 +70,7 @@
 \TITLE{Gate-Power-Aligned Functional Transfer for Chance-Constrained Dynamic Simulation Optimization from Legacy Logs}
 \ARTICLEAUTHORS{\AUTHOR{Authors omitted for double-anonymous peer review}}
 
-\ABSTRACT{Historical simulation logs can guide which policies to evaluate and replicate when a new system must meet a chance constraint. Gate-Power-Aligned Functional Transfer (GP-FTA) learns a prior from adaptive solver logs using summaries of simulated system states. It estimates simulation noise from repeated runs at the same policy and adapts transfer using a predictive score. Two query rules use the probability of passing a binomial verification test. A separate terminal procedure verifies policies on fresh data and abstains if none pass. Under the registered independent sampling law, the chance of returning an unsafe policy is at most the allocated error level. On a previously evaluated task panel, frozen GP-FTA lookahead reduced loss relative to six raw-space comparators across four simulation families. Its clearest gains were in queueing. A simpler target-only method using the same representation achieved lower loss in inventory and traffic simulation. On 72 new simulated tasks with a common call cap, corrected lookahead used fewer calls in inventory and queueing. The same-representation target-only method had lower loss and more certifications in traffic. None of the six loss comparisons reached the adjusted 5 percent level.}
+\ABSTRACT{Historical simulation logs can guide which policies to evaluate when a new system must meet a chance constraint. GP-FTA uses public summaries of system states to learn a prior that transfers across policy dimensions. It estimates simulation noise from repeated runs and scores new queries by the probability of passing a finite-sample verification test. A separate procedure verifies candidate policies on fresh data. Under independent verification sampling, the probability of returning an unsafe certified policy is bounded by the test's error budget. An unsafe status quo can still operate after abstention. On 72 new simulated tasks, gate-power lookahead used fewer terminal calls than a same-representation target-only method in inventory. The mean operating loss favored lookahead in queueing and the target-only method in traffic, with uncertainty after adjustment for multiple comparisons. On another 48 tasks, adding off-diagonal historical covariance changed most nominated and operating policies, with mean loss changing in opposite directions in queueing and traffic. Matched comparisons found no statistically significant loss benefit for the historical prior, gate-power weighting, or an early prior release rule.}
 
 \KEYWORDS{simulation optimization; chance constraints; knowledge gradient; empirical Bayes; heteroscedastic metamodeling; clean-up verification}
 \SUBJECTCLASS{Simulation: efficiency and statistical analysis; Programming: stochastic, chance-constrained.}
@@ -92,20 +92,20 @@
 Google Gemini, OpenAI ChatGPT, and OpenAI Codex assisted with software development, methodological review, analysis scripts, reproducibility checks, and drafting and editing manuscript text. The reported numerical results were obtained from the logged experiments and checked against the archived records.
 
 \paragraph{Data and code availability.}
-The reproducibility attachment contains the scientific source for U3 and the independent panel, the sealed ledgers, and instructions for rebuilding the tables, manuscript, and formal declarations. It gives the pinned upstream versions and preparation steps for external benchmark inputs. A separate archive contains the U3 source trajectories, fitted priors, and search and audit receipts. The editorial office can request it for confidential review. Replay from these receipts reproduced the six U3 statistical ledgers. Experiment identities, the portability checks and the numerical correction are described in Electronic Companion~\ref{ec:provenance}.
+The reproducibility attachment contains the scientific source for frozen U3 and both independent panels, the sealed ledgers, and instructions for rebuilding the tables, manuscript, and formal declarations. It gives the pinned upstream versions and preparation steps for external benchmark inputs. A separate archive contains the U3 source trajectories, fitted priors, and search and audit receipts. The editorial office can request it for confidential review. Replay from these receipts reproduced the six U3 statistical ledgers. Experiment identities, the portability checks and the numerical correction are described in Electronic Companion~\ref{ec:provenance}.
 
 \clearpage
 \bibliographystyle{informs2014}
 \bibliography{references_v2}
 
 \clearpage
+\input{tables/table_independent_panel}
+\input{tables/table_operating_policy}
+\input{tables/table_matched_policy}
+\input{tables/table_matched_contrasts}
 \input{tables/table_main}
 \input{tables/table_ablations}
 \input{tables/table_verification_audit}
-\input{tables/table_messy_archive}
-\input{tables/table_live_sumo}
-\input{tables/table_amortization}
-\input{tables/table_independent_panel}
 
 \clearpage
 \input{sections/09_electronic_companion}

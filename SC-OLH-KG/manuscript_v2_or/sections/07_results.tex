@@ -1,6 +1,36 @@
 \section{Empirical Results}\label{sec:results}
 
-\subsection{Stage P1 Diagnostics and Sequential Mechanism Comparisons}\label{sec:p1_diag}
+\subsection{Results on the Independent Panel}\label{sec:independent_results}
+
+Table~\ref{tab:independent_panel} presents the 432 observations from the prospective comparison. All six Holm-adjusted loss comparisons have $p>0.05$. In inventory all three mean losses are within 0.0024. Corrected KG uses 369.0 target calls on average and certifies all 48 runs. PublicPsi uses 396.4 calls and certifies 47. The paired reduction is 27.42 calls per run (individual 95\% interval $[5.61,49.22]$). Each arm uses 136 search calls per run, so the inventory savings arise during verification. KG takes 15.52 seconds per run on average, compared with 7.97 for PublicPsi.
+
+In queueing, corrected KG uses 352.3 mean target calls, compared with 365.6 for GP-FTA-TS and 374.6 for PublicPsi. The 22.33-call reduction relative to PublicPsi has an individual 95\% paired interval of $[-0.52,45.18]$. KG wins 19 of 24 paired task-mean loss comparisons against PublicPsi, with a mean difference of 0.0325 (individual 95\% interval $[0.0047,0.0603]$, Holm-adjusted $p=0.119$). The mean loss of the same-framework TS arm is within 0.0029 of KG. All 144 deployments are certified and classified as confidently safe.
+
+In traffic, PublicPsi has lower mean loss than KG by 0.0455 (individual 95\% interval $[0.0101,0.0809]$, Holm-adjusted $p=0.084$), uses 23.83 fewer calls on average (individual 95\% paired interval $[-4.11,51.78]$), and certifies 42 of 48 runs. All 42 are confidently safe. KG certifies 32, of which 29 are confidently safe, two boundary-ambiguous and one confidently unsafe. The illustrative 10\% abstention surcharge preserves this traffic ordering and places KG first by mean loss in inventory.
+
+The 72 saved status-quo audits used 2,000 replications per task and reproduce the status-quo costs in all 432 run records. All 24 anchors in each of inventory and queueing are confidently safe. All 24 stylized traffic anchors are confidently unsafe, with violation point estimates from 22.80\% to 95.95\%. The lowest traffic estimate is 456 violations in 2,000 audited replications (95\% interval $[20.98\%,24.70\%]$). When the operator retains the anchor after abstention, the resulting traffic policy is confidently unsafe in 17 of 48 KG runs, 11 of 48 GP-FTA-TS runs, and six of 48 PublicPsi runs (Table~\ref{tab:operating_policy}). For KG the 17 comprise one certified nominee and 16 retained anchors. Those 16 anchors have point estimates from 50.25\% to 95.95\%. These traffic results illustrate how certification of new policies and safety of the policy actually operated can diverge.
+
+Recomputing the exact test and choice rule on 885 saved verification slots reproduces the recorded terminal decisions and calls. The rule deploys a non-primary nominee in 51 of the 128 corrected KG certifications, including 20 of 32 in traffic. Of these 51 deployments, 30 selected a later slot despite a primary pass, and 21 followed a primary failure. The final decision thus frequently uses a policy other than the first nominee scored by the search proxy.
+
+The recorded search counters classify a query as a revisit when its normalized policy, rounded to six decimal places, matches a policy already observed. Among the 2,880 online queries per method and family, the inventory, queueing, and traffic revisit rates are 33.2\%, 30.1\%, and 37.4\% for KG. The corresponding rates are 39.6\%, 37.2\%, and 40.6\% for GP-FTA-TS, and 41.9\%, 39.2\%, and 42.7\% for PublicPsi. These rates quantify the use of adaptive pooling. They leave the size of any resulting finite-sample variance bias open.
+
+The panel used 165,864 target calls, comprising 58,752 for search and 107,112 for terminal verification. The independent audits used 1,320,000 calls. Source archives and fitted priors were reused. This comparison measures the corrected implementation on newly drawn tasks at the common cap. It does not estimate the causal effect of the quadrature adjustment in isolation.
+
+\subsection{Matched Results on Queueing and Traffic}\label{sec:matched_results}
+
+Tables~\ref{tab:matched_policy} and~\ref{tab:matched_contrasts} report the four paid arms and the exact replay of the early release policy. All ten Holm-adjusted $p$ values equal 1. In queueing, the historical diagonal prior raises the mean loss by $0.0380$ relative to the target-initialized weak prior. Adding off-diagonal covariance lowers mean loss by $0.0222$ (individual 95\% interval $[-0.0483,0.0926]$ for the reduction). In traffic, full covariance raises mean loss relative to diagonal by $0.0147$ (reduction interval $[-0.0393,0.0099]$). The point estimates show how the contribution of the historical coefficients can change with the prior and problem.
+
+Full covariance changes the first query in 7 of 48 queueing runs and 18 of 48 traffic runs. Relative to the diagonal prior, it changes 46 primary nominations in each family and changes the operating policy in 46 queueing and 35 traffic runs. In queueing all policies operated by both arms are confidently safe. Full covariance lowers loss in 25 of those paired runs and raises it in 21. In traffic it turns three confidently unsafe operating policies into confidently safe ones, and six confidently safe policies into confidently unsafe ones. When both traffic runs are confidently safe, full covariance lowers loss in 12 and raises it in 13. All 24 traffic anchors on this new panel are confidently unsafe, and all confidently unsafe operating outcomes in Table~\ref{tab:matched_policy} arise from retaining an anchor after abstention.
+
+Keeping the full coefficient model fixed, weighting by gate power rather than chance feasibility raises mean loss by $0.0314$ in queueing and $0.0208$ in traffic. Mean terminal use rises by 1.0 call in queueing and falls by 7.5 in traffic. Queueing yields 48 confidently safe policies with either weighting. Traffic yields 30 confidently safe operating policies with gate power and 33 with feasibility weighting. These comparisons assess two scores used with the same terminal test.
+
+The initial score releases the historical coefficients in five queueing runs and three traffic runs out of 48 in each family. Relative to always using the full prior, the replayed strategy reduces mean queueing loss by $0.00003$ and raises mean traffic loss by $0.00106$. Its mean loss is higher than always using the weak coefficients in both families. This experiment gives no evidence of a loss benefit from the registered release rule.
+
+Across the paid arms, online revisit rates range from $31.5\%$ to $35.0\%$ in queueing and $38.2\%$ to $42.4\%$ in traffic. Comparing variance estimates to the independent audit at nominated policies, the fixed-batch constraint estimate has a lower mean squared error in traffic and a higher one in queueing. For certified deployments the pooled estimate has lower mean squared error in both families. Electronic Companion~\ref{ec:matched_variances} reports the corresponding values and sampling scope. The matched study uses 52,224 search, 97,344 verification, and 1,208,000 audit calls across the four paid arms and their shared anchor audits. It reuses the fitted sources.
+
+\subsection{Earlier Shared-Panel Results}
+
+\subsubsection{Stage P1 Diagnostics and Sequential Mechanism Comparisons}\label{sec:p1_diag}
 
 \begin{figure}[htbp]
   \centering
@@ -12,7 +42,7 @@ Nearby public representations often correspond to similar objectives, with media
 
 With identical NNLS fitting, within-policy dispersion improves the log-variance RMSE relative to prior-centered residuals. Under the $1.3\times$ shift with four replications, queueing RMSE falls from $6.83$ to $5.16$, while the median ratio of predicted to reference variance remains $198.7$. The binomial pass curve gives $C_{112,1}(0.05)\approx0.0221$, versus $0.50$ from a feasibility-boundary proxy. Calibration still depends on the fitted posterior. In P1, Brier error increased on inventory and queueing and fell slightly on traffic. For the P1 mechanism comparisons, $D-C$ favors adding the functional prior in inventory but fixed-scale transfer incurs a higher loss in queueing at $N=60$. The recorded gate-power KG arm has lower mean loss than gate-power TS in all eight inventory/queueing budget cells on that development panel. The U3 comparison below shows the dependence of this finding on the experimental configuration.
 
-\subsection{Stage U3 Shared-Panel Comparisons}
+\subsubsection{Stage U3 Shared-Panel Comparisons}
 
 \begin{figure}[htbp]
   \centering
@@ -31,30 +61,10 @@ At $N=60$, KG has lower mean status-quo loss than its same-framework TS counterp
 
 At the same $N=60$ budget, mean KG loss from P2 to U3 falls from $1.9136$ to $1.8974$ in inventory and from $2.5502$ to $2.5065$ in queueing, with the same certification counts. It rises from $1.0706$ to $1.0781$ in traffic DES and from $0.06018$ to $0.06102$ on the unclipped grid, where certifications fall from 20 to 17 of 28 runs. These are comparisons of the two complete versions on shared tasks and streams.
 
-\subsection{Verification Coverage and Safety Audits}
+\subsubsection{Verification Coverage and Safety Audits}
 
 Table~\ref{tab:verification_audit} separates gate-law rechecks from the deployment audits. The main and raw-tail U3 ledger contains 6,144 certified deployments and 1,400 abstentions. Grid rechecks use fresh draws from the verification block law and are available for 1,624 certified grid runs across all methods. The two GP-FTA arms account for 279 of these rechecks (205 clipped and 74 unclipped). The verification-law point estimate is at or below $0.05$ in each of those 279 runs. On the separate audit block pool, Clopper--Pearson classifications across the two GP-FTA grid arms include 28 confidently unsafe deployments (10 clipped and 18 unclipped). Pool-specific outcomes measure different risks. The exact conditional verification bound concerns the verification law; outcomes from the audit pool characterize performance when that empirical distribution changes.
 
-The status-quo endpoint assigns the cost of the anchor to abstentions and the audited objective to all certified deployments. Its use does not guarantee the anchor's safety, and a certified deployment can have low cost even when the independent audit identifies it as unsafe. The extra 10\% cost of abstention is an illustrative sensitivity parameter. We therefore interpret the loss and audit summaries together.
+The status-quo loss assigns the anchor's cost to abstentions and the selected nominee's audited objective to certified deployments. Table~\ref{tab:verification_audit} classifies the certified nominees from the archived campaigns. For the independent panel, Table~\ref{tab:operating_policy} also classifies the anchors retained after abstention.
 
-\subsection{Heterogeneous Archives, Microscopic Traffic, and Amortization}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.95\textwidth]{figures/fig3_amortization_mbreak.pdf}
-  \caption{(a) Mean certification rate and savings under the illustrative delay penalty on the four U3 families at $N=60$. (b) Savings under simulated archive heterogeneity on the same panel.}\label{fig:amortization}
-\end{figure}
-
-The heterogeneous archive experiment (Table~\ref{tab:messy_archive}) obtains 1,861 certified deployments in 2,108 runs. All 422 recorded grid verification-law rechecks have point estimates at or below $0.05$. The independent audit classifies 12 deployments as confidently unsafe and 7 as ambiguous. Among the displayed arms at $N=60$, frozen KG has the smallest queueing loss ($2.518$) and frozen TS the smallest grid delay-penalized loss ($0.0570$). Removing the occupancy weights produces similar losses in inventory, queueing, and storage, and lowers the traffic loss from $1.082$ to $1.034$. Because the archive conditions change together, these comparisons describe robustness to combined heterogeneity.
-
-On the calibrated single-network, single-route SUMO panel (Table~\ref{tab:live_sumo}), frozen KG records the smallest mean loss among nine methods ($0.9439$), compared with $0.9696$ for \texttt{PublicPsi-TargetGP-TS}. It certifies 8 of 16 runs. The independent audit finds 3 confidently safe, 5 boundary-ambiguous, and 0 confidently unsafe among these eight. The prior-version P2 KG on these configurations achieved $0.9685$ with 6 of 16 certified. Mean search-plus-verification calls fell from $370.25$ to $344.75$ while the recorded wall time increased from roughly $5{,}566$ to $8{,}507$ seconds. The separate uncalibrated stress panel produced 40 abstentions and thus no certified deployment to audit.
-
-Table~\ref{tab:amortization} contrasts frozen GP-FTA-KG at $N=15$ with raw-policy SCBO at $N=60$. On this panel the reported mean losses favor GP-FTA-KG and the mean call savings range from 58.0 to 146.1 per task. The paired intervals quantify call savings, whereas the loss comparison is descriptive. Counting source generation at $1{,}428$ calls per family yields an illustrative break-even range of 10--25 tasks. This estimate concerns the reported comparator and excludes retraining or transfer of the cost assumptions to a new deployment setting.
-
-\subsection{Results on the Independent Panel}\label{sec:independent_results}
-
-Table~\ref{tab:independent_panel} presents the 432 observations from the prospective comparison. None of the six paired comparisons rejects equality at the 5\% level after Holm adjustment. In inventory all three mean losses are within 0.0024. Corrected KG uses 369.0 target calls on average and certifies all 48 runs. PublicPsi uses 396.4 calls and certifies 47. KG takes 15.52 seconds per run on average, compared with 7.97 for PublicPsi.
-
-In queueing, corrected KG uses 352.3 mean target calls, compared with 365.6 for GP-FTA-TS and 374.6 for PublicPsi. The mean paired loss difference against PublicPsi is 0.0325 in favor of KG (individual 95\% interval $[0.0047,0.0603]$, Holm-adjusted $p=0.119$). All 144 deployments were certified and classified as confidently safe by their audits. In traffic, PublicPsi has lower mean loss than KG by 0.0455 (individual 95\% interval $[0.0101,0.0809]$, Holm-adjusted $p=0.084$), uses fewer calls and certifies 42 of 48 runs. All 42 are confidently safe. KG certifies 32, of which 29 are confidently safe, two boundary-ambiguous and one confidently unsafe. The 10\% abstention surcharge preserves this traffic ordering and places KG first by mean loss in inventory. Its role is descriptive.
-
-The panel used 165,864 target calls, comprising 58,752 for search and 107,112 for terminal verification. The independent audits used 1,320,000 calls. Source archives and fitted priors were reused. This comparison measures the corrected implementation on newly drawn tasks at the common cap. It does not estimate the causal effect of the quadrature adjustment in isolation.
+The heterogeneous-archive, microscopic traffic and source-amortization results are detailed in Electronic Companion~\ref{ec:archived_sensitivity}.

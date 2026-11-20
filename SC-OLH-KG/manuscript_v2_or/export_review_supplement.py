@@ -28,6 +28,7 @@ REVIEW_INPUTS = {
 OMIT = REVIEW_INPUTS | {
     MANUSCRIPT / "main_or.pdf",
     MANUSCRIPT / "export_clean_replication_bundle.py",
+    MANUSCRIPT / "export_review_supplement.py",
     SC / "docs/gp_fta_or_remediation_20261120.md",
     SC / "docs/gp_fta_systematic_audit_20261120.md",
     SC / "docs/gp_fta_u3_historical_replay_20261120.md",

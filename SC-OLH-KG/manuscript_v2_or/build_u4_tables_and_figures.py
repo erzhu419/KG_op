@@ -4,7 +4,7 @@
 Reads strictly from sealed Stage P0, Stage P1, and Stage U3 CSV ledgers and JSON
 diagnostics (`v2_or_p1_diagnostics_v1`, `v2_or_p1_mech_v1`, `v2_or_u3_confirm_v1`,
 `v2_or_u3_messy_archive_v1`, `v2_or_u3_live_sumo_v1`, `v2_or_p0_reaudit_v1`).
-Adds the corrected KG table when the sealed independent panel readout is available.
+Adds corrected KG and operating-policy tables from the independent panel readouts.
 """
 
 from __future__ import annotations
@@ -548,6 +548,115 @@ def build_table_independent_panel(readout: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def build_table_operating_policy(readout: dict[str, Any]) -> str:
+    methods = ("GP-FTA-KG", "GP-FTA-TS", "PublicPsi-TargetGP-TS")
+    classes = ("confidently_safe", "boundary_ambiguous", "confidently_unsafe")
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Audited risk of each operating policy on the independent panel. "
+        r"A run deploys its certified nominee or retains its status-quo policy on abstention. "
+        r"Classifications use two-sided 95\% Clopper--Pearson intervals relative to the 5\% threshold. "
+        r"An audit of the status-quo policy is reused across methods and streams within a task.}\label{tab:operating_policy}",
+        r"\scriptsize",
+        r"\begin{tabular}{llccrrr}",
+        r"\toprule",
+        r"\textbf{Family} & \textbf{Method} & \textbf{New certificates} & \textbf{Status quo} & "
+        r"\textbf{Safe} & \textbf{Ambiguous} & \textbf{Unsafe} \\",
+    ]
+    for family in ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "Traffic_Ingolstadt"):
+        lines.append(r"\midrule")
+        for index, method in enumerate(methods):
+            arm = readout["families"][family]["arms"][method]
+            family_label = "Traffic DES" if family == "Traffic_Ingolstadt" else SHORT_FAM[family]
+            family_col = rf"\multirow{{3}}{{*}}{{{family_label}}}" if index == 0 else ""
+            safe, ambiguous, unsafe = (arm["operating_policy_classes"].get(label, 0) for label in classes)
+            lines.append(
+                f"{family_col} & {_disp_method(method)} & {arm['certified']}/{arm['runs']} & "
+                rf"{arm['retained_anchor']} & {safe} & {ambiguous} & {unsafe} \\"
+            )
+    lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}"])
+    return "\n".join(lines)
+
+
+
+def build_referee_tables(readout: dict[str, Any]) -> tuple[str, str]:
+    names = {
+        "TargetWeak-GateKG": "Weak",
+        "HistoryDiag-GateKG": "Diagonal",
+        "HistoryFull-GateKG": "Full",
+        "HistoryFull-FeasibleKG": "Feasible KG",
+        "InitialRelease-GateKG": "Early release",
+    }
+    policy = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{Matched runs on new queueing and traffic tasks. Operating loss and audit classes",
+        r"include the status quo on abstention. Each row contains 48 runs in 24 paired tasks.",
+        r"Early release is an exact replay of the selected weak or full path.}\label{tab:matched_policy}",
+        r"\small\begin{tabular}{llrcccc}\toprule",
+        r"Family & Prior / rule & Loss & Terminal calls & Certified & Safe / unclear / unsafe & Violation rate \\",
+    ]
+    comparisons = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{Paired operating loss, averaged within each task. Positive differences favor the latter arm.",
+        r"Intervals are individual 95\% paired $t$ intervals. Holm adjustment uses all ten tests.}\label{tab:matched_contrasts}",
+        r"\small\begin{tabular}{llccc}\toprule",
+        r"Family & Former $\to$ latter & Difference [interval] & Wins / losses / ties & Holm $p$ \\",
+    ]
+    for family, values in readout["families"].items():
+        policy.append(r"\midrule")
+        comparisons.append(r"\midrule")
+        short_family = "Queueing" if family.startswith("Queueing") else "Traffic"
+        for j, (arm, row) in enumerate(values["arms"].items()):
+            counts = "/".join(str(row["operating_audits"].get(key, 0)) for key in
+                              ("confidently_safe", "boundary_ambiguous", "confidently_unsafe"))
+            fam = short_family if j == 0 else ""
+            policy.append(
+                f"{fam} & {names[arm]} & {row['mean_operating_loss']:.4f} & "
+                f"{row['mean_terminal_calls']:.1f} & {row['certified']}/{row['runs']} & {counts} & "
+                rf"{100*row['mean_operating_violation_rate']:.2f}\% \\"
+            )
+        for j, (label, row) in enumerate(values["comparisons"].items()):
+            before, after = label.split(" to ")
+            lo, hi = row["ci95"]
+            wins = "/".join(map(str, row["latter_wins_losses_ties"]))
+            fam = short_family if j == 0 else ""
+            comparisons.append(
+                rf"{fam} & {names[before]} $\to$ {names[after]} & "
+                rf"${row['improvement']:.4f}\ [{lo:.4f},\,{hi:.4f}]$ & {wins} & "
+                rf"{_fmt_p(row['p_holm'])} \\"
+            )
+    end = [r"\bottomrule\end{tabular}", r"\end{table}"]
+    return "\n".join(policy + end) + "\n", "\n".join(comparisons + end) + "\n"
+
+
+def build_referee_variances(readout: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{Mean squared variance error against independent audits, by family and role.}\label{tab:matched_variances}",
+        r"\small\begin{tabular}{llrcccc}\toprule",
+        r"& & & \multicolumn{2}{c}{Objective variance} & \multicolumn{2}{c}{Constraint variance} \\",
+        r"Family & Policy role & Runs & Fixed batch & Pooled & Fixed batch & Pooled \\",
+    ]
+    for family, values in readout["families"].items():
+        lines.append(r"\midrule")
+        short_family = "Queueing" if family.startswith("Queueing") else "Traffic"
+        paid_arms = [arm for name, arm in values["arms"].items() if name != "InitialRelease-GateKG"]
+        for role, label in (("primary", "Primary"), ("deployed", "Certified")):
+            roles = [arm["variance_diagnostics"][role] for arm in paid_arms]
+            n = sum(row["n"] for row in roles)
+            cells = []
+            for head in ("obj_var", "con_var"):
+                for estimator in ("fixed_batch", "pooled"):
+                    mse = sum(row["n"] * row["mean_squared_errors"][estimator][head] for row in roles if row["n"]) / n
+                    base, exponent = f"{mse:.3e}".split("e")
+                    cells.append(rf"${base}\times 10^{{{int(exponent)}}}$")
+            family_cell = short_family if role == "primary" else ""
+            lines.append(" & ".join([family_cell, label, str(n), *cells]) + r" \\")
+    lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
 def _compute_honest_amortization(rows_u3: list[dict[str, str]], fam: str, b_src: int = 1428) -> dict[str, Any]:
     agg = _task_agg(rows_u3, fam)["by_budget"]
     fta15 = agg[15]["GP-FTA-KG"]
@@ -826,6 +935,19 @@ def main() -> None:
         (tab_dir / "table_independent_panel.tex").write_text(
             build_table_independent_panel(independent_readout), encoding="utf-8"
         )
+    operating_path = independent_path.with_name("operating_policy_readout.json")
+    if operating_path.is_file():
+        operating_readout = json.loads(operating_path.read_text(encoding="utf-8"))
+        (tab_dir / "table_operating_policy.tex").write_text(
+            build_table_operating_policy(operating_readout), encoding="utf-8"
+        )
+    referee = ART_DIR / "v2_or_gpfta_referee_ablation_v1/referee_ablation_readout.json"
+    if referee.is_file():
+        readout = json.loads(referee.read_text(encoding="utf-8"))
+        policy, comparisons = build_referee_tables(readout)
+        (tab_dir / "table_matched_policy.tex").write_text(policy, encoding="utf-8")
+        (tab_dir / "table_matched_contrasts.tex").write_text(comparisons, encoding="utf-8")
+        (tab_dir / "table_matched_variances.tex").write_text(build_referee_variances(readout), encoding="utf-8")
     build_figures(args.output_dir / "figures", rows_u3, rows_messy, rows_p1_mech, p1_diag)
     print(f"Regenerated sealed-ledger tables and figures in {args.output_dir}.")
 

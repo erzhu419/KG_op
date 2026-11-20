@@ -1,0 +1,709 @@
+{
+  "campaign_name": "v2_or_gpfta_referee_ablation_v1",
+  "paid_cells": 384,
+  "exact_early_policy_replays": 96,
+  "families": {
+    "Queueing_CrossHorizon": {
+      "tasks": 24,
+      "streams_per_task": 2,
+      "arms": {
+        "TargetWeak-GateKG": {
+          "runs": 48,
+          "certified": 48,
+          "certified_audits": {
+            "confidently_safe": 48
+          },
+          "operating_audits": {
+            "confidently_safe": 48
+          },
+          "mean_operating_violation_rate": 0.0009479166666666667,
+          "mean_operating_loss": 2.640525592707294,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 226.66666666666666,
+          "mean_total_target_calls": 362.6666666666667,
+          "revisit_count": 934,
+          "revisit_share": 0.32430555555555557,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0010337205355188134,
+                  "con_var": 1.101783051152294e-07
+                },
+                "pooled": {
+                  "obj_var": 0.0010428583283687105,
+                  "con_var": 1.0415433771818372e-07
+                }
+              }
+            },
+            "deployed": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0005534479936761518,
+                  "con_var": 1.2385856216399267e-08
+                },
+                "pooled": {
+                  "obj_var": 0.0005601156744709908,
+                  "con_var": 1.1711356941743095e-08
+                }
+              }
+            }
+          }
+        },
+        "HistoryDiag-GateKG": {
+          "runs": 48,
+          "certified": 48,
+          "certified_audits": {
+            "confidently_safe": 48
+          },
+          "operating_audits": {
+            "confidently_safe": 48
+          },
+          "mean_operating_violation_rate": 0.00053125,
+          "mean_operating_loss": 2.678511034218645,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 241.75,
+          "mean_total_target_calls": 377.75,
+          "revisit_count": 907,
+          "revisit_share": 0.31493055555555555,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.001057615266502996,
+                  "con_var": 5.972406132708165e-08
+                },
+                "pooled": {
+                  "obj_var": 0.0009337316104303853,
+                  "con_var": 4.27989262010987e-08
+                }
+              }
+            },
+            "deployed": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0011054310038028793,
+                  "con_var": 9.548708493522108e-09
+                },
+                "pooled": {
+                  "obj_var": 0.001065352541123386,
+                  "con_var": 9.7414348239056e-09
+                }
+              }
+            }
+          }
+        },
+        "HistoryFull-GateKG": {
+          "runs": 48,
+          "certified": 48,
+          "certified_audits": {
+            "confidently_safe": 48
+          },
+          "operating_audits": {
+            "confidently_safe": 48
+          },
+          "mean_operating_violation_rate": 9.375e-05,
+          "mean_operating_loss": 2.6563371991298363,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 219.66666666666666,
+          "mean_total_target_calls": 355.6666666666667,
+          "revisit_count": 978,
+          "revisit_share": 0.33958333333333335,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.001473111487550602,
+                  "con_var": 2.581081634655361e-07
+                },
+                "pooled": {
+                  "obj_var": 0.001283191791670218,
+                  "con_var": 2.5546683645602375e-07
+                }
+              }
+            },
+            "deployed": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0013648118227761591,
+                  "con_var": 8.747356699465185e-09
+                },
+                "pooled": {
+                  "obj_var": 0.0012620107217813225,
+                  "con_var": 7.529275018123343e-09
+                }
+              }
+            }
+          }
+        },
+        "HistoryFull-FeasibleKG": {
+          "runs": 48,
+          "certified": 48,
+          "certified_audits": {
+            "confidently_safe": 48
+          },
+          "operating_audits": {
+            "confidently_safe": 48
+          },
+          "mean_operating_violation_rate": 0.0013958333333333333,
+          "mean_operating_loss": 2.624943204883013,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 218.66666666666666,
+          "mean_total_target_calls": 354.6666666666667,
+          "revisit_count": 1007,
+          "revisit_share": 0.34965277777777776,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0010078149797080763,
+                  "con_var": 1.806918675179834e-08
+                },
+                "pooled": {
+                  "obj_var": 0.0009233242004077773,
+                  "con_var": 2.0077400313409956e-08
+                }
+              }
+            },
+            "deployed": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.001041472625901092,
+                  "con_var": 1.4478239467408807e-08
+                },
+                "pooled": {
+                  "obj_var": 0.0010195902923281896,
+                  "con_var": 1.3559732263877723e-08
+                }
+              }
+            }
+          }
+        },
+        "InitialRelease-GateKG": {
+          "runs": 48,
+          "certified": 48,
+          "certified_audits": {
+            "confidently_safe": 48
+          },
+          "operating_audits": {
+            "confidently_safe": 48
+          },
+          "mean_operating_violation_rate": 0.00046875000000000004,
+          "mean_operating_loss": 2.656308988425175,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 222.33333333333334,
+          "mean_total_target_calls": 358.3333333333333,
+          "revisit_count": 970,
+          "revisit_share": 0.3368055555555556,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0015061026241201204,
+                  "con_var": 2.6712134264877374e-07
+                },
+                "pooled": {
+                  "obj_var": 0.0013342361269691855,
+                  "con_var": 2.6455957156332515e-07
+                }
+              }
+            },
+            "deployed": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0013733015567398775,
+                  "con_var": 1.2602607498945394e-08
+                },
+                "pooled": {
+                  "obj_var": 0.0012404665750976205,
+                  "con_var": 1.1521584705306834e-08
+                }
+              }
+            }
+          }
+        }
+      },
+      "comparisons": {
+        "TargetWeak-GateKG to HistoryDiag-GateKG": {
+          "improvement": -0.03798544151135114,
+          "ci95": [
+            -0.10223724947689204,
+            0.02626636645418977
+          ],
+          "latter_wins_losses_ties": [
+            9,
+            15,
+            0
+          ],
+          "p": 0.23371978637414098,
+          "p_holm": 1.0
+        },
+        "HistoryDiag-GateKG to HistoryFull-GateKG": {
+          "improvement": 0.022173835088809084,
+          "ci95": [
+            -0.04825986666436771,
+            0.09260753684198589
+          ],
+          "latter_wins_losses_ties": [
+            15,
+            9,
+            0
+          ],
+          "p": 0.5213383581931851,
+          "p_holm": 1.0
+        },
+        "HistoryFull-FeasibleKG to HistoryFull-GateKG": {
+          "improvement": -0.031393994246823244,
+          "ci95": [
+            -0.0803974952544173,
+            0.01760950676077081
+          ],
+          "latter_wins_losses_ties": [
+            11,
+            13,
+            0
+          ],
+          "p": 0.19809305226424492,
+          "p_holm": 1.0
+        },
+        "HistoryFull-GateKG to InitialRelease-GateKG": {
+          "improvement": 2.8210704661043213e-05,
+          "ci95": [
+            -0.006811151441434238,
+            0.006867572850756324
+          ],
+          "latter_wins_losses_ties": [
+            2,
+            2,
+            20
+          ],
+          "p": 0.9932655458048796,
+          "p_holm": 1.0
+        },
+        "TargetWeak-GateKG to InitialRelease-GateKG": {
+          "improvement": -0.01578339571788101,
+          "ci95": [
+            -0.07009562271172828,
+            0.03852883127596627
+          ],
+          "latter_wins_losses_ties": [
+            11,
+            12,
+            1
+          ],
+          "p": 0.5536114243119548,
+          "p_holm": 1.0
+        }
+      },
+      "early_choices": {
+        "TargetWeak-GateKG": 5,
+        "HistoryFull-GateKG": 43
+      },
+      "full_vs_diagonal": {
+        "primary_changed": 46,
+        "operating_policy_changed": 46,
+        "first_query_changed": 7,
+        "both_safe_full_lower_loss": 25,
+        "both_safe_diagonal_lower_loss": 21
+      },
+      "initial_log_ratio_range": [
+        -3.1403172106140755,
+        4.881558531588525
+      ]
+    },
+    "Traffic_Ingolstadt": {
+      "tasks": 24,
+      "streams_per_task": 2,
+      "arms": {
+        "TargetWeak-GateKG": {
+          "runs": 48,
+          "certified": 35,
+          "certified_audits": {
+            "confidently_safe": 35
+          },
+          "operating_audits": {
+            "confidently_unsafe": 13,
+            "confidently_safe": 35
+          },
+          "mean_operating_violation_rate": 0.21804166666666666,
+          "mean_operating_loss": 1.1033443724391003,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 278.9166666666667,
+          "mean_total_target_calls": 414.9166666666667,
+          "revisit_count": 1099,
+          "revisit_share": 0.3815972222222222,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.00015072210874599666,
+                  "con_var": 6.361470900084767e-05
+                },
+                "pooled": {
+                  "obj_var": 0.00017462913242377375,
+                  "con_var": 6.69107165766874e-05
+                }
+              }
+            },
+            "deployed": {
+              "n": 35,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 4.8743402900254816e-05,
+                  "con_var": 3.0907864211282866e-05
+                },
+                "pooled": {
+                  "obj_var": 2.3263618585155637e-05,
+                  "con_var": 1.5973172439339996e-05
+                }
+              }
+            }
+          }
+        },
+        "HistoryDiag-GateKG": {
+          "runs": 48,
+          "certified": 33,
+          "certified_audits": {
+            "confidently_safe": 33
+          },
+          "operating_audits": {
+            "confidently_unsafe": 15,
+            "confidently_safe": 33
+          },
+          "mean_operating_violation_rate": 0.24495833333333333,
+          "mean_operating_loss": 1.1160319776375125,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 281.3333333333333,
+          "mean_total_target_calls": 417.3333333333333,
+          "revisit_count": 1163,
+          "revisit_share": 0.40381944444444445,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0003067550076384521,
+                  "con_var": 0.00011652022706152638
+                },
+                "pooled": {
+                  "obj_var": 0.0003114893248092858,
+                  "con_var": 0.00010516546573663661
+                }
+              }
+            },
+            "deployed": {
+              "n": 33,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 1.7346191869296577e-05,
+                  "con_var": 1.2775744864947497e-05
+                },
+                "pooled": {
+                  "obj_var": 1.7063693731594206e-05,
+                  "con_var": 1.1885292437976596e-05
+                }
+              }
+            }
+          }
+        },
+        "HistoryFull-GateKG": {
+          "runs": 48,
+          "certified": 31,
+          "certified_audits": {
+            "boundary_ambiguous": 1,
+            "confidently_safe": 30
+          },
+          "operating_audits": {
+            "confidently_unsafe": 17,
+            "boundary_ambiguous": 1,
+            "confidently_safe": 30
+          },
+          "mean_operating_violation_rate": 0.282625,
+          "mean_operating_loss": 1.130713996249961,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 276.75,
+          "mean_total_target_calls": 412.75,
+          "revisit_count": 1220,
+          "revisit_share": 0.4236111111111111,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.00030507420310279013,
+                  "con_var": 8.254450713589979e-05
+                },
+                "pooled": {
+                  "obj_var": 0.0003525431473899427,
+                  "con_var": 9.690561552678573e-05
+                }
+              }
+            },
+            "deployed": {
+              "n": 31,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 2.8923331712966066e-05,
+                  "con_var": 1.4112542625959236e-05
+                },
+                "pooled": {
+                  "obj_var": 2.724063102599894e-05,
+                  "con_var": 1.256166799673898e-05
+                }
+              }
+            }
+          }
+        },
+        "HistoryFull-FeasibleKG": {
+          "runs": 48,
+          "certified": 33,
+          "certified_audits": {
+            "confidently_safe": 33
+          },
+          "operating_audits": {
+            "confidently_unsafe": 15,
+            "confidently_safe": 33
+          },
+          "mean_operating_violation_rate": 0.25092708333333336,
+          "mean_operating_loss": 1.1098708119538343,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 284.25,
+          "mean_total_target_calls": 420.25,
+          "revisit_count": 1175,
+          "revisit_share": 0.4079861111111111,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.0017600394580655487,
+                  "con_var": 0.0006381580482382464
+                },
+                "pooled": {
+                  "obj_var": 0.001749374986275978,
+                  "con_var": 0.000634831113776191
+                }
+              }
+            },
+            "deployed": {
+              "n": 33,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 2.2765785177624578e-05,
+                  "con_var": 1.2410577559378805e-05
+                },
+                "pooled": {
+                  "obj_var": 2.1305969614397047e-05,
+                  "con_var": 9.968547591919693e-06
+                }
+              }
+            }
+          }
+        },
+        "InitialRelease-GateKG": {
+          "runs": 48,
+          "certified": 31,
+          "certified_audits": {
+            "boundary_ambiguous": 1,
+            "confidently_safe": 30
+          },
+          "operating_audits": {
+            "confidently_unsafe": 17,
+            "boundary_ambiguous": 1,
+            "confidently_safe": 30
+          },
+          "mean_operating_violation_rate": 0.2826458333333333,
+          "mean_operating_loss": 1.1317704662684764,
+          "mean_search_calls": 136,
+          "mean_terminal_calls": 276.75,
+          "mean_total_target_calls": 412.75,
+          "revisit_count": 1228,
+          "revisit_share": 0.4263888888888889,
+          "variance_diagnostics": {
+            "primary": {
+              "n": 48,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 0.000316927352105471,
+                  "con_var": 8.57087169884863e-05
+                },
+                "pooled": {
+                  "obj_var": 0.0003637704458091788,
+                  "con_var": 9.939864666478032e-05
+                }
+              }
+            },
+            "deployed": {
+              "n": 31,
+              "mean_squared_errors": {
+                "fixed_batch": {
+                  "obj_var": 2.916173574433097e-05,
+                  "con_var": 1.418717179138504e-05
+                },
+                "pooled": {
+                  "obj_var": 2.7479035057363844e-05,
+                  "con_var": 1.2636297162164784e-05
+                }
+              }
+            }
+          }
+        }
+      },
+      "comparisons": {
+        "TargetWeak-GateKG to HistoryDiag-GateKG": {
+          "improvement": -0.012687605198412283,
+          "ci95": [
+            -0.048053795599040425,
+            0.022678585202215856
+          ],
+          "latter_wins_losses_ties": [
+            10,
+            14,
+            0
+          ],
+          "p": 0.4655204546919589,
+          "p_holm": 1.0
+        },
+        "HistoryDiag-GateKG to HistoryFull-GateKG": {
+          "improvement": -0.014682018612448536,
+          "ci95": [
+            -0.039274257321411536,
+            0.009910220096514466
+          ],
+          "latter_wins_losses_ties": [
+            11,
+            11,
+            2
+          ],
+          "p": 0.2292888497706257,
+          "p_holm": 1.0
+        },
+        "HistoryFull-FeasibleKG to HistoryFull-GateKG": {
+          "improvement": -0.020843184296126804,
+          "ci95": [
+            -0.050655756317888226,
+            0.00896938772563462
+          ],
+          "latter_wins_losses_ties": [
+            7,
+            13,
+            4
+          ],
+          "p": 0.16158882620399828,
+          "p_holm": 1.0
+        },
+        "HistoryFull-GateKG to InitialRelease-GateKG": {
+          "improvement": -0.0010564700185153597,
+          "ci95": [
+            -0.0025797078954823247,
+            0.00046676785845160525
+          ],
+          "latter_wins_losses_ties": [
+            0,
+            2,
+            22
+          ],
+          "p": 0.16481550479988855,
+          "p_holm": 1.0
+        },
+        "TargetWeak-GateKG to InitialRelease-GateKG": {
+          "improvement": -0.02842609382937618,
+          "ci95": [
+            -0.06700025579051955,
+            0.010148068131767184
+          ],
+          "latter_wins_losses_ties": [
+            7,
+            17,
+            0
+          ],
+          "p": 0.1410332396457955,
+          "p_holm": 1.0
+        }
+      },
+      "early_choices": {
+        "HistoryFull-GateKG": 45,
+        "TargetWeak-GateKG": 3
+      },
+      "full_vs_diagonal": {
+        "primary_changed": 46,
+        "operating_policy_changed": 35,
+        "first_query_changed": 18,
+        "safe_to_unsafe": 6,
+        "both_safe_full_lower_loss": 12,
+        "both_safe_diagonal_lower_loss": 13,
+        "unsafe_to_safe": 3
+      },
+      "initial_log_ratio_range": [
+        -4.066486592811147,
+        5.198036516394261
+      ]
+    }
+  },
+  "call_accounting": {
+    "source_simulation_calls_new": 0,
+    "source_refits_new": 0,
+    "search_calls_used": 52224,
+    "terminal_verification_calls_used": 97344,
+    "target_call_cap_total": 198144,
+    "anchor_audit_calls_used": 96000,
+    "policy_audit_calls_used": 1112000,
+    "verification_law_audit_calls_used": 0
+  },
+  "stage_attempt_fees": {
+    "source_archive": {
+      "attempt_status": {},
+      "attempted_calls_recorded": {},
+      "cpu_time_sec_recorded": 0,
+      "wall_time_sec_recorded": 0,
+      "unfinished_attempts": []
+    },
+    "search_and_verify": {
+      "attempt_status": {
+        "ok": 384
+      },
+      "attempted_calls_recorded": {
+        "search": 52224,
+        "verification": 97344
+      },
+      "cpu_time_sec_recorded": 8713.560806720001,
+      "wall_time_sec_recorded": 9255.335185727105,
+      "unfinished_attempts": []
+    },
+    "audit_anchors": {
+      "attempt_status": {
+        "ok": 48
+      },
+      "attempted_calls_recorded": {
+        "audit": 96000
+      },
+      "cpu_time_sec_recorded": 20.8329102,
+      "wall_time_sec_recorded": 21.063946060836315,
+      "unfinished_attempts": []
+    },
+    "audit_and_summarize": {
+      "attempt_status": {
+        "ok": 384
+      },
+      "attempted_calls_recorded": {
+        "audit": 1112000
+      },
+      "cpu_time_sec_recorded": 451.9134023629996,
+      "wall_time_sec_recorded": 465.1180022759363,
+      "unfinished_attempts": []
+    }
+  },
+  "execution_code_sha256": "905eca832b0973cba9710693d17e09050e94b03471cb387308d0052d947a4f3d",
+  "manifest_sha256": "b0dd7749e9480dc2bdc1d106f5dc0456a8b8fc06cba20397ee1c3c25c5bde664"
+}

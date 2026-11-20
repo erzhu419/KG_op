@@ -1,0 +1,279 @@
+{
+  "run_rows_checked": 432,
+  "terminal_slot_rows_checked": 885,
+  "families": {
+    "Inventory_CrossHorizon": {
+      "anchor_classes": {
+        "confidently_safe": 24
+      },
+      "anchor_risk_range": [
+        0.0,
+        0.004
+      ],
+      "minimum_risk_anchor": {
+        "family": "Inventory_CrossHorizon",
+        "task": 0,
+        "seed": 2036112001,
+        "n": 2000,
+        "violations": 0,
+        "mean_loss": 1.8963970540941437,
+        "violation_probability": 0.0,
+        "ci95": [
+          0.0,
+          0.0018427397934059364
+        ],
+        "audit_class": "confidently_safe"
+      },
+      "arms": {
+        "GP-FTA-KG": {
+          "certified": 48,
+          "retained_anchor": 0,
+          "operating_policy_classes": {
+            "confidently_safe": 48
+          },
+          "retained_anchor_classes": {},
+          "retained_anchor_risk_range": null,
+          "selected_outside_primary": 18,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 957,
+          "runs_with_revisit": 48
+        },
+        "GP-FTA-TS": {
+          "certified": 46,
+          "retained_anchor": 2,
+          "operating_policy_classes": {
+            "confidently_safe": 48
+          },
+          "retained_anchor_classes": {
+            "confidently_safe": 2
+          },
+          "retained_anchor_risk_range": [
+            0.0,
+            0.0015
+          ],
+          "selected_outside_primary": 21,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1141,
+          "runs_with_revisit": 48,
+          "paired_call_difference_vs_kg": {
+            "control_minus_kg_mean": 17,
+            "ci95": [
+              -12.742997525818616,
+              46.742997525818616
+            ]
+          }
+        },
+        "PublicPsi-TargetGP-TS": {
+          "certified": 47,
+          "retained_anchor": 1,
+          "operating_policy_classes": {
+            "confidently_safe": 48
+          },
+          "retained_anchor_classes": {
+            "confidently_safe": 1
+          },
+          "retained_anchor_risk_range": [
+            0.004,
+            0.004
+          ],
+          "selected_outside_primary": 21,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1208,
+          "runs_with_revisit": 48,
+          "paired_call_difference_vs_kg": {
+            "control_minus_kg_mean": 27.416666666666668,
+            "ci95": [
+              5.614211910434008,
+              49.21912142289933
+            ]
+          }
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "anchor_classes": {
+        "confidently_safe": 24
+      },
+      "anchor_risk_range": [
+        0.0,
+        0.0
+      ],
+      "minimum_risk_anchor": {
+        "family": "Queueing_CrossHorizon",
+        "task": 0,
+        "seed": 2037112001,
+        "n": 2000,
+        "violations": 0,
+        "mean_loss": 3.230309947122825,
+        "violation_probability": 0.0,
+        "ci95": [
+          0.0,
+          0.0018427397934059364
+        ],
+        "audit_class": "confidently_safe"
+      },
+      "arms": {
+        "GP-FTA-KG": {
+          "certified": 48,
+          "retained_anchor": 0,
+          "operating_policy_classes": {
+            "confidently_safe": 48
+          },
+          "retained_anchor_classes": {},
+          "retained_anchor_risk_range": null,
+          "selected_outside_primary": 13,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 867,
+          "runs_with_revisit": 48
+        },
+        "GP-FTA-TS": {
+          "certified": 48,
+          "retained_anchor": 0,
+          "operating_policy_classes": {
+            "confidently_safe": 48
+          },
+          "retained_anchor_classes": {},
+          "retained_anchor_risk_range": null,
+          "selected_outside_primary": 17,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1072,
+          "runs_with_revisit": 48,
+          "paired_call_difference_vs_kg": {
+            "control_minus_kg_mean": 13.333333333333334,
+            "ci95": [
+              -8.013762160471375,
+              34.680428827138044
+            ]
+          }
+        },
+        "PublicPsi-TargetGP-TS": {
+          "certified": 48,
+          "retained_anchor": 0,
+          "operating_policy_classes": {
+            "confidently_safe": 48
+          },
+          "retained_anchor_classes": {},
+          "retained_anchor_risk_range": null,
+          "selected_outside_primary": 20,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1129,
+          "runs_with_revisit": 48,
+          "paired_call_difference_vs_kg": {
+            "control_minus_kg_mean": 22.333333333333332,
+            "ci95": [
+              -0.5166415471226777,
+              45.183308213789346
+            ]
+          }
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "anchor_classes": {
+        "confidently_unsafe": 24
+      },
+      "anchor_risk_range": [
+        0.228,
+        0.9595
+      ],
+      "minimum_risk_anchor": {
+        "family": "Traffic_Ingolstadt",
+        "task": 19,
+        "seed": 2038130944,
+        "n": 2000,
+        "violations": 456,
+        "mean_loss": 1.173759813637269,
+        "violation_probability": 0.228,
+        "ci95": [
+          0.2097724379455143,
+          0.24702833338403174
+        ],
+        "audit_class": "confidently_unsafe"
+      },
+      "arms": {
+        "GP-FTA-KG": {
+          "certified": 32,
+          "retained_anchor": 16,
+          "operating_policy_classes": {
+            "confidently_unsafe": 17,
+            "confidently_safe": 29,
+            "boundary_ambiguous": 2
+          },
+          "retained_anchor_classes": {
+            "confidently_unsafe": 16
+          },
+          "retained_anchor_risk_range": [
+            0.5025,
+            0.9595
+          ],
+          "selected_outside_primary": 20,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1077,
+          "runs_with_revisit": 48
+        },
+        "GP-FTA-TS": {
+          "certified": 37,
+          "retained_anchor": 11,
+          "operating_policy_classes": {
+            "confidently_safe": 35,
+            "confidently_unsafe": 11,
+            "boundary_ambiguous": 2
+          },
+          "retained_anchor_classes": {
+            "confidently_unsafe": 11
+          },
+          "retained_anchor_risk_range": [
+            0.647,
+            0.9595
+          ],
+          "selected_outside_primary": 12,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1168,
+          "runs_with_revisit": 48,
+          "paired_call_difference_vs_kg": {
+            "control_minus_kg_mean": -17.25,
+            "ci95": [
+              -44.502003177256,
+              10.002003177256004
+            ]
+          }
+        },
+        "PublicPsi-TargetGP-TS": {
+          "certified": 42,
+          "retained_anchor": 6,
+          "operating_policy_classes": {
+            "confidently_safe": 42,
+            "confidently_unsafe": 6
+          },
+          "retained_anchor_classes": {
+            "confidently_unsafe": 6
+          },
+          "retained_anchor_risk_range": [
+            0.615,
+            0.9595
+          ],
+          "selected_outside_primary": 16,
+          "runs": 48,
+          "online_queries": 2880,
+          "revisits": 1230,
+          "runs_with_revisit": 48,
+          "paired_call_difference_vs_kg": {
+            "control_minus_kg_mean": -23.833333333333332,
+            "ci95": [
+              -51.78093067823538,
+              4.114264011568711
+            ]
+          }
+        }
+      }
+    }
+  }
+}

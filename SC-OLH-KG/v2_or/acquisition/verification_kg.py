@@ -158,6 +158,7 @@ def score_gate_power_vkg(
     delta_slot0: float = 0.025,
     status_quo_obj: float | None = None,
     max_eval_targets: int = 64,
+    common_target_screen: bool = False,
 ) -> np.ndarray:
     """Rank-one lookahead using a mean-aligned finite Gaussian fantasy rule.
 
@@ -165,21 +166,56 @@ def score_gate_power_vkg(
     alignment removes tower drift between the current and fantasy quadrature;
     it is not an exact integration of the posterior or the terminal cascade.
     """
-    m_cand = pred.mean_obj.size
     k_crit = exact_binomial_critical_k(int(verif_budget_slot0), float(alpha), float(delta_slot0))
     if k_crit < 0:
+        return np.zeros(pred.mean_obj.size, dtype=float)
+    return _score_rank_one_kg(
+        pred, alpha, batch_reps, status_quo_obj, max_eval_targets, common_target_screen,
+        (int(verif_budget_slot0), float(delta_slot0), k_crit),
+    )
+
+
+def score_chance_feasibility_kg(
+    pred: JointPosteriorPrediction,
+    *,
+    alpha: float = 0.05,
+    batch_reps: int = 2,
+    status_quo_obj: float | None = None,
+    max_eval_targets: int = 64,
+) -> np.ndarray:
+    """Same KG lookahead with posterior business chance-feasibility as the weight."""
+    return _score_rank_one_kg(pred, alpha, batch_reps, status_quo_obj, max_eval_targets, True, None)
+
+
+def _chance_feasibility_probability(margin: np.ndarray, sd: np.ndarray) -> np.ndarray:
+    z = np.divide(margin, sd, out=np.zeros_like(margin), where=sd > 0.0)
+    return np.where(sd > 0.0, ndtr(z), margin >= 0.0)
+
+
+def _score_rank_one_kg(
+    pred: JointPosteriorPrediction,
+    alpha: float,
+    batch_reps: int,
+    status_quo_obj: float | None,
+    max_eval_targets: int,
+    common_target_screen: bool,
+    gate: tuple[int, float, int] | None,
+) -> np.ndarray:
+    m_cand = pred.mean_obj.size
+    if not m_cand:
         return np.zeros(m_cand, dtype=float)
 
     av_ucb = np.maximum(pred.ucb_aleatoric_var_con, 1e-8)
-    pass_power_curr = posterior_binomial_gate_power(
-        pred.mean_con,
-        pred.std_con,
-        av_ucb,
-        n_samples=int(verif_budget_slot0),
-        alpha=float(alpha),
-        delta_slot=float(delta_slot0),
-        r_perp_con=pred.r_perp_con,
-    )
+    s2_constraint = pred.std_con ** 2 + 0.25 * np.maximum(pred.r_perp_con, 0.0)
+    if gate is None:
+        feasibility_limit = norm.ppf(alpha) * np.sqrt(av_ucb)
+        pass_power_curr = _chance_feasibility_probability(feasibility_limit - pred.mean_con, np.sqrt(s2_constraint))
+    else:
+        n_verif, delta_slot, k_crit = gate
+        pass_power_curr = posterior_binomial_gate_power(
+            pred.mean_con, pred.std_con, av_ucb,
+            n_samples=n_verif, alpha=float(alpha), delta_slot=delta_slot, r_perp_con=pred.r_perp_con,
+        )
     spread_f = max(float(np.std(pred.mean_obj)), 1e-8)
     if status_quo_obj is not None and np.isfinite(status_quo_obj):
         j_ref = max(float(status_quo_obj), float(np.min(pred.mean_obj)) + 0.20 * spread_f)
@@ -188,7 +224,11 @@ def score_gate_power_vkg(
 
     curr_utility = np.maximum(j_ref - pred.mean_obj, 0.0) * pass_power_curr
     boundary_info = pass_power_curr * (1.0 - pass_power_curr) * spread_f
-    eval_idx = np.argsort(-curr_utility - 0.12 * boundary_info)[: min(int(max_eval_targets), m_cand)]
+    eval_count = min(int(max_eval_targets), m_cand)
+    if common_target_screen:
+        eval_idx = np.argsort(pred.mean_obj, kind="stable")[:eval_count]
+    else:
+        eval_idx = np.argsort(-curr_utility - 0.12 * boundary_info)[:eval_count]
     incumbent = int(np.argmax(curr_utility[eval_idx]))
 
     denom_f = np.sqrt(np.maximum(np.diag(pred.cov_obj) + pred.aleatoric_var_obj / float(batch_reps), 1e-10))
@@ -199,17 +239,20 @@ def score_gate_power_vkg(
     mu_f_eval = pred.mean_obj[eval_idx]
     mu_g_eval = pred.mean_con[eval_idx]
     current_power = pass_power_curr[eval_idx]
-    s2_g_eval = pred.std_con[eval_idx] ** 2 + 0.25 * np.maximum(pred.r_perp_con[eval_idx], 0.0)
+    s2_g_eval = s2_constraint[eval_idx]
     sig_aleat_eval = np.sqrt(av_ucb[eval_idx])
 
     s_next_g = np.sqrt(np.maximum(s2_g_eval[None, :] - tilde_g ** 2, 0.0))
     # The gate depends only on the constraint fantasy node, not the objective
     # fantasy node. Integrate it once per pair with the 7-node conditional rule.
     mu_g_next = mu_g_eval[None, None, :] + tilde_g[:, None, :] * _GH5_Z[None, :, None]
-    g_lat = mu_g_next[:, :, :, None] + s_next_g[:, None, :, None] * _GH7_Z[None, None, None, :]
-    p_lat = ndtr(g_lat / sig_aleat_eval[None, None, :, None])
-    c_lat = exact_binomial_pass_power(p_lat, int(verif_budget_slot0), k_crit)
-    raw_gate = np.clip(c_lat @ _GH7_W, 0.0, 1.0)
+    if gate is None:
+        raw_gate = _chance_feasibility_probability(feasibility_limit[None, None, eval_idx] - mu_g_next, s_next_g[:, None, :])
+    else:
+        g_lat = mu_g_next[:, :, :, None] + s_next_g[:, None, :, None] * _GH7_Z[None, None, None, :]
+        p_lat = ndtr(g_lat / sig_aleat_eval[None, None, :, None])
+        c_lat = exact_binomial_pass_power(p_lat, n_verif, k_crit)
+        raw_gate = np.clip(c_lat @ _GH7_W, 0.0, 1.0)
     p_gate_next = _align_fantasy_gate_power(raw_gate, current_power)
     p_gate_next = np.where(tilde_g[:, None, :] == 0.0, current_power[None, None, :], p_gate_next)
 
@@ -429,6 +472,7 @@ class SequentialRunResult:
     n_unique_policies_evaluated: int
     n_replication_queries: int
     receipt: TerminalDeploymentReceipt
+    mechanism_receipt: dict | None = None
 
 
 def build_cold_dct_initial_points(
@@ -479,6 +523,65 @@ def build_hybrid_warmstart_points(
     return out[:n_tot]
 
 
+def _initial_release_evidence(
+    prior: DebiasedSpectralMetaPrior,
+    records: Sequence[SufficientStatsRecord],
+) -> dict:
+    """Score the later initialization batches from the earlier ones, without new calls."""
+    cut = len(records) // 2
+    train, test = records[:cut], records[cut:]
+    held_means = np.array([r.mean_con for r in test])
+    held_n = np.array([r.n_reps for r in test])
+    scores = {}
+    for kind in ("weak_target", "historical_full"):
+        model = TemperedHierarchicalHVDModel(
+            prior, mode="matched_coefficients", coefficient_prior=kind,
+            use_source_basis=True, use_source_hvd_prior=False, use_empirical_r_perp=False,
+        )
+        for record in train:
+            model.observe(record)
+        model.freeze_matched_scales(train)
+        prediction = model.predict_joint([r.x_norm for r in test], [r.exposure for r in test])
+        observed_cov = prediction.cov_con + np.diag(prediction.aleatoric_var_con / held_n)
+        factor = _safe_cholesky(observed_cov)
+        standardized = np.linalg.solve(factor, held_means - prediction.mean_con)
+        log_normalizer = len(test) * np.log(2.0 * np.pi) + 2.0 * np.log(np.diag(factor)).sum()
+        scores[kind] = -0.5 * float(standardized @ standardized + log_normalizer)
+    ratio = scores["weak_target"] - scores["historical_full"]
+    threshold = float(np.log(10.0))
+    return {
+        "n_train_batches": len(train), "n_held_batches": len(test),
+        "log_predictive_weak": scores["weak_target"], "log_predictive_full": scores["historical_full"],
+        "log_ratio_weak_over_full": ratio, "threshold": threshold, "recommend_weak": ratio > threshold,
+    }
+
+
+def _variance_summary(records: Sequence[SufficientStatsRecord]) -> dict:
+    dof = sum(r.n_reps - 1 for r in records)
+    return {"dof": dof, **{f"{head}_var": sum(getattr(r, f"ssq_{head}") for r in records) / dof if dof else None
+                          for head in ("obj", "con")}}
+
+
+def _observed_variances(
+    batches: Sequence[SufficientStatsRecord], model: TemperedHierarchicalHVDModel, receipt: TerminalDeploymentReceipt,
+) -> dict:
+    policies: dict[bytes, list[SufficientStatsRecord]] = {}
+    for batch in batches:
+        policies.setdefault(model._policy_key(batch.x_norm), []).append(batch)
+    merged = {model._policy_key(record.x_norm): record for record in model.unique_records}
+
+    def describe(keys: Sequence[bytes]) -> dict:
+        return {"n_policies": len(keys), "n_batches": sum(len(policies[key]) for key in keys),
+                "fixed_batch": _variance_summary([r for key in keys for r in policies[key]]),
+                "pooled": _variance_summary([merged[key] for key in keys])}
+
+    result = {"all": describe(list(policies)), "revisited": describe([k for k, v in policies.items() if len(v) > 1])}
+    for name, policy in (("primary", receipt.primary_policy), ("deployed", receipt.deployed_policy)):
+        if policy is not None:
+            result[name] = describe([model._policy_key(policy)])
+    return result
+
+
 def run_tls_olh_kg(
     problem: BaseDynamicORProblem,
     prior: DebiasedSpectralMetaPrior | None,
@@ -500,12 +603,18 @@ def run_tls_olh_kg(
     pool_size: int = 160,
     method_label: str = "TLS-OLH-KG",
     gate_mode: str = "auto",
+    coefficient_prior: str | None = None,
 ) -> SequentialRunResult:
     """Execute initial design + `n_online_steps` sequential queries + gated verification."""
     t0 = time.perf_counter()
     rng_init = np.random.default_rng(seed)
     rng_search = np.random.default_rng(seed + 100_003)
     verif_seed = seed + 200_007
+    matched = model_mode == "matched_coefficients"
+    if matched and (init_mode != "cold_dct" or proposal_mode != "local_dct_only" or n0_init < 4):
+        raise ValueError("Matched runs require common cold initialization and source-free candidate proposals")
+    if acquisition_type == "chance_feasibility_kg" and not matched:
+        raise ValueError("The matched feasibility KG requires the common comparison model")
 
     calls_start = problem.search_calls
     model = TemperedHierarchicalHVDModel(
@@ -517,6 +626,7 @@ def run_tls_olh_kg(
         variance_estimator=variance_estimator,
         use_empirical_r_perp=use_empirical_r_perp,
         n0_freeze=n0_init,
+        coefficient_prior=coefficient_prior,
     )
 
     if init_mode == "auto":
@@ -573,6 +683,17 @@ def run_tls_olh_kg(
         initial_records.append(rec0)
         model.observe(rec0)
 
+    mechanism = None
+    if matched:
+        evidence = _initial_release_evidence(prior, initial_records)
+        if coefficient_prior == "initial_release" and evidence["recommend_weak"]:
+            model.coefficient_prior = "weak_target"
+        model.freeze_matched_scales(initial_records)
+        evidence["applied_weak"] = model.coefficient_prior == "weak_target"
+        mechanism = {"configured_coefficient_prior": coefficient_prior, "active_coefficient_prior": model.coefficient_prior,
+                     "early_release": evidence, "first_query_index": None}
+        batch_history = initial_records.copy()
+
     # Initial point 0 is always `domain_heuristic_anchor()`, giving an online sample estimate of status-quo cost
     sq_est_obj = float(initial_records[0].mean_obj) if initial_records else None
 
@@ -611,7 +732,11 @@ def run_tls_olh_kg(
                     alpha=problem.alpha,
                     batch_reps=batch_reps,
                     status_quo_obj=sq_ref_step,
+                    common_target_screen=matched,
                 )
+                chosen_idx = int(np.argmax(scores))
+            elif acquisition_type == "chance_feasibility_kg":
+                scores = score_chance_feasibility_kg(pred, alpha=problem.alpha, batch_reps=batch_reps, status_quo_obj=sq_ref_step)
                 chosen_idx = int(np.argmax(scores))
             elif acquisition_type == "gate_power_ts":
                 chosen_idx = score_gate_power_ts(
@@ -634,6 +759,10 @@ def run_tls_olh_kg(
             samp = problem.simulate_replications(x_next, batch_reps, rng_search, split="search")
             rec = SufficientStatsRecord.from_samples(x_next, samp, exps[chosen_idx])
             model.observe(rec)
+            if mechanism is not None:
+                if _step == 0:
+                    mechanism["first_query_index"] = chosen_idx
+                batch_history.append(rec)
 
     eval_recs = model.unique_records
     term_cands = [r.x_norm.copy() for r in eval_recs]
@@ -663,6 +792,8 @@ def run_tls_olh_kg(
         seed=verif_seed,
         gate_mode=gate_mode,
     )
+    if mechanism is not None:
+        mechanism["variance"] = _observed_variances(batch_history, model, receipt)
     wall_sec = time.perf_counter() - t0
     search_used = int(problem.search_calls - calls_start)
 
@@ -685,4 +816,5 @@ def run_tls_olh_kg(
         n_unique_policies_evaluated=len(model.unique_records),
         n_replication_queries=n_rep_queries,
         receipt=receipt,
+        mechanism_receipt=mechanism,
     )

@@ -1,0 +1,20 @@
+\begin{table}[htbp]\centering
+\caption{Matched runs on new queueing and traffic tasks. Operating loss and audit classes
+include the status quo on abstention. Each row contains 48 runs in 24 paired tasks.
+Early release is an exact replay of the selected weak or full path.}\label{tab:matched_policy}
+\small\begin{tabular}{llrcccc}\toprule
+Family & Prior / rule & Loss & Terminal calls & Certified & Safe / unclear / unsafe & Violation rate \\
+\midrule
+Queueing & Weak & 2.6405 & 226.7 & 48/48 & 48/0/0 & 0.09\% \\
+ & Diagonal & 2.6785 & 241.8 & 48/48 & 48/0/0 & 0.05\% \\
+ & Full & 2.6563 & 219.7 & 48/48 & 48/0/0 & 0.01\% \\
+ & Feasible KG & 2.6249 & 218.7 & 48/48 & 48/0/0 & 0.14\% \\
+ & Early release & 2.6563 & 222.3 & 48/48 & 48/0/0 & 0.05\% \\
+\midrule
+Traffic & Weak & 1.1033 & 278.9 & 35/48 & 35/0/13 & 21.80\% \\
+ & Diagonal & 1.1160 & 281.3 & 33/48 & 33/0/15 & 24.50\% \\
+ & Full & 1.1307 & 276.8 & 31/48 & 30/1/17 & 28.26\% \\
+ & Feasible KG & 1.1099 & 284.2 & 33/48 & 33/0/15 & 25.09\% \\
+ & Early release & 1.1318 & 276.8 & 31/48 & 30/1/17 & 28.26\% \\
+\bottomrule\end{tabular}
+\end{table}

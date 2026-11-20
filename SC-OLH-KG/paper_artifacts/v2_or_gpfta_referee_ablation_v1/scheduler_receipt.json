@@ -1,0 +1,208 @@
+{
+  "campaign": "v2_or_gpfta_referee_ablation_v1",
+  "allowed_nodes": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "automatic_requeues": false,
+  "staged_budget": {
+    "source_simulation_calls_new": 0,
+    "source_refits_new": 0,
+    "search_calls_used": 52224,
+    "terminal_verification_calls_used": 97344,
+    "target_call_cap_total": 198144,
+    "anchor_audit_calls_used": 96000,
+    "policy_audit_calls_used": 1112000,
+    "verification_law_audit_calls_used": 0
+  },
+  "completed_stages": {
+    "search_and_verify": [
+      {
+        "scheduler_task": "t224935",
+        "planned_node": "node001",
+        "start": 0,
+        "end": 16,
+        "workers": 16
+      },
+      {
+        "scheduler_task": "t224936",
+        "planned_node": "node002",
+        "start": 16,
+        "end": 87,
+        "workers": 71
+      },
+      {
+        "scheduler_task": "t224937",
+        "planned_node": "node003",
+        "start": 87,
+        "end": 164,
+        "workers": 77
+      },
+      {
+        "scheduler_task": "t224938",
+        "planned_node": "node004",
+        "start": 164,
+        "end": 244,
+        "workers": 80
+      },
+      {
+        "scheduler_task": "t224939",
+        "planned_node": "node005",
+        "start": 244,
+        "end": 317,
+        "workers": 73
+      },
+      {
+        "scheduler_task": "t224940",
+        "planned_node": "node006",
+        "start": 317,
+        "end": 384,
+        "workers": 67
+      }
+    ],
+    "audit_anchors": [
+      {
+        "scheduler_task": "t224942",
+        "planned_node": "node001",
+        "start": 0,
+        "end": 2,
+        "workers": 2
+      },
+      {
+        "scheduler_task": "t224943",
+        "planned_node": "node002",
+        "start": 2,
+        "end": 11,
+        "workers": 9
+      },
+      {
+        "scheduler_task": "t224944",
+        "planned_node": "node003",
+        "start": 11,
+        "end": 21,
+        "workers": 10
+      },
+      {
+        "scheduler_task": "t224945",
+        "planned_node": "node004",
+        "start": 21,
+        "end": 29,
+        "workers": 8
+      },
+      {
+        "scheduler_task": "t224946",
+        "planned_node": "node005",
+        "start": 29,
+        "end": 39,
+        "workers": 10
+      },
+      {
+        "scheduler_task": "t224947",
+        "planned_node": "node006",
+        "start": 39,
+        "end": 48,
+        "workers": 9
+      }
+    ],
+    "audit_and_summarize": [
+      {
+        "scheduler_task": "t224948",
+        "planned_node": "node001",
+        "start": 0,
+        "end": 16,
+        "workers": 16
+      },
+      {
+        "scheduler_task": "t224949",
+        "planned_node": "node002",
+        "start": 16,
+        "end": 87,
+        "workers": 71
+      },
+      {
+        "scheduler_task": "t224950",
+        "planned_node": "node003",
+        "start": 87,
+        "end": 164,
+        "workers": 77
+      },
+      {
+        "scheduler_task": "t224951",
+        "planned_node": "node004",
+        "start": 164,
+        "end": 242,
+        "workers": 78
+      },
+      {
+        "scheduler_task": "t224952",
+        "planned_node": "node005",
+        "start": 242,
+        "end": 316,
+        "workers": 74
+      },
+      {
+        "scheduler_task": "t224953",
+        "planned_node": "node006",
+        "start": 316,
+        "end": 384,
+        "workers": 68
+      }
+    ]
+  },
+  "recorded_worker_fees": {
+    "source_archive": {
+      "attempt_status": {},
+      "attempted_calls_recorded": {},
+      "cpu_time_sec_recorded": 0,
+      "wall_time_sec_recorded": 0,
+      "unfinished_attempts": []
+    },
+    "search_and_verify": {
+      "attempt_status": {
+        "ok": 384
+      },
+      "attempted_calls_recorded": {
+        "search": 52224,
+        "verification": 97344
+      },
+      "cpu_time_sec_recorded": 8713.560806720001,
+      "wall_time_sec_recorded": 9255.335185727105,
+      "unfinished_attempts": []
+    },
+    "audit_anchors": {
+      "attempt_status": {
+        "ok": 48
+      },
+      "attempted_calls_recorded": {
+        "audit": 96000
+      },
+      "cpu_time_sec_recorded": 20.8329102,
+      "wall_time_sec_recorded": 21.063946060836315,
+      "unfinished_attempts": []
+    },
+    "audit_and_summarize": {
+      "attempt_status": {
+        "ok": 384
+      },
+      "attempted_calls_recorded": {
+        "audit": 1112000
+      },
+      "cpu_time_sec_recorded": 451.9134023629996,
+      "wall_time_sec_recorded": 465.1180022759363,
+      "unfinished_attempts": []
+    }
+  },
+  "historical_budget_reset": false,
+  "control_plane": {
+    "queued_shard": "t224951",
+    "initial_block": "no eligible host had 78 CPU slots at the time of placement",
+    "read_only_status_probe": "scheduler state-lock timeout",
+    "targeted_dispatch_probe": "scheduler state-lock timeout before changing placement",
+    "replacement_shards": 0,
+    "additional_simulation_calls": 0
+  }
+}

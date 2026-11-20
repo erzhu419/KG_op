@@ -79,6 +79,7 @@ class TemperedHierarchicalHVDModel:
         "tempered",
         "tempered_adaptive",
         "tempered_full_release",
+        "matched_coefficients",
         "source_basis_weak_prior",
         "untempered_fixed_prior",
         "frozen_after_init",
@@ -104,6 +105,7 @@ class TemperedHierarchicalHVDModel:
         use_empirical_r_perp: bool = True,
         n0_freeze: int = 8,
         variance_ucb_scale: float = 0.35,
+        coefficient_prior: str | None = None,
     ) -> None:
         if mode not in self.VALID_MODES:
             raise ValueError(f"Unknown model mode {mode!r}; expected one of {self.VALID_MODES}")
@@ -143,6 +145,15 @@ class TemperedHierarchicalHVDModel:
         self.use_empirical_r_perp = bool(use_empirical_r_perp)
         self.n0_freeze = int(n0_freeze)
         self.variance_ucb_scale = float(variance_ucb_scale)
+        if mode == "matched_coefficients":
+            if coefficient_prior not in {"weak_target", "historical_diagonal", "historical_full", "initial_release"}:
+                raise ValueError("A matched model requires an explicit coefficient prior")
+            if not self.use_source_basis or self.use_source_hvd_prior or self.use_empirical_r_perp or self.variance_estimator != "within_ssq":
+                raise ValueError("Matched coefficients require the common source basis and target within-SSQ noise policy")
+        elif coefficient_prior is not None:
+            raise ValueError("Coefficient prior variants are for the matched model")
+        self.coefficient_prior = "historical_full" if coefficient_prior == "initial_release" else coefficient_prior
+        self._matched_initial_moments: dict[str, tuple[float, float]] = {}
 
         self._records_by_key: dict[bytes, SufficientStatsRecord] = {}
         self._ordered_keys: list[bytes] = []
@@ -181,6 +192,18 @@ class TemperedHierarchicalHVDModel:
             self._records_by_key[key] = record
             self._ordered_keys.append(key)
         self._refit()
+
+    def freeze_matched_scales(self, records: Sequence[SufficientStatsRecord]) -> None:
+        """Fix the common residual and weak-prior scales from paid initialization."""
+        if self.mode != "matched_coefficients" or self._matched_initial_moments:
+            raise RuntimeError("Matched scales can be frozen once after initialization")
+        for head in ("obj", "con"):
+            means = [getattr(r, f"mean_{head}") for r in records]
+            noise = [getattr(r, f"ssq_{head}") / (r.n_reps * (r.n_reps - 1)) for r in records if r.n_reps > 1]
+            scale = max(float(np.var(means)), float(np.median(noise)) if noise else 0.0, 1e-8)
+            self._matched_initial_moments[head] = (float(np.mean(means)), scale)
+            setattr(self, f"tau_shift_{head}_", 0.08 * scale)
+            setattr(self, f"sigma_perp_{head}_", 0.10 * scale)
 
     def _transform_batch(
         self,
@@ -515,6 +538,13 @@ class TemperedHierarchicalHVDModel:
         return best_tuple
 
     def _prior_moments_head(self, p_phi: int, recs: list[SufficientStatsRecord], head: str) -> tuple[np.ndarray, np.ndarray]:
+        if self.mode == "matched_coefficients":
+            if self.coefficient_prior == "weak_target":
+                level, scale = self._matched_initial_moments[head]
+                return np.r_[level, np.zeros(p_phi - 1)], 0.60 * scale * np.eye(p_phi)
+            mean = getattr(self.prior, f"mu_0_{head}_")
+            cov = getattr(self.prior, f"cov_0_{head}_")
+            return mean, np.diag(np.diag(cov)) if self.coefficient_prior == "historical_diagonal" else cov
         if self.use_source_coef_prior and self.prior is not None and self.prior.is_fitted:
             if head == "obj":
                 return self.prior.mu_0_obj_, self.prior.cov_0_obj_
@@ -532,6 +562,8 @@ class TemperedHierarchicalHVDModel:
             return
         phi, psi_std, u_hvd, _, _ = self._transform_batch([r.exposure for r in recs])
         self._fit_hvd_variance(recs, phi, u_hvd)
+        if self.mode == "matched_coefficients":
+            return
 
         if self.mode == "frozen_after_init":
             gp_recs = recs[: min(len(recs), self.n0_freeze)]

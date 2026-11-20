@@ -17,7 +17,7 @@ Let clipped weights $\tilde{w}(\psi) = \min\{\bar{w}, \rho(\psi)\}$ define $\nu_
 \begin{theorem}[Within-Policy Shift Invariance, Multi-Source Mismatch, \& Transfer Dominance]\label{thm:transfer_boundary}
 Consider evaluating policy $x$ on target task $t$ where $Y_{t,g,\ell}(x) = \mu_{0,g}(x) + \Delta_g(x) + \varepsilon_\ell$ ($\ell = 1,\dots,r$) with independent errors, $\E[\varepsilon_\ell]=0$, and $\E[\varepsilon_\ell^2] = v_t(x)$.
 \begin{enumerate}
-  \item \emph{(Mean-shift contamination and within-policy invariance.)} Raw prior residuals satisfy $\E[(Y_{t,g,\ell}(x) - \mu_{0,g}(x))^2] = \Delta_g(x)^2 + v_t(x)$. For every $r \ge 2$, the within-policy statistic $S_{t,g}^2(x) = \sum_{\ell=1}^r (Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x))^2$ equals $\sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2$, with $\E[S_{t,g}^2(x)/(r-1)] = v_t(x)$.
+  \item \emph{(Mean-shift contamination and within-policy invariance.)} Raw prior residuals satisfy $\E[(Y_{t,g,\ell}(x) - \mu_{0,g}(x))^2] = \Delta_g(x)^2 + v_t(x)$. The within-policy statistic $S_{t,g}^2(x) = \sum_{\ell=1}^r (Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x))^2$ equals $\sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2$ on every realized sample. For a fixed $r\ge2$, $\E[S_{t,g}^2(x)/(r-1)] = v_t(x)$.
   \item \emph{(Finite-$M_{\mathrm{src}}$ Effective Mismatch Decomposition)} For an orthogonal coordinate where $\hat{\mu}_0 = \mu^\star + \xi_{\mathrm{meta}} + b_{\mathrm{occ}}$ ($\E[\xi_{\mathrm{meta}}]=0$, $\Var(\xi_{\mathrm{meta}}) = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$) and $\theta_t = \mu^\star + \Delta_{\mathrm{shift}}$, the expected squared prior discrepancy $\Delta_{\mathrm{eff}}^2 \coloneqq (\theta_t - \hat{\mu}_0)^2$ satisfies
   \begin{equation}\label{eq:mismatch_decomp}
     \E\big[\Delta_{\mathrm{eff}}^2\big] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \frac{\sigma_{\mathrm{src}}^2}{M_{\mathrm{src}}}.
@@ -30,6 +30,8 @@ Consider evaluating policy $x$ on target task $t$ where $Y_{t,g,\ell}(x) = \mu_{
   \end{equation}
 \end{enumerate}
 \end{theorem}
+
+Target search pools batches at revisited policies. The algebraic cancellation still holds for the pooled statistic. Unbiasedness holds within a fresh batch when its policy and size are determined before its observations and the independent-replication assumptions hold conditional on that history. Selecting the pooled sample size after seeing earlier observations can introduce bias. For IID symmetric $\{-1,1\}$ draws, two initial draws followed by two more only when the first two differ give expected pooled sample variance $7/12$ for a true variance of $1$. The Electronic Companion gives the enumeration. This distinction motivates a fixed-batch comparison of dispersion when per-batch statistics are retained.
 
 \subsection{Self-Normalized Empirical-Bayes Uniform Shift Excess-Risk Bound}
 
@@ -76,6 +78,25 @@ Condition on the frozen shortlist and all search data. Let $A_i$ be the event th
        + J_{\rm sq}\Prob(A_0^c\cap A_1^c\cap A_2^c).\label{eq:guarded-terminal-loss}
 \end{align}
 The nominal cost $J_i$ here is the actual expected objective for the frozen policy in slot $i$. Terms with $B$ account for the possibility that both gates pass. These joint probabilities depend on the verification objective and constraint observations. The nomination heuristic uses simpler marginal gate proxies. For lists without the guard, the loss decomposes over the first-pass events $A_i\cap\bigcap_{j<i}A_j^c$ and the all-fail event. Thus a first-pass comparison with fixed continuations describes only that special branch.
+
+\subsection{Value of information for the executed terminal rule}\label{sec:cascade_value}
+
+Let $H$ be the current or fantasized search history, and fix a predictive law for the target scenario and potential verification blocks jointly. Each roster $r$ specifies an ordered list and whether the second slot is the incumbent. Run the exact terminal map on those potential blocks. Write $U_H(r)$ for the conditional expected saving relative to abstention, where the saving is $J_{\rm sq}-J_i$ if slot $i$ is selected and zero on abstention. In a fixed finite roster menu $\mathcal R$, the one-step value of a query $q$ is
+\begin{equation}\label{eq:full_cascade_kg}
+    G_C(q)=\E\big[\max_{r\in\mathcal R} U_{H_q^+}(r)\mid H,q\big]
+            - \max_{r\in\mathcal R} U_H(r).
+\end{equation}
+Here $H_q^+$ is the fantasy after observing $q$. The conditional expectation integrates both the unknown policy costs and the fresh verification outcomes, including the observed-objective guard in~\eqref{eq:guarded-terminal-loss}. One can also value the fitted nomination rule by substituting its chosen roster for each maximum. The actual search scorer uses the single-slot proxy in Section~\ref{sec:model}. The following bound relates the scores on common fantasy draws.
+
+\begin{proposition}[A sufficient query-ranking condition]\label{prop:cascade_rank}
+Let $M_C(H)$ denote either the full-rule maximum above or the value of the chosen roster, and let $M_S(H)$ be the maximum single-slot proxy. Suppose the forecasted difference $|M_C(H_q^+)-M_S(H_q^+)|$ on common fantasy draws has expectation bounded by $e(q)$. With $G_C$ and $G_S$ defined by subtracting their respective current values, a query $q_\star$ preferred by the single-slot score is also strictly preferred by the full rule if, for every competing $q$,
+\begin{equation}\label{eq:cascade_rank_margin}
+    G_S(q_\star)-G_S(q) > e(q_\star)+e(q).
+\end{equation}
+An explicit $e(q)$ can be computed or bounded with the probability of a fallback or a guard override, the losses on these branches, and the discrepancy between a single-gate conditional saving and its posterior proxy.
+\end{proposition}
+
+The Electronic Companion gives the branchwise bound and an evaluation procedure using the same query fantasies. Guard comparisons require the joint distribution of objective and violation observations from a verification block. When only the marginal gate probabilities are modeled, bounds on joint events remain available, and the ranking condition can be inconclusive. The reported GP-FTA-KG runs score queries using the single-slot proxy.
 
 \begin{theorem}[Unsafe certified return under the verification law]\label{thm:vkg_safety}
 Given the frozen list, suppose each slot's constraint exceedance indicators are IID Bernoulli under the verification law. For each slot $i$ at level $\delta_i$, use the binomial lower-tail rejection rule at $\alpha$. If $\sum_i\delta_i\le\delta$, the probability of a certified return with violation probability above $\alpha$ is at most $\delta$. This holds for either executed terminal branch and for each supported list length. With the three registered budgets and levels the per-slot critical count is one, and the maximum total verification calls is $\MaxVerifCalls$.

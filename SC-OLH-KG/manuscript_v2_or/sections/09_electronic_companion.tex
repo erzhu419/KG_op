@@ -12,7 +12,9 @@ For $q(\psi) > 0$ and $\rho(\psi) = \frac{\mathrm{d}\nu}{\mathrm{d}q}(\psi)$, $|
 \subsection{Proof of Theorem~\ref{thm:transfer_boundary} (Shift Invariance \& Exact Transfer Dominance Boundary)}
 
 \proof{Proof of Theorem~\ref{thm:transfer_boundary}.}
-\emph{Part 1.} Expanding $(\Delta_g(x)+\varepsilon_\ell)^2$ and taking expectations gives the residual second moment. Subtracting the within-policy sample mean cancels the common mean exactly. Independence and centering then give $\E[\sum_\ell(\varepsilon_\ell-\bar\varepsilon)^2]=(r-1)v_t(x)$.
+\emph{Part 1.} Expanding $(\Delta_g(x)+\varepsilon_\ell)^2$ and taking expectations gives the residual second moment. Subtracting the within-policy sample mean cancels the common mean exactly at every realized sample length. At a fixed $r$, independence and centering give $\E[\sum_\ell(\varepsilon_\ell-\bar\varepsilon)^2]=(r-1)v_t(x)$. The same identity holds conditionally within a batch whose size and policy are fixed before its observations. Conditioning on a final pooled count after adaptive revisits need not preserve the distribution of the earlier observations.
+
+For the symmetric $\{-1,1\}$ example, equal first draws occur with probability $1/2$ and contribute zero sample variance. Conditional on unequal first draws, the next two are equal with probability $1/2$, giving a 3-to-1 sign count and sample variance $1$. Otherwise the count is 2-to-2 and the sample variance is $4/3$. The pooled expectation is $(1/2)[(1/2)1+(1/2)(4/3)]=7/12$. The matched study compares the sum of the original within-batch sums of squares divided by their total degrees of freedom with the merged-policy variance. The original batches have fixed size. The set of revisited batches and the policies selected for audit still depend on the data, so the comparison describes error relative to independent audits of those selected policies.
 
 \emph{Part 2.} Substituting $\theta_t - \hat{\mu}_0 = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}}) - \xi_{\mathrm{meta}}$ and using $\E[\xi_{\mathrm{meta}}] = 0$, $\E[\xi_{\mathrm{meta}}^2] = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$ yields $\E[(\theta_t - \hat{\mu}_0)^2] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$. Module \texttt{FunctionalTransferRisk} checks the second-moment identity.
 
@@ -64,6 +66,45 @@ Let $b$ be the current best evaluation candidate and $s_b=\hat J^{\mathrm{ref}}-
 
 This calibration enforces finite-rule mean conservation for a fixed one-step model. It does not estimate the resulting error against an exact joint posterior or the actual verification cascade. The archived U3 implementation uses~\eqref{eq:bgpkg_acq}; the correction changes decisions in a deterministic regression example. The prospectively registered panel in Section~\ref{sec:independent_design} uses the corrected implementation.
 
+\subsection{Evaluating the full-rule value and testing the ranking margin}\label{ec:cascade_rank}
+
+For evaluation under the model in~\eqref{eq:full_cascade_kg}, draw a latent target scenario conditional on the history, then draw potential verification blocks at their allocated sizes from that scenario. Draw objective and violation observations together within each replication to preserve the dependence of the guard comparison on gate outcomes. Apply the first-pass rule or the incumbent guard according to the roster roles. The expected verification count is $K_0+K_1+K_2\Prob(A_0^c\cap A_1^c\mid H)$ with three guarded slots, $K_0+K_1$ with two guarded slots, and $\sum_i K_i\Prob(\bigcap_{j<i}A_j^c\mid H)$ under first pass.
+
+Couple the full rule and a primary-only rule using the same first-slot block. The primary-only rule deploys the primary exactly on $A_0$. The full guarded rule differs from it only on the disjoint events
+\[
+ B_{01}=A_0\cap A_1\cap B^c,\quad
+ B_{\varnothing1}=A_0^c\cap A_1,\quad
+ B_{\varnothing2}=A_0^c\cap A_1^c\cap A_2 .
+\]
+For first pass, take $B_{01}=\varnothing$. Omit events with absent slots. Writing $U_{1,H}(r)=\E[(J_{\rm sq}-J_0)\mathbf{1}_{A_0}\mid H]$, we have
+\begin{align}
+ |U_H(r)-U_{1,H}(r)| \le \Gamma_H(r)
+ :=\E\big[&
+ |J_1-J_0|\mathbf{1}_{B_{01}}+|J_1-J_{\rm sq}|\mathbf{1}_{B_{\varnothing1}}\notag\\[-2pt]
+ &+|J_2-J_{\rm sq}|\mathbf{1}_{B_{\varnothing2}}\mid H\big].\label{eq:cascade_branch_bound}
+\end{align}
+This follows by comparing the two realized savings on each event and applying the triangle inequality. With conditionally independent blocks and gate probabilities $p_i$ given a latent scenario, the three event probabilities are bounded by $p_0p_1$, $(1-p_0)p_1$ and $(1-p_0)(1-p_1)p_2$, respectively. The last two are equalities when their slots exist. Without block independence, use the minima of the participating pass or fail marginals. The loss differences are fixed given the scenario, so either set of bounds can be integrated over scenario uncertainty.
+
+Write $D=J_{\rm sq}-J_0$, $p=\Prob(A_0\mid H)$ and let the computed proxy be $S_H(x_0)=s\,\tilde p$ with $s=(\hat J^{\rm ref}-\hat\mu_f(x_0))_+$. Then
+\begin{equation}\label{eq:cascade_proxy_bound}
+ |U_{1,H}(r)-S_H(x_0)|
+ \le |\operatorname{Cov}(D,\mathbf{1}_{A_0}\mid H)|
+     +p\,|\E[D\mid H]-s|+s\,|p-\tilde p|.
+\end{equation}
+Expanding the expected product and adding and subtracting $ps$ gives the inequality. The covariance is at most $\sqrt{\Var(D\mid H)p(1-p)}$ in absolute value when the second moment exists. The other terms account for the reference and positive part and for approximating the pass probability. Here $\tilde p$ can be the corrected quadrature's aligned marginal. The last term can also account for using a different first-slot test in the proxy.
+
+\proof{Proof of Proposition~\ref{prop:cascade_rank}.}
+Write $\mathcal E$ for the proxy evaluation set and $b_H(r)$ for the sum of the bounds in~\eqref{eq:cascade_branch_bound} and~\eqref{eq:cascade_proxy_bound}. If the primary policies of $\mathcal R$ are exactly $\mathcal E$, the maximum inequality in both directions gives $|\max_{r\in\mathcal R}U_H(r)-\max_{x\in\mathcal E}S_H(x)|\le \max_{r\in\mathcal R} b_H(r)$. For a heuristic roster $\hat r(H)$, instead use $b_H(\hat r(H))+|\max_{x\in\mathcal E}S_H(x)-S_H(x_0(\hat r(H)))|$. This second term accounts for deviation from the proxy maximizer, including when the nomination rule uses a different candidate set.
+
+Take $e(q)$ to be the expected bound conditional on $q$. The current value of each score cancels when comparing queries. Thus $G_C(q_\star)-G_C(q)\ge G_S(q_\star)-G_S(q)-e(q_\star)-e(q)$, proving~\eqref{eq:cascade_rank_margin}. Under an exact joint model and a fixed finite menu, each roster value is a conditional expectation of a fixed payoff. Its expectation over the fantasy equals its current value by the tower property, so~\eqref{eq:full_cascade_kg} is nonnegative by the maximum inequality.
+\Halmos\endproof
+
+To test the implemented score, hold its screened evaluation set and reference fixed. At each of its fantasy nodes, evaluate a frozen roster menu or apply the nomination heuristic to the policies available in that fantasy, with the same role-dependent terminal test. Average the discrepancy bounds using the scorer's positive weights. Compare the winning score gap with the sum of the two query bounds for each rival. The test holds on that discrete fantasy law. Comparing to a different fantasy law requires bounding the resulting integration errors as well. Model-based estimates can diagnose disagreement, while a certificate requires valid upper bounds.
+
+The test can be sharpened if the model bounds the signed correction. The signs for the three branch contributions are given by $J_0-J_1$, $J_{\rm sq}-J_1$ and $J_{\rm sq}-J_2$, respectively. If $[\ell_q,u_q]$ bounds the forecasted mean correction $M_C(H_q^+)-M_S(H_q^+)$, it suffices that the proxy's score gap against $q$ exceed $u_q-\ell_{q_\star}$. Shared changes in roster value can then cancel across queries.
+
+As an example of a primary ordering reversal, take status-quo cost $10$ and an incumbent that always passes with cost $2$. Two primaries with deterministic costs $0$ and $4$ pass with probabilities $0.4$ and $0.9$. The single-slot savings are $4$ and $5.4$. With the guard they are $8.8$ and $8$. This reversal occurs with exact gate powers and noiseless objective comparisons.
+
 \subsection{Proof of Theorem~\ref{thm:vkg_safety} and Corollary~\ref{cor:amortization}}
 
 \proof{Proof of Theorem~\ref{thm:vkg_safety}.}
@@ -85,4 +126,30 @@ The saved Lean~4.31.0 interface receipt covers the algebraic and event statement
 
 \section{Sealed Artifact Provenance and Standalone Replication Package}\label{ec:provenance}
 
-The attachment separates frozen U3 execution source (SHA-256 \texttt{5965482dba30}\ldots) from the corrected implementation. U3 reuses the P2 target panel and evaluation streams. It contains 7,544 main and raw-tail evaluations, 2,108 archive sensitivity evaluations, and 144 calibrated microscopic simulator evaluations. These are run counts across methods, budgets and streams. The appendix and main tables retain the archived outcomes. The corrected score has deterministic regression evidence and is evaluated separately on the independent panel. The included manifest ties its paired results to a distinct code and task configuration. The U3 replay tools can reconstruct the historical statistical ledgers from retained audit receipts without running simulations. The package manifest records the files and the README describes the archived inputs and runtime provenance. Retained ledgers and earlier receipts preserve their original cost and failure records.
+The attachment separates frozen U3 execution source (SHA-256 \texttt{5965482dba30}\ldots) from the corrected implementation. U3 reuses the P2 target panel and evaluation streams. It contains 7,544 main and raw-tail evaluations, 2,108 archive sensitivity evaluations, and 144 calibrated microscopic simulator evaluations. These are run counts across methods, budgets and streams. The appendix and main tables retain the archived outcomes. The corrected score has deterministic regression evidence. The two subsequent panels have separate task, stream, and code identifiers. The matched study uses the corrected score and a specified coefficient model, with the first-step choice and original batch dispersion recorded in its per-run ledger. The U3 replay tools can reconstruct the historical statistical ledgers from retained audit receipts without running simulations. The package manifest records the files and the README describes the archived inputs and runtime provenance. Retained ledgers and earlier receipts preserve their original cost and failure records.
+
+\section{Additional Archived Experiments}\label{ec:archived_sensitivity}
+
+\subsection{Heterogeneous Archives, Microscopic Traffic, and Amortization}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/fig3_amortization_mbreak.pdf}
+  \caption{(a) Mean certification rate and savings under the illustrative delay penalty on the four U3 families at $N=60$. (b) Savings under simulated archive heterogeneity on the same panel.}\label{fig:amortization}
+\end{figure}
+
+The heterogeneous archive experiment (Table~\ref{tab:messy_archive}) obtains 1,861 certified deployments in 2,108 runs. All 422 recorded grid verification-law rechecks have point estimates at or below $0.05$. The independent audit classifies 12 deployments as confidently unsafe and 7 as ambiguous. Among the displayed arms at $N=60$, frozen KG has the smallest queueing loss ($2.518$) and frozen TS the smallest grid delay-penalized loss ($0.0570$). Removing the occupancy weights produces similar losses in inventory, queueing, and storage, and lowers the traffic loss from $1.082$ to $1.034$. Because the archive conditions change together, these comparisons describe robustness to combined heterogeneity.
+
+On the calibrated single-network, single-route SUMO panel (Table~\ref{tab:live_sumo}), frozen KG records the smallest mean loss among nine methods ($0.9439$), compared with $0.9696$ for \texttt{PublicPsi-TargetGP-TS}. It certifies 8 of 16 runs. The independent audit finds 3 confidently safe, 5 boundary-ambiguous, and 0 confidently unsafe among these eight. The prior-version P2 KG on these configurations achieved $0.9685$ with 6 of 16 certified. Mean search-plus-verification calls fell from $370.25$ to $344.75$ while the recorded wall time increased from roughly $5{,}566$ to $8{,}507$ seconds. The separate uncalibrated stress panel produced 40 abstentions and thus no certified deployment to audit.
+
+Table~\ref{tab:amortization} contrasts frozen GP-FTA-KG at $N=15$ with raw-policy SCBO at $N=60$. On this shared panel the reported mean losses favor frozen GP-FTA-KG and the mean call savings range from 58.0 to 146.1 per task. The paired intervals quantify call savings. Charging $1{,}428$ source simulation calls per family gives a break-even range of 10--25 tasks for these versions, budgets, and comparator. This estimate excludes retraining, and Section~\ref{sec:independent_results} reports realized calls per run.
+
+\input{tables/table_messy_archive}
+\input{tables/table_live_sumo}
+\input{tables/table_amortization}
+
+\section{Variance Diagnostics on the Matched Panel}\label{ec:matched_variances}
+
+At each primary nominee and each certified deployment, we compare the fixed-batch estimate and the merged-policy sample variance to the variance computed from 2,000 independent audit draws. The fixed-batch estimate uses the sum of the original batch sums of squares divided by their total degrees of freedom. Table~\ref{tab:matched_variances} averages squared differences over the four paid arms. Each nominated or certified policy contributes its run-level estimate. The deployed column excludes abstentions. Both estimators remain subject to outcome-dependent policy selection and revisiting. These comparisons concern raw variance estimates at selected policies and do not measure the change in performance from replacing the variance estimator in the search model.
+
+\input{tables/table_matched_variances}

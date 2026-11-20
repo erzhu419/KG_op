@@ -1,0 +1,19 @@
+\begin{table}[htbp]\centering
+\caption{Paired operating loss, averaged within each task. Positive differences favor the latter arm.
+Intervals are individual 95\% paired $t$ intervals. Holm adjustment uses all ten tests.}\label{tab:matched_contrasts}
+\small\begin{tabular}{llccc}\toprule
+Family & Former $\to$ latter & Difference [interval] & Wins / losses / ties & Holm $p$ \\
+\midrule
+Queueing & Weak $\to$ Diagonal & $-0.0380\ [-0.1022,\,0.0263]$ & 9/15/0 & $1.000$ \\
+ & Diagonal $\to$ Full & $0.0222\ [-0.0483,\,0.0926]$ & 15/9/0 & $1.000$ \\
+ & Feasible KG $\to$ Full & $-0.0314\ [-0.0804,\,0.0176]$ & 11/13/0 & $1.000$ \\
+ & Full $\to$ Early release & $0.0000\ [-0.0068,\,0.0069]$ & 2/2/20 & $1.000$ \\
+ & Weak $\to$ Early release & $-0.0158\ [-0.0701,\,0.0385]$ & 11/12/1 & $1.000$ \\
+\midrule
+Traffic & Weak $\to$ Diagonal & $-0.0127\ [-0.0481,\,0.0227]$ & 10/14/0 & $1.000$ \\
+ & Diagonal $\to$ Full & $-0.0147\ [-0.0393,\,0.0099]$ & 11/11/2 & $1.000$ \\
+ & Feasible KG $\to$ Full & $-0.0208\ [-0.0507,\,0.0090]$ & 7/13/4 & $1.000$ \\
+ & Full $\to$ Early release & $-0.0011\ [-0.0026,\,0.0005]$ & 0/2/22 & $1.000$ \\
+ & Weak $\to$ Early release & $-0.0284\ [-0.0670,\,0.0101]$ & 7/17/0 & $1.000$ \\
+\bottomrule\end{tabular}
+\end{table}
