@@ -1,0 +1,157 @@
+{
+  "scope": "Rev2 frozen rosters; eligibility tested against evaluated policies and one queried policy",
+  "scheduler_task_ids": [
+    "t225005",
+    "t225006",
+    "t225007",
+    "t225008",
+    "t225009",
+    "t225010"
+  ],
+  "simulator_calls": 0,
+  "source_refits": 0,
+  "worker_cpu_seconds": 12.119239085,
+  "roster_membership_by_rounding_places": {
+    "5": {
+      "rosters": 96,
+      "slot_observed": [
+        0,
+        96,
+        0
+      ],
+      "primary_backup_distinct": 96,
+      "rosters_by_number_unobserved": {
+        "2": 96
+      },
+      "admissible_for_some_query": 0,
+      "admissible_after_saved_query": 0
+    },
+    "6": {
+      "rosters": 96,
+      "slot_observed": [
+        0,
+        96,
+        0
+      ],
+      "primary_backup_distinct": 96,
+      "rosters_by_number_unobserved": {
+        "2": 96
+      },
+      "admissible_for_some_query": 0,
+      "admissible_after_saved_query": 0
+    }
+  },
+  "families": {
+    "Queueing_CrossHorizon": {
+      "posterior_source_deletion_cost_order": {
+        "full": {
+          "pairs": 844,
+          "original_strict_pairs": 844,
+          "pairs_reversed_in_at_least_one_fold": 700,
+          "reversals_by_fold": {
+            "queue_H36_000": 206,
+            "queue_H36_002": 437,
+            "queue_H36_004": 277,
+            "queue_H48_001": 168,
+            "queue_H48_003": 160,
+            "queue_H48_005": 270
+          },
+          "mean_fold_reversal_fraction": 0.29976303317535546
+        },
+        "diagonal": {
+          "pairs": 844,
+          "original_strict_pairs": 844,
+          "pairs_reversed_in_at_least_one_fold": 708,
+          "reversals_by_fold": {
+            "queue_H36_000": 218,
+            "queue_H36_002": 453,
+            "queue_H36_004": 282,
+            "queue_H48_001": 180,
+            "queue_H48_003": 150,
+            "queue_H48_005": 321
+          },
+          "mean_fold_reversal_fraction": 0.3167456556082148
+        }
+      },
+      "cost_order_changes_from_offdiagonal_terms": {
+        "pairs": 844,
+        "original_coupling_order_changes": 19,
+        "both_orders_preserved_through_all_six": 0
+      },
+      "states": 12,
+      "choice_disagreements": {
+        "saved_to_refined_primary": 9,
+        "refined_primary_to_refined_full": 3,
+        "saved_to_refined_full": 9
+      },
+      "states_by_queries_retained": {
+        "1": 7,
+        "3": 2,
+        "5": 1,
+        "24": 1,
+        "160": 1
+      },
+      "states_retaining_at_least_155_queries": 1,
+      "largest_gain_state": "Queueing_CrossHorizon_t13",
+      "largest_full_over_primary_gain": 0.0023170225662745014,
+      "sum_full_over_primary_gains": 0.004373746483233604,
+      "largest_gain_share": 0.5297569429679146
+    },
+    "Traffic_Ingolstadt": {
+      "posterior_source_deletion_cost_order": {
+        "full": {
+          "pairs": 857,
+          "original_strict_pairs": 857,
+          "pairs_reversed_in_at_least_one_fold": 809,
+          "reversals_by_fold": {
+            "traffic_tls11_d23_000": 287,
+            "traffic_tls11_d23_002": 453,
+            "traffic_tls11_d23_004": 472,
+            "traffic_tls15_d32_001": 331,
+            "traffic_tls15_d32_003": 347,
+            "traffic_tls15_d32_005": 432
+          },
+          "mean_fold_reversal_fraction": 0.4515752625437573
+        },
+        "diagonal": {
+          "pairs": 857,
+          "original_strict_pairs": 857,
+          "pairs_reversed_in_at_least_one_fold": 807,
+          "reversals_by_fold": {
+            "traffic_tls11_d23_000": 286,
+            "traffic_tls11_d23_002": 413,
+            "traffic_tls11_d23_004": 504,
+            "traffic_tls15_d32_001": 347,
+            "traffic_tls15_d32_003": 384,
+            "traffic_tls15_d32_005": 465
+          },
+          "mean_fold_reversal_fraction": 0.4665499805523143
+        }
+      },
+      "cost_order_changes_from_offdiagonal_terms": {
+        "pairs": 857,
+        "original_coupling_order_changes": 77,
+        "both_orders_preserved_through_all_six": 0
+      },
+      "states": 12,
+      "choice_disagreements": {
+        "saved_to_refined_primary": 5,
+        "refined_primary_to_refined_full": 6,
+        "saved_to_refined_full": 7
+      },
+      "states_by_queries_retained": {
+        "1": 3,
+        "2": 1,
+        "155": 1,
+        "156": 1,
+        "157": 1,
+        "160": 5
+      },
+      "states_retaining_at_least_155_queries": 8,
+      "largest_gain_state": "Traffic_Ingolstadt_t08",
+      "largest_full_over_primary_gain": 0.03588071683200511,
+      "sum_full_over_primary_gains": 0.04573859058771159,
+      "largest_gain_share": 0.784473600322198
+    }
+  }
+}

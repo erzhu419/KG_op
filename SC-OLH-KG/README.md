@@ -12,6 +12,8 @@ The [matched referee-study results](docs/gp_fta_referee_ablation_results_2026112
 
 The [second review response](docs/gp_fta_referee_rev2_results_20261120.md) records the terminal-rule replay, leave-one-source-out sensitivity and matched first-query scoring. The [revision index](../OR_Submission_GP_FTA_Rev2_20261120/README.md) links these results to the revised manuscript and code and data supplement.
 
+The [third review response](docs/gp_fta_referee_rev3_results_20261120.md) checks which policies can enter the terminal roster after one more query. The [revision index](../OR_Submission_GP_FTA_Rev3_20261120/README.md) links the eligible-query results, manuscript, and replication supplement.
+
 The first revision is archived as the [anonymous manuscript](../OR_Submission_GP_FTA_Rev1_20261120/upload/manuscript.pdf), [electronic companion](../OR_Submission_GP_FTA_Rev1_20261120/upload/electronic_companion.pdf), and [code and data supplement](../OR_Submission_GP_FTA_Rev1_20261120/upload/code_and_data.zip). The [provenance and rights audit](docs/gp_fta_rights_audit_20261120.md) describes the pinned upstream inputs.
 
 The sealed P0–P3 and U3 run artifacts remain in [paper_artifacts](paper_artifacts/). Earlier protocol receipts and model results retain their original version and budget.

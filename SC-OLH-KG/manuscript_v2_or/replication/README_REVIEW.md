@@ -3,7 +3,9 @@
 This archive provides the paper's table and figure generator, per-run ledgers,
 per-slot certificates, software, mechanized proofs, the completed 432-cell
 independent panel, the 384-cell referee study, and the second-round source and
-query diagnostics. The manifest records the
+query diagnostics. The third-round supplement adds the eligibility audit,
+query comparisons under native nomination, and late-state recovery receipts.
+The manifest records the
 original execution identifiers for `frozen_u3/SC-OLH-KG`,
 `frozen_independent/SC-OLH-KG`, and the active referee code in `SC-OLH-KG`.
 The review source copies omit cluster-only launchers and use portable scheduler
@@ -54,7 +56,17 @@ PYTHONPATH=SC-OLH-KG python summarize_terminal_replay.py "$sealed" > "$readout/t
 cmp "$sealed/terminal_replay_readout.json" "$readout/terminal_replay_readout.json"
 python summarize_cascade_prefix.py "$sealed/cascade_query_v1/receipts.json" --output "$readout/cascade.json"
 cmp "$sealed/cascade_query_v1/readout.json" "$readout/cascade.json"
-PYTHONPATH=SC-OLH-KG python -m pytest -q test_cascade_prefix.py
+review3=SC-OLH-KG/paper_artifacts/v2_or_gpfta_review3_v1
+python audit_rev2_cascade_scope.py summarize \
+  --roster-receipts "$review3/rev2_scope_receipts.json" \
+  --cascade-receipts "$sealed/cascade_query_v1/receipts.json" \
+  --source-loo SC-OLH-KG/paper_artifacts/v2_or_gpfta_review2_v1/source_loo_readout.json \
+  --output "$readout/rev2_scope_readout.json"
+cmp "$review3/rev2_scope_readout.json" "$readout/rev2_scope_readout.json"
+PYTHONPATH=SC-OLH-KG python summarize_eligible_prefix.py "$review3/eligible_query_receipts.json" \
+  --output "$readout/eligible_query_readout.json"
+cmp "$review3/eligible_query_readout.json" "$readout/eligible_query_readout.json"
+PYTHONPATH=SC-OLH-KG python -m pytest -q test_cascade_prefix.py test_eligible_prefix.py
 ```
 
 The source-deletion and guarded query diagnostics include their protocols,
@@ -69,6 +81,15 @@ source-deletion and query-scoring scripts. The controlled U3 archive in
 original matched receipts and restored states for authorized review. The
 compact query readout, including the refinement, and the ledger replay both
 regenerate from this ZIP with zero simulation calls.
+
+The third-round query scoring and old-roster audit use saved search-state
+snapshots on the exact execution runtime. The late-prefix restoration also
+uses the original first-stream receipts and fitted priors, repeats the next
+search batches, and verifies the original terminal nominations. The compact
+late-prefix receipts retain the search fees. The compact eligibility and
+query readouts can be regenerated from the included receipts alone.
+The diagnostic entry points are at the archive root. Protocol links to the
+source tree use the repository's manuscript replication directory.
 
 ## Get the pinned inputs and run checks
 

@@ -713,6 +713,31 @@ def build_query_screen_table(readout: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def build_eligible_query_table(readout: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{One more query with native eligibility. The gain is the modeled improvement from",
+        r"the first-slot to the full-rule choice under the primary forecast. CPU includes the numerical",
+        r"sensitivity comparisons.}\label{tab:eligible_query}",
+        r"\small\begin{tabular}{llrrrrrr}\toprule",
+        r"& & \multicolumn{3}{c}{Query choices} & \multicolumn{2}{c}{Model gain} & CPU seconds \\",
+        r"Stage & Family & Different & Unique & Retained & Median & Maximum & Median \\",
+        r"\midrule",
+    ]
+    for stage, stage_label in (("early", "Initial"), ("late", "Before last batch")):
+        for family, family_label in (("Queueing_CrossHorizon", "Queueing"), ("Traffic_Ingolstadt", "Traffic")):
+            row = readout[stage][family]
+            n = row["states"]
+            lines.append(
+                f"{stage_label} & {family_label} & {row['first_vs_full_disagreements']}/{n} & "
+                f"{row['unique_full_query']}/{n} & {row['retained_query_positions']}/{row['query_positions']} & "
+                f"{row['median_model_value_gain']:.6f} & {row['maximum_model_value_gain']:.6f} & "
+                rf"{row['median_whole_trial_cpu_seconds']:.1f} \\"
+            )
+    lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
 def _compute_honest_amortization(rows_u3: list[dict[str, str]], fam: str, b_src: int = 1428) -> dict[str, Any]:
     agg = _task_agg(rows_u3, fam)["by_budget"]
     fta15 = agg[15]["GP-FTA-KG"]
@@ -1013,6 +1038,10 @@ def main() -> None:
         query_readout = json.loads(cascade.read_text(encoding="utf-8"))
         if "refinement" in query_readout["Queueing_CrossHorizon"]:
             (tab_dir / "table_query_screen.tex").write_text(build_query_screen_table(query_readout), encoding="utf-8")
+    eligible = ART_DIR / "v2_or_gpfta_review3_v1/eligible_query_readout.json"
+    if eligible.is_file():
+        eligible_readout = json.loads(eligible.read_text(encoding="utf-8"))
+        (tab_dir / "table_eligible_query.tex").write_text(build_eligible_query_table(eligible_readout), encoding="utf-8")
     build_figures(args.output_dir / "figures", rows_u3, rows_messy, rows_p1_mech, p1_diag)
     print(f"Regenerated sealed-ledger tables and figures in {args.output_dir}.")
 

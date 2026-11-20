@@ -70,7 +70,7 @@
 \TITLE{Functional Transfer and Terminal Verification in Chance-Constrained Simulation Optimization with Legacy Logs}
 \ARTICLEAUTHORS{\AUTHOR{Authors omitted for double-anonymous peer review}}
 
-\ABSTRACT{Historical simulation logs can guide new policy evaluations when deployment requires an independent chance-constraint test. We transfer a function prior across policy dimensions using public state summaries and estimate simulation noise from repeat observations. To decide where to simulate next, we compare a score based on the first verification slot with one that values the full terminal rule, including its backup candidates and the status quo. We derive an interval screen that can identify queries that cannot be optimal under this rule. On observed traffic search paths, adding later verification slots reverses the sample ordering of two knowledge-gradient scores by mean operating loss. On 24 reconstructed first-query states, the screen singles out a full-rule choice in 10 states under a common working model and fixed candidate menus. Source deletion frequently changes predicted cost and constraint orderings even after common target initialization. Across 48 new queueing and traffic tasks, matched comparisons show no statistically significant loss benefit from historical coefficient coupling or gate-power weighting. Independent verification bounds the chance of a certified unsafe return under its sampling law. Our audits also count unsafe status quo policies after abstention.}
+\ABSTRACT{Historical simulation logs can guide new policy evaluations when deployment requires an independent chance-constraint test. We transfer a function prior across policy dimensions using public state summaries, and estimate simulation noise from repeats. To choose one more simulation query, we value the terminal roster that can actually be nominated after observing the proposed batch. An interval screen excludes queries whose full-rule values cannot be optimal. On 24 reconstructed initial states, the screen uniquely determines 23 choices under the designated finite forecast. The eligible scores disagree in one of these states. In four near-terminal histories they disagree three times and the screen retains multiple choices. On observed traffic search paths, applying later verification slots reverses the sample mean loss ordering of two previously run knowledge-gradient methods. Deleting source tasks frequently changes policy orderings even after common target initialization. Matched comparisons on 48 queueing and traffic tasks show no statistically significant loss benefit from historical coefficient coupling or gate-power weighting. Independent verification bounds the chance of a certified unsafe return under its sampling law. The audits also count unsafe status-quo policies after abstention.}
 
 \KEYWORDS{simulation optimization; chance constraints; knowledge gradient; empirical Bayes; heteroscedastic metamodeling; clean-up verification}
 \SUBJECTCLASS{Simulation: efficiency and statistical analysis; Programming: stochastic, chance-constrained.}
@@ -103,9 +103,7 @@ The reproducibility attachment contains the scientific source for frozen U3 and 
 \input{tables/table_operating_policy}
 \input{tables/table_matched_policy}
 \input{tables/table_matched_contrasts}
-\input{tables/table_main}
-\input{tables/table_ablations}
-\input{tables/table_verification_audit}
+\input{tables/table_eligible_query}
 
 \clearpage
 \input{sections/09_electronic_companion}

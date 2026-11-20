@@ -28,6 +28,7 @@ U3_SHA256 = "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a"
 U3_COHORTS = ("v2_or_u3_confirm_v1", "v2_or_u3_live_sumo_v1", "v2_or_u3_messy_archive_v1")
 FRESH_COHORT = "v2_or_kg_quadrature_confirm_v1"
 REFEREE_COHORT = "v2_or_gpfta_referee_ablation_v1"
+REVIEW3_DIAGNOSTIC = "v2_or_gpfta_review3_v1"
 LEDGER_COHORTS = (
     "v2_or_p1_gate_check_v1",
     "v2_or_p1_mech_v1",
@@ -146,6 +147,10 @@ def collect_clean_replication_files(independent_tree: Path = INDEPENDENT_TREE) -
         "SC-OLH-KG/docs/gp_fta_review2_source_loo_protocol_20261120.md",
         "SC-OLH-KG/docs/gp_fta_cascade_query_protocol_20261120.md",
         "SC-OLH-KG/docs/gp_fta_cascade_query_results_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_rev2_scope_audit_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_eligible_late_protocol_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_eligible_query_protocol_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_referee_rev3_results_20261120.md",
     ):
         add(REPO_ROOT / rel)
     for path in (REPO_ROOT / "proof/SCOLHKG/V2OR").glob("*.lean"):
@@ -185,7 +190,12 @@ def collect_clean_replication_files(independent_tree: Path = INDEPENDENT_TREE) -
         artifacts / REFEREE_COHORT / "terminal_replay_readout.json",
         artifacts / REFEREE_COHORT / "cascade_query_v1/receipts.json",
         artifacts / REFEREE_COHORT / "cascade_query_v1/readout.json",
+        artifacts / REFEREE_COHORT / "eligible_query_v1/late_prefix_receipts.json",
         artifacts / "v2_or_gpfta_review2_v1/source_loo_readout.json",
+        artifacts / REVIEW3_DIAGNOSTIC / "rev2_scope_receipts.json",
+        artifacts / REVIEW3_DIAGNOSTIC / "rev2_scope_readout.json",
+        artifacts / REVIEW3_DIAGNOSTIC / "eligible_query_receipts.json",
+        artifacts / REVIEW3_DIAGNOSTIC / "eligible_query_readout.json",
     ):
         add(path)
     for directory in artifacts.glob("v2_or_*"):
@@ -214,7 +224,9 @@ def collect_clean_replication_files(independent_tree: Path = INDEPENDENT_TREE) -
                  "RESCO_INGOLSTADT21_LICENSE.txt", "verify_inputs.py", "read_u3_replay.py",
                  "summarize_operating_policy.py", "summarize_terminal_replay.py", "diagnose_source_loo.py",
                  "restore_cascade_prefix.py", "score_cascade_prefix.py", "refine_cascade_prefix.py",
-                 "summarize_cascade_prefix.py", "test_cascade_prefix.py"):
+                 "summarize_cascade_prefix.py", "test_cascade_prefix.py", "audit_rev2_cascade_scope.py",
+                 "restore_eligible_late_prefix.py", "score_eligible_prefix.py", "summarize_eligible_prefix.py",
+                 "test_eligible_prefix.py"):
         add(REPLICATION_DIR / name, Path(name))
     return files
 

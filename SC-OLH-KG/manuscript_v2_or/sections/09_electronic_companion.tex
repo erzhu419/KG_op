@@ -166,9 +166,9 @@ For the first-slot replay, we preserve the selected primary and observed exact-b
 
 Each deletion removes one task's entire archive. The original pipeline re-estimates representation standardization, active modes, whitening and coefficient moments from the remaining five tasks. Across folds, a change in a policy difference can reflect any of those estimates. Within each fold we compare full and diagonal covariance with all other fitted components fixed. This isolates off-diagonal covariance in that fold. We report mean cost and constraint differences, their predictive dispersion and reversal counts. The complete saved menu uses unique nominations from both streams of all four arms, plus the status quo. The posterior diagnostic uses the restored stream and same eight initial batches for all refits. Its candidate pairs come from the corresponding stream and status quo. Thus the comparison of reversal rates across those two diagnostics also changes menus and denominators.
 
-\subsection{Guarded terminal score on the common query menu}
+\subsection{The fixed-roster diagnostic with relaxed eligibility}
 
-For each history, use the implementation's objective screen and freeze four primaries, a common incumbent and distinct fallback policies before fantasizing. Both scores allow immediate abstention, value loss relative to the same fixed reference, and share a $5\times 5$ normal fantasy rule for the two heads. Each candidate query represents a new batch of two observations. After a fantasy, write $F_i$ for the latent mean cost and $A_i$ for exact binomial certification in slot $i$. The full-rule expectation adds the following terms to the saving of the first-slot policy: the expected guard correction on $A_0\cap A_1$, the saving on $A_0^c\cap A_1$, and the saving on $A_0^c\cap A_1^c\cap A_2$. Conditional on the two Gaussian heads, the verification blocks are independent and exceedance counts use the Gaussian constraint mapping as their violation probabilities.
+The 96 fixed rosters each contained two unevaluated policies. This diagnostic values them as potential rosters after additional search. For each history, use the implementation's objective screen and freeze four primaries, a common incumbent and distinct fallback policies before fantasizing. Both scores allow immediate abstention, value loss relative to the same fixed reference, and share a $5\times 5$ normal fantasy rule for the two heads. Each candidate query represents a new batch of two observations. After a fantasy, write $F_i$ for the latent mean cost and $A_i$ for exact binomial certification in slot $i$. The full-rule expectation adds the following terms to the saving of the first-slot policy: the expected guard correction on $A_0\cap A_1$, the saving on $A_0^c\cap A_1$, and the saving on $A_0^c\cap A_1^c\cap A_2$. Conditional on the two Gaussian heads, the verification blocks are independent and exceedance counts use the Gaussian constraint mapping as their violation probabilities.
 
 Let $D=F_0-F_1$ and $Z=D+\epsilon_0-\epsilon_1$ be the difference of the verification sample means, with independent Gaussian verification errors. If $D$ has conditional mean $m$ and variance $v$ and $Z$ has standard deviation $s$, the correction to the slot~0 payoff when both slots pass is
 \[
@@ -178,3 +178,61 @@ where $\phi$ and $\Phi$ are the standard normal density and distribution. This f
 
 For the interval screen, each marginal gate curve is monotone in a standard Gaussian quantile. Divide its probability domain into 512 cells of equal mass. Evaluating the curve at the internal endpoints and using $[0,1]$ for the tail end bounds gives lower and upper sums differing by at most $1/512$. Fr\'echet bounds give joint bounds on $A_0\cap A_1$, $A_0^c\cap A_1$ and $A_0^c\cap A_1^c\cap A_2$. Multiplication by each term's signed objective coefficient preserves the bounds when its sign is included. Taking maxima over the same menu, including immediate abstention, and averaging by the positive fantasy weights gives a lower and upper reading for each full-rule query value. These bounds apply under the frozen working law and finite fantasy rule. Numerical ranking is checked separately. The binomial CDF for at most one violation at probability $p$ is $\Prob(U\ge p)$ for $U\sim\mathrm{Beta}(2,K_0-1)$. Exchanging integration with this threshold variable gives the first-slot marginal by a normal CDF integrated against a beta density. We compare 24- and 48-point quadratures for that integral. For the retained full-tree contenders and the two first-slot choices, the three correlated constraint latents use common scrambled Sobol points. We compare 4,096 and 32,768 points per scramble under two fixed independent scrambles. These refinements use the same query fantasies, rosters and working law. Agreement across rules is a numerical diagnostic. The interval screen gives the ordering implications for the stipulated finite fantasy problem.
 \input{tables/table_query_screen}
+
+\subsection{Score after the next observed batch}\label{ec:eligible_score}
+
+For each query and outcome head $h$, write $m_h$ and $v_h$ for its fitted mean and latent variance, and $a_h$ for its estimated observational variance. A two-replication Gaussian forecast can be generated by drawing independent standard normals $z_{h,m},z_{h,d}$ and setting
+\[
+  \bar y_h=m_h+\sqrt{v_h+a_h/2}\,z_{h,m},\qquad
+  y_{h,1/2}=\bar y_h\pm\sqrt{a_h/2}\,z_{h,d}.
+\]
+We use the two generated responses to form the sufficient statistics of the fantasy, including its within-pair dispersion and count of positive constraint outcomes. The matched model updates its target noise fit using the augmented records. Native nomination receives this updated model and only the post-query observed policies. Revisits merge according to the six-place policy key. The nominee builder deduplicates by its five-place key and the verification rule sets the applicable gate budgets and guard according to the returned slot roles. The common first-slot comparison uses that same primary and test.
+
+To compute~\eqref{eq:eligible_cascade_values}, we integrate conditional signed savings from an allocated binomial gate, the objective guard when its role is present, and the later first-pass events. The independent objective head permits the same truncated-Gaussian guard formula used above. With no guarding incumbent, the simultaneous-pass correction is zero. The product of conditional gate probabilities within the working model preserves dependence through the shared constraint latent. We propagate marginal quantile bounds through the conditional branch values for each roster, then average over the shared forecast nodes. This ordering permits lists, allocated tests and slot roles to vary across nodes without weakening the rank argument.
+
+The primary finite forecast uses 64 scrambled Sobol nodes for the four coordinates of a hypothetical batch. Nested 32-node rules and a second scramble measure sensitivity to the finite forecast itself. The inner calculation uses 24- and 48-point marginal beta quadratures and two scrambles of 512 and 2,048 joint Sobol points for dependent gates on retained queries. A separate 512-cell marginal bracket supplies the Fr\'echet screen. Agreement of these rules concerns numerical comparisons; the interval implication uses the declared finite forecast and working law. Across the two 64-node scrambles, all 245,760 forecast rosters per family at initialization have three distinct nominated policies. The incumbent guard is present in 35,524 queueing rosters and 107,419 traffic rosters. The other rosters use first pass because deduplication removed an incumbent matching the primary.
+
+\section{Development and Shared-Panel Results}\label{ec:shared_panel}
+
+\subsection{Stage P1 Diagnostics and Sequential Mechanism Comparisons}\label{sec:p1_diag}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.97\textwidth]{figures/fig2_tempering_diagnostics.pdf}
+  \caption{P1 diagnostics. (a) Log-variance RMSE on separate policies at $1.3\times$ shift and four replications. (b) Mechanism comparisons at $N=15$ and $N=60$ on 16 inventory and 16 queueing configurations.}\label{fig:tempering_diag}
+\end{figure}
+
+Nearby public representations often correspond to similar objectives, with median nearest-neighbor differences between $10.8\%$ and $25.7\%$ of the global policy objective standard deviation across the four diagnostic tasks. The residual kernel can capture nonlinear variation as a function of $\psi$. Policies with identical $\psi$ remain indistinguishable to a kernel on $\psi$.
+
+With identical NNLS fitting, within-policy dispersion improves the log-variance RMSE relative to prior-centered residuals. Under the $1.3\times$ shift with four replications, queueing RMSE falls from $6.83$ to $5.16$, while the median ratio of predicted to reference variance remains $198.7$. The binomial pass curve gives $C_{112,1}(0.05)\approx0.0221$, versus $0.50$ from a feasibility-boundary proxy. Calibration still depends on the fitted posterior. In P1, Brier error increased on inventory and queueing and fell slightly on traffic. For the P1 mechanism comparisons, $D-C$ favors adding the functional prior in inventory but fixed-scale transfer incurs a higher loss in queueing at $N=60$. The recorded gate-power KG arm has lower mean loss than gate-power TS in all eight inventory/queueing budget cells on that development panel. The U3 comparison below shows the dependence of this finding on the experimental configuration.
+
+\subsection{Stage U3 Shared-Panel Comparisons}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{figures/fig1_horizon_scaling.pdf}
+  \caption{Frozen U3 mean status-quo loss and task-level standard errors by online step budget. Comparisons reuse the P2 panel. The figure reports a subset of the recorded methods.}\label{fig:horizon_scaling}
+\end{figure}
+
+The U3 ledger records the frozen runtime \texttt{5965482dba30}. The KG curves therefore refer to the version that used different quadrature orders for current and fantasy gate power. Section~\ref{sec:experiments} describes the shared-panel design. For the six raw-policy comparators at $N=60$, frozen KG has lower task-mean loss in all 24 family-by-comparator comparisons, with within-family adjusted $p\le0.018$. The comparison against the public-coordinate and same-framework controls is mixed (Tables~\ref{tab:main_confirm} and~\ref{tab:ablations}). In particular:
+\begin{itemize}
+  \item \textbf{Inventory.} \texttt{PublicPsi-TargetGP-TS} yields $\mathcal L_{\mathrm{SQ}}=1.8834$ and $\mathcal L_{10\%}=1.8950$, compared with $1.8974$ and $1.9037$ for GP-FTA-KG. KG certifies 31 of 32 runs. Same-representation RGPE certifies 20 of 32 and has mean status-quo loss $1.8836$. The illustrative abstention penalty changes the ranking of these two arms.
+  \item \textbf{Queueing.} Frozen KG attains $2.5065$, compared with $2.5904$ for \texttt{RGPE-on-Psi} and $2.5334$ for its same-framework TS counterpart. It wins 15 of 16 task comparisons against \texttt{RGPE-on-Psi} and 9 of 16 against GP-FTA-TS. With 136 search calls for each adaptive arm at $N=60$, KG uses $372.8$ mean search-plus-verification calls compared with $312.4$ for raw-policy SCBO.
+  \item \textbf{Grid storage.} In the clipped U3 panel, KG mean loss decreases from $0.05914$ at $N=8$ to $0.05665$ at $N=60$. This highest-budget value exceeds P2 KG's $0.05587$ despite the improved U3 budget curve. For unclipped errors at $N=60$, GP-FTA-KG yields the lowest illustrative delay-penalized loss among the displayed arms ($0.0637$) while certifying 17 of 28 runs. The raw-tail results and audit outcomes qualify the clipped-panel advantage.
+  \item \textbf{Traffic DES.} \texttt{PublicPsi-TargetGP-TS} yields $1.0072$ and certifies 32 of 32 runs. Frozen KG yields $1.0781$ and certifies 25 of 32, and the same-framework TS yields $1.0569$. TS loss rises from $N=8$ to $N=15$ before decreasing at higher budgets. In queueing the TS mean also rises from $N=30$ to $N=60$.
+\end{itemize}
+At $N=60$, KG has lower mean status-quo loss than its same-framework TS counterpart in queueing and the clipped grid. TS leads in inventory and traffic DES. The one-sided task comparisons in Table~\ref{tab:main_confirm} give $p>0.05$ in all four families.
+
+At the same $N=60$ budget, mean KG loss from P2 to U3 falls from $1.9136$ to $1.8974$ in inventory and from $2.5502$ to $2.5065$ in queueing, with the same certification counts. It rises from $1.0706$ to $1.0781$ in traffic DES and from $0.06018$ to $0.06102$ on the unclipped grid, where certifications fall from 20 to 17 of 28 runs. These are comparisons of the two complete versions on shared tasks and streams.
+
+\subsection{Verification Coverage and Safety Audits}
+
+Table~\ref{tab:verification_audit} separates gate-law rechecks from the deployment audits. The main and raw-tail U3 ledger contains 6,144 certified deployments and 1,400 abstentions. Grid rechecks use fresh draws from the verification block law and are available for 1,624 certified grid runs across all methods. The two GP-FTA arms account for 279 of these rechecks (205 clipped and 74 unclipped). The verification-law point estimate is at or below $0.05$ in each of those 279 runs. On the separate audit block pool, Clopper--Pearson classifications across the two GP-FTA grid arms include 28 confidently unsafe deployments (10 clipped and 18 unclipped). Pool-specific outcomes measure different risks. The exact conditional verification bound concerns the verification law; outcomes from the audit pool characterize performance when that empirical distribution changes.
+
+The status-quo loss assigns the anchor's cost to abstentions and the selected nominee's audited objective to certified deployments. Table~\ref{tab:verification_audit} classifies the certified nominees from the archived campaigns. For the independent panel, Table~\ref{tab:operating_policy} also classifies the anchors retained after abstention.
+
+The heterogeneous-archive, microscopic traffic and source-amortization results are detailed in Electronic Companion~\ref{ec:archived_sensitivity}.
+
+\input{tables/table_main}
+\input{tables/table_ablations}
+\input{tables/table_verification_audit}
