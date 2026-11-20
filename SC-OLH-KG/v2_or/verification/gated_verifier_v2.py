@@ -20,6 +20,7 @@ Implements a transparent, finite-sample safety certification contract:
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Sequence
 
 import numpy as np
@@ -76,6 +77,7 @@ class TerminalDeploymentReceipt:
     shortlist_roles: tuple[str, ...]
 
 
+@lru_cache(maxsize=128)
 def exact_binomial_critical_k(n_samples: int, alpha: float, delta_slot: float) -> int:
     """Largest integer `k*` such that `BinomCDF(k*; K, alpha) <= delta_slot` (`-1` if none)."""
     k_tot = int(n_samples)
@@ -94,9 +96,19 @@ def exact_binomial_pass_power(
 ) -> np.ndarray:
     """Exact pass probability `C_K(p) = BinomCDF(k_crit; K, p)` as a function of `p`."""
     p_arr = np.clip(np.asarray(p_viol, dtype=float), 0.0, 1.0)
-    if int(k_crit) < 0 or int(n_samples) < 1:
+    k = int(k_crit)
+    n = int(n_samples)
+    if k < 0 or n < 1:
         return np.zeros_like(p_arr, dtype=float)
-    return np.asarray(binom.cdf(int(k_crit), int(n_samples), p_arr), dtype=float)
+    q = 1.0 - p_arr
+    if k == 0:
+        return np.asarray(q ** n, dtype=float)
+    if k == 1 and n >= 1:
+        return np.asarray((q ** (n - 1)) * (1.0 + (n - 1) * p_arr), dtype=float)
+    if k == 2 and n >= 2:
+        poly = q * q + n * p_arr * q + (0.5 * n * (n - 1)) * (p_arr * p_arr)
+        return np.asarray((q ** (n - 2)) * poly, dtype=float)
+    return np.asarray(binom.cdf(k, n, p_arr), dtype=float)
 
 
 def posterior_binomial_gate_power(

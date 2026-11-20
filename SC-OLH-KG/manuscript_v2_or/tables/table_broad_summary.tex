@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\caption{Cross-domain summary of the 9,796-run four-family benchmark, ENTSO-E grid raw-tail sensitivity, heterogeneous single-replication enterprise archive ($r_a=1$, $\alpha_m \neq \alpha_t$), and calibrated microscopic \texttt{Ingolstadt21} SUMO suite (complete per-method tables in Sections~\ref*{ec:shared_panel}--\ref*{ec:archived_sensitivity}).}\label{tab:broad_summary}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Suite \& Domain} & \textbf{Tasks ($d_s \to d_t$)} & \textbf{GP-FTA-KG $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{PublicPsi $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Best Raw-Space BO} & \textbf{RGPE (Warped)} & \textbf{GP-FTA Cert.} & \textbf{Raw-BO Wins} \\
+\midrule
+Standard Archive ($N=60$): Inventory & 16 ($72\!\to\!240$) & $1.897$ & $1.883$ & $1.960$ (\texttt{SCBO}) & $1.972$ & 31/32 & 6/6 \\
+Standard Archive ($N=60$): Queueing & 16 ($72\!\to\!240$) & $2.506$ & $2.596$ & $3.050$ (\texttt{HetGP-KG}) & $3.077$ & 32/32 & 6/6 \\
+Standard Archive ($N=60$): OPSD Grid & 14 ($168\!\to\!336$) & $0.0567$ & $0.0583$ & $0.0610$ (\texttt{SCBO}) & $0.0630$ & 26/28 & 6/6 \\
+Standard Archive ($N=60$): Traffic-21 & 16 ($22\!\to\!44$) & $1.078$ & $1.007$ & $1.137$ (\texttt{HyperBO-EB}) & $1.104$ & 25/32 & 6/6 \\
+OPSD Raw Tails ($N=60$): OPSD Raw & 14 ($168\!\to\!336$) & $0.0610$ & $0.0621$ & $0.0645$ (\texttt{SCBO}) & $0.0668$ & 17/28 & 2/2 \\
+Messy Archive ($N=60$): Inventory & 16 ($r_a\!\ge\!1$) & $1.910$ & $1.883$ & $1.987$ (\texttt{HyperBO-EB}) & $1.976$ & 32/32 & 2/2 \\
+Messy Archive ($N=60$): Queueing & 16 ($r_a\!\ge\!1$) & $2.518$ & $2.596$ & $3.069$ (\texttt{HyperBO-EB}) & $3.012$ & 32/32 & 2/2 \\
+Messy Archive ($N=60$): OPSD Grid & 14 ($r_a\!\ge\!1$) & $0.0568$ & $0.0583$ & $0.0618$ (\texttt{HyperBO-EB}) & $0.0641$ & 26/28 & 2/2 \\
+Messy Archive ($N=60$): Traffic-21 & 16 ($r_a\!\ge\!1$) & $1.082$ & $1.007$ & $1.137$ (\texttt{HyperBO-EB}) & $1.094$ & 25/32 & 2/2 \\
+Live SUMO ($N=15$): Ingolstadt-21 & 8 configs ($d_t\!=\!44$) & $\mathbf{0.9439}$ & $0.9696$ & $0.9941$ (\texttt{SCBO}) & $0.9941$ & 8/16 & 2/2 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

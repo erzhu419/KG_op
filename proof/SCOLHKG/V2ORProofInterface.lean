@@ -23,6 +23,7 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 -- Supporting Subspace & Occupancy Lemmas (`DebiasedSubspace`)
 #check SCOLHKG.V2OR.DebiasedSubspace.debiased_inner_exact_when_bounded
 #check SCOLHKG.V2OR.DebiasedSubspace.debiased_inner_clipping_bias_le
+#check SCOLHKG.V2OR.DebiasedSubspace.normalized_debiased_inner_clipping_bias_le
 #check SCOLHKG.V2OR.DebiasedSubspace.orthonormal_subset_parseval
 #check SCOLHKG.V2OR.DebiasedSubspace.active_pruned_orthogonal_decomposition
 #check SCOLHKG.V2OR.DebiasedSubspace.finset_sq_sum_le_card_mul_sum_sq
@@ -57,14 +58,23 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 #check SCOLHKG.V2OR.SequentialTheory.greedy_bgp_kg_cannot_starve_informative_arm
 #check SCOLHKG.V2OR.SequentialTheory.three_slot_cascade_bellman_identity
 #check SCOLHKG.V2OR.SequentialTheory.bellman_slot0_minimizes_expected_deployed_loss
+#check SCOLHKG.V2OR.SequentialTheory.fisher_whitened_unit_variance_sure_bound
+#check SCOLHKG.V2OR.SequentialTheory.eligible_cascade_dual_voi_decomposition
+#check SCOLHKG.V2OR.SequentialTheory.eligible_cascade_components_nonneg
+#check SCOLHKG.V2OR.SequentialTheory.revisit_query_zero_admit_voi
 
 -- Axiom audits on core theorems (must depend strictly on `[propext, Classical.choice, Quot.sound]`)
 #print axioms SCOLHKG.V2OR.FunctionalTransferRisk.effective_mismatch_second_moment_with_finite_sources
 #print axioms SCOLHKG.V2OR.FunctionalTransferRisk.transfer_dominates_target_only_iff
 #print axioms SCOLHKG.V2OR.FunctionalTransferRisk.grid_with_release_bounded_by_target_only
 #print axioms SCOLHKG.V2OR.FunctionalTransferRisk.binomial_one_violation_gate_power_bound
+#print axioms SCOLHKG.V2OR.DebiasedSubspace.normalized_debiased_inner_clipping_bias_le
 #print axioms SCOLHKG.V2OR.SequentialTheory.sure_selector_uniform_shift_excess_loss_bound
 #print axioms SCOLHKG.V2OR.SequentialTheory.expected_unit_projection_noise_le_sigma_div_rank
+#print axioms SCOLHKG.V2OR.SequentialTheory.fisher_whitened_unit_variance_sure_bound
+#print axioms SCOLHKG.V2OR.SequentialTheory.eligible_cascade_dual_voi_decomposition
+#print axioms SCOLHKG.V2OR.SequentialTheory.eligible_cascade_components_nonneg
+#print axioms SCOLHKG.V2OR.SequentialTheory.revisit_query_zero_admit_voi
 #print axioms SCOLHKG.V2OR.SequentialTheory.bgp_kg_nonneg_from_posterior_tower
 #print axioms SCOLHKG.V2OR.SequentialTheory.bgp_kg_lipschitz_in_step_innovations
 #print axioms SCOLHKG.V2OR.SequentialTheory.greedy_bgp_kg_cannot_starve_informative_arm

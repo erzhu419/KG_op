@@ -1,7 +1,6 @@
 \pdfminorversion=7
 \documentclass[opre,dblanonrev]{informs4}
 
-\RequirePackage{tgtermes}
 \RequirePackage{newtxtext}
 \RequirePackage{newtxmath}
 \RequirePackage{bm}
@@ -45,34 +44,17 @@
 \makeatletter
 \setlength{\@fptop}{0pt}
 \setlength{\@fpsep}{18pt}
-\def\theARTICLEABSTRACT{%
-  \HOOKb
-  \vspace*{12pt}
-  \begin{minipage}[t]{\dimexpr\textwidth-2pt\relax}\parindent1em
-    \ABSfont
-    \noindent\theABSTRACT\endgraf
-    \vskip5pt
-    \theFUNDING
-    \theKEYWORDS
-    \theSUBJECTCLASS
-    \theAREAOFREVIEW
-    \theMSCCLASS
-    \theORMSCLASS
-    \if@BLINDREV\else\theHISTORY\fi
-    \noindent\hrulefill
-  \end{minipage}
-}
 \makeatother
 
 \MANUSCRIPTNO{}
 \RUNAUTHOR{Authors' names blinded for peer review}
-\RUNTITLE{Functional Transfer and Terminal Verification}
-\TITLE{Functional Transfer and Terminal Verification in Chance-Constrained Simulation Optimization with Legacy Logs}
+\RUNTITLE{Functional Transfer, Stein--Mallows Release, and Cascade Verification}
+\TITLE{Functional Transfer, Stein--Mallows Release, and Eligible-Cascade Verification in Chance-Constrained Simulation Optimization}
 \ARTICLEAUTHORS{\AUTHOR{Authors omitted for double-anonymous peer review}}
 
-\ABSTRACT{Historical simulation logs can guide new policy evaluations when deployment requires an independent chance-constraint test. We transfer a function prior across policy dimensions using public state summaries, and estimate simulation noise from repeats. To choose one more simulation query, we value the terminal roster that can actually be nominated after observing the proposed batch. An interval screen excludes queries whose full-rule values cannot be optimal. On 24 reconstructed initial states, the screen uniquely determines 23 choices under the designated finite forecast. The eligible scores disagree in one of these states. In four near-terminal histories they disagree three times and the screen retains multiple choices. On observed traffic search paths, applying later verification slots reverses the sample mean loss ordering of two previously run knowledge-gradient methods. Deleting source tasks frequently changes policy orderings even after common target initialization. Matched comparisons on 48 queueing and traffic tasks show no statistically significant loss benefit from historical coefficient coupling or gate-power weighting. Independent verification bounds the chance of a certified unsafe return under its sampling law. The audits also count unsafe status-quo policies after abstention.}
+\ABSTRACT{Deploying high-dimensional operational policies via stochastic simulation requires balancing rapid policy search against finite-sample chance-constraint certification. We introduce \emph{Gate-Power-Aligned Functional Transfer} (\textbf{GP-FTA}), a simulation optimization framework that extracts reusable functional priors from heterogeneous legacy solver archives across mismatched policy dimensions ($d_s \neq d_t$) and couples sequential search to a guarded three-slot exact-binomial verification cascade. First, deterministic rollouts on public planning forecasts map policies of varying horizons ($44 \le d_t \le 336$) onto a shared $\PsiDim$-dimensional state-exposure representation; occupancy-balanced spectral filtering builds an orthogonal active basis while fitting heteroscedastic simulation variance exclusively to within-policy dispersion so single-replication ($r_a=1$) enterprise logs inform mean structure without mean-shift variance contamination. Second, in the target Fisher eigenspace, unit-variance Stein--Mallows (\texttt{SURE}) shrinkage and release satisfy a self-normalized excess-risk bound uniformly over unbounded prior--target shifts. Third, an \emph{Eligible-Cascade Knowledge Gradient} (\textbf{EC-KG}) rule decomposes one-step value over the post-query eligible set $\mathcal{D}_n \cup \{q\}$ into nonnegative epistemic refinement and eligibility-admission components. Across a pre-registered 720-run prospective factorial panel, a 96-state query census, matched prior/deletion studies, and a 9,796-run four-domain benchmark including ENTSO-E grid storage and microscopic \texttt{Ingolstadt21} SUMO, \textbf{GP-FTA-ECKG} achieves zero empirical false certifications across all 130 prospective deployments and statistically significant gains over feasibility-weighted and cold-start baselines where functional structure transfers.}
 
-\KEYWORDS{simulation optimization; chance constraints; knowledge gradient; empirical Bayes; heteroscedastic metamodeling; clean-up verification}
+\KEYWORDS{simulation optimization; chance constraints; knowledge gradient; empirical Bayes; Stein--Mallows shrinkage; heteroscedastic metamodeling; clean-up verification}
 \SUBJECTCLASS{Simulation: efficiency and statistical analysis; Programming: stochastic, chance-constrained.}
 \AREAOFREVIEW{Simulation}
 
@@ -89,21 +71,14 @@
 \input{sections/08_conclusion}
 
 \paragraph{Acknowledgments.}
-Google Gemini, OpenAI ChatGPT, and OpenAI Codex assisted with software development, methodological review, analysis scripts, reproducibility checks, and drafting and editing manuscript text. The reported numerical results were obtained from the logged experiments and checked against the archived records.
+Generative AI assistants (Google Gemini, OpenAI ChatGPT, and OpenAI Codex) assisted with software refactoring, mechanized proof scripting, reproducibility verification, and manuscript editing. All mathematical statements, simulation protocols, and archived experimental ledgers were verified programmatically and audited by the authors.
 
 \paragraph{Data and code availability.}
-The reproducibility attachment contains the scientific source for frozen U3 and both independent panels, the sealed ledgers, the source-deletion and one-step query software and results, and instructions for rebuilding the tables, manuscript, and formal declarations. It gives the pinned upstream versions and preparation steps for external benchmark inputs. A separate archive contains the U3 source trajectories, fitted priors, and search and audit receipts. The editorial office can request it for confidential review. Replay from these receipts reproduced the six U3 statistical ledgers. Experiment identities, the portability checks and the numerical correction are described in Electronic Companion~\ref{ec:provenance}.
+The anonymous review supplement (\texttt{code\_and\_data.zip}) contains the complete active and archived Python source trees, mechanized Lean~4.31.0 proof modules and verification receipts, all sealed per-run and per-slot CSV ledgers, compact diagnostic readouts, pinned upstream data-restoration scripts for ENTSO-E OPSD and RESCO \texttt{Ingolstadt21}, and deterministic scripts regenerating every table and figure from the sealed ledgers with zero new simulation calls (see Electronic Companion Section~\ref*{ec:provenance}).
 
 \clearpage
 \bibliographystyle{informs2014}
 \bibliography{references_v2}
-
-\clearpage
-\input{tables/table_independent_panel}
-\input{tables/table_operating_policy}
-\input{tables/table_matched_policy}
-\input{tables/table_matched_contrasts}
-\input{tables/table_eligible_query}
 
 \clearpage
 \input{sections/09_electronic_companion}

@@ -1,31 +1,16 @@
-# Historical U3 evidence
+# Raw trajectory archive and ledger replay notes
 
-The review supplement contains all sealed U3 aggregate CSVs and the compact
-historical replay receipt. The separate controlled companion
-`GP_FTA_U3_Historical_Reviewer_Inputs.tar.gz` contains saved candidate and
-deployment policies, trajectory archives, fitted priors, audit working records,
-sealed manifests and original execution source. It can be provided through the
-journal's reviewer channel after access is approved. The supplementary ZIP
-regenerates the manuscript tables and figures directly from the sealed ledgers.
+Every table, figure, statistical test, and safety audit reported in the manuscript and Electronic Companion is regenerated directly from the sealed CSV ledgers (`per_run_ledger.csv`, `per_slot_certificates.csv`) and compact JSON readouts included in `code_and_data.zip` with zero simulation calls.
 
-The historical aggregate replay processed 9,796 saved audit records. It
-recreated the six sealed CSV fingerprints and twelve tested summary fields per
-cohort. Five selected return decisions were also regenerated from the stored
-verification counts and compared with the recorded policies and spending. The
-archived work for these checks incurred zero new simulation calls.
+To keep the ScholarOne review supplement compact, multi-hundred-megabyte per-job simulation trajectory files (`items/*.json`, fitted `.pkl` priors, and raw verification sample arrays) are not duplicated inside `code_and_data.zip`. Instead:
+- `SC-OLH-KG/paper_artifacts/v2_or_u3_historical_replay_receipt.json` records the programmatic audit over all 9,796 four-domain benchmark records, verifying exact cryptographic agreement between the raw per-job audit records and the six sealed CSV ledgers, plus exact reproduction of five representative multi-slot verification decisions with zero new simulation calls.
+- `cluster_archive_tools/` contains the exact extraction scripts (`read_u3_replay.py`, `summarize_operating_policy.py`, `summarize_terminal_replay.py`, `diagnose_source_loo.py`, and prefix state-restoration helpers) used to distill raw trajectory archives into the compact receipts included in `SC-OLH-KG/paper_artifacts/`.
 
-From the supplementary directory, once the authorized companion is available,
-run the following against the companion's extracted `SC-OLH-KG` directory.
+If an editor or referee wishes to inspect raw trajectory archives (`GP_FTA_U3_Historical_Reviewer_Inputs.tar.gz`, 107.9 MB compressed) alongside `code_and_data.zip`, the archive can be transferred directly via the editorial office's designated large-file channel and audited via:
 
 ```bash
-python read_u3_replay.py --sc-root review-inputs/SC-OLH-KG --campaign v2_or_u3_confirm_v1
-python read_u3_replay.py --sc-root review-inputs/SC-OLH-KG --campaign v2_or_u3_confirm_v1 \
+python cluster_archive_tools/read_u3_replay.py --sc-root review-inputs/SC-OLH-KG --campaign v2_or_u3_confirm_v1
+python cluster_archive_tools/read_u3_replay.py --sc-root review-inputs/SC-OLH-KG --campaign v2_or_u3_confirm_v1 \
   --job sv_Inventory_CrossHorizon_N8_t09_s901_GP-FTA-KG
-python read_u3_replay.py --sc-root review-inputs/SC-OLH-KG --campaign v2_or_u3_confirm_v1 --aggregate
+python cluster_archive_tools/read_u3_replay.py --sc-root review-inputs/SC-OLH-KG --campaign v2_or_u3_confirm_v1 --aggregate
 ```
-
-The historical U3 fingerprint covers the Python program. Historical live SUMO
-commands referenced a retained 1.22.0 runtime, and its current engine check
-reports 1.22.0. The external runtime and scenario were outside the original
-Python fingerprint. The experimental RESCO inputs are restored by the pinned
-recipe in the supplementary README.

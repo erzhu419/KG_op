@@ -800,7 +800,8 @@ def _worker_entry(args_tuple: tuple[str, str, str, str, dict[str, Any]]) -> dict
 
 def run_worker_shard(descriptor_path: Path, start: int, end: int, workers: int) -> None:
     node = socket.gethostname().split(".")[0]
-    if node not in DEFAULT_CPU_NODES:
+    portable_ok = os.environ.get("GPFTA_PORTABLE_REVIEW") == "1" or (REPO_ROOT / ".gpfta_portable_review").is_file()
+    if not portable_ok and node not in DEFAULT_CPU_NODES:
         raise RuntimeError(f"v2_or cluster shards must run on node001-node006, got {node!r}")
     descriptor = _read_json(descriptor_path)
     manifest_path = SC_ROOT / descriptor["manifest_relpath"]
@@ -916,6 +917,9 @@ def _export_ledgers(out_dir: Path, rows: list[dict[str, Any]]) -> dict[str, str]
             "execution_code_sha256": r["execution_code_sha256"],
             "manifest_sha256": r["manifest_sha256"],
             **({"n_replication_queries": r["n_replication_queries"],
+                "posterior_beta_con": r.get("posterior_beta_con"),
+                "anchor_mc_viol_prob": anc_aud.get("mc_violation_prob"),
+                "anchor_safety_audit_class": anc_aud.get("safety_audit_class"),
                 "mechanism_receipt_json": json.dumps(r.get("mechanism_receipt"), separators=(",", ":"), sort_keys=True)}
                if has_mechanism else {}),
         })
@@ -1359,6 +1363,7 @@ def build_submit_command(
         "--workers",
         "{workers}",
     ])
+    proj_tag = os.environ.get("GPFTA_CLUSTER_PROJECT", "gp_fta_v2")
     out = [
         sys.executable,
         str(scheduler_py),
@@ -1372,13 +1377,13 @@ def build_submit_command(
         "--nodes",
         ",".join(nodes),
         "--signature",
-        f"KG_op_v2/{descriptor['campaign_name']}/{descriptor['stage']}/{{start}}-{{end}}",
+        f"{proj_tag}/{descriptor['campaign_name']}/{descriptor['stage']}/{{start}}-{{end}}",
         "--description",
         f"v2_or {descriptor['campaign_name']} {descriptor['stage']} {{node}} [{{start}},{{end}})",
         "--ram-mb",
         str(ram_mb),
         "--project",
-        "KG_op",
+        proj_tag,
         "--skip-launch-staging",
         "--env-spec",
         "none",
@@ -1411,19 +1416,10 @@ def main() -> None:
 
     p_sub = sub.add_parser("submit")
     p_sub.add_argument("--descriptor", type=Path, required=True)
-    p_sub.add_argument("--scheduler", type=Path, default=Path.home() / "mine_code/scheduleurm/skill/scheduler.py")
-    p_sub.add_argument(
-        "--remote-cwd",
-        default="/home/zhengliang01/scheduleurm_work/KG_op_v2_or_cluster/SC-OLH-KG",
-    )
-    p_sub.add_argument(
-        "--remote-python",
-        default="/home/zhengliang01/scheduleurm_work/conda_envs/scomp-mainline-py310-20261017/bin/python",
-    )
-    p_sub.add_argument(
-        "--extra-pythonpath",
-        default="/home/zhengliang01/scheduleurm_work/runtimes/cfcmt-sumo122-py310-v1",
-    )
+    p_sub.add_argument("--scheduler", type=Path, default=Path(os.environ.get("GPFTA_CLUSTER_SCHEDULER", "scheduler.py")))
+    p_sub.add_argument("--remote-cwd", default=os.environ.get("GPFTA_REMOTE_CWD", "."))
+    p_sub.add_argument("--remote-python", default=os.environ.get("GPFTA_REMOTE_PYTHON", sys.executable))
+    p_sub.add_argument("--extra-pythonpath", default=os.environ.get("GPFTA_EXTRA_PYTHONPATH", ""))
     p_sub.add_argument("--ram-mb", type=int, default=16384)
     p_sub.add_argument("--dry-run", action="store_true")
 

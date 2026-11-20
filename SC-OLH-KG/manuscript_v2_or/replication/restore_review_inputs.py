@@ -17,12 +17,26 @@ from zipfile import ZipFile
 ROOT = Path(__file__).resolve().parent
 SC = ROOT / "SC-OLH-KG"
 OPSD = SC / "data/external/opsd_time_series_extended_v2.npz"
-INGOLSTADT = ROOT / "Final_Submission/GPR_KG_Code/experiments/ingolstadt21/data"
+INGOLSTADT = SC / "data/ingolstadt21/data"
 TEX = SC / "manuscript_v2_or"
 RESCO_UPSTREAM = (
     "https://raw.githubusercontent.com/Pi-Star-Lab/RESCO/"
     "01b969ba8248a0f49c5456124ec76682785620a2/resco_benchmark/environments/ingolstadt21/"
 )
+
+
+def compute_npz_arrays_sha256(npz_bytes: bytes) -> str:
+    import numpy as np
+
+    digest = hashlib.sha256()
+    with np.load(io.BytesIO(npz_bytes), allow_pickle=False) as archive:
+        for key in sorted(archive.files):
+            arr = archive[key]
+            digest.update(key.encode("utf-8") + b"\0")
+            digest.update(str(arr.dtype).encode("utf-8") + b"\0")
+            digest.update(repr(tuple(int(s) for s in arr.shape)).encode("utf-8") + b"\0")
+            digest.update(arr.tobytes() + b"\0")
+    return digest.hexdigest()
 
 
 def install(path: Path, payload: bytes, expected: str) -> None:
@@ -37,6 +51,7 @@ def restore_resco(hashes: dict) -> None:
     for name in ("ingolstadt21.net.xml", "ingolstadt21.rou.xml"):
         with urlopen(RESCO_UPSTREAM + name, timeout=30) as response:
             source = response.read()
+        source = source.replace(b"\r\n", b"\n")
         if name.endswith("net.xml"):
             # The experimental network disabled two upstream signal phases.
             for line in (b'<phase duration="1"  state="rrrr"/>',
@@ -57,14 +72,24 @@ def restore_informs(archive_path: Path, hashes: dict) -> None:
             if len(members) != 1:
                 raise ValueError(f"Publisher template archive must contain one {name}")
             path = TEX / name
-            install(path, archive.read(members[0]), hashes[path.relative_to(ROOT).as_posix()])
+            expected = hashes[path.relative_to(ROOT).as_posix()]
+            raw = archive.read(members[0])
+            if name.endswith(".cls") and hashlib.sha256(raw).hexdigest() != expected:
+                lf = raw.replace(b"\r\n", b"\n")
+                crlf = lf.replace(b"\n", b"\r\n")
+                for candidate in (lf, crlf):
+                    if hashlib.sha256(candidate).hexdigest() == expected:
+                        raw = candidate
+                        break
+            install(path, raw, expected)
 
 
-def restore_opsd(csv: Path | None, prepared: Path | None) -> None:
+def restore_opsd(csv: Path | None, prepared: Path | None, review_meta: dict) -> None:
     manifest = json.loads(OPSD.with_suffix(".npz.manifest.json").read_bytes())
-    expected = manifest.pop("output")["sha256"]
+    expected_outer = manifest.pop("output")["sha256"]
+    expected_arrays = review_meta.get("opsd_uncompressed_arrays_sha256")
     if prepared is not None:
-        install(OPSD, prepared.read_bytes(), expected)
+        install(OPSD, prepared.read_bytes(), expected_outer)
         return
 
     sys.path.insert(0, str(SC))
@@ -78,7 +103,6 @@ def restore_opsd(csv: Path | None, prepared: Path | None) -> None:
                               interpolation_limit=manifest["interpolation_limit_hours"])
         if raw["source"]["sha256"] != manifest["source"]["sha256"]:
             raise ValueError("OPSD source differs from the pinned official release")
-        # Retain the original source provenance when reading an exact, local CSV copy.
         raw["source"] = manifest["source"]
         raw.pop("output")
         if raw != manifest:
@@ -88,7 +112,15 @@ def restore_opsd(csv: Path | None, prepared: Path | None) -> None:
         arrays["metadata_json"] = np.asarray(json.dumps(manifest, sort_keys=True), dtype="U")
         buffer = io.BytesIO()
         np.savez_compressed(buffer, **arrays)
-        install(OPSD, buffer.getvalue(), expected)
+        payload = buffer.getvalue()
+        if expected_arrays is not None:
+            if compute_npz_arrays_sha256(payload) != expected_arrays:
+                raise ValueError("OPSD uncompressed array contents differ from the pinned archive")
+            OPSD.parent.mkdir(parents=True, exist_ok=True)
+            OPSD.write_bytes(payload)
+            print(f"Verified {OPSD.relative_to(ROOT)} (exact array-level SHA-256)")
+        else:
+            install(OPSD, payload, expected_outer)
 
 
 def main() -> None:
@@ -102,13 +134,14 @@ def main() -> None:
     opsd_source.add_argument("--csv", type=Path, help="Local copy of the official CSV")
     opsd_source.add_argument("--prepared", type=Path, help="Existing authorized copy of the exact NPZ")
     args = parser.parse_args()
-    hashes = json.loads((ROOT / "REVIEW_INPUTS.json").read_bytes())["omitted_input_sha256"]
+    review_meta = json.loads((ROOT / "REVIEW_INPUTS.json").read_bytes())
+    hashes = review_meta["omitted_input_sha256"]
     if args.input == "resco":
         restore_resco(hashes)
     elif args.input == "informs":
         restore_informs(args.zip, hashes)
     else:
-        restore_opsd(args.csv, args.prepared)
+        restore_opsd(args.csv, args.prepared, review_meta)
 
 
 if __name__ == "__main__":

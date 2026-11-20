@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Complete early ($n=0$, $N_0=8$) and near-terminal ($n=59$, before the 60th online batch) query census across all 24 queueing tasks and all 24 traffic tasks ($96$ states total, $160$ candidate queries per state). Dual VOI decomposes $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q_\star) = \widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q_\star) + \widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q_\star)$ on the post-query eligible set $\mathcal{D}_n \cup \{q\}$.}\label{tab:prefix_census}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccccc}
+\toprule
+\textbf{Stage} & \textbf{Family ($n=24$)} & \textbf{$|\mathcal{D}_n|$} & \textbf{Diff.\ vs.\ Slot-0} & \textbf{Diff.\ vs.\ Feas.} & \textbf{EC-KG Revisit} & \textbf{$\widehat{\mathrm{VOI}}^{\mathrm{EC}}$ ($\times 10^{-3}$)} & \textbf{Refine / Admit Share} & \textbf{Slot-0 VOI ($\times 10^{-3}$)} & \textbf{Mean / P95 Wall (s)} \\
+\midrule
+Initial ($n=0$) & Queueing & 8.0 & 14/24 (58.3\%) & 15/24 (62.5\%) & 0/24 (0.0\%) & $183.138$ & 0.9\% / 99.1\% & $153.312$ & 0.46 / 0.50 \\
+Initial ($n=0$) & Traffic-21 & 8.0 & 11/24 (45.8\%) & 11/24 (45.8\%) & 0/24 (0.0\%) & $89.359$ & 0.5\% / 99.5\% & $73.656$ & 0.63 / 0.84 \\
+Near-terminal ($n=59$) & Queueing & 51.5 & 17/24 (70.8\%) & 18/24 (75.0\%) & 6/24 (25.0\%) & $1.361$ & 53.0\% / 47.0\% & $0.584$ & 0.68 / 0.77 \\
+Near-terminal ($n=59$) & Traffic-21 & 47.0 & 23/24 (95.8\%) & 20/24 (83.3\%) & 14/24 (58.3\%) & $0.936$ & 51.5\% / 48.5\% & $0.623$ & 0.68 / 0.81 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

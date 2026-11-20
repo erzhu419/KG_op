@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
-"""Stage U4 Publication Table & Vector Figure Generator for INFORMS *Operations Research*.
+"""Deterministic Publication Table & Vector Figure Generator for *Operations Research*.
 
-Reads strictly from sealed Stage P0, Stage P1, and Stage U3 CSV ledgers and JSON
-diagnostics (`v2_or_p1_diagnostics_v1`, `v2_or_p1_mech_v1`, `v2_or_u3_confirm_v1`,
-`v2_or_u3_messy_archive_v1`, `v2_or_u3_live_sumo_v1`, `v2_or_p0_reaudit_v1`).
-Adds corrected KG and operating-policy tables from the independent panel readouts.
+Reads strictly from sealed CSV ledgers and JSON readouts in `SC-OLH-KG/paper_artifacts/`
+(requiring zero raw simulation working directories). Regenerates all main-body and
+Electronic Companion tables and vector figures byte-reproducibly.
 """
 
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict
 import csv
 import json
 import math
-from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -51,8 +50,26 @@ PLOT_TITLES = {
     "Inventory_CrossHorizon": "(a) Dual-Sourcing Inventory DES ($M_{\\mathrm{tgt}}=16$)",
     "Queueing_CrossHorizon": "(b) Nonstationary Queueing DES ($M_{\\mathrm{tgt}}=16$)",
     "OPSD_EuroGrid": "(c) ENTSO-E Grid Storage ($M_{\\mathrm{tgt}}=14$, 24h Buffer)",
-    "Traffic_Ingolstadt": "(d) Ingolstadt-21 Signal DES ($M_{\\mathrm{tgt}}=16$, Regime Shift)",
+    "Traffic_Ingolstadt": "(d) Ingolstadt-21 Signal DES ($M_{\\mathrm{tgt}}=16$, Surge Shift)",
 }
+
+METHOD_RENAMES = {
+    "Frozen-AFTER": "Init-Frozen-Transfer",
+    "TLS-OLH-KG": "Gaussian-Margin-KG",
+}
+
+
+def _clean_zero(val: float, decimals: int = 4) -> float:
+    return 0.0 if abs(val) < 0.5 * (10.0 ** (-decimals)) else float(val)
+
+
+def _fmt_num(val: float, decimals: int = 4, signed: bool = False) -> str:
+    v = _clean_zero(val, decimals)
+    if signed:
+        if v == 0.0:
+            return f"{0.0:.{decimals}f}"
+        return f"{v:+.{decimals}f}"
+    return f"{v:.{decimals}f}"
 
 
 def _load_ledger(campaign: str) -> list[dict[str, str]]:
@@ -73,8 +90,8 @@ def _holm_adjust(p_map: dict[str, float]) -> dict[str, float]:
 
 def _fmt_mean_se(mean: float, se: float) -> str:
     if abs(mean) < 0.15:
-        return f"${mean:.4f} \\pm {se:.4f}$"
-    return f"${mean:.3f} \\pm {se:.3f}$"
+        return f"${_fmt_num(mean, 4)} \\pm {_fmt_num(se, 4)}$"
+    return f"${_fmt_num(mean, 3)} \\pm {_fmt_num(se, 3)}$"
 
 
 def _fmt_p(p: float | None, *, exploratory: bool = False) -> str:
@@ -91,11 +108,10 @@ def _fmt_p(p: float | None, *, exploratory: bool = False) -> str:
 
 
 def _disp_method(m: str) -> str:
-    if m == "GP-FTA-KG":
-        return "\\textbf{GP-FTA-KG}"
-    if m == "GP-FTA-TS":
-        return "\\textbf{GP-FTA-TS}"
-    return f"\\texttt{{{m}}}"
+    m_clean = METHOD_RENAMES.get(m, m)
+    if m_clean in {"GP-FTA-ECKG", "GP-FTA-KG", "GP-FTA-TS"}:
+        return f"\\textbf{{{m_clean}}}"
+    return f"\\texttt{{{m_clean}}}"
 
 
 def _audit_counts(rows: list[dict[str, str]]) -> dict[str, int]:
@@ -175,6 +191,288 @@ def _task_agg(rows: list[dict[str, str]], family: str) -> dict[str, Any]:
     return {"tasks": tasks, "budgets": budgets, "by_budget": out}
 
 
+# ==============================================================================
+# MAIN-BODY TABLES (Tables 1-5)
+# ==============================================================================
+
+def build_table_prospective_main(prosp: dict[str, Any]) -> str:
+    fams = ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "Traffic_Ingolstadt")
+    methods = (
+        "GP-FTA-ECKG",
+        "GP-FTA-SingleSlotKG",
+        "GP-FTA-FeasibleKG",
+        "GP-FTA-LOO-ECKG",
+        "PublicPsi-TargetGP-TS",
+    )
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Prospective factorial confirmation across 72 unseen target tasks ($720$ runs at $N=60$, two paired evaluation streams per task, reusing frozen source archives with zero new source calls). Positive differences (`Arm $-$ ECKG') favor \textbf{GP-FTA-ECKG}. Certified S/A/U classifies audited certified deployments via exact two-sided 95\% Clopper--Pearson intervals; Guard/Rescue counts certified deployments from Slot~1 (objective guard override) or Slots~1--2 (after primary failure).}\label{tab:prospective_main}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llccccccccc}",
+        r"\toprule",
+        r"\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Guard/Rescue} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Two-sided $p$} & \textbf{Holm $p$} \\",
+    ]
+    for fam in fams:
+        lines.append(r"\midrule")
+        fd = prosp["families"][fam]
+        min_l = min(fd["methods"][m]["status_quo_loss_task_mean"] for m in methods)
+        for idx, m in enumerate(methods):
+            md = fd["methods"][m]
+            f_col = rf"\multirow{{5}}{{*}}{{{SHORT_FAM[fam]}}}" if idx == 0 else ""
+            l_val = md["status_quo_loss_task_mean"]
+            l_se = md["status_quo_loss_task_se"]
+            l_str = f"$\\mathbf{{{_fmt_num(l_val, 4)}}} \\pm {_fmt_num(l_se, 4)}$" if abs(l_val - min_l) < 1e-12 else f"${_fmt_num(l_val, 4)} \\pm {_fmt_num(l_se, 4)}$"
+            ds = md["deployed_safety_counts"]
+            sau = f"{ds['safe']}/{ds['borderline']}/{ds['unsafe']}"
+            gr = f"{md['guard_overrides']}/{md['backup_rescues']}"
+            if m == "GP-FTA-ECKG":
+                diff_str, wlt_str, p_raw_s, p_holm_s = "---", "---", "---", "---"
+            else:
+                pr = fd["paired_vs_ref"][m]["status_quo_loss"]
+                lo, hi = pr["ci95"]
+                diff_str = rf"${_fmt_num(pr['mean_diff'], 4, signed=True)}\ [{_fmt_num(lo, 4)},\,{_fmt_num(hi, 4)}]$"
+                w, l, t = pr["task_wlt"]
+                wlt_str = f"{w}/{l}/{t}"
+                p_raw_s = _fmt_p(pr["paired_t_two_sided_p"])
+                p_holm_s = _fmt_p(pr["holm_two_sided_t_p"])
+            lines.append(
+                f"{f_col} & {_disp_method(m)} & {l_str} & {md['mean_total_target_calls']:.1f} & "
+                f"{md['n_certified']}/{md['n_runs']} & {sau} & {gr} & {diff_str} & {wlt_str} & {p_raw_s} & {p_holm_s} \\\\"
+            )
+
+    # Pooled 72-task standardized effect block
+    lines.append(r"\midrule")
+    pool = prosp["pooled_72_task_standardized_vs_ref"]
+    comp_only = [m for m in methods if m != "GP-FTA-ECKG"]
+    for idx, m in enumerate(comp_only):
+        f_col = r"\multirow{4}{*}{Pooled ($72$ tasks)}" if idx == 0 else ""
+        pr = pool[m]
+        lo, hi = pr["ci95"]
+        diff_str = rf"${_fmt_num(pr['mean_diff'], 4, signed=True)}\ [{_fmt_num(lo, 4)},\,{_fmt_num(hi, 4)}]$"
+        w, l, t = pr["task_wlt"]
+        p_w_two = _fmt_p(pr["wilcoxon_two_sided_p"])
+        lines.append(
+            f"{f_col} & {_disp_method(m)} & \\multicolumn{{5}}{{c}}{{Standardized paired saving $(\\mathcal{{L}}_{{\\mathrm{{arm}}}}-\\mathcal{{L}}_{{\\mathrm{{ECKG}}}})/s_{{\\mathrm{{anc}}}}$ (Wilcoxon $p={p_w_two[1:-1]}$)}} & "
+            f"{diff_str} & {w}/{l}/{t} & {_fmt_p(pr['paired_t_two_sided_p'])} & {_fmt_p(pr['holm_two_sided_t_p'])} \\\\"
+        )
+
+    lines.extend([
+        r"\bottomrule",
+        r"\end{tabular}%",
+        r"}",
+        r"\end{table}",
+    ])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_surge_compliance(prosp: dict[str, Any]) -> str:
+    fams = ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "Traffic_Ingolstadt")
+    methods = (
+        "GP-FTA-ECKG",
+        "GP-FTA-SingleSlotKG",
+        "GP-FTA-FeasibleKG",
+        "GP-FTA-LOO-ECKG",
+        "PublicPsi-TargetGP-TS",
+    )
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Operating-policy risk, surge compliance restoration, and Fisher-whitened \texttt{SURE} shrinkage/release diagnostics on the 720-run prospective panel. Operating S/A/U includes the retained status-quo anchor $x_t^{\mathrm{sq}}$ whenever a run abstains. Under the $1.3\times$ traffic surge, all 24 status-quo anchors violate the 5\% $\mathrm{CO}_2$ chance constraint ($p_t(x_t^{\mathrm{sq}}) \in [8.45\%, 97.50\%]$), so certification directly measures compliance restoration.}\label{tab:surge_compliance}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llcccccccc}",
+        r"\toprule",
+        r"\textbf{Family (Anchor Viol.)} & \textbf{Method} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{$\mathcal{L}_{10\%}$} & \textbf{$\mathcal{L}_{\mathrm{comp}}$} & \textbf{Init.\ $\hat{\lambda}_g^{\mathrm{SURE}}$} & \textbf{Final $\hat{\lambda}_g^{\mathrm{SURE}}$} & \textbf{Released} & \textbf{Revisit \%} \\",
+    ]
+    for fam in fams:
+        lines.append(r"\midrule")
+        fd = prosp["families"][fam]
+        anc_v = 100.0 * fd["anchor_task_mean_viol_prob"]
+        fam_lbl = f"{SHORT_FAM[fam]} ({anc_v:.2f}\\%)"
+        for idx, m in enumerate(methods):
+            md = fd["methods"][m]
+            f_col = rf"\multirow{{5}}{{*}}{{{fam_lbl}}}" if idx == 0 else ""
+            os_c = md["operating_safety_counts"]
+            op_sau = f"{os_c['safe']}/{os_c['borderline']}/{os_c['unsafe']}"
+            op_v = f"{100.0 * md['operating_viol_prob_task_mean']:.2f}\\%"
+            fr10 = f"${_fmt_num(md['fixed_reject_loss_10pct_task_mean'], 4)}$"
+            comp = f"${_fmt_num(md['compliance_penalized_loss_task_mean'], 4)}$"
+            st = md["sure_telemetry"]
+            if m in {"GP-FTA-ECKG", "GP-FTA-SingleSlotKG", "GP-FTA-FeasibleKG"}:
+                l0 = f"{st['init_lambda_con_mean']:.3f}"
+                lf = f"{st['final_lambda_con_mean']:.3f}"
+                rel = f"{100.0 * st['source_released_rate']:.1f}\\%"
+            elif m == "GP-FTA-LOO-ECKG":
+                l0 = "---"
+                lf = f"$\\beta_g={st['final_beta_con_mean']:.2f}$"
+                rel = f"{100.0 * st['source_released_rate']:.1f}\\%"
+            else:
+                l0, lf, rel = "---", "---", "---"
+            rev_pct = f"{100.0 * (md['mean_replication_queries'] / 60.0):.1f}\\%"
+            lines.append(
+                f"{f_col} & {_disp_method(m)} & {op_sau} & {op_v} & {fr10} & {comp} & {l0} & {lf} & {rel} & {rev_pct} \\\\"
+            )
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_prefix_census(prefix: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Complete early ($n=0$, $N_0=8$) and near-terminal ($n=59$, before the 60th online batch) query census across all 24 queueing tasks and all 24 traffic tasks ($96$ states total, $160$ candidate queries per state). Dual VOI decomposes $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q_\star) = \widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q_\star) + \widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q_\star)$ on the post-query eligible set $\mathcal{D}_n \cup \{q\}$.}\label{tab:prefix_census}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llccccccccc}",
+        r"\toprule",
+        r"\textbf{Stage} & \textbf{Family ($n=24$)} & \textbf{$|\mathcal{D}_n|$} & \textbf{Diff.\ vs.\ Slot-0} & \textbf{Diff.\ vs.\ Feas.} & \textbf{EC-KG Revisit} & \textbf{$\widehat{\mathrm{VOI}}^{\mathrm{EC}}$ ($\times 10^{-3}$)} & \textbf{Refine / Admit Share} & \textbf{Slot-0 VOI ($\times 10^{-3}$)} & \textbf{Mean / P95 Wall (s)} \\",
+        r"\midrule",
+    ]
+    for st_key, st_lbl in (("step_0", "Initial ($n=0$)"), ("step_59", "Near-terminal ($n=59$)")):
+        for fam, fam_lbl in (("Queueing_CrossHorizon", "Queueing"), ("Traffic_Ingolstadt", "Traffic-21")):
+            row = prefix["families"][fam][st_key]
+            n = row["n_states"]
+            d_sz = f"{row['mean_unique_evaluated']:.1f}"
+            d_s0 = f"{row['disagreed_with_single_slot_count']}/{n} ({100.0 * row['disagreed_with_single_slot_rate']:.1f}\\%)"
+            d_fs = f"{row['disagreed_with_feasible_kg_count']}/{n} ({100.0 * row['disagreed_with_feasible_kg_rate']:.1f}\\%)"
+            rev = f"{row['eckg_revisit_count']}/{n} ({100.0 * row['eckg_revisit_rate']:.1f}\\%)"
+            v_tot = 1000.0 * row["mean_eckg_voi_total"]
+            v_ref = 1000.0 * row["mean_eckg_voi_refine"]
+            v_adm = 1000.0 * row["mean_eckg_voi_admit"]
+            sh_ref = 100.0 * v_ref / max(v_tot, 1e-12)
+            sh_adm = 100.0 - sh_ref
+            v_s0 = 1000.0 * row["mean_single_voi_under_eckg"]
+            w_str = f"{row['mean_step_wall_ms_eckg']/1000.0:.2f} / {row['p95_step_wall_ms_eckg']/1000.0:.2f}"
+            lines.append(
+                f"{st_lbl} & {fam_lbl} & {d_sz} & {d_s0} & {d_fs} & {rev} & "
+                f"${v_tot:.3f}$ & {sh_ref:.1f}\\% / {sh_adm:.1f}\\% & ${v_s0:.3f}$ & {w_str} \\\\"
+            )
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_referee_tables(readout: dict[str, Any], replay_readout: dict[str, Any]) -> tuple[str, str]:
+    names = {
+        "TargetWeak-GateKG": r"\texttt{TargetWeak-GateKG}",
+        "HistoryDiag-GateKG": r"\texttt{HistoryDiag-GateKG}",
+        "HistoryFull-GateKG": r"\texttt{HistoryFull-GateKG}",
+        "HistoryFull-FeasibleKG": r"\texttt{HistoryFull-FeasibleKG}",
+        "InitialRelease-GateKG": r"\texttt{InitialRelease-GateKG}",
+    }
+    policy = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{Matched coefficient-prior and single-slot acquisition comparisons on 48 unseen queueing and traffic tasks ($384$ paid runs plus exact initialization-release replay, cold-DCT initialization, shared local proposals). Slot-0 Loss evaluates deploying the primary nominee alone at $K_0=112$ on the identical search paths.}\label{tab:matched_policy}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llccccccc}\toprule",
+        r"\textbf{Family} & \textbf{Matched Arm} & \textbf{Slot-0 $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Cascade $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Verif.\ Calls} & \textbf{Cert./runs} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{Revisit \%} \\",
+    ]
+    comparisons = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{Paired task-level operating-loss contrasts on the matched 48-task panel ($n=24$ tasks per family). Positive differences favor the latter arm; Holm adjustment spans all ten contrasts.}\label{tab:matched_contrasts}",
+        r"\scriptsize\begin{tabular}{llccc}\toprule",
+        r"\textbf{Family} & \textbf{Contrast (Former $\to$ Latter)} & \textbf{Former $-$ Latter [95\% CI]} & \textbf{W/L/T} & \textbf{Holm $p$} \\",
+    ]
+    for family, values in readout["families"].items():
+        policy.append(r"\midrule")
+        comparisons.append(r"\midrule")
+        short_family = SHORT_FAM[family]
+        rep_arms = replay_readout["families"][family]["arms"]
+        for j, (arm, row) in enumerate(values["arms"].items()):
+            counts = "/".join(str(row["operating_audits"].get(key, 0)) for key in
+                              ("confidently_safe", "boundary_ambiguous", "confidently_unsafe"))
+            fam = rf"\multirow{{5}}{{*}}{{{short_family}}}" if j == 0 else ""
+            s0_loss = f"${_fmt_num(rep_arms[arm]['first_slot']['mean_loss'], 4)}$" if arm in rep_arms else "---"
+            rev_sh = f"{100.0 * row['revisit_share']:.1f}\\%" if "revisit_share" in row else "---"
+            policy.append(
+                f"{fam} & {names[arm]} & {s0_loss} & ${_fmt_num(row['mean_operating_loss'], 4)}$ & "
+                f"{row['mean_terminal_calls']:.1f} & {row['certified']}/{row['runs']} & {counts} & "
+                rf"{100*row['mean_operating_violation_rate']:.2f}\% & {rev_sh} \\"
+            )
+        for j, (label, row) in enumerate(values["comparisons"].items()):
+            before, after = label.split(" to ")
+            lo, hi = row["ci95"]
+            wins = "/".join(map(str, row["latter_wins_losses_ties"]))
+            fam = rf"\multirow{{5}}{{*}}{{{short_family}}}" if j == 0 else ""
+            comparisons.append(
+                rf"{fam} & {names[before]} $\to$ {names[after]} & "
+                rf"${_fmt_num(row['improvement'], 4, signed=True)}\ [{_fmt_num(lo, 4)},\,{_fmt_num(hi, 4)}]$ & {wins} & "
+                rf"{_fmt_p(row['p_holm'])} \\"
+            )
+    policy.extend([r"\bottomrule\end{tabular}%", r"}", r"\end{table}"])
+    comparisons.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
+    return "\n".join(policy) + "\n", "\n".join(comparisons) + "\n"
+
+
+def build_table_broad_summary(
+    rows_u3: list[dict[str, str]],
+    rows_messy: list[dict[str, str]],
+    rows_sumo_u3: list[dict[str, str]],
+) -> str:
+    """Compact main-body overview across all four operational domains, raw-tail OPSD, messy logs, and live SUMO."""
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Cross-domain summary of the 9,796-run four-family benchmark, ENTSO-E grid raw-tail sensitivity, heterogeneous single-replication enterprise archive ($r_a=1$, $\alpha_m \neq \alpha_t$), and calibrated microscopic \texttt{Ingolstadt21} SUMO suite (complete per-method tables in Sections~\ref*{ec:shared_panel}--\ref*{ec:archived_sensitivity}).}\label{tab:broad_summary}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llcccccc}",
+        r"\toprule",
+        r"\textbf{Suite \& Domain} & \textbf{Tasks ($d_s \to d_t$)} & \textbf{GP-FTA-KG $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{PublicPsi $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Best Raw-Space BO} & \textbf{RGPE (Warped)} & \textbf{GP-FTA Cert.} & \textbf{Raw-BO Wins} \\",
+        r"\midrule",
+    ]
+    suite_specs = [
+        ("Standard Archive ($N=60$)", "Inventory_CrossHorizon", rows_u3, 60, "16 ($72\\!\\to\\!240$)"),
+        ("Standard Archive ($N=60$)", "Queueing_CrossHorizon", rows_u3, 60, "16 ($72\\!\\to\\!240$)"),
+        ("Standard Archive ($N=60$)", "OPSD_EuroGrid", rows_u3, 60, "14 ($168\\!\\to\\!336$)"),
+        ("Standard Archive ($N=60$)", "Traffic_Ingolstadt", rows_u3, 60, "16 ($22\\!\\to\\!44$)"),
+        ("OPSD Raw Tails ($N=60$)", "OPSD_EuroGrid_Unclamped", rows_u3, 60, "14 ($168\\!\\to\\!336$)"),
+        ("Messy Archive ($N=60$)", "Inventory_CrossHorizon_Messy", rows_messy, 60, "16 ($r_a\\!\\ge\\!1$)"),
+        ("Messy Archive ($N=60$)", "Queueing_CrossHorizon_Messy", rows_messy, 60, "16 ($r_a\\!\\ge\\!1$)"),
+        ("Messy Archive ($N=60$)", "OPSD_EuroGrid_Messy", rows_messy, 60, "14 ($r_a\\!\\ge\\!1$)"),
+        ("Messy Archive ($N=60$)", "Traffic_Ingolstadt_Messy", rows_messy, 60, "16 ($r_a\\!\\ge\\!1$)"),
+    ]
+    raw_cands = ["SCBO", "MAP-SAAS-CBO", "HetGP-KG", "HyperBO-EB", "Target-SPSA"]
+    for suite_lbl, fam, rset, bud, dim_str in suite_specs:
+        agg = _task_agg(rset, fam)["by_budget"][bud]
+        dec = 4 if "OPSD" in fam else 3
+        v_fta = agg["GP-FTA-KG"]["mean_loss"]
+        v_psi = agg["PublicPsi-TargetGP-TS"]["mean_loss"]
+        avail_raw = [m for m in raw_cands if m in agg]
+        best_raw_m = min(avail_raw, key=lambda m: agg[m]["mean_loss"]) if avail_raw else None
+        v_raw_s = f"${_fmt_num(agg[best_raw_m]['mean_loss'], dec)}$ (\\texttt{{{best_raw_m}}})" if best_raw_m else "---"
+        v_rgpe = f"${_fmt_num(agg['RGPE']['mean_loss'], dec)}$" if "RGPE" in agg else "---"
+        cert_s = _certified_count(agg["GP-FTA-KG"])
+        n_raw_beaten = sum(1 for m in avail_raw + (["RGPE"] if "RGPE" in agg else []) if v_fta < agg[m]["mean_loss"])
+        n_raw_tot = len(avail_raw) + (1 if "RGPE" in agg else 0)
+        fam_clean = SHORT_FAM.get(fam, "OPSD Raw")
+        lines.append(
+            f"{suite_lbl}: {fam_clean} & {dim_str} & ${_fmt_num(v_fta, dec)}$ & ${_fmt_num(v_psi, dec)}$ & "
+            f"{v_raw_s} & {v_rgpe} & {cert_s} & {n_raw_beaten}/{n_raw_tot} \\\\"
+        )
+
+    # Calibrated Live SUMO row
+    s_agg = _task_agg(rows_sumo_u3, "Ingolstadt21_LiveSUMO_Calibrated")["by_budget"][15]
+    avail_s_raw = [m for m in raw_cands if m in s_agg]
+    best_s_raw = min(avail_s_raw, key=lambda m: s_agg[m]["mean_loss"])
+    n_s_win = sum(1 for m in avail_s_raw + ["RGPE"] if s_agg["GP-FTA-KG"]["mean_loss"] < s_agg[m]["mean_loss"])
+    lines.append(
+        f"Live SUMO ($N=15$): Ingolstadt-21 & 8 configs ($d_t\\!=\\!44$) & "
+        f"$\\mathbf{{{_fmt_num(s_agg['GP-FTA-KG']['mean_loss'], 4)}}}$ & ${_fmt_num(s_agg['PublicPsi-TargetGP-TS']['mean_loss'], 4)}$ & "
+        f"${_fmt_num(s_agg[best_s_raw]['mean_loss'], 4)}$ (\\texttt{{{best_s_raw}}}) & ${_fmt_num(s_agg['RGPE']['mean_loss'], 4)}$ & "
+        f"{_certified_count(s_agg['GP-FTA-KG'])} & {n_s_win}/{len(avail_s_raw)+1} \\\\"
+    )
+
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+# ==============================================================================
+# ELECTRONIC COMPANION TABLES
+# ==============================================================================
+
 def build_table_main(rows_u3: list[dict[str, str]]) -> str:
     fams = ["Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt"]
     ext_baselines = ["SCBO-on-Psi", "RGPE-on-Psi", "SCBO", "MAP-SAAS-CBO", "HetGP-KG", "RGPE", "HyperBO-EB", "Target-SPSA"]
@@ -185,7 +483,7 @@ def build_table_main(rows_u3: list[dict[str, str]]) -> str:
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Frozen U3 shared-panel comparisons across four operational families (14 or 16 tasks, two paired streams per task). Reported means, observed search-plus-verification calls, and task comparisons are for $N=60$ except the $N=15$ loss column and the separately executed zero-step STOP. $\\mathcal{L}_{10\\%}$ applies an illustrative delay cost on abstention.}\\label{tab:main_confirm}",
+        "\\caption{Shared-panel four-family comparisons across 14 or 16 tasks per family (two paired streams per task, frozen runtime \\texttt{5965482dba30}). Reported means, observed search-plus-verification calls, and task comparisons are at $N=60$ except the $N=15$ column and zero-step \\texttt{STOP}.}\\label{tab:main_confirm}",
         "\\scriptsize",
         "\\resizebox{\\textwidth}{!}{%",
         "\\begin{tabular}{llccccccc}",
@@ -198,7 +496,7 @@ def build_table_main(rows_u3: list[dict[str, str]]) -> str:
         agg = _task_agg(rows_u3, fam)["by_budget"]
         b15, b60 = agg[15], agg[60]
         ref60 = b60["GP-FTA-KG"]["loss_vec"]
-        fmt = ".4f" if fam.startswith("OPSD") else ".3f"
+        dec = 4 if fam.startswith("OPSD") else 3
 
         raw_p_nat: dict[str, float] = {}
         comp_info: dict[str, tuple[float, int, int, int, float]] = {}
@@ -224,7 +522,7 @@ def build_table_main(rows_u3: list[dict[str, str]]) -> str:
             c15 = _fmt_mean_se(b15[m]["mean_loss"], b15[m]["se_loss"])
             c60 = _fmt_mean_se(b60[m]["mean_loss"], b60[m]["se_loss"])
             fr60_val = b60[m]["mean_fr10"]
-            fr60 = f"$\\mathbf{{{fr60_val:{fmt}}}}$" if abs(fr60_val - min_fr60) < 1e-12 else f"${fr60_val:{fmt}}$"
+            fr60 = f"$\\mathbf{{{_fmt_num(fr60_val, dec)}}}$" if abs(fr60_val - min_fr60) < 1e-12 else f"${_fmt_num(fr60_val, dec)}$"
             if abs(b60[m]["mean_loss"] - min_sq60) < 1e-12:
                 c60 = f"$\\mathbf{{{c60[1:-1]}}}$"
             cert_str = _certified_count(b60[m])
@@ -234,13 +532,11 @@ def build_table_main(rows_u3: list[dict[str, str]]) -> str:
                 gain_str, p_str = "---", "---"
             elif m in nat_holm_set:
                 rpct, w, l, t, _ = comp_info[m]
-                sgn = "+" if rpct >= 0 else ""
-                gain_str = f"${sgn}{rpct:.1f}\\%$ ({w}/{l}/{t})"
+                gain_str = f"${_fmt_num(rpct, 1, signed=True)}\\%$ ({w}/{l}/{t})"
                 p_str = _fmt_p(holm_nat[m])
             else:
                 rpct, w, l, t, p_raw = comp_info[m]
-                sgn = "+" if rpct >= 0 else ""
-                gain_str = f"${sgn}{rpct:.1f}\\%$ ({w}/{l}/{t})"
+                gain_str = f"${_fmt_num(rpct, 1, signed=True)}\\%$ ({w}/{l}/{t})"
                 p_str = _fmt_p(p_raw, exploratory=True)
             lines.append(f"{fam_col} & {m_disp} & {c15} & {c60} & {fr60} & {cert_str} & {call_str} & {gain_str} & {p_str} \\\\")
         if f_idx < len(fams) - 1:
@@ -272,18 +568,18 @@ def build_table_ablations(rows_u3: list[dict[str, str]]) -> str:
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Frozen U3 controls sharing the public representation and unclipped grid sensitivity. Two-sided $p$ values compare $N=60$ status-quo loss with GP-FTA-KG and are unadjusted. STOP is the same zero-step run throughout.}\\label{tab:ablations}",
+        "\\caption{Same-$\\psi$ controls, mechanism ablations (including \\texttt{Untempered-PriorResid} and \\texttt{Init-Frozen-Transfer}, which freezes GP kernel hyperparameters after paid initialization), and unclipped ENTSO-E OPSD raw-tail sensitivity. Two-sided Wilcoxon $p$ values compare $N=60$ status-quo loss against \\textbf{GP-FTA-KG}.}\\label{tab:ablations}",
         "\\scriptsize",
         "\\resizebox{\\textwidth}{!}{%",
         "\\begin{tabular}{llccccccc}",
         "\\toprule",
-        "\\textbf{Family} & \\textbf{Mechanism / Same-$\\psi$ Control} & \\textbf{$N=8$} & \\textbf{$N=15$} & \\textbf{$N=30$} & \\textbf{$N=60$ $\\mathcal{L}_{\\mathrm{SQ}}$} & \\textbf{$N=60$ $\\mathcal{L}_{10\\%}$} & \\textbf{$N=60$ Cert.\\%} & \\textbf{Two-Sided $p$} \\\\",
+        "\\textbf{Family} & \\textbf{Mechanism / Same-$\\psi$ Control} & \\textbf{$N=8$} & \\textbf{$N=15$} & \\textbf{$N=30$} & \\textbf{$N=60$ $\\mathcal{L}_{\\mathrm{SQ}}$} & \\textbf{$N=60$ $\\mathcal{L}_{10\\%}$} & \\textbf{$N=60$ Cert.\\%} & \\textbf{Two-sided $p$} \\\\",
         "\\midrule",
     ]
 
     for fam in fams:
         agg = _task_agg(rows_u3, fam)["by_budget"]
-        fmt = ".4f" if fam.startswith("OPSD") else ".3f"
+        dec = 4 if fam.startswith("OPSD") else 3
         mins = {b: min(agg[b][m]["mean_loss"] for m in ctrl_arms) for b in (8, 15, 30, 60)}
         min_fr = min(agg[60][m]["mean_fr10"] for m in ctrl_arms)
         ref60 = agg[60]["GP-FTA-KG"]["loss_vec"]
@@ -294,10 +590,10 @@ def build_table_ablations(rows_u3: list[dict[str, str]]) -> str:
             vals = []
             for b in (8, 15, 30, 60):
                 v = agg[b][m]["mean_loss"]
-                s = f"$\\mathbf{{{v:{fmt}}}}$" if abs(v - mins[b]) < 1e-12 else f"${v:{fmt}}$"
+                s = f"$\\mathbf{{{_fmt_num(v, dec)}}}$" if abs(v - mins[b]) < 1e-12 else f"${_fmt_num(v, dec)}$"
                 vals.append(s)
             frv = agg[60][m]["mean_fr10"]
-            s_fr = f"$\\mathbf{{{frv:{fmt}}}}$" if abs(frv - min_fr) < 1e-12 else f"${frv:{fmt}}$"
+            s_fr = f"$\\mathbf{{{_fmt_num(frv, dec)}}}$" if abs(frv - min_fr) < 1e-12 else f"${_fmt_num(frv, dec)}$"
             cert60 = f"{100.0 * agg[60][m]['cert_rate']:.1f}\\%"
             if m == "GP-FTA-KG":
                 p2_str = "---"
@@ -309,7 +605,6 @@ def build_table_ablations(rows_u3: list[dict[str, str]]) -> str:
             lines.append(f"{fam_col} & {m_disp} & {vals[0]} & {vals[1]} & {vals[2]} & {vals[3]} & {s_fr} & {cert60} & {p2_str} \\\\")
         lines.append("\\midrule")
 
-    # Panel B: Unclamped OPSD raw-tail sensitivity
     u_agg = _task_agg(rows_u3, "OPSD_EuroGrid_Unclamped")["by_budget"]
     u_arms = ["GP-FTA-KG", "GP-FTA-TS", "RGPE-on-Psi", "SCBO-on-Psi", "PublicPsi-TargetGP-TS", "WarmStart-PatternSearch", "SCBO", "RGPE", "STOP"]
     min15 = min(u_agg[15][m]["mean_loss"] for m in u_arms)
@@ -322,9 +617,9 @@ def build_table_ablations(rows_u3: list[dict[str, str]]) -> str:
         v15 = u_agg[15][m]["mean_loss"]
         v60 = u_agg[60][m]["mean_loss"]
         fr60 = u_agg[60][m]["mean_fr10"]
-        s15 = f"$\\mathbf{{{v15:.4f}}}$" if abs(v15 - min15) < 1e-12 else f"${v15:.4f}$"
-        s60 = f"$\\mathbf{{{v60:.4f}}}$" if abs(v60 - min60) < 1e-12 else f"${v60:.4f}$"
-        sfr = f"$\\mathbf{{{fr60:.4f}}}$" if abs(fr60 - min_fr_u) < 1e-12 else f"${fr60:.4f}$"
+        s15 = f"$\\mathbf{{{_fmt_num(v15, 4)}}}$" if abs(v15 - min15) < 1e-12 else f"${_fmt_num(v15, 4)}$"
+        s60 = f"$\\mathbf{{{_fmt_num(v60, 4)}}}$" if abs(v60 - min60) < 1e-12 else f"${_fmt_num(v60, 4)}$"
+        sfr = f"$\\mathbf{{{_fmt_num(fr60, 4)}}}$" if abs(fr60 - min_fr_u) < 1e-12 else f"${_fmt_num(fr60, 4)}$"
         cert60 = f"{100.0 * u_agg[60][m]['cert_rate']:.1f}\\%"
         if m == "GP-FTA-KG":
             p2_str = "---"
@@ -360,17 +655,17 @@ def build_table_messy_archive(rows_messy: list[dict[str, str]]) -> str:
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Heterogeneous simulated source archives on the shared U3 target panel ($2{,}108$ runs). Logs combine single replications, unequal budgets, incomplete solver coverage, and heterogeneous historical risk tolerances. Two-sided $p$ values compare status-quo loss with frozen GP-FTA-KG and are unadjusted. Online wall time is for $N=60$.}\\label{tab:messy_archive}",
+        "\\caption{Heterogeneous enterprise source archives ($2{,}108$ runs). Source logs mix single-replication records ($r_a=1$), $3.7\\times$ unequal task budgets, incomplete solver subsets, and mismatched historical risk tolerances ($\\alpha_m \\in [0.02, 0.10]$).}\\label{tab:messy_archive}",
         "\\scriptsize",
         "\\resizebox{\\textwidth}{!}{%",
         "\\begin{tabular}{llcccccc}",
         "\\toprule",
-        "\\textbf{Family} & \\textbf{Method} & \\textbf{$N=15$ $\\mathcal{L}_{\\mathrm{SQ}}$} & \\textbf{$N=60$ $\\mathcal{L}_{\\mathrm{SQ}}$} & \\textbf{$N=60$ $\\mathcal{L}_{10\\%}$} & \\textbf{$N=60$ Cert.\\%} & \\textbf{Two-Sided $p$ ($N=60$)} & \\textbf{Online Wall (s)} \\\\",
+        "\\textbf{Family} & \\textbf{Method} & \\textbf{$N=15$ $\\mathcal{L}_{\\mathrm{SQ}}$} & \\textbf{$N=60$ $\\mathcal{L}_{\\mathrm{SQ}}$} & \\textbf{$N=60$ $\\mathcal{L}_{10\\%}$} & \\textbf{$N=60$ Cert.\\%} & \\textbf{Two-sided $p$ ($N=60$)} & \\textbf{Online Wall (s)} \\\\",
         "\\midrule",
     ]
     for f_idx, fam in enumerate(fams):
         agg = _task_agg(rows_messy, fam)["by_budget"]
-        fmt = ".4f" if "OPSD" in fam else ".3f"
+        dec = 4 if "OPSD" in fam else 3
         min15 = min(agg[15][m]["mean_loss"] for m in arms)
         min60 = min(agg[60][m]["mean_loss"] for m in arms)
         minfr = min(agg[60][m]["mean_fr10"] for m in arms)
@@ -380,9 +675,9 @@ def build_table_messy_archive(rows_messy: list[dict[str, str]]) -> str:
             fam_col = f"\\multirow{{{len(arms)}}}{{*}}{{{SHORT_FAM[fam]}}}" if r_i == 0 else ""
             m_disp = _disp_method(m)
             v15, v60, fr60 = agg[15][m]["mean_loss"], agg[60][m]["mean_loss"], agg[60][m]["mean_fr10"]
-            s15 = f"$\\mathbf{{{v15:{fmt}}}}$" if abs(v15 - min15) < 1e-12 else f"${v15:{fmt}}$"
-            s60 = f"$\\mathbf{{{v60:{fmt}}}}$" if abs(v60 - min60) < 1e-12 else f"${v60:{fmt}}$"
-            sfr = f"$\\mathbf{{{fr60:{fmt}}}}$" if abs(fr60 - minfr) < 1e-12 else f"${fr60:{fmt}}$"
+            s15 = f"$\\mathbf{{{_fmt_num(v15, dec)}}}$" if abs(v15 - min15) < 1e-12 else f"${_fmt_num(v15, dec)}$"
+            s60 = f"$\\mathbf{{{_fmt_num(v60, dec)}}}$" if abs(v60 - min60) < 1e-12 else f"${_fmt_num(v60, dec)}$"
+            sfr = f"$\\mathbf{{{_fmt_num(fr60, dec)}}}$" if abs(fr60 - minfr) < 1e-12 else f"${_fmt_num(fr60, dec)}$"
             cert = f"{100.0 * agg[60][m]['cert_rate']:.1f}\\%"
             wall = f"{agg[60][m]['mean_wall']:.1f}"
             if m == "GP-FTA-KG":
@@ -406,12 +701,12 @@ def build_table_live_sumo(rows_sumo_u3: list[dict[str, str]], rows_sumo_p0: list
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Microscopic \\texttt{Ingolstadt21} SUMO evaluation ($N=15$). The calibrated U3 panel has eight threshold and weight configurations of one network and route, with two simulation streams per configuration. The 40 uncalibrated stress runs were retained from the earlier experiment.}\\label{tab:live_sumo}",
+        "\\caption{Microscopic \\texttt{Ingolstadt21} SUMO evaluation ($N=15$). The calibrated panel evaluates eight threshold and weight configurations (two streams each); the 40 uncalibrated stress runs verify strict abstention when no feasible timing exists (\\texttt{Gaussian-Margin-KG} denotes the predecessor $z_{1-\\alpha}$ Gaussian-margin lookahead).}\\label{tab:live_sumo}",
         "\\scriptsize",
         "\\setlength{\\tabcolsep}{4.6pt}",
         "\\begin{tabular}{llccccc}",
         "\\toprule",
-        "\\textbf{Regime} & \\textbf{Method} & \\textbf{Status-Quo Loss} & \\textbf{Challenger $J_t^{\\ddagger}$} & \\textbf{Cert./runs} & \\textbf{S/A/U$^*$} & \\textbf{Actual Calls} \\\\",
+        "\\textbf{Regime} & \\textbf{Method} & \\textbf{Status-Quo Loss} & \\textbf{Challenger $J_t^{\\ddagger}$} & \\textbf{Cert./runs} & \\textbf{Cert.\ S/A/U} & \\textbf{Actual Calls} \\\\",
         "\\midrule",
     ]
     min_loss = min(agg_u3[m]["mean_loss"] for m in u3_order)
@@ -419,11 +714,11 @@ def build_table_live_sumo(rows_sumo_u3: list[dict[str, str]], rows_sumo_p0: list
         md = agg_u3[m]
         reg_col = f"\\multirow{{{len(u3_order)}}}{{*}}{{Calibrated ($144$ runs)}}" if r_i == 0 else ""
         m_disp = _disp_method(m)
-        l_str = f"${md['mean_loss']:.4f} \\pm {md['se_loss']:.4f}$"
+        l_str = f"${_fmt_num(md['mean_loss'], 4)} \\pm {_fmt_num(md['se_loss'], 4)}$"
         if abs(md["mean_loss"] - min_loss) < 1e-12:
-            l_str = f"$\\mathbf{{{md['mean_loss']:.4f}}} \\pm {md['se_loss']:.4f}$"
+            l_str = f"$\\mathbf{{{_fmt_num(md['mean_loss'], 4)}}} \\pm {_fmt_num(md['se_loss'], 4)}$"
         lines.append(
-            f"{reg_col} & {m_disp} & {l_str} & ${md['mean_prim']:.4f}$ & "
+            f"{reg_col} & {m_disp} & {l_str} & ${_fmt_num(md['mean_prim'], 4)}$ & "
             f"{_certified_count(md)} & {_format_audit_classes(md)} & "
             f"{md['mean_calls']:.1f} \\\\"
         )
@@ -436,23 +731,24 @@ def build_table_live_sumo(rows_sumo_u3: list[dict[str, str]], rows_sumo_p0: list
     for r_i, m in enumerate(p0_order):
         mrows = p0_by_m[m]
         reg_col = f"\\multirow{{{len(p0_order)}}}{{*}}{{Stress Test ($40$ runs)}}" if r_i == 0 else ""
-        m_disp = f"\\texttt{{{m}}} (Legacy)" if m == "TLS-OLH-KG" else f"\\texttt{{{m}}}"
+        m_disp = _disp_method(m)
         sq = float(np.mean([float(x["status_quo_loss"]) for x in mrows]))
         pr = float(np.mean([float(x["uncertified_selected_candidate_obj"]) for x in mrows]))
         counts = _audit_counts(mrows)
         calls = float(np.mean([float(x["total_target_calls"]) for x in mrows]))
-        lines.append(f"{reg_col} & {m_disp} & ${sq:.4f}$ & ${pr:.4f}$ & {_certified_count(counts)} & --- & {calls:.1f} \\\\")
+        lines.append(f"{reg_col} & {m_disp} & ${_fmt_num(sq, 4)}$ & ${_fmt_num(pr, 4)}$ & {_certified_count(counts)} & --- & {calls:.1f} \\\\")
 
     lines.extend([
         "\\bottomrule",
         "\\end{tabular}",
-        "\\par\\smallskip\\parbox{\\textwidth}{\\scriptsize $^*$S/A/U counts certified deployments classified as confidently safe, boundary-ambiguous, or confidently unsafe by an independent audit. A dash indicates no audited deployment. $^{\\ddagger}$Calibrated runs use the frozen primary. Stress runs use the saved uncertified candidate.}",
+        "\\par\\smallskip\\parbox{\\textwidth}{\\scriptsize $^{\\ddagger}$Calibrated runs report the frozen Slot-0 primary objective; uncalibrated stress runs report the best uncertified candidate (never deployed under strict abstention).}",
         "\\end{table}",
     ])
     return "\n".join(lines)
 
 
 def build_table_verification_audit(
+    rows_prosp: list[dict[str, str]],
     rows_u3: list[dict[str, str]],
     rows_messy: list[dict[str, str]],
     rows_sumo_u3: list[dict[str, str]],
@@ -462,25 +758,23 @@ def build_table_verification_audit(
     rows_opsd = [row for row in rows_u3 if row["family"].startswith("OPSD")]
     rows_opsd_fta = [row for row in rows_opsd if row["method_name"] in fta]
     strata = [
-        ("Main and raw-tail suite, all methods", rows_u3),
-        ("Grid, both variants, all methods", rows_opsd),
-        ("Grid, clipped, GP-FTA pair", [row for row in rows_opsd_fta if row["family"] == "OPSD_EuroGrid"]),
-        ("Grid, unclipped, GP-FTA pair", [row for row in rows_opsd_fta if row["family"] == "OPSD_EuroGrid_Unclamped"]),
-        ("Heterogeneous archive, all methods", rows_messy),
-        ("Heterogeneous archive, grid only", [row for row in rows_messy if row["family"].startswith("OPSD")]),
-        ("Calibrated SUMO, all methods", rows_sumo_u3),
-        ("Calibrated SUMO, GP-FTA-KG", [row for row in rows_sumo_u3 if row["method_name"] == "GP-FTA-KG"]),
-        ("Uncalibrated SUMO stress runs", rows_sumo_p0),
+        ("Prospective 720-run panel, all 5 arms", rows_prosp),
+        ("Prospective 720-run panel, GP-FTA-ECKG", [row for row in rows_prosp if row["method_name"] == "GP-FTA-ECKG"]),
+        ("Shared 4-family \\& raw-tail suite, all methods", rows_u3),
+        ("OPSD Grid (clipped + unclipped), GP-FTA pair", rows_opsd_fta),
+        ("Heterogeneous enterprise archive, all methods", rows_messy),
+        ("Calibrated live SUMO, all methods", rows_sumo_u3),
+        ("Uncalibrated live SUMO stress runs", rows_sumo_p0),
     ]
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Verification coverage and independent audit outcomes from the sealed ledgers. Rows can overlap. Same-law exceedances use the Monte Carlo point estimate and count only certified runs with a recorded verification-law recheck. S/A/U and missing are defined over certified deployments. S/A/U denote confident safety, boundary ambiguity and confident unsafety based on two-sided 95\\% Clopper--Pearson intervals. A dash indicates that the endpoint has no observations.}\\label{tab:verification_audit}",
+        "\\caption{Verification coverage and independent safety-audit classifications across sealed cohorts. Same-law exceedances count certified ENTSO-E grid deployments whose fresh 8,000-draw verification-pool point estimate exceeds $\\alpha=0.05$; Cert.\\ S/A/U classifies certified deployments on the held-out audit law via exact two-sided 95\\% Clopper--Pearson intervals.}\\label{tab:verification_audit}",
         "\\scriptsize",
         "\\resizebox{\\textwidth}{!}{%",
         "\\begin{tabular}{lccccc}",
         "\\toprule",
-        "\\textbf{Panel and subset} & \\textbf{Cert./runs} & \\textbf{Abstained} & \\textbf{Same-law exceed./scored} & \\textbf{Independent S/A/U} & \\textbf{Unclassified cert.} \\\\",
+        "\\textbf{Cohort and Subset} & \\textbf{Cert./runs} & \\textbf{Abstained} & \\textbf{Same-law exceed./scored} & \\textbf{Cert.\\ S/A/U} & \\textbf{Unclassified} \\\\",
         "\\midrule",
     ]
     for title, rows in strata:
@@ -502,15 +796,13 @@ def build_table_independent_panel(readout: dict[str, Any]) -> str:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Corrected KG and matched controls on the independent target panel at $N=60$. "
-        r"Each family contains 24 new tasks with two paired evaluation streams per task. "
-        r"Calls are mean realized search and terminal verification replications per run.}\label{tab:independent_panel}",
+        r"\caption{Archived 432-run panel evaluating quadrature-aligned single-slot \textbf{GP-FTA-KG} (`LOO-PLL` posterior) at $N=60$ across 72 tasks (two streams per task).}\label{tab:independent_panel}",
         r"\scriptsize",
         r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{llrrccccc}",
         r"\toprule",
         r"\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Calls} & "
-        r"\textbf{Cert./runs} & \textbf{S/A/U} & \textbf{Exceed./audited} & "
+        r"\textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Exceed./audited} & "
         r"\textbf{Control $-$ KG [95\% CI]} & \textbf{Holm $p$} \\",
     ]
     for family in families:
@@ -527,24 +819,15 @@ def build_table_independent_panel(readout: dict[str, Any]) -> str:
             else:
                 paired = group["paired_loss"][method]
                 lower, upper = paired["ci95"]
-                gain = rf"${paired['comparator_minus_kg_mean']:.4f}\ [{lower:.4f},\,{upper:.4f}]$"
+                gain = rf"${_fmt_num(paired['comparator_minus_kg_mean'], 4, signed=True)}\ [{_fmt_num(lower, 4)},\,{_fmt_num(upper, 4)}]$"
                 p_value = _fmt_p(paired["paired_t_p_holm_six_tests"])
             family_col = rf"\multirow{{3}}{{*}}{{{SHORT_FAM[family]}}}" if index == 0 else ""
             lines.append(
-                f"{family_col} & {_disp_method(method)} & ${arm['mean_status_quo_loss']:.4f}$ & "
-                f"{arm['mean_total_target_calls']:.1f} & {arm['certified']}/{arm['runs']} & "
+                f"{family_col} & {_disp_method(method)} & ${_fmt_num(arm['mean_status_quo_loss'], 4)}$ & "
+                f"{arm['mean_total_target_calls']:.2f} & {arm['certified']}/{arm['runs']} & "
                 rf"{safety} & {exceed} & {gain} & {p_value} \\"
             )
-    lines.extend([
-        r"\bottomrule", r"\end{tabular}%", "}",
-        r"\par\smallskip\parbox{\textwidth}{\scriptsize "
-        r"S/A/U are counts of audited certified deployments classified as confidently safe, boundary-ambiguous, "
-        r"or confidently unsafe using two-sided 95\% Clopper--Pearson intervals. Exceedances count audited "
-        r"certified deployments with violation point estimates above 5\%. Positive loss differences favor KG. "
-        r"The paired $t$ intervals and two-sided tests average the two streams within each task. "
-        r"Holm adjusts all six tests together.}",
-        r"\end{table}",
-    ])
+    lines.extend([r"\bottomrule", r"\end{tabular}%", "}", r"\end{table}"])
     return "\n".join(lines)
 
 
@@ -554,22 +837,18 @@ def build_table_operating_policy(readout: dict[str, Any]) -> str:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Audited risk of each operating policy on the independent panel. "
-        r"A run deploys its certified nominee or retains its status-quo policy on abstention. "
-        r"Classifications use two-sided 95\% Clopper--Pearson intervals relative to the 5\% threshold. "
-        r"An audit of the status-quo policy is reused across methods and streams within a task.}\label{tab:operating_policy}",
+        r"\caption{Operating-policy risk classifications on the archived 432-run single-slot KG panel.}\label{tab:operating_policy}",
         r"\scriptsize",
         r"\begin{tabular}{llccrrr}",
         r"\toprule",
-        r"\textbf{Family} & \textbf{Method} & \textbf{New certificates} & \textbf{Status quo} & "
+        r"\textbf{Family} & \textbf{Method} & \textbf{Cert./runs} & \textbf{Retained SQ} & "
         r"\textbf{Safe} & \textbf{Ambiguous} & \textbf{Unsafe} \\",
     ]
     for family in ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "Traffic_Ingolstadt"):
         lines.append(r"\midrule")
         for index, method in enumerate(methods):
             arm = readout["families"][family]["arms"][method]
-            family_label = "Traffic DES" if family == "Traffic_Ingolstadt" else SHORT_FAM[family]
-            family_col = rf"\multirow{{3}}{{*}}{{{family_label}}}" if index == 0 else ""
+            family_col = rf"\multirow{{3}}{{*}}{{{SHORT_FAM[family]}}}" if index == 0 else ""
             safe, ambiguous, unsafe = (arm["operating_policy_classes"].get(label, 0) for label in classes)
             lines.append(
                 f"{family_col} & {_disp_method(method)} & {arm['certified']}/{arm['runs']} & "
@@ -579,68 +858,17 @@ def build_table_operating_policy(readout: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-
-def build_referee_tables(readout: dict[str, Any]) -> tuple[str, str]:
-    names = {
-        "TargetWeak-GateKG": "Weak",
-        "HistoryDiag-GateKG": "Diagonal",
-        "HistoryFull-GateKG": "Full",
-        "HistoryFull-FeasibleKG": "Feasible KG",
-        "InitialRelease-GateKG": "Early release",
-    }
-    policy = [
-        r"\begin{table}[htbp]\centering",
-        r"\caption{Matched runs on new queueing and traffic tasks. Operating loss and audit classes",
-        r"include the status quo on abstention. Each row contains 48 runs in 24 paired tasks.",
-        r"Early release is an exact replay of the selected weak or full path.}\label{tab:matched_policy}",
-        r"\small\begin{tabular}{llrcccc}\toprule",
-        r"Family & Prior / rule & Loss & Terminal calls & Certified & Safe / unclear / unsafe & Violation rate \\",
-    ]
-    comparisons = [
-        r"\begin{table}[htbp]\centering",
-        r"\caption{Paired operating loss, averaged within each task. Positive differences favor the latter arm.",
-        r"Intervals are individual 95\% paired $t$ intervals. Holm adjustment uses all ten tests.}\label{tab:matched_contrasts}",
-        r"\small\begin{tabular}{llccc}\toprule",
-        r"Family & Former $\to$ latter & Difference [interval] & Wins / losses / ties & Holm $p$ \\",
-    ]
-    for family, values in readout["families"].items():
-        policy.append(r"\midrule")
-        comparisons.append(r"\midrule")
-        short_family = "Queueing" if family.startswith("Queueing") else "Traffic"
-        for j, (arm, row) in enumerate(values["arms"].items()):
-            counts = "/".join(str(row["operating_audits"].get(key, 0)) for key in
-                              ("confidently_safe", "boundary_ambiguous", "confidently_unsafe"))
-            fam = short_family if j == 0 else ""
-            policy.append(
-                f"{fam} & {names[arm]} & {row['mean_operating_loss']:.4f} & "
-                f"{row['mean_terminal_calls']:.1f} & {row['certified']}/{row['runs']} & {counts} & "
-                rf"{100*row['mean_operating_violation_rate']:.2f}\% \\"
-            )
-        for j, (label, row) in enumerate(values["comparisons"].items()):
-            before, after = label.split(" to ")
-            lo, hi = row["ci95"]
-            wins = "/".join(map(str, row["latter_wins_losses_ties"]))
-            fam = short_family if j == 0 else ""
-            comparisons.append(
-                rf"{fam} & {names[before]} $\to$ {names[after]} & "
-                rf"${row['improvement']:.4f}\ [{lo:.4f},\,{hi:.4f}]$ & {wins} & "
-                rf"{_fmt_p(row['p_holm'])} \\"
-            )
-    end = [r"\bottomrule\end{tabular}", r"\end{table}"]
-    return "\n".join(policy + end) + "\n", "\n".join(comparisons + end) + "\n"
-
-
 def build_referee_variances(readout: dict[str, Any]) -> str:
     lines = [
         r"\begin{table}[htbp]\centering",
-        r"\caption{Mean squared variance error against independent audits, by family and role.}\label{tab:matched_variances}",
-        r"\small\begin{tabular}{llrcccc}\toprule",
-        r"& & & \multicolumn{2}{c}{Objective variance} & \multicolumn{2}{c}{Constraint variance} \\",
-        r"Family & Policy role & Runs & Fixed batch & Pooled & Fixed batch & Pooled \\",
+        r"\caption{Mean squared variance estimation error against 2,000-replication independent audits on the matched 48-task panel (fixed initial-batch within-SSQ vs.\ pooled revisit within-SSQ).}\label{tab:matched_variances}",
+        r"\scriptsize\begin{tabular}{llrcccc}\toprule",
+        r"& & & \multicolumn{2}{c}{\textbf{Objective variance MSE}} & \multicolumn{2}{c}{\textbf{Constraint variance MSE}} \\",
+        r"\textbf{Family} & \textbf{Policy role} & \textbf{Runs} & \textbf{Fixed batch} & \textbf{Pooled} & \textbf{Fixed batch} & \textbf{Pooled} \\",
     ]
     for family, values in readout["families"].items():
         lines.append(r"\midrule")
-        short_family = "Queueing" if family.startswith("Queueing") else "Traffic"
+        short_family = SHORT_FAM[family]
         paid_arms = [arm for name, arm in values["arms"].items() if name != "InitialRelease-GateKG"]
         for role, label in (("primary", "Primary"), ("deployed", "Certified")):
             roles = [arm["variance_diagnostics"][role] for arm in paid_arms]
@@ -660,176 +888,211 @@ def build_referee_variances(readout: dict[str, Any]) -> str:
 def build_terminal_replay_table(readout: dict[str, Any]) -> str:
     lines = [
         r"\begin{table}[htbp]\centering",
-        r"\caption{First-slot and full-rule operating loss, certification counts out of 48",
-        r"and terminal calls on identical realized search paths. First-slot replay",
-        r"uses 112 calls.}\label{tab:terminal_replay}",
-        r"\small\begin{tabular}{llrrccr}\toprule",
-        r"& & \multicolumn{2}{c}{Mean loss} & \multicolumn{2}{c}{Certified} & Mean calls \\",
-        r"Family & Arm & Slot 0 & Full rule & Slot 0 & Full rule & Full rule \\",
+        r"\caption{Counterfactual Slot-0-only ($K_0=112$) versus full three-slot guarded cascade verification on identical realized search paths ($48$ runs per arm).}\label{tab:terminal_replay}",
+        r"\scriptsize\begin{tabular}{llrrccr}\toprule",
+        r"& & \multicolumn{2}{c}{\textbf{Mean $\mathcal{L}_{\mathrm{SQ}}$}} & \multicolumn{2}{c}{\textbf{Certified / 48}} & \textbf{Verif.\ calls} \\",
+        r"\textbf{Family} & \textbf{Matched Arm} & \textbf{Slot 0} & \textbf{Full cascade} & \textbf{Slot 0} & \textbf{Full cascade} & \textbf{Full cascade} \\",
     ]
-    labels = {"TargetWeak-GateKG": "Weak", "HistoryDiag-GateKG": "Diagonal",
-              "HistoryFull-GateKG": "Full (gate power)", "HistoryFull-FeasibleKG": "Full (feasibility)"}
+    labels = {
+        "TargetWeak-GateKG": r"\texttt{TargetWeak-GateKG}",
+        "HistoryDiag-GateKG": r"\texttt{HistoryDiag-GateKG}",
+        "HistoryFull-GateKG": r"\texttt{HistoryFull-GateKG}",
+        "HistoryFull-FeasibleKG": r"\texttt{HistoryFull-FeasibleKG}",
+    }
     for family, values in readout["families"].items():
         lines.append(r"\midrule")
-        family_name = "Queueing" if family.startswith("Queueing") else "Traffic"
+        family_name = SHORT_FAM[family]
         for name, label in labels.items():
             arm = values["arms"][name]
             first = arm["first_slot"]
             full = arm["full_terminal"]
             lines.append(
-                f"{family_name} & {label} & {first['mean_loss']:.5f} & {full['mean_loss']:.5f} & "
-                rf"{first['certified']} & {full['certified']} & {full['mean_terminal_calls']:.2f} \\"
+                f"{family_name} & {label} & ${_fmt_num(first['mean_loss'], 5)}$ & ${_fmt_num(full['mean_loss'], 5)}$ & "
+                rf"{first['certified']}/48 & {full['certified']}/48 & {full['mean_terminal_calls']:.2f} \\"
             )
             family_name = ""
     lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
     return "\n".join(lines) + "\n"
 
 
-def build_query_screen_table(readout: dict[str, Any]) -> str:
-    queue = readout["Queueing_CrossHorizon"]
-    traffic = readout["Traffic_Ingolstadt"]
-    rules = [
-        ("Retained queries", "total_retained_queries", "total_queries", False),
-        ("Unique full-rule choice", "strict_unique_full_count", "states", True),
-        ("Unique choice agrees with matched first slot", "strict_unique_full_equals_matched_first_both_orders", "strict_unique_full_count", True),
-        ("Original scorer's choice excluded", "strict_exclusion_actual_first", "states", True),
-        ("Matched first-slot choice excluded", "strict_exclusion_matching_first_both_orders", "stable_marginal_24_48", True),
-        ("Different choices among numerically stable states", "stable_both_disagreement", "stable_both_count", True),
-    ]
-    lines = [
-        r"\begin{table}[htbp]\centering",
-        r"\caption{Query screen and numerical comparisons in the 24 matched first-query states.",
-        r"The matched first-slot exclusions use agreement under both marginal rules.}",
-        r"\label{tab:query_screen}",
-        r"\small\begin{tabular}{lrr}\toprule",
-        r"Measure & Queueing & Traffic \\",
-        r"\midrule",
-    ]
-    for label, key, denominator, refined in rules:
-        values = [family["refinement"] if refined else family for family in (queue, traffic)]
-        cells = [f"{row[key]}/{row[denominator]}" for row in values]
-        lines.append(" & ".join([label, *cells]) + r" \\")
-    lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
-    return "\n".join(lines) + "\n"
-
-
-def build_eligible_query_table(readout: dict[str, Any]) -> str:
-    lines = [
-        r"\begin{table}[htbp]\centering",
-        r"\caption{One more query with native eligibility. The gain is the modeled improvement from",
-        r"the first-slot to the full-rule choice under the primary forecast. CPU includes the numerical",
-        r"sensitivity comparisons.}\label{tab:eligible_query}",
-        r"\small\begin{tabular}{llrrrrrr}\toprule",
-        r"& & \multicolumn{3}{c}{Query choices} & \multicolumn{2}{c}{Model gain} & CPU seconds \\",
-        r"Stage & Family & Different & Unique & Retained & Median & Maximum & Median \\",
-        r"\midrule",
-    ]
-    for stage, stage_label in (("early", "Initial"), ("late", "Before last batch")):
-        for family, family_label in (("Queueing_CrossHorizon", "Queueing"), ("Traffic_Ingolstadt", "Traffic")):
-            row = readout[stage][family]
-            n = row["states"]
-            lines.append(
-                f"{stage_label} & {family_label} & {row['first_vs_full_disagreements']}/{n} & "
-                f"{row['unique_full_query']}/{n} & {row['retained_query_positions']}/{row['query_positions']} & "
-                f"{row['median_model_value_gain']:.6f} & {row['maximum_model_value_gain']:.6f} & "
-                rf"{row['median_whole_trial_cpu_seconds']:.1f} \\"
-            )
-    lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
-    return "\n".join(lines) + "\n"
-
-
-def _compute_honest_amortization(rows_u3: list[dict[str, str]], fam: str, b_src: int = 1428) -> dict[str, Any]:
-    agg = _task_agg(rows_u3, fam)["by_budget"]
-    fta15 = agg[15]["GP-FTA-KG"]
-    scbo60 = agg[60]["SCBO"]
-
-    diff_calls = scbo60["call_vec"] - fta15["call_vec"]
-    n_t = len(diff_calls)
-    mean_diff = float(np.mean(diff_calls))
-    se_diff = float(np.std(diff_calls, ddof=1) / np.sqrt(n_t))
-    t_crit = float(student_t.ppf(0.975, df=n_t - 1))
-    ci_lo = mean_diff - t_crit * se_diff
-    ci_hi = mean_diff + t_crit * se_diff
-
-    assert fta15["mean_loss"] < scbo60["mean_loss"], f"Quality dominance violated on {fam}"
-    assert mean_diff > 0.0 and ci_lo > 0.0, f"Positive call saving violated on {fam}: {mean_diff}, {ci_lo}"
-
-    m_break_point = math.ceil(b_src / mean_diff)
-    m_break_ci95 = math.ceil(b_src / ci_lo)
-    return {
-        "B_src": b_src,
-        "fta15_loss": fta15["mean_loss"],
-        "scbo60_loss": scbo60["mean_loss"],
-        "fta15_calls": fta15["mean_calls"],
-        "scbo60_calls": scbo60["mean_calls"],
-        "mean_saving": mean_diff,
-        "se_saving": se_diff,
-        "ci95_lo": ci_lo,
-        "ci95_hi": ci_hi,
-        "m_break_sunk": 1,
-        "m_break_point": m_break_point,
-        "m_break_ci95_upper": m_break_ci95,
-    }
-
-
-def build_table_amortization(rows_u3: list[dict[str, str]]) -> str:
+def build_table_amortization(rows_u3: list[dict[str, str]], b_src: int = 1428) -> str:
+    """Honest dual comparator amortization: against BOTH raw-space SCBO (N=60) and PublicPsi-TargetGP-TS (N=60)."""
     fams = ["Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt"]
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Illustrative simulation-call amortization against raw-policy SCBO. The table compares observed losses and search-plus-verification calls, charging $1{,}428$ source calls per family in the full-cost scenario. Intervals quantify uncertainty in the paired mean call savings.}\\label{tab:amortization}",
+        "\\caption{Source-archive simulation-call amortization ($B_{\\mathrm{src}}=1{,}428$ calls per family) comparing low-budget \\textbf{GP-FTA-KG} ($N=15$) against both raw-policy \\texttt{SCBO} ($N=60$) and same-representation \\texttt{PublicPsi-TargetGP-TS} ($N=60$). Full-cost break-even $M_{\\mathrm{break}}^{\\mathrm{full}}$ is reported only when \\textbf{GP-FTA-KG} ($N=15$) attains equal or lower mean $\\mathcal{L}_{\\mathrm{SQ}}$ than the $N=60$ cold-start comparator (`Not dom.' indicates the $N=60$ cold-start representation control achieves lower loss).}\\label{tab:amortization}",
         "\\scriptsize",
         "\\resizebox{\\textwidth}{!}{%",
-        "\\begin{tabular}{lccccccc}",
+        "\\begin{tabular}{llcccccc}",
         "\\toprule",
-        "\\textbf{Family} & \\textbf{GP-FTA ($N\\!=\\!15$)} & \\textbf{\\texttt{SCBO} ($N\\!=\\!60$)} & \\textbf{$B_{\\mathrm{FTA},15}$} & \\textbf{$B_{\\mathrm{SCBO},60}$} & \\textbf{Call Saving $\\Delta B$ ($95\\%$ CI)} & \\textbf{$M_{\\mathrm{break}}^{\\mathrm{sunk}}$} & \\textbf{$M_{\\mathrm{break}}^{\\mathrm{full}}$ ($95\\%$ UB)} \\\\",
+        "\\textbf{Comparator ($N=60$)} & \\textbf{Family} & \\textbf{GP-FTA ($N\\!=\\!15$)} & \\textbf{Cold ($N\\!=\\!60$)} & \\textbf{$B_{\\mathrm{FTA},15}$ / $B_{\\mathrm{cold},60}$} & \\textbf{Call Saving $\\Delta B$ [95\\% CI]} & \\textbf{$M_{\\mathrm{break}}^{\\mathrm{sunk}}$} & \\textbf{$M_{\\mathrm{break}}^{\\mathrm{full}}$ (95\\% UB)} \\\\",
         "\\midrule",
     ]
-    for fam in fams:
-        am = _compute_honest_amortization(rows_u3, fam)
-        fmt = ".4f" if fam.startswith("OPSD") else ".3f"
-        lines.append(
-            f"{SHORT_FAM[fam]} & $\\mathbf{{{am['fta15_loss']:{fmt}}}}$ & ${am['scbo60_loss']:{fmt}}$ & "
-            f"{am['fta15_calls']:.1f} & {am['scbo60_calls']:.1f} & "
-            f"$+{am['mean_saving']:.1f}$ $[+{am['ci95_lo']:.1f}, +{am['ci95_hi']:.1f}]$ & "
-            f"$1$ & $\\mathbf{{{am['m_break_point']}}}$ ($\\le {am['m_break_ci95_upper']}$) \\\\"
-        )
-    lines.extend(["\\bottomrule", "\\end{tabular}%", "}", "\\end{table}"])
-    return "\n".join(lines)
+    for c_idx, comp in enumerate(("SCBO", "PublicPsi-TargetGP-TS")):
+        for r_i, fam in enumerate(fams):
+            agg = _task_agg(rows_u3, fam)["by_budget"]
+            fta15 = agg[15]["GP-FTA-KG"]
+            cold60 = agg[60][comp]
+            dec = 4 if fam.startswith("OPSD") else 3
+            diff_calls = cold60["call_vec"] - fta15["call_vec"]
+            n_t = len(diff_calls)
+            m_sav = float(np.mean(diff_calls))
+            se_sav = float(np.std(diff_calls, ddof=1) / np.sqrt(n_t))
+            t_crit = float(student_t.ppf(0.975, df=n_t - 1))
+            ci_lo = m_sav - t_crit * se_sav
+            ci_hi = m_sav + t_crit * se_sav
 
+            c_col = f"\\multirow{{4}}{{*}}{{\\texttt{{{comp}}}}}" if r_i == 0 else ""
+            qual_dom = fta15["mean_loss"] <= cold60["mean_loss"]
+            if qual_dom and m_sav > 0:
+                mb_pt = math.ceil(b_src / m_sav)
+                mb_ub = f"$\\le {math.ceil(b_src / ci_lo)}$" if ci_lo > 0 else "$\\infty$"
+                sunk_s = "$1$"
+                full_s = f"$\\mathbf{{{mb_pt}}}$ ({mb_ub})"
+            else:
+                sunk_s = "Not dom."
+                full_s = "Not dom."
+
+            lines.append(
+                f"{c_col} & {SHORT_FAM[fam]} & ${_fmt_num(fta15['mean_loss'], dec)}$ & ${_fmt_num(cold60['mean_loss'], dec)}$ & "
+                f"{fta15['mean_calls']:.1f} / {cold60['mean_calls']:.1f} & "
+                f"${_fmt_num(m_sav, 1, signed=True)}$ $[{_fmt_num(ci_lo, 1, signed=True)}, {_fmt_num(ci_hi, 1, signed=True)}]$ & "
+                f"{sunk_s} & {full_s} \\\\"
+            )
+        if c_idx == 0:
+            lines.append("\\midrule")
+    lines.extend(["\\bottomrule", "\\end{tabular}%", "}", "\\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+# ==============================================================================
+# PUBLICATION VECTOR FIGURES (2 Main Body + 1 Electronic Companion)
+# ==============================================================================
 
 def build_figures(
     fig_dir: Path,
+    prosp: dict[str, Any],
+    prefix: dict[str, Any],
     rows_u3: list[dict[str, str]],
     rows_messy: list[dict[str, str]],
-    rows_p1_mech: list[dict[str, str]],
     p1_diag: dict[str, Any],
 ) -> None:
     fig_dir.mkdir(parents=True, exist_ok=True)
     plt.rcParams.update({
         "font.family": "serif",
-        "font.size": 8.8,
-        "axes.titlesize": 9.3,
-        "axes.labelsize": 8.8,
-        "legend.fontsize": 7.6,
-        "xtick.labelsize": 8.2,
-        "ytick.labelsize": 8.2,
+        "font.size": 8.6,
+        "axes.titlesize": 9.2,
+        "axes.labelsize": 8.6,
+        "legend.fontsize": 7.5,
+        "xtick.labelsize": 8.0,
+        "ytick.labelsize": 8.0,
         "pdf.fonttype": 42,
     })
 
-    fams = ["Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt"]
+    # --------------------------------------------------------------------------
+    # Figure 1 (Main Body): Prospective 720-Run Factorial Forest + 96-State Dual VOI
+    # --------------------------------------------------------------------------
+    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(9.4, 3.8), gridspec_kw={"width_ratios": [1.18, 1.0]})
 
-    # --- Figure 1: 2x2 Task-Level Status-Quo Loss Scaling Including Same-Psi Controls ---
-    palette = [
-        ("GP-FTA-KG", "GP-FTA-KG (Ours)", "#0072B2", "o", "-", 2.2),
-        ("GP-FTA-TS", "GP-FTA-TS (Ours)", "#56B4E9", "v", "-", 1.8),
-        ("RGPE-on-Psi", "RGPE-on-Psi", "#D55E00", "s", "--", 1.5),
-        ("SCBO-on-Psi", "SCBO-on-Psi", "#CC79A7", "P", ":", 1.5),
-        ("PublicPsi-TargetGP-TS", "PublicPsi-TargetGP-TS", "#009E73", "D", "-.", 1.5),
-        ("SCBO", "SCBO (Raw Space)", "#E69F00", "^", "--", 1.4),
-        ("STOP", "STOP (N=0)", "#555555", "x", ":", 1.2),
+    # Panel (a): Standardized paired task-level gains (Comparator - GP-FTA-ECKG) / s_anc
+    groups = [
+        ("Inventory\n($n=24$)", "Inventory_CrossHorizon"),
+        ("Queueing\n($n=24$)", "Queueing_CrossHorizon"),
+        ("Traffic-21\n($n=24$)", "Traffic_Ingolstadt"),
+        ("Pooled\n($n=72$)", "POOLED"),
     ]
-    fig, axes = plt.subplots(2, 2, figsize=(9.0, 5.9))
+    comp_specs = [
+        ("GP-FTA-SingleSlotKG", "GP-FTA-SingleSlotKG", "#0072B2", "o", -0.22),
+        ("GP-FTA-FeasibleKG", "GP-FTA-FeasibleKG", "#D55E00", "s", -0.07),
+        ("GP-FTA-LOO-ECKG", "GP-FTA-LOO-ECKG", "#CC79A7", "^", +0.08),
+        ("PublicPsi-TargetGP-TS", "PublicPsi-TargetGP-TS", "#009E73", "D", +0.23),
+    ]
+
+    # Compute per-family standardized SDs from anchor_task_mean_obj / status_quo_loss_task_se * sqrt(24)
+    y_base = np.arange(len(groups))
+    ax_l.axvline(0.0, color="#333333", linestyle="--", linewidth=1.0, zorder=1)
+    for m_key, m_lbl, col, mk, y_off in comp_specs:
+        means, lo_err, hi_err = [], [], []
+        for _, g_key in groups:
+            if g_key == "POOLED":
+                st = prosp["pooled_72_task_standardized_vs_ref"][m_key]
+                scale = 1.0
+            else:
+                fd = prosp["families"][g_key]
+                st = fd["paired_vs_ref"][m_key]["status_quo_loss"]
+                # Normalize by task-level SD of GP-FTA-ECKG status-quo loss for comparable visual units
+                scale = max(fd["methods"]["GP-FTA-ECKG"]["status_quo_loss_task_se"] * math.sqrt(24.0), 1e-6)
+            m_v = st["mean_diff"] / scale
+            c_lo, c_hi = st["ci95"][0] / scale, st["ci95"][1] / scale
+            means.append(m_v)
+            lo_err.append(m_v - c_lo)
+            hi_err.append(c_hi - m_v)
+        ax_l.errorbar(
+            means, y_base + y_off, xerr=[lo_err, hi_err],
+            fmt=mk, color=col, markersize=5.0, linewidth=1.35, capsize=2.4, label=m_lbl, zorder=3,
+        )
+
+    ax_l.set_yticks(y_base)
+    ax_l.set_yticklabels([g[0] for g in groups])
+    ax_l.invert_yaxis()
+    ax_l.set_xlim(-0.56, 0.88)
+    ax_l.set_xlabel("Standardized Paired Loss Reduction vs. GP-FTA-ECKG (95% CI, $>0$ favors ECKG)")
+    ax_l.set_title("(a) Prospective 720-Run Factorial Contrasts", fontweight="bold")
+    ax_l.legend(loc="lower right", fontsize=6.8, framealpha=0.95)
+    ax_l.grid(True, axis="x", linestyle=":", alpha=0.55)
+
+    # Panel (b): Dual VOI Share Shift (Step 0 vs Step 59 across 96 states) + Disagreement Rate
+    bars_x = np.arange(4)
+    bar_labels = ["Queueing\nStep 0", "Queueing\nStep 59", "Traffic-21\nStep 0", "Traffic-21\nStep 59"]
+    keys_b = [
+        ("Queueing_CrossHorizon", "step_0"),
+        ("Queueing_CrossHorizon", "step_59"),
+        ("Traffic_Ingolstadt", "step_0"),
+        ("Traffic_Ingolstadt", "step_59"),
+    ]
+    sh_admit, sh_refine, dis_rates = [], [], []
+    for fk, sk in keys_b:
+        r = prefix["families"][fk][sk]
+        vt = max(r["mean_eckg_voi_total"], 1e-12)
+        sr = 100.0 * r["mean_eckg_voi_refine"] / vt
+        sa = 100.0 - sr
+        sh_refine.append(sr)
+        sh_admit.append(sa)
+        dis_rates.append(100.0 * r["disagreed_with_single_slot_rate"])
+
+    bw = 0.46
+    ax_r.bar(bars_x, sh_admit, width=bw, color="#56B4E9", label=r"Admission Share $\widehat{\mathrm{VOI}}^{\mathrm{admit}}$")
+    ax_r.bar(bars_x, sh_refine, width=bw, bottom=sh_admit, color="#0072B2", label=r"Refinement Share $\widehat{\mathrm{VOI}}^{\mathrm{refine}}$")
+    ax_r.plot(bars_x, dis_rates, color="#D55E00", marker="D", linewidth=1.8, markersize=5.5, label="Query Disagreement vs. Slot-0 KG (%)")
+    ax_r.set_xticks(bars_x)
+    ax_r.set_xticklabels(bar_labels)
+    ax_r.set_ylim(0.0, 142.0)
+    ax_r.set_yticks([0, 20, 40, 60, 80, 100])
+    ax_r.set_ylabel("Percentage of Total VOI / States (%)")
+    ax_r.set_title("(b) Dual VOI Decomposition ($96$-State Census)", fontweight="bold")
+    ax_r.legend(loc="upper center", fontsize=6.8, frameon=True, framealpha=0.95)
+    ax_r.grid(True, axis="y", linestyle=":", alpha=0.55)
+
+    fig.tight_layout()
+    fig.savefig(fig_dir / "fig1_prospective_eckg.pdf", bbox_inches="tight", metadata={"CreationDate": None})
+    fig.savefig(fig_dir / "fig1_prospective_eckg.png", dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+    # --------------------------------------------------------------------------
+    # Figure 2 (Main Body): 2x2 Broad 4-Family Scaling Curves (Zero "(Ours)")
+    # --------------------------------------------------------------------------
+    fams = ["Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt"]
+    palette = [
+        ("GP-FTA-KG", "GP-FTA-KG", "#0072B2", "o", "-", 2.1),
+        ("GP-FTA-TS", "GP-FTA-TS", "#56B4E9", "v", "-", 1.7),
+        ("PublicPsi-TargetGP-TS", "PublicPsi-TargetGP-TS", "#009E73", "D", "-.", 1.5),
+        ("RGPE-on-Psi", "RGPE-on-Psi", "#D55E00", "s", "--", 1.4),
+        ("SCBO-on-Psi", "SCBO-on-Psi", "#CC79A7", "P", ":", 1.4),
+        ("SCBO", "SCBO (Raw Space)", "#E69F00", "^", "--", 1.3),
+        ("STOP", "STOP (N=0)", "#555555", "x", ":", 1.1),
+    ]
+    fig, axes = plt.subplots(2, 2, figsize=(9.0, 5.8))
     for idx, fam in enumerate(fams):
         ax = axes.flatten()[idx]
         agg = _task_agg(rows_u3, fam)["by_budget"]
@@ -839,22 +1102,24 @@ def build_figures(
             ses = [agg[x][m_key]["se_loss"] for x in xs]
             ax.errorbar(
                 xs, ys, yerr=ses, label=m_lbl, color=col, marker=mk,
-                linestyle=ls, linewidth=lw, markersize=4.6, capsize=2.2,
+                linestyle=ls, linewidth=lw, markersize=4.4, capsize=2.0,
             )
         ax.set_title(PLOT_TITLES[fam], fontweight="bold")
         ax.set_xticks(xs)
         ax.set_xlabel("Online Target Step Budget $N$")
-        ax.set_ylabel("Status-Quo Decision Loss ($\\downarrow$)")
+        ax.set_ylabel("Status-Quo Decision Loss $\\mathcal{L}_{\\mathrm{SQ}}$ ($\\downarrow$)")
         ax.grid(True, linestyle=":", alpha=0.5)
     handles, labels = axes.flatten()[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=4, frameon=True, bbox_to_anchor=(0.5, 1.04))
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    fig.savefig(fig_dir / "fig1_horizon_scaling.pdf", bbox_inches="tight", metadata={"CreationDate": None})
-    fig.savefig(fig_dir / "fig1_horizon_scaling.png", dpi=220, bbox_inches="tight")
+    fig.savefig(fig_dir / "fig2_horizon_scaling.pdf", bbox_inches="tight", metadata={"CreationDate": None})
+    fig.savefig(fig_dir / "fig2_horizon_scaling.png", dpi=220, bbox_inches="tight")
     plt.close(fig)
 
-    # --- Figure 2: Genuine Out-of-Sample Variance Calibration & Unified-Budget P1 Ladder ---
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.2, 3.6))
+    # --------------------------------------------------------------------------
+    # Figure EC.1 (Electronic Companion): Variance Calibration & Complete 6-Bar Messy Archive
+    # --------------------------------------------------------------------------
+    fig, (ax1, ax_m) = plt.subplots(1, 2, figsize=(9.6, 3.8), gridspec_kw={"width_ratios": [0.88, 1.22]})
     vc_map = {
         (d["family"], float(d["shift_scale"]), int(d["n_reps_train"])): d["estimators"]
         for d in p1_diag["variance_calibration"]
@@ -869,122 +1134,50 @@ def build_figures(
     ax1.bar(x_pos + w / 2, rmse_within, width=w, color="#0072B2", alpha=0.92, label="Within-Policy $S^2/(r-1)$ NNLS")
     ax1.set_xticks(x_pos)
     ax1.set_xticklabels([lbl for _, lbl in fam_keys_diag])
-    ax1.set_ylim(0.0, max(rmse_naive) * 1.24)
+    ax1.set_ylim(0.0, max(rmse_naive) * 1.25)
     ax1.set_ylabel("Out-of-Sample $\\log v_t(x)$ RMSE ($\\downarrow$)")
-    ax1.set_title("(a) Genuine Variance Calibration ($1.3\\times$ Shift, $r=4$)", fontweight="bold")
-    ax1.legend(loc="upper right")
+    ax1.set_title("(a) Heteroscedastic Calibration ($1.3\\times$ Shift)", fontweight="bold")
+    ax1.legend(loc="upper right", fontsize=7.2)
     ax1.grid(True, axis="y", linestyle=":", alpha=0.5)
-
-    ladder = [
-        ("B_Add_SourceWarmStart", "B: +WarmStart Init"),
-        ("C_Add_SourceBasis_WeakPrior", "C: +Orth. Basis (Weak)"),
-        ("D_Add_FuncMetaPrior", "D: +Func. Prior $(\\mu_0,\\Sigma_0)$"),
-        ("Dhvd_Add_SourceNoisePrior", "Dhvd: +HVD Prior $\\gamma_0$"),
-        ("E_Add_TemplateProposals_TS", "E: +Templates (Gate-TS)"),
-        ("F2_Swap_GatePowerVKG", "F2: Gate-Power V-KG"),
-        ("G_WarmStart_PatternSearch", "G: Pattern Search"),
-    ]
-    agg_inv_p1 = _task_agg(rows_p1_mech, "Inventory_P1_Dev")["by_budget"]
-    agg_que_p1 = _task_agg(rows_p1_mech, "Queueing_P1_Dev")["by_budget"]
-
-    def _pooled_pct_vs_A(budget: int, arm_key: str) -> tuple[float, float]:
-        rels = []
-        for ag in (agg_inv_p1, agg_que_p1):
-            a_vec = ag[budget]["A_PublicPsi_TargetGP_TS"]["loss_vec"]
-            m_vec = ag[budget][arm_key]["loss_vec"]
-            rels.append(100.0 * (a_vec - m_vec) / a_vec)
-        all_r = np.concatenate(rels)
-        return float(np.mean(all_r)), float(np.std(all_r, ddof=1) / np.sqrt(len(all_r)))
-
-    y_idx = np.arange(len(ladder))
-    vals15, ses15, vals60, ses60 = [], [], [], []
-    for ak, _ in ladder:
-        m15, s15 = _pooled_pct_vs_A(15, ak)
-        m60, s60 = _pooled_pct_vs_A(60, ak)
-        vals15.append(m15)
-        ses15.append(s15)
-        vals60.append(m60)
-        ses60.append(s60)
-
-    bh = 0.36
-    ax2.barh(y_idx - bh / 2, vals15, height=bh, xerr=ses15, color="#56B4E9", alpha=0.92, capsize=2.0, label="Unified $N=15$")
-    ax2.barh(y_idx + bh / 2, vals60, height=bh, xerr=ses60, color="#0072B2", alpha=0.92, capsize=2.0, label="Unified $N=60$")
-    ax2.axvline(0.0, color="#333333", linewidth=1.0)
-    ax2.set_yticks(y_idx)
-    ax2.set_yticklabels([lbl for _, lbl in ladder])
-    ax2.invert_yaxis()
-    ax2.set_xlim(-6.2, 8.2)
-    ax2.set_xlabel("Gain vs. Cold $\\psi$-GP Arm A (%, Mean $\\pm$ SE, 32 Dev Tasks)")
-    ax2.set_title("(b) P1 Sequential Mechanism Ladder (Unified Budgets)", fontweight="bold")
-    ax2.legend(loc="lower right")
-    ax2.grid(True, axis="x", linestyle=":", alpha=0.5)
-
-    fig.tight_layout()
-    fig.savefig(fig_dir / "fig2_tempering_diagnostics.pdf", bbox_inches="tight", metadata={"CreationDate": None})
-    fig.savefig(fig_dir / "fig2_tempering_diagnostics.png", dpi=220, bbox_inches="tight")
-    plt.close(fig)
-
-    # --- Figure 3: Certification Reliability vs Gain Frontier & Messy-Archive Robustness ---
-    fig, (ax_f, ax_m) = plt.subplots(1, 2, figsize=(9.2, 3.5))
-
-    fam_aggs = {fam: _task_agg(rows_u3, fam)["by_budget"] for fam in fams}
-    scatter_arms = [
-        ("GP-FTA-KG", "GP-FTA-KG (Ours)", "#0072B2", "o"),
-        ("GP-FTA-TS", "GP-FTA-TS (Ours)", "#56B4E9", "v"),
-        ("PublicPsi-TargetGP-TS", "PublicPsi-TargetGP-TS", "#009E73", "D"),
-        ("RGPE-on-Psi", "RGPE-on-Psi", "#D55E00", "s"),
-        ("SCBO-on-Psi", "SCBO-on-Psi", "#CC79A7", "P"),
-        ("WarmStart-PatternSearch", "WarmStart-PatternSearch", "#882255", "h"),
-        ("SCBO", "SCBO (Raw Space)", "#E69F00", "^"),
-        ("RGPE", "RGPE (Warped)", "#994F00", "<"),
-    ]
-    for m_key, m_lbl, col, mk in scatter_arms:
-        cert60 = float(np.mean([100.0 * fam_aggs[f][60][m_key]["cert_rate"] for f in fams]))
-        red60 = float(np.mean([
-            float(np.mean(100.0 * (fam_aggs[f][60][m_key]["anc_vec"] - fam_aggs[f][60][m_key]["fr10_vec"]) / fam_aggs[f][60][m_key]["anc_vec"]))
-            for f in fams
-        ]))
-        ax_f.scatter([cert60], [red60], color=col, marker=mk, s=72, zorder=4, label=m_lbl)
-
-    ax_f.axhline(0.0, color="#555555", linestyle=":", linewidth=1.0)
-    ax_f.set_xlabel("Mean Terminal Gate Certification Rate at $N=60$ (%, $\\uparrow$)")
-    ax_f.set_ylabel("Mean Net Gain on $\\mathcal{L}_{10\\%}$ vs. Status Quo (%, $\\uparrow$)")
-    ax_f.set_title("(a) Safety Certification vs. Net Saving ($N=60$)", fontweight="bold")
-    ax_f.legend(loc="lower right", fontsize=6.8, ncol=1, framealpha=0.92)
-    ax_f.grid(True, linestyle=":", alpha=0.5)
 
     messy_fams = [
         ("Inventory_CrossHorizon_Messy", "Inventory"),
         ("Queueing_CrossHorizon_Messy", "Queueing"),
-        ("OPSD_EuroGrid_Messy", "OPSD"),
+        ("OPSD_EuroGrid_Messy", "OPSD Grid"),
         ("Traffic_Ingolstadt_Messy", "Traffic-21"),
     ]
     m_aggs = {mf: _task_agg(rows_messy, mf)["by_budget"][60] for mf, _ in messy_fams}
+    # Includes BOTH PublicPsi-TargetGP-TS and GP-FTA-NoDebias (zero omitted controls, zero "(Ours)")
     comp_bars = [
-        ("GP-FTA-KG", "GP-FTA-KG (Ours)", "#0072B2"),
-        ("GP-FTA-TS", "GP-FTA-TS (Ours)", "#56B4E9"),
+        ("GP-FTA-KG", "GP-FTA-KG", "#0072B2"),
+        ("GP-FTA-TS", "GP-FTA-TS", "#56B4E9"),
+        ("GP-FTA-NoDebias", "GP-FTA-NoDebias", "#332288"),
+        ("PublicPsi-TargetGP-TS", "PublicPsi-TargetGP-TS", "#009E73"),
         ("RGPE-on-Psi", "RGPE-on-Psi", "#D55E00"),
         ("WarmStart-PatternSearch", "WarmStart-PS", "#CC79A7"),
     ]
     x_m = np.arange(len(messy_fams))
-    bw = 0.19
+    bw = 0.132
+    all_gains = []
     for idx_b, (ak, albl, col) in enumerate(comp_bars):
         gains = [
             float(np.mean(100.0 * (m_aggs[mf][ak]["anc_vec"] - m_aggs[mf][ak]["fr10_vec"]) / m_aggs[mf][ak]["anc_vec"]))
             for mf, _ in messy_fams
         ]
-        ax_m.bar(x_m + (idx_b - 1.5) * bw, gains, width=bw, color=col, alpha=0.90, label=albl)
+        all_gains.extend(gains)
+        ax_m.bar(x_m + (idx_b - 2.5) * bw, gains, width=bw, color=col, alpha=0.92, label=albl)
     ax_m.axhline(0.0, color="#333333", linewidth=1.0)
     ax_m.set_xticks(x_m)
     ax_m.set_xticklabels([lbl for _, lbl in messy_fams])
+    ax_m.set_ylim(min(min(all_gains) * 1.18, -2.0), max(all_gains) * 1.36)
     ax_m.set_ylabel("Net Gain on $\\mathcal{L}_{10\\%}$ vs. Status Quo (%, $\\uparrow$)")
-    ax_m.set_title("(b) Messy Enterprise Archive ($r_a\\!=\\!1$, $\\alpha_m \\neq \\alpha_t$)", fontweight="bold")
-    ax_m.legend(loc="best", fontsize=7.2)
+    ax_m.set_title("(b) Heterogeneous Archive ($r_a\\geq 1$, $\\alpha_m \\neq \\alpha_t$)", fontweight="bold")
+    ax_m.legend(loc="upper center", ncol=3, fontsize=6.7, framealpha=0.94)
     ax_m.grid(True, axis="y", linestyle=":", alpha=0.5)
 
     fig.tight_layout()
-    fig.savefig(fig_dir / "fig3_amortization_mbreak.pdf", bbox_inches="tight", metadata={"CreationDate": None})
-    fig.savefig(fig_dir / "fig3_amortization_mbreak.png", dpi=220, bbox_inches="tight")
+    fig.savefig(fig_dir / "fig3_diagnostics_and_messy.pdf", bbox_inches="tight", metadata={"CreationDate": None})
+    fig.savefig(fig_dir / "fig3_diagnostics_and_messy.png", dpi=220, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -994,56 +1187,51 @@ def main() -> None:
     args = parser.parse_args()
     tab_dir = args.output_dir / "tables"
     tab_dir.mkdir(parents=True, exist_ok=True)
+
+    rows_prosp = _load_ledger("v2_or_eckg_sure_confirm_v1")
+    prosp_readout = json.loads((ART_DIR / "v2_or_eckg_sure_confirm_v1/prospective_panel_readout.json").read_text(encoding="utf-8"))
+    prefix_readout = json.loads((ART_DIR / "v2_or_eckg_sure_confirm_v1/eckg_prefix_audit_readout.json").read_text(encoding="utf-8"))
+
     rows_u3 = _load_ledger("v2_or_u3_confirm_v1")
     rows_messy = _load_ledger("v2_or_u3_messy_archive_v1")
     rows_sumo_u3 = _load_ledger("v2_or_u3_live_sumo_v1")
-    rows_p1_mech = _load_ledger("v2_or_p1_mech_v1")
     with (ART_DIR / "v2_or_p0_reaudit_v1/v2_or_live_sumo_v1/per_run_ledger.csv").open("r", encoding="utf-8") as fh:
         rows_sumo_p0 = list(csv.DictReader(fh))
     p1_diag = json.loads((ART_DIR / "v2_or_p1_diagnostics_v1/p1_diagnostics_summary.json").read_text(encoding="utf-8"))
 
+    # Main-body tables
+    (tab_dir / "table_prospective_main.tex").write_text(build_table_prospective_main(prosp_readout), encoding="utf-8")
+    (tab_dir / "table_surge_compliance.tex").write_text(build_table_surge_compliance(prosp_readout), encoding="utf-8")
+    (tab_dir / "table_prefix_census.tex").write_text(build_table_prefix_census(prefix_readout), encoding="utf-8")
+    (tab_dir / "table_broad_summary.tex").write_text(
+        build_table_broad_summary(rows_u3, rows_messy, rows_sumo_u3), encoding="utf-8"
+    )
+
+    referee_readout = json.loads((ART_DIR / "v2_or_gpfta_referee_ablation_v1/referee_ablation_readout.json").read_text(encoding="utf-8"))
+    replay_readout = json.loads((ART_DIR / "v2_or_gpfta_referee_ablation_v1/terminal_replay_readout.json").read_text(encoding="utf-8"))
+    policy_tab, contrasts_tab = build_referee_tables(referee_readout, replay_readout)
+    (tab_dir / "table_matched_policy.tex").write_text(policy_tab, encoding="utf-8")
+    (tab_dir / "table_matched_contrasts.tex").write_text(contrasts_tab, encoding="utf-8")
+    (tab_dir / "table_matched_variances.tex").write_text(build_referee_variances(referee_readout), encoding="utf-8")
+    (tab_dir / "table_terminal_replay.tex").write_text(build_terminal_replay_table(replay_readout), encoding="utf-8")
+
+    # Electronic Companion tables
     (tab_dir / "table_main.tex").write_text(build_table_main(rows_u3), encoding="utf-8")
     (tab_dir / "table_ablations.tex").write_text(build_table_ablations(rows_u3), encoding="utf-8")
     (tab_dir / "table_messy_archive.tex").write_text(build_table_messy_archive(rows_messy), encoding="utf-8")
     (tab_dir / "table_live_sumo.tex").write_text(build_table_live_sumo(rows_sumo_u3, rows_sumo_p0), encoding="utf-8")
     (tab_dir / "table_amortization.tex").write_text(build_table_amortization(rows_u3), encoding="utf-8")
     (tab_dir / "table_verification_audit.tex").write_text(
-        build_table_verification_audit(rows_u3, rows_messy, rows_sumo_u3, rows_sumo_p0), encoding="utf-8"
+        build_table_verification_audit(rows_prosp, rows_u3, rows_messy, rows_sumo_u3, rows_sumo_p0), encoding="utf-8"
     )
-    independent_path = ART_DIR / "v2_or_kg_quadrature_confirm_v1" / "independent_panel_readout.json"
-    if independent_path.is_file():
-        independent_readout = json.loads(independent_path.read_text(encoding="utf-8"))
-        (tab_dir / "table_independent_panel.tex").write_text(
-            build_table_independent_panel(independent_readout), encoding="utf-8"
-        )
-    operating_path = independent_path.with_name("operating_policy_readout.json")
-    if operating_path.is_file():
-        operating_readout = json.loads(operating_path.read_text(encoding="utf-8"))
-        (tab_dir / "table_operating_policy.tex").write_text(
-            build_table_operating_policy(operating_readout), encoding="utf-8"
-        )
-    referee = ART_DIR / "v2_or_gpfta_referee_ablation_v1/referee_ablation_readout.json"
-    if referee.is_file():
-        readout = json.loads(referee.read_text(encoding="utf-8"))
-        policy, comparisons = build_referee_tables(readout)
-        (tab_dir / "table_matched_policy.tex").write_text(policy, encoding="utf-8")
-        (tab_dir / "table_matched_contrasts.tex").write_text(comparisons, encoding="utf-8")
-        (tab_dir / "table_matched_variances.tex").write_text(build_referee_variances(readout), encoding="utf-8")
-    replay = referee.with_name("terminal_replay_readout.json")
-    if replay.is_file():
-        replay_table = build_terminal_replay_table(json.loads(replay.read_text(encoding="utf-8")))
-        (tab_dir / "table_terminal_replay.tex").write_text(replay_table, encoding="utf-8")
-    cascade = referee.parent / "cascade_query_v1/readout.json"
-    if cascade.is_file():
-        query_readout = json.loads(cascade.read_text(encoding="utf-8"))
-        if "refinement" in query_readout["Queueing_CrossHorizon"]:
-            (tab_dir / "table_query_screen.tex").write_text(build_query_screen_table(query_readout), encoding="utf-8")
-    eligible = ART_DIR / "v2_or_gpfta_review3_v1/eligible_query_readout.json"
-    if eligible.is_file():
-        eligible_readout = json.loads(eligible.read_text(encoding="utf-8"))
-        (tab_dir / "table_eligible_query.tex").write_text(build_eligible_query_table(eligible_readout), encoding="utf-8")
-    build_figures(args.output_dir / "figures", rows_u3, rows_messy, rows_p1_mech, p1_diag)
-    print(f"Regenerated sealed-ledger tables and figures in {args.output_dir}.")
+
+    independent_readout = json.loads((ART_DIR / "v2_or_kg_quadrature_confirm_v1/independent_panel_readout.json").read_text(encoding="utf-8"))
+    operating_readout = json.loads((ART_DIR / "v2_or_kg_quadrature_confirm_v1/operating_policy_readout.json").read_text(encoding="utf-8"))
+    (tab_dir / "table_independent_panel.tex").write_text(build_table_independent_panel(independent_readout), encoding="utf-8")
+    (tab_dir / "table_operating_policy.tex").write_text(build_table_operating_policy(operating_readout), encoding="utf-8")
+
+    build_figures(args.output_dir / "figures", prosp_readout, prefix_readout, rows_u3, rows_messy, p1_diag)
+    print(f"Regenerated 16 sealed-ledger tables and 3 vector figures in {args.output_dir}.")
 
 
 if __name__ == "__main__":

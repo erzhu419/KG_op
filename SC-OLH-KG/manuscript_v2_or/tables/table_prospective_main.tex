@@ -1,0 +1,35 @@
+\begin{table}[htbp]
+\centering
+\caption{Prospective factorial confirmation across 72 unseen target tasks ($720$ runs at $N=60$, two paired evaluation streams per task, reusing frozen source archives with zero new source calls). Positive differences (`Arm $-$ ECKG') favor \textbf{GP-FTA-ECKG}. Certified S/A/U classifies audited certified deployments via exact two-sided 95\% Clopper--Pearson intervals; Guard/Rescue counts certified deployments from Slot~1 (objective guard override) or Slots~1--2 (after primary failure).}\label{tab:prospective_main}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccccc}
+\toprule
+\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Guard/Rescue} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Two-sided $p$} & \textbf{Holm $p$} \\
+\midrule
+\multirow{5}{*}{Inventory} & \textbf{GP-FTA-ECKG} & $1.8065 \pm 0.0350$ & 390.8 & 47/48 & 47/0/0 & 10/15 & --- & --- & --- & --- \\
+ & \texttt{GP-FTA-SingleSlotKG} & $1.8238 \pm 0.0388$ & 367.1 & 48/48 & 48/0/0 & 1/18 & $+0.0174\ [-0.0007,\,0.0354]$ & 16/8/0 & $0.058$ & $0.175$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $1.8242 \pm 0.0391$ & 357.8 & 48/48 & 48/0/0 & 4/11 & $+0.0178\ [-0.0067,\,0.0422]$ & 12/12/0 & $0.146$ & $0.292$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $\mathbf{1.8025} \pm 0.0361$ & 399.3 & 48/48 & 48/0/0 & 6/16 & $-0.0039\ [-0.0137,\,0.0058]$ & 9/15/0 & $0.413$ & $0.413$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $1.8236 \pm 0.0357$ & 390.8 & 48/48 & 48/0/0 & 9/13 & $+0.0171\ [0.0019,\,0.0323]$ & 15/9/0 & $0.029$ & $0.116$ \\
+\midrule
+\multirow{5}{*}{Queueing} & \textbf{GP-FTA-ECKG} & $\mathbf{2.5649} \pm 0.0464$ & 365.8 & 48/48 & 48/0/0 & 12/3 & --- & --- & --- & --- \\
+ & \texttt{GP-FTA-SingleSlotKG} & $2.5764 \pm 0.0465$ & 344.0 & 48/48 & 48/0/0 & 10/4 & $+0.0114\ [-0.0061,\,0.0290]$ & 12/12/0 & $0.190$ & $0.571$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $2.5666 \pm 0.0418$ & 349.3 & 48/48 & 48/0/0 & 12/3 & $+0.0016\ [-0.0173,\,0.0206]$ & 13/11/0 & $0.859$ & $1.000$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $2.5687 \pm 0.0461$ & 357.3 & 48/48 & 48/0/0 & 15/1 & $+0.0038\ [-0.0113,\,0.0189]$ & 14/10/0 & $0.609$ & $1.000$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $2.6293 \pm 0.0477$ & 373.8 & 48/48 & 48/0/0 & 7/7 & $+0.0643\ [0.0311,\,0.0976]$ & 19/5/0 & $0.0006$ & $0.002$ \\
+\midrule
+\multirow{5}{*}{Traffic-21} & \textbf{GP-FTA-ECKG} & $1.0790 \pm 0.0184$ & 408.6 & 35/48 & 35/0/0 & 7/6 & --- & --- & --- & --- \\
+ & \texttt{GP-FTA-SingleSlotKG} & $1.0827 \pm 0.0183$ & 412.2 & 36/48 & 36/0/0 & 10/11 & $+0.0037\ [-0.0130,\,0.0205]$ & 16/6/2 & $0.647$ & $0.647$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $1.1078 \pm 0.0226$ & 426.8 & 30/48 & 29/1/0 & 5/6 & $+0.0288\ [0.0036,\,0.0540]$ & 16/6/2 & $0.027$ & $0.107$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $1.0973 \pm 0.0225$ & 417.6 & 31/48 & 31/0/0 & 10/6 & $+0.0183\ [-0.0074,\,0.0440]$ & 11/11/2 & $0.154$ & $0.463$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.0598} \pm 0.0197$ & 405.4 & 41/48 & 41/0/0 & 15/10 & $-0.0192\ [-0.0463,\,0.0078]$ & 8/15/1 & $0.154$ & $0.463$ \\
+\midrule
+\multirow{4}{*}{Pooled ($72$ tasks)} & \texttt{GP-FTA-SingleSlotKG} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ (Wilcoxon $p=0.014$)} & $+0.0639\ [-0.0187,\,0.1465]$ & 44/26/2 & $0.127$ & $0.382$ \\
+ & \texttt{GP-FTA-FeasibleKG} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ (Wilcoxon $p=0.034$)} & $+0.1691\ [0.0423,\,0.2958]$ & 41/29/2 & $0.010$ & $0.039$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ (Wilcoxon $p=0.845$)} & $+0.0802\ [-0.0379,\,0.1982]$ & 34/36/2 & $0.180$ & $0.382$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ (Wilcoxon $p=0.115$)} & $+0.0154\ [-0.1192,\,0.1500]$ & 42/29/1 & $0.821$ & $0.821$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

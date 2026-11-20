@@ -1,128 +1,80 @@
-\section{Transfer Risk, One-Step Utility, and Terminal Safety}\label{sec:theory}
+\section{Theoretical Analysis}\label{sec:theory}
 
-We separate results for the executed terminal rule from mathematical models of transfer risk and one-step information value. The Lean declarations in the Electronic Companion check the indicated algebra, inequalities and abstract event relationships. The statistical assumptions and numerical accuracy have a separate role.
+We establish four formal results governing occupancy-balanced subspace compression, shift-invariant variance and transfer dominance, self-normalized \texttt{SURE} uniform shift excess risk, and dual Eligible-Cascade VOI decomposition alongside finite-sample clean-up safety. Core algebraic and measure-theoretic statements are machine-checked in Lean~4.31.0 (Section~\ref*{ec:lean_map}).
 
-\subsection{Occupancy Balancing, Shift Invariance, and the Exact Transfer Boundary}
+\subsection{Self-Normalized Occupancy Balancing, Shift Invariance, and Transfer Dominance}
 
-Let $\nu$ denote a reference measure on exposure domain $\mathcal{M}_\psi$ and $q > 0$ the occupancy distribution induced by adaptive source solvers, with density ratio $\rho(\psi) = \nu(\psi)/q(\psi)$.
+Let $\nu$ denote a reference probability measure on exposure domain $\mathcal{M}_\psi$ and $\pi_{\mathrm{occ}} > 0$ the empirical occupancy distribution induced by adaptive source solvers, with density ratio $\rho(\psi) = \nu(\psi)/\pi_{\mathrm{occ}}(\psi)$.
 
-\begin{proposition}[Occupancy Clipping Bias \& Active--Pruned Parseval Separation]\label{prop:subspace}
-Let clipped weights $\tilde{w}(\psi) = \min\{\bar{w}, \rho(\psi)\}$ define $\nu_{\bar{w}}(\mathrm{d}\psi) = \tilde{w}(\psi)q(\psi)\mathrm{d}\psi$. Then:
+\begin{proposition}[Self-Normalized Clipping Bias and Parseval Separation]\label{prop:subspace}
+Let clipped weights $\tilde{w}(\psi) = \min\{\bar{w}, \rho(\psi)\}$ define both the unnormalized measure $\nu_{\bar{w}}(\mathrm{d}\psi) = \tilde{w}(\psi)\pi_{\mathrm{occ}}(\mathrm{d}\psi)$ and the self-normalized probability measure $\tilde{\nu}_{\bar{w}}(\mathrm{d}\psi) = \nu_{\bar{w}}(\mathrm{d}\psi)/Z_{\bar{w}}$ with $Z_{\bar{w}} = \int_{\mathcal{M}_\psi} \nu_{\bar{w}}(\mathrm{d}\psi) > 0$ (matching~\eqref{eq:inv_occ_weights}). Then:
 \begin{enumerate}
-  \item \emph{(Exactness Under Bounded Ratio and Clipping Bias)} For any $f, h \in L^2(\nu)$, $|\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu| \le \int_{\mathcal{M}_\psi} \max\{0, \rho(\psi) - \bar{w}\}|f(\psi)h(\psi)|q(\mathrm{d}\psi)$, vanishing identically whenever $\sup_\psi \rho(\psi) \le \bar{w}$.
-  \item \emph{(Orthonormal Parseval Separation)} For any $\nu_{\bar{w}}$-orthonormal dictionary $\{\tilde{\varphi}_k\}_{k=1}^{M_+}$ partitioned into active set $S_{\mathrm{act}}$ ($|S_{\mathrm{act}}| = r$) and pruned set $S_{\mathrm{act}}^c$, any $h(x) = \theta_0 + \sum_{k=1}^{M_+} \theta_k \tilde{\varphi}_k(\psi(x)) + r_{\mathrm{hf}}(x)$ with $r_{\mathrm{hf}} \perp \operatorname{span}(1, \tilde{\varphi})$ satisfies $\|h - \theta_0\|_{L^2(\nu_{\bar{w}})}^2 = \sum_{j \in S_{\mathrm{act}}} \theta_j^2 + \sum_{k \in S_{\mathrm{act}}^c} \theta_k^2 + \|r_{\mathrm{hf}}\|_{L^2(\nu_{\bar{w}})}^2$.
+  \item \emph{(Unnormalized and Self-Normalized Clipping Bias)} For any $f, h \in L^2(\nu)$, $|\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu| \le \int_{\mathcal{M}_\psi} \max\{0, \rho(\psi) - \bar{w}\}|f(\psi)h(\psi)|\pi_{\mathrm{occ}}(\mathrm{d}\psi)$. Moreover, whenever $|f(\psi)h(\psi)| \le B$ almost everywhere, the normalizing denominator $Z_{\bar{w}}$ cancels algebraically to yield the denominator-free self-normalized bound
+  \begin{equation}\label{eq:norm_clip_bias}
+    \big|\langle f, h \rangle_{\tilde{\nu}_{\bar{w}}} - \langle f, h \rangle_\nu\big| \;\le\; 2 B \int_{\mathcal{M}_\psi} \max\{0,\, \rho(\psi) - \bar{w}\}\,\pi_{\mathrm{occ}}(\mathrm{d}\psi),
+  \end{equation}
+  vanishing identically whenever $\sup_\psi \rho(\psi) \le \bar{w}$.
+  \item \emph{(Active--Pruned Orthonormal Parseval Separation)} For any $\tilde{\nu}_{\bar{w}}$-orthonormal dictionary $\{\tilde{\varphi}_k\}_{k=1}^{M_+}$ partitioned into active coordinates $S_{\mathrm{act}}$ ($|S_{\mathrm{act}}| = K_{\mathrm{act}}$) and pruned coordinates $S_{\mathrm{act}}^c$, any $h(x) = \theta_0 + \sum_{k=1}^{M_+} \theta_k \tilde{\varphi}_k(\psi(x)) + r_{\mathrm{hf}}(x)$ with $r_{\mathrm{hf}} \perp \operatorname{span}(1, \tilde{\varphi})$ satisfies $\|h - \theta_0\|_{L^2(\tilde{\nu}_{\bar{w}})}^2 = \sum_{j \in S_{\mathrm{act}}} \theta_j^2 + \sum_{k \in S_{\mathrm{act}}^c} \theta_k^2 + \|r_{\mathrm{hf}}\|_{L^2(\tilde{\nu}_{\bar{w}})}^2$.
 \end{enumerate}
 \end{proposition}
 
-\begin{theorem}[Within-Policy Shift Invariance, Multi-Source Mismatch, \& Transfer Dominance]\label{thm:transfer_boundary}
-Consider evaluating policy $x$ on target task $t$ where $Y_{t,g,\ell}(x) = \mu_{0,g}(x) + \Delta_g(x) + \varepsilon_\ell$ ($\ell = 1,\dots,r$) with independent errors, $\E[\varepsilon_\ell]=0$, and $\E[\varepsilon_\ell^2] = v_t(x)$.
+\begin{theorem}[Within-Policy Shift Invariance and Exact Transfer Dominance Boundary]\label{thm:transfer_boundary}
+Consider evaluating policy $x$ on target task $t$ where $Y_{t,g,\ell}(x) = \mu_{0,g}(x) + \Delta_g(x) + \varepsilon_\ell$ ($\ell = 1,\dots,r$) with independent zero-mean errors $\E[\varepsilon_\ell]=0$ and $\E[\varepsilon_\ell^2] = v_t(x)$.
 \begin{enumerate}
-  \item \emph{(Mean-shift contamination and within-policy invariance.)} Raw prior residuals satisfy $\E[(Y_{t,g,\ell}(x) - \mu_{0,g}(x))^2] = \Delta_g(x)^2 + v_t(x)$. The within-policy statistic $S_{t,g}^2(x) = \sum_{\ell=1}^r (Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x))^2$ equals $\sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2$ on every realized sample. For a fixed $r\ge2$, $\E[S_{t,g}^2(x)/(r-1)] = v_t(x)$.
-  \item \emph{(Finite-$M_{\mathrm{src}}$ Effective Mismatch Decomposition)} For an orthogonal coordinate where $\hat{\mu}_0 = \mu^\star + \xi_{\mathrm{meta}} + b_{\mathrm{occ}}$ ($\E[\xi_{\mathrm{meta}}]=0$, $\Var(\xi_{\mathrm{meta}}) = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$) and $\theta_t = \mu^\star + \Delta_{\mathrm{shift}}$, the expected squared prior discrepancy $\Delta_{\mathrm{eff}}^2 \coloneqq (\theta_t - \hat{\mu}_0)^2$ satisfies
-  \begin{equation}\label{eq:mismatch_decomp}
-    \E\big[\Delta_{\mathrm{eff}}^2\big] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \frac{\sigma_{\mathrm{src}}^2}{M_{\mathrm{src}}}.
-  \end{equation}
-  \item \emph{(Exact Necessary \& Sufficient Transfer Dominance Boundary)} Condition on the source estimate and use an unbiased target estimate with variance $1/\rho_N$. Let $\rho_N > 0$ and $\tau > 0$ be fixed target and prior precisions. The scalar precision-weighted estimator has MSE $\operatorname{MSE}(\tau; \Delta_{\mathrm{eff}}) = \frac{\tau^2\Delta_{\mathrm{eff}}^2 + \rho_N}{(\tau + \rho_N)^2}$. Tempered transfer strictly beats target-only estimation ($\rho_N^{-1}$) \textbf{if and only if}
+  \item \emph{(Mean-Shift Contamination vs.\ Within-Policy Invariance)} Raw prior residuals satisfy $\E[(Y_{t,g,\ell}(x) - \mu_{0,g}(x))^2] = \Delta_g(x)^2 + v_t(x)$, whereas $S_{t,g}^2(x) = \sum_{\ell=1}^r (Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x))^2 = \sum_{\ell=1}^r (\varepsilon_\ell - \bar{\varepsilon})^2$ cancels $\mu_{0,g}(x) + \Delta_g(x)$ deterministically on every sample path and satisfies $\E[S_{t,g}^2(x)/(r-1)] = v_t(x)$ for any fixed batch size $r \ge 2$.
+  \item \emph{(Finite-$M_{\mathrm{src}}$ Mismatch Decomposition)} For a whitened coordinate where $\hat{\mu}_0 = \mu^\star + \xi_{\mathrm{meta}} + b_{\mathrm{occ}}$ ($\E[\xi_{\mathrm{meta}}]=0$, $\Var(\xi_{\mathrm{meta}}) = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$) and $\theta_t = \mu^\star + \Delta_{\mathrm{shift}}$, the expected squared prior discrepancy $\Delta_{\mathrm{eff}}^2 \coloneqq (\theta_t - \hat{\mu}_0)^2$ satisfies $\E[\Delta_{\mathrm{eff}}^2] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$.
+  \item \emph{(Exact Necessary and Sufficient Transfer Boundary)} Conditioning on $\hat{\mu}_0$ and combining prior precision $\kappa_0 > 0$ with an unbiased target estimator of precision $\rho_n > 0$ yields $\operatorname{MSE}(\kappa_0; \Delta_{\mathrm{eff}}) = (\kappa_0^2\Delta_{\mathrm{eff}}^2 + \rho_n)/(\kappa_0 + \rho_n)^2$. Tempered transfer strictly dominates target-only estimation ($\rho_n^{-1}$) \textbf{if and only if}
   \begin{equation}\label{eq:transfer_iff}
-    \operatorname{MSE}(\tau; \Delta_{\mathrm{eff}}) < \frac{1}{\rho_N}
+    \operatorname{MSE}(\kappa_0; \Delta_{\mathrm{eff}}) < \frac{1}{\rho_n}
     \qquad \Longleftrightarrow \qquad
-    \Delta_{\mathrm{eff}}^2 < \frac{1}{\rho_N} + \frac{2}{\tau}.
+    \Delta_{\mathrm{eff}}^2 < \frac{1}{\rho_n} + \frac{2}{\kappa_0}.
   \end{equation}
 \end{enumerate}
 \end{theorem}
 
-Target search pools batches at revisited policies. The algebraic cancellation still holds for the pooled statistic. Unbiasedness holds within a fresh batch when its policy and size are determined before its observations and the independent-replication assumptions hold conditional on that history. Selecting the pooled sample size after seeing earlier observations can introduce bias. For IID symmetric $\{-1,1\}$ draws, two initial draws followed by two more only when the first two differ give expected pooled sample variance $7/12$ for a true variance of $1$. The Electronic Companion gives the enumeration. This distinction motivates a fixed-batch comparison of dispersion when per-batch statistics are retained.
+While deterministic mean cancellation holds on any pooled sample, adaptive stopping or data-dependent revisiting can introduce finite-sample bias when pooling across sequential batches (e.g., two symmetric $\{-1,1\}$ draws followed by two additional draws only upon initial disagreement yield $\E[\hat{s}_{\mathrm{pool}}^2] = 7/12 < 1$; see Section~\ref*{ec:proofs}). We therefore audit both fixed-batch and pooled variance MSEs empirically on matched target paths.
 
-\subsection{Self-Normalized Empirical-Bayes Uniform Shift Excess-Risk Bound}
+\subsection{Self-Normalized Fisher-Whitened \texttt{SURE} Uniform Shift Excess-Risk Bound}
 
-A central statistical question in adaptive transfer is whether data-driven shrinkage/release selection can suffer unbounded finite-sample risk when the unseen prior--target shift $\|D\|_2$ grows arbitrarily large. Analyzing the orthogonal subspace representation $R_k = \hat{\theta}_{t,k} - \hat{\mu}_{0,k} = D_k + \xi_k$ across active coordinates $k \in \mathcal{I}$ ($|\mathcal{I}| = r \ge 1$, where $D_k = \theta_{t,k} - \hat{\mu}_{0,k}$ is the unknown shift and $\xi_k$ is zero-mean target estimation noise with variance proxy $\sigma_k^2 \ge 0$), let $\hat{\theta}_k(\lambda) = \hat{\mu}_{0,k} + \lambda R_k$ for $\lambda \in [0, 1]$ ($\lambda = 0$ pure source prior; $\lambda = 1$ full release to target estimate $\hat{\theta}_{t,k}$), with true normalized squared estimation loss $L_{\mathcal{I}}(\lambda) = \frac{1}{r}\sum_{k \in \mathcal{I}} ((1 - \lambda)D_k - \lambda \xi_k)^2$ and observable Stein--Mallows empirical risk $\widehat{R}_{\mathcal{I}}(\lambda) = \frac{1}{r}\sum_{k \in \mathcal{I}} \big[(1 - \lambda)^2 R_k^2 + (2\lambda - 1)\sigma_k^2\big]$.
+Theorem~\ref{thm:transfer_boundary}(3) shows that fixed-weight transfer ($\kappa_0 > 0$) incurs unbounded excess risk once $\Delta_{\mathrm{eff}}^2 > \rho_n^{-1} + 2/\kappa_0$. Under the Fisher-eigenspace whitening~\eqref{eq:fisher_whitening}--\eqref{eq:sure_closed_form} implemented in \textbf{GP-FTA-ECKG}, each identifiable coordinate $k \in \mathcal{I}_{n,c}$ ($|\mathcal{I}_{n,c}| = m_{\mathrm{id}} \ge 1$) satisfies $\tilde{R}_k = \delta_k + \xi_k$ with unknown shift $\delta_k$ and noise proxy $\sigma_k^2 \ge 0$ ($\sigma_k^2 \equiv 1$ in~\eqref{eq:sure_closed_form}). For shrinkage weight $\lambda \in [0, 1]$ ($\lambda=0$ pure source prior; $\lambda=1$ full target release), compare true normalized estimation loss $L_{\mathcal{I}}(\lambda) = \frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}} ((1 - \lambda)\delta_k - \lambda \xi_k)^2$ with observable Stein--Mallows risk $\widehat{R}_{\mathcal{I}}(\lambda) = \frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}} \big[(1 - \lambda)^2 \tilde{R}_k^2 + (2\lambda - 1)\sigma_k^2\big]$.
 
 \begin{theorem}[Self-Normalized \texttt{SURE} Uniform Shift Excess-Risk Bound]\label{thm:sure_uniform}
-Let $\hat{\lambda} \in [0, 1]$ be \emph{any} data-driven shrinkage/release selector (over any finite grid $\mathcal{G} \ni 1$ or continuum $[0,1]$) satisfying the single release optimality comparison $\widehat{R}_{\mathcal{I}}(\hat{\lambda}) \le \widehat{R}_{\mathcal{I}}(1)$. Define $\bar{D}^2 = \frac{1}{r}\sum_{k \in \mathcal{I}} D_k^2$, $\bar{C} = \frac{1}{r}\sum_{k \in \mathcal{I}} D_k \xi_k$, and $\bar{\sigma}^2 = \frac{1}{r}\sum_{k \in \mathcal{I}} \sigma_k^2$. Then:
+Let $\hat{\lambda} \in [0, 1]$ be \emph{any} empirical shrinkage/release selector (including closed-form~\eqref{eq:sure_closed_form} over $[0,1]$ or minimization over any grid $\mathcal{G} \ni 1$) satisfying $\widehat{R}_{\mathcal{I}}(\hat{\lambda}) \le \widehat{R}_{\mathcal{I}}(1)$. Write $\bar{\delta}^2 = \frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}} \delta_k^2$, $\bar{C} = \frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}} \delta_k \xi_k$, and $\bar{\sigma}^2 = \frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}} \sigma_k^2$. Then:
 \begin{enumerate}
-  \item \emph{(Exact Self-Normalizing Quadratic Identity)} For every $\lambda \in \R$, setting $u = 1 - \lambda$,
+  \item \emph{(Self-Normalizing Quadratic Identity)} Setting $u = 1 - \lambda$, for all $\lambda \in \R$,
   \begin{equation}\label{eq:sure_identity}
     \big(L_{\mathcal{I}}(\lambda) - L_{\mathcal{I}}(1)\big) - \frac{3}{2}\big(\widehat{R}_{\mathcal{I}}(\lambda) - \widehat{R}_{\mathcal{I}}(1)\big)
-    = -\frac{1}{2}u^2 \bar{D}^2 - u(2 + u)\bar{C} - \Big(2u + \frac{1}{2}u^2\Big)\frac{1}{r}\sum_{k \in \mathcal{I}} \xi_k^2 + 3u\bar{\sigma}^2.
+    = -\frac{1}{2}u^2 \bar{\delta}^2 - u(2 + u)\bar{C} - \Big(2u + \frac{1}{2}u^2\Big)\frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}} \xi_k^2 + 3u\bar{\sigma}^2.
   \end{equation}
-  \item \emph{(Deterministic Uniform Excess-Loss Bound Over All Shifts $D \in \R^r$)} If $\bar{D}^2 = 0$, $L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1) \le 3\bar{\sigma}^2$. For \emph{every} nonzero shift $D \in \R^r \setminus \{0\}$—including $\|D\|_2 \to \infty$, and with \emph{zero dependence on grid cardinality $|\mathcal{G}|$}—completing the square against $-\tfrac{1}{2}u^2 \bar{D}^2$ yields the deterministic sample-path bound
+  \item \emph{(Uniform Sample-Path Excess-Loss Bound Over All Shifts $\bm{\delta} \in \R^{m_{\mathrm{id}}}$)} If $\bar{\delta}^2 = 0$, $L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1) \le 3\bar{\sigma}^2$. For \emph{every} nonzero shift $\bm{\delta} \neq 0$—including $\|\bm{\delta}\|_2 \to \infty$ and with zero dependence on $|\mathcal{G}|$—
   \begin{equation}\label{eq:sure_uniform_path}
-    L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1) \;\le\; 3\bar{\sigma}^2 + \frac{9\bar{C}^2}{2\bar{D}^2}.
+    L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1) \;\le\; 3\bar{\sigma}^2 + \frac{9\bar{C}^2}{2\bar{\delta}^2},
   \end{equation}
-  Notice $\bar{C}^2 / \bar{D}^2$ is homogeneous of degree $0$ in $\|D\|_2$ (completely invariant to shift magnitude).
-  \item \emph{(Uniform Expected Excess Risk)} Under any probability law where $\{\xi_k\}_{k \in \mathcal{I}}$ are pairwise orthogonal with $\E[\xi_k^2] \le \sigma_{\max}^2$ and $\sigma_k^2 \le \sigma_{\max}^2$, $\sup_{D \in \R^r} \E\big[L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1)\big] \le \big(3 + \frac{9}{2r}\big)\sigma_{\max}^2$.
+  which reduces to $3 + 9\bar{C}^2/(2\bar{\delta}^2)$ under exact Fisher whitening $\sigma_k^2 \equiv 1$ (\texttt{fisher\_whitened\_unit\_variance\_sure\_bound}) and is homogeneous of degree $0$ in $\|\bm{\delta}\|_2$.
+  \item \emph{(Uniform Expected Excess Risk)} Whenever $\{\xi_k\}_{k \in \mathcal{I}}$ are pairwise orthogonal with $\E[\xi_k^2] \le \sigma_{\max}^2$ and $\sigma_k^2 \le \sigma_{\max}^2$ (conditional on fixed $W_{n,c}$, $\sigma_{\max}^2 = 1$), $\sup_{\bm{\delta} \in \R^{m_{\mathrm{id}}}} \E[L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1)] \le (3 + \frac{9}{2 m_{\mathrm{id}}})\sigma_{\max}^2$ in whitened units—equivalently $O(\Lambda_{n,c,\min}^{-1})$ in unwhitened parameter MSE as $\Lambda_{n,c,\min} \to \infty$.
 \end{enumerate}
 \end{theorem}
 
-This result applies to the stated scalar SURE comparison. The implementation in Section~\ref{sec:model} uses a multivariate plug-in GP score and has no guarantee that its release decision satisfies the SURE comparison. A rate in target precision requires a matching rate assumption on $\sigma_{\max}^2$.
+\subsection{Dual Eligible-Cascade VOI Decomposition and Clean-Up Safety}\label{sec:cascade_value}
 
-\paragraph{Source-deletion sensitivity of policy comparisons.}
-With six source tasks and nine fitted coefficients per problem family, the centered matrix of task coefficients has rank at most five. Shrinkage and ridge regularization make the fitted covariance usable in a GP. They leave the off-diagonal estimates dependent on the same task sample. Let $d_0(x,y)$ be a forecast difference for two physical policies and $d_{-j}(x,y)$ the corresponding difference after omitting source task $j$ and refitting. The observed deletion interval is
-\begin{equation}\label{eq:source_deletion_interval}
-  \left[\min_{j\in\{0,1,\ldots,6\}} d_{-j}(x,y),\ \max_{j\in\{0,1,\ldots,6\}} d_{-j}(x,y)\right],
-  \qquad d_{-0}=d_0.
-\end{equation}
-An interval strictly above or below zero gives the same ordering in all seven fits. The same check applies to a difference in forecasts conditional on common target observations. Evaluating the two policies in their original coordinates keeps the comparison meaningful if refitting changes the active basis. This interval describes sensitivity to the observed deletions. Its width addresses dependence on individual sources, while benefit on new tasks requires a separate comparison of operating loss.
-
-\subsection{One-step gate utility under a factored fantasy law}
-
-\begin{theorem}[One-step gate-power inequality]\label{thm:sequential_bgpkg}
-Fix a finite evaluation set $\mathcal{E}_n$ and reference $\hat J^{\mathrm{ref}}$. Suppose the objective and constraint fantasy updates have a product law, objective means have expectation $\mu_{n,f}(x')$, and the future gate powers are in $[0,1]$ with expectation $p_n^{\mathrm{gate}}(x')$. Then $V_{n+1}(x') = (\hat J^{\mathrm{ref}}-\mu_{n+1,f}(x'))_+ p_{n+1}^{\mathrm{gate}}(x')$ has expectation at least $V_n(x')$. The expected maximum increment is nonnegative. If $|\mu_{n+1,f}(x')-\mu_{n,f}(x')|\le\varepsilon_f(x)$ and $|p_{n+1}^{\mathrm{gate}}(x')-p_n^{\mathrm{gate}}(x')|\le\varepsilon_g(x)$ pointwise, and $(\hat J^{\mathrm{ref}}-\mu_{n,f}(x'))_+\le B_f$, then
-\begin{equation}\label{eq:bgpkg_lipschitz}
- 0\le \E_n[\max_{x'\in\mathcal{E}_n} V_{n+1}(x')] - \max_{x'\in\mathcal{E}_n} V_n(x')
- \le \varepsilon_f(x)+ B_f\varepsilon_g(x).
-\end{equation}
+\begin{theorem}[Dual Eligible-Cascade VOI Decomposition and Single-Slot Innovation Cap]\label{thm:eckg_dual_voi}\label{thm:sequential_bgpkg}
+Fix search state $\mathcal{F}_n$ with evaluated policy set $\mathcal{D}_n$, non-negative fantasy weights $\{w_s\}_{s=1}^{S_{\mathrm{out}}}$ ($\sum_s w_s = 1$), post-query conditional cascade utility $U_{n+1}(\mathcal{S}; q, \xi^{(s)})$ ($U_{n+1}(\varnothing) \equiv 0$), current shortlist $\mathcal{S}_n^\star$, and nested menus $\mathfrak{M}_0^{(s)} = \{\varnothing, \mathcal{S}_n^\star, \hat{\mathcal{S}}_{n+1}(\mathcal{D}_n)\} \subseteq \mathfrak{M}_1^{(s)}(q) = \mathfrak{M}_0^{(s)} \cup \{\hat{\mathcal{S}}_{n+1}(\mathcal{D}_n \cup \{q\})\}$. Then:
+\begin{enumerate}
+  \item \emph{(Exact Dual VOI Decomposition and Non-Negativity)} For every candidate query $q \in \mathcal{C}_n$, $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q) = \widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q) + \widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q)$ with $\widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q) \ge 0$, $\widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q) \ge 0$, and $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q) \ge 0$.
+  \item \emph{(Revisit vs.\ Admission Dichotomy)} For every already-evaluated revisit $q \in \mathcal{D}_n$, $\mathcal{D}_n \cup \{q\} = \mathcal{D}_n$ implies $\widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q) = 0$ identically, so $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q) = \widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q)$; if in addition $q \in \mathcal{D}_n$ induces zero posterior innovation, $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q) = 0$.
+  \item \emph{(Single-Slot Submartingale and Lipschitz Cap)} On a factored single-slot evaluation set $\mathcal{C}_n^{\mathrm{eval}}$ where $\E_n[\mu_{n+1,f}(x')] = \mu_{n,f}(x')$, $\E_n[p_{n+1,0}^{\mathrm{gate}}(x')] = p_{n,0}^{\mathrm{gate}}(x') \in [0,1]$, $|\mu_{n+1,f}(x')-\mu_{n,f}(x')| \le \varepsilon_f(q)$, $|p_{n+1,0}^{\mathrm{gate}}(x')-p_{n,0}^{\mathrm{gate}}(x')| \le \varepsilon_g(q)$, and $(\hat{J}_n^{\mathrm{ref}} - \mu_{n,f}(x'))_+ \le B_f$, single-slot utility $V_{n+1}(x')$ is a submartingale ($\E_n[V_{n+1}(x')] \ge V_n(x')$) satisfying $0 \le \E_n[\max_{x' \in \mathcal{C}_n^{\mathrm{eval}}} V_{n+1}(x')] - \max_{x' \in \mathcal{C}_n^{\mathrm{eval}}} V_n(x') \le \varepsilon_f(q) + B_f\varepsilon_g(q)$, preventing greedy starvation of positive-value candidates as $\varepsilon_f(q), \varepsilon_g(q) \to 0$.
+\end{enumerate}
 \end{theorem}
 
-In a fixed probabilistic model with its exact posterior, gate power is the conditional expectation of a fixed verification event and obeys the tower identity. Separately, the corrected finite rule enforces preservation of the current marginal gate power under its positive quadrature weights. The inequality concerns a fixed one-step model and evaluation set. Coverage of the changing candidate pools, contraction across model reselection, and a sequential convergence guarantee require additional assumptions.
+Electronic Companion Section~\ref*{ec:cascade_rank} establishes a sufficient margin condition (Proposition~\ref*{prop:cascade_rank}) characterizing when single-slot and full-cascade query rankings coincide via branchwise guard and fallback discrepancy bounds.
 
-\subsection{Objective-guarded terminal selection and unsafe certification}
-
-Condition on the frozen shortlist and all search data. Let $A_i$ be the event that slot $i$ passes on its potential fresh sample block. For the three-slot incumbent-guard branch, let $B$ be the event that the verification objective mean of slot~0 is at most that of slot~1. The exact expected status-quo loss of the executed branch is
-\begin{align}
-  \E[\mathcal L_t] ={}& J_0 \Prob(A_0\cap(A_1^c\cup B))
-       + J_1 \Prob(A_1\cap(A_0^c\cup B^c)) \notag \\
-   &+ J_2 \Prob(A_0^c\cap A_1^c\cap A_2)
-       + J_{\rm sq}\Prob(A_0^c\cap A_1^c\cap A_2^c).\label{eq:guarded-terminal-loss}
-\end{align}
-The nominal cost $J_i$ here is the actual expected objective for the frozen policy in slot $i$. Terms with $B$ account for the possibility that both gates pass. These joint probabilities depend on the verification objective and constraint observations. The nomination heuristic uses simpler marginal gate proxies. For lists without the guard, the loss decomposes over the first-pass events $A_i\cap\bigcap_{j<i}A_j^c$ and the all-fail event. Thus a first-pass comparison with fixed continuations describes only that special branch.
-
-\subsection{Value of information for the executed terminal rule}\label{sec:cascade_value}
-
-Let $H$ be the current or fantasized search history, and fix a predictive law for the target scenario and potential verification blocks jointly. Each roster $r$ specifies an ordered list and whether the second slot is the incumbent. Run the exact terminal map on those potential blocks. Write $U_H(r)$ for the conditional expected saving relative to abstention, where the saving is $J_{\rm sq}-J_i$ if slot $i$ is selected and zero on abstention. In a fixed finite roster menu $\mathcal R$, the one-step value of a query $q$ is
-\begin{equation}\label{eq:full_cascade_kg}
-    G_C(q)=\E\big[\max_{r\in\mathcal R} U_{H_q^+}(r)\mid H,q\big]
-            - \max_{r\in\mathcal R} U_H(r).
+\begin{theorem}[Distribution-Free Familywise Safety of the Guarded Clean-Up Cascade]\label{thm:vkg_safety}
+Condition on any frozen shortlist $\mathcal{S} = (x_{(0)}, \dots, x_{(L-1)})$ ($1 \le L \le 3$) and search history $\mathcal{F}_N$. Suppose verification constraint indicators at each slot $i$ are i.i.d.\ Bernoulli($p_t^{\mathrm{ver}}(x_{(i)})$) under verification law $\mathbb{Q}_t^{\mathrm{ver}}$, and each slot applies the exact lower-tail binomial gate at risk threshold $\alpha$ and level $\delta_i \ge 0$ with $\sum_{i=0}^{L-1} \delta_i \le \delta$. Then under both the incumbent-guarded branch and the sequential first-pass branch,
+\begin{equation}\label{eq:fwer_safety}
+  \Prob_{\mathbb{Q}_t^{\mathrm{ver}}}\!\big(\mathrm{state} = \texttt{certified\_deployment} \;\text{and}\; p_t^{\mathrm{ver}}(\hat{x}_t) > \alpha \,\big|\, \mathcal{F}_N\big) \;\le\; \delta,
 \end{equation}
-Here $H_q^+$ is the fantasy after observing $q$. The conditional expectation integrates both the unknown policy costs and the fresh verification outcomes, including the observed-objective guard in~\eqref{eq:guarded-terminal-loss}. A fixed menu can describe a terminal choice among policies whose evaluations are already available, or approximate the choices after several further queries.
-
-\paragraph{Nomination after one more query.}
-Let $D(H)$ be the set of policies with search observations. A query adds at most one policy even if it takes two replications. Given its predicted batch $\xi$, update the model and record at $q$, then run the nomination map $R$ on $D(H_q^+)=D(H)\cup\{q\}$, merging repeat policies according to the search key. Write $r_q(\xi)=R(H_q^+)$ for the resulting ordered roster. Its deduplication can remove the incumbent from the second slot, which changes the branch, and any change in list length changes the gate allocations. Let $U_{1,H_q^+}(r)$ value operating that roster's primary on a pass of its allocated first test and retaining the status quo otherwise. Define the conditional forecast values
-\begin{equation}\label{eq:eligible_cascade_values}
- V_C(q)=\E[U_{H_q^+}(r_q(\xi))\mid H,q], \qquad
- V_S(q)=\E[U_{1,H_q^+}(r_q(\xi))\mid H,q].
-\end{equation}
-The two scores use the same nomination at each fantasy, including cases in which the primary has higher predicted cost than the status quo. Their difference isolates the value of the later verification branches for that query. A common current-history baseline can be subtracted from each score without changing its ordering. The deployed search uses the computationally simpler proxy of Section~\ref{sec:model}; we use~\eqref{eq:eligible_cascade_values} to compare prospective queries under the actual nomination rule.
-
-\begin{proposition}[A sufficient query-ranking condition]\label{prop:cascade_rank}
-Let $M_C(H_q^+)$ denote the full-rule forecast payoff and $M_S(H_q^+)$ the single-slot forecast payoff. These may be roster maxima on a fixed menu, or the corresponding payoffs of the roster chosen after observing the fantasy. Suppose the forecasted difference $|M_C(H_q^+)-M_S(H_q^+)|$ on common fantasy draws has expectation bounded by $e(q)$. With $G_C$ and $G_S$ defined by subtracting their respective current values, a query $q_\star$ preferred by the single-slot score is also strictly preferred by the full rule if, for every competing $q$,
-\begin{equation}\label{eq:cascade_rank_margin}
-    G_S(q_\star)-G_S(q) > e(q_\star)+e(q).
-\end{equation}
-An explicit $e(q)$ can be computed or bounded with the probability of a fallback or a guard override, the losses on these branches, and the discrepancy between a single-gate conditional saving and its posterior proxy.
-\end{proposition}
-
-The Electronic Companion gives the branchwise bound and an evaluation procedure using the same query fantasies. Guard comparisons require the joint distribution of objective and violation observations from a verification block. When only the marginal gate probabilities are modeled, bounds on joint events remain available, and the ranking condition can be inconclusive. The reported GP-FTA-KG runs score queries using the single-slot proxy.
-
-\paragraph{When a full-tree calculation can change the query.}
-Let $d(q)=\E[M_C(H_q^+)-M_S(H_q^+)\mid H,q]$. A signed interval $[\ell_q,u_q]$ for $d(q)$ may be available from the forecast branch contributions. The symmetric interval $[-e(q),e(q)]$ is another choice. Set $L(q)=G_S(q)+\ell_q$ and $U(q)=G_S(q)+u_q$. Direct bounds on the full forecast value, shifted by a common baseline, can play the same role. Keep candidates with $U(q)\ge\max_{q'}L(q')$. For the difference bounds, $G_C(q)=G_S(q)+d(q)+M_S(H)-M_C(H)$, and the last two terms are common to every query. Any excluded query thus has lower full-tree value than some retained query. A unique survivor is optimal for the specified model and nomination rule. These arguments apply when the roster varies with both $q$ and its fantasy because the bounds compare the conditional payoffs within each fantasy before averaging. When intervals overlap, the remaining candidates need full-tree evaluation or finer bounds to establish an exact ordering. For an operator-specified approximation tolerance, the one-step value given up by retaining the proxy choice $\hat q$ is bounded by $\max_q U(q)-L(\hat q)$. The forecast bounds have to include numerical error to support exact pruning. The ranking depends on variation in forecasted corrections across queries.
-
-\begin{theorem}[Unsafe certified return under the verification law]\label{thm:vkg_safety}
-Given the frozen list, suppose each slot's constraint exceedance indicators are IID Bernoulli under the verification law. For each slot $i$ at level $\delta_i$, use the binomial lower-tail rejection rule at $\alpha$. If $\sum_i\delta_i\le\delta$, the probability of a certified return with violation probability above $\alpha$ is at most $\delta$. This holds for either executed terminal branch and for each supported list length. With the three registered budgets and levels the per-slot critical count is one, and the maximum total verification calls is $\MaxVerifCalls$.
+using at most $B_{\mathrm{ver}} = \MaxVerifCalls$ verification replications ($k^\star = 1$ across $(\SlotZeroK, \SlotOneK, \SlotTwoK)$ at $\alpha = 0.05, \delta = 0.05$).
 \end{theorem}
 
-The safety claim places no restriction on the cost ordering of the returned policies or on the conditional probability of unsafety given that the output is certified. The same-event bound holds whenever the individual gates control their error at their specified levels, as for the optional Gaussian gate under its distributional assumptions.
-
-\begin{corollary}[Dual Sunk-Cost vs.\ Full-Cost Source Archive Amortization]\label{cor:amortization}
-Whenever \textbf{GP-FTA} attains strictly lower status-quo loss than a cold-start baseline while expending $B_{\mathrm{FTA}} < B_{\mathrm{cold}}$ total target calls per task: (a)~if historical logs are pre-existing sunk enterprise data ($B_{\mathrm{src}}^{\mathrm{marginal}} = 0$), net call savings accrue immediately at $M_{\mathrm{break}}^{\mathrm{sunk}} = 1$; (b)~if all $B_{\mathrm{src}} > 0$ archive calls are charged upfront across $M > 0$ target tasks, $B_{\mathrm{FTA}} + B_{\mathrm{src}}/M \le B_{\mathrm{cold}} \iff M \ge M_{\mathrm{break}}^{\mathrm{full}} \coloneqq B_{\mathrm{src}} / (B_{\mathrm{cold}} - B_{\mathrm{FTA}})$.
-\end{corollary}
+\paragraph{Remark (Archive Call Amortization).}
+When historical trajectories are pre-existing sunk enterprise logs ($B_{\mathrm{src}}^{\mathrm{marginal}} = 0$), any per-task call reduction $\Delta B = B_{\mathrm{cold}} - B_{\mathrm{FTA}} > 0$ at equal or lower deployment loss yields immediate savings ($M_{\mathrm{break}}^{\mathrm{sunk}} = 1$); if $B_{\mathrm{src}} > 0$ offline source calls are generated from scratch across $M$ target tasks, total simulation cost breaks even at $M \ge M_{\mathrm{break}}^{\mathrm{full}} = \lceil B_{\mathrm{src}} / \Delta B \rceil$ (evaluated empirically against both raw-space and same-representation cold-start comparators in Table~\ref*{tab:amortization}).

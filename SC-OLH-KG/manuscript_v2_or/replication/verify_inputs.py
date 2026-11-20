@@ -34,7 +34,7 @@ def verify_live_sumo() -> dict:
     family = next(family for family in manifest["families"] if family["kind"] == "traffic_live_sumo")
     task = build_family_tasks(family, "target")[0]
     backend = task._get_live_problem()
-    scenario = ROOT / "Final_Submission/GPR_KG_Code/experiments/ingolstadt21/data"
+    scenario = (SC_ROOT / "data/ingolstadt21/data").resolve()
     network = Path(backend._sim.NET_FILE).resolve()
     routes = Path(backend._route_files[0]).resolve()
     if network.parent != scenario or routes.parent != scenario:

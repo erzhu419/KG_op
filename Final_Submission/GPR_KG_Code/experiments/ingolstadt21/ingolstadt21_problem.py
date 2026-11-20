@@ -1,8 +1,5 @@
 """
-Ingolstadt21Problem — GPR-KG compatible interface for the RESCO subnet.
-
-Same API as InTASProblem (so methods/run_main.py only needs an import
-swap), but parameterized for the smaller, signal-sensitive subnet.
+Ingolstadt21Problem — simulation optimization interface for the RESCO ingolstadt21 subnet.
 """
 
 import os
@@ -51,9 +48,7 @@ class Ingolstadt21Problem:
         self.L     = None
         self.ref_point = np.array([1.5, 1.5])
 
-        # Single route file (vs InTAS multi-file).  Stored as a 1-element
-        # list so simulate() can reuse the InTAS-style random.choice path
-        # without branching.
+        # Single route file stored as a 1-element list.
         self._route_files = [ROUTE_FILE]
         self._rng = np.random.default_rng()
 

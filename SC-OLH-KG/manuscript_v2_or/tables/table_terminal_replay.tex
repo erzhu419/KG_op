@@ -1,19 +1,17 @@
 \begin{table}[htbp]\centering
-\caption{First-slot and full-rule operating loss, certification counts out of 48
-and terminal calls on identical realized search paths. First-slot replay
-uses 112 calls.}\label{tab:terminal_replay}
-\small\begin{tabular}{llrrccr}\toprule
-& & \multicolumn{2}{c}{Mean loss} & \multicolumn{2}{c}{Certified} & Mean calls \\
-Family & Arm & Slot 0 & Full rule & Slot 0 & Full rule & Full rule \\
+\caption{Counterfactual Slot-0-only ($K_0=112$) versus full three-slot guarded cascade verification on identical realized search paths ($48$ runs per arm).}\label{tab:terminal_replay}
+\scriptsize\begin{tabular}{llrrccr}\toprule
+& & \multicolumn{2}{c}{\textbf{Mean $\mathcal{L}_{\mathrm{SQ}}$}} & \multicolumn{2}{c}{\textbf{Certified / 48}} & \textbf{Verif.\ calls} \\
+\textbf{Family} & \textbf{Matched Arm} & \textbf{Slot 0} & \textbf{Full cascade} & \textbf{Slot 0} & \textbf{Full cascade} & \textbf{Full cascade} \\
 \midrule
-Queueing & Weak & 2.68059 & 2.64053 & 45 & 48 & 226.67 \\
- & Diagonal & 2.77140 & 2.67851 & 39 & 48 & 241.75 \\
- & Full (gate power) & 2.76099 & 2.65634 & 40 & 48 & 219.67 \\
- & Full (feasibility) & 2.66918 & 2.62494 & 46 & 48 & 218.67 \\
+Queueing & \texttt{TargetWeak-GateKG} & $2.68059$ & $2.64053$ & 45/48 & 48/48 & 226.67 \\
+ & \texttt{HistoryDiag-GateKG} & $2.77140$ & $2.67851$ & 39/48 & 48/48 & 241.75 \\
+ & \texttt{HistoryFull-GateKG} & $2.76099$ & $2.65634$ & 40/48 & 48/48 & 219.67 \\
+ & \texttt{HistoryFull-FeasibleKG} & $2.66918$ & $2.62494$ & 46/48 & 48/48 & 218.67 \\
 \midrule
-Traffic & Weak & 1.17334 & 1.10334 & 24 & 35 & 278.92 \\
- & Diagonal & 1.17567 & 1.11603 & 23 & 33 & 281.33 \\
- & Full (gate power) & 1.17594 & 1.13071 & 23 & 31 & 276.75 \\
- & Full (feasibility) & 1.18329 & 1.10987 & 21 & 33 & 284.25 \\
+Traffic-21 & \texttt{TargetWeak-GateKG} & $1.17334$ & $1.10334$ & 24/48 & 35/48 & 278.92 \\
+ & \texttt{HistoryDiag-GateKG} & $1.17567$ & $1.11603$ & 23/48 & 33/48 & 281.33 \\
+ & \texttt{HistoryFull-GateKG} & $1.17594$ & $1.13071$ & 23/48 & 31/48 & 276.75 \\
+ & \texttt{HistoryFull-FeasibleKG} & $1.18329$ & $1.10987$ & 21/48 & 33/48 & 284.25 \\
 \bottomrule\end{tabular}
 \end{table}

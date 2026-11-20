@@ -1,4 +1,4 @@
-"""Shared scheduler node policy for KG_op submission helpers."""
+"""Shared scheduler node policy for CPU batch submission helpers."""
 
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ DEFAULT_CPU_NODES = (
     "node005",
     "node006",
 )
-FORBIDDEN_CPU_NODES = {"jtl110cpu", "jtl110cpu2"}
 
 
 def parse_csv(text):
@@ -22,12 +21,12 @@ def parse_cpu_nodes(text):
     nodes = parse_csv(text)
     if not nodes:
         nodes = list(DEFAULT_CPU_NODES)
-    forbidden = sorted(FORBIDDEN_CPU_NODES.intersection(nodes))
+    forbidden = sorted(set(nodes).difference(DEFAULT_CPU_NODES))
     if forbidden:
         raise SystemExit(
             "Forbidden CPU scheduler nodes requested: "
             + ",".join(forbidden)
-            + ". Use node001-node006 for KG/SUMO CPU tasks."
+            + ". Use node001-node006 for CPU tasks."
         )
     return nodes
 

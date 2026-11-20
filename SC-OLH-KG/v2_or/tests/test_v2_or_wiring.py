@@ -127,7 +127,7 @@ def test_zero_oracle_leakage_invariance_all_four_families() -> None:
 
 
 def test_multichannel_policy_warping_and_loocv_exactness() -> None:
-    """Verify GPT-6's `[0.2, 0.8]*3 -> [0.2, 0.8]*4` adapter test & exact GP LOOCV."""
+    """Verify multichannel `[0.2, 0.8]*3 -> [0.2, 0.8]*4` warping & exact GP LOOCV."""
     src_const = np.array([0.2, 0.8, 0.2, 0.8, 0.2, 0.8], dtype=float)
     warped = warp_multichannel_policy(src_const, target_d=8, num_channels=2)
     expected = np.array([0.2, 0.8, 0.2, 0.8, 0.2, 0.8, 0.2, 0.8], dtype=float)
@@ -165,7 +165,7 @@ def test_exact_gate_power_and_strict_abstention_contract() -> None:
     assert exact_binomial_critical_k(128, 0.05, 0.015) == 1
     assert exact_binomial_critical_k(140, 0.05, 0.010) == 1
 
-    # GPT-6 Section 8.4 boundary check: p = 0.05 -> mu_g = -z_{0.95} * sigma_g, s_g = 0
+    # Boundary check at exact risk level: p = 0.05 -> mu_g = -z_{0.95} * sigma_g, s_g = 0
     z_95 = float(norm.ppf(0.95))
     exact_pass = float(binom.cdf(1, 112, 0.05))
     pred_pass = float(

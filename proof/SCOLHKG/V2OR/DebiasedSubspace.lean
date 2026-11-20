@@ -234,4 +234,115 @@ theorem pruned_residual_pointwise_square_bound
     exact mul_le_mul_of_nonneg_right (hCap k hk) (sq_nonneg _)
   linarith
 
+/-- Self-normalized clipped inverse-occupancy probability measure `mu_c(x) / ∑_y mu_c(y)`
+    matching the normalized weights `w / np.sum(w)` in `DebiasedSpectralMetaPrior`. -/
+noncomputable def normalizedDebiasedMeasure (nu q : X → ℝ) (wBar : ℝ) (x : X) : ℝ :=
+  debiasedMeasure nu q wBar x / (∑ y, debiasedMeasure nu q wBar y)
+
+/-- Pointwise mass deficit identity `nu(x) - mu_c(x) = max(0, nu(x) - wBar * q(x))`. -/
+lemma debiased_measure_deficit_eq
+    (nu q : X → ℝ) (wBar : ℝ) (x : X)
+    (hqPos : 0 < q x) :
+    nu x - debiasedMeasure nu q wBar x = max 0 (nu x - wBar * q x) := by
+  unfold debiasedMeasure clippedOccupancyWeight
+  have hqxNe : q x ≠ 0 := ne_of_gt hqPos
+  have hDiv : q x * (nu x / q x) = nu x := by field_simp [hqxNe]
+  by_cases hle : nu x / q x ≤ wBar
+  · rw [min_eq_right hle, hDiv, sub_self]
+    have hMul : q x * (nu x / q x) ≤ q x * wBar :=
+      mul_le_mul_of_nonneg_left hle hqPos.le
+    rw [hDiv] at hMul
+    symm
+    exact max_eq_left (by linarith)
+  · have hgt : wBar < nu x / q x := lt_of_not_ge hle
+    rw [min_eq_left hgt.le]
+    have hMul : q x * wBar ≤ q x * (nu x / q x) :=
+      mul_le_mul_of_nonneg_left hgt.le hqPos.le
+    rw [hDiv] at hMul
+    symm
+    calc
+      max 0 (nu x - wBar * q x) = nu x - wBar * q x := max_eq_right (by linarith)
+      _ = nu x - q x * wBar := by ring
+
+/-- Exact self-normalized clipping bias bound for `w_i / ∑_j w_j` with bounded integrands
+    `|f(x) g(x)| ≤ B`: the normalizing constant `Z_c = ∑_y mu_c(y) > 0` cancels cleanly! -/
+theorem normalized_debiased_inner_clipping_bias_le
+    (nu q f g : X → ℝ) (wBar B : ℝ)
+    (hqPos : ∀ x, 0 < q x)
+    (hNuNonneg : ∀ x, 0 ≤ nu x)
+    (hwBarNonneg : 0 ≤ wBar)
+    (hNuSum : (∑ x, nu x) = 1)
+    (hZPos : 0 < ∑ x, debiasedMeasure nu q wBar x)
+    (hBNonneg : 0 ≤ B)
+    (hProdBound : ∀ x, |f x * g x| ≤ B) :
+    |weightedInner (normalizedDebiasedMeasure nu q wBar) f g - weightedInner nu f g| ≤
+      2 * B * (∑ x, max 0 (nu x - wBar * q x)) := by
+  set Z := ∑ x, debiasedMeasure nu q wBar x
+  set Ic := weightedInner (debiasedMeasure nu q wBar) f g
+  set Inu := weightedInner nu f g
+  set Delta := ∑ x, max 0 (nu x - wBar * q x)
+  have hZNe : Z ≠ 0 := ne_of_gt hZPos
+  have hNormInner : weightedInner (normalizedDebiasedMeasure nu q wBar) f g = Ic / Z := by
+    unfold weightedInner normalizedDebiasedMeasure
+    simp only [Ic, Z, weightedInner, div_eq_mul_inv, Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro x _
+    ring
+  rw [hNormInner]
+  have hOneSubZ : 1 - Z = Delta := by
+    rw [← hNuSum]
+    simp only [Z, Delta, ← Finset.sum_sub_distrib]
+    apply Finset.sum_congr rfl
+    intro x _
+    exact debiased_measure_deficit_eq nu q wBar x (hqPos x)
+  have hDeltaNonneg : 0 ≤ Delta :=
+    Finset.sum_nonneg (fun x _ => le_max_left 0 _)
+  have hMuNonneg : ∀ x, 0 ≤ debiasedMeasure nu q wBar x := by
+    intro x
+    unfold debiasedMeasure clippedOccupancyWeight
+    exact mul_nonneg (hqPos x).le (le_min hwBarNonneg (div_nonneg (hNuNonneg x) (hqPos x).le))
+  have hIcBound : |Ic| ≤ Z * B := by
+    simp only [Ic, weightedInner]
+    calc
+      |∑ x, debiasedMeasure nu q wBar x * f x * g x| ≤
+          ∑ x, |debiasedMeasure nu q wBar x * f x * g x| := Finset.abs_sum_le_sum_abs _ _
+      _ = ∑ x, debiasedMeasure nu q wBar x * |f x * g x| := by
+        apply Finset.sum_congr rfl
+        intro x _
+        have hAssoc : debiasedMeasure nu q wBar x * f x * g x =
+            debiasedMeasure nu q wBar x * (f x * g x) := by ring
+        rw [hAssoc, abs_mul, abs_of_nonneg (hMuNonneg x)]
+      _ ≤ ∑ x, debiasedMeasure nu q wBar x * B := by
+        apply Finset.sum_le_sum
+        intro x _
+        exact mul_le_mul_of_nonneg_left (hProdBound x) (hMuNonneg x)
+      _ = Z * B := by simp only [Z, ← Finset.sum_mul]
+  have hTerm1 : |Ic / Z - Ic| ≤ B * Delta := by
+    have hFactor : Ic / Z - Ic = ((1 - Z) / Z) * Ic := by
+      field_simp [hZNe]
+      try ring
+    have hFracNonneg : 0 ≤ (1 - Z) / Z := by
+      rw [hOneSubZ]
+      exact div_nonneg hDeltaNonneg hZPos.le
+    rw [hFactor, abs_mul, abs_of_nonneg hFracNonneg]
+    have hMul := mul_le_mul_of_nonneg_left hIcBound hFracNonneg
+    have hCancel : ((1 - Z) / Z) * (Z * B) = B * Delta := by
+      rw [hOneSubZ]
+      field_simp [hZNe]
+      try ring
+    linarith
+  have hTerm2 : |Ic - Inu| ≤ B * Delta := by
+    have hRaw := debiased_inner_clipping_bias_le nu q f g wBar hqPos
+    have hStep : (∑ x, max 0 (nu x - wBar * q x) * |f x * g x|) ≤ Delta * B := by
+      simp only [Delta, Finset.sum_mul]
+      apply Finset.sum_le_sum
+      intro x _
+      exact mul_le_mul_of_nonneg_left (hProdBound x) (le_max_left 0 _)
+    linarith
+  have hTri : |Ic / Z - Inu| ≤ |Ic / Z - Ic| + |Ic - Inu| := by
+    have hSplit : Ic / Z - Inu = (Ic / Z - Ic) + (Ic - Inu) := by ring
+    rw [hSplit]
+    exact abs_add_le _ _
+  linarith
+
 end SCOLHKG.V2OR.DebiasedSubspace

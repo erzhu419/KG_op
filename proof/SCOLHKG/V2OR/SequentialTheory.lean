@@ -494,4 +494,113 @@ theorem bellman_slot0_minimizes_expected_deployed_loss
   rw [hMax0, hMax0']
   constructor <;> intro h <;> linarith
 
+
+/-! ## Section 5: Fisher-Whitened SURE Realizability & Dual Eligible-Cascade VOI Decomposition -/
+
+/-- **Theorem 5a (Exact Unit-Variance Fisher-Whitened SURE Realizability)**:
+    For Fisher-eigenspace whitened target projections `R̃_k = D_k + ξ_k` with exact unit
+    variance `σ̃_k^2 ≡ 1` (`mode = "tempered_sure_release"` in `tempered_hvd_posterior.py`),
+    every empirical SURE minimizer `lamHat ∈ [0, 1]` satisfies
+      `L(lamHat) - L(1) ≤ 3 + (9 * CBar^2) / (2 * DBarSq)`
+    uniformly across all nonzero prior-target shifts `D`. -/
+theorem fisher_whitened_unit_variance_sure_bound
+    {ι : Type*} (I : Finset ι) (D xi : ι → ℝ) (lamHat : ℝ)
+    (hCard : 0 < (I.card : ℝ))
+    (hLam0 : 0 ≤ lamHat)
+    (hLam1 : lamHat ≤ 1)
+    (hShiftPos : 0 < (∑ k ∈ I, (D k) ^ 2) / (I.card : ℝ))
+    (hOpt : sureEmpiricalRisk I D xi (fun _ => 1) lamHat ≤
+      sureEmpiricalRisk I D xi (fun _ => 1) 1) :
+    sureTrueLoss I D xi lamHat - sureTrueLoss I D xi 1 ≤
+      3 + (9 * (((∑ k ∈ I, D k * xi k) / (I.card : ℝ)) ^ 2)) /
+        (2 * ((∑ k ∈ I, (D k) ^ 2) / (I.card : ℝ))) := by
+  have hBase := sure_selector_uniform_shift_excess_loss_bound I D xi (fun _ => 1)
+    lamHat hCard hLam0 hLam1 (fun _ _ => by norm_num) hShiftPos hOpt
+  have hUnitMean : ((∑ _k ∈ I, (1 : ℝ)) / (I.card : ℝ)) = 1 := by
+    rw [Finset.sum_const, nsmul_eq_mul, mul_one, div_self (ne_of_gt hCard)]
+  rw [hUnitMean, mul_one] at hBase
+  exact hBase
+
+/-- Epistemic refinement component of Eligible-Cascade KG (`VOI_refine`):
+    expected post-query switch gain over the nested `D_n`-only menu `{∅, S_curr*, S_hat(D_n)}`. -/
+def ecVoiRefine {Ω : Type*} [Fintype Ω]
+    (w uCurrStar uEligBase : Ω → ℝ) : ℝ :=
+  ∑ ω, w ω * (max 0 (max (uCurrStar ω) (uEligBase ω)) - uCurrStar ω)
+
+/-- Eligibility-admission component of Eligible-Cascade KG (`VOI_admit`):
+    expected marginal gain from admitting query `q` into terminal shortlist eligibility `D_n ∪ {q}`. -/
+def ecVoiAdmit {Ω : Type*} [Fintype Ω]
+    (w uCurrStar uEligBase uEligAdmit : Ω → ℝ) : ℝ :=
+  ∑ ω, w ω *
+    (max (max 0 (max (uCurrStar ω) (uEligBase ω))) (uEligAdmit ω) -
+      max 0 (max (uCurrStar ω) (uEligBase ω)))
+
+/-- Total Eligible-Cascade Knowledge Gradient (`VOI_EC`) implemented in `score_eligible_cascade_kg`. -/
+def ecVoiTotal {Ω : Type*} [Fintype Ω]
+    (w uCurrStar uEligBase uEligAdmit : Ω → ℝ) : ℝ :=
+  ∑ ω, w ω *
+    (max (max 0 (max (uCurrStar ω) (uEligBase ω))) (uEligAdmit ω) - uCurrStar ω)
+
+/-- **Theorem 5b (Exact Dual VOI Decomposition: `VOI_EC = VOI_refine + VOI_admit`)**:
+    Decomposes one-step lookahead over `D_n ∪ {q}` into pure epistemic refinement on `D_n`
+    plus pure eligibility-admission value from making `q` certifiable at `N`. -/
+theorem eligible_cascade_dual_voi_decomposition
+    {Ω : Type*} [Fintype Ω]
+    (w uCurrStar uEligBase uEligAdmit : Ω → ℝ) :
+    ecVoiTotal w uCurrStar uEligBase uEligAdmit =
+      ecVoiRefine w uCurrStar uEligBase +
+        ecVoiAdmit w uCurrStar uEligBase uEligAdmit := by
+  unfold ecVoiTotal ecVoiRefine ecVoiAdmit
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  intro ω _
+  ring
+
+/-- **Theorem 5c (Pointwise Non-Negativity of `VOI_refine` and `VOI_admit`)**:
+    Both components of Eligible-Cascade KG are guaranteed non-negative for every non-negative
+    quadrature/QMC measure `w ≥ 0`. -/
+theorem eligible_cascade_components_nonneg
+    {Ω : Type*} [Fintype Ω]
+    (w uCurrStar uEligBase uEligAdmit : Ω → ℝ)
+    (hWNonneg : ∀ ω, 0 ≤ w ω) :
+    0 ≤ ecVoiRefine w uCurrStar uEligBase ∧
+      0 ≤ ecVoiAdmit w uCurrStar uEligBase uEligAdmit ∧
+      0 ≤ ecVoiTotal w uCurrStar uEligBase uEligAdmit := by
+  have hRef : 0 ≤ ecVoiRefine w uCurrStar uEligBase := by
+    unfold ecVoiRefine
+    apply Finset.sum_nonneg
+    intro ω _
+    apply mul_nonneg (hWNonneg ω)
+    have hLe : uCurrStar ω ≤ max 0 (max (uCurrStar ω) (uEligBase ω)) :=
+      le_trans (le_max_left (uCurrStar ω) (uEligBase ω)) (le_max_right 0 _)
+    linarith
+  have hAdm : 0 ≤ ecVoiAdmit w uCurrStar uEligBase uEligAdmit := by
+    unfold ecVoiAdmit
+    apply Finset.sum_nonneg
+    intro ω _
+    apply mul_nonneg (hWNonneg ω)
+    have hLe := le_max_left (max 0 (max (uCurrStar ω) (uEligBase ω))) (uEligAdmit ω)
+    linarith
+  refine ⟨hRef, hAdm, ?_⟩
+  rw [eligible_cascade_dual_voi_decomposition]
+  linarith
+
+/-- **Theorem 5d (Revisit Queries Have Exact Zero Admission VOI)**:
+    Whenever `q ∈ D_n` is an already-evaluated revisit (`D_n ∪ {q} = D_n`, so `uEligAdmit = uEligBase`),
+    `VOI_admit(q) = 0` identically and `VOI_EC(q) = VOI_refine(q)`. -/
+theorem revisit_query_zero_admit_voi
+    {Ω : Type*} [Fintype Ω]
+    (w uCurrStar uEligBase : Ω → ℝ) :
+    ecVoiAdmit w uCurrStar uEligBase uEligBase = 0 ∧
+      ecVoiTotal w uCurrStar uEligBase uEligBase = ecVoiRefine w uCurrStar uEligBase := by
+  have hAdmZero : ecVoiAdmit w uCurrStar uEligBase uEligBase = 0 := by
+    unfold ecVoiAdmit
+    apply Finset.sum_eq_zero
+    intro ω _
+    have hLe : uEligBase ω ≤ max 0 (max (uCurrStar ω) (uEligBase ω)) :=
+      le_trans (le_max_right (uCurrStar ω) (uEligBase ω)) (le_max_right 0 _)
+    rw [max_eq_left hLe, sub_self, mul_zero]
+  refine ⟨hAdmZero, ?_⟩
+  rw [eligible_cascade_dual_voi_decomposition, hAdmZero, add_zero]
+
 end SCOLHKG.V2OR.SequentialTheory

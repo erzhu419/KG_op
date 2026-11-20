@@ -10,8 +10,8 @@ import shlex
 import subprocess
 import sys
 
-SC_ROOT = Path(__file__).resolve().parents[2]
-REPO_ROOT = SC_ROOT.parent
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SC_ROOT = REPO_ROOT / "SC-OLH-KG"
 STAGE_DIR = REPO_ROOT.parent / "KG_op_v2_or_stage"
 REMOTE_ROOT = "/home/zhengliang01/scheduleurm_work/KG_op_v2_or_cluster"
 TRANSPORT = REPO_ROOT.parent / "scheduleurm/skill/transport_exec.py"
@@ -21,10 +21,19 @@ def collect_files() -> list[str]:
     rels: set[str] = {
         "AGENTS.md",
         "scripts/scheduler_node_policy.py",
+        "scripts/run_v2_lean_cluster.py",
         "SC-OLH-KG/data/__init__.py",
         "SC-OLH-KG/data/opsd.py",
         "SC-OLH-KG/data/external/opsd_time_series_extended_v2.npz",
         "SC-OLH-KG/data/external/opsd_time_series_extended_v2.npz.manifest.json",
+        "SC-OLH-KG/data/ingolstadt21/__init__.py",
+        "SC-OLH-KG/data/ingolstadt21/config.py",
+        "SC-OLH-KG/data/ingolstadt21/ingolstadt21_problem.py",
+        "SC-OLH-KG/data/ingolstadt21/sumo_sim.py",
+        "SC-OLH-KG/data/ingolstadt21/decision_space.json",
+        "SC-OLH-KG/data/ingolstadt21/baseline.json",
+        "SC-OLH-KG/data/ingolstadt21/data/ingolstadt21.net.xml",
+        "SC-OLH-KG/data/ingolstadt21/data/ingolstadt21.rou.xml",
         "Final_Submission/GPR_KG_Code/results/ingolstadt21/decision_space.json",
         "Final_Submission/GPR_KG_Code/results/ingolstadt21/baseline.json",
     }

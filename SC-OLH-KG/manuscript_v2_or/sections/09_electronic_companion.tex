@@ -1,238 +1,105 @@
 \ECSwitch
-\ECHead{Electronic Companion: Mathematical Proofs, Lean~4 Audit Map, and Provenance}
+\ECHead{Electronic Companion: Complete Proofs, Lean~4 Audit Map, and Extended Benchmarks}
 
 \section{Complete Mathematical Proofs}\label{ec:proofs}
 
-\subsection{Proof of Proposition~\ref{prop:subspace} (Occupancy Clipping Bias \& Parseval Separation)}
+\subsection{Proof of Proposition~\ref*{prop:subspace} (Self-Normalized Clipping Bias and Parseval Separation)}
 
-\proof{Proof of Proposition~\ref{prop:subspace}.}
-For $q(\psi) > 0$ and $\rho(\psi) = \frac{\mathrm{d}\nu}{\mathrm{d}q}(\psi)$, $|\min\{\bar{w}, \rho(\psi)\} - \rho(\psi)| = \max\{0, \rho(\psi) - \bar{w}\}$. Applying the triangle inequality to $\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu = \int_{\mathcal{M}_\psi} (\min\{\bar{w}, \rho(\psi)\} - \rho(\psi)) f(\psi)h(\psi) q(\mathrm{d}\psi)$ yields Part~(1), vanishing identically when $\sup_\psi \rho(\psi) \le \bar{w}$ (mechanized on finite supports as \texttt{debiased\_inner\_exact\_when\_bounded} and \texttt{debiased\_inner\_clipping\_bias\_le} in \texttt{SCOLHKG/V2OR/DebiasedSubspace.lean}). Part~(2) follows by expanding $h - \theta_0$ in the $\nu_{\bar{w}}$-orthogonal decomposition $\operatorname{span}(\tilde{\varphi}_{S_{\mathrm{act}}}) \oplus \operatorname{span}(\tilde{\varphi}_{S_{\mathrm{act}}^c}) \oplus \{r_{\mathrm{hf}}\}$ (\texttt{active\_pruned\_orthogonal\_decomposition}).
-\Halmos\endproof
-
-\subsection{Proof of Theorem~\ref{thm:transfer_boundary} (Shift Invariance \& Exact Transfer Dominance Boundary)}
-
-\proof{Proof of Theorem~\ref{thm:transfer_boundary}.}
-\emph{Part 1.} Expanding $(\Delta_g(x)+\varepsilon_\ell)^2$ and taking expectations gives the residual second moment. Subtracting the within-policy sample mean cancels the common mean exactly at every realized sample length. At a fixed $r$, independence and centering give $\E[\sum_\ell(\varepsilon_\ell-\bar\varepsilon)^2]=(r-1)v_t(x)$. The same identity holds conditionally within a batch whose size and policy are fixed before its observations. Conditioning on a final pooled count after adaptive revisits need not preserve the distribution of the earlier observations.
-
-For the symmetric $\{-1,1\}$ example, equal first draws occur with probability $1/2$ and contribute zero sample variance. Conditional on unequal first draws, the next two are equal with probability $1/2$, giving a 3-to-1 sign count and sample variance $1$. Otherwise the count is 2-to-2 and the sample variance is $4/3$. The pooled expectation is $(1/2)[(1/2)1+(1/2)(4/3)]=7/12$. The matched study compares the sum of the original within-batch sums of squares divided by their total degrees of freedom with the merged-policy variance. The original batches have fixed size. The set of revisited batches and the policies selected for audit still depend on the data, so the comparison describes error relative to independent audits of those selected policies.
-
-\emph{Part 2.} Substituting $\theta_t - \hat{\mu}_0 = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}}) - \xi_{\mathrm{meta}}$ and using $\E[\xi_{\mathrm{meta}}] = 0$, $\E[\xi_{\mathrm{meta}}^2] = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$ yields $\E[(\theta_t - \hat{\mu}_0)^2] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$. Module \texttt{FunctionalTransferRisk} checks the second-moment identity.
-
-\emph{Part 3.} For $\tau > 0$ and $\rho_N > 0$, $(\tau + \rho_N)^2 > 0$ and exact algebraic factoring gives
+\proof{Proof of Proposition~\ref*{prop:subspace}.}
+\emph{Part 1.} For $\pi_{\mathrm{occ}}(\psi) > 0$ and $\rho(\psi) = \frac{\mathrm{d}\nu}{\mathrm{d}\pi_{\mathrm{occ}}}(\psi) \ge 0$, pointwise inspection gives $\rho(\psi) - \min\{\bar{w}, \rho(\psi)\} = \max\{0, \rho(\psi) - \bar{w}\} \ge 0$ (\texttt{debiased\_measure\_deficit\_eq} in \texttt{SCOLHKG/V2OR/DebiasedSubspace.lean}). Applying the triangle inequality to $\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu = \int_{\mathcal{M}_\psi} (\min\{\bar{w}, \rho(\psi)\} - \rho(\psi)) f(\psi)h(\psi) \pi_{\mathrm{occ}}(\mathrm{d}\psi)$ yields the unnormalized bound (\texttt{debiased\_inner\_clipping\_bias\_le}). Next, let $\Delta_{\bar{w}} \coloneqq \int_{\mathcal{M}_\psi} \max\{0, \rho(\psi) - \bar{w}\}\pi_{\mathrm{occ}}(\mathrm{d}\psi)$. Because $\nu(\mathcal{M}_\psi) = 1$, integrating the pointwise deficit identity yields $1 - Z_{\bar{w}} = \Delta_{\bar{w}} \ge 0$. When $|f(\psi)h(\psi)| \le B$ almost everywhere and $Z_{\bar{w}} > 0$, $|\langle f, h \rangle_{\nu_{\bar{w}}}| \le \int_{\mathcal{M}_\psi} B\,\nu_{\bar{w}}(\mathrm{d}\psi) = Z_{\bar{w}} B$. Writing $\langle f, h \rangle_{\tilde{\nu}_{\bar{w}}} = \langle f, h \rangle_{\nu_{\bar{w}}} / Z_{\bar{w}}$, the denominator $Z_{\bar{w}}$ cancels identically:
 \[
-  \frac{1}{\rho_N} - \frac{\tau^2\Delta_{\mathrm{eff}}^2 + \rho_N}{(\tau + \rho_N)^2}
-  = \frac{(\tau + \rho_N)^2 - \rho_N(\tau^2\Delta_{\mathrm{eff}}^2 + \rho_N)}{\rho_N(\tau + \rho_N)^2}
-  = \frac{\tau^2\big(1 + 2\rho_N/\tau - \rho_N\Delta_{\mathrm{eff}}^2\big)}{\rho_N(\tau + \rho_N)^2}.
+  \big|\langle f, h \rangle_{\tilde{\nu}_{\bar{w}}} - \langle f, h \rangle_{\nu_{\bar{w}}}\big|
+  = \frac{1 - Z_{\bar{w}}}{Z_{\bar{w}}}\big|\langle f, h \rangle_{\nu_{\bar{w}}}\big|
+  \le \frac{\Delta_{\bar{w}}}{Z_{\bar{w}}}(Z_{\bar{w}} B) = B\Delta_{\bar{w}}.
 \]
-Since $\tau^2 / [\rho_N(\tau + \rho_N)^2] > 0$, the difference is strictly positive if and only if $1 + 2\rho_N/\tau - \rho_N\Delta_{\mathrm{eff}}^2 > 0$, which upon dividing by $\rho_N > 0$ is equivalent to $\Delta_{\mathrm{eff}}^2 < \rho_N^{-1} + 2/\tau$ (\texttt{transfer\_dominates\_target\_only\_iff}).
+Combining this bound with $|\langle f, h \rangle_{\nu_{\bar{w}}} - \langle f, h \rangle_\nu| \le B\Delta_{\bar{w}}$ via the triangle inequality yields~\eqref{eq:norm_clip_bias} (\texttt{normalized\_debiased\_inner\_clipping\_bias\_le}), vanishing whenever $\sup_\psi \rho(\psi) \le \bar{w}$.
+
+\emph{Part 2.} Expanding $h - \theta_0$ in the $\tilde{\nu}_{\bar{w}}$-orthogonal direct sum $\operatorname{span}(\tilde{\varphi}_{S_{\mathrm{act}}}) \oplus \operatorname{span}(\tilde{\varphi}_{S_{\mathrm{act}}^c}) \oplus \{r_{\mathrm{hf}}\}$ establishes Parseval separation (\texttt{active\_pruned\_orthogonal\_decomposition}).
 \Halmos\endproof
 
-\subsection{Proof of Theorem~\ref{thm:sure_uniform} (Self-Normalized \texttt{SURE} Uniform Shift Excess-Risk Bound)}
+\subsection{Proof of Theorem~\ref*{thm:transfer_boundary} (Within-Policy Shift Invariance and Transfer Boundary)}
 
-\proof{Proof of Theorem~\ref{thm:sure_uniform}.}
-\emph{Part 1.} Set $u = 1 - \lambda$. For each coordinate $k \in \mathcal{I}$ with $R_k = D_k + \xi_k$, expanding $(u D_k - (1 - u)\xi_k)^2 - \xi_k^2 = u^2 D_k^2 - 2u(1 - u)D_k\xi_k + (u^2 - 2u)\xi_k^2$ and $\frac{3}{2}[(u^2(D_k + \xi_k)^2 + (1 - 2u)\sigma_k^2) - \sigma_k^2] = \frac{3}{2}u^2 D_k^2 + 3u^2 D_k\xi_k + \frac{3}{2}u^2 \xi_k^2 - 3u\sigma_k^2$, subtracting the second expression from the first yields the exact per-coordinate polynomial identity $-\frac{1}{2}u^2 D_k^2 - u(2 + u)D_k\xi_k - (2u + \frac{1}{2}u^2)\xi_k^2 + 3u\sigma_k^2$. Averaging over $k \in \mathcal{I}$ ($r = |\mathcal{I}| > 0$) establishes~\eqref{eq:sure_identity} (\texttt{sure\_excess\_loss\_minus\_three\_halves\_empirical\_gap} in \texttt{SCOLHKG/V2OR/SequentialTheory.lean}).
+\proof{Proof of Theorem~\ref*{thm:transfer_boundary}.}
+\emph{Part 1.} Since $\E[\varepsilon_\ell]=0$ and $\E[\varepsilon_\ell^2]=v_t(x)$, $\E[(\Delta_g(x)+\varepsilon_\ell)^2] = \Delta_g(x)^2 + v_t(x)$. Subtracting $\bar{Y}_{t,g}(x) = \mu_{0,g}(x) + \Delta_g(x) + \bar{\varepsilon}$ gives $Y_{t,g,\ell}(x) - \bar{Y}_{t,g}(x) = \varepsilon_\ell - \bar{\varepsilon}$ identically on every sample path (\texttt{within\_policy\_ssq\_shift\_invariant}), so $\E[S_{t,g}^2(x)/(r-1)] = v_t(x)$ for any fixed $r \ge 2$. Under outcome-dependent stopping, pooled sample variance can be biased: for i.i.d.\ Rademacher draws $\{-1, +1\}$ ($v_t = 1$), stopping at $r=2$ when the first two draws agree (probability $1/2$, $s^2 = 0$) and taking two more draws when they disagree (probability $1/2$, yielding $3$-to-$1$ counts with $s^2 = 1$ with probability $1/2$ and $2$-to-$2$ counts with $s^2 = 4/3$ with probability $1/2$) gives $\E[\hat{s}_{\mathrm{pool}}^2] = \tfrac{1}{2}[0] + \tfrac{1}{4}(1) + \tfrac{1}{4}(\tfrac{4}{3}) = \tfrac{7}{12} < 1$.
 
-\emph{Part 2.} Since $\hat{\lambda} \in [0, 1]$, $\hat{u} = 1 - \hat{\lambda} \in [0, 1]$ and $\widehat{R}_{\mathcal{I}}(\hat{\lambda}) \le \widehat{R}_{\mathcal{I}}(1)$ implies $\frac{3}{2}(\widehat{R}_{\mathcal{I}}(\hat{\lambda}) - \widehat{R}_{\mathcal{I}}(1)) \le 0$. Moreover, $(2\hat{u} + \frac{1}{2}\hat{u}^2)\frac{1}{r}\sum_{k \in \mathcal{I}}\xi_k^2 \ge 0$ and $3\hat{u}\bar{\sigma}^2 \le 3\bar{\sigma}^2$ because $\bar{\sigma}^2 \ge 0$ and $\hat{u} \le 1$. If $\bar{D}^2 = 0$, $D_k = 0$ for all $k \in \mathcal{I}$, giving $L_{\mathcal{I}}(\hat{\lambda}) - L_{\mathcal{I}}(1) \le 3\bar{\sigma}^2$ (\texttt{sure\_selector\_zero\_shift\_excess\_loss\_bound}). If $\bar{D}^2 > 0$, since $0 \le 2 + \hat{u} \le 3$, $-\hat{u}(2 + \hat{u})\bar{C} \le 3\hat{u}|\bar{C}|$; completing the square over $\hat{u} \in \R$ gives
+\emph{Part 2.} Substituting $\theta_t - \hat{\mu}_0 = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}}) - \xi_{\mathrm{meta}}$ and using $\E[\xi_{\mathrm{meta}}] = 0$, $\E[\xi_{\mathrm{meta}}^2] = \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$ yields $\E[\Delta_{\mathrm{eff}}^2] = (\Delta_{\mathrm{shift}} - b_{\mathrm{occ}})^2 + \sigma_{\mathrm{src}}^2 / M_{\mathrm{src}}$ (\texttt{effective\_mismatch\_second\_moment\_with\_finite\_sources}).
+
+\emph{Part 3.} For $\kappa_0 > 0$ and $\rho_n > 0$, $(\kappa_0 + \rho_n)^2 > 0$ and exact algebraic factoring gives
 \[
-  -\frac{1}{2}\hat{u}^2 \bar{D}^2 + 3\hat{u}|\bar{C}|
-  = \frac{9\bar{C}^2}{2\bar{D}^2} - \frac{(\hat{u}\bar{D}^2 - 3|\bar{C}|)^2}{2\bar{D}^2}
-  \;\le\; \frac{9\bar{C}^2}{2\bar{D}^2},
+  \frac{1}{\rho_n} - \frac{\kappa_0^2\Delta_{\mathrm{eff}}^2 + \rho_n}{(\kappa_0 + \rho_n)^2}
+  = \frac{\kappa_0^2\big(1 + 2\rho_n/\kappa_0 - \rho_n\Delta_{\mathrm{eff}}^2\big)}{\rho_n(\kappa_0 + \rho_n)^2} > 0
+  \;\Longleftrightarrow\;
+  \Delta_{\mathrm{eff}}^2 < \frac{1}{\rho_n} + \frac{2}{\kappa_0},
 \]
-yielding~\eqref{eq:sure_uniform_path} uniformly over all $D \neq 0$ and any selector grid $\mathcal{G} \ni 1$ (\texttt{sure\_selector\_uniform\_shift\_excess\_loss\_bound}).
-
-\emph{Part 3.} Under pairwise orthogonality with $\E[\xi_k^2] \le \sigma_{\max}^2$, $\E[(\sum_{k \in \mathcal{I}} D_k\xi_k)^2] = \sum_{k \in \mathcal{I}} D_k^2 \E[\xi_k^2] \le \sigma_{\max}^2 \sum_{k \in \mathcal{I}} D_k^2 = r\sigma_{\max}^2 \bar{D}^2$. Substituting $\bar{C} = \frac{1}{r}\sum_{k \in \mathcal{I}} D_k\xi_k$ yields $\E\big[\frac{9\bar{C}^2}{2\bar{D}^2}\big] = \frac{9}{2 r^2 \bar{D}^2}\E\big[(\sum_{k \in \mathcal{I}} D_k\xi_k)^2\big] \le \frac{9\sigma_{\max}^2}{2r}$ identically cancelling $\bar{D}^2 > 0$ (\texttt{expected\_unit\_projection\_noise\_le\_sigma\_div\_rank}). Combining with $3\bar{\sigma}^2 \le 3\sigma_{\max}^2$ completes the proof.
+checked in Lean as \texttt{transfer\_dominates\_target\_only\_iff}.
 \Halmos\endproof
 
-\subsection{Proof of Theorem~\ref{thm:sequential_bgpkg}}
+\subsection{Proof of Theorem~\ref*{thm:sure_uniform} (Self-Normalized \texttt{SURE} Uniform Shift Excess-Risk Bound)}
 
-\proof{Proof of Theorem~\ref{thm:sequential_bgpkg}.}
-\emph{Part 1.} For fixed $x' \in \mathcal{E}_n$, convexity of $z \mapsto (\hat{J}^{\mathrm{ref}} - z)_+$ and posterior mean martingale conservation $\E_{\Omega_f}[\mu_{n+1,f}(x')] = \mu_{n,f}(x')$ imply $\E_{\Omega_f}[(\hat{J}^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+] \ge (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+$ (\texttt{hinge\_submartingale\_step}). On the product fantasy space $\Omega_f \times \Omega_g$, factoring the expectation and invoking gate-power tower conservation $\E_{\Omega_g}[p_{n+1}^{\mathrm{gate}}(x')] = p_n^{\mathrm{gate}}(x') \ge 0$ yields $\E_n[V_{n+1}(x')] = \E_{\Omega_f}[(\hat{J}^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+]\cdot \E_{\Omega_g}[p_{n+1}^{\mathrm{gate}}(x')] \ge (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ p_n^{\mathrm{gate}}(x') = V_n(x')$ (\texttt{factored\_gate\_utility\_submartingale}). Since $\max_{\tilde{x} \in \mathcal{E}_n} V_{n+1}(\tilde{x}) \ge V_{n+1}(x')$ pointwise, $\E_n[\max_{\tilde{x} \in \mathcal{E}_n} V_{n+1}(\tilde{x})] \ge V_n(x')$ for every $x' \in \mathcal{E}_n$, hence $\operatorname{Acq}_n^{\mathrm{BGP-KG}}(x) \ge 0$ (\texttt{bgp\_kg\_nonneg\_from\_posterior\_tower}).
+\proof{Proof of Theorem~\ref*{thm:sure_uniform}.}
+\emph{Part 1.} Set $u = 1 - \lambda$. For each coordinate $k \in \mathcal{I}$ with $\tilde{R}_k = \delta_k + \xi_k$, expanding $(u \delta_k - (1 - u)\xi_k)^2 - \xi_k^2 - \frac{3}{2}[(u^2(\delta_k + \xi_k)^2 + (1 - 2u)\sigma_k^2) - \sigma_k^2]$ yields the exact identity $-\frac{1}{2}u^2 \delta_k^2 - u(2 + u)\delta_k\xi_k - (2u + \frac{1}{2}u^2)\xi_k^2 + 3u\sigma_k^2$. Averaging over $k \in \mathcal{I}$ ($m_{\mathrm{id}} = |\mathcal{I}| > 0$) gives~\eqref{eq:sure_identity} (\texttt{sure\_excess\_loss\_minus\_three\_halves\_empirical\_gap}).
 
-\emph{Part 2.} When $|\mu_{n+1,f}(x') - \mu_{n,f}(x')| \le \varepsilon_f$, $|p_{n+1}^{\mathrm{gate}}(x') - p_n^{\mathrm{gate}}(x')| \le \varepsilon_g$, $p_{n+1}^{\mathrm{gate}}(x') \in [0, 1]$, and $(\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ \le B_f$, subadditivity of $(\cdot)_+$ gives $(\hat{J}^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+ \le (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ + \varepsilon_f$. Multiplying by $p_{n+1}^{\mathrm{gate}}(x') \in [0,1]$ gives $V_{n+1}(x') \le (\hat{J}^{\mathrm{ref}} - \mu_{n,f}(x'))_+ [p_n^{\mathrm{gate}}(x') + (p_{n+1}^{\mathrm{gate}}(x') - p_n^{\mathrm{gate}}(x'))] + \varepsilon_f \le V_n(x') + B_f\varepsilon_g + \varepsilon_f \le \max_{\tilde{x} \in \mathcal{E}_n} V_n(\tilde{x}) + \varepsilon_f + B_f\varepsilon_g$ (\texttt{gate\_utility\_step\_perturbation\_le}). Taking maxima over $x' \in \mathcal{E}_n$ and expectations yields~\eqref{eq:bgpkg_lipschitz} (\texttt{bgp\_kg\_lipschitz\_in\_step\_innovations}). \Halmos\endproof
+\emph{Part 2.} Since $\hat{\lambda} \in [0, 1]$, $\hat{u} = 1 - \hat{\lambda} \in [0, 1]$ and $\widehat{R}_{\mathcal{I}}(\hat{\lambda}) \le \widehat{R}_{\mathcal{I}}(1)$ implies $\frac{3}{2}(\widehat{R}_{\mathcal{I}}(\hat{\lambda}) - \widehat{R}_{\mathcal{I}}(1)) \le 0$. Dropping the non-positive noise square $-(2\hat{u} + \frac{1}{2}\hat{u}^2)\frac{1}{m_{\mathrm{id}}}\sum_{k \in \mathcal{I}}\xi_k^2 \le 0$ and using $3\hat{u}\bar{\sigma}^2 \le 3\bar{\sigma}^2$ proves the $\bar{\delta}^2 = 0$ bound (\texttt{sure\_selector\_zero\_shift\_excess\_loss\_bound}). When $\bar{\delta}^2 > 0$, $0 \le 2 + \hat{u} \le 3$ gives $-\hat{u}(2 + \hat{u})\bar{C} \le 3\hat{u}|\bar{C}|$; completing the square yields $-\frac{1}{2}\hat{u}^2 \bar{\delta}^2 + 3\hat{u}|\bar{C}| = \frac{9\bar{C}^2}{2\bar{\delta}^2} - \frac{(\hat{u}\bar{\delta}^2 - 3|\bar{C}|)^2}{2\bar{\delta}^2} \le \frac{9\bar{C}^2}{2\bar{\delta}^2}$ (\texttt{sure\_selector\_uniform\_shift\_excess\_loss\_bound}), specializing at $\sigma_k^2 \equiv 1$ to $3 + 9\bar{C}^2/(2\bar{\delta}^2)$ (\texttt{fisher\_whitened\_unit\_variance\_sure\_bound}). Notice that in~\eqref{eq:fisher_whitening}, because $X_{n,c}^\top W_{n,c}\mathbf{1} = 0$, $\operatorname{Cov}(X_{n,c}^\top W_{n,c}(y_{n,c} - \bar{y}_{n,c}\mathbf{1}) \mid W_{n,c}) = X_{n,c}^\top (W_{n,c} - \frac{W_{n,c}\mathbf{1}\mathbf{1}^\top W_{n,c}}{\mathbf{1}^\top W_{n,c}\mathbf{1}}) X_{n,c} = X_{n,c}^\top W_{n,c} X_{n,c} = G_{n,c}$, so $\operatorname{Cov}(\tilde{\xi}_{n,c} \mid W_{n,c}) = I_{m_{\mathrm{id}}}$ holds with zero approximation.
 
-\subsection{Finite-rule alignment in the corrected KG implementation}\label{ec:kg_correction}
-
-For each query and evaluated candidate, let $p$ be its current nine-node approximation and $q_g\in[0,1]$ the raw conditional power at constraint fantasy node $g$, using the seven-node inner rule. Write $m=\sum_g w_g q_g$ with positive weights summing to one. We replace the conditional power with
-\[
- \tilde p_g=\begin{cases}
-    (p/m) q_g, & m>p,\\
-    1-[(1-p)/(1-m)](1-q_g), & m<p,\\
-    q_g, & m=p.
- \end{cases}
-\]
-The denominators are positive in the branches where they are used. This affine map preserves the weak order of fantasy powers, keeps them in $[0,1]$ and gives $\sum_g w_g\tilde p_g=p$. For zero constraint innovation the code uses $p$ directly at all nodes.
-
-Let $b$ be the current best evaluation candidate and $s_b=\hat J^{\mathrm{ref}}-\mu_{n,f}(b)$. If $I_b$ is the symmetric objective innovation for $b$, then $\E[(s_b-I_b)_+]-(s_b)_+=\E[(I_b-|s_b|)_+]$ under the symmetric rule. The corrected discrete score sums the expected nonnegative switch gain $\E[\max_j V_{n+1}(j)-V_{n+1}(b)]$ and $p_b\E[(I_b-|s_b|)_+]$. This equals the corrected rule's expected maximum minus the current maximum by factorization. When the query induces zero innovation in both heads for all evaluated candidates, both terms vanish. The score is computed without subtracting two large, nearly equal expected utilities.
-
-This calibration enforces finite-rule mean conservation for a fixed one-step model. It does not estimate the resulting error against an exact joint posterior or the actual verification cascade. The archived U3 implementation uses~\eqref{eq:bgpkg_acq}; the correction changes decisions in a deterministic regression example. The prospectively registered panel in Section~\ref{sec:independent_design} uses the corrected implementation.
-
-\subsection{Evaluating the full-rule value and testing the ranking margin}\label{ec:cascade_rank}
-
-For evaluation under the model in~\eqref{eq:full_cascade_kg}, draw a latent target scenario conditional on the history, then draw potential verification blocks at their allocated sizes from that scenario. Draw objective and violation observations together within each replication to preserve the dependence of the guard comparison on gate outcomes. Apply the first-pass rule or the incumbent guard according to the roster roles. The expected verification count is $K_0+K_1+K_2\Prob(A_0^c\cap A_1^c\mid H)$ with three guarded slots, $K_0+K_1$ with two guarded slots, and $\sum_i K_i\Prob(\bigcap_{j<i}A_j^c\mid H)$ under first pass.
-
-Couple the full rule and a primary-only rule using the same first-slot block. The primary-only rule deploys the primary exactly on $A_0$. The full guarded rule differs from it only on the disjoint events
-\[
- B_{01}=A_0\cap A_1\cap B^c,\quad
- B_{\varnothing1}=A_0^c\cap A_1,\quad
- B_{\varnothing2}=A_0^c\cap A_1^c\cap A_2 .
-\]
-For first pass, take $B_{01}=\varnothing$. Omit events with absent slots. Writing $U_{1,H}(r)=\E[(J_{\rm sq}-J_0)\mathbf{1}_{A_0}\mid H]$, we have
-\begin{align}
- |U_H(r)-U_{1,H}(r)| \le \Gamma_H(r)
- :=\E\big[&
- |J_1-J_0|\mathbf{1}_{B_{01}}+|J_1-J_{\rm sq}|\mathbf{1}_{B_{\varnothing1}}\notag\\[-2pt]
- &+|J_2-J_{\rm sq}|\mathbf{1}_{B_{\varnothing2}}\mid H\big].\label{eq:cascade_branch_bound}
-\end{align}
-This follows by comparing the two realized savings on each event and applying the triangle inequality. With conditionally independent blocks and gate probabilities $p_i$ given a latent scenario, the three event probabilities are bounded by $p_0p_1$, $(1-p_0)p_1$ and $(1-p_0)(1-p_1)p_2$, respectively. The last two are equalities when their slots exist. Without block independence, use the minima of the participating pass or fail marginals. The loss differences are fixed given the scenario, so either set of bounds can be integrated over scenario uncertainty.
-
-Write $D=J_{\rm sq}-J_0$, $p=\Prob(A_0\mid H)$ and let the computed proxy be $S_H(x_0)=s\,\tilde p$ with $s=(\hat J^{\rm ref}-\hat\mu_f(x_0))_+$. Then
-\begin{equation}\label{eq:cascade_proxy_bound}
- |U_{1,H}(r)-S_H(x_0)|
- \le |\operatorname{Cov}(D,\mathbf{1}_{A_0}\mid H)|
-     +p\,|\E[D\mid H]-s|+s\,|p-\tilde p|.
-\end{equation}
-Expanding the expected product and adding and subtracting $ps$ gives the inequality. The covariance is at most $\sqrt{\Var(D\mid H)p(1-p)}$ in absolute value when the second moment exists. The other terms account for the reference and positive part and for approximating the pass probability. Here $\tilde p$ can be the corrected quadrature's aligned marginal. The last term can also account for using a different first-slot test in the proxy.
-
-\proof{Proof of Proposition~\ref{prop:cascade_rank}.}
-Write $\mathcal E$ for the proxy evaluation set and $b_H(r)$ for the sum of the bounds in~\eqref{eq:cascade_branch_bound} and~\eqref{eq:cascade_proxy_bound}. If the primary policies of $\mathcal R$ are exactly $\mathcal E$, the maximum inequality in both directions gives $|\max_{r\in\mathcal R}U_H(r)-\max_{x\in\mathcal E}S_H(x)|\le \max_{r\in\mathcal R} b_H(r)$. For a heuristic roster $\hat r(H)$, instead use $b_H(\hat r(H))+|\max_{x\in\mathcal E}S_H(x)-S_H(x_0(\hat r(H)))|$. This second term accounts for deviation from the proxy maximizer, including when the nomination rule uses a different candidate set.
-
-Take $e(q)$ to be the expected bound conditional on $q$. The current value of each score cancels when comparing queries. Thus $G_C(q_\star)-G_C(q)\ge G_S(q_\star)-G_S(q)-e(q_\star)-e(q)$, proving~\eqref{eq:cascade_rank_margin}. Under an exact joint model and a fixed finite menu, each roster value is a conditional expectation of a fixed payoff. Its expectation over the fantasy equals its current value by the tower property, so~\eqref{eq:full_cascade_kg} is nonnegative by the maximum inequality.
+\emph{Part 3.} Under pairwise orthogonality with $\E[\xi_k^2] \le \sigma_{\max}^2$, $\E[(\sum_{k \in \mathcal{I}} \delta_k\xi_k)^2] = \sum_{k \in \mathcal{I}} \delta_k^2 \E[\xi_k^2] \le m_{\mathrm{id}}\sigma_{\max}^2 \bar{\delta}^2$, hence $\E[9\bar{C}^2/(2\bar{\delta}^2)] \le 9\sigma_{\max}^2/(2 m_{\mathrm{id}})$ (\texttt{expected\_unit\_projection\_noise\_le\_sigma\_div\_rank}).
 \Halmos\endproof
 
-To test the implemented score, hold its screened evaluation set and reference fixed. At each of its fantasy nodes, evaluate a frozen roster menu or apply the nomination heuristic to the policies available in that fantasy, with the same role-dependent terminal test. Average the discrepancy bounds using the scorer's positive weights. Compare the winning score gap with the sum of the two query bounds for each rival. The test holds on that discrete fantasy law. Comparing to a different fantasy law requires bounding the resulting integration errors as well. Model-based estimates can diagnose disagreement, while a certificate requires valid upper bounds.
+\subsection{Proof of Theorem~\ref*{thm:eckg_dual_voi} and Sufficient Query-Ranking Margin}\label{ec:kg_correction}\label{ec:cascade_rank}
 
-The test can be sharpened if the model bounds the signed correction. The signs for the three branch contributions are given by $J_0-J_1$, $J_{\rm sq}-J_1$ and $J_{\rm sq}-J_2$, respectively. If $[\ell_q,u_q]$ bounds the forecasted mean correction $M_C(H_q^+)-M_S(H_q^+)$, it suffices that the proxy's score gap against $q$ exceed $u_q-\ell_{q_\star}$. Shared changes in roster value can then cancel across queries.
+\proof{Proof of Theorem~\ref*{thm:eckg_dual_voi}.}
+\emph{Parts 1--2.} For each fantasy node $s \in \{1,\dots,S_{\mathrm{out}}\}$ with $w_s \ge 0$, write $M_0^{(s)} = \max_{\mathcal{S} \in \mathfrak{M}_0^{(s)}} U_{n+1}(\mathcal{S})$ and $M_1^{(s)}(q) = \max_{\mathcal{S} \in \mathfrak{M}_1^{(s)}(q)} U_{n+1}(\mathcal{S})$. Because $\mathcal{S}_n^\star \in \mathfrak{M}_0^{(s)} \subseteq \mathfrak{M}_1^{(s)}(q)$, pointwise monotonicity gives $U_{n+1}(\mathcal{S}_n^\star) \le M_0^{(s)} \le M_1^{(s)}(q)$, and telescoping $(M_1^{(s)}(q) - U_{n+1}(\mathcal{S}_n^\star)) = (M_0^{(s)} - U_{n+1}(\mathcal{S}_n^\star)) + (M_1^{(s)}(q) - M_0^{(s)})$ establishes $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q) = \widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q) + \widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q)$ alongside non-negativity of all three quantities (\texttt{eligible\_cascade\_dual\_voi\_decomposition} and \texttt{eligible\_cascade\_components\_nonneg}). Whenever $q \in \mathcal{D}_n$, $\mathcal{D}_n \cup \{q\} = \mathcal{D}_n$ implies $\hat{\mathcal{S}}_{n+1}(\mathcal{D}_n \cup \{q\}) = \hat{\mathcal{S}}_{n+1}(\mathcal{D}_n) \in \mathfrak{M}_0^{(s)}$, so $M_1^{(s)}(q) = M_0^{(s)}$ and $\widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q) = 0$ identically (\texttt{revisit\_query\_zero\_admit\_voi}).
 
-As an example of a primary ordering reversal, take status-quo cost $10$ and an incumbent that always passes with cost $2$. Two primaries with deterministic costs $0$ and $4$ pass with probabilities $0.4$ and $0.9$. The single-slot savings are $4$ and $5.4$. With the guard they are $8.8$ and $8$. This reversal occurs with exact gate powers and noiseless objective comparisons.
-
-\subsection{Proof of Theorem~\ref{thm:vkg_safety} and Corollary~\ref{cor:amortization}}
-
-\proof{Proof of Theorem~\ref{thm:vkg_safety}.}
-For a fixed unsafe slot $i$ with $p_i>\alpha$, a block of fresh IID draws gives a binomial count with probability $p_i$. The lower-tail probability is nonincreasing in $p_i$ by coupling counts with shared uniform variates. Hence the chance that it passes its test is at most $\delta_i$. With the three registered budgets the critical count is one in every slot, and the same claim follows from the polynomial bound mechanized in \texttt{FunctionalTransferRisk}. Each deployed policy has itself passed a test, even if both guard slots pass and the objective sample means determine selection. Each unattempted gate can be defined on its potential fresh block for the event argument. The unsafe certified return event is contained in the union of the unsafe-slot pass events, of probability at most $\sum_i\delta_i$. The three-slot guard uses 240 calls when at least one of the first two passes, and 380 after both fail. The first-pass branch uses the sum of attempted slot budgets. Deduplication can shorten the list and the reallocated levels still sum to $\delta$. Averaging the conditional bound over the search history gives the same bound.
-
-For the corollary, solving $B_{\mathrm{FTA}}+B_{\mathrm{src}}/M\le B_{\mathrm{cold}}$ for positive $M$ gives the call break-even threshold when the per-task saving is positive. The cost comparison is conditional on the assumed deployment loss comparison.
+\emph{Part 3 and Tower-Aligned Single-Slot Quadrature.} Convexity of $z \mapsto (\hat{J}_n^{\mathrm{ref}} - z)_+$ and $\E_{\Omega_f}[\mu_{n+1,f}(x')] = \mu_{n,f}(x')$ give $\E_{\Omega_f}[(\hat{J}_n^{\mathrm{ref}} - \mu_{n+1,f}(x'))_+] \ge (\hat{J}_n^{\mathrm{ref}} - \mu_{n,f}(x'))_+$ (\texttt{hinge\_submartingale\_step}); multiplying by $\E_{\Omega_g}[p_{n+1,0}^{\mathrm{gate}}(x')] = p_{n,0}^{\mathrm{gate}}(x') \ge 0$ on $\Omega_f \times \Omega_g$ yields $\E_n[V_{n+1}(x')] \ge V_n(x')$ (\texttt{factored\_gate\_utility\_submartingale}) and non-negativity of single-slot KG (\texttt{bgp\_kg\_nonneg\_from\_posterior\_tower}). In numerical implementation, because current gate power uses a $9$-node rule $p$ while conditional fantasy power uses a $7$-node inner rule $q_j \in [0,1]$ with mean $m = \sum_j w_j q_j$, the monotone affine map $\tilde{p}_j = (p/m)q_j$ ($m > p$) and $\tilde{p}_j = 1 - [(1-p)/(1-m)](1-q_j)$ ($m < p$) preserves $[0,1]$ bounds and enforces $\sum_j w_j \tilde{p}_j = p$ identically, yielding exact zero value at zero innovation. Bounded innovations $|\Delta\mu_f| \le \varepsilon_f$, $|\Delta p_0^{\mathrm{gate}}| \le \varepsilon_g$ imply $V_{n+1}(x') \le V_n(x') + \varepsilon_f + B_f\varepsilon_g$ (\texttt{bgp\_kg\_lipschitz\_in\_step\_innovations}), preventing starvation of informative arms (\texttt{greedy\_bgp\_kg\_cannot\_starve\_informative\_arm}).
 \Halmos\endproof
 
-\section{Code, mathematical claims, and proof scope}\label{ec:lean_map}
+\begin{proposition}[Sufficient Margin for Single-Slot vs.\ Cascade Query Agreement]\label{prop:cascade_rank}
+Let $M_C(\mathcal{F}_{n,q}^+)$ and $M_S(\mathcal{F}_{n,q}^+)$ denote post-query full-cascade and single-slot payoffs on coupled fantasy draws, with $\E_n[|M_C(\mathcal{F}_{n,q}^+) - M_S(\mathcal{F}_{n,q}^+)|] \le e_n(q)$. Writing $G_C(q)$ and $G_S(q)$ for their increments over current baselines, a single-slot maximizer $q_\star$ is also preferred by the full cascade over every rival $q$ satisfying $G_S(q_\star) - G_S(q) > e_n(q_\star) + e_n(q)$, where $e_n(q)$ is bounded by the probabilities and cost gaps of the disjoint guard-override event $A_0 \cap A_1 \cap B^c$ and fallback rescue events $A_0^c \cap A_1$ and $A_0^c \cap A_1^c \cap A_2$.
+\end{proposition}
 
-The saved Lean~4.31.0 interface receipt covers the algebraic and event statements below. The attachment supplies a dependency lock and standalone build instructions. The terminal branch tests exercise the actual Python return rule, including shorter lists, the first-pass branch, ties, and double certification.
+\subsection{Proof of Theorem~\ref*{thm:vkg_safety} (Distribution-Free Clean-Up Safety)}
 
-\begin{description}
-\item[Source representation.] \texttt{DebiasedSubspace} proves clipping and orthogonal decomposition results with given weights and exact orthogonality. The Python occupancy weights are empirical and the pruned-mode energies are estimated.
-\item[Transfer risk.] \texttt{TemperedHVD} proves invariance of the centered sum. \texttt{FunctionalTransferRisk} checks the fixed scalar MSE boundary and \texttt{SequentialTheory} bounds a selector satisfying the scalar SURE condition. Python uses a separate multivariate plug-in predictive criterion.
-\item[One-step score.] \texttt{SequentialTheory} checks the factored one-step inequality with tower assumptions. The finite-rule alignment above supplies its own discrete mean relationship. The earlier first-pass Bellman and greedy threshold lemmas describe separate mathematical special cases.
-\item[Terminal safety.] \texttt{VerificationKGAmortization} checks the unsafe-return event inclusion and error bound for the three-slot guarded tree. The executed Python protocol additionally allows a first-pass branch and shorter lists. Fresh verification data and validity of each test are required for the statistical inequality.
-\end{description}
+\proof{Proof of Theorem~\ref*{thm:vkg_safety}.}
+Fix any shortlist $\mathcal{S} = (x_{(0)}, \dots, x_{(L-1)})$ conditional on $\mathcal{F}_N$. For any unsafe slot $i$ with $p_i = p_t^{\mathrm{ver}}(x_{(i)}) > \alpha$, coupling Bernoulli($p_i$) and Bernoulli($\alpha$) indicators via common uniforms shows $\Prob_{\mathbb{Q}_t^{\mathrm{ver}}}(A_i \mid \mathcal{F}_N) = \operatorname{BinomCDF}(k_i^\star; K_i, p_i) \le \operatorname{BinomCDF}(k_i^\star; K_i, \alpha) \le \delta_i$ (\texttt{binomial\_one\_violation\_gate\_power\_bound}). Under both the guarded branch and the sequential first-pass branch, every certified deployment $\hat{x}_t = x_{(i)}$ requires $A_i$ to occur on slot $i$'s fresh verification block (\texttt{v2\_objective\_guarded\_unsafe\_deployment\_subset}). Union-bounding over $\{i : p_i > \alpha\}$ gives $\Prob_{\mathbb{Q}_t^{\mathrm{ver}}}(C \cap \{p_t^{\mathrm{ver}}(\hat{x}_t) > \alpha\} \mid \mathcal{F}_N) \le \sum_{i=0}^{L-1} \delta_i \le \delta$ (\texttt{v2\_terminal\_deployment\_fwer\_le\_delta}, \texttt{v2\_terminal\_five\_percent\_asymmetric\_spend}), with total verification calls bounded by $112 + 128 + 140 = \MaxVerifCalls$ (\texttt{v2\_terminal\_calls\_le\_cap}).
+\Halmos\endproof
 
-\section{Sealed Artifact Provenance and Standalone Replication Package}\label{ec:provenance}
+\section{Lean~4.31.0 Mechanized Proof Map and Artifact Provenance}\label{ec:lean_map}\label{ec:provenance}
 
-The attachment separates frozen U3 execution source (SHA-256 \texttt{5965482dba30}\ldots) from the corrected implementation. U3 reuses the P2 target panel and evaluation streams. It contains 7,544 main and raw-tail evaluations, 2,108 archive sensitivity evaluations, and 144 calibrated microscopic simulator evaluations. These are run counts across methods, budgets and streams. The appendix and main tables retain the archived outcomes. The corrected score has deterministic regression evidence. The two subsequent panels have separate task, stream, and code identifiers. The matched study uses the corrected score and a specified coefficient model, with the first-step choice and original batch dispersion recorded in its per-run ledger. The U3 replay tools can reconstruct the historical statistical ledgers from retained audit receipts without running simulations. The package manifest records the files and the README describes the archived inputs and runtime provenance. Retained ledgers and earlier receipts preserve their original cost and failure records.
+All mechanized declarations in \texttt{SCOLHKG.V2ORProofInterface} were verified under Lean~4.31.0 (commit \texttt{68218e876d2a}, Mathlib \texttt{v4.31.0}) with zero \texttt{sorry} statements; \texttt{\#print axioms} confirms that all eighteen audited core theorems depend solely on standard classical foundations \texttt{[propext, Classical.choice, Quot.sound]} (receipt \texttt{v2\_or\_eckg\_lean\_receipt.json}):
+{\sloppy
+\begin{itemize}
+  \item \texttt{DebiasedSubspace.lean}: \texttt{debiased\_\allowbreak inner\_\allowbreak exact\_\allowbreak when\_\allowbreak bounded}, \texttt{debiased\_\allowbreak inner\_\allowbreak clipping\_\allowbreak bias\_\allowbreak le}, \texttt{normalized\_\allowbreak debiased\_\allowbreak inner\_\allowbreak clipping\_\allowbreak bias\_\allowbreak le}, \texttt{orthonormal\_\allowbreak subset\_\allowbreak parseval}, \texttt{active\_\allowbreak pruned\_\allowbreak orthogonal\_\allowbreak decomposition}, and \texttt{pruned\_\allowbreak residual\_\allowbreak pointwise\_\allowbreak square\_\allowbreak bound}.
+  \item \texttt{TemperedHVD.lean} and \texttt{FunctionalTransferRisk.lean}: \texttt{within\_\allowbreak policy\_\allowbreak ssq\_\allowbreak shift\_\allowbreak invariant}, \texttt{effective\_\allowbreak mismatch\_\allowbreak second\_\allowbreak moment\_\allowbreak with\_\allowbreak finite\_\allowbreak sources}, \texttt{transfer\_\allowbreak dominates\_\allowbreak target\_\allowbreak only\_\allowbreak iff}, \texttt{binomial\_\allowbreak one\_\allowbreak violation\_\allowbreak gate\_\allowbreak power\_\allowbreak bound}, and \texttt{status\_\allowbreak quo\_\allowbreak loss\_\allowbreak roster\_\allowbreak invariant}.
+  \item \texttt{SequentialTheory.lean}: \texttt{sure\_\allowbreak selector\_\allowbreak uniform\_\allowbreak shift\_\allowbreak excess\_\allowbreak loss\_\allowbreak bound}, \texttt{expected\_\allowbreak unit\_\allowbreak projection\_\allowbreak noise\_\allowbreak le\_\allowbreak sigma\_\allowbreak div\_\allowbreak rank}, \texttt{fisher\_\allowbreak whitened\_\allowbreak unit\_\allowbreak variance\_\allowbreak sure\_\allowbreak bound}, \texttt{eligible\_\allowbreak cascade\_\allowbreak dual\_\allowbreak voi\_\allowbreak decomposition}, \texttt{eligible\_\allowbreak cascade\_\allowbreak components\_\allowbreak nonneg}, \texttt{revisit\_\allowbreak query\_\allowbreak zero\_\allowbreak admit\_\allowbreak voi}, \texttt{bgp\_\allowbreak kg\_\allowbreak nonneg\_\allowbreak from\_\allowbreak posterior\_\allowbreak tower}, \texttt{bgp\_\allowbreak kg\_\allowbreak lipschitz\_\allowbreak in\_\allowbreak step\_\allowbreak innovations}, \texttt{greedy\_\allowbreak bgp\_\allowbreak kg\_\allowbreak cannot\_\allowbreak starve\_\allowbreak informative\_\allowbreak arm}, and \texttt{bellman\_\allowbreak slot0\_\allowbreak minimizes\_\allowbreak expected\_\allowbreak deployed\_\allowbreak loss}.
+  \item \texttt{VerificationKGAmortization.lean}: \texttt{v2\_\allowbreak objective\_\allowbreak guarded\_\allowbreak unsafe\_\allowbreak deployment\_\allowbreak subset}, \texttt{v2\_\allowbreak terminal\_\allowbreak deployment\_\allowbreak fwer\_\allowbreak le\_\allowbreak delta}, \texttt{v2\_\allowbreak terminal\_\allowbreak five\_\allowbreak percent\_\allowbreak asymmetric\_\allowbreak spend}, \texttt{v2\_\allowbreak terminal\_\allowbreak calls\_\allowbreak le\_\allowbreak cap}, and \texttt{amortized\_\allowbreak cost\_\allowbreak le\_\allowbreak cold\_\allowbreak start\_\allowbreak iff}.
+\end{itemize}
+}
 
-\section{Additional Archived Experiments}\label{ec:archived_sensitivity}
+\paragraph{Reproducibility supplement structure.}
+The review supplement (\texttt{code\_and\_data.zip}) bundles: (i)~the active \texttt{v2\_or} runtime (execution SHA-256 \texttt{fe8df9098424...}) bound to the sealed $720$-run prospective campaign (\texttt{v2\_or\_eckg\_sure\_confirm\_v1}) and $96$-state query census; (ii)~frozen execution snapshots for the matched $384$-run study (\texttt{frozen\_referee}, SHA-256 \texttt{905eca832b09...}), the $432$-run quadrature-aligned single-slot panel (\texttt{frozen\_independent}, SHA-256 \texttt{c76f162df1f8...}), and the $9{,}796$-run shared four-family suite (\texttt{frozen\_u3}, SHA-256 \texttt{5965482dba30...}); (iii)~all sealed \texttt{per\_run\_ledger.csv} and \texttt{per\_slot\_certificates.csv} files; and (iv)~portable ledger-to-table scripts (\texttt{summarize\_prospective\_panel.py}, \texttt{build\_u4\_tables\_and\_figures.py}) and upstream input restoration (\texttt{restore\_review\_inputs.py}).
 
-\subsection{Heterogeneous Archives, Microscopic Traffic, and Amortization}
+\section{Extended Prospective, Matched, and Shared-Panel Tables}\label{ec:matched_variances}\label{ec:terminal_replay}\label{ec:shared_panel}
+
+Tables~\ref{tab:independent_panel} and~\ref{tab:operating_policy} preserve the archived $432$-run panel evaluating single-slot quadrature-aligned \textbf{GP-FTA-KG} under the predecessor \texttt{LOO-PLL} selector, providing a direct historical baseline for the improvements achieved by Fisher-whitened \texttt{SURE} and \textbf{EC-KG} in Tables~\ref*{tab:prospective_main}--\ref*{tab:surge_compliance}. Tables~\ref{tab:matched_contrasts}--\ref{tab:terminal_replay} provide the complete paired contrasts, variance MSE diagnostics, and Slot-0 vs.\ full-cascade replays on the matched $48$-task panel. Tables~\ref{tab:main_confirm}--\ref{tab:verification_audit} report the full $N \in \{8, 15, 30, 60\}$ four-family shared benchmark, same-$\psi$ and mechanism ablations, raw-tail ENTSO-E grid sensitivity, and cross-cohort verification safety audits.
+
+\input{tables/table_independent_panel}
+\input{tables/table_operating_policy}
+\input{tables/table_matched_contrasts}
+\input{tables/table_matched_variances}
+\input{tables/table_terminal_replay}
+\input{tables/table_main}
+\input{tables/table_ablations}
+\input{tables/table_verification_audit}
+
+\section{Heterogeneous Archives, Live Microscopic SUMO, and Amortization}\label{ec:archived_sensitivity}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.95\textwidth]{figures/fig3_amortization_mbreak.pdf}
-  \caption{(a) Mean certification rate and savings under the illustrative delay penalty on the four U3 families at $N=60$. (b) Savings under simulated archive heterogeneity on the same panel.}\label{fig:amortization}
+  \includegraphics[width=0.98\textwidth]{figures/fig3_diagnostics_and_messy.pdf}
+  \caption{(a) Out-of-sample heteroscedastic log-variance RMSE under $1.3\times$ target shift ($r=4$ replications), comparing raw prior-residual NNLS against shift-invariant within-policy $S^2/(r-1)$ NNLS. (b) Mean net gain on $\calL_{10\%}$ relative to status quo across all four operational domains under heterogeneous enterprise source archives ($r_a \ge 1$, $\alpha_m \neq \alpha_t$), including both \texttt{PublicPsi-TargetGP-TS} and \texttt{GP-FTA-NoDebias}.}\label{fig:ec_diagnostics}
 \end{figure}
 
-The heterogeneous archive experiment (Table~\ref{tab:messy_archive}) obtains 1,861 certified deployments in 2,108 runs. All 422 recorded grid verification-law rechecks have point estimates at or below $0.05$. The independent audit classifies 12 deployments as confidently unsafe and 7 as ambiguous. Among the displayed arms at $N=60$, frozen KG has the smallest queueing loss ($2.518$) and frozen TS the smallest grid delay-penalized loss ($0.0570$). Removing the occupancy weights produces similar losses in inventory, queueing, and storage, and lowers the traffic loss from $1.082$ to $1.034$. Because the archive conditions change together, these comparisons describe robustness to combined heterogeneity.
-
-On the calibrated single-network, single-route SUMO panel (Table~\ref{tab:live_sumo}), frozen KG records the smallest mean loss among nine methods ($0.9439$), compared with $0.9696$ for \texttt{PublicPsi-TargetGP-TS}. It certifies 8 of 16 runs. The independent audit finds 3 confidently safe, 5 boundary-ambiguous, and 0 confidently unsafe among these eight. The prior-version P2 KG on these configurations achieved $0.9685$ with 6 of 16 certified. Mean search-plus-verification calls fell from $370.25$ to $344.75$ while the recorded wall time increased from roughly $5{,}566$ to $8{,}507$ seconds. The separate uncalibrated stress panel produced 40 abstentions and thus no certified deployment to audit.
-
-Table~\ref{tab:amortization} contrasts frozen GP-FTA-KG at $N=15$ with raw-policy SCBO at $N=60$. On this shared panel the reported mean losses favor frozen GP-FTA-KG and the mean call savings range from 58.0 to 146.1 per task. The paired intervals quantify call savings. Charging $1{,}428$ source simulation calls per family gives a break-even range of 10--25 tasks for these versions, budgets, and comparator. This estimate excludes retraining, and Section~\ref{sec:independent_results} reports realized calls per run.
+Figure~\ref{fig:ec_diagnostics} and Tables~\ref{tab:messy_archive}--\ref{tab:amortization} report the out-of-sample heteroscedastic calibration diagnostic, the $2{,}108$-run heterogeneous enterprise archive suite (comparing \textbf{GP-FTA-KG}, \textbf{GP-FTA-TS}, \texttt{GP-FTA-NoDebias}, \texttt{PublicPsi-TargetGP-TS}, \texttt{RGPE-on-Psi}, and \texttt{WarmStart-PatternSearch} side by side), the calibrated and stress-test live \texttt{Ingolstadt21} SUMO experiments, and source-archive simulation-call amortization against both raw-policy \texttt{SCBO} and same-representation \texttt{PublicPsi-TargetGP-TS}.
 
 \input{tables/table_messy_archive}
 \input{tables/table_live_sumo}
 \input{tables/table_amortization}
-
-\section{Variance Diagnostics on the Matched Panel}\label{ec:matched_variances}
-
-At each primary nominee and each certified deployment, we compare the fixed-batch estimate and the merged-policy sample variance to the variance computed from 2,000 independent audit draws. The fixed-batch estimate uses the sum of the original batch sums of squares divided by their total degrees of freedom. Table~\ref{tab:matched_variances} averages squared differences over the four paid arms. Each nominated or certified policy contributes its run-level estimate. The deployed column excludes abstentions. Both estimators remain subject to outcome-dependent policy selection and revisiting. These comparisons concern raw variance estimates at selected policies and do not measure the change in performance from replacing the variance estimator in the search model.
-
-\input{tables/table_matched_variances}
-
-\section{Terminal Replay on Saved Search Outputs}\label{ec:terminal_replay}
-
-For the first-slot replay, we preserve the selected primary and observed exact-binomial test, including its original error allocation. If it passes, the loss is its independently audited objective. If it fails, the loss is the independently audited status-quo objective. Full-rule losses and calls use the saved terminal receipts. We form paired differences on each aligned task and stream and average over the two streams before forming the ordinary task-level intervals. Contributions split the 48 paired run differences into joint certification, joint abstention, and the two asymmetric outcomes, using 48 as the denominator in every contribution.
-
-\input{tables/table_terminal_replay}
-
-\section{The Source-Deletion and Query Diagnostics}\label{ec:query_diagnostics}
-
-\subsection{Comparison of the same physical policies across refits}
-
-Each deletion removes one task's entire archive. The original pipeline re-estimates representation standardization, active modes, whitening and coefficient moments from the remaining five tasks. Across folds, a change in a policy difference can reflect any of those estimates. Within each fold we compare full and diagonal covariance with all other fitted components fixed. This isolates off-diagonal covariance in that fold. We report mean cost and constraint differences, their predictive dispersion and reversal counts. The complete saved menu uses unique nominations from both streams of all four arms, plus the status quo. The posterior diagnostic uses the restored stream and same eight initial batches for all refits. Its candidate pairs come from the corresponding stream and status quo. Thus the comparison of reversal rates across those two diagnostics also changes menus and denominators.
-
-\subsection{The fixed-roster diagnostic with relaxed eligibility}
-
-The 96 fixed rosters each contained two unevaluated policies. This diagnostic values them as potential rosters after additional search. For each history, use the implementation's objective screen and freeze four primaries, a common incumbent and distinct fallback policies before fantasizing. Both scores allow immediate abstention, value loss relative to the same fixed reference, and share a $5\times 5$ normal fantasy rule for the two heads. Each candidate query represents a new batch of two observations. After a fantasy, write $F_i$ for the latent mean cost and $A_i$ for exact binomial certification in slot $i$. The full-rule expectation adds the following terms to the saving of the first-slot policy: the expected guard correction on $A_0\cap A_1$, the saving on $A_0^c\cap A_1$, and the saving on $A_0^c\cap A_1^c\cap A_2$. Conditional on the two Gaussian heads, the verification blocks are independent and exceedance counts use the Gaussian constraint mapping as their violation probabilities.
-
-Let $D=F_0-F_1$ and $Z=D+\epsilon_0-\epsilon_1$ be the difference of the verification sample means, with independent Gaussian verification errors. If $D$ has conditional mean $m$ and variance $v$ and $Z$ has standard deviation $s$, the correction to the slot~0 payoff when both slots pass is
-\[
-   \E[D\mathbf{1}\{Z>0\}]=m\Phi(m/s)+(v/s)\phi(m/s),
-\]
-where $\phi$ and $\Phi$ are the standard normal density and distribution. This follows by regressing $D$ on $Z$ and integrating the upper half-line. Head independence makes the joint gate event independent of this objective term in the working model. Gates are correlated after integrating the constraint head. The numerical comparator integrates this head with tensor Gauss--Hermite rules, using orders 9 and 17. The full rule and proxy both use the same query pool, batch size and 380-call verification cap. Query utility is measured in operating loss units. Actual verification costs can differ by branch.
-
-For the interval screen, each marginal gate curve is monotone in a standard Gaussian quantile. Divide its probability domain into 512 cells of equal mass. Evaluating the curve at the internal endpoints and using $[0,1]$ for the tail end bounds gives lower and upper sums differing by at most $1/512$. Fr\'echet bounds give joint bounds on $A_0\cap A_1$, $A_0^c\cap A_1$ and $A_0^c\cap A_1^c\cap A_2$. Multiplication by each term's signed objective coefficient preserves the bounds when its sign is included. Taking maxima over the same menu, including immediate abstention, and averaging by the positive fantasy weights gives a lower and upper reading for each full-rule query value. These bounds apply under the frozen working law and finite fantasy rule. Numerical ranking is checked separately. The binomial CDF for at most one violation at probability $p$ is $\Prob(U\ge p)$ for $U\sim\mathrm{Beta}(2,K_0-1)$. Exchanging integration with this threshold variable gives the first-slot marginal by a normal CDF integrated against a beta density. We compare 24- and 48-point quadratures for that integral. For the retained full-tree contenders and the two first-slot choices, the three correlated constraint latents use common scrambled Sobol points. We compare 4,096 and 32,768 points per scramble under two fixed independent scrambles. These refinements use the same query fantasies, rosters and working law. Agreement across rules is a numerical diagnostic. The interval screen gives the ordering implications for the stipulated finite fantasy problem.
-\input{tables/table_query_screen}
-
-\subsection{Score after the next observed batch}\label{ec:eligible_score}
-
-For each query and outcome head $h$, write $m_h$ and $v_h$ for its fitted mean and latent variance, and $a_h$ for its estimated observational variance. A two-replication Gaussian forecast can be generated by drawing independent standard normals $z_{h,m},z_{h,d}$ and setting
-\[
-  \bar y_h=m_h+\sqrt{v_h+a_h/2}\,z_{h,m},\qquad
-  y_{h,1/2}=\bar y_h\pm\sqrt{a_h/2}\,z_{h,d}.
-\]
-We use the two generated responses to form the sufficient statistics of the fantasy, including its within-pair dispersion and count of positive constraint outcomes. The matched model updates its target noise fit using the augmented records. Native nomination receives this updated model and only the post-query observed policies. Revisits merge according to the six-place policy key. The nominee builder deduplicates by its five-place key and the verification rule sets the applicable gate budgets and guard according to the returned slot roles. The common first-slot comparison uses that same primary and test.
-
-To compute~\eqref{eq:eligible_cascade_values}, we integrate conditional signed savings from an allocated binomial gate, the objective guard when its role is present, and the later first-pass events. The independent objective head permits the same truncated-Gaussian guard formula used above. With no guarding incumbent, the simultaneous-pass correction is zero. The product of conditional gate probabilities within the working model preserves dependence through the shared constraint latent. We propagate marginal quantile bounds through the conditional branch values for each roster, then average over the shared forecast nodes. This ordering permits lists, allocated tests and slot roles to vary across nodes without weakening the rank argument.
-
-The primary finite forecast uses 64 scrambled Sobol nodes for the four coordinates of a hypothetical batch. Nested 32-node rules and a second scramble measure sensitivity to the finite forecast itself. The inner calculation uses 24- and 48-point marginal beta quadratures and two scrambles of 512 and 2,048 joint Sobol points for dependent gates on retained queries. A separate 512-cell marginal bracket supplies the Fr\'echet screen. Agreement of these rules concerns numerical comparisons; the interval implication uses the declared finite forecast and working law. Across the two 64-node scrambles, all 245,760 forecast rosters per family at initialization have three distinct nominated policies. The incumbent guard is present in 35,524 queueing rosters and 107,419 traffic rosters. The other rosters use first pass because deduplication removed an incumbent matching the primary.
-
-\section{Development and Shared-Panel Results}\label{ec:shared_panel}
-
-\subsection{Stage P1 Diagnostics and Sequential Mechanism Comparisons}\label{sec:p1_diag}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.97\textwidth]{figures/fig2_tempering_diagnostics.pdf}
-  \caption{P1 diagnostics. (a) Log-variance RMSE on separate policies at $1.3\times$ shift and four replications. (b) Mechanism comparisons at $N=15$ and $N=60$ on 16 inventory and 16 queueing configurations.}\label{fig:tempering_diag}
-\end{figure}
-
-Nearby public representations often correspond to similar objectives, with median nearest-neighbor differences between $10.8\%$ and $25.7\%$ of the global policy objective standard deviation across the four diagnostic tasks. The residual kernel can capture nonlinear variation as a function of $\psi$. Policies with identical $\psi$ remain indistinguishable to a kernel on $\psi$.
-
-With identical NNLS fitting, within-policy dispersion improves the log-variance RMSE relative to prior-centered residuals. Under the $1.3\times$ shift with four replications, queueing RMSE falls from $6.83$ to $5.16$, while the median ratio of predicted to reference variance remains $198.7$. The binomial pass curve gives $C_{112,1}(0.05)\approx0.0221$, versus $0.50$ from a feasibility-boundary proxy. Calibration still depends on the fitted posterior. In P1, Brier error increased on inventory and queueing and fell slightly on traffic. For the P1 mechanism comparisons, $D-C$ favors adding the functional prior in inventory but fixed-scale transfer incurs a higher loss in queueing at $N=60$. The recorded gate-power KG arm has lower mean loss than gate-power TS in all eight inventory/queueing budget cells on that development panel. The U3 comparison below shows the dependence of this finding on the experimental configuration.
-
-\subsection{Stage U3 Shared-Panel Comparisons}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.96\textwidth]{figures/fig1_horizon_scaling.pdf}
-  \caption{Frozen U3 mean status-quo loss and task-level standard errors by online step budget. Comparisons reuse the P2 panel. The figure reports a subset of the recorded methods.}\label{fig:horizon_scaling}
-\end{figure}
-
-The U3 ledger records the frozen runtime \texttt{5965482dba30}. The KG curves therefore refer to the version that used different quadrature orders for current and fantasy gate power. Section~\ref{sec:experiments} describes the shared-panel design. For the six raw-policy comparators at $N=60$, frozen KG has lower task-mean loss in all 24 family-by-comparator comparisons, with within-family adjusted $p\le0.018$. The comparison against the public-coordinate and same-framework controls is mixed (Tables~\ref{tab:main_confirm} and~\ref{tab:ablations}). In particular:
-\begin{itemize}
-  \item \textbf{Inventory.} \texttt{PublicPsi-TargetGP-TS} yields $\mathcal L_{\mathrm{SQ}}=1.8834$ and $\mathcal L_{10\%}=1.8950$, compared with $1.8974$ and $1.9037$ for GP-FTA-KG. KG certifies 31 of 32 runs. Same-representation RGPE certifies 20 of 32 and has mean status-quo loss $1.8836$. The illustrative abstention penalty changes the ranking of these two arms.
-  \item \textbf{Queueing.} Frozen KG attains $2.5065$, compared with $2.5904$ for \texttt{RGPE-on-Psi} and $2.5334$ for its same-framework TS counterpart. It wins 15 of 16 task comparisons against \texttt{RGPE-on-Psi} and 9 of 16 against GP-FTA-TS. With 136 search calls for each adaptive arm at $N=60$, KG uses $372.8$ mean search-plus-verification calls compared with $312.4$ for raw-policy SCBO.
-  \item \textbf{Grid storage.} In the clipped U3 panel, KG mean loss decreases from $0.05914$ at $N=8$ to $0.05665$ at $N=60$. This highest-budget value exceeds P2 KG's $0.05587$ despite the improved U3 budget curve. For unclipped errors at $N=60$, GP-FTA-KG yields the lowest illustrative delay-penalized loss among the displayed arms ($0.0637$) while certifying 17 of 28 runs. The raw-tail results and audit outcomes qualify the clipped-panel advantage.
-  \item \textbf{Traffic DES.} \texttt{PublicPsi-TargetGP-TS} yields $1.0072$ and certifies 32 of 32 runs. Frozen KG yields $1.0781$ and certifies 25 of 32, and the same-framework TS yields $1.0569$. TS loss rises from $N=8$ to $N=15$ before decreasing at higher budgets. In queueing the TS mean also rises from $N=30$ to $N=60$.
-\end{itemize}
-At $N=60$, KG has lower mean status-quo loss than its same-framework TS counterpart in queueing and the clipped grid. TS leads in inventory and traffic DES. The one-sided task comparisons in Table~\ref{tab:main_confirm} give $p>0.05$ in all four families.
-
-At the same $N=60$ budget, mean KG loss from P2 to U3 falls from $1.9136$ to $1.8974$ in inventory and from $2.5502$ to $2.5065$ in queueing, with the same certification counts. It rises from $1.0706$ to $1.0781$ in traffic DES and from $0.06018$ to $0.06102$ on the unclipped grid, where certifications fall from 20 to 17 of 28 runs. These are comparisons of the two complete versions on shared tasks and streams.
-
-\subsection{Verification Coverage and Safety Audits}
-
-Table~\ref{tab:verification_audit} separates gate-law rechecks from the deployment audits. The main and raw-tail U3 ledger contains 6,144 certified deployments and 1,400 abstentions. Grid rechecks use fresh draws from the verification block law and are available for 1,624 certified grid runs across all methods. The two GP-FTA arms account for 279 of these rechecks (205 clipped and 74 unclipped). The verification-law point estimate is at or below $0.05$ in each of those 279 runs. On the separate audit block pool, Clopper--Pearson classifications across the two GP-FTA grid arms include 28 confidently unsafe deployments (10 clipped and 18 unclipped). Pool-specific outcomes measure different risks. The exact conditional verification bound concerns the verification law; outcomes from the audit pool characterize performance when that empirical distribution changes.
-
-The status-quo loss assigns the anchor's cost to abstentions and the selected nominee's audited objective to certified deployments. Table~\ref{tab:verification_audit} classifies the certified nominees from the archived campaigns. For the independent panel, Table~\ref{tab:operating_policy} also classifies the anchors retained after abstention.
-
-The heterogeneous-archive, microscopic traffic and source-amortization results are detailed in Electronic Companion~\ref{ec:archived_sensitivity}.
-
-\input{tables/table_main}
-\input{tables/table_ablations}
-\input{tables/table_verification_audit}

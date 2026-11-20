@@ -1,21 +1,19 @@
 \begin{table}[htbp]
 \centering
-\caption{Verification coverage and independent audit outcomes from the sealed ledgers. Rows can overlap. Same-law exceedances use the Monte Carlo point estimate and count only certified runs with a recorded verification-law recheck. S/A/U and missing are defined over certified deployments. S/A/U denote confident safety, boundary ambiguity and confident unsafety based on two-sided 95\% Clopper--Pearson intervals. A dash indicates that the endpoint has no observations.}\label{tab:verification_audit}
+\caption{Verification coverage and independent safety-audit classifications across sealed cohorts. Same-law exceedances count certified ENTSO-E grid deployments whose fresh 8,000-draw verification-pool point estimate exceeds $\alpha=0.05$; Cert.\ S/A/U classifies certified deployments on the held-out audit law via exact two-sided 95\% Clopper--Pearson intervals.}\label{tab:verification_audit}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
-\textbf{Panel and subset} & \textbf{Cert./runs} & \textbf{Abstained} & \textbf{Same-law exceed./scored} & \textbf{Independent S/A/U} & \textbf{Unclassified cert.} \\
+\textbf{Cohort and Subset} & \textbf{Cert./runs} & \textbf{Abstained} & \textbf{Same-law exceed./scored} & \textbf{Cert.\ S/A/U} & \textbf{Unclassified} \\
 \midrule
-Main and raw-tail suite, all methods & 6144/7544 & 1400 & 0/1624 & 6015/39/90 & 0 \\
-Grid, both variants, all methods & 1624/2072 & 448 & 0/1624 & 1500/37/87 & 0 \\
-Grid, clipped, GP-FTA pair & 205/224 & 19 & 0/205 & 187/8/10 & 0 \\
-Grid, unclipped, GP-FTA pair & 74/112 & 38 & 0/74 & 54/2/18 & 0 \\
-Heterogeneous archive, all methods & 1861/2108 & 247 & 0/422 & 1842/7/12 & 0 \\
-Heterogeneous archive, grid only & 422/476 & 54 & 0/422 & 403/7/12 & 0 \\
-Calibrated SUMO, all methods & 26/144 & 118 & --- & 10/16/0 & 0 \\
-Calibrated SUMO, GP-FTA-KG & 8/16 & 8 & --- & 3/5/0 & 0 \\
-Uncalibrated SUMO stress runs & 0/40 & 40 & --- & --- & 0 \\
+Prospective 720-run panel, all 5 arms & 652/720 & 68 & --- & 651/1/0 & 0 \\
+Prospective 720-run panel, GP-FTA-ECKG & 130/144 & 14 & --- & 130/0/0 & 0 \\
+Shared 4-family \& raw-tail suite, all methods & 6144/7544 & 1400 & 0/1624 & 6015/39/90 & 0 \\
+OPSD Grid (clipped + unclipped), GP-FTA pair & 279/336 & 57 & 0/279 & 241/10/28 & 0 \\
+Heterogeneous enterprise archive, all methods & 1861/2108 & 247 & 0/422 & 1842/7/12 & 0 \\
+Calibrated live SUMO, all methods & 26/144 & 118 & --- & 10/16/0 & 0 \\
+Uncalibrated live SUMO stress runs & 0/40 & 40 & --- & --- & 0 \\
 \bottomrule
 \end{tabular}%
 }

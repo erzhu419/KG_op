@@ -1,20 +1,21 @@
 \begin{table}[htbp]\centering
-\caption{Matched runs on new queueing and traffic tasks. Operating loss and audit classes
-include the status quo on abstention. Each row contains 48 runs in 24 paired tasks.
-Early release is an exact replay of the selected weak or full path.}\label{tab:matched_policy}
-\small\begin{tabular}{llrcccc}\toprule
-Family & Prior / rule & Loss & Terminal calls & Certified & Safe / unclear / unsafe & Violation rate \\
+\caption{Matched coefficient-prior and single-slot acquisition comparisons on 48 unseen queueing and traffic tasks ($384$ paid runs plus exact initialization-release replay, cold-DCT initialization, shared local proposals). Slot-0 Loss evaluates deploying the primary nominee alone at $K_0=112$ on the identical search paths.}\label{tab:matched_policy}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccc}\toprule
+\textbf{Family} & \textbf{Matched Arm} & \textbf{Slot-0 $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Cascade $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Verif.\ Calls} & \textbf{Cert./runs} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{Revisit \%} \\
 \midrule
-Queueing & Weak & 2.6405 & 226.7 & 48/48 & 48/0/0 & 0.09\% \\
- & Diagonal & 2.6785 & 241.8 & 48/48 & 48/0/0 & 0.05\% \\
- & Full & 2.6563 & 219.7 & 48/48 & 48/0/0 & 0.01\% \\
- & Feasible KG & 2.6249 & 218.7 & 48/48 & 48/0/0 & 0.14\% \\
- & Early release & 2.6563 & 222.3 & 48/48 & 48/0/0 & 0.05\% \\
+\multirow{5}{*}{Queueing} & \texttt{TargetWeak-GateKG} & $2.6806$ & $2.6405$ & 226.7 & 48/48 & 48/0/0 & 0.09\% & 32.4\% \\
+ & \texttt{HistoryDiag-GateKG} & $2.7714$ & $2.6785$ & 241.8 & 48/48 & 48/0/0 & 0.05\% & 31.5\% \\
+ & \texttt{HistoryFull-GateKG} & $2.7610$ & $2.6563$ & 219.7 & 48/48 & 48/0/0 & 0.01\% & 34.0\% \\
+ & \texttt{HistoryFull-FeasibleKG} & $2.6692$ & $2.6249$ & 218.7 & 48/48 & 48/0/0 & 0.14\% & 35.0\% \\
+ & \texttt{InitialRelease-GateKG} & --- & $2.6563$ & 222.3 & 48/48 & 48/0/0 & 0.05\% & 33.7\% \\
 \midrule
-Traffic & Weak & 1.1033 & 278.9 & 35/48 & 35/0/13 & 21.80\% \\
- & Diagonal & 1.1160 & 281.3 & 33/48 & 33/0/15 & 24.50\% \\
- & Full & 1.1307 & 276.8 & 31/48 & 30/1/17 & 28.26\% \\
- & Feasible KG & 1.1099 & 284.2 & 33/48 & 33/0/15 & 25.09\% \\
- & Early release & 1.1318 & 276.8 & 31/48 & 30/1/17 & 28.26\% \\
-\bottomrule\end{tabular}
+\multirow{5}{*}{Traffic-21} & \texttt{TargetWeak-GateKG} & $1.1733$ & $1.1033$ & 278.9 & 35/48 & 35/0/13 & 21.80\% & 38.2\% \\
+ & \texttt{HistoryDiag-GateKG} & $1.1757$ & $1.1160$ & 281.3 & 33/48 & 33/0/15 & 24.50\% & 40.4\% \\
+ & \texttt{HistoryFull-GateKG} & $1.1759$ & $1.1307$ & 276.8 & 31/48 & 30/1/17 & 28.26\% & 42.4\% \\
+ & \texttt{HistoryFull-FeasibleKG} & $1.1833$ & $1.1099$ & 284.2 & 33/48 & 33/0/15 & 25.09\% & 40.8\% \\
+ & \texttt{InitialRelease-GateKG} & --- & $1.1318$ & 276.8 & 31/48 & 30/1/17 & 28.26\% & 42.6\% \\
+\bottomrule\end{tabular}%
+}
 \end{table}

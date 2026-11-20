@@ -1,11 +1,11 @@
 \begin{table}[htbp]
 \centering
-\caption{Frozen U3 controls sharing the public representation and unclipped grid sensitivity. Two-sided $p$ values compare $N=60$ status-quo loss with GP-FTA-KG and are unadjusted. STOP is the same zero-step run throughout.}\label{tab:ablations}
+\caption{Same-$\psi$ controls, mechanism ablations (including \texttt{Untempered-PriorResid} and \texttt{Init-Frozen-Transfer}, which freezes GP kernel hyperparameters after paid initialization), and unclipped ENTSO-E OPSD raw-tail sensitivity. Two-sided Wilcoxon $p$ values compare $N=60$ status-quo loss against \textbf{GP-FTA-KG}.}\label{tab:ablations}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llccccccc}
 \toprule
-\textbf{Family} & \textbf{Mechanism / Same-$\psi$ Control} & \textbf{$N=8$} & \textbf{$N=15$} & \textbf{$N=30$} & \textbf{$N=60$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{10\%}$} & \textbf{$N=60$ Cert.\%} & \textbf{Two-Sided $p$} \\
+\textbf{Family} & \textbf{Mechanism / Same-$\psi$ Control} & \textbf{$N=8$} & \textbf{$N=15$} & \textbf{$N=30$} & \textbf{$N=60$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{10\%}$} & \textbf{$N=60$ Cert.\%} & \textbf{Two-sided $p$} \\
 \midrule
 \multirow{9}{*}{Inventory} & \textbf{GP-FTA-KG} & $1.939$ & $1.927$ & $1.915$ & $1.897$ & $1.904$ & 96.9\% & --- \\
  & \textbf{GP-FTA-TS} & $1.931$ & $1.915$ & $1.896$ & $1.894$ & $1.906$ & 93.8\% & $0.632$ \\
@@ -14,7 +14,7 @@
  & \texttt{PublicPsi-TargetGP-TS} & $1.951$ & $1.909$ & $1.904$ & $\mathbf{1.883}$ & $\mathbf{1.895}$ & 93.8\% & $0.495$ \\
  & \texttt{WarmStart-PatternSearch} & $1.931$ & $1.925$ & $1.930$ & $1.938$ & $2.043$ & 46.9\% & $0.039$ \\
  & \texttt{Untempered-PriorResid} & $2.027$ & $2.034$ & $1.980$ & $1.951$ & $1.951$ & 100.0\% & $0.013$ \\
- & \texttt{Frozen-AFTER} & $1.979$ & $1.975$ & $1.974$ & $1.955$ & $1.955$ & 100.0\% & $0.0004$ \\
+ & \texttt{Init-Frozen-Transfer} & $1.979$ & $1.975$ & $1.974$ & $1.955$ & $1.955$ & 100.0\% & $0.0004$ \\
  & \texttt{STOP} & $1.942$ & $1.942$ & $1.942$ & $1.942$ & $1.942$ & 100.0\% & $0.001$ \\
 \midrule
 \multirow{9}{*}{Queueing} & \textbf{GP-FTA-KG} & $\mathbf{2.554}$ & $\mathbf{2.535}$ & $\mathbf{2.520}$ & $\mathbf{2.506}$ & $\mathbf{2.506}$ & 100.0\% & --- \\
@@ -24,7 +24,7 @@
  & \texttt{PublicPsi-TargetGP-TS} & $2.872$ & $2.704$ & $2.614$ & $2.596$ & $2.607$ & 96.9\% & $0.002$ \\
  & \texttt{WarmStart-PatternSearch} & $2.693$ & $2.691$ & $2.734$ & $2.716$ & $2.756$ & 87.5\% & $<10^{-4}$ \\
  & \texttt{Untempered-PriorResid} & $3.043$ & $3.027$ & $3.078$ & $3.027$ & $3.027$ & 100.0\% & $<10^{-4}$ \\
- & \texttt{Frozen-AFTER} & $2.646$ & $2.645$ & $2.638$ & $2.631$ & $2.631$ & 100.0\% & $<10^{-4}$ \\
+ & \texttt{Init-Frozen-Transfer} & $2.646$ & $2.645$ & $2.638$ & $2.631$ & $2.631$ & 100.0\% & $<10^{-4}$ \\
  & \texttt{STOP} & $2.720$ & $2.720$ & $2.720$ & $2.720$ & $2.720$ & 100.0\% & $<10^{-4}$ \\
 \midrule
 \multirow{9}{*}{OPSD Grid} & \textbf{GP-FTA-KG} & $0.0591$ & $0.0587$ & $0.0582$ & $\mathbf{0.0567}$ & $\mathbf{0.0571}$ & 92.9\% & --- \\
@@ -34,7 +34,7 @@
  & \texttt{PublicPsi-TargetGP-TS} & $0.0620$ & $0.0607$ & $0.0579$ & $0.0583$ & $0.0590$ & 85.7\% & $0.542$ \\
  & \texttt{WarmStart-PatternSearch} & $\mathbf{0.0570}$ & $0.0576$ & $0.0589$ & $0.0606$ & $0.0629$ & 57.1\% & $0.068$ \\
  & \texttt{Untempered-PriorResid} & $0.0608$ & $0.0607$ & $0.0597$ & $0.0589$ & $0.0589$ & 100.0\% & $0.326$ \\
- & \texttt{Frozen-AFTER} & $0.0575$ & $\mathbf{0.0566}$ & $\mathbf{0.0573}$ & $0.0579$ & $0.0579$ & 100.0\% & $0.241$ \\
+ & \texttt{Init-Frozen-Transfer} & $0.0575$ & $\mathbf{0.0566}$ & $\mathbf{0.0573}$ & $0.0579$ & $0.0579$ & 100.0\% & $0.241$ \\
  & \texttt{STOP} & $0.0576$ & $0.0576$ & $0.0576$ & $0.0576$ & $0.0576$ & 100.0\% & $0.296$ \\
 \midrule
 \multirow{9}{*}{Traffic-21} & \textbf{GP-FTA-KG} & $1.126$ & $1.108$ & $1.093$ & $1.078$ & $1.106$ & 78.1\% & --- \\
@@ -44,7 +44,7 @@
  & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.063}$ & $\mathbf{1.050}$ & $\mathbf{1.015}$ & $\mathbf{1.007}$ & $\mathbf{1.007}$ & 100.0\% & $0.002$ \\
  & \texttt{WarmStart-PatternSearch} & $1.098$ & $1.106$ & $1.105$ & $1.105$ & $1.141$ & 71.9\% & $0.173$ \\
  & \texttt{Untempered-PriorResid} & $1.124$ & $1.128$ & $1.135$ & $1.149$ & $1.200$ & 59.4\% & $0.0002$ \\
- & \texttt{Frozen-AFTER} & $1.123$ & $1.122$ & $1.114$ & $1.107$ & $1.136$ & 78.1\% & $0.151$ \\
+ & \texttt{Init-Frozen-Transfer} & $1.123$ & $1.122$ & $1.114$ & $1.107$ & $1.136$ & 78.1\% & $0.151$ \\
  & \texttt{STOP} & $1.112$ & $1.112$ & $1.112$ & $1.112$ & $1.148$ & 71.9\% & $0.110$ \\
 \midrule
 \multirow{9}{*}{OPSD Raw Tails} & \textbf{GP-FTA-KG} & --- & $0.0619$ & --- & $0.0610$ & $\mathbf{0.0637}$ & 60.7\% & --- \\

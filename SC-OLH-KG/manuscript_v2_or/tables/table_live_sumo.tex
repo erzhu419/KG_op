@@ -1,11 +1,11 @@
 \begin{table}[htbp]
 \centering
-\caption{Microscopic \texttt{Ingolstadt21} SUMO evaluation ($N=15$). The calibrated U3 panel has eight threshold and weight configurations of one network and route, with two simulation streams per configuration. The 40 uncalibrated stress runs were retained from the earlier experiment.}\label{tab:live_sumo}
+\caption{Microscopic \texttt{Ingolstadt21} SUMO evaluation ($N=15$). The calibrated panel evaluates eight threshold and weight configurations (two streams each); the 40 uncalibrated stress runs verify strict abstention when no feasible timing exists (\texttt{Gaussian-Margin-KG} denotes the predecessor $z_{1-\alpha}$ Gaussian-margin lookahead).}\label{tab:live_sumo}
 \scriptsize
 \setlength{\tabcolsep}{4.6pt}
 \begin{tabular}{llccccc}
 \toprule
-\textbf{Regime} & \textbf{Method} & \textbf{Status-Quo Loss} & \textbf{Challenger $J_t^{\ddagger}$} & \textbf{Cert./runs} & \textbf{S/A/U$^*$} & \textbf{Actual Calls} \\
+\textbf{Regime} & \textbf{Method} & \textbf{Status-Quo Loss} & \textbf{Challenger $J_t^{\ddagger}$} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Actual Calls} \\
 \midrule
 \multirow{9}{*}{Calibrated ($144$ runs)} & \textbf{GP-FTA-KG} & $\mathbf{0.9439} \pm 0.0181$ & $0.9340$ & 8/16 & 3/5/0 & 344.8 \\
  & \texttt{PublicPsi-TargetGP-TS} & $0.9696 \pm 0.0088$ & $0.9661$ & 5/16 & 3/2/0 & 387.8 \\
@@ -17,12 +17,12 @@
  & \texttt{SCBO} & $0.9941 \pm 0.0012$ & $0.9909$ & 0/16 & --- & 422.0 \\
  & \texttt{STOP} & $0.9941 \pm 0.0012$ & $0.9878$ & 0/16 & --- & 392.0 \\
 \midrule
-\multirow{5}{*}{Stress Test ($40$ runs)} & \texttt{TLS-OLH-KG} (Legacy) & $0.9876$ & $0.9642$ & 0/8 & --- & 422.0 \\
+\multirow{5}{*}{Stress Test ($40$ runs)} & \texttt{Gaussian-Margin-KG} & $0.9876$ & $0.9642$ & 0/8 & --- & 422.0 \\
  & \texttt{SCBO} & $0.9876$ & $0.9826$ & 0/8 & --- & 422.0 \\
  & \texttt{RGPE} & $0.9876$ & $0.9888$ & 0/8 & --- & 422.0 \\
  & \texttt{Target-SPSA} & $0.9876$ & $0.9645$ & 0/8 & --- & 422.0 \\
  & \texttt{STOP} & $0.9876$ & $0.9876$ & 0/8 & --- & 392.0 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\parbox{\textwidth}{\scriptsize $^*$S/A/U counts certified deployments classified as confidently safe, boundary-ambiguous, or confidently unsafe by an independent audit. A dash indicates no audited deployment. $^{\ddagger}$Calibrated runs use the frozen primary. Stress runs use the saved uncertified candidate.}
+\par\smallskip\parbox{\textwidth}{\scriptsize $^{\ddagger}$Calibrated runs report the frozen Slot-0 primary objective; uncalibrated stress runs report the best uncertified candidate (never deployed under strict abstention).}
 \end{table}

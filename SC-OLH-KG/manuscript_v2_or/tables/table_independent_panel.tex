@@ -1,25 +1,24 @@
 \begin{table}[htbp]
 \centering
-\caption{Corrected KG and matched controls on the independent target panel at $N=60$. Each family contains 24 new tasks with two paired evaluation streams per task. Calls are mean realized search and terminal verification replications per run.}\label{tab:independent_panel}
+\caption{Archived 432-run panel evaluating quadrature-aligned single-slot \textbf{GP-FTA-KG} (`LOO-PLL` posterior) at $N=60$ across 72 tasks (two streams per task).}\label{tab:independent_panel}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llrrccccc}
 \toprule
-\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{S/A/U} & \textbf{Exceed./audited} & \textbf{Control $-$ KG [95\% CI]} & \textbf{Holm $p$} \\
+\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Exceed./audited} & \textbf{Control $-$ KG [95\% CI]} & \textbf{Holm $p$} \\
 \midrule
-\multirow{3}{*}{Inventory} & \textbf{GP-FTA-KG} & $1.9224$ & 369.0 & 48/48 & 48/0/0 & 0/48 & --- & --- \\
- & \textbf{GP-FTA-TS} & $1.9200$ & 386.0 & 46/48 & 46/0/0 & 0/46 & $-0.0024\ [-0.0131,\,0.0083]$ & $1.000$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $1.9223$ & 396.4 & 47/48 & 47/0/0 & 0/47 & $-0.0000\ [-0.0149,\,0.0148]$ & $1.000$ \\
+\multirow{3}{*}{Inventory} & \textbf{GP-FTA-KG} & $1.9224$ & 369.00 & 48/48 & 48/0/0 & 0/48 & --- & --- \\
+ & \textbf{GP-FTA-TS} & $1.9200$ & 386.00 & 46/48 & 46/0/0 & 0/46 & $-0.0024\ [-0.0131,\,0.0083]$ & $1.000$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $1.9223$ & 396.42 & 47/48 & 47/0/0 & 0/47 & $0.0000\ [-0.0149,\,0.0148]$ & $1.000$ \\
 \midrule
-\multirow{3}{*}{Queueing} & \textbf{GP-FTA-KG} & $2.5285$ & 352.2 & 48/48 & 48/0/0 & 0/48 & --- & --- \\
- & \textbf{GP-FTA-TS} & $2.5314$ & 365.6 & 48/48 & 48/0/0 & 0/48 & $0.0029\ [-0.0151,\,0.0208]$ & $1.000$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $2.5611$ & 374.6 & 48/48 & 48/0/0 & 0/48 & $0.0325\ [0.0047,\,0.0603]$ & $0.119$ \\
+\multirow{3}{*}{Queueing} & \textbf{GP-FTA-KG} & $2.5285$ & 352.25 & 48/48 & 48/0/0 & 0/48 & --- & --- \\
+ & \textbf{GP-FTA-TS} & $2.5314$ & 365.58 & 48/48 & 48/0/0 & 0/48 & $+0.0029\ [-0.0151,\,0.0208]$ & $1.000$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $2.5611$ & 374.58 & 48/48 & 48/0/0 & 0/48 & $+0.0325\ [0.0047,\,0.0603]$ & $0.119$ \\
 \midrule
-\multirow{3}{*}{Traffic-21} & \textbf{GP-FTA-KG} & $1.0971$ & 417.6 & 32/48 & 29/2/1 & 1/32 & --- & --- \\
- & \textbf{GP-FTA-TS} & $1.0748$ & 400.3 & 37/48 & 35/2/0 & 1/37 & $-0.0222\ [-0.0658,\,0.0214]$ & $1.000$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $1.0516$ & 393.8 & 42/48 & 42/0/0 & 0/42 & $-0.0455\ [-0.0809,\,-0.0101]$ & $0.084$ \\
+\multirow{3}{*}{Traffic-21} & \textbf{GP-FTA-KG} & $1.0971$ & 417.58 & 32/48 & 29/2/1 & 1/32 & --- & --- \\
+ & \textbf{GP-FTA-TS} & $1.0748$ & 400.33 & 37/48 & 35/2/0 & 1/37 & $-0.0222\ [-0.0658,\,0.0214]$ & $1.000$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $1.0516$ & 393.75 & 42/48 & 42/0/0 & 0/42 & $-0.0455\ [-0.0809,\,-0.0101]$ & $0.084$ \\
 \bottomrule
 \end{tabular}%
 }
-\par\smallskip\parbox{\textwidth}{\scriptsize S/A/U are counts of audited certified deployments classified as confidently safe, boundary-ambiguous, or confidently unsafe using two-sided 95\% Clopper--Pearson intervals. Exceedances count audited certified deployments with violation point estimates above 5\%. Positive loss differences favor KG. The paired $t$ intervals and two-sided tests average the two streams within each task. Holm adjusts all six tests together.}
 \end{table}

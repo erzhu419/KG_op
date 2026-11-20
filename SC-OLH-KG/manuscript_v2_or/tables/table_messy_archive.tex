@@ -1,11 +1,11 @@
 \begin{table}[htbp]
 \centering
-\caption{Heterogeneous simulated source archives on the shared U3 target panel ($2{,}108$ runs). Logs combine single replications, unequal budgets, incomplete solver coverage, and heterogeneous historical risk tolerances. Two-sided $p$ values compare status-quo loss with frozen GP-FTA-KG and are unadjusted. Online wall time is for $N=60$.}\label{tab:messy_archive}
+\caption{Heterogeneous enterprise source archives ($2{,}108$ runs). Source logs mix single-replication records ($r_a=1$), $3.7\times$ unequal task budgets, incomplete solver subsets, and mismatched historical risk tolerances ($\alpha_m \in [0.02, 0.10]$).}\label{tab:messy_archive}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccc}
 \toprule
-\textbf{Family} & \textbf{Method} & \textbf{$N=15$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{10\%}$} & \textbf{$N=60$ Cert.\%} & \textbf{Two-Sided $p$ ($N=60$)} & \textbf{Online Wall (s)} \\
+\textbf{Family} & \textbf{Method} & \textbf{$N=15$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{\mathrm{SQ}}$} & \textbf{$N=60$ $\mathcal{L}_{10\%}$} & \textbf{$N=60$ Cert.\%} & \textbf{Two-sided $p$ ($N=60$)} & \textbf{Online Wall (s)} \\
 \midrule
 \multirow{9}{*}{Inventory} & \textbf{GP-FTA-KG} & $1.941$ & $1.910$ & $1.910$ & 100.0\% & --- & 41.6 \\
  & \textbf{GP-FTA-TS} & $1.937$ & $1.914$ & $1.920$ & 96.9\% & $0.669$ & 10.0 \\

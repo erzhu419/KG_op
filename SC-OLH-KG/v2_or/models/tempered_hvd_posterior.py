@@ -79,6 +79,7 @@ class TemperedHierarchicalHVDModel:
         "tempered",
         "tempered_adaptive",
         "tempered_full_release",
+        "tempered_sure_release",
         "matched_coefficients",
         "source_basis_weak_prior",
         "untempered_fixed_prior",
@@ -168,6 +169,17 @@ class TemperedHierarchicalHVDModel:
         self.lengthscale_obj_: float = 0.85
         self.lengthscale_con_: float = 0.85
         self.is_source_released_: bool = False
+        self.sure_lambda_obj_: float = 0.0
+        self.sure_lambda_con_: float = 0.0
+        self.sure_lambda_int_obj_: float = 0.0
+        self.sure_lambda_int_con_: float = 0.0
+        self.sure_identifiable_rank_obj_: int = 0
+        self.sure_identifiable_rank_con_: int = 0
+        self.source_cov_shrink_: float = 0.0
+        self._sure_y_bar_obj_: float = 0.0
+        self._sure_y_bar_con_: float = 0.0
+        self._sure_phi_bar_obj_: np.ndarray = np.empty(0)
+        self._sure_phi_bar_con_: np.ndarray = np.empty(0)
 
         self.gamma_obj_: np.ndarray = np.empty(0)
         self.gamma_con_: np.ndarray = np.empty(0)
@@ -326,11 +338,12 @@ class TemperedHierarchicalHVDModel:
             g0_f = self.prior.gamma_0_obj_.copy()
             g0_g = self.prior.gamma_0_con_.copy()
             base_strength = min(3.0, 0.5 + 2.5 * (float(n_src_multirep) / 36.0))
-            prior_strength = (
-                base_strength / (1.0 + 0.10 * tot_dof)
-                if self.mode == "tempered_full_release"
-                else base_strength
-            )
+            if self.mode == "tempered_sure_release":
+                prior_strength = base_strength * (1.0 - self.sure_lambda_con_) / (1.0 + 0.10 * tot_dof)
+            elif self.mode == "tempered_full_release":
+                prior_strength = base_strength / (1.0 + 0.10 * tot_dof)
+            else:
+                prior_strength = base_strength
         else:
             # Scale-equivariant target-only baseline regularization (never hardcoded `1e-2`!)
             g0_f = np.r_[med_tf, np.zeros(p_hvd - 1)]
@@ -353,7 +366,61 @@ class TemperedHierarchicalHVDModel:
             self.empirical_var_ratio_vs_within_ = float(np.median(pred_g / s2_g_pure))
         else:
             self.empirical_var_ratio_vs_within_ = 1.0
+        self.empirical_var_ratio_vs_within_ = self.empirical_var_ratio_vs_within_
         self.untempered_inflation_factor_ = self.empirical_var_ratio_vs_within_
+
+    @staticmethod
+    def _compute_fisher_sure_shrinkage(
+        phi: np.ndarray,
+        y: np.ndarray,
+        obs_var: np.ndarray,
+        mu_0: np.ndarray,
+    ) -> tuple[float, float, int, float, np.ndarray]:
+        """Design-whitened Fisher-eigenspace Stein-Mallows SURE shrinkage (`Theorem 2`)."""
+        n_obs = int(y.size)
+        phi_act = phi[:, 1:]
+        k_act = int(phi_act.shape[1])
+        if n_obs == 0:
+            return 0.0, 0.0, 0, 0.0, np.zeros(k_act, dtype=float)
+        w = 1.0 / np.maximum(obs_var, 1e-10)
+        w_sum = max(float(np.sum(w)), 1e-12)
+        w_bar = w / w_sum
+        y_bar = float(w_bar @ y)
+        phi_bar = phi_act.T @ w_bar if k_act > 0 else np.zeros(0, dtype=float)
+
+        mu_center = float(mu_0[0] + (phi_bar @ mu_0[1:] if k_act > 0 else 0.0))
+        z_int_sq = w_sum * (y_bar - mu_center) ** 2
+        lam_int = float(np.clip(1.0 - 1.0 / max(z_int_sq, 1e-12), 0.0, 1.0)) if n_obs >= 2 else 0.0
+
+        if n_obs < 4 or k_act == 0:
+            return 0.0, lam_int, 0, y_bar, phi_bar
+
+        X_c = phi_act - phi_bar[None, :]
+        y_tilde = (y - y_bar) - (X_c @ mu_0[1:])
+        G = (X_c.T * w[None, :]) @ X_c
+        G = 0.5 * (G + G.T)
+        evals, evecs = np.linalg.eigh(G)
+        tol = max(1e-5 * float(np.sum(np.maximum(evals, 0.0))), 1e-8)
+        mask = evals > tol
+        r_id = int(np.sum(mask))
+        if r_id < 1:
+            return 0.0, lam_int, 0, y_bar, phi_bar
+
+        Q_id = evecs[:, mask]
+        lam_id = evals[mask]
+        rhs = Q_id.T @ (X_c.T @ (w * y_tilde))
+        R_tilde = rhs / np.sqrt(lam_id)
+        sum_R2 = float(np.sum(R_tilde * R_tilde))
+        lam_shape = float(np.clip(1.0 - float(r_id) / max(sum_R2, 1e-12), 0.0, 1.0))
+        return lam_shape, lam_int, r_id, y_bar, phi_bar
+
+    def _stabilized_source_cov(self, cov_0: np.ndarray) -> tuple[np.ndarray, float]:
+        """Shrink sample source covariance toward its diagonal by `p / (M_src + p)`."""
+        p_phi = int(cov_0.shape[0])
+        m_src = int(getattr(getattr(self.prior, "diagnostics_", None), "n_source_tasks", 6)) if self.prior is not None else 0
+        omega = float(p_phi) / float(max(m_src + p_phi, 1)) if m_src > 0 else 1.0
+        cov_stab = (1.0 - omega) * cov_0 + omega * np.diag(np.diag(cov_0))
+        return cov_stab, omega
 
     def _select_tempered_hyperparams(
         self,
@@ -391,6 +458,48 @@ class TemperedHierarchicalHVDModel:
                             best_nll = nll
                             best = (1.0, tau2, sig2, ell)
             return best
+
+        if self.mode == "tempered_sure_release" and self.use_source_coef_prior:
+            n_obs = max(int(y.size), 1)
+            y_var = max(
+                float(np.var(y)) if n_obs >= 2 else 0.25,
+                float(np.median(obs_var)) if obs_var.size else 1e-4,
+                1e-8,
+            )
+            lam_shape, lam_int, _, y_bar, phi_bar = self._compute_fisher_sure_shrinkage(phi, y, obs_var, mu_0)
+            cov_stab, _ = self._stabilized_source_cov(cov_0)
+            mu_act = mu_0[1:] if mu_0.size > 1 else np.zeros(0, dtype=float)
+            int_term = (1.0 - lam_int) * float(mu_0[0]) + lam_int * (
+                y_bar - (1.0 - lam_shape) * (float(phi_bar @ mu_act) if mu_act.size else 0.0)
+            )
+            mu_sure = int_term + ((1.0 - lam_shape) * (phi[:, 1:] @ mu_act) if mu_act.size else 0.0)
+            resid_sure = y - mu_sure
+
+            K_src = phi @ cov_stab @ phi.T
+            if self.use_empirical_r_perp and w_perp is not None and w_perp.shape[1] > 0:
+                K_src = K_src + (w_perp @ w_perp.T)
+            psi_rel = psi_tgt_std if psi_tgt_std is not None else psi_std
+            phi_rel = np.column_stack([np.ones(n_obs, dtype=float), psi_rel[:, : min(8, psi_rel.shape[1])]])
+            K_tgt_lin = phi_rel @ phi_rel.T
+            psi_ker = psi_rel if lam_shape >= 0.50 else psi_std
+
+            best_tuple = (max(1.0 - lam_shape, 0.0), 0.30 * y_var, 0.25 * y_var, 0.85)
+            best_nll = float("inf")
+            tau_mults = (0.15, 0.60, 1.50) if lam_shape > 1e-6 else (0.15,)
+            for ell in (0.45, 0.85, 1.50):
+                K_mat = _matern52_kernel(psi_ker, psi_ker, ell)
+                for tau_m in tau_mults:
+                    tau2 = tau_m * y_var
+                    for sig_m in (0.04, 0.20, 0.65, 1.40):
+                        sig2 = sig_m * y_var
+                        K = (1.0 - lam_shape) * K_src + lam_shape * tau2 * K_tgt_lin + sig2 * K_mat + np.diag(obs_var)
+                        L = _safe_cholesky(K)
+                        alpha = np.linalg.solve(L.T, np.linalg.solve(L, resid_sure))
+                        nll = 0.5 * float(resid_sure @ alpha) + float(np.sum(np.log(np.diag(L))))
+                        if nll < best_nll:
+                            best_nll = nll
+                            best_tuple = (max(1.0 - lam_shape, 0.0), tau2, sig2, ell)
+            return best_tuple
 
         if self.mode == "tempered_full_release" and self.use_source_coef_prior:
             # Analytic Rasmussen-Williams Eq. 5.12 Leave-One-Out Predictive Log-Likelihood (LOO-PLL)
@@ -580,9 +689,10 @@ class TemperedHierarchicalHVDModel:
 
         mu0_f, cov0_f = self._prior_moments_head(phi_gp.shape[1], gp_recs, "obj")
         mu0_g, cov0_g = self._prior_moments_head(phi_gp.shape[1], gp_recs, "con")
-        psi_tgt_gp = self._target_standardized_psi([r.exposure for r in gp_recs]) if self.mode == "tempered_full_release" else None
+        use_rel_mode = self.mode in {"tempered_full_release", "tempered_sure_release"}
+        psi_tgt_gp = self._target_standardized_psi([r.exposure for r in gp_recs]) if use_rel_mode else None
         if (
-            self.mode == "tempered_full_release"
+            use_rel_mode
             and self.use_source_basis
             and self.prior is not None
             and self.prior.is_fitted
@@ -590,6 +700,23 @@ class TemperedHierarchicalHVDModel:
             wp_gp_f, wp_gp_g = self.prior.transform_pruned_features([r.exposure for r in gp_recs])
         else:
             wp_gp_f = wp_gp_g = None
+
+        if self.mode == "tempered_sure_release" and self.use_source_coef_prior:
+            (
+                self.sure_lambda_obj_,
+                self.sure_lambda_int_obj_,
+                self.sure_identifiable_rank_obj_,
+                self._sure_y_bar_obj_,
+                self._sure_phi_bar_obj_,
+            ) = self._compute_fisher_sure_shrinkage(phi_gp, y_f, var_f_obs, mu0_f)
+            (
+                self.sure_lambda_con_,
+                self.sure_lambda_int_con_,
+                self.sure_identifiable_rank_con_,
+                self._sure_y_bar_con_,
+                self._sure_phi_bar_con_,
+            ) = self._compute_fisher_sure_shrinkage(phi_gp, y_g, var_g_obs, mu0_g)
+            _, self.source_cov_shrink_ = self._stabilized_source_cov(cov0_g)
 
         self.beta_obj_, self.tau_shift_obj_, self.sigma_perp_obj_, ell_f = self._select_tempered_hyperparams(
             phi_gp, psi_gp, y_f, var_f_obs, mu0_f, cov0_f, psi_tgt_std=psi_tgt_gp, w_perp=wp_gp_f
@@ -600,11 +727,16 @@ class TemperedHierarchicalHVDModel:
         self.lengthscale_obj_ = float(ell_f)
         self.lengthscale_con_ = float(ell_g)
         self.lengthscale_perp_ = 0.5 * (ell_f + ell_g)
-        self.is_source_released_ = bool(
-            self.mode == "tempered_full_release" and (self.beta_obj_ <= 0.0 or self.beta_con_ <= 0.0)
-        )
-        if self.is_source_released_ and sum(1 for r in recs if r.n_reps > 1) >= 4:
-            self._fit_hvd_variance(recs, phi, u_hvd, force_target_only_hvd=True)
+        if self.mode == "tempered_sure_release":
+            self.is_source_released_ = bool(max(self.sure_lambda_obj_, self.sure_lambda_con_) >= 0.65)
+        else:
+            self.is_source_released_ = bool(
+                self.mode == "tempered_full_release" and (self.beta_obj_ <= 0.0 or self.beta_con_ <= 0.0)
+            )
+        if (self.is_source_released_ or self.mode == "tempered_sure_release") and sum(1 for r in recs if r.n_reps > 1) >= 4:
+            self._fit_hvd_variance(
+                recs, phi, u_hvd, force_target_only_hvd=bool(self.is_source_released_)
+            )
 
         if self.variance_estimator == "posterior_residual_sq" and len(recs) >= 2:
             # One Gauss-Newton style refinement pass using fitted posterior mean
@@ -632,9 +764,47 @@ class TemperedHierarchicalHVDModel:
         sig_perp2 = self.sigma_perp_obj_ if head == "obj" else self.sigma_perp_con_
         ell_head = (
             (self.lengthscale_obj_ if head == "obj" else self.lengthscale_con_)
-            if self.mode == "tempered_full_release"
+            if self.mode in {"tempered_full_release", "tempered_sure_release"}
             else self.lengthscale_perp_
         )
+
+        if self.mode == "tempered_sure_release" and self.use_source_coef_prior:
+            lam_shape = self.sure_lambda_obj_ if head == "obj" else self.sure_lambda_con_
+            lam_int = self.sure_lambda_int_obj_ if head == "obj" else self.sure_lambda_int_con_
+            y_bar = self._sure_y_bar_obj_ if head == "obj" else self._sure_y_bar_con_
+            phi_bar = self._sure_phi_bar_obj_ if head == "obj" else self._sure_phi_bar_con_
+            cov_stab, _ = self._stabilized_source_cov(cov0)
+            mu_act = mu0[1:] if mu0.size > 1 else np.zeros(0, dtype=float)
+            if recs and phi_bar.size == mu_act.size:
+                int_term = (1.0 - lam_int) * float(mu0[0]) + lam_int * (
+                    y_bar - (1.0 - lam_shape) * (float(phi_bar @ mu_act) if mu_act.size else 0.0)
+                )
+            else:
+                int_term = float(mu0[0])
+            mean_A = np.full(phi_A.shape[0], int_term, dtype=float)
+            if mu_act.size:
+                mean_A = mean_A + (1.0 - lam_shape) * (phi_A[:, 1:] @ mu_act)
+
+            K_src = phi_A @ cov_stab @ phi_B.T
+            if (
+                self.use_empirical_r_perp
+                and w_perp_A is not None
+                and w_perp_B is not None
+                and w_perp_A.shape[1] > 0
+            ):
+                K_src = K_src + (w_perp_A @ w_perp_B.T)
+            psi_rel_A = psi_tgt_A if psi_tgt_A is not None else psi_A
+            psi_rel_B = psi_tgt_B if psi_tgt_B is not None else psi_B
+            phi_rel_A = np.column_stack([np.ones(psi_rel_A.shape[0], dtype=float), psi_rel_A[:, : min(8, psi_rel_A.shape[1])]])
+            phi_rel_B = np.column_stack([np.ones(psi_rel_B.shape[0], dtype=float), psi_rel_B[:, : min(8, psi_rel_B.shape[1])]])
+            psi_ker_A = psi_rel_A if lam_shape >= 0.50 else psi_A
+            psi_ker_B = psi_rel_B if lam_shape >= 0.50 else psi_B
+            K_AB = (
+                (1.0 - lam_shape) * K_src
+                + lam_shape * tau2 * (phi_rel_A @ phi_rel_B.T)
+                + sig_perp2 * _matern52_kernel(psi_ker_A, psi_ker_B, ell_head)
+            )
+            return mean_A, K_AB
 
         if beta <= 0.0:
             lvl = (
@@ -682,8 +852,9 @@ class TemperedHierarchicalHVDModel:
         """Compute exact closed-form joint posterior `(mean, cov)` across `candidates_x`."""
         phi_c, psi_c, u_c, _, r_perp_con = self._transform_batch(exposures)
         m_cand = len(exposures)
-        if self.beta_con_ <= 0.0 or self.mode == "tempered_full_release":
-            # In `tempered_full_release`, pruned-mode uncertainty is conditioned inside `post_cov_g`!
+        use_rel_mode = self.mode in {"tempered_full_release", "tempered_sure_release"}
+        if self.beta_con_ <= 0.0 or use_rel_mode:
+            # In release modes, pruned-mode uncertainty is conditioned inside `post_cov_g`!
             r_perp_con = np.full(m_cand, 1e-10, dtype=float)
 
         recs = self.unique_records
@@ -708,7 +879,7 @@ class TemperedHierarchicalHVDModel:
         ):
             floor_hvd = (
                 min(float(self.prior.hvd_residual_floor_con_), 0.20 * med_aleat_g)
-                if (self.mode == "tempered_full_release" and n_dof_tot >= 4)
+                if (use_rel_mode and n_dof_tot >= 4)
                 else float(self.prior.hvd_residual_floor_con_)
             )
         else:
@@ -716,9 +887,9 @@ class TemperedHierarchicalHVDModel:
         shrink_ucb = self.variance_ucb_scale / np.sqrt(max(n_dof_tot, 1.0))
         ucb_aleat_g = aleat_g * (1.0 + shrink_ucb) + floor_hvd
 
-        psi_tgt_c = self._target_standardized_psi(exposures) if self.mode == "tempered_full_release" else None
+        psi_tgt_c = self._target_standardized_psi(exposures) if use_rel_mode else None
         if (
-            self.mode == "tempered_full_release"
+            use_rel_mode
             and self.use_source_basis
             and self.prior is not None
             and self.prior.is_fitted
@@ -761,11 +932,11 @@ class TemperedHierarchicalHVDModel:
         phi_o, psi_o, u_o, _, _ = self._transform_batch(obs_exps)
         psi_tgt_o = (
             self._target_standardized_psi(obs_exps)
-            if self.mode == "tempered_full_release"
+            if use_rel_mode
             else None
         )
         if (
-            self.mode == "tempered_full_release"
+            use_rel_mode
             and self.use_source_basis
             and self.prior is not None
             and self.prior.is_fitted

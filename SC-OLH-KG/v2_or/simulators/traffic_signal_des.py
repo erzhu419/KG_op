@@ -7,8 +7,7 @@ trajectory exposure `nominal_exposure(x)`:
    RESCO `ingolstadt21` signal phase structure (`decision_space.json`, up to 21 TLS /
    `d = 44` main phases, or arterial subnetworks `d_s = 22` for cross-dimension transfer).
 2. `IngolstadtLiveSUMOBenchmark`: Direct microscopic `libsumo` wrapper around
-   `Final_Submission/GPR_KG_Code/experiments/ingolstadt21` for cluster validation on
-   `node001-node006` (`cfcmt-sumo122-py310-v1`).
+   the RESCO `ingolstadt21` scenario for SUMO 1.22 validation.
 """
 
 from __future__ import annotations
@@ -24,10 +23,8 @@ from v2_or.contracts import BaseDynamicORProblem, NominalTrajectoryExposure
 
 
 DEFAULT_INGOLSTADT_DECISION_SPACE = (
-    Path(__file__).resolve().parents[3]
-    / "Final_Submission"
-    / "GPR_KG_Code"
-    / "results"
+    Path(__file__).resolve().parents[2]
+    / "data"
     / "ingolstadt21"
     / "decision_space.json"
 )
@@ -470,10 +467,10 @@ class IngolstadtLiveSUMOBenchmark(BaseDynamicORProblem):
     def _get_live_problem(self) -> Any:
         if self._live_problem is None:
             import sys
-            gpr_dir = Path(__file__).resolve().parents[3] / "Final_Submission" / "GPR_KG_Code"
-            if str(gpr_dir) not in sys.path:
-                sys.path.insert(0, str(gpr_dir))
-            from experiments.ingolstadt21.ingolstadt21_problem import Ingolstadt21Problem
+            sc_dir = Path(__file__).resolve().parents[2]
+            if str(sc_dir) not in sys.path:
+                sys.path.insert(0, str(sc_dir))
+            from data.ingolstadt21.ingolstadt21_problem import Ingolstadt21Problem
             prob = Ingolstadt21Problem(tau=self.tau_emission, alpha=self.alpha)
             if self.baseline_override is not None:
                 if "T0" in self.baseline_override:

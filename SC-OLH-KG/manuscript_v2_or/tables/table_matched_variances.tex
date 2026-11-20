@@ -1,13 +1,13 @@
 \begin{table}[htbp]\centering
-\caption{Mean squared variance error against independent audits, by family and role.}\label{tab:matched_variances}
-\small\begin{tabular}{llrcccc}\toprule
-& & & \multicolumn{2}{c}{Objective variance} & \multicolumn{2}{c}{Constraint variance} \\
-Family & Policy role & Runs & Fixed batch & Pooled & Fixed batch & Pooled \\
+\caption{Mean squared variance estimation error against 2,000-replication independent audits on the matched 48-task panel (fixed initial-batch within-SSQ vs.\ pooled revisit within-SSQ).}\label{tab:matched_variances}
+\scriptsize\begin{tabular}{llrcccc}\toprule
+& & & \multicolumn{2}{c}{\textbf{Objective variance MSE}} & \multicolumn{2}{c}{\textbf{Constraint variance MSE}} \\
+\textbf{Family} & \textbf{Policy role} & \textbf{Runs} & \textbf{Fixed batch} & \textbf{Pooled} & \textbf{Fixed batch} & \textbf{Pooled} \\
 \midrule
 Queueing & Primary & 192 & $1.143\times 10^{-3}$ & $1.046\times 10^{-3}$ & $1.115\times 10^{-7}$ & $1.056\times 10^{-7}$ \\
  & Certified & 192 & $1.016\times 10^{-3}$ & $9.768\times 10^{-4}$ & $1.129\times 10^{-8}$ & $1.064\times 10^{-8}$ \\
 \midrule
-Traffic & Primary & 192 & $6.306\times 10^{-4}$ & $6.470\times 10^{-4}$ & $2.252\times 10^{-4}$ & $2.260\times 10^{-4}$ \\
+Traffic-21 & Primary & 192 & $6.306\times 10^{-4}$ & $6.470\times 10^{-4}$ & $2.252\times 10^{-4}$ & $2.260\times 10^{-4}$ \\
  & Certified & 132 & $2.974\times 10^{-5}$ & $2.216\times 10^{-5}$ & $1.781\times 10^{-5}$ & $1.265\times 10^{-5}$ \\
 \bottomrule\end{tabular}
 \end{table}

@@ -80,7 +80,7 @@ U3 的**截尾 OPSD 固定面板**中，KG 随四个预算的均值 0.05914、0.
 - 包的 Lean 指令默认引用作者集群绝对路径和旧 Mathlib 缓存，缺单独工具链和依赖锁入口。Live SUMO Python 路径会导入 `experiments.ingolstadt21.ingolstadt21_problem`，包内仅复制了该依赖的决策空间和基线 JSON。包中缺依赖锁、许可与外部场景取得指引，且缺完整运行内容延续所需的源归档或小例端到端验收。原有 Lean 4.31.0 成功回执属真实本地证据，无法代替包的冷构建。根 README 仍以 P2 哈希介绍目前指向 U3 的论文，应修版本标记。
 - 公开账本可重算现有表格，未包含可从每行还原候选、源档案、全部审计和失败恢复的入口。对 P1，`hash(fam)` 带进程盐，缺固定 PYTHONHASHSEED 的诊断执行不具备逐位重建承诺。对 U3，当前保有完整结果行，尝试账和单阶段缓存的历史身份无法仅由这些行全部核实。
 
-定位：[导出范围及后缀白名单](../manuscript_v2_or/export_clean_replication_bundle.py#L74)、[Lean 路径默认值](../v2_or/dispatch/run_v2_lean_cluster.py#L48)、[SUMO 导入](../v2_or/simulators/traffic_signal_des.py#L470)、[P1 随机种子](../v2_or/dispatch/run_p1_diagnostics.py#L96)、[旧主线固定包验收](mainline_submission_release_20261026.md)。
+定位：[导出范围及后缀白名单](../manuscript_v2_or/export_clean_replication_bundle.py#L74)、[Lean 路径默认值](../../scripts/run_v2_lean_cluster.py#L48)、[SUMO 导入](../v2_or/simulators/traffic_signal_des.py#L470)、[P1 随机种子](../v2_or/dispatch/run_p1_diagnostics.py#L96)、[旧主线固定包验收](mainline_submission_release_20261026.md)。
 
 ## 四、投稿决定与最小下一轮
 

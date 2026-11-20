@@ -10,13 +10,10 @@ on the SAME ingolstadt21 setup):
   f2(x,xi) = atkinson_index(x,xi)  / A0    (equity,     <1 = better)
   f3(x,xi) = total_CO2(x,xi)       / E0    (emission,   <1 = better)
 
-Compared to the InTAS sumo_sim.py:
-  - Single route file (no random draw across InTAS_NNN.rou.xml)
-  - No bus / pedestrian routes loaded
-  - No additional files (RESCO ships net+routes only)
-  - SUMO defaults for time-to-teleport / max-depart-delay / car-follow model
-    (matches the published RESCO benchmark; InTAS-style overrides removed)
-  - Stochasticity comes from the SUMO seed only (no rerouting randomness)
+Simulation protocol:
+  - Single RESCO route file (4,283 PM-peak trips)
+  - Published RESCO SUMO defaults for time-to-teleport, max-depart-delay, and Krauss car-following
+  - Stochasticity driven by the explicit SUMO replication seed (rerouting disabled)
 """
 
 import csv
@@ -123,8 +120,7 @@ _TRIPINFO_RE  = None
 _EMISSIONS_RE = None
 
 def _parse_tripinfo(path: str) -> list:
-    """Regex-based tripinfo XML scanner (avoids ElementTree DLL issues).
-    Same logic as InTAS variant."""
+    """Regex-based tripinfo XML scanner (avoids ElementTree DLL issues)."""
     global _TRIPINFO_RE, _EMISSIONS_RE
     import re
     if _TRIPINFO_RE is None:
