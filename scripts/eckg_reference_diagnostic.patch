@@ -1,0 +1,206 @@
+--- a/SC-OLH-KG/v2_or/acquisition/verification_kg.py
++++ b/SC-OLH-KG/v2_or/acquisition/verification_kg.py
+@@ -478,7 +478,11 @@
+         if len(contenders) >= max(int(top_k_contenders), 6):
+             break
+ 
+-    # Stage B: Exact correlated 3-slot nomination & switch-gain integration over K_n x 32 Sobol fantasies
++    # The all-candidate diagnostic explicitly includes every revisit and new policy.
++    if top_k_contenders >= m_cand:
++        contenders = list(range(m_cand))
++
++    # Stage B integrates over the nodes in the frozen production table.
+     n_outer = int(_ECKG_OUTER_32.shape[0])
+     eval_sq_list: list[float] = []
+     eval_mu_f: list[np.ndarray] = []
+@@ -687,6 +691,7 @@
+         "chosen_voi_refine": float(voi_refine[chosen_q]),
+         "chosen_voi_admit": float(voi_admit[chosen_q]),
+         "contenders_evaluated": len(contenders),
++        "contender_indices": contenders,
+         "rosters_integrated": len(eval_sq_list),
+         "step_wall_ms": float(step_ms),
+     }
+--- a/scripts/run_eckg_reference_validation.py
++++ b/scripts/run_eckg_reference_validation.py
+@@ -5,7 +5,7 @@
+ Evaluates ALL 160 candidates (no Stage-A pre-screen) with independent scrambled Sobol
+ quadrature (`256` antithetic outer fantasies x `1024` inner draws) under BOTH:
+   1. Nested menu-max proxy VOI (`VOI_menu_ref`), and
+-  2. Exact actual terminal single-nomination rule gain (`Delta_term_ref`, no menu retention).
++  2. Working-model single-nomination gain (`Delta_term_ref`, no menu retention).
+ """
+ 
+ from __future__ import annotations
+@@ -38,6 +38,8 @@
+ from scheduler_node_policy import DEFAULT_CPU_NODES, parse_cpu_nodes
+ from v2_or.acquisition.verification_kg import (
+     _SLOT_SIZES,
++    _ECKG_OUTER_32,
++    _ECKG_INNER_128,
+     build_balanced_warmstart_points,
+     generate_dynamic_candidate_pool,
+     score_chance_feasibility_kg,
+@@ -152,20 +154,27 @@
+ ) -> dict[str, Any]:
+     # 1. Production rules (top_k=16 fast ECKG, SingleSlotKG, FeasibleKG)
+     t0 = time.perf_counter()
+-    s_fast16, diag16 = score_eligible_cascade_kg(
++    screened_scores, diag16 = score_eligible_cascade_kg(
+         pred, model, cands, exps, alpha=alpha, batch_reps=batch_reps,
+         status_quo_obj=sq_ref, nomination_mode="cascade_bellman_3slot",
+         top_k_contenders=16, return_diagnostics=True,
+     )
+     fast16_ms = 1000.0 * (time.perf_counter() - t0)
+ 
+-    # Also evaluate fast 32x128 across ALL 160 candidates (`top_k_contenders=len(cands)`) to isolate screening vs quadrature!
+-    s_fast_all160, _ = score_eligible_cascade_kg(
++    # Measure quadrature on identical candidate sets, using the actual production nodes.
++    s_fast_all160, diag_all = score_eligible_cascade_kg(
+         pred, model, cands, exps, alpha=alpha, batch_reps=batch_reps,
+         status_quo_obj=sq_ref, nomination_mode="cascade_bellman_3slot",
+         top_k_contenders=len(cands), return_diagnostics=True,
+     )
+ 
++    screen_ids = diag16["contender_indices"]
++    if diag_all["contender_indices"] != list(range(len(cands))):
++        raise ValueError("All-candidate pass omitted a candidate")
++    np.testing.assert_allclose(s_fast_all160[screen_ids], screened_scores[screen_ids], rtol=1e-10, atol=1e-12)
++    fast_outer = len(_ECKG_OUTER_32)
++    fast_inner = len(_ECKG_INNER_128)
++
+     s_single = score_gate_power_vkg(pred, alpha=alpha, batch_reps=batch_reps, status_quo_obj=sq_ref)
+     s_feas = score_chance_feasibility_kg(pred, alpha=alpha, batch_reps=batch_reps, status_quo_obj=sq_ref)
+ 
+@@ -173,7 +182,7 @@
+     q_single = int(np.argmax(s_single))
+     q_feas = int(np.argmax(s_feas))
+ 
+-    # 2. Independent 256 x 1024 all-160 evaluation (both menu-max and actual single-nomination rule)
++    # 2. Independent 256 x 1024 all-160 evaluation (the menu and the frozen working-model nomination rule)
+     z_out_256, z_in_1024 = _make_ref_qmc(ref_seed, m_out_pow2=7, m_in_pow2=10)
+     n_outer = int(z_out_256.shape[0])
+     m_cand = len(cands)
+@@ -258,7 +267,7 @@
+     eval_sig_g: list[np.ndarray] = []
+     eval_nslots: list[int] = []
+     eval_guard: list[bool] = []
+-    # ptr roles: 0 = S_curr (always evaluated for actual terminal rule), 1 = post-query D_n, 2 = post-query D_n U {q}
++    # ptr roles: 0 = S_curr (pre-query nomination), 1 = post-query D_n, 2 = post-query D_n U {q}
+     slot_ptr = np.full((m_cand, n_outer, 3), -1, dtype=int)
+ 
+     t_ref0 = time.perf_counter()
+@@ -393,14 +402,13 @@
+         m0_max = np.maximum(0.0, np.maximum(u_ref_star, u_d))
+         m1_max = np.maximum(m0_max, u_full)
+         voi_menu_ref[q] = float(np.mean(np.maximum(m1_max - u_ref_star, 0.0)))
+-        # Exact actual terminal rule: single nomination `u_full` vs current nomination `u_curr_s`
++        # Working-model single nomination `u_full` vs current nomination `u_curr_s`
+         delta_term_ref[q] = float(np.mean(u_full - u_curr_s))
+ 
+     q_menu_opt = int(np.argmax(voi_menu_ref))
+     q_term_opt = int(np.argmax(delta_term_ref))
+-    contenders_16_mask = s_fast16 > 0.0
+-
+-    # Spearman rank correlation across all 160 candidates between fast-all160 (32x128) and ref-all160 (256x1024)
++
++    # Spearman rank correlation across all 160 candidates between fast-all160 (16x128) and ref-all160 (256x1024)
+     rho_quad = float(spearmanr(s_fast_all160, voi_menu_ref).statistic) if np.std(voi_menu_ref) > 1e-12 else 1.0
+     rho_menu_vs_term = float(spearmanr(voi_menu_ref, delta_term_ref).statistic) if (np.std(voi_menu_ref) > 1e-12 and np.std(delta_term_ref) > 1e-12) else 1.0
+ 
+@@ -408,6 +416,13 @@
+     max_term = float(delta_term_ref[q_term_opt])
+ 
+     return {
++        "fast_outer_nodes": fast_outer,
++        "fast_inner_nodes": fast_inner,
++        "reference_seed": ref_seed,
++        "screened_candidate_ids": screen_ids,
++        "fast_menu_scores": s_fast_all160.tolist(),
++        "reference_menu_scores": voi_menu_ref.tolist(),
++        "reference_nomination_scores": delta_term_ref.tolist(),
+         "n_unique_evaluated": len(obs_recs),
+         "fast16_wall_ms": fast16_ms,
+         "ref_all160_wall_sec": ref_wall_s,
+@@ -416,9 +431,9 @@
+         "q_feas": q_feas,
+         "q_menu_ref_opt": q_menu_opt,
+         "q_term_ref_opt": q_term_opt,
+-        "menu_opt_in_stage_a_top16": bool(contenders_16_mask[q_menu_opt]) if np.any(contenders_16_mask) else True,
+-        "term_opt_in_stage_a_top16": bool(contenders_16_mask[q_term_opt]) if np.any(contenders_16_mask) else True,
+-        "quadrature_spearman_32x128_vs_256x1024": 0.0 if np.isnan(rho_quad) else rho_quad,
++        "menu_opt_in_stage_a_top16": q_menu_opt in screen_ids,
++        "term_opt_in_stage_a_top16": q_term_opt in screen_ids,
++        "quadrature_spearman_16x128_vs_256x1024": 0.0 if np.isnan(rho_quad) else rho_quad,
+         "menu_vs_actual_terminal_spearman": 0.0 if np.isnan(rho_menu_vs_term) else rho_menu_vs_term,
+         "menu_ref_max": float(voi_menu_ref[q_menu_opt]),
+         "menu_ref_at_eckg16": float(voi_menu_ref[q_eckg16]),
+@@ -440,6 +455,8 @@
+     if ipath.is_file():
+         return {"job_id": jb["job_id"], "status": "cached"}
+ 
++    started_cpu = time.process_time()
++    started_wall = time.perf_counter()
+     fam_name = jb["family"]
+     t_idx = int(jb["target_task_idx"])
+     fam_spec = next(f for f in manifest["families"] if f["name"] == fam_name)
+@@ -512,6 +529,11 @@
+         "target_task_idx": t_idx,
+         "task_id": prob.task_id,
+         "cell_seed": cell_seed,
++        "diagnostic_search_calls": prob.search_calls,
++        "diagnostic_verification_calls": prob.verification_calls,
++        "diagnostic_audit_calls": prob.audit_calls,
++        "worker_cpu_seconds": time.process_time() - started_cpu,
++        "worker_wall_seconds": time.perf_counter() - started_wall,
+         "step_0": snap_step0,
+         "step_59": snap_step59,
+     }
+@@ -529,7 +551,7 @@
+                 "target_task_idx": ti,
+             })
+     desc = {
+-        "diagnostic_name": "v2_or_eckg_reference_validation_v1",
++        "diagnostic_name": "v2_or_eckg_reference_validation_corrected",
+         "manifest_relpath": str(manifest_path.resolve().relative_to(SC_ROOT)),
+         "execution_code_sha256": compute_v2_or_code_sha256(),
+         "created_utc": datetime.now(timezone.utc).isoformat(),
+@@ -584,7 +606,7 @@
+                 "stage_a_top16_contains_menu_opt_rate": float(np.mean([1.0 if x["menu_opt_in_stage_a_top16"] else 0.0 for x in st])),
+                 "stage_a_top16_contains_term_opt_rate": float(np.mean([1.0 if x["term_opt_in_stage_a_top16"] else 0.0 for x in st])),
+                 "exact_match_eckg16_vs_menu_opt_rate": float(np.mean([1.0 if x["q_eckg16"] == x["q_menu_ref_opt"] else 0.0 for x in st])),
+-                "quadrature_spearman_mean": float(np.mean([x["quadrature_spearman_32x128_vs_256x1024"] for x in st])),
++                "quadrature_spearman_mean": float(np.mean([x["quadrature_spearman_16x128_vs_256x1024"] for x in st])),
+                 "menu_vs_actual_terminal_spearman_mean": float(np.mean([x["menu_vs_actual_terminal_spearman"] for x in st])),
+                 "menu_ref_rel_regret_eckg16_mean": float(np.mean([x["menu_ref_rel_regret_eckg16"] for x in st])),
+                 "menu_ref_max_mean_x1e3": 1000.0 * float(np.mean([x["menu_ref_max"] for x in st])),
+@@ -622,13 +644,13 @@
+     for name in ("describe", "worker", "summarize", "submit"):
+         p = sub.add_parser(name)
+         p.add_argument("--manifest", type=Path, default=SC_ROOT / "v2_or/manifests/v2_or_eckg_sure_confirm_v1.json")
+-        p.add_argument("--out-dir", type=Path, default=SC_ROOT / "paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_ref_val")
++        p.add_argument("--out-dir", type=Path, default=SC_ROOT / "paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_ref_val_corrected")
+         if name == "worker":
+             p.add_argument("--start", type=int, required=True)
+             p.add_argument("--end", type=int, required=True)
+             p.add_argument("--workers", type=int, default=1)
+         elif name == "summarize":
+-            p.add_argument("--summary-path", type=Path, default=SC_ROOT / "paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_reference_validation_readout.json")
++            p.add_argument("--summary-path", type=Path, default=SC_ROOT / "paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_reference_validation_corrected_legacy_summary.json")
+         elif name == "submit":
+             p.add_argument("--scheduler", type=Path, default=Path(os.environ.get("GPFTA_CLUSTER_SCHEDULER", "scheduler.py")))
+             p.add_argument("--remote-cwd", default=os.environ.get("GPFTA_REMOTE_CWD", "."))
+@@ -662,11 +684,11 @@
+             "--cmd-template", cmd,
+             "--cwd", args.remote_cwd,
+             "--nodes", ",".join(nodes),
+-            "--signature", "gp_fta_v2/eckg_ref_val/{start}-{end}",
++            "--signature", "gp_fta_v2/eckg_ref_val_corrected/{start}-{end}",
+             "--description", "v2_or eckg all160 reference validation {node} [{start},{end})",
+             "--ram-mb", str(args.ram_mb),
+             "--project", "gp_fta_v2",
+-            "--skip-launch-staging", "--env-spec", "none", "--json",
++            "--no-auto-requeue", "--skip-launch-staging", "--env-spec", "none", "--json",
+         ]
+         cp = subprocess.run(s_cmd, text=True, capture_output=True)
+         print(cp.stdout, end="")

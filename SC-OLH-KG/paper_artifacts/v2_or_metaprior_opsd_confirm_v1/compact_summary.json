@@ -1,0 +1,1136 @@
+{
+  "campaign_name": "v2_or_metaprior_opsd_confirm_v1",
+  "contract_version": "v2.1_roster_invariant",
+  "generated_utc": "2026-11-20T12:09:41.918541+00:00",
+  "execution_code_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "manifest_sha256": "5e08ec244f983164b822eeb0d879dfe22e92f8f52822f8e673f43c11abba3496",
+  "per_run_ledger_csv_sha256": "a3b93f6e8cfea3550ab12375802b550e8d0f0beca313134ed41e65a764c459eb",
+  "per_slot_certificates_csv_sha256": "83f4592068fd9d591f6675c5dedd7b1090c9fd95a379b87944cf0547faf51b7e",
+  "total_evaluated_cells": 656,
+  "total_certified_deployments": 595,
+  "total_abstentions": 61,
+  "safety_audit_summary": {
+    "confidently_safe": 570,
+    "boundary_ambiguous": 13,
+    "abstained_not_deployed": 61,
+    "confidently_unsafe": 12
+  },
+  "prior_diagnostics": {
+    "Inventory_CrossHorizon": {
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "n_single_rep_evaluations": 0,
+      "single_rep_fraction": 0.0,
+      "source_simulation_calls": 1428,
+      "source_solver_wall_sec": 1.1915663732215762,
+      "archive_sha256": "e6a3a20bfa551eae01f387ad5bb151df199e1a4f7e7aa2caf8457d57e6388091",
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 3175518.8221791624,
+          "debiased_orth_gram_cond": 1.00000000000768,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6868786321762783,
+          "effective_sample_size_ratio": 0.6764204282908031,
+          "prior_fit_wall_sec": 0.053713975474238396
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "n_single_rep_evaluations": 0,
+      "single_rep_fraction": 0.0,
+      "source_simulation_calls": 1428,
+      "source_solver_wall_sec": 1.5023543015122414,
+      "archive_sha256": "a6af428f1cbcc8e061f265e047360ad5c81777d0ef3e69b1bba5c992a901efb7",
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 5550032.829462232,
+          "debiased_orth_gram_cond": 1.0000000000041425,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.7228259782298176,
+          "effective_sample_size_ratio": 0.6716036576984028,
+          "prior_fit_wall_sec": 0.04659583978354931
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "n_single_rep_evaluations": 0,
+      "single_rep_fraction": 0.0,
+      "source_simulation_calls": 1428,
+      "source_solver_wall_sec": 7.018931859172881,
+      "archive_sha256": "0bec9901da3af7b1861f152b914ac38a62b304d30f41a2427f32b12455119d49",
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 85146593.41863135,
+          "debiased_orth_gram_cond": 1.0000000000063622,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6424482070044828,
+          "effective_sample_size_ratio": 0.6651524558882341,
+          "prior_fit_wall_sec": 0.04264424182474613
+        }
+      }
+    },
+    "OPSD_EuroGrid": {
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "n_single_rep_evaluations": 0,
+      "single_rep_fraction": 0.0,
+      "source_simulation_calls": 1428,
+      "source_solver_wall_sec": 7.448370859026909,
+      "archive_sha256": "9cb5021741c77f7b59dd172d99546c1c6d95cf933b93811e14eece07ab525e8a",
+      "variants": {
+        "default": {
+          "n_source_tasks": 6,
+          "n_archive_points": 468,
+          "raw_gram_cond": 8980762.235277895,
+          "debiased_orth_gram_cond": 1.0000000000051503,
+          "dictionary_size": 52,
+          "lowpass_kept_count": 39,
+          "active_rank": 8,
+          "mean_lowfreq_energy_ratio": 0.6548788556645143,
+          "effective_sample_size_ratio": 0.7243310291495709,
+          "prior_fit_wall_sec": 0.040572669357061386
+        }
+      }
+    }
+  },
+  "families": {
+    "Inventory_CrossHorizon": {
+      "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+      "source_simulation_calls": 1428,
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "budgets": {
+        "60": {
+          "methods": {
+            "ColdInit-MetaPrior-SURE-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 1.0,
+              "abstention_rate": 0.0,
+              "task_certified_rate_mean": 1.0,
+              "conditional_certified_obj_mean": 1.8096927497201731,
+              "conditional_certified_obj_se": 0.025799179878917996,
+              "primary_slot0_obj_mean": 1.809086702163956,
+              "status_quo_loss_task_mean": 1.809692749720173,
+              "status_quo_loss_task_se": 0.036120494286890965,
+              "status_quo_loss_run_mean": 1.8096927497201731,
+              "status_quo_loss_run_se": 0.025799179878917996,
+              "fixed_reject_loss_10pct_task_mean": 1.809692749720173,
+              "deployed_mc_viol_prob_mean": 0.005864583333333334,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 48
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 30,
+                "empirical_feasible_incumbent": 14,
+                "conservative_posterior_interior": 4
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 229.83333333333334,
+              "mean_total_target_calls": 365.8333333333333,
+              "mean_online_wall_sec": 34.598801324900705,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 1.0,
+              "abstention_rate": 0.0,
+              "task_certified_rate_mean": 1.0,
+              "conditional_certified_obj_mean": 1.8226283407007795,
+              "conditional_certified_obj_se": 0.02585601184551502,
+              "primary_slot0_obj_mean": 1.8130570950463059,
+              "status_quo_loss_task_mean": 1.8226283407007793,
+              "status_quo_loss_task_se": 0.0364922038065237,
+              "status_quo_loss_run_mean": 1.8226283407007795,
+              "status_quo_loss_run_se": 0.02585601184551502,
+              "fixed_reject_loss_10pct_task_mean": 1.8226283407007793,
+              "deployed_mc_viol_prob_mean": 0.0028125000000000003,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 48
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 30,
+                "empirical_feasible_incumbent": 12,
+                "conservative_posterior_interior": 6
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 233.0,
+              "mean_total_target_calls": 369.0,
+              "mean_online_wall_sec": 34.30137316969922,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 1.0,
+              "abstention_rate": 0.0,
+              "task_certified_rate_mean": 1.0,
+              "conditional_certified_obj_mean": 1.8216931732301604,
+              "conditional_certified_obj_se": 0.0259016924483897,
+              "primary_slot0_obj_mean": 1.810268425078552,
+              "status_quo_loss_task_mean": 1.8216931732301604,
+              "status_quo_loss_task_se": 0.0366000549931947,
+              "status_quo_loss_run_mean": 1.8216931732301604,
+              "status_quo_loss_run_se": 0.0259016924483897,
+              "fixed_reject_loss_10pct_task_mean": 1.8216931732301604,
+              "deployed_mc_viol_prob_mean": 0.005781249999999999,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 47,
+                "boundary_ambiguous": 1
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 26,
+                "conservative_posterior_interior": 8,
+                "empirical_feasible_incumbent": 14
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 252.41666666666666,
+              "mean_total_target_calls": 388.4166666666667,
+              "mean_online_wall_sec": 34.13322814744121,
+              "mean_source_pretrain_wall_sec": 0.0
+            }
+          },
+          "paired_task_level_vs_ref": {
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_tasks": 24,
+              "mean_saving_status_quo_loss": 0.012935590980606168,
+              "se_saving_status_quo_loss": 0.008377923791714249,
+              "mean_rel_improvement_pct": 0.684946758367237,
+              "task_wins_losses_ties": [
+                14,
+                10,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.08899009227752686,
+              "paired_t_one_sided_p": 0.06811744456594762,
+              "holm_adjusted_p": 0.08899009227752686
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_tasks": 24,
+              "mean_saving_status_quo_loss": 0.012000423509987266,
+              "se_saving_status_quo_loss": 0.005101528751138431,
+              "mean_rel_improvement_pct": 0.6427606048747102,
+              "task_wins_losses_ties": [
+                17,
+                7,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.016992568969726562,
+              "paired_t_one_sided_p": 0.013793379932010413,
+              "holm_adjusted_p": 0.033985137939453125
+            }
+          },
+          "paired_run_level_vs_ref": {
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_pairs": 48,
+              "mean_saving_status_quo_loss": 0.012935590980606195,
+              "mean_rel_improvement_pct": 0.6515311920956491,
+              "run_wins_losses_ties": [
+                27,
+                21,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.12552877726986011,
+              "holm_adjusted_p": 0.12552877726986011
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_pairs": 48,
+              "mean_saving_status_quo_loss": 0.01200042350998729,
+              "mean_rel_improvement_pct": 0.6412342407424426,
+              "run_wins_losses_ties": [
+                28,
+                20,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.0194774353035001,
+              "holm_adjusted_p": 0.0389548706070002
+            }
+          }
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+      "source_simulation_calls": 1428,
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "budgets": {
+        "60": {
+          "methods": {
+            "ColdInit-MetaPrior-SURE-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 1.0,
+              "abstention_rate": 0.0,
+              "task_certified_rate_mean": 1.0,
+              "conditional_certified_obj_mean": 2.610220507339075,
+              "conditional_certified_obj_se": 0.0374626004168137,
+              "primary_slot0_obj_mean": 2.5931337810661996,
+              "status_quo_loss_task_mean": 2.610220507339075,
+              "status_quo_loss_task_se": 0.05094500720350308,
+              "status_quo_loss_run_mean": 2.610220507339075,
+              "status_quo_loss_run_se": 0.0374626004168137,
+              "fixed_reject_loss_10pct_task_mean": 2.610220507339075,
+              "deployed_mc_viol_prob_mean": 0.0011770833333333334,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 48
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 22,
+                "conservative_posterior_interior": 8,
+                "empirical_feasible_incumbent": 18
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 246.58333333333334,
+              "mean_total_target_calls": 382.5833333333333,
+              "mean_online_wall_sec": 32.45962277906559,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 1.0,
+              "abstention_rate": 0.0,
+              "task_certified_rate_mean": 1.0,
+              "conditional_certified_obj_mean": 2.5859281070634244,
+              "conditional_certified_obj_se": 0.03344087379979315,
+              "primary_slot0_obj_mean": 2.5913154318149174,
+              "status_quo_loss_task_mean": 2.5859281070634244,
+              "status_quo_loss_task_se": 0.04684677956030706,
+              "status_quo_loss_run_mean": 2.5859281070634244,
+              "status_quo_loss_run_se": 0.03344087379979315,
+              "fixed_reject_loss_10pct_task_mean": 2.5859281070634244,
+              "deployed_mc_viol_prob_mean": 0.0003854166666666667,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 48
+              },
+              "selected_role_breakdown": {
+                "empirical_feasible_incumbent": 19,
+                "posterior_primary": 28,
+                "conservative_posterior_interior": 1
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 226.91666666666666,
+              "mean_total_target_calls": 362.9166666666667,
+              "mean_online_wall_sec": 32.41872278616453,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 0.9791666666666666,
+              "abstention_rate": 0.02083333333333337,
+              "task_certified_rate_mean": 0.9791666666666666,
+              "conditional_certified_obj_mean": 2.594877486912711,
+              "conditional_certified_obj_se": 0.033900425036413155,
+              "primary_slot0_obj_mean": 2.5956691375392116,
+              "status_quo_loss_task_mean": 2.608230130032625,
+              "status_quo_loss_task_se": 0.04788672917708916,
+              "status_quo_loss_run_mean": 2.608230130032625,
+              "status_quo_loss_run_se": 0.03577215320891168,
+              "fixed_reject_loss_10pct_task_mean": 2.6149713891090176,
+              "deployed_mc_viol_prob_mean": 0.0014787234042553193,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 47,
+                "abstained_not_deployed": 1
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 32,
+                "empirical_feasible_incumbent": 11,
+                "conservative_posterior_interior": 4,
+                "abstained_uncertified": 1
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 241.25,
+              "mean_total_target_calls": 377.25,
+              "mean_online_wall_sec": 32.29854776397891,
+              "mean_source_pretrain_wall_sec": 0.0
+            }
+          },
+          "paired_task_level_vs_ref": {
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_tasks": 24,
+              "mean_saving_status_quo_loss": -0.024292400275650567,
+              "se_saving_status_quo_loss": 0.01316412159139829,
+              "mean_rel_improvement_pct": -0.9073898604010142,
+              "task_wins_losses_ties": [
+                10,
+                14,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.928324818611145,
+              "paired_t_one_sided_p": 0.9610494876969206,
+              "holm_adjusted_p": 1.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_tasks": 24,
+              "mean_saving_status_quo_loss": -0.0019903773064502603,
+              "se_saving_status_quo_loss": 0.01787600414264611,
+              "mean_rel_improvement_pct": -0.07819550974334884,
+              "task_wins_losses_ties": [
+                10,
+                14,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.827561616897583,
+              "paired_t_one_sided_p": 0.5438450442644082,
+              "holm_adjusted_p": 1.0
+            }
+          },
+          "paired_run_level_vs_ref": {
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_pairs": 48,
+              "mean_saving_status_quo_loss": -0.02429240027565055,
+              "mean_rel_improvement_pct": -0.9279940757549987,
+              "run_wins_losses_ties": [
+                20,
+                28,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.9070843587202368,
+              "holm_adjusted_p": 1.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_pairs": 48,
+              "mean_saving_status_quo_loss": -0.0019903773064502603,
+              "mean_rel_improvement_pct": -0.1374399234268661,
+              "run_wins_losses_ties": [
+                20,
+                28,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.7441699727143032,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+      "source_simulation_calls": 1428,
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "budgets": {
+        "60": {
+          "methods": {
+            "ColdInit-MetaPrior-SURE-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 0.7708333333333334,
+              "abstention_rate": 0.22916666666666663,
+              "task_certified_rate_mean": 0.7708333333333334,
+              "conditional_certified_obj_mean": 1.0304338511845186,
+              "conditional_certified_obj_se": 0.0048988814900489475,
+              "primary_slot0_obj_mean": 1.0571189836531518,
+              "status_quo_loss_task_mean": 1.0805387662680308,
+              "status_quo_loss_task_se": 0.019794070480968685,
+              "status_quo_loss_run_mean": 1.0805387662680308,
+              "status_quo_loss_run_se": 0.014954512527924279,
+              "fixed_reject_loss_10pct_task_mean": 1.1091633668660272,
+              "deployed_mc_viol_prob_mean": 0.006635135135135137,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 37,
+                "abstained_not_deployed": 11
+              },
+              "selected_role_breakdown": {
+                "empirical_feasible_incumbent": 16,
+                "posterior_primary": 16,
+                "conservative_posterior_interior": 5,
+                "abstained_uncertified": 11
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 286.6666666666667,
+              "mean_total_target_calls": 422.6666666666667,
+              "mean_online_wall_sec": 52.24709661204057,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 0.6458333333333334,
+              "abstention_rate": 0.35416666666666663,
+              "task_certified_rate_mean": 0.6458333333333334,
+              "conditional_certified_obj_mean": 1.0331365696412342,
+              "conditional_certified_obj_se": 0.00662965121997238,
+              "primary_slot0_obj_mean": 1.0636987624289824,
+              "status_quo_loss_task_mean": 1.1024668037281267,
+              "status_quo_loss_task_se": 0.01877603337081411,
+              "status_quo_loss_run_mean": 1.1024668037281267,
+              "status_quo_loss_run_se": 0.01562945269244172,
+              "fixed_reject_loss_10pct_task_mean": 1.1459900806449432,
+              "deployed_mc_viol_prob_mean": 0.008338709677419355,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 30,
+                "abstained_not_deployed": 17,
+                "boundary_ambiguous": 1
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 18,
+                "empirical_feasible_incumbent": 11,
+                "abstained_uncertified": 17,
+                "conservative_posterior_interior": 2
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 279.4166666666667,
+              "mean_total_target_calls": 415.4166666666667,
+              "mean_online_wall_sec": 51.938696627505124,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_runs": 48,
+              "n_independent_tasks": 24,
+              "certified_rate": 0.8125,
+              "abstention_rate": 0.1875,
+              "task_certified_rate_mean": 0.8125,
+              "conditional_certified_obj_mean": 1.0263017235468967,
+              "conditional_certified_obj_se": 0.00538814043171839,
+              "primary_slot0_obj_mean": 1.044858826841854,
+              "status_quo_loss_task_mean": 1.072749374954211,
+              "status_quo_loss_task_se": 0.02001179535382147,
+              "status_quo_loss_run_mean": 1.072749374954211,
+              "status_quo_loss_run_se": 0.015505067523009812,
+              "fixed_reject_loss_10pct_task_mean": 1.0966372974114469,
+              "deployed_mc_viol_prob_mean": 0.006769230769230771,
+              "verif_law_mc_viol_prob_mean": null,
+              "audit_point_fc_count": 0,
+              "safety_audit_breakdown": {
+                "confidently_safe": 39,
+                "abstained_not_deployed": 9
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 19,
+                "empirical_feasible_incumbent": 14,
+                "abstained_uncertified": 9,
+                "conservative_posterior_interior": 6
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 275.5,
+              "mean_total_target_calls": 411.5,
+              "mean_online_wall_sec": 52.474382107708756,
+              "mean_source_pretrain_wall_sec": 0.0
+            }
+          },
+          "paired_task_level_vs_ref": {
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_tasks": 24,
+              "mean_saving_status_quo_loss": 0.021928037460095934,
+              "se_saving_status_quo_loss": 0.017987172907706135,
+              "mean_rel_improvement_pct": 1.7415745916036385,
+              "task_wins_losses_ties": [
+                17,
+                6,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.02422046661376953,
+              "paired_t_one_sided_p": 0.11758234976301846,
+              "holm_adjusted_p": 0.04844093322753906
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_tasks": 24,
+              "mean_saving_status_quo_loss": -0.0077893913138198006,
+              "se_saving_status_quo_loss": 0.012534161904498768,
+              "mean_rel_improvement_pct": -0.8864072345555517,
+              "task_wins_losses_ties": [
+                8,
+                14,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.8548884391784668,
+              "paired_t_one_sided_p": 0.7297935465773626,
+              "holm_adjusted_p": 0.8548884391784668
+            }
+          },
+          "paired_run_level_vs_ref": {
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_pairs": 48,
+              "mean_saving_status_quo_loss": 0.021928037460095945,
+              "mean_rel_improvement_pct": 1.559732939970681,
+              "run_wins_losses_ties": [
+                27,
+                14,
+                7
+              ],
+              "wilcoxon_one_sided_p": 0.04008017837850275,
+              "holm_adjusted_p": 0.0801603567570055
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_pairs": 48,
+              "mean_saving_status_quo_loss": -0.007789391313819789,
+              "mean_rel_improvement_pct": -1.0238100625597581,
+              "run_wins_losses_ties": [
+                20,
+                23,
+                5
+              ],
+              "wilcoxon_one_sided_p": 0.886280518522085,
+              "holm_adjusted_p": 0.886280518522085
+            }
+          }
+        }
+      }
+    },
+    "OPSD_EuroGrid": {
+      "reference_arm": "GP-FTA-ECKG",
+      "source_simulation_calls": 1428,
+      "n_solver_trajectories": 24,
+      "n_logged_evaluations": 468,
+      "budgets": {
+        "60": {
+          "methods": {
+            "ColdInit-MetaPrior-SURE-ECKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.8571428571428571,
+              "abstention_rate": 0.1428571428571429,
+              "task_certified_rate_mean": 0.8571428571428571,
+              "conditional_certified_obj_mean": 0.060484420301876396,
+              "conditional_certified_obj_se": 0.004822593399860119,
+              "primary_slot0_obj_mean": 0.055395600601942645,
+              "status_quo_loss_task_mean": 0.058465121649350874,
+              "status_quo_loss_task_se": 0.006014337857611725,
+              "status_quo_loss_run_mean": 0.058465121649350894,
+              "status_quo_loss_run_se": 0.004232598349374819,
+              "fixed_reject_loss_10pct_task_mean": 0.059127254931267983,
+              "deployed_mc_viol_prob_mean": 0.011328125000000001,
+              "verif_law_mc_viol_prob_mean": 0.003671875,
+              "audit_point_fc_count": 2,
+              "safety_audit_breakdown": {
+                "confidently_safe": 20,
+                "abstained_not_deployed": 4,
+                "confidently_unsafe": 1,
+                "boundary_ambiguous": 3
+              },
+              "selected_role_breakdown": {
+                "conservative_posterior_interior": 5,
+                "posterior_primary": 15,
+                "empirical_feasible_incumbent": 4,
+                "abstained_uncertified": 4
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 275.85714285714283,
+              "mean_total_target_calls": 411.85714285714283,
+              "mean_online_wall_sec": 32.38583956878366,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.9285714285714286,
+              "abstention_rate": 0.0714285714285714,
+              "task_certified_rate_mean": 0.9285714285714286,
+              "conditional_certified_obj_mean": 0.05727020780266063,
+              "conditional_certified_obj_se": 0.004712862259630927,
+              "primary_slot0_obj_mean": 0.05477836464343743,
+              "status_quo_loss_task_mean": 0.056574663885115305,
+              "status_quo_loss_task_se": 0.006274879799307133,
+              "status_quo_loss_run_mean": 0.05657466388511529,
+              "status_quo_loss_run_se": 0.004396597044862373,
+              "fixed_reject_loss_10pct_task_mean": 0.05691418240623692,
+              "deployed_mc_viol_prob_mean": 0.008230769230769232,
+              "verif_law_mc_viol_prob_mean": 0.002923076923076923,
+              "audit_point_fc_count": 1,
+              "safety_audit_breakdown": {
+                "confidently_safe": 25,
+                "abstained_not_deployed": 2,
+                "confidently_unsafe": 1
+              },
+              "selected_role_breakdown": {
+                "conservative_posterior_interior": 6,
+                "empirical_feasible_incumbent": 7,
+                "posterior_primary": 13,
+                "abstained_uncertified": 2
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 256.7142857142857,
+              "mean_total_target_calls": 392.7142857142857,
+              "mean_online_wall_sec": 32.76718012183638,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.9285714285714286,
+              "abstention_rate": 0.0714285714285714,
+              "task_certified_rate_mean": 0.9285714285714286,
+              "conditional_certified_obj_mean": 0.05755788822036065,
+              "conditional_certified_obj_se": 0.004880591872029325,
+              "primary_slot0_obj_mean": 0.05628137762343844,
+              "status_quo_loss_task_mean": 0.05712534910656137,
+              "status_quo_loss_task_se": 0.006490458493471711,
+              "status_quo_loss_run_mean": 0.05712534910656137,
+              "status_quo_loss_run_se": 0.00453929086199314,
+              "fixed_reject_loss_10pct_task_mean": 0.05749322296818403,
+              "deployed_mc_viol_prob_mean": 0.0066298076923076935,
+              "verif_law_mc_viol_prob_mean": 0.0051730769230769235,
+              "audit_point_fc_count": 2,
+              "safety_audit_breakdown": {
+                "confidently_safe": 24,
+                "confidently_unsafe": 2,
+                "abstained_not_deployed": 2
+              },
+              "selected_role_breakdown": {
+                "empirical_feasible_incumbent": 7,
+                "posterior_primary": 12,
+                "conservative_posterior_interior": 7,
+                "abstained_uncertified": 2
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 266.7142857142857,
+              "mean_total_target_calls": 402.7142857142857,
+              "mean_online_wall_sec": 31.604522536675045,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "GP-FTA-ECKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.8928571428571429,
+              "abstention_rate": 0.1071428571428571,
+              "task_certified_rate_mean": 0.8928571428571429,
+              "conditional_certified_obj_mean": 0.05818701741171309,
+              "conditional_certified_obj_se": 0.004780873691618502,
+              "primary_slot0_obj_mean": 0.05610890752821568,
+              "status_quo_loss_task_mean": 0.05749550111342452,
+              "status_quo_loss_task_se": 0.006097300066800086,
+              "status_quo_loss_run_mean": 0.05749550111342453,
+              "status_quo_loss_run_se": 0.004290206201131745,
+              "fixed_reject_loss_10pct_task_mean": 0.058049781813006886,
+              "deployed_mc_viol_prob_mean": 0.012000000000000002,
+              "verif_law_mc_viol_prob_mean": 0.004665,
+              "audit_point_fc_count": 4,
+              "safety_audit_breakdown": {
+                "confidently_safe": 21,
+                "abstained_not_deployed": 3,
+                "confidently_unsafe": 2,
+                "boundary_ambiguous": 2
+              },
+              "selected_role_breakdown": {
+                "empirical_feasible_incumbent": 6,
+                "conservative_posterior_interior": 4,
+                "posterior_primary": 15,
+                "abstained_uncertified": 3
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 256.7142857142857,
+              "mean_total_target_calls": 392.7142857142857,
+              "mean_online_wall_sec": 32.769874813999714,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "GP-FTA-FeasibleKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.8928571428571429,
+              "abstention_rate": 0.1071428571428571,
+              "task_certified_rate_mean": 0.8928571428571429,
+              "conditional_certified_obj_mean": 0.061187589100519066,
+              "conditional_certified_obj_se": 0.004338638214811815,
+              "primary_slot0_obj_mean": 0.0567415224051658,
+              "status_quo_loss_task_mean": 0.05950664058845458,
+              "status_quo_loss_task_se": 0.005657881902887805,
+              "status_quo_loss_run_mean": 0.0595066405884546,
+              "status_quo_loss_run_se": 0.003982021346177668,
+              "fixed_reject_loss_10pct_task_mean": 0.05999412704903941,
+              "deployed_mc_viol_prob_mean": 0.008655000000000001,
+              "verif_law_mc_viol_prob_mean": 0.00229,
+              "audit_point_fc_count": 2,
+              "safety_audit_breakdown": {
+                "abstained_not_deployed": 3,
+                "confidently_safe": 22,
+                "boundary_ambiguous": 2,
+                "confidently_unsafe": 1
+              },
+              "selected_role_breakdown": {
+                "abstained_uncertified": 3,
+                "empirical_feasible_incumbent": 7,
+                "posterior_primary": 13,
+                "conservative_posterior_interior": 5
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 261.7142857142857,
+              "mean_total_target_calls": 397.7142857142857,
+              "mean_online_wall_sec": 9.79706027525078,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "GP-FTA-LOO-ECKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.8928571428571429,
+              "abstention_rate": 0.1071428571428571,
+              "task_certified_rate_mean": 0.8928571428571429,
+              "conditional_certified_obj_mean": 0.0568050012075736,
+              "conditional_certified_obj_se": 0.004710053495386323,
+              "primary_slot0_obj_mean": 0.055287299309860684,
+              "status_quo_loss_task_mean": 0.056425483990220106,
+              "status_quo_loss_task_se": 0.005985063956543673,
+              "status_quo_loss_run_mean": 0.056425483990220106,
+              "status_quo_loss_run_se": 0.004228652286759763,
+              "fixed_reject_loss_10pct_task_mean": 0.05699615728142304,
+              "deployed_mc_viol_prob_mean": 0.009105,
+              "verif_law_mc_viol_prob_mean": 0.00147,
+              "audit_point_fc_count": 3,
+              "safety_audit_breakdown": {
+                "confidently_safe": 22,
+                "abstained_not_deployed": 3,
+                "confidently_unsafe": 1,
+                "boundary_ambiguous": 2
+              },
+              "selected_role_breakdown": {
+                "conservative_posterior_interior": 7,
+                "posterior_primary": 14,
+                "abstained_uncertified": 3,
+                "empirical_feasible_incumbent": 4
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 257.14285714285717,
+              "mean_total_target_calls": 393.14285714285717,
+              "mean_online_wall_sec": 33.48107830464973,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "GP-FTA-SingleSlotKG": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.8928571428571429,
+              "abstention_rate": 0.1071428571428571,
+              "task_certified_rate_mean": 0.8928571428571429,
+              "conditional_certified_obj_mean": 0.059300478908364616,
+              "conditional_certified_obj_se": 0.004738226217595156,
+              "primary_slot0_obj_mean": 0.05602403889960615,
+              "status_quo_loss_task_mean": 0.058310887316787165,
+              "status_quo_loss_task_se": 0.006030067642098986,
+              "status_quo_loss_run_mean": 0.05831088731678717,
+              "status_quo_loss_run_se": 0.004262806437436243,
+              "fixed_reject_loss_10pct_task_mean": 0.0588472904316476,
+              "deployed_mc_viol_prob_mean": 0.008385,
+              "verif_law_mc_viol_prob_mean": 0.0019850000000000002,
+              "audit_point_fc_count": 3,
+              "safety_audit_breakdown": {
+                "confidently_safe": 22,
+                "abstained_not_deployed": 3,
+                "confidently_unsafe": 2,
+                "boundary_ambiguous": 1
+              },
+              "selected_role_breakdown": {
+                "conservative_posterior_interior": 6,
+                "posterior_primary": 12,
+                "abstained_uncertified": 3,
+                "empirical_feasible_incumbent": 7
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 265.85714285714283,
+              "mean_total_target_calls": 401.85714285714283,
+              "mean_online_wall_sec": 11.467676997816723,
+              "mean_source_pretrain_wall_sec": 0.0
+            },
+            "PublicPsi-TargetGP-TS": {
+              "n_runs": 28,
+              "n_independent_tasks": 14,
+              "certified_rate": 0.8928571428571429,
+              "abstention_rate": 0.1071428571428571,
+              "task_certified_rate_mean": 0.8928571428571429,
+              "conditional_certified_obj_mean": 0.05811178629471188,
+              "conditional_certified_obj_se": 0.00498091737243603,
+              "primary_slot0_obj_mean": 0.05581511001061503,
+              "status_quo_loss_task_mean": 0.057428330473244873,
+              "status_quo_loss_task_se": 0.006409867823491061,
+              "status_quo_loss_run_mean": 0.057428330473244873,
+              "status_quo_loss_run_se": 0.004466797247550227,
+              "fixed_reject_loss_10pct_task_mean": 0.05798261117282723,
+              "deployed_mc_viol_prob_mean": 0.009089999999999999,
+              "verif_law_mc_viol_prob_mean": 0.004705,
+              "audit_point_fc_count": 2,
+              "safety_audit_breakdown": {
+                "confidently_safe": 22,
+                "abstained_not_deployed": 3,
+                "confidently_unsafe": 2,
+                "boundary_ambiguous": 1
+              },
+              "selected_role_breakdown": {
+                "posterior_primary": 16,
+                "conservative_posterior_interior": 4,
+                "abstained_uncertified": 3,
+                "empirical_feasible_incumbent": 5
+              },
+              "mean_search_calls": 136.0,
+              "mean_verification_calls": 256.2857142857143,
+              "mean_total_target_calls": 392.2857142857143,
+              "mean_online_wall_sec": 9.438071014692209,
+              "mean_source_pretrain_wall_sec": 0.0
+            }
+          },
+          "paired_task_level_vs_ref": {
+            "ColdInit-MetaPrior-SURE-ECKG": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": 0.0009696205359263568,
+              "se_saving_status_quo_loss": 0.0010143909000694016,
+              "mean_rel_improvement_pct": 1.568124767734535,
+              "task_wins_losses_ties": [
+                8,
+                5,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.1878662109375,
+              "paired_t_one_sided_p": 0.17828948989090299,
+              "holm_adjusted_p": 1.0
+            },
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": -0.0009208372283092311,
+              "se_saving_status_quo_loss": 0.0014933938212147119,
+              "mean_rel_improvement_pct": -3.698993143885666,
+              "task_wins_losses_ties": [
+                6,
+                8,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.61956787109375,
+              "paired_t_one_sided_p": 0.7259297249848924,
+              "holm_adjusted_p": 1.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": -0.0003701520068631567,
+              "se_saving_status_quo_loss": 0.0012214130540855247,
+              "mean_rel_improvement_pct": -2.111303386262586,
+              "task_wins_losses_ties": [
+                4,
+                10,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.786865234375,
+              "paired_t_one_sided_p": 0.6166774330517404,
+              "holm_adjusted_p": 1.0
+            },
+            "GP-FTA-FeasibleKG": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": 0.002011139475030068,
+              "se_saving_status_quo_loss": 0.0010069273584399352,
+              "mean_rel_improvement_pct": 4.890426205841122,
+              "task_wins_losses_ties": [
+                8,
+                5,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.095458984375,
+              "paired_t_one_sided_p": 0.033581913218353875,
+              "holm_adjusted_p": 0.668212890625
+            },
+            "GP-FTA-LOO-ECKG": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": -0.0010700171232044323,
+              "se_saving_status_quo_loss": 0.0007011373082269644,
+              "mean_rel_improvement_pct": -1.632969240118674,
+              "task_wins_losses_ties": [
+                4,
+                9,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.891845703125,
+              "paired_t_one_sided_p": 0.9245316515550435,
+              "holm_adjusted_p": 1.0
+            },
+            "GP-FTA-SingleSlotKG": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": 0.0008153862033626376,
+              "se_saving_status_quo_loss": 0.0012769890171221237,
+              "mean_rel_improvement_pct": 1.8143236851321722,
+              "task_wins_losses_ties": [
+                8,
+                6,
+                0
+              ],
+              "wilcoxon_one_sided_p": 0.213134765625,
+              "paired_t_one_sided_p": 0.2671107579634818,
+              "holm_adjusted_p": 1.0
+            },
+            "PublicPsi-TargetGP-TS": {
+              "n_tasks": 14,
+              "mean_saving_status_quo_loss": -6.71706401796544e-05,
+              "se_saving_status_quo_loss": 0.001092132414701825,
+              "mean_rel_improvement_pct": -2.0262005356949535,
+              "task_wins_losses_ties": [
+                7,
+                6,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.5,
+              "paired_t_one_sided_p": 0.5240533658492375,
+              "holm_adjusted_p": 1.0
+            }
+          },
+          "paired_run_level_vs_ref": {
+            "ColdInit-MetaPrior-SURE-ECKG": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": 0.0009696205359263582,
+              "mean_rel_improvement_pct": -0.3931983738077949,
+              "run_wins_losses_ties": [
+                15,
+                10,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.2209186851978302,
+              "holm_adjusted_p": 1.0
+            },
+            "ColdInit-SourceBasisWeak-ECKG": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": -0.00092083722830923,
+              "mean_rel_improvement_pct": -4.3168064666124195,
+              "run_wins_losses_ties": [
+                16,
+                11,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.42965641617774963,
+              "holm_adjusted_p": 1.0
+            },
+            "ColdPsi-TargetGP-ECKG": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": -0.00037015200686315523,
+              "mean_rel_improvement_pct": -2.611008136097114,
+              "run_wins_losses_ties": [
+                10,
+                17,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.6777087822556496,
+              "holm_adjusted_p": 1.0
+            },
+            "GP-FTA-FeasibleKG": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": 0.0020111394750300694,
+              "mean_rel_improvement_pct": 4.146430230090264,
+              "run_wins_losses_ties": [
+                17,
+                8,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.06682002544403076,
+              "holm_adjusted_p": 0.46774017810821533
+            },
+            "GP-FTA-LOO-ECKG": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": -0.0010700171232044338,
+              "mean_rel_improvement_pct": -1.8588593447647885,
+              "run_wins_losses_ties": [
+                9,
+                17,
+                2
+              ],
+              "wilcoxon_one_sided_p": 0.8865207433700562,
+              "holm_adjusted_p": 1.0
+            },
+            "GP-FTA-SingleSlotKG": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": 0.0008153862033626399,
+              "mean_rel_improvement_pct": 1.5990558422365841,
+              "run_wins_losses_ties": [
+                15,
+                12,
+                1
+              ],
+              "wilcoxon_one_sided_p": 0.1741638034582138,
+              "holm_adjusted_p": 1.0
+            },
+            "PublicPsi-TargetGP-TS": {
+              "n_pairs": 28,
+              "mean_saving_status_quo_loss": -6.717064017965305e-05,
+              "mean_rel_improvement_pct": -1.8935806152969439,
+              "run_wins_losses_ties": [
+                13,
+                12,
+                3
+              ],
+              "wilcoxon_one_sided_p": 0.5525697767734528,
+              "holm_adjusted_p": 1.0
+            }
+          }
+        }
+      }
+    }
+  },
+  "stage_attempt_fees": {
+    "source_archive": {
+      "attempt_status": {},
+      "attempted_calls_recorded": {},
+      "cpu_time_sec_recorded": 0,
+      "wall_time_sec_recorded": 0,
+      "unfinished_attempts": []
+    },
+    "search_and_verify": {
+      "attempt_status": {
+        "ok": 656
+      },
+      "attempted_calls_recorded": {
+        "search": 89216,
+        "verification": 167752
+      },
+      "cpu_time_sec_recorded": 21953.08556227902,
+      "wall_time_sec_recorded": 22651.47564338427,
+      "unfinished_attempts": []
+    },
+    "audit_anchors": {
+      "attempt_status": {
+        "ok": 86
+      },
+      "attempted_calls_recorded": {
+        "audit": 144000
+      },
+      "cpu_time_sec_recorded": 39.57717942,
+      "wall_time_sec_recorded": 40.21345989219844,
+      "unfinished_attempts": []
+    },
+    "audit_and_summarize": {
+      "attempt_status": {
+        "ok": 656
+      },
+      "attempted_calls_recorded": {
+        "audit": 1206000
+      },
+      "cpu_time_sec_recorded": 1094.7298605259996,
+      "wall_time_sec_recorded": 1144.037468019873,
+      "unfinished_attempts": []
+    }
+  },
+  "call_accounting": {
+    "source_simulation_calls_new": 0,
+    "source_refits_new": 0,
+    "search_calls_used": 89216,
+    "terminal_verification_calls_used": 167752,
+    "target_call_cap_total": 338496,
+    "anchor_audit_calls_used": 256000,
+    "policy_audit_calls_used": 5198000,
+    "verification_law_audit_calls_used": 0
+  }
+}

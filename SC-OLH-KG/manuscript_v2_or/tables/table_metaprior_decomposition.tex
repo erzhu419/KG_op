@@ -1,0 +1,20 @@
+\begin{table}[htbp]\centering\scriptsize
+\caption{Closed-loop source-prior comparisons and held-out predictions after eight shared observations. In Panel A positive differences favor ColdMeta over ColdPsi or BasisWeak, and FullWarm over ColdMeta. Parentheses give the Holm-adjusted paired \(p\) for the two prespecified cold contrasts in each family and the exploratory unadjusted \(p\) for the warm contrast. The warm configuration changes initialization, subsequent proposals and source variance regularization. Panel B reports objective rank correlation. The last three columns give standardized RMS changes in summary, objective and constraint for the selected raw-policy perturbations.}\label{tab:metaprior_decomp}
+\resizebox{\textwidth}{!}{\begin{tabular}{lrrrrrrr}\toprule
+\multicolumn{8}{l}{\textbf{A. Operating loss and task-paired contrasts}} \\
+Domain & ColdPsi & BasisWeak & ColdMeta & FullWarm & ColdPsi $-$ ColdMeta & BasisWeak $-$ ColdMeta & ColdMeta $-$ FullWarm \\
+\midrule
+Inventory (24) & $1.8217$ & $1.8226$ & $1.8097$ & $1.8065$ & $+0.01200$ ($0.055$) & $+0.01294$ ($0.136$) & $+0.00322$ ($0.626$) \\
+Queueing (24) & $2.6082$ & $2.5859$ & $2.6102$ & $2.5649$ & $-0.00199$ ($0.912$) & $-0.02429$ ($0.156$) & $+0.04528$ ($0.003$) \\
+OPSD-336 (14) & $0.0571$ & $0.0566$ & $0.0585$ & $0.0575$ & $-0.00134$ ($0.398$) & $-0.00189$ ($0.134$) & $+0.00097$ ($0.357$) \\
+Traffic-21 (24) & $1.0727$ & $1.1025$ & $1.0805$ & $1.0790$ & $-0.00779$ ($0.540$) & $+0.02193$ ($0.470$) & $+0.00155$ ($0.920$) \\
+\bottomrule\end{tabular}}\par\smallskip
+\begin{tabular}{lrrrrrrr}\toprule
+\multicolumn{8}{l}{\textbf{B. Held-out policy ranks and perturbation sizes}} \\
+Domain & Raw & Scrambled & Diagonal & Full & $\psi$ RMS & Objective RMS & Constraint RMS \\
+\midrule
+Inventory & $0.705$ & $0.652$ & $0.793$ & $0.790$ & $0.47$ & $0.18$ & $0.18$ \\
+Queueing & $0.791$ & $0.755$ & $0.786$ & $0.785$ & $0.16$ & $0.17$ & $0.31$ \\
+OPSD-336 & $0.272$ & $0.255$ & $0.277$ & $0.275$ & $2.82$ & $1.60$ & $0.57$ \\
+Traffic-21 & $0.535$ & $0.553$ & $0.557$ & $0.560$ & $0.13$ & $0.18$ & $0.17$ \\
+\bottomrule\end{tabular}\end{table}

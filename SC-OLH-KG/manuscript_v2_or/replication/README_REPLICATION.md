@@ -1,6 +1,6 @@
 # GP-FTA Operations Research replication bundle
 
-This controlled archive packages the LaTeX manuscript (`SC-OLH-KG/manuscript_v2_or/main_or.tex`), active `SC-OLH-KG/v2_or` software (`v2_or_eckg_sure_confirm_v1`), frozen historical snapshots (`frozen_referee/`, `frozen_independent/`, `frozen_u3/`), mechanized Lean 4.31.0 proofs (`proof/`), third-party benchmark inputs (`SC-OLH-KG/data/`), and all sealed CSV ledgers and JSON summaries (`SC-OLH-KG/paper_artifacts/`).
+This controlled archive packages the LaTeX manuscript (`SC-OLH-KG/manuscript_v2_or/main_or.tex`), the Python implementation that ran `v2_or_eckg_sure_confirm_v1` and `v2_or_metaprior_opsd_confirm_v1` (720 and 656 distinct runs), historical snapshots (`frozen_referee/`, `frozen_independent/`, `frozen_u3/`), mechanized Lean 4.31.0 proofs (`proof/`), third-party benchmark inputs (`SC-OLH-KG/data/`), and the sealed ledgers and diagnostics (`SC-OLH-KG/paper_artifacts/`). The grid accounting update for subsequent runs is in `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py`.
 
 ## Verification, unit tests, table regeneration, and LaTeX build
 
@@ -22,6 +22,28 @@ python SC-OLH-KG/manuscript_v2_or/build_u4_tables_and_figures.py --output-dir "$
   bibtex main_or && pdflatex -interaction=nonstopmode -halt-on-error main_or.tex &&
   pdflatex -interaction=nonstopmode -halt-on-error main_or.tex &&
   pdflatex -interaction=nonstopmode -halt-on-error main_or.tex)
+```
+
+## Rebuild the fine-grained diagnostic summaries
+
+The 86-task propagation audit and the original reference evaluation at two states on each of 12 tasks are distributed with their complete compact item sets. The corrected reference file adds actual shortlist indices and complete 160-candidate vectors for both menu resolutions and the single-nomination reference. The two-file patch in `scripts/eckg_reference_diagnostic.patch` records how these vectors were collected. The commands below use the included JSON files and make zero simulation calls.
+
+```bash
+prosp=SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1
+mp_opsd=SC-OLH-KG/paper_artifacts/v2_or_metaprior_opsd_confirm_v1
+diag_dir=$(mktemp -d)
+python scripts/run_eckg_reference_validation.py summarize --out-dir "$prosp/eckg_ref_val" \
+  --summary-path "$diag_dir/eckg_reference_validation_readout.json"
+python scripts/run_metaprior_propagation_audit.py summarize --out-dir "$mp_opsd/propagation_audit" \
+  --summary-path "$diag_dir/metaprior_propagation_readout.json"
+cmp "$prosp/eckg_reference_validation_readout.json" "$diag_dir/eckg_reference_validation_readout.json"
+cmp "$mp_opsd/metaprior_propagation_readout.json" "$diag_dir/metaprior_propagation_readout.json"
+python summarize_inventory_covariance.py "$mp_opsd/propagation_audit" \
+  --output "$diag_dir/inventory_covariance_readout.json"
+cmp "$mp_opsd/inventory_covariance_readout.json" "$diag_dir/inventory_covariance_readout.json"
+python scripts/summarize_eckg_reference_correction.py summarize \
+  --states "$prosp/eckg_reference_states.json" --output "$diag_dir/eckg_reference_validation_corrected.json"
+cmp "$prosp/eckg_reference_validation_corrected.json" "$diag_dir/eckg_reference_validation_corrected.json"
 ```
 
 ## Live SUMO adapter and Lean 4.31.0 proof verification

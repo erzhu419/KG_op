@@ -1,16 +1,33 @@
 \begin{table}[htbp]
 \centering
-\caption{Complete early ($n=0$, $N_0=8$) and near-terminal ($n=59$, before the 60th online batch) query census across all 24 queueing tasks and all 24 traffic tasks ($96$ states total, $160$ candidate queries per state). Dual VOI decomposes $\widehat{\mathrm{VOI}}_n^{\mathrm{EC}}(q_\star) = \widehat{\mathrm{VOI}}_n^{\mathrm{refine}}(q_\star) + \widehat{\mathrm{VOI}}_n^{\mathrm{admit}}(q_\star)$ on the post-query eligible set $\mathcal{D}_n \cup \{q\}$.}\label{tab:prefix_census}
+\caption{Menu diagnostics and single-nomination scores. Panel A uses 96 separate diagnostic states (screen cap 24). Panels B and C use 24 production-stream states, six per family and stage. The $256\times1{,}024$ reference scores all 160 candidates under the frozen model. Panel B reports mean single-nomination gains ($\times10^{-3}$), wins or ties among the six states, and execution times in seconds. Panel C compares the $16\times128$ and reference menu scores over all 160 candidates. Hits count first-argmax reference winner IDs in the logged production screen. MAE averages absolute menu-score discrepancies. Screen loss compares the best reference nomination overall and in the screen, and query loss compares it to the production choice (both $\times10^{-3}$).}\label{tab:prefix_census}
 \scriptsize
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llccccccccc}
+\begin{tabular}{llcccccccc}
 \toprule
-\textbf{Stage} & \textbf{Family ($n=24$)} & \textbf{$|\mathcal{D}_n|$} & \textbf{Diff.\ vs.\ Slot-0} & \textbf{Diff.\ vs.\ Feas.} & \textbf{EC-KG Revisit} & \textbf{$\widehat{\mathrm{VOI}}^{\mathrm{EC}}$ ($\times 10^{-3}$)} & \textbf{Refine / Admit Share} & \textbf{Slot-0 VOI ($\times 10^{-3}$)} & \textbf{Mean / P95 Wall (s)} \\
+\multicolumn{10}{l}{\textbf{Panel A: 96-State Menu-Proxy Mechanism Diagnostic ($n=24$ tasks per family, up to $24$ of $160$ candidates)}} \\
+\textbf{Stage} & \textbf{Family} & \textbf{$|\mathcal{D}_n|$} & \textbf{Diff.\ vs.\ Slot-0} & \textbf{Diff.\ vs.\ Feas.} & \textbf{EC-KG Revisit} & \textbf{$\widehat{\mathrm{VOI}}^{\mathrm{EC}}$ ($\times 10^{-3}$)} & \textbf{Refine / Admit} & \textbf{Slot-0 ($\times 10^{-3}$)} & \textbf{Wall Mean / P95 (s)} \\
 \midrule
 Initial ($n=0$) & Queueing & 8.0 & 14/24 (58.3\%) & 15/24 (62.5\%) & 0/24 (0.0\%) & $183.138$ & 0.9\% / 99.1\% & $153.312$ & 0.46 / 0.50 \\
 Initial ($n=0$) & Traffic-21 & 8.0 & 11/24 (45.8\%) & 11/24 (45.8\%) & 0/24 (0.0\%) & $89.359$ & 0.5\% / 99.5\% & $73.656$ & 0.63 / 0.84 \\
-Near-terminal ($n=59$) & Queueing & 51.5 & 17/24 (70.8\%) & 18/24 (75.0\%) & 6/24 (25.0\%) & $1.361$ & 53.0\% / 47.0\% & $0.584$ & 0.68 / 0.77 \\
-Near-terminal ($n=59$) & Traffic-21 & 47.0 & 23/24 (95.8\%) & 20/24 (83.3\%) & 14/24 (58.3\%) & $0.936$ & 51.5\% / 48.5\% & $0.623$ & 0.68 / 0.81 \\
+Near-term.\ ($n=59$) & Queueing & 51.5 & 17/24 (70.8\%) & 18/24 (75.0\%) & 6/24 (25.0\%) & $1.361$ & 53.0\% / 47.0\% & $0.584$ & 0.68 / 0.77 \\
+Near-term.\ ($n=59$) & Traffic-21 & 47.0 & 23/24 (95.8\%) & 20/24 (83.3\%) & 14/24 (58.3\%) & $0.936$ & 51.5\% / 48.5\% & $0.623$ & 0.68 / 0.81 \\
+\midrule
+\multicolumn{10}{l}{\textbf{B. Single-nomination value of the selected query under the reference model}} \\
+Stage & Family & All-160 best & EC-KG & Slot-0 & Feas. & EC $\ge$ Slot-0 & EC $\ge$ Feas. & Fast (s) & Ref. (s) \\
+\midrule
+Initial & Queueing & 147.525 & 145.120 & 97.656 & 131.821 & 6/6 & 6/6 & 0.23 & 59.2 \\
+Initial & Traffic-21 & 40.122 & 34.442 & 2.626 & 26.178 & 6/6 & 5/6 & 0.25 & 58.9 \\
+Step 59 & Queueing & 3.537 & 3.077 & 0.528 & 0.282 & 5/6 & 5/6 & 0.34 & 67.1 \\
+Step 59 & Traffic-21 & 0.768 & 0.705 & 0.248 & 0.041 & 5/6 & 5/6 & 0.35 & 66.4 \\
+\midrule
+\multicolumn{10}{l}{\textbf{C. Logged Stage A membership and all-candidate finite-grid error}} \\
+Stage & Family & Mean screen size & Menu hits & Nomination hits & Mean Spearman & Defined & MAE ($\times10^{-3}$) & Screen loss & Query loss \\
+\midrule
+Initial & Queueing & 14.2 & 6/6 & 6/6 & 0.923 & 6/6 & 2.106 & 0.000 & 2.406 \\
+Initial & Traffic-21 & 14.3 & 6/6 & 5/6 & 0.886 & 6/6 & 1.573 & 0.563 & 5.680 \\
+Step 59 & Queueing & 16.0 & 1/6 & 1/6 & 0.814 & 6/6 & 0.202 & 0.458 & 0.460 \\
+Step 59 & Traffic-21 & 15.8 & 5/6 & 6/6 & 0.847 & 5/6 & 0.022 & 0.000 & 0.064 \\
 \bottomrule
 \end{tabular}%
 }

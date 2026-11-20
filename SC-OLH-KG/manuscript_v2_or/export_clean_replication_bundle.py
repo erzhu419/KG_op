@@ -32,6 +32,7 @@ REFEREE_ARCHIVE = Path("frozen_referee/SC-OLH-KG")
 REFEREE_COMMIT = "fa22a8f970b81ce54c58cafcbfc7f812aff130f5"
 REFEREE_SHA256 = "905eca832b0973cba9710693d17e09050e94b03471cb387308d0052d947a4f3d"
 
+PROSPECTIVE_COMMIT = "5454c63a56bd8310730c4d425b5a7eaefd1f2f96"
 PROSPECTIVE_SHA256 = "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b"
 
 U3_COHORTS = ("v2_or_u3_confirm_v1", "v2_or_u3_live_sumo_v1", "v2_or_u3_messy_archive_v1")
@@ -39,6 +40,7 @@ FRESH_COHORT = "v2_or_kg_quadrature_confirm_v1"
 REFEREE_COHORT = "v2_or_gpfta_referee_ablation_v1"
 REVIEW3_DIAGNOSTIC = "v2_or_gpfta_review3_v1"
 PROSPECTIVE_COHORT = "v2_or_eckg_sure_confirm_v1"
+METAPRIOR_OPSD_COHORT = "v2_or_metaprior_opsd_confirm_v1"
 
 LEDGER_COHORTS = (
     "v2_or_p1_gate_check_v1",
@@ -51,16 +53,20 @@ LEDGER_COHORTS = (
     FRESH_COHORT,
     REFEREE_COHORT,
     PROSPECTIVE_COHORT,
+    METAPRIOR_OPSD_COHORT,
 )
 
 ROOT_REPLICATION_FILES = (
     "README_REPLICATION.md",
     "LICENSES.md",
+    "PREREGISTRATION_METAPRIOR_OPSD_20261120.json",
     "requirements.txt",
     "requirements-live-sumo.txt",
     "RESCO_INGOLSTADT21_LICENSE.txt",
     "verify_inputs.py",
     "summarize_prospective_panel.py",
+    "summarize_metaprior_opsd_panel.py",
+    "summarize_inventory_covariance.py",
     "summarize_cascade_prefix.py",
     "audit_rev2_cascade_scope.py",
     "summarize_eligible_prefix.py",
@@ -139,7 +145,7 @@ def _check_archived_bindings(root: Path, entries: list[dict]) -> dict[str, str]:
             _check_panel_binding(sc_root, root / INDEPENDENT_ARCHIVE, cohort, summary, INDEPENDENT_SHA256)
         elif cohort == REFEREE_COHORT:
             _check_panel_binding(sc_root, root / REFEREE_ARCHIVE, cohort, summary, REFEREE_SHA256)
-        elif cohort == PROSPECTIVE_COHORT:
+        elif cohort in {PROSPECTIVE_COHORT, METAPRIOR_OPSD_COHORT}:
             _check_panel_binding(sc_root, sc_root, cohort, summary, PROSPECTIVE_SHA256)
         for name in ("per_run_ledger", "per_slot_certificates"):
             csv = directory / f"{name}.csv"
@@ -169,7 +175,7 @@ def _extract_git_v2(stage: Path, subdir: str, commit: str) -> Path:
     return dest_root / "SC-OLH-KG"
 
 
-def collect_clean_replication_files(independent_tree: Path, referee_tree: Path) -> dict[Path, Path]:
+def collect_clean_replication_files(independent_tree: Path, referee_tree: Path, prospective_tree: Path) -> dict[Path, Path]:
     files: dict[Path, Path] = {}
 
     def add(source: Path, destination: Path | None = None) -> None:
@@ -178,12 +184,18 @@ def collect_clean_replication_files(independent_tree: Path, referee_tree: Path) 
         files[destination or source.relative_to(REPO_ROOT)] = source
 
     for path in (SC_ROOT / "v2_or").rglob("*"):
-        if path.is_file() and "__pycache__" not in path.parts and path.suffix in {".py", ".json", ".md"}:
+        if path.is_file() and path.suffix in {".json", ".md"}:
             add(path)
+    for path in (prospective_tree / "v2_or").rglob("*.py"):
+        add(path, Path(SC_ROOT.name) / path.relative_to(prospective_tree))
     # The sealed execution predates moving these launchers to scripts/.
     for launcher in ("run_v2_lean_cluster.py", "sync_v2_cluster.py"):
         relative = Path("v2_or/dispatch") / launcher
         add(referee_tree / relative, Path(SC_ROOT.name) / relative)
+    grid_simulator = Path("v2_or/simulators/opsd_storage.py")
+    add(SC_ROOT / grid_simulator, Path("maintenance/SC-OLH-KG") / grid_simulator)
+    grid_test = Path("tests/test_opsd_audit_accounting.py")
+    add(SC_ROOT / grid_test, Path("maintenance/SC-OLH-KG") / grid_test)
 
     for path in (FROZEN_TREE / "v2_or").rglob("*"):
         if path.is_file() and "__pycache__" not in path.parts and path.suffix in {".py", ".json", ".md"}:
@@ -197,6 +209,10 @@ def collect_clean_replication_files(independent_tree: Path, referee_tree: Path) 
 
     for rel in (
         "scripts/scheduler_node_policy.py",
+        "scripts/run_metaprior_propagation_audit.py",
+        "scripts/run_eckg_reference_validation.py",
+        "scripts/eckg_reference_diagnostic.patch",
+        "scripts/summarize_eckg_reference_correction.py",
         "SC-OLH-KG/data/__init__.py",
         "SC-OLH-KG/data/opsd.py",
         "SC-OLH-KG/data/external/opsd_time_series_extended_v2.npz",
@@ -219,6 +235,15 @@ def collect_clean_replication_files(independent_tree: Path, referee_tree: Path) 
         add(path)
 
     artifacts = SC_ROOT / "paper_artifacts"
+    for cohort, diagnostic in (
+        (PROSPECTIVE_COHORT, "eckg_ref_val"),
+        (METAPRIOR_OPSD_COHORT, "propagation_audit"),
+    ):
+        diagnostic_dir = artifacts / cohort / diagnostic
+        descriptor = diagnostic_dir / "jobs.json"
+        add(descriptor)
+        for job in json.loads(descriptor.read_bytes())["jobs"]:
+            add(diagnostic_dir / "items" / f"{job['job_id']}.json")
     for cohort in LEDGER_COHORTS:
         for name in ("compact_summary.json", "per_run_ledger.csv", "per_slot_certificates.csv"):
             add(artifacts / cohort / name)
@@ -248,6 +273,15 @@ def collect_clean_replication_files(independent_tree: Path, referee_tree: Path) 
         artifacts / PROSPECTIVE_COHORT / "sealed_manifest.json",
         artifacts / PROSPECTIVE_COHORT / "prospective_panel_readout.json",
         artifacts / PROSPECTIVE_COHORT / "eckg_prefix_audit_readout.json",
+        artifacts / PROSPECTIVE_COHORT / "eckg_reference_validation_readout.json",
+        artifacts / PROSPECTIVE_COHORT / "eckg_reference_validation_corrected.json",
+        artifacts / PROSPECTIVE_COHORT / "eckg_reference_states.json",
+        artifacts / PROSPECTIVE_COHORT / "eckg_reference_correction_execution.json",
+        artifacts / METAPRIOR_OPSD_COHORT / "sealed_manifest.json",
+        artifacts / METAPRIOR_OPSD_COHORT / "metaprior_opsd_panel_readout.json",
+        artifacts / METAPRIOR_OPSD_COHORT / "as_reported/metaprior_opsd_panel_readout.json",
+        artifacts / METAPRIOR_OPSD_COHORT / "metaprior_propagation_readout.json",
+        artifacts / METAPRIOR_OPSD_COHORT / "inventory_covariance_readout.json",
     ):
         add(path)
     for directory in artifacts.glob("v2_or_*"):
@@ -289,7 +323,8 @@ def export_bundle(root: Path) -> dict:
         stage_path = Path(stage)
         indep = INDEPENDENT_TREE if INDEPENDENT_TREE.is_dir() else _extract_git_v2(stage_path, "indep", INDEPENDENT_COMMIT)
         referee = _extract_git_v2(stage_path, "referee", REFEREE_COMMIT)
-        files = collect_clean_replication_files(indep, referee)
+        prospective = _extract_git_v2(stage_path, "prospective", PROSPECTIVE_COMMIT)
+        files = collect_clean_replication_files(indep, referee, prospective)
         root.mkdir(parents=True)
         for relative, source in sorted(files.items()):
             target = root / relative

@@ -1,0 +1,103 @@
+{
+  "job_id": "mpprop_Traffic_Ingolstadt_t22",
+  "family": "Traffic_Ingolstadt",
+  "target_task_idx": 22,
+  "task_id": "traffic_tls21_d44_022",
+  "policy_dim": 44,
+  "wall_sec": 9.125363362021744,
+  "models": {
+    "TargetGP-RawPsi": {
+      "shape_nrmse_obj": 0.7349775561317972,
+      "shape_nrmse_con": 0.7218913564080573,
+      "raw_nrmse_obj": 0.755174225766131,
+      "raw_nrmse_con": 0.7347697820899391,
+      "spearman_obj": 0.25329912023460405,
+      "spearman_con": 0.44464809384164217,
+      "feas_brier": 0.33053623773695495,
+      "var_buffer_coverage": 0.75,
+      "var_raw_coverage": 0.75,
+      "sure_lambda_obj": 0.0,
+      "sure_lambda_con": 0.0
+    },
+    "SourceBasis-WeakIso": {
+      "shape_nrmse_obj": 0.6409477857807769,
+      "shape_nrmse_con": 0.5645405300434565,
+      "raw_nrmse_obj": 0.6416312080125743,
+      "raw_nrmse_con": 0.5645658393664548,
+      "spearman_obj": 0.3914956011730205,
+      "spearman_con": 0.6151026392961876,
+      "feas_brier": 0.31908827411731966,
+      "var_buffer_coverage": 0.75,
+      "var_raw_coverage": 0.75,
+      "sure_lambda_obj": 0.0,
+      "sure_lambda_con": 0.0
+    },
+    "MetaPrior-Scrambled": {
+      "shape_nrmse_obj": 0.6781930670473975,
+      "shape_nrmse_con": 0.7381554167981499,
+      "raw_nrmse_obj": 0.6900826485663768,
+      "raw_nrmse_con": 0.7503669872141172,
+      "spearman_obj": 0.31854838709677413,
+      "spearman_con": 0.43071847507331373,
+      "feas_brier": 0.3309729103567235,
+      "var_buffer_coverage": 0.75,
+      "var_raw_coverage": 0.75,
+      "sure_lambda_obj": 0.9292327541818465,
+      "sure_lambda_con": 0.9332625872116508
+    },
+    "MetaPrior-DiagSURE": {
+      "shape_nrmse_obj": 0.6733156053258885,
+      "shape_nrmse_con": 0.6950271485375455,
+      "raw_nrmse_obj": 0.683741173880581,
+      "raw_nrmse_con": 0.7054295112308405,
+      "spearman_obj": 0.3024193548387097,
+      "spearman_con": 0.4908357771260997,
+      "feas_brier": 0.3292139917551341,
+      "var_buffer_coverage": 0.75,
+      "var_raw_coverage": 0.75,
+      "sure_lambda_obj": 0.884290612204159,
+      "sure_lambda_con": 0.8614629370331447
+    },
+    "MetaPrior-NoSURE": {
+      "shape_nrmse_obj": 0.5373849676086366,
+      "shape_nrmse_con": 0.4793757438496565,
+      "raw_nrmse_obj": 0.5423452731942078,
+      "raw_nrmse_con": 0.479425097193898,
+      "spearman_obj": 0.8793988269794721,
+      "spearman_con": 0.8852639296187683,
+      "feas_brier": 0.25481718066581016,
+      "var_buffer_coverage": 0.75,
+      "var_raw_coverage": 0.75,
+      "sure_lambda_obj": 0.0,
+      "sure_lambda_con": 0.0
+    },
+    "MetaPrior-FullSURE": {
+      "shape_nrmse_obj": 0.669974340242166,
+      "shape_nrmse_con": 0.6936779894810197,
+      "raw_nrmse_obj": 0.6800319669124396,
+      "raw_nrmse_con": 0.7037465397675087,
+      "spearman_obj": 0.3203812316715542,
+      "spearman_con": 0.4970674486803519,
+      "feas_brier": 0.32915855460180227,
+      "var_buffer_coverage": 0.75,
+      "var_raw_coverage": 0.75,
+      "sure_lambda_obj": 0.884290612204159,
+      "sure_lambda_con": 0.8614629370331447
+    }
+  },
+  "psi_fiber_audit": {
+    "n_pairs": 12,
+    "mean_raw_policy_rms_dist": 0.07933018469014294,
+    "mean_rel_psi_rms_dist": 0.0856095792823987,
+    "fiber_obj_rms_over_sd": 0.09418912827910046,
+    "fiber_con_rms_over_sd": 0.06875247952064131
+  },
+  "anchor_shift_pair": {
+    "viol_prob_shift_1_0": 0.3155,
+    "safety_class_shift_1_0": "confidently_unsafe",
+    "viol_prob_shift_1_3": 0.337,
+    "safety_class_shift_1_3": "confidently_unsafe",
+    "obj_shift_1_0": 1.0791093355701629,
+    "obj_shift_1_3": 1.0802563598587929
+  }
+}

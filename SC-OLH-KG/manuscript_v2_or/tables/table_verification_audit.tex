@@ -1,19 +1,23 @@
 \begin{table}[htbp]
 \centering
-\caption{Verification coverage and independent safety-audit classifications across sealed cohorts. Same-law exceedances count certified ENTSO-E grid deployments whose fresh 8,000-draw verification-pool point estimate exceeds $\alpha=0.05$; Cert.\ S/A/U classifies certified deployments on the held-out audit law via exact two-sided 95\% Clopper--Pearson intervals.}\label{tab:verification_audit}
+\caption{Verification and audit outcomes among certified policies. The two exceedance columns count point estimates above $5\%$, with their respective scored denominators. Grid verification-pool rechecks use 8,000 draws per deployment. S/A/U classifies the audit-pool 95\% Clopper--Pearson interval as below, overlapping or above $5\%$. Grid block pools span the same historical period.}\label{tab:verification_audit}
 \scriptsize
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \toprule
-\textbf{Cohort and Subset} & \textbf{Cert./runs} & \textbf{Abstained} & \textbf{Same-law exceed./scored} & \textbf{Cert.\ S/A/U} & \textbf{Unclassified} \\
+\textbf{Cohort and Subset} & \textbf{Cert./runs} & \textbf{Abstained} & \textbf{Verif.\ pool $>$5\%} & \textbf{Audit pool $>$5\%} & \textbf{Cert.\ S/A/U} & \textbf{Unclassified} \\
 \midrule
-Prospective 720-run panel, all 5 arms & 652/720 & 68 & --- & 651/1/0 & 0 \\
-Prospective 720-run panel, GP-FTA-ECKG & 130/144 & 14 & --- & 130/0/0 & 0 \\
-Shared 4-family \& raw-tail suite, all methods & 6144/7544 & 1400 & 0/1624 & 6015/39/90 & 0 \\
-OPSD Grid (clipped + unclipped), GP-FTA pair & 279/336 & 57 & 0/279 & 241/10/28 & 0 \\
-Heterogeneous enterprise archive, all methods & 1861/2108 & 247 & 0/422 & 1842/7/12 & 0 \\
-Calibrated live SUMO, all methods & 26/144 & 118 & --- & 10/16/0 & 0 \\
-Uncalibrated live SUMO stress runs & 0/40 & 40 & --- & --- & 0 \\
+Prospective 720-run DES panel, all 5 arms & 652/720 & 68 & --- & 0/652 & 651/1/0 & 0 \\
+Prospective 720-run DES panel, GP-FTA-ECKG & 130/144 & 14 & --- & 0/130 & 130/0/0 & 0 \\
+Prospective 336-dim OPSD Grid, all 8 arms & 201/224 & 23 & 0/201 & 19/201 & 178/11/12 & 0 \\
+Prospective 336-dim OPSD Grid, GP-FTA-ECKG & 25/28 & 3 & 0/25 & 4/25 & 21/2/2 & 0 \\
+Cold-init meta-prior DES ladder, all 3 arms & 394/432 & 38 & --- & 0/394 & 392/2/0 & 0 \\
+Shared 4-family \& raw-tail suite, all methods & 6144/7544 & 1400 & 0/1624 & 111/6144 & 6015/39/90 & 0 \\
+Shared OPSD Grid (clipped + raw), all methods & 1624/2072 & 448 & 0/1624 & 107/1624 & 1500/37/87 & 0 \\
+Shared OPSD Grid (clipped + raw), GP-FTA-KG/TS & 279/336 & 57 & 0/279 & 35/279 & 241/10/28 & 0 \\
+Heterogeneous enterprise archive, all methods & 1861/2108 & 247 & 0/422 & 17/1861 & 1842/7/12 & 0 \\
+Calibrated live SUMO, all methods & 26/144 & 118 & --- & 0/26 & 10/16/0 & 0 \\
+Uncalibrated live SUMO stress runs & 0/40 & 40 & --- & --- & --- & 0 \\
 \bottomrule
 \end{tabular}%
 }

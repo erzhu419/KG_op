@@ -366,11 +366,9 @@ class OPSDGridStorageBenchmark(BaseDynamicORProblem):
         rem = total_eval
         while rem > 0:
             b_sz = min(rem, 512)
-            idx_mat = self._sample_split_hour_matrix(b_sz, rng, str(split))
-            batches.append(self._evaluate_hour_index_matrix(x_clean, idx_mat))
+            batches.append(self.simulate_replications(x_clean, b_sz, rng, split=split))
             rem -= b_sz
         samples = np.vstack(batches)
-        self.audit_calls += int(total_eval)
         obj = samples[:, 0]
         con = samples[:, 1]
         k_viol = int(np.sum(con > 0.0))

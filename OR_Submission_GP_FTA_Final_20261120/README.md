@@ -1,18 +1,12 @@
-# GP-FTA · 本轮审阅材料
+# GP-FTA 第四轮复审材料
 
-本轮稿件包括正式提名资格下的 EC-KG、Stein–Mallows 释放规则、720 次前瞻对照和 96 个状态的查询核对。
+[匿名主稿，27 页](upload/manuscript.pdf) · [电子附录，11 页](upload/electronic_companion.pdf) · [匿名代码与数据包](upload/code_and_data.zip)
 
-96 状态来自诊断脚本按首流种子生成的单独轨迹，查询池使用单独的随机种子。
+两批主实验在 72 个离散事件仿真任务和 14 个电网市场上，共有 1,376 次不同的优化运行。第一批为 720 次，第二批包含 432 次新增的冷启动仿真对照和 224 次电网运行。查询选点和先验预测诊断另计。
 
-## 稿件与复现包
+## 复查入口
 
-- [匿名主稿](upload/manuscript.pdf)，24 页。
-- [电子附录](upload/electronic_companion.pdf)，10 页。
-- [匿名代码与数据 ZIP](upload/code_and_data.zip)
-
-## 结果与实现
-
-- [前瞻对照结果](../SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1/prospective_panel_readout.json) · [逐运行及逐槽账本](../SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1/)
-- [96 状态查询核对](../SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_prefix_audit_readout.json) · [运行清单](../SC-OLH-KG/v2_or/manifests/v2_or_eckg_sure_confirm_v1.json)
-- [论文源码](../SC-OLH-KG/manuscript_v2_or/) · [算法实现](../SC-OLH-KG/v2_or/) · [Lean 接口](../proof/SCOLHKG/V2ORProofInterface.lean) · [验证回执](../SC-OLH-KG/paper_artifacts/v2_or_eckg_lean_receipt.json)
-- [复现说明](../SC-OLH-KG/manuscript_v2_or/replication/README_REVIEW.md) · [第三方数据来源与权利](../SC-OLH-KG/docs/gp_fta_rights_audit_20261120.md)
+- [本轮四项修订、结果与边界](../SC-OLH-KG/docs/gp_fta_referee_rev4_results_20261120.md) · [修订前审查](../SC-OLH-KG/docs/gp_fta_gpt6_v4_post_gemini_or_diagnosis_20261120.md)
+- [库存先验的逐任务配对读数](../SC-OLH-KG/paper_artifacts/v2_or_metaprior_opsd_confirm_v1/inventory_covariance_readout.json) · [部署对照、电网安全和费用对账](../SC-OLH-KG/paper_artifacts/v2_or_metaprior_opsd_confirm_v1/metaprior_opsd_panel_readout.json)
+- [24 个 KG 状态的修正读数](../SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_reference_validation_corrected.json) · [逐状态的入围下标和候选分数](../SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1/eckg_reference_states.json)
+- [复现说明](../SC-OLH-KG/manuscript_v2_or/replication/README_REVIEW.md) · [论文源码](../SC-OLH-KG/manuscript_v2_or/) · [第三方数据与模板](../SC-OLH-KG/docs/gp_fta_rights_audit_20261120.md)

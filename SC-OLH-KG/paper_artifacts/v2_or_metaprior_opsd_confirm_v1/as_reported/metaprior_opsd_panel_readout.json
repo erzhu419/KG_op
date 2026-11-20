@@ -1,0 +1,1105 @@
+{
+  "campaign_name": "v2_or_metaprior_opsd_confirm_v1",
+  "execution_code_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "manifest_sha256": "5e08ec244f983164b822eeb0d879dfe22e92f8f52822f8e673f43c11abba3496",
+  "per_run_ledger_csv_sha256": "a3b93f6e8cfea3550ab12375802b550e8d0f0beca313134ed41e65a764c459eb",
+  "per_slot_certificates_csv_sha256": "83f4592068fd9d591f6675c5dedd7b1090c9fd95a379b87944cf0547faf51b7e",
+  "call_accounting": {
+    "source_simulation_calls_new": 0,
+    "source_refits_new": 0,
+    "search_calls_used": 89216,
+    "terminal_verification_calls_used": 167752,
+    "target_call_cap_total": 338496,
+    "anchor_audit_calls_used": 256000,
+    "policy_audit_calls_used": 5198000,
+    "verification_law_audit_calls_used": 0
+  },
+  "total_new_cells": 656,
+  "families": {
+    "Inventory_CrossHorizon": {
+      "methods": {
+        "ColdInit-MetaPrior-SURE-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 48,
+          "certified_rate": 1.0,
+          "guard_overrides": 8,
+          "backup_rescues": 10,
+          "status_quo_loss_task_mean": 1.809692749720173,
+          "status_quo_loss_task_se": 0.036120494286890965,
+          "fixed_reject_loss_10pct_task_mean": 1.809692749720173,
+          "compliance_penalized_loss_task_mean": 1.809692749720173,
+          "operating_viol_prob_task_mean": 0.005864583333333334,
+          "deployed_viol_prob_mean": 0.005864583333333334,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 0
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 365.8333333333333,
+          "mean_replication_queries": 18.729166666666668,
+          "final_sure_lambda_con_mean": 0.8927118432986824,
+          "source_released_rate": 1.0
+        },
+        "ColdInit-SourceBasisWeak-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 48,
+          "certified_rate": 1.0,
+          "guard_overrides": 10,
+          "backup_rescues": 8,
+          "status_quo_loss_task_mean": 1.8226283407007793,
+          "status_quo_loss_task_se": 0.0364922038065237,
+          "fixed_reject_loss_10pct_task_mean": 1.8226283407007793,
+          "compliance_penalized_loss_task_mean": 1.8226283407007793,
+          "operating_viol_prob_task_mean": 0.0028125000000000003,
+          "deployed_viol_prob_mean": 0.0028125000000000003,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 0
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 369.0,
+          "mean_replication_queries": 19.604166666666668,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "ColdPsi-TargetGP-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 48,
+          "certified_rate": 1.0,
+          "guard_overrides": 8,
+          "backup_rescues": 14,
+          "status_quo_loss_task_mean": 1.8216931732301604,
+          "status_quo_loss_task_se": 0.0366000549931947,
+          "fixed_reject_loss_10pct_task_mean": 1.8216931732301604,
+          "compliance_penalized_loss_task_mean": 1.8216931732301604,
+          "operating_viol_prob_task_mean": 0.005781250000000002,
+          "deployed_viol_prob_mean": 0.005781249999999999,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 47,
+            "borderline": 1,
+            "unsafe": 0,
+            "abstained": 0
+          },
+          "operating_safety_counts": {
+            "safe": 47,
+            "borderline": 1,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 388.4166666666667,
+          "mean_replication_queries": 20.75,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "GP-FTA-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 47,
+          "certified_rate": 0.9791666666666666,
+          "guard_overrides": 10,
+          "backup_rescues": 15,
+          "status_quo_loss_task_mean": 1.8064743726702197,
+          "status_quo_loss_task_se": 0.035036866917028626,
+          "fixed_reject_loss_10pct_task_mean": 1.8104540881938764,
+          "compliance_penalized_loss_task_mean": 1.8064743726702197,
+          "operating_viol_prob_task_mean": 0.005687500000000001,
+          "deployed_viol_prob_mean": 0.005808510638297873,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 47,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 1
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 390.8333333333333,
+          "mean_replication_queries": 18.354166666666668,
+          "final_sure_lambda_con_mean": 0.9049519346076954,
+          "source_released_rate": 1.0
+        }
+      },
+      "metaprior_ladder_contrasts": {
+        "pure_metaprior_vs_cold_psi": {
+          "n_tasks": 24,
+          "mean_diff": 0.012000423509987266,
+          "se_diff": 0.005101528751138431,
+          "ci95": [
+            0.0014471072341732064,
+            0.022553739785801323
+          ],
+          "task_wlt": [
+            17,
+            7,
+            0
+          ],
+          "paired_t_two_sided_p": 0.027586759864020826,
+          "wilcoxon_two_sided_p": 0.033985137939453125,
+          "holm_two_sided_t_p": 0.05517351972804165
+        },
+        "coef_coupling_vs_basis_weak": {
+          "n_tasks": 24,
+          "mean_diff": 0.012935590980606168,
+          "se_diff": 0.008377923791714249,
+          "ci95": [
+            -0.004395464830634259,
+            0.030266646791846596
+          ],
+          "task_wlt": [
+            14,
+            10,
+            0
+          ],
+          "paired_t_two_sided_p": 0.13623488913189524,
+          "wilcoxon_two_sided_p": 0.1779801845550537,
+          "holm_two_sided_t_p": 0.13623488913189524
+        },
+        "spectral_basis_vs_cold_psi": {
+          "n_tasks": 24,
+          "mean_diff": -0.0009351674706189009,
+          "se_diff": 0.009339291654164101,
+          "ci95": [
+            -0.0202549642269285,
+            0.018384629285690696
+          ],
+          "task_wlt": [
+            15,
+            9,
+            0
+          ],
+          "paired_t_two_sided_p": 0.9211067704301978,
+          "wilcoxon_two_sided_p": 0.49079859256744385
+        },
+        "warmstart_increment_over_cold_metaprior": {
+          "n_tasks": 24,
+          "mean_diff": 0.0032183770499530826,
+          "se_diff": 0.006509923661135989,
+          "ci95": [
+            -0.010248426074902863,
+            0.01668518017480903
+          ],
+          "task_wlt": [
+            13,
+            11,
+            0
+          ],
+          "paired_t_two_sided_p": 0.6257267764809114,
+          "wilcoxon_two_sided_p": 0.746925950050354
+        },
+        "full_gpfta_vs_cold_psi_same_eckg": {
+          "n_tasks": 24,
+          "mean_diff": 0.015218800559940349,
+          "se_diff": 0.006014650983243699,
+          "ci95": [
+            0.002776547029438905,
+            0.02766105409044179
+          ],
+          "task_wlt": [
+            16,
+            8,
+            0
+          ],
+          "paired_t_two_sided_p": 0.018699132514349074,
+          "wilcoxon_two_sided_p": 0.033985137939453125
+        }
+      },
+      "opsd_336_primary_contrasts": {}
+    },
+    "OPSD_EuroGrid": {
+      "methods": {
+        "ColdInit-MetaPrior-SURE-ECKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 24,
+          "certified_rate": 0.8571428571428571,
+          "guard_overrides": 4,
+          "backup_rescues": 5,
+          "status_quo_loss_task_mean": 0.058465121649350874,
+          "status_quo_loss_task_se": 0.006014337857611725,
+          "fixed_reject_loss_10pct_task_mean": 0.059127254931267983,
+          "compliance_penalized_loss_task_mean": 0.05850696613102596,
+          "operating_viol_prob_task_mean": 0.00970982142857143,
+          "deployed_viol_prob_mean": 0.011328125000000001,
+          "deployed_audit_exceed_alpha_count": 2,
+          "verif_law_viol_prob_mean": 0.003671875,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 24,
+          "deployed_safety_counts": {
+            "safe": 20,
+            "borderline": 3,
+            "unsafe": 1,
+            "abstained": 4
+          },
+          "operating_safety_counts": {
+            "safe": 24,
+            "borderline": 3,
+            "unsafe": 1
+          },
+          "mean_total_target_calls": 411.85714285714283,
+          "mean_replication_queries": 20.607142857142858,
+          "final_sure_lambda_con_mean": 0.9262085218833944,
+          "source_released_rate": 1.0
+        },
+        "ColdInit-SourceBasisWeak-ECKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 26,
+          "certified_rate": 0.9285714285714286,
+          "guard_overrides": 5,
+          "backup_rescues": 8,
+          "status_quo_loss_task_mean": 0.056574663885115305,
+          "status_quo_loss_task_se": 0.006274879799307133,
+          "fixed_reject_loss_10pct_task_mean": 0.05691418240623692,
+          "compliance_penalized_loss_task_mean": 0.05664722908645207,
+          "operating_viol_prob_task_mean": 0.007642857142857144,
+          "deployed_viol_prob_mean": 0.008230769230769232,
+          "deployed_audit_exceed_alpha_count": 1,
+          "verif_law_viol_prob_mean": 0.002923076923076923,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 26,
+          "deployed_safety_counts": {
+            "safe": 25,
+            "borderline": 0,
+            "unsafe": 1,
+            "abstained": 2
+          },
+          "operating_safety_counts": {
+            "safe": 27,
+            "borderline": 0,
+            "unsafe": 1
+          },
+          "mean_total_target_calls": 392.7142857142857,
+          "mean_replication_queries": 19.25,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "ColdPsi-TargetGP-ECKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 26,
+          "certified_rate": 0.9285714285714286,
+          "guard_overrides": 6,
+          "backup_rescues": 8,
+          "status_quo_loss_task_mean": 0.05712534910656137,
+          "status_quo_loss_task_se": 0.006490458493471711,
+          "fixed_reject_loss_10pct_task_mean": 0.05749322296818403,
+          "compliance_penalized_loss_task_mean": 0.05718546175710674,
+          "operating_viol_prob_task_mean": 0.006156249999999999,
+          "deployed_viol_prob_mean": 0.0066298076923076935,
+          "deployed_audit_exceed_alpha_count": 2,
+          "verif_law_viol_prob_mean": 0.0051730769230769235,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 26,
+          "deployed_safety_counts": {
+            "safe": 24,
+            "borderline": 0,
+            "unsafe": 2,
+            "abstained": 2
+          },
+          "operating_safety_counts": {
+            "safe": 26,
+            "borderline": 0,
+            "unsafe": 2
+          },
+          "mean_total_target_calls": 402.7142857142857,
+          "mean_replication_queries": 21.678571428571427,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "GP-FTA-ECKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 25,
+          "certified_rate": 0.8928571428571429,
+          "guard_overrides": 6,
+          "backup_rescues": 4,
+          "status_quo_loss_task_mean": 0.05749550111342452,
+          "status_quo_loss_task_se": 0.006097300066800086,
+          "fixed_reject_loss_10pct_task_mean": 0.058049781813006886,
+          "compliance_penalized_loss_task_mean": 0.05770056053253405,
+          "operating_viol_prob_task_mean": 0.010714285714285714,
+          "deployed_viol_prob_mean": 0.012000000000000002,
+          "deployed_audit_exceed_alpha_count": 4,
+          "verif_law_viol_prob_mean": 0.004665,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 25,
+          "deployed_safety_counts": {
+            "safe": 21,
+            "borderline": 2,
+            "unsafe": 2,
+            "abstained": 3
+          },
+          "operating_safety_counts": {
+            "safe": 24,
+            "borderline": 2,
+            "unsafe": 2
+          },
+          "mean_total_target_calls": 392.7142857142857,
+          "mean_replication_queries": 22.392857142857142,
+          "final_sure_lambda_con_mean": 0.9512915412016436,
+          "source_released_rate": 1.0
+        },
+        "GP-FTA-FeasibleKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 25,
+          "certified_rate": 0.8928571428571429,
+          "guard_overrides": 7,
+          "backup_rescues": 5,
+          "status_quo_loss_task_mean": 0.05950664058845458,
+          "status_quo_loss_task_se": 0.005657881902887805,
+          "fixed_reject_loss_10pct_task_mean": 0.05999412704903941,
+          "compliance_penalized_loss_task_mean": 0.05954390554058852,
+          "operating_viol_prob_task_mean": 0.007727678571428572,
+          "deployed_viol_prob_mean": 0.008655000000000001,
+          "deployed_audit_exceed_alpha_count": 2,
+          "verif_law_viol_prob_mean": 0.00229,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 25,
+          "deployed_safety_counts": {
+            "safe": 22,
+            "borderline": 2,
+            "unsafe": 1,
+            "abstained": 3
+          },
+          "operating_safety_counts": {
+            "safe": 25,
+            "borderline": 2,
+            "unsafe": 1
+          },
+          "mean_total_target_calls": 397.7142857142857,
+          "mean_replication_queries": 24.25,
+          "final_sure_lambda_con_mean": 0.9613171800485534,
+          "source_released_rate": 1.0
+        },
+        "GP-FTA-LOO-ECKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 25,
+          "certified_rate": 0.8928571428571429,
+          "guard_overrides": 3,
+          "backup_rescues": 8,
+          "status_quo_loss_task_mean": 0.056425483990220106,
+          "status_quo_loss_task_se": 0.005985063956543673,
+          "fixed_reject_loss_10pct_task_mean": 0.05699615728142304,
+          "compliance_penalized_loss_task_mean": 0.05647450925802424,
+          "operating_viol_prob_task_mean": 0.008129464285714285,
+          "deployed_viol_prob_mean": 0.009105,
+          "deployed_audit_exceed_alpha_count": 3,
+          "verif_law_viol_prob_mean": 0.00147,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 25,
+          "deployed_safety_counts": {
+            "safe": 22,
+            "borderline": 2,
+            "unsafe": 1,
+            "abstained": 3
+          },
+          "operating_safety_counts": {
+            "safe": 25,
+            "borderline": 2,
+            "unsafe": 1
+          },
+          "mean_total_target_calls": 393.14285714285717,
+          "mean_replication_queries": 22.214285714285715,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.9642857142857143
+        },
+        "GP-FTA-SingleSlotKG": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 25,
+          "certified_rate": 0.8928571428571429,
+          "guard_overrides": 5,
+          "backup_rescues": 8,
+          "status_quo_loss_task_mean": 0.058310887316787165,
+          "status_quo_loss_task_se": 0.006030067642098986,
+          "fixed_reject_loss_10pct_task_mean": 0.0588472904316476,
+          "compliance_penalized_loss_task_mean": 0.058423820122398655,
+          "operating_viol_prob_task_mean": 0.007486607142857142,
+          "deployed_viol_prob_mean": 0.008385,
+          "deployed_audit_exceed_alpha_count": 3,
+          "verif_law_viol_prob_mean": 0.0019850000000000002,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 25,
+          "deployed_safety_counts": {
+            "safe": 22,
+            "borderline": 1,
+            "unsafe": 2,
+            "abstained": 3
+          },
+          "operating_safety_counts": {
+            "safe": 25,
+            "borderline": 1,
+            "unsafe": 2
+          },
+          "mean_total_target_calls": 401.85714285714283,
+          "mean_replication_queries": 24.214285714285715,
+          "final_sure_lambda_con_mean": 0.9585837653786046,
+          "source_released_rate": 1.0
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_runs": 28,
+          "n_tasks": 14,
+          "n_certified": 25,
+          "certified_rate": 0.8928571428571429,
+          "guard_overrides": 4,
+          "backup_rescues": 5,
+          "status_quo_loss_task_mean": 0.057428330473244873,
+          "status_quo_loss_task_se": 0.006409867823491061,
+          "fixed_reject_loss_10pct_task_mean": 0.05798261117282723,
+          "compliance_penalized_loss_task_mean": 0.05749729692503335,
+          "operating_viol_prob_task_mean": 0.008116071428571429,
+          "deployed_viol_prob_mean": 0.009089999999999999,
+          "deployed_audit_exceed_alpha_count": 2,
+          "verif_law_viol_prob_mean": 0.004705,
+          "verif_law_exceed_alpha_count": 0,
+          "verif_law_scored_count": 25,
+          "deployed_safety_counts": {
+            "safe": 22,
+            "borderline": 1,
+            "unsafe": 2,
+            "abstained": 3
+          },
+          "operating_safety_counts": {
+            "safe": 25,
+            "borderline": 1,
+            "unsafe": 2
+          },
+          "mean_total_target_calls": 392.2857142857143,
+          "mean_replication_queries": 22.428571428571427,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        }
+      },
+      "metaprior_ladder_contrasts": {
+        "pure_metaprior_vs_cold_psi": {
+          "n_tasks": 14,
+          "mean_diff": -0.0013397725427895136,
+          "se_diff": 0.001532663663279473,
+          "ci95": [
+            -0.0046508910818352026,
+            0.001971345996256176
+          ],
+          "task_wlt": [
+            4,
+            10,
+            0
+          ],
+          "paired_t_two_sided_p": 0.3978999035843197,
+          "wilcoxon_two_sided_p": 0.1937255859375,
+          "holm_two_sided_t_p": 0.3978999035843197
+        },
+        "coef_coupling_vs_basis_weak": {
+          "n_tasks": 14,
+          "mean_diff": -0.001890457764235588,
+          "se_diff": 0.0009465273782044411,
+          "ci95": [
+            -0.003935305844590681,
+            0.00015439031611950548
+          ],
+          "task_wlt": [
+            5,
+            9,
+            0
+          ],
+          "paired_t_two_sided_p": 0.06716949436299015,
+          "wilcoxon_two_sided_p": 0.118896484375,
+          "holm_two_sided_t_p": 0.1343389887259803
+        },
+        "spectral_basis_vs_cold_psi": {
+          "n_tasks": 14,
+          "mean_diff": 0.0005506852214460745,
+          "se_diff": 0.001523344279009137,
+          "ci95": [
+            -0.002740300011924465,
+            0.003841670454816614
+          ],
+          "task_wlt": [
+            6,
+            8,
+            0
+          ],
+          "paired_t_two_sided_p": 0.7235350340773188,
+          "wilcoxon_two_sided_p": 1.0
+        },
+        "warmstart_increment_over_cold_metaprior": {
+          "n_tasks": 14,
+          "mean_diff": 0.0009696205359263568,
+          "se_diff": 0.0010143909000694016,
+          "ci95": [
+            -0.0012218377699828539,
+            0.0031610788418355673
+          ],
+          "task_wlt": [
+            8,
+            5,
+            1
+          ],
+          "paired_t_two_sided_p": 0.35657897978180597,
+          "wilcoxon_two_sided_p": 0.375732421875
+        },
+        "full_gpfta_vs_cold_psi_same_eckg": {
+          "n_tasks": 14,
+          "mean_diff": -0.0003701520068631567,
+          "se_diff": 0.0012214130540855247,
+          "ci95": [
+            -0.0030088544855018436,
+            0.0022685504717755304
+          ],
+          "task_wlt": [
+            4,
+            10,
+            0
+          ],
+          "paired_t_two_sided_p": 0.7666451338965192,
+          "wilcoxon_two_sided_p": 0.463134765625
+        }
+      },
+      "opsd_336_primary_contrasts": {
+        "GP-FTA-SingleSlotKG": {
+          "n_tasks": 14,
+          "mean_diff": 0.0008153862033626376,
+          "se_diff": 0.0012769890171221237,
+          "ci95": [
+            -0.001943380843872954,
+            0.003574153250598229
+          ],
+          "task_wlt": [
+            8,
+            6,
+            0
+          ],
+          "paired_t_two_sided_p": 0.5342215159269637,
+          "wilcoxon_two_sided_p": 0.42626953125,
+          "holm_two_sided_t_p": 1.0
+        },
+        "GP-FTA-FeasibleKG": {
+          "n_tasks": 14,
+          "mean_diff": 0.002011139475030068,
+          "se_diff": 0.0010069273584399352,
+          "ci95": [
+            -0.0001641948294766513,
+            0.004186473779536787
+          ],
+          "task_wlt": [
+            8,
+            5,
+            1
+          ],
+          "paired_t_two_sided_p": 0.06716382643670775,
+          "wilcoxon_two_sided_p": 0.19091796875,
+          "holm_two_sided_t_p": 0.268655305746831
+        },
+        "GP-FTA-LOO-ECKG": {
+          "n_tasks": 14,
+          "mean_diff": -0.0010700171232044323,
+          "se_diff": 0.0007011373082269644,
+          "ci95": [
+            -0.0025847321877734103,
+            0.00044469794136454575
+          ],
+          "task_wlt": [
+            4,
+            9,
+            1
+          ],
+          "paired_t_two_sided_p": 0.15093669688991312,
+          "wilcoxon_two_sided_p": 0.243896484375,
+          "holm_two_sided_t_p": 0.4528100906697394
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_tasks": 14,
+          "mean_diff": -6.71706401796544e-05,
+          "se_diff": 0.001092132414701825,
+          "ci95": [
+            -0.002426579277606558,
+            0.0022922379972472487
+          ],
+          "task_wlt": [
+            7,
+            6,
+            1
+          ],
+          "paired_t_two_sided_p": 0.9518932683015251,
+          "wilcoxon_two_sided_p": 1.0,
+          "holm_two_sided_t_p": 1.0
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "methods": {
+        "ColdInit-MetaPrior-SURE-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 48,
+          "certified_rate": 1.0,
+          "guard_overrides": 14,
+          "backup_rescues": 12,
+          "status_quo_loss_task_mean": 2.610220507339075,
+          "status_quo_loss_task_se": 0.05094500720350308,
+          "fixed_reject_loss_10pct_task_mean": 2.610220507339075,
+          "compliance_penalized_loss_task_mean": 2.610220507339075,
+          "operating_viol_prob_task_mean": 0.0011770833333333334,
+          "deployed_viol_prob_mean": 0.0011770833333333334,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 0
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 382.5833333333333,
+          "mean_replication_queries": 16.145833333333332,
+          "final_sure_lambda_con_mean": 0.9360143821584787,
+          "source_released_rate": 1.0
+        },
+        "ColdInit-SourceBasisWeak-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 48,
+          "certified_rate": 1.0,
+          "guard_overrides": 16,
+          "backup_rescues": 4,
+          "status_quo_loss_task_mean": 2.5859281070634244,
+          "status_quo_loss_task_se": 0.04684677956030706,
+          "fixed_reject_loss_10pct_task_mean": 2.5859281070634244,
+          "compliance_penalized_loss_task_mean": 2.5859281070634244,
+          "operating_viol_prob_task_mean": 0.0003854166666666667,
+          "deployed_viol_prob_mean": 0.0003854166666666667,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 0
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 362.9166666666667,
+          "mean_replication_queries": 10.375,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "ColdPsi-TargetGP-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 47,
+          "certified_rate": 0.9791666666666666,
+          "guard_overrides": 4,
+          "backup_rescues": 11,
+          "status_quo_loss_task_mean": 2.608230130032625,
+          "status_quo_loss_task_se": 0.04788672917708916,
+          "fixed_reject_loss_10pct_task_mean": 2.6149713891090176,
+          "compliance_penalized_loss_task_mean": 2.608230130032625,
+          "operating_viol_prob_task_mean": 0.0014479166666666668,
+          "deployed_viol_prob_mean": 0.0014787234042553193,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 47,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 1
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 377.25,
+          "mean_replication_queries": 15.4375,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "GP-FTA-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 48,
+          "certified_rate": 1.0,
+          "guard_overrides": 12,
+          "backup_rescues": 3,
+          "status_quo_loss_task_mean": 2.5649450787795494,
+          "status_quo_loss_task_se": 0.04641919369627239,
+          "fixed_reject_loss_10pct_task_mean": 2.5649450787795494,
+          "compliance_penalized_loss_task_mean": 2.5649450787795494,
+          "operating_viol_prob_task_mean": 0.0011354166666666665,
+          "deployed_viol_prob_mean": 0.0011354166666666665,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 0
+          },
+          "operating_safety_counts": {
+            "safe": 48,
+            "borderline": 0,
+            "unsafe": 0
+          },
+          "mean_total_target_calls": 365.8333333333333,
+          "mean_replication_queries": 16.625,
+          "final_sure_lambda_con_mean": 0.9300153153880855,
+          "source_released_rate": 1.0
+        }
+      },
+      "metaprior_ladder_contrasts": {
+        "pure_metaprior_vs_cold_psi": {
+          "n_tasks": 24,
+          "mean_diff": -0.0019903773064502603,
+          "se_diff": 0.01787600414264611,
+          "ci95": [
+            -0.038969709320017434,
+            0.03498895470711691
+          ],
+          "task_wlt": [
+            10,
+            14,
+            0
+          ],
+          "paired_t_two_sided_p": 0.9123099114711836,
+          "wilcoxon_two_sided_p": 0.35962629318237305,
+          "holm_two_sided_t_p": 0.9123099114711836
+        },
+        "coef_coupling_vs_basis_weak": {
+          "n_tasks": 24,
+          "mean_diff": -0.024292400275650567,
+          "se_diff": 0.01316412159139829,
+          "ci95": [
+            -0.051524460590178255,
+            0.0029396600388771205
+          ],
+          "task_wlt": [
+            10,
+            14,
+            0
+          ],
+          "paired_t_two_sided_p": 0.07790102460615896,
+          "wilcoxon_two_sided_p": 0.15150094032287598,
+          "holm_two_sided_t_p": 0.1558020492123179
+        },
+        "spectral_basis_vs_cold_psi": {
+          "n_tasks": 24,
+          "mean_diff": 0.022302022969200308,
+          "se_diff": 0.01664839217829468,
+          "ci95": [
+            -0.01213780021166981,
+            0.05674184615007043
+          ],
+          "task_wlt": [
+            11,
+            13,
+            0
+          ],
+          "paired_t_two_sided_p": 0.1934658518294614,
+          "wilcoxon_two_sided_p": 0.5087660551071167
+        },
+        "warmstart_increment_over_cold_metaprior": {
+          "n_tasks": 24,
+          "mean_diff": 0.04527542855952558,
+          "se_diff": 0.013380156699118786,
+          "ci95": [
+            0.017596465575294193,
+            0.07295439154375696
+          ],
+          "task_wlt": [
+            21,
+            3,
+            0
+          ],
+          "paired_t_two_sided_p": 0.0025570645326682202,
+          "wilcoxon_two_sided_p": 0.0007423162460327148
+        },
+        "full_gpfta_vs_cold_psi_same_eckg": {
+          "n_tasks": 24,
+          "mean_diff": 0.04328505125307532,
+          "se_diff": 0.01796297850083596,
+          "ci95": [
+            0.006125799071527403,
+            0.08044430343462325
+          ],
+          "task_wlt": [
+            16,
+            8,
+            0
+          ],
+          "paired_t_two_sided_p": 0.02436712695118281,
+          "wilcoxon_two_sided_p": 0.04906117916107178
+        }
+      },
+      "opsd_336_primary_contrasts": {}
+    },
+    "Traffic_Ingolstadt": {
+      "methods": {
+        "ColdInit-MetaPrior-SURE-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 37,
+          "certified_rate": 0.7708333333333334,
+          "guard_overrides": 11,
+          "backup_rescues": 10,
+          "status_quo_loss_task_mean": 1.0805387662680308,
+          "status_quo_loss_task_se": 0.019794070480968685,
+          "fixed_reject_loss_10pct_task_mean": 1.1091633668660272,
+          "compliance_penalized_loss_task_mean": 1.512540395675554,
+          "operating_viol_prob_task_mean": 0.18843749999999995,
+          "deployed_viol_prob_mean": 0.006635135135135137,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 37,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 11
+          },
+          "operating_safety_counts": {
+            "safe": 37,
+            "borderline": 0,
+            "unsafe": 11
+          },
+          "mean_total_target_calls": 422.6666666666667,
+          "mean_replication_queries": 20.333333333333332,
+          "final_sure_lambda_con_mean": 0.9435837450361316,
+          "source_released_rate": 1.0
+        },
+        "ColdInit-SourceBasisWeak-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 31,
+          "certified_rate": 0.6458333333333334,
+          "guard_overrides": 7,
+          "backup_rescues": 6,
+          "status_quo_loss_task_mean": 1.1024668037281267,
+          "status_quo_loss_task_se": 0.01877603337081411,
+          "fixed_reject_loss_10pct_task_mean": 1.1459900806449432,
+          "compliance_penalized_loss_task_mean": 1.7234141136257255,
+          "operating_viol_prob_task_mean": 0.2735208333333333,
+          "deployed_viol_prob_mean": 0.008338709677419355,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 30,
+            "borderline": 1,
+            "unsafe": 0,
+            "abstained": 17
+          },
+          "operating_safety_counts": {
+            "safe": 30,
+            "borderline": 1,
+            "unsafe": 17
+          },
+          "mean_total_target_calls": 415.4166666666667,
+          "mean_replication_queries": 14.604166666666666,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "ColdPsi-TargetGP-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 39,
+          "certified_rate": 0.8125,
+          "guard_overrides": 11,
+          "backup_rescues": 9,
+          "status_quo_loss_task_mean": 1.072749374954211,
+          "status_quo_loss_task_se": 0.02001179535382147,
+          "fixed_reject_loss_10pct_task_mean": 1.0966372974114469,
+          "compliance_penalized_loss_task_mean": 1.4540095392445986,
+          "operating_viol_prob_task_mean": 0.163875,
+          "deployed_viol_prob_mean": 0.006769230769230771,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 39,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 9
+          },
+          "operating_safety_counts": {
+            "safe": 39,
+            "borderline": 0,
+            "unsafe": 9
+          },
+          "mean_total_target_calls": 411.5,
+          "mean_replication_queries": 20.041666666666668,
+          "final_sure_lambda_con_mean": 0.0,
+          "source_released_rate": 0.0
+        },
+        "GP-FTA-ECKG": {
+          "n_runs": 48,
+          "n_tasks": 24,
+          "n_certified": 35,
+          "certified_rate": 0.7291666666666666,
+          "guard_overrides": 7,
+          "backup_rescues": 6,
+          "status_quo_loss_task_mean": 1.0789894468284336,
+          "status_quo_loss_task_se": 0.018414798024457484,
+          "fixed_reject_loss_10pct_task_mean": 1.1125078783967204,
+          "compliance_penalized_loss_task_mean": 1.5980218468555085,
+          "operating_viol_prob_task_mean": 0.22632291666666668,
+          "deployed_viol_prob_mean": 0.005957142857142858,
+          "deployed_audit_exceed_alpha_count": 0,
+          "verif_law_viol_prob_mean": null,
+          "verif_law_exceed_alpha_count": null,
+          "verif_law_scored_count": 0,
+          "deployed_safety_counts": {
+            "safe": 35,
+            "borderline": 0,
+            "unsafe": 0,
+            "abstained": 13
+          },
+          "operating_safety_counts": {
+            "safe": 35,
+            "borderline": 0,
+            "unsafe": 13
+          },
+          "mean_total_target_calls": 408.5833333333333,
+          "mean_replication_queries": 19.708333333333332,
+          "final_sure_lambda_con_mean": 0.9505789879461606,
+          "source_released_rate": 1.0
+        }
+      },
+      "metaprior_ladder_contrasts": {
+        "pure_metaprior_vs_cold_psi": {
+          "n_tasks": 24,
+          "mean_diff": -0.0077893913138198006,
+          "se_diff": 0.012534161904498768,
+          "ci95": [
+            -0.03371828072778559,
+            0.018139498100145993
+          ],
+          "task_wlt": [
+            8,
+            14,
+            2
+          ],
+          "paired_t_two_sided_p": 0.540412906845275,
+          "wilcoxon_two_sided_p": 0.30530881881713867,
+          "holm_two_sided_t_p": 0.540412906845275
+        },
+        "coef_coupling_vs_basis_weak": {
+          "n_tasks": 24,
+          "mean_diff": 0.021928037460095934,
+          "se_diff": 0.017987172907706135,
+          "ci95": [
+            -0.015281264665353542,
+            0.059137339585545415
+          ],
+          "task_wlt": [
+            17,
+            6,
+            1
+          ],
+          "paired_t_two_sided_p": 0.2351646995260369,
+          "wilcoxon_two_sided_p": 0.04844093322753906,
+          "holm_two_sided_t_p": 0.4703293990520738
+        },
+        "spectral_basis_vs_cold_psi": {
+          "n_tasks": 24,
+          "mean_diff": -0.029717428773915738,
+          "se_diff": 0.016104622456741116,
+          "ci95": [
+            -0.06303237858197863,
+            0.00359752103414716
+          ],
+          "task_wlt": [
+            1,
+            22,
+            1
+          ],
+          "paired_t_two_sided_p": 0.0779124502296862,
+          "wilcoxon_two_sided_p": 0.000152587890625
+        },
+        "warmstart_increment_over_cold_metaprior": {
+          "n_tasks": 24,
+          "mean_diff": 0.001549319439597412,
+          "se_diff": 0.015271560216760214,
+          "ci95": [
+            -0.03004230982577626,
+            0.033140948704971085
+          ],
+          "task_wlt": [
+            14,
+            9,
+            1
+          ],
+          "paired_t_two_sided_p": 0.9200714750993466,
+          "wilcoxon_two_sided_p": 0.5803380012512207
+        },
+        "full_gpfta_vs_cold_psi_same_eckg": {
+          "n_tasks": 24,
+          "mean_diff": -0.006240071874222389,
+          "se_diff": 0.011968446315707712,
+          "ci95": [
+            -0.030998689430102876,
+            0.0185185456816581
+          ],
+          "task_wlt": [
+            9,
+            14,
+            1
+          ],
+          "paired_t_two_sided_p": 0.607088650207438,
+          "wilcoxon_two_sided_p": 0.5803380012512207
+        }
+      },
+      "opsd_336_primary_contrasts": {}
+    }
+  }
+}

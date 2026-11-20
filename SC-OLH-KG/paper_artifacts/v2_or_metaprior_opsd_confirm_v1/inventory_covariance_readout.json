@@ -1,0 +1,59 @@
+{
+  "family": "Inventory_CrossHorizon",
+  "endpoint": "Objective Spearman correlation across the same held-out policies after eight observations",
+  "analysis": "Exploratory task-paired FullSURE minus comparator; marginal 95% paired-t intervals",
+  "full_mean": 0.7898490957966765,
+  "contrasts": {
+    "MetaPrior-DiagSURE": {
+      "comparator_mean": 0.7929343841642229,
+      "n_tasks": 24,
+      "mean_diff": -0.0030852883675464363,
+      "se_diff": 0.0026127916763635977,
+      "ci95": [
+        -0.008490259753295516,
+        0.002319683018202643
+      ],
+      "task_wlt": [
+        8,
+        11,
+        5
+      ],
+      "paired_t_two_sided_p": 0.24973404523665654,
+      "wilcoxon_two_sided_p": 0.312408447265625
+    },
+    "TargetGP-RawPsi": {
+      "comparator_mean": 0.7045301808406647,
+      "n_tasks": 24,
+      "mean_diff": 0.08531891495601174,
+      "se_diff": 0.059732597699136886,
+      "ci95": [
+        -0.038247377864406656,
+        0.20888520777643013
+      ],
+      "task_wlt": [
+        12,
+        12,
+        0
+      ],
+      "paired_t_two_sided_p": 0.16663164675870556,
+      "wilcoxon_two_sided_p": 0.6170571136750788
+    },
+    "MetaPrior-Scrambled": {
+      "comparator_mean": 0.6518664467253177,
+      "n_tasks": 24,
+      "mean_diff": 0.13798264907135874,
+      "se_diff": 0.06076301900213166,
+      "ci95": [
+        0.012284767380562306,
+        0.26368053076215514
+      ],
+      "task_wlt": [
+        17,
+        7,
+        0
+      ],
+      "paired_t_two_sided_p": 0.03283503722671356,
+      "wilcoxon_two_sided_p": 0.008714795112609863
+    }
+  }
+}

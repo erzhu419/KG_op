@@ -22,6 +22,8 @@ def collect_files() -> list[str]:
         "AGENTS.md",
         "scripts/scheduler_node_policy.py",
         "scripts/run_v2_lean_cluster.py",
+        "scripts/run_metaprior_propagation_audit.py",
+        "scripts/run_eckg_reference_validation.py",
         "SC-OLH-KG/data/__init__.py",
         "SC-OLH-KG/data/opsd.py",
         "SC-OLH-KG/data/external/opsd_time_series_extended_v2.npz",

@@ -108,7 +108,7 @@ def _copy_entry(source: Path, target: Path, relative: Path) -> None:
     else:
         shutil.copy2(source, target)
 
-    if target.suffix in {".py", ".json", ".md", ".tex", ".bib", ".csv", ".txt", ".lean", ".sty", ".bst"}:
+    if target.suffix in {".py", ".patch", ".json", ".md", ".tex", ".bib", ".csv", ".txt", ".lean", ".sty", ".bst"}:
         content = target.read_text(encoding="utf-8")
         match = STRICT_LEAK_RE.search(content)
         if match:

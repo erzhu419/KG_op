@@ -1,14 +1,17 @@
 # GP-FTA anonymous review supplement
 
-This archive contains the complete active and frozen Python software, mechanized Lean 4.31.0 proof modules and verification receipts, sealed per-run and per-slot CSV ledgers, compact diagnostic readouts, and deterministic table/figure builders for *Functional Transfer, Stein--Mallows Release, and Eligible-Cascade Verification in Chance-Constrained Simulation Optimization*.
+This archive accompanies *Cross-Horizon Functional Meta-Priors and Certification-Aligned Search in Chance-Constrained Simulation Optimization*. It includes Python execution snapshots, Lean 4.31.0 proofs and receipts, run and slot ledgers, task- and state-level diagnostics, and table and figure builders.
 
-Specifically, it bundles:
-- Active implementation `SC-OLH-KG/v2_or` used by the pre-registered 720-run prospective factorial confirmation (`v2_or_eckg_sure_confirm_v1`) and 96-state early/near-terminal query census (`eckg_prefix_audit_readout.json`).
+## Included studies
+
+- The implementation under `SC-OLH-KG/v2_or` ran 1,376 distinct optimization runs. The first cohort comprises 720 runs on the 72-task discrete-event simulation panel. The second comprises 432 additional cold-configuration runs on those tasks and 224 runs in 14 OPSD markets. Its prespecified comparisons are in `PREREGISTRATION_METAPRIOR_OPSD_20261120.json`. The markets also appeared in the predecessor benchmark. Search, verification and held-out audit blocks alternate within the same historical period.
+- Diagnostic receipts cover prediction after eight observations on 86 tasks, a separate 96-state query study and the 24-state comparison of the production shortlist and single-nomination rule. The corrected 24-state receipts give the actual shortlist indices and three score vectors for each of the 160 candidates. The low-resolution menu uses the production 16 outer and 128 inner nodes. The reference menu and single-nomination values use 256 outer and 1,024 inner nodes under the frozen working model. The archive also retains the original 24-state readout, whose fast pass skipped some revisits and inferred shortlist membership from a positive score.
+- `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py` contains the audit-purpose accounting update. The sealed execution sources remain under `SC-OLH-KG/v2_or`. The panel readout separates fresh verification-pool draws within the original total policy audit cost. Compare `v2_or_metaprior_opsd_confirm_v1/metaprior_opsd_panel_readout.json` with `as_reported/metaprior_opsd_panel_readout.json` in the same study directory for the original classification.
 - Frozen execution snapshots `frozen_referee/SC-OLH-KG` (384-run matched coefficient-prior and terminal-replay study `v2_or_gpfta_referee_ablation_v1`), `frozen_independent/SC-OLH-KG` (432-run single-slot quadrature panel `v2_or_kg_quadrature_confirm_v1`), and `frozen_u3/SC-OLH-KG` (9,796-run four-domain benchmark across `v2_or_u3_confirm_v1`, `v2_or_u3_messy_archive_v1`, and `v2_or_u3_live_sumo_v1`).
 - Mechanized Lean 4.31.0 modules under `proof/SCOLHKG/V2OR/` (`DebiasedSubspace.lean`, `TemperedHVD.lean`, `VerificationKGAmortization.lean`, `SequentialTheory.lean`) and `proof/SCOLHKG/V2ORProofInterface.lean` verifying all 18 audited theorems with zero `sorry`.
 - Third-party provenance and restoration recipes in `LICENSES.md` and `restore_review_inputs.py`, plus raw-archive audit documentation in `U3_REPLAY.md`.
 
-## 1. Verify manifest integrity and regenerate all 16 tables and 3 figures
+## 1. Verify archive contents and regenerate the manuscript tables and figures
 
 Run from the extracted supplement root on Linux x86_64 with CPython 3.10+. Every manuscript and Electronic Companion table (`tables/*.tex`) and vector figure (`figures/*.pdf`) regenerates deterministically from the sealed CSV ledgers and compact JSON readouts with zero simulation calls:
 
@@ -27,15 +30,45 @@ diff -qr SC-OLH-KG/manuscript_v2_or/figures "$report/figures"
 
 ## 2. Rebuild prospective, matched-ablation, and query-diagnostic readouts
 
-All statistical readouts shipped in `SC-OLH-KG/paper_artifacts/` can be regenerated in disposable directories directly from the included CSV ledgers and compact receipts with zero simulation calls:
+Use a temporary output directory to recompute the following published readouts from the included ledgers and diagnostic receipts. These commands use zero simulation calls.
 
 ```bash
 readout=$(mktemp -d)
 
-# 720-run prospective factorial readout (Table 1, Table 2, Figure 1a)
+# 720-run prospective ablation readout (Table 1, Table 2, Figure 1a)
 prosp=SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1
 python summarize_prospective_panel.py --campaign-dir "$prosp" --output "$readout/prospective_panel_readout.json"
 cmp "$prosp/prospective_panel_readout.json" "$readout/prospective_panel_readout.json"
+
+# 656-run cold-configuration and 336-dimensional grid study
+mp_opsd=SC-OLH-KG/paper_artifacts/v2_or_metaprior_opsd_confirm_v1
+python summarize_metaprior_opsd_panel.py --campaign-dir "$mp_opsd" --prospective-dir "$prosp" \
+  --output "$readout/metaprior_opsd_panel_readout.json"
+cmp "$mp_opsd/metaprior_opsd_panel_readout.json" "$readout/metaprior_opsd_panel_readout.json"
+
+# Verify the maintenance fix for per-pool metering on a disposable copy of the simulator
+meter_test=$(mktemp -d)
+cp -a SC-OLH-KG/v2_or "$meter_test/v2_or"
+cp maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py "$meter_test/v2_or/simulators/"
+PYTHONPATH="$meter_test:SC-OLH-KG" python -m pytest -q maintenance/SC-OLH-KG/tests/test_opsd_audit_accounting.py
+
+# Per-task contributions to the 86-task propagation and representation audit
+python scripts/run_metaprior_propagation_audit.py summarize \
+  --out-dir "$mp_opsd/propagation_audit" --summary-path "$readout/metaprior_propagation_readout.json"
+cmp "$mp_opsd/metaprior_propagation_readout.json" "$readout/metaprior_propagation_readout.json"
+python summarize_inventory_covariance.py "$mp_opsd/propagation_audit" \
+  --output "$readout/inventory_covariance_readout.json"
+cmp "$mp_opsd/inventory_covariance_readout.json" "$readout/inventory_covariance_readout.json"
+
+# Historical single-nomination reference (12 task receipts, two search states each)
+python scripts/run_eckg_reference_validation.py summarize \
+  --out-dir "$prosp/eckg_ref_val" --summary-path "$readout/eckg_reference_validation_readout.json"
+cmp "$prosp/eckg_reference_validation_readout.json" "$readout/eckg_reference_validation_readout.json"
+
+# Corrected 24-state comparison with recorded shortlist indices and complete candidate scores
+python scripts/summarize_eckg_reference_correction.py summarize \
+  --states "$prosp/eckg_reference_states.json" --output "$readout/eckg_reference_validation_corrected.json"
+cmp "$prosp/eckg_reference_validation_corrected.json" "$readout/eckg_reference_validation_corrected.json"
 
 # 384-run matched coefficient-prior readout (Table 4, Table EC.3)
 ref_dir="$readout/referee"
@@ -65,6 +98,27 @@ PYTHONPATH=SC-OLH-KG:cluster_archive_tools python -m pytest -q test_cascade_pref
 ```
 
 Scripts in `cluster_archive_tools/` (`read_u3_replay.py`, `summarize_terminal_replay.py`, etc.) document how compact receipts were extracted from raw per-job trajectory archives (see `U3_REPLAY.md`).
+
+Each diagnostic's `jobs.json` identifies its `items/<job_id>.json` inputs. The 86 propagation items contain model-specific held-out prediction metrics, representation distances and paired anchor audits where applicable. The original reference items record the three chosen query indices, several values and timings for each state. The correction gives all candidate scores, the admitted indices, per-task calls and timing in `eckg_reference_states.json`. The execution receipt `eckg_reference_correction_execution.json` records worker completion and diagnostic costs. The two-file patch `scripts/eckg_reference_diagnostic.patch` records the instrumentation applied to the frozen execution source and original reference producer. It can be inspected using `git apply --check scripts/eckg_reference_diagnostic.patch` from a clean extracted root. Regenerating simulation receipts requires access to the frozen U3 source priors documented in `U3_REPLAY.md` and, for OPSD, the restored input below.
+
+### Optional replay of the 24 corrected states
+
+Use a fresh copy of the supplement on a compute worker, install the dependencies above, and place the two original fitted priors from the U3 companion at `SC-OLH-KG/paper_artifacts/v2_or_u3_confirm_v1/source_bundles/{Queueing_CrossHorizon,Traffic_Ingolstadt}/prior_default.pkl`. The traffic discrete-event simulator uses the bundled `SC-OLH-KG/data/ingolstadt21/decision_space.json`. This replay spends search calls and integration time. The routine summary command in Section 2 reads the saved vectors directly.
+
+```bash
+git apply scripts/eckg_reference_diagnostic.patch
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+prosp=SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1
+replay=$(mktemp -d)
+python scripts/run_eckg_reference_validation.py describe --out-dir "$replay"
+python scripts/run_eckg_reference_validation.py worker --out-dir "$replay" --start 0 --end 12 --workers 1
+python scripts/summarize_eckg_reference_correction.py pack --corrected-dir "$replay" \
+  --original-dir "$prosp/eckg_ref_val" --output "$replay/states.json"
+python scripts/summarize_eckg_reference_correction.py summarize \
+  --states "$replay/states.json" --output "$replay/corrected.json"
+```
+
+`pack` checks the regenerated query indices and reference values against the original state receipts. Resource usage and wall times reflect the replay machine.
 
 ## 3. Restore pinned upstream inputs and run full unit tests
 

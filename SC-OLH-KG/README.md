@@ -4,7 +4,7 @@ Execution policy (2026-10-17): substantive computation now uses scheduler CPU ba
 
 ## GP-FTA manuscript and replication
 
-The [current manuscript](manuscript_v2_or/main_or.pdf) presents eligible-cascade knowledge gradient and Stein--Mallows release, with a 720-run prospective factorial panel and a 96-state query census. The [review index](../OR_Submission_GP_FTA_Final_20261120/README.md) links the current manuscript, electronic companion, receipts and replication ZIP. The [remediation record](docs/gp_fta_or_remediation_20261120.md) describes the KG quadrature correction and the evidence available for each version. [Current implementation](v2_or/) · [Lean interface](../proof/SCOLHKG/V2ORProofInterface.lean)
+The current GP-FTA study evaluates eligible-cascade search and functional transfer across 1,376 distinct runs. It includes three DES families and 14 grid markets. The review index links the manuscript, electronic companion, annotated evidence and anonymous replication package. [Manuscript](manuscript_v2_or/main_or.pdf) · [Review index](../OR_Submission_GP_FTA_Final_20261120/README.md) · [Earlier remediation record](docs/gp_fta_or_remediation_20261120.md) · [Implementation](v2_or/) · [Lean interface](../proof/SCOLHKG/V2ORProofInterface.lean)
 
 The [independent panel results](docs/gp_fta_corrected_kg_confirmation_results_20261120.md) report 72 new simulated tasks with paired comparisons against GP-FTA-TS and PublicPsi. The [historical replay record](docs/gp_fta_u3_historical_replay_20261120.md) links the regenerated U3 ledger evidence and the staged reviewer-input archive.
 

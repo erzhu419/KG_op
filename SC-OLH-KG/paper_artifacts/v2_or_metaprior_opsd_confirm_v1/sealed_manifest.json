@@ -1,0 +1,475 @@
+{
+  "campaign_name": "v2_or_metaprior_opsd_confirm_v1",
+  "role": "preregistered_single_factor_metaprior_decomposition_and_opsd336_external_confirmation",
+  "output_dir": "paper_artifacts/v2_or_metaprior_opsd_confirm_v1",
+  "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+  "reuse_source_campaign": "v2_or_u3_confirm_v1",
+  "reuse_source_execution_code_sha256": "5965482dba305513d62307c362558e304c2c5943930648738f5cc71f6e10b89a",
+  "families": [
+    {
+      "name": "Inventory_CrossHorizon",
+      "kind": "inventory",
+      "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5101,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 4611201,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7101
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2046112001,
+        2046112002
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 2056112001,
+      "arms": [
+        {
+          "name": "ColdInit-MetaPrior-SURE-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": true,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdInit-SourceBasisWeak-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "source_basis_weak_prior",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdPsi-TargetGP-ECKG",
+          "kind": "target_only_psi",
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "Inventory_CrossHorizon",
+      "target_call_cap": 516
+    },
+    {
+      "name": "Queueing_CrossHorizon",
+      "kind": "queueing",
+      "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5201,
+        "horizons": [
+          36,
+          48
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 4611202,
+        "horizons": [
+          96,
+          120
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7201
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2047112001,
+        2047112002
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 2057112001,
+      "arms": [
+        {
+          "name": "ColdInit-MetaPrior-SURE-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": true,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdInit-SourceBasisWeak-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "source_basis_weak_prior",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdPsi-TargetGP-ECKG",
+          "kind": "target_only_psi",
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "Queueing_CrossHorizon",
+      "target_call_cap": 516
+    },
+    {
+      "name": "Traffic_Ingolstadt",
+      "kind": "traffic_des",
+      "reference_arm": "ColdInit-MetaPrior-SURE-ECKG",
+      "source_config": {
+        "n_tasks": 6,
+        "seed": 5401,
+        "tls_counts": [
+          11,
+          15
+        ],
+        "shift_scale": 1.0
+      },
+      "target_config": {
+        "n_tasks": 24,
+        "seed": 4611203,
+        "tls_counts": [
+          21
+        ],
+        "shift_scale": 1.3
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7401
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2048112001,
+        2048112002
+      ],
+      "audit_replications": 2000,
+      "audit_seed_base": 2058112001,
+      "arms": [
+        {
+          "name": "ColdInit-MetaPrior-SURE-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": true,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdInit-SourceBasisWeak-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "source_basis_weak_prior",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdPsi-TargetGP-ECKG",
+          "kind": "target_only_psi",
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "Traffic_Ingolstadt",
+      "target_call_cap": 516
+    },
+    {
+      "name": "OPSD_EuroGrid",
+      "kind": "opsd",
+      "reference_arm": "GP-FTA-ECKG",
+      "source_config": {
+        "markets": [
+          "DK_1",
+          "NO_1",
+          "NO_2",
+          "SE_1",
+          "IT_CNOR",
+          "IT_CSUD"
+        ],
+        "horizons": [
+          168,
+          240
+        ],
+        "buffer_hours": 24,
+        "clamp_limit": 0.2
+      },
+      "target_config": {
+        "markets": [
+          "DK_2",
+          "GB_GBN",
+          "IT_NORD",
+          "IT_SUD",
+          "IT_SARD",
+          "IT_SICI",
+          "NO_3",
+          "NO_4",
+          "NO_5",
+          "SE_2",
+          "SE_3",
+          "SE_4",
+          "IE_sem",
+          "AT"
+        ],
+        "horizons": [
+          336
+        ],
+        "buffer_hours": 24,
+        "clamp_limit": 0.2
+      },
+      "source_archive_protocol": {
+        "solvers": [
+          "penalty_spsa",
+          "constrained_cmaes",
+          "constrained_nsga2",
+          "heuristic_powell"
+        ],
+        "per_solver_budget": 60,
+        "reps_per_eval": 3,
+        "seed": 7301
+      },
+      "prior_variants": {
+        "default": {
+          "active_rank": 8,
+          "enable_debiasing": true,
+          "enable_lowpass": true,
+          "enable_orthogonalization": true,
+          "enable_sparse_pruning": true
+        }
+      },
+      "n0_init": 8,
+      "batch_reps": 2,
+      "pool_size": 160,
+      "online_step_budgets": [
+        60
+      ],
+      "target_eval_seeds": [
+        2049112001,
+        2049112002
+      ],
+      "audit_replications": 8000,
+      "audit_seed_base": 2059112001,
+      "arms": [
+        {
+          "name": "GP-FTA-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "balanced_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-SingleSlotKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "balanced_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "gate_power_vkg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-FeasibleKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "balanced_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "chance_feasibility_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "GP-FTA-LOO-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_full_release",
+          "init_mode": "balanced_warmstart",
+          "proposal_mode": "adaptive_release",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": true,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "PublicPsi-TargetGP-TS",
+          "kind": "target_only_psi",
+          "acquisition": "gate_power_ts",
+          "nomination_mode": "cascade_bellman_3slot"
+        },
+        {
+          "name": "ColdInit-MetaPrior-SURE-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "tempered_sure_release",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": true,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": true,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdInit-SourceBasisWeak-ECKG",
+          "kind": "tls_olh_kg",
+          "load_prior": true,
+          "model_mode": "source_basis_weak_prior",
+          "init_mode": "cold_dct",
+          "proposal_mode": "local_dct_only",
+          "use_source_basis": true,
+          "use_source_coef_prior": false,
+          "use_source_hvd_prior": false,
+          "use_empirical_r_perp": false,
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot",
+          "prior_variant": "default"
+        },
+        {
+          "name": "ColdPsi-TargetGP-ECKG",
+          "kind": "target_only_psi",
+          "acquisition": "eligible_cascade_kg",
+          "nomination_mode": "cascade_bellman_3slot"
+        }
+      ],
+      "reuse_archive_from_family": "OPSD_EuroGrid",
+      "target_call_cap": 516
+    }
+  ],
+  "sealed_complete": true,
+  "sealed_utc": "2026-11-20T12:09:42.527042+00:00",
+  "sealed_execution_code_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b"
+}

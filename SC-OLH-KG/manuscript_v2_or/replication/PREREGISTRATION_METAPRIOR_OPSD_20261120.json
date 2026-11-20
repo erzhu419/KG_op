@@ -1,0 +1,80 @@
+{
+  "protocol_id": "GP-FTA_OR_Targeted_Confirmation_PreRegistration_20261120",
+  "preregistered_before_execution_utc": "2026-11-20T11:38:00.578631+00:00",
+  "frozen_cluster_v2_or_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "portable_supplement_v2_or_sha256": "f484ed141a3947393609b6482e9cb459d1c0ae9d9c78fe7766811c74ea5c5084",
+  "campaign_manifest": {
+    "relpath": "SC-OLH-KG/v2_or/manifests/v2_or_metaprior_opsd_confirm_v1.json",
+    "sha256": "5e08ec244f983164b822eeb0d879dfe22e92f8f52822f8e673f43c11abba3496",
+    "total_search_and_verify_cells": 656,
+    "families": {
+      "Inventory_CrossHorizon": {
+        "n_tasks": 24,
+        "d_max": 240,
+        "n_arms": 3,
+        "n_jobs": 144,
+        "limits": {
+          "search": 136,
+          "verification": 380
+        }
+      },
+      "Queueing_CrossHorizon": {
+        "n_tasks": 24,
+        "d_max": 240,
+        "n_arms": 3,
+        "n_jobs": 144,
+        "limits": {
+          "search": 136,
+          "verification": 380
+        }
+      },
+      "Traffic_Ingolstadt": {
+        "n_tasks": 24,
+        "d_max": 44,
+        "n_arms": 3,
+        "n_jobs": 144,
+        "limits": {
+          "search": 136,
+          "verification": 380
+        }
+      },
+      "OPSD_EuroGrid": {
+        "n_tasks": 14,
+        "d_max": 336,
+        "n_arms": 8,
+        "n_jobs": 224,
+        "limits": {
+          "search": 136,
+          "verification": 380
+        }
+      }
+    }
+  },
+  "diagnostic_scripts": {
+    "scripts/run_metaprior_propagation_audit.py": "94cd18c0f4ff44247cd530368aeaf487e99df9913886ba2e424494b8c6120f01",
+    "scripts/run_eckg_reference_validation.py": "c730da2dd0f378eb406495ae9a17eb904a2c850b12a8abd4a6b9ff1a23094547"
+  },
+  "primary_statistical_analysis_plan": {
+    "statistical_unit": "independent target task (averaging the two pre-fixed evaluation streams within each task before paired comparison)",
+    "primary_endpoint": "status_quo_loss (audited on 2,000 independent replications for DES families; 8,000 replications on both chronological audit blocks and same-law verification blocks for OPSD_EuroGrid)",
+    "primary_test": "two-sided paired Student-t test with within-family Holm-Bonferroni multiplicity adjustment",
+    "secondary_exploratory_metrics": [
+      "two-sided Wilcoxon signed-rank p-value (explicitly labeled non-primary)",
+      "10%-reject penalized loss and compliance-penalized loss",
+      "out-of-sample held-out policy Spearman rank correlation and shape NRMSE",
+      "256x1024 all-160 reference actual-terminal-nomination cascade gain"
+    ],
+    "holm_families": {
+      "cold_init_metaprior_decomposition": [
+        "ColdInit-MetaPrior-SURE-ECKG vs ColdPsi-TargetGP-ECKG",
+        "ColdInit-MetaPrior-SURE-ECKG vs ColdInit-SourceBasisWeak-ECKG"
+      ],
+      "opsd_336_external_confirmation": [
+        "GP-FTA-ECKG vs GP-FTA-SingleSlotKG",
+        "GP-FTA-ECKG vs GP-FTA-FeasibleKG",
+        "GP-FTA-ECKG vs GP-FTA-LOO-ECKG",
+        "GP-FTA-ECKG vs PublicPsi-TargetGP-TS"
+      ]
+    }
+  }
+}
