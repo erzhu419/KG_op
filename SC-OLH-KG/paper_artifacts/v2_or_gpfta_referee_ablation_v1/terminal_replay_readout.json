@@ -1,0 +1,622 @@
+{
+  "campaign": "v2_or_gpfta_referee_ablation_v1",
+  "scope": "Descriptive replay of fixed search, observed first-slot rules, and actual full terminal outcomes.",
+  "independent_unit": "Target task, after averaging its two streams. Intervals are ordinary 95% paired t intervals.",
+  "per_run_rows_checked": 384,
+  "slot_rows_checked": 801,
+  "new_simulator_calls": 0,
+  "families": {
+    "Queueing_CrossHorizon": {
+      "arms": {
+        "TargetWeak-GateKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 2.6805919465036085,
+            "certified": 45,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 2.640525592707294,
+            "certified": 48,
+            "mean_terminal_calls": 226.66666666666666
+          },
+          "rescued_after_first_failure": 3,
+          "guarded_override_after_first_pass": 19,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.02601666397506162,
+            "guarded_override_after_first_pass": -0.014049689821252884
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.040066353796314506,
+            "unadjusted_ci95": [
+              -0.07826104939133316,
+              -0.0018716582012958602
+            ],
+            "unadjusted_p": 0.04058129822780358
+          }
+        },
+        "HistoryDiag-GateKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 2.7713971333643816,
+            "certified": 39,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 2.678511034218645,
+            "certified": 48,
+            "mean_terminal_calls": 241.75
+          },
+          "rescued_after_first_failure": 9,
+          "guarded_override_after_first_pass": 12,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.08053348911925948,
+            "guarded_override_after_first_pass": -0.01235261002647712
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.0928860991457366,
+            "unadjusted_ci95": [
+              -0.15894792152705234,
+              -0.026824276764420868
+            ],
+            "unadjusted_p": 0.007911375239585185
+          }
+        },
+        "HistoryFull-GateKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 2.760987354312552,
+            "certified": 40,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 2.6563371991298363,
+            "certified": 48,
+            "mean_terminal_calls": 219.66666666666666
+          },
+          "rescued_after_first_failure": 8,
+          "guarded_override_after_first_pass": 14,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.09099009812809174,
+            "guarded_override_after_first_pass": -0.013660057054624078
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.10465015518271582,
+            "unadjusted_ci95": [
+              -0.16906669915336026,
+              -0.04023361121207139
+            ],
+            "unadjusted_p": 0.002703780947099139
+          }
+        },
+        "HistoryFull-FeasibleKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 2.669183025528948,
+            "certified": 46,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 2.624943204883013,
+            "certified": 48,
+            "mean_terminal_calls": 218.66666666666666
+          },
+          "rescued_after_first_failure": 2,
+          "guarded_override_after_first_pass": 18,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.02738444616559771,
+            "guarded_override_after_first_pass": -0.016855374480337516
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.04423982064593523,
+            "unadjusted_ci95": [
+              -0.08392182786043975,
+              -0.0045578134314307045
+            ],
+            "unadjusted_p": 0.030450153884186305
+          }
+        }
+      },
+      "gate_minus_feasible": {
+        "first_slot_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.09180432878360387,
+          "unadjusted_ci95": [
+            0.004992504651468541,
+            0.17861615291573918
+          ],
+          "unadjusted_p": 0.03911992725241352
+        },
+        "full_terminal_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.03139399424682327,
+          "unadjusted_ci95": [
+            -0.017609506760770777,
+            0.08039749525441732
+          ],
+          "unadjusted_p": 0.19809305226424453
+        },
+        "full_minus_first_contrast_change": {
+          "tasks": 24,
+          "mean_loss_difference": -0.060410334536780595,
+          "unadjusted_ci95": [
+            -0.1323385270126761,
+            0.01151785793911491
+          ],
+          "unadjusted_p": 0.09569077193629258
+        },
+        "full_terminal_by_certification": {
+          "both_certified": {
+            "runs": 48,
+            "conditional_mean_left_minus_right": 0.03139399424682327,
+            "contribution_to_overall_mean": 0.03139399424682327
+          },
+          "left_only_certified": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          },
+          "right_only_certified": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          },
+          "both_abstained": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          }
+        },
+        "discordant_certifications": {
+          "runs": 0,
+          "contribution_to_overall_mean": 0.0,
+          "share_of_observed_difference": 0.0
+        }
+      },
+      "full_minus_diagonal": {
+        "first_slot_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": -0.010409779051829817,
+          "unadjusted_ci95": [
+            -0.10038332527126304,
+            0.07956376716760341
+          ],
+          "unadjusted_p": 0.8129619181965265
+        },
+        "full_terminal_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": -0.022173835088809036,
+          "unadjusted_ci95": [
+            -0.0926075368419858,
+            0.04825986666436774
+          ],
+          "unadjusted_p": 0.5213383581931856
+        },
+        "full_minus_first_contrast_change": {
+          "tasks": 24,
+          "mean_loss_difference": -0.01176405603697922,
+          "unadjusted_ci95": [
+            -0.06485694672580919,
+            0.041328834651850756
+          ],
+          "unadjusted_p": 0.6509934136475255
+        },
+        "full_terminal_by_certification": {
+          "both_certified": {
+            "runs": 48,
+            "conditional_mean_left_minus_right": -0.022173835088809036,
+            "contribution_to_overall_mean": -0.022173835088809036
+          },
+          "left_only_certified": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          },
+          "right_only_certified": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          },
+          "both_abstained": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          }
+        },
+        "discordant_certifications": {
+          "runs": 0,
+          "contribution_to_overall_mean": 0.0,
+          "share_of_observed_difference": -0.0
+        }
+      },
+      "full_minus_weak": {
+        "first_slot_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.08039540780894334,
+          "unadjusted_ci95": [
+            -0.021853011226616703,
+            0.1826438268445034
+          ],
+          "unadjusted_p": 0.11746045974128057
+        },
+        "full_terminal_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.015811606422542035,
+          "unadjusted_ci95": [
+            -0.03910456810862083,
+            0.0707277809537049
+          ],
+          "unadjusted_p": 0.5572497445136717
+        },
+        "full_minus_first_contrast_change": {
+          "tasks": 24,
+          "mean_loss_difference": -0.06458380138640131,
+          "unadjusted_ci95": [
+            -0.1443120294975358,
+            0.015144426724733179
+          ],
+          "unadjusted_p": 0.10733747910697611
+        },
+        "full_terminal_by_certification": {
+          "both_certified": {
+            "runs": 48,
+            "conditional_mean_left_minus_right": 0.015811606422542035,
+            "contribution_to_overall_mean": 0.015811606422542035
+          },
+          "left_only_certified": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          },
+          "right_only_certified": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          },
+          "both_abstained": {
+            "runs": 0,
+            "conditional_mean_left_minus_right": null,
+            "contribution_to_overall_mean": 0.0
+          }
+        },
+        "discordant_certifications": {
+          "runs": 0,
+          "contribution_to_overall_mean": 0.0,
+          "share_of_observed_difference": 0.0
+        }
+      },
+      "early_release": {
+        "release_to_weak": {
+          "runs": 5,
+          "weak_lower_loss": 3,
+          "weak_higher_loss": 2,
+          "ties": 0,
+          "mean_weak_minus_full_loss": -0.000270822764745926
+        },
+        "retain_full": {
+          "runs": 43,
+          "weak_lower_loss": 26,
+          "weak_higher_loss": 17,
+          "ties": 0,
+          "mean_weak_minus_full_loss": -0.017618674289727628
+        },
+        "descriptive_task_rank_correlation": {
+          "tasks": 24,
+          "score": "Initial weak minus full constraint log predictive density",
+          "outcome": "Full minus weak operating loss under complete terminal verification",
+          "spearman_rho": -0.05739130434782608
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "arms": {
+        "TargetWeak-GateKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 1.1733431549040203,
+            "certified": 24,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 1.1033443724391003,
+            "certified": 35,
+            "mean_terminal_calls": 278.9166666666667
+          },
+          "rescued_after_first_failure": 11,
+          "guarded_override_after_first_pass": 9,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.06570899823868719,
+            "guarded_override_after_first_pass": -0.004289784226232734
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.06999878246491992,
+            "unadjusted_ci95": [
+              -0.11034020149812665,
+              -0.029657363431713185
+            ],
+            "unadjusted_p": 0.0015495737376231917
+          }
+        },
+        "HistoryDiag-GateKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 1.175674179706165,
+            "certified": 23,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 1.1160319776375125,
+            "certified": 33,
+            "mean_terminal_calls": 281.3333333333333
+          },
+          "rescued_after_first_failure": 10,
+          "guarded_override_after_first_pass": 17,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.05240345393047191,
+            "guarded_override_after_first_pass": -0.007238748138180412
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.059642202068652325,
+            "unadjusted_ci95": [
+              -0.08789181848546876,
+              -0.03139258565183589
+            ],
+            "unadjusted_p": 0.0002252911935443375
+          }
+        },
+        "HistoryFull-GateKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 1.1759387739459963,
+            "certified": 23,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 1.130713996249961,
+            "certified": 31,
+            "mean_terminal_calls": 276.75
+          },
+          "rescued_after_first_failure": 8,
+          "guarded_override_after_first_pass": 11,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.04016849521731156,
+            "guarded_override_after_first_pass": -0.005056282478723584
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.04522477769603515,
+            "unadjusted_ci95": [
+              -0.07521859918956955,
+              -0.015230956202500735
+            ],
+            "unadjusted_p": 0.004823729157162518
+          }
+        },
+        "HistoryFull-FeasibleKG": {
+          "runs": 48,
+          "first_slot": {
+            "mean_loss": 1.1832864833189,
+            "certified": 21,
+            "mean_terminal_calls": 112
+          },
+          "full_terminal": {
+            "mean_loss": 1.1098708119538343,
+            "certified": 33,
+            "mean_terminal_calls": 284.25
+          },
+          "rescued_after_first_failure": 12,
+          "guarded_override_after_first_pass": 12,
+          "full_minus_first_contributions": {
+            "rescued_after_first_failure": -0.07022606972146334,
+            "guarded_override_after_first_pass": -0.00318960164360235
+          },
+          "full_minus_first": {
+            "tasks": 24,
+            "mean_loss_difference": -0.0734156713650657,
+            "unadjusted_ci95": [
+              -0.11617893834199683,
+              -0.030652404388134567
+            ],
+            "unadjusted_p": 0.0017005015037706264
+          }
+        }
+      },
+      "gate_minus_feasible": {
+        "first_slot_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": -0.007347709372903727,
+          "unadjusted_ci95": [
+            -0.042044506486140575,
+            0.02734908774033312
+          ],
+          "unadjusted_p": 0.665416756771251
+        },
+        "full_terminal_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.02084318429612683,
+          "unadjusted_ci95": [
+            -0.00896938772563459,
+            0.05065575631788825
+          ],
+          "unadjusted_p": 0.1615888262039977
+        },
+        "full_minus_first_contrast_change": {
+          "tasks": 24,
+          "mean_loss_difference": 0.028190893669030555,
+          "unadjusted_ci95": [
+            -0.010284145915763356,
+            0.06666593325382447
+          ],
+          "unadjusted_p": 0.14321476288815865
+        },
+        "full_terminal_by_certification": {
+          "both_certified": {
+            "runs": 29,
+            "conditional_mean_left_minus_right": 0.006258859152775051,
+            "contribution_to_overall_mean": 0.00378139407146826
+          },
+          "left_only_certified": {
+            "runs": 2,
+            "conditional_mean_left_minus_right": -0.32013421647863594,
+            "contribution_to_overall_mean": -0.013338925686609831
+          },
+          "right_only_certified": {
+            "runs": 4,
+            "conditional_mean_left_minus_right": 0.3648085909352208,
+            "contribution_to_overall_mean": 0.0304007159112684
+          },
+          "both_abstained": {
+            "runs": 13,
+            "conditional_mean_left_minus_right": 0.0,
+            "contribution_to_overall_mean": 0.0
+          }
+        },
+        "discordant_certifications": {
+          "runs": 6,
+          "contribution_to_overall_mean": 0.017061790224658566,
+          "share_of_observed_difference": 0.8185788688645363
+        }
+      },
+      "full_minus_diagonal": {
+        "first_slot_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.00026459423983134917,
+          "unadjusted_ci95": [
+            -0.033978035663124795,
+            0.03450722414278749
+          ],
+          "unadjusted_p": 0.9873845268388848
+        },
+        "full_terminal_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.014682018612448527,
+          "unadjusted_ci95": [
+            -0.00991022009651447,
+            0.03927425732141153
+          ],
+          "unadjusted_p": 0.22928884977062586
+        },
+        "full_minus_first_contrast_change": {
+          "tasks": 24,
+          "mean_loss_difference": 0.014417424372617178,
+          "unadjusted_ci95": [
+            -0.02027727511706741,
+            0.049112123862301765
+          ],
+          "unadjusted_p": 0.39886295708687425
+        },
+        "full_terminal_by_certification": {
+          "both_certified": {
+            "runs": 27,
+            "conditional_mean_left_minus_right": 0.0005005346210849027,
+            "contribution_to_overall_mean": 0.00028155072436025774
+          },
+          "left_only_certified": {
+            "runs": 4,
+            "conditional_mean_left_minus_right": -0.27065169042695186,
+            "contribution_to_overall_mean": -0.022554307535579323
+          },
+          "right_only_certified": {
+            "runs": 6,
+            "conditional_mean_left_minus_right": 0.2956382033893407,
+            "contribution_to_overall_mean": 0.03695477542366759
+          },
+          "both_abstained": {
+            "runs": 11,
+            "conditional_mean_left_minus_right": 0.0,
+            "contribution_to_overall_mean": 0.0
+          }
+        },
+        "discordant_certifications": {
+          "runs": 10,
+          "contribution_to_overall_mean": 0.01440046788808827,
+          "share_of_observed_difference": 0.980823432268262
+        }
+      },
+      "full_minus_weak": {
+        "first_slot_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.002595619041976032,
+          "unadjusted_ci95": [
+            -0.034875611690779525,
+            0.04006684977473159
+          ],
+          "unadjusted_p": 0.8873050891317863
+        },
+        "full_terminal_left_minus_right": {
+          "tasks": 24,
+          "mean_loss_difference": 0.02736962381086081,
+          "unadjusted_ci95": [
+            -0.011368624584562448,
+            0.06610787220628407
+          ],
+          "unadjusted_p": 0.15739015607450005
+        },
+        "full_minus_first_contrast_change": {
+          "tasks": 24,
+          "mean_loss_difference": 0.02477400476888478,
+          "unadjusted_ci95": [
+            -0.009766756327962606,
+            0.05931476586573217
+          ],
+          "unadjusted_p": 0.1514578679198163
+        },
+        "full_terminal_by_certification": {
+          "both_certified": {
+            "runs": 25,
+            "conditional_mean_left_minus_right": 0.008798544243170742,
+            "contribution_to_overall_mean": 0.004582575126651428
+          },
+          "left_only_certified": {
+            "runs": 6,
+            "conditional_mean_left_minus_right": -0.29672675439383317,
+            "contribution_to_overall_mean": -0.037090844299229146
+          },
+          "right_only_certified": {
+            "runs": 10,
+            "conditional_mean_left_minus_right": 0.28741388632050496,
+            "contribution_to_overall_mean": 0.059877892983438534
+          },
+          "both_abstained": {
+            "runs": 7,
+            "conditional_mean_left_minus_right": 0.0,
+            "contribution_to_overall_mean": 0.0
+          }
+        },
+        "discordant_certifications": {
+          "runs": 16,
+          "contribution_to_overall_mean": 0.022787048684209384,
+          "share_of_observed_difference": 0.8325671131499817
+        }
+      },
+      "early_release": {
+        "release_to_weak": {
+          "runs": 3,
+          "weak_lower_loss": 0,
+          "weak_higher_loss": 2,
+          "ties": 1,
+          "mean_weak_minus_full_loss": 0.016903520296245794
+        },
+        "retain_full": {
+          "runs": 45,
+          "weak_lower_loss": 25,
+          "weak_higher_loss": 14,
+          "ties": 6,
+          "mean_weak_minus_full_loss": -0.030321166751334585
+        },
+        "descriptive_task_rank_correlation": {
+          "tasks": 24,
+          "score": "Initial weak minus full constraint log predictive density",
+          "outcome": "Full minus weak operating loss under complete terminal verification",
+          "spearman_rho": -0.21739130434782608
+        }
+      }
+    }
+  }
+}

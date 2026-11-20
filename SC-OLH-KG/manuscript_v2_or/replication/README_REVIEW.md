@@ -2,7 +2,8 @@
 
 This archive provides the paper's table and figure generator, per-run ledgers,
 per-slot certificates, software, mechanized proofs, the completed 432-cell
-independent panel and the 384-cell referee study. The manifest records the
+independent panel, the 384-cell referee study, and the second-round source and
+query diagnostics. The manifest records the
 original execution identifiers for `frozen_u3/SC-OLH-KG`,
 `frozen_independent/SC-OLH-KG`, and the active referee code in `SC-OLH-KG`.
 The review source copies omit cluster-only launchers and use portable scheduler
@@ -49,7 +50,25 @@ cp -a "$sealed/." "$readout/"
 PYTHONPATH=SC-OLH-KG python -m v2_or.dispatch.summarize_gpfta_referee \
   --manifest "SC-OLH-KG/v2_or/manifests/$campaign.json" --campaign-dir "$readout"
 cmp "$sealed/referee_ablation_readout.json" "$readout/referee_ablation_readout.json"
+PYTHONPATH=SC-OLH-KG python summarize_terminal_replay.py "$sealed" > "$readout/terminal_replay_readout.json"
+cmp "$sealed/terminal_replay_readout.json" "$readout/terminal_replay_readout.json"
+python summarize_cascade_prefix.py "$sealed/cascade_query_v1/receipts.json" --output "$readout/cascade.json"
+cmp "$sealed/cascade_query_v1/readout.json" "$readout/cascade.json"
+PYTHONPATH=SC-OLH-KG python -m pytest -q test_cascade_prefix.py
 ```
+
+The source-deletion and guarded query diagnostics include their protocols,
+scientific scripts, compact readings and charged attempts. The source-deletion
+script consumes the saved source solver logs and target nomination receipts.
+The first-query reconstruction consumes the saved original receipts and fitted
+priors, and repeats only the registered initialization batches. It verifies the
+runtime against the original seal, so use the exact runtime from the execution
+archive for reconstruction. The resulting working states are shared by the
+source-deletion and query-scoring scripts. The controlled U3 archive in
+`U3_REPLAY.md` provides the source logs. The execution archive retains the
+original matched receipts and restored states for authorized review. The
+compact query readout, including the refinement, and the ledger replay both
+regenerate from this ZIP with zero simulation calls.
 
 ## Get the pinned inputs and run checks
 

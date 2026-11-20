@@ -657,6 +657,62 @@ def build_referee_variances(readout: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def build_terminal_replay_table(readout: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{First-slot and full-rule operating loss, certification counts out of 48",
+        r"and terminal calls on identical realized search paths. First-slot replay",
+        r"uses 112 calls.}\label{tab:terminal_replay}",
+        r"\small\begin{tabular}{llrrccr}\toprule",
+        r"& & \multicolumn{2}{c}{Mean loss} & \multicolumn{2}{c}{Certified} & Mean calls \\",
+        r"Family & Arm & Slot 0 & Full rule & Slot 0 & Full rule & Full rule \\",
+    ]
+    labels = {"TargetWeak-GateKG": "Weak", "HistoryDiag-GateKG": "Diagonal",
+              "HistoryFull-GateKG": "Full (gate power)", "HistoryFull-FeasibleKG": "Full (feasibility)"}
+    for family, values in readout["families"].items():
+        lines.append(r"\midrule")
+        family_name = "Queueing" if family.startswith("Queueing") else "Traffic"
+        for name, label in labels.items():
+            arm = values["arms"][name]
+            first = arm["first_slot"]
+            full = arm["full_terminal"]
+            lines.append(
+                f"{family_name} & {label} & {first['mean_loss']:.5f} & {full['mean_loss']:.5f} & "
+                rf"{first['certified']} & {full['certified']} & {full['mean_terminal_calls']:.2f} \\"
+            )
+            family_name = ""
+    lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_query_screen_table(readout: dict[str, Any]) -> str:
+    queue = readout["Queueing_CrossHorizon"]
+    traffic = readout["Traffic_Ingolstadt"]
+    rules = [
+        ("Retained queries", "total_retained_queries", "total_queries", False),
+        ("Unique full-rule choice", "strict_unique_full_count", "states", True),
+        ("Unique choice agrees with matched first slot", "strict_unique_full_equals_matched_first_both_orders", "strict_unique_full_count", True),
+        ("Original scorer's choice excluded", "strict_exclusion_actual_first", "states", True),
+        ("Matched first-slot choice excluded", "strict_exclusion_matching_first_both_orders", "stable_marginal_24_48", True),
+        ("Different choices among numerically stable states", "stable_both_disagreement", "stable_both_count", True),
+    ]
+    lines = [
+        r"\begin{table}[htbp]\centering",
+        r"\caption{Query screen and numerical comparisons in the 24 matched first-query states.",
+        r"The matched first-slot exclusions use agreement under both marginal rules.}",
+        r"\label{tab:query_screen}",
+        r"\small\begin{tabular}{lrr}\toprule",
+        r"Measure & Queueing & Traffic \\",
+        r"\midrule",
+    ]
+    for label, key, denominator, refined in rules:
+        values = [family["refinement"] if refined else family for family in (queue, traffic)]
+        cells = [f"{row[key]}/{row[denominator]}" for row in values]
+        lines.append(" & ".join([label, *cells]) + r" \\")
+    lines.extend([r"\bottomrule\end{tabular}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
 def _compute_honest_amortization(rows_u3: list[dict[str, str]], fam: str, b_src: int = 1428) -> dict[str, Any]:
     agg = _task_agg(rows_u3, fam)["by_budget"]
     fta15 = agg[15]["GP-FTA-KG"]
@@ -948,6 +1004,15 @@ def main() -> None:
         (tab_dir / "table_matched_policy.tex").write_text(policy, encoding="utf-8")
         (tab_dir / "table_matched_contrasts.tex").write_text(comparisons, encoding="utf-8")
         (tab_dir / "table_matched_variances.tex").write_text(build_referee_variances(readout), encoding="utf-8")
+    replay = referee.with_name("terminal_replay_readout.json")
+    if replay.is_file():
+        replay_table = build_terminal_replay_table(json.loads(replay.read_text(encoding="utf-8")))
+        (tab_dir / "table_terminal_replay.tex").write_text(replay_table, encoding="utf-8")
+    cascade = referee.parent / "cascade_query_v1/readout.json"
+    if cascade.is_file():
+        query_readout = json.loads(cascade.read_text(encoding="utf-8"))
+        if "refinement" in query_readout["Queueing_CrossHorizon"]:
+            (tab_dir / "table_query_screen.tex").write_text(build_query_screen_table(query_readout), encoding="utf-8")
     build_figures(args.output_dir / "figures", rows_u3, rows_messy, rows_p1_mech, p1_diag)
     print(f"Regenerated sealed-ledger tables and figures in {args.output_dir}.")
 

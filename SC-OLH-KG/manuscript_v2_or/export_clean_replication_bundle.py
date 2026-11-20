@@ -141,6 +141,11 @@ def collect_clean_replication_files(independent_tree: Path = INDEPENDENT_TREE) -
         "SC-OLH-KG/docs/gp_fta_corrected_kg_confirmation_results_20261120.md",
         "SC-OLH-KG/docs/gp_fta_referee_ablation_protocol_20261120.md",
         "SC-OLH-KG/docs/gp_fta_referee_ablation_results_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_terminal_ledger_replay_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_referee_rev2_results_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_review2_source_loo_protocol_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_cascade_query_protocol_20261120.md",
+        "SC-OLH-KG/docs/gp_fta_cascade_query_results_20261120.md",
     ):
         add(REPO_ROOT / rel)
     for path in (REPO_ROOT / "proof/SCOLHKG/V2OR").glob("*.lean"):
@@ -177,6 +182,10 @@ def collect_clean_replication_files(independent_tree: Path = INDEPENDENT_TREE) -
         artifacts / REFEREE_COHORT / "referee_ablation_readout.json",
         artifacts / REFEREE_COHORT / "operating_policy_diagnostics.json",
         artifacts / REFEREE_COHORT / "sealed_manifest.json",
+        artifacts / REFEREE_COHORT / "terminal_replay_readout.json",
+        artifacts / REFEREE_COHORT / "cascade_query_v1/receipts.json",
+        artifacts / REFEREE_COHORT / "cascade_query_v1/readout.json",
+        artifacts / "v2_or_gpfta_review2_v1/source_loo_readout.json",
     ):
         add(path)
     for directory in artifacts.glob("v2_or_*"):
@@ -203,7 +212,9 @@ def collect_clean_replication_files(independent_tree: Path = INDEPENDENT_TREE) -
     add(REPLICATION_DIR / "lakefile.lean", Path("proof/lakefile.lean"))
     for name in ("README_REPLICATION.md", "LICENSES.md", "requirements.txt", "requirements-live-sumo.txt",
                  "RESCO_INGOLSTADT21_LICENSE.txt", "verify_inputs.py", "read_u3_replay.py",
-                 "summarize_operating_policy.py"):
+                 "summarize_operating_policy.py", "summarize_terminal_replay.py", "diagnose_source_loo.py",
+                 "restore_cascade_prefix.py", "score_cascade_prefix.py", "refine_cascade_prefix.py",
+                 "summarize_cascade_prefix.py", "test_cascade_prefix.py"):
         add(REPLICATION_DIR / name, Path(name))
     return files
 

@@ -1,0 +1,19 @@
+\begin{table}[htbp]\centering
+\caption{First-slot and full-rule operating loss, certification counts out of 48
+and terminal calls on identical realized search paths. First-slot replay
+uses 112 calls.}\label{tab:terminal_replay}
+\small\begin{tabular}{llrrccr}\toprule
+& & \multicolumn{2}{c}{Mean loss} & \multicolumn{2}{c}{Certified} & Mean calls \\
+Family & Arm & Slot 0 & Full rule & Slot 0 & Full rule & Full rule \\
+\midrule
+Queueing & Weak & 2.68059 & 2.64053 & 45 & 48 & 226.67 \\
+ & Diagonal & 2.77140 & 2.67851 & 39 & 48 & 241.75 \\
+ & Full (gate power) & 2.76099 & 2.65634 & 40 & 48 & 219.67 \\
+ & Full (feasibility) & 2.66918 & 2.62494 & 46 & 48 & 218.67 \\
+\midrule
+Traffic & Weak & 1.17334 & 1.10334 & 24 & 35 & 278.92 \\
+ & Diagonal & 1.17567 & 1.11603 & 23 & 33 & 281.33 \\
+ & Full (gate power) & 1.17594 & 1.13071 & 23 & 31 & 276.75 \\
+ & Full (feasibility) & 1.18329 & 1.10987 & 21 & 33 & 284.25 \\
+\bottomrule\end{tabular}
+\end{table}

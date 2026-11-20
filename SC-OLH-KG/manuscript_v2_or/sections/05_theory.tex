@@ -56,6 +56,14 @@ Let $\hat{\lambda} \in [0, 1]$ be \emph{any} data-driven shrinkage/release selec
 
 This result applies to the stated scalar SURE comparison. The implementation in Section~\ref{sec:model} uses a multivariate plug-in GP score and has no guarantee that its release decision satisfies the SURE comparison. A rate in target precision requires a matching rate assumption on $\sigma_{\max}^2$.
 
+\paragraph{Source-deletion sensitivity of policy comparisons.}
+With six source tasks and nine fitted coefficients per problem family, the centered matrix of task coefficients has rank at most five. Shrinkage and ridge regularization make the fitted covariance usable in a GP. They leave the off-diagonal estimates dependent on the same task sample. Let $d_0(x,y)$ be a forecast difference for two physical policies and $d_{-j}(x,y)$ the corresponding difference after omitting source task $j$ and refitting. The observed deletion interval is
+\begin{equation}\label{eq:source_deletion_interval}
+  \left[\min_{j\in\{0,1,\ldots,6\}} d_{-j}(x,y),\ \max_{j\in\{0,1,\ldots,6\}} d_{-j}(x,y)\right],
+  \qquad d_{-0}=d_0.
+\end{equation}
+An interval strictly above or below zero gives the same ordering in all seven fits. The same check applies to a difference in forecasts conditional on common target observations. Evaluating the two policies in their original coordinates keeps the comparison meaningful if refitting changes the active basis. This interval describes sensitivity to the observed deletions. Its width addresses dependence on individual sources, while benefit on new tasks requires a separate comparison of operating loss.
+
 \subsection{One-step gate utility under a factored fantasy law}
 
 \begin{theorem}[One-step gate-power inequality]\label{thm:sequential_bgpkg}
@@ -97,6 +105,9 @@ An explicit $e(q)$ can be computed or bounded with the probability of a fallback
 \end{proposition}
 
 The Electronic Companion gives the branchwise bound and an evaluation procedure using the same query fantasies. Guard comparisons require the joint distribution of objective and violation observations from a verification block. When only the marginal gate probabilities are modeled, bounds on joint events remain available, and the ranking condition can be inconclusive. The reported GP-FTA-KG runs score queries using the single-slot proxy.
+
+\paragraph{When a full-tree calculation can change the query.}
+Let $d(q)=\E[M_C(H_q^+)-M_S(H_q^+)\mid H,q]$. A signed interval $[\ell_q,u_q]$ for $d(q)$ may be available from the forecast branch contributions. The symmetric interval $[-e(q),e(q)]$ is another choice. Set $L(q)=G_S(q)+\ell_q$ and $U(q)=G_S(q)+u_q$. Keep candidates with $U(q)\ge\max_{q'}L(q')$. Indeed, $G_C(q)=G_S(q)+d(q)+M_S(H)-M_C(H)$, and the last two terms are common to every query. Any excluded query thus has lower full-tree value than some retained query. A unique survivor is optimal for the specified model and menu. When intervals overlap, the remaining candidates need full-tree evaluation or finer bounds to establish an exact ordering. For an operator-specified approximation tolerance, the one-step value given up by retaining the proxy choice $\hat q$ is bounded by $\max_q U(q)-L(\hat q)$. The forecast bounds have to include any numerical error to support exact pruning. A large expected backup saving by itself does not determine the ranking. The relevant quantity is how the forecasted correction changes from one query to another.
 
 \begin{theorem}[Unsafe certified return under the verification law]\label{thm:vkg_safety}
 Given the frozen list, suppose each slot's constraint exceedance indicators are IID Bernoulli under the verification law. For each slot $i$ at level $\delta_i$, use the binomial lower-tail rejection rule at $\alpha$. If $\sum_i\delta_i\le\delta$, the probability of a certified return with violation probability above $\alpha$ is at most $\delta$. This holds for either executed terminal branch and for each supported list length. With the three registered budgets and levels the per-slot critical count is one, and the maximum total verification calls is $\MaxVerifCalls$.
