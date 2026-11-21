@@ -1,35 +1,35 @@
 \begin{table}[htbp]
 \centering
-\caption{Operating-policy risk and posterior shrinkage. Operating S/A/U counts safe, borderline, and unsafe policies under the audit intervals, including retained anchors. In traffic the $24$ status-quo plans had mean violation probability $63.49\%$. For grid the same-law column counts verification-pool point estimates above $5\%$ among scored certifications (parentheses give mean risk). Electronic Companion Table~\ref*{tab:verification_audit} also reports point exceedances and interval classifications on the disjoint audit pool.}\label{tab:surge_compliance}
+\caption{Operating-policy risk, cascade guard/rescue activity, and posterior shrinkage. Operating S/A/U counts safe, borderline, and unsafe policies under independent audit intervals, including retained anchors ($63.49\%$ mean anchor violation in traffic). Guard/Rescue counts Slot-1 objective overrides and Slot-1/Slot-2 fallback rescues. For grid, Same-Law gives verification-pool point exceedances above $5\%$ (parentheses give mean risk); Electronic Companion Table~\ref*{tab:verification_audit} reports interleaved audit-pool counts.}\label{tab:surge_compliance}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccccc}
 \toprule
-\textbf{Family (Anchor Viol.)} & \textbf{Method} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{$\mathcal{L}_{10\%}$} & \textbf{$\mathcal{L}_{\mathrm{comp}}$} & \textbf{Same-Law / Init.\ $\hat{\lambda}_g$} & \textbf{Final $\hat{\lambda}_g^{\mathrm{SURE}}$} & \textbf{Thresh.\ Flag} & \textbf{Revisit \%} \\
+\textbf{Family (Anc.\ Viol.)} & \textbf{Method} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{Guard/Resc.} & \textbf{$\mathcal{L}_{10\%}$} & \textbf{$\mathcal{L}_{\mathrm{comp}}$} & \textbf{Same-Law / Init.\ $\hat{\lambda}_g$} & \textbf{Final $\hat{\lambda}_g^{\mathrm{SURE}}$} & \textbf{Revisit \%} \\
 \midrule
-\multirow{5}{*}{Inventory (0.04\%)} & \textbf{GP-FTA-ECKG} & 48/0/0 & 0.57\% & $1.8105$ & $1.8065$ & 0.750 & 0.905 & 100.0\% & 30.6\% \\
- & \texttt{GP-FTA-SingleSlotKG} & 48/0/0 & 0.37\% & $1.8238$ & $1.8238$ & 0.750 & 0.911 & 100.0\% & 35.1\% \\
- & \texttt{GP-FTA-FeasibleKG} & 48/0/0 & 0.32\% & $1.8242$ & $1.8242$ & 0.750 & 0.881 & 100.0\% & 33.8\% \\
- & \texttt{GP-FTA-LOO-ECKG} & 48/0/0 & 0.55\% & $1.8025$ & $1.8025$ & --- & $\beta_g=0.98$ & 54.2\% & 31.1\% \\
- & \texttt{PublicPsi-TargetGP-TS} & 48/0/0 & 0.46\% & $1.8236$ & $1.8236$ & --- & --- & --- & 41.4\% \\
+\multirow{5}{*}{Inventory (0.0\%)} & \textbf{GP-FTA-ECKG} & 48/0/0 & 0.57\% & 10/15 & $1.8105$ & $1.8065$ & 0.750 & 0.905 & 30.6\% \\
+ & \texttt{GP-FTA-SingleSlotKG} & 48/0/0 & 0.37\% & 1/18 & $1.8238$ & $1.8238$ & 0.750 & 0.911 & 35.1\% \\
+ & \texttt{GP-FTA-FeasibleKG} & 48/0/0 & 0.32\% & 4/11 & $1.8242$ & $1.8242$ & 0.750 & 0.881 & 33.8\% \\
+ & \texttt{GP-FTA-LOO-ECKG} & 48/0/0 & 0.55\% & 6/16 & $1.8025$ & $1.8025$ & --- & $\beta_g=0.98$ & 31.1\% \\
+ & \texttt{PublicPsi-TargetGP-TS} & 48/0/0 & 0.46\% & 9/13 & $1.8236$ & $1.8236$ & --- & --- & 41.4\% \\
 \midrule
-\multirow{5}{*}{Queueing (0.00\%)} & \textbf{GP-FTA-ECKG} & 48/0/0 & 0.11\% & $2.5649$ & $2.5649$ & 0.806 & 0.930 & 100.0\% & 27.7\% \\
- & \texttt{GP-FTA-SingleSlotKG} & 48/0/0 & 0.09\% & $2.5764$ & $2.5764$ & 0.806 & 0.952 & 100.0\% & 31.7\% \\
- & \texttt{GP-FTA-FeasibleKG} & 48/0/0 & 0.04\% & $2.5666$ & $2.5666$ & 0.806 & 0.963 & 100.0\% & 32.4\% \\
- & \texttt{GP-FTA-LOO-ECKG} & 48/0/0 & 0.11\% & $2.5687$ & $2.5687$ & --- & $\beta_g=0.69$ & 85.4\% & 23.9\% \\
- & \texttt{PublicPsi-TargetGP-TS} & 48/0/0 & 0.23\% & $2.6293$ & $2.6293$ & --- & --- & --- & 39.2\% \\
+\multirow{5}{*}{Queueing (0.0\%)} & \textbf{GP-FTA-ECKG} & 48/0/0 & 0.11\% & 12/3 & $2.5649$ & $2.5649$ & 0.806 & 0.930 & 27.7\% \\
+ & \texttt{GP-FTA-SingleSlotKG} & 48/0/0 & 0.09\% & 10/4 & $2.5764$ & $2.5764$ & 0.806 & 0.952 & 31.7\% \\
+ & \texttt{GP-FTA-FeasibleKG} & 48/0/0 & 0.04\% & 12/3 & $2.5666$ & $2.5666$ & 0.806 & 0.963 & 32.4\% \\
+ & \texttt{GP-FTA-LOO-ECKG} & 48/0/0 & 0.11\% & 15/1 & $2.5687$ & $2.5687$ & --- & $\beta_g=0.69$ & 23.9\% \\
+ & \texttt{PublicPsi-TargetGP-TS} & 48/0/0 & 0.23\% & 7/7 & $2.6293$ & $2.6293$ & --- & --- & 39.2\% \\
 \midrule
-\multirow{5}{*}{OPSD-336 (0.00\%)} & \textbf{GP-FTA-ECKG} & 24/2/2 & 1.07\% & $0.0580$ & $0.0577$ & 0/25 (0.47\%) & 0.951 & 100.0\% & 37.3\% \\
- & \texttt{GP-FTA-SingleSlotKG} & 25/1/2 & 0.75\% & $0.0588$ & $0.0584$ & 0/25 (0.20\%) & 0.959 & 100.0\% & 40.4\% \\
- & \texttt{GP-FTA-FeasibleKG} & 25/2/1 & 0.77\% & $0.0600$ & $0.0595$ & 0/25 (0.23\%) & 0.961 & 100.0\% & 40.4\% \\
- & \texttt{GP-FTA-LOO-ECKG} & 25/2/1 & 0.81\% & $0.0570$ & $0.0565$ & 0/25 (0.15\%) & LOO & 96.4\% & 37.0\% \\
- & \texttt{PublicPsi-TargetGP-TS} & 25/1/2 & 0.81\% & $0.0580$ & $0.0575$ & 0/25 (0.47\%) & --- & --- & 37.4\% \\
+\multirow{5}{*}{OPSD-336 (0.0\%)} & \textbf{GP-FTA-ECKG} & 24/2/2 & 1.07\% & 6/4 & $0.0580$ & $0.0577$ & 0/25 (0.47\%) & 0.951 & 37.3\% \\
+ & \texttt{GP-FTA-SingleSlotKG} & 25/1/2 & 0.75\% & 5/8 & $0.0588$ & $0.0584$ & 0/25 (0.20\%) & 0.959 & 40.4\% \\
+ & \texttt{GP-FTA-FeasibleKG} & 25/2/1 & 0.77\% & 7/5 & $0.0600$ & $0.0595$ & 0/25 (0.23\%) & 0.961 & 40.4\% \\
+ & \texttt{GP-FTA-LOO-ECKG} & 25/2/1 & 0.81\% & 3/8 & $0.0570$ & $0.0565$ & 0/25 (0.15\%) & LOO & 37.0\% \\
+ & \texttt{PublicPsi-TargetGP-TS} & 25/1/2 & 0.81\% & 4/5 & $0.0580$ & $0.0575$ & 0/25 (0.47\%) & --- & 37.4\% \\
 \midrule
-\multirow{5}{*}{Traffic-21 (63.50\%)} & \textbf{GP-FTA-ECKG} & 35/0/13 & 22.63\% & $1.1125$ & $1.5980$ & 0.725 & 0.951 & 100.0\% & 32.8\% \\
- & \texttt{GP-FTA-SingleSlotKG} & 36/0/12 & 21.07\% & $1.1139$ & $1.5644$ & 0.725 & 0.960 & 100.0\% & 46.1\% \\
- & \texttt{GP-FTA-FeasibleKG} & 29/1/18 & 31.66\% & $1.1546$ & $1.8423$ & 0.725 & 0.942 & 97.9\% & 44.8\% \\
- & \texttt{GP-FTA-LOO-ECKG} & 31/0/17 & 31.15\% & $1.1415$ & $1.8253$ & --- & $\beta_g=0.29$ & 79.2\% & 28.6\% \\
- & \texttt{PublicPsi-TargetGP-TS} & 41/0/7 & 12.91\% & $1.0785$ & $1.3622$ & --- & --- & --- & 45.2\% \\
+\multirow{5}{*}{Traffic-21 (63.5\%)} & \textbf{GP-FTA-ECKG} & 35/0/13 & 22.63\% & 7/6 & $1.1125$ & $1.5980$ & 0.725 & 0.951 & 32.8\% \\
+ & \texttt{GP-FTA-SingleSlotKG} & 36/0/12 & 21.07\% & 10/11 & $1.1139$ & $1.5644$ & 0.725 & 0.960 & 46.1\% \\
+ & \texttt{GP-FTA-FeasibleKG} & 29/1/18 & 31.66\% & 5/6 & $1.1546$ & $1.8423$ & 0.725 & 0.942 & 44.8\% \\
+ & \texttt{GP-FTA-LOO-ECKG} & 31/0/17 & 31.15\% & 10/6 & $1.1415$ & $1.8253$ & --- & $\beta_g=0.29$ & 28.6\% \\
+ & \texttt{PublicPsi-TargetGP-TS} & 41/0/7 & 12.91\% & 15/10 & $1.0785$ & $1.3622$ & --- & --- & 45.2\% \\
 \bottomrule
 \end{tabular}%
 }

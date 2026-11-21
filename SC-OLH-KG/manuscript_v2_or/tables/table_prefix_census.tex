@@ -1,6 +1,6 @@
 \begin{table}[htbp]
 \centering
-\caption{Menu diagnostics and single-nomination scores. Panel A uses 96 separate diagnostic states (screen cap 24). Panels B and C use 24 production-stream states, six per family and stage. The $256\times1{,}024$ reference scores all 160 candidates under the frozen model. Panel B reports mean single-nomination gains ($\times10^{-3}$), wins or ties among the six states, and execution times in seconds. Panel C compares the $16\times128$ and reference menu scores over all 160 candidates. Hits count first-argmax reference winner IDs in the logged production screen. MAE averages absolute menu-score discrepancies. Screen loss compares the best reference nomination overall and in the screen, and query loss compares it to the production choice (both $\times10^{-3}$).}\label{tab:prefix_census}
+\caption{Menu diagnostics, 24-scramble single-nomination reference values, and \texttt{UB-cEI} comparisons. Panel~A profiles 96 diagnostic states (screen cap 24). Panels~B and~C evaluate 24 production-stream states ($256\times 1{,}024$ Sobol nodes across $24$ independent scrambles per state under the frozen working model). Panel~B reports mean single-nomination gains ($\times 10^{-3}$), wins or ties of \textbf{EC-KG} against \texttt{UB-cEI} \citep[Section~5]{ungredda2024bayesian}, ratio of group means (`Mean Ratio'), and unweighted average of state-wise ratios (`State Ratio'; $^{\ast}$5/6 non-saturated states in late traffic, excluding one near-zero state with $\Delta^{\mathrm{term}}_{\max}=3.1\times 10^{-10}$). Across all 24 states, \textbf{EC-KG} beats or ties \texttt{SingleSlotKG} in $22/24$, \texttt{FeasibleKG} in $21/24$, \texttt{UB-cEI} in $22/24$, and \texttt{Gate-cEI} in $23/24$ ($0.06$--$0.07$s fast score vs.\ $12.6$--$18.8$s all-160 reference; $3/24$ states have negative single-nomination gain). Panel~C reports Stage~A screen membership, missed revisit vs.\ new-candidate winners, all-160 Spearman correlation, menu MAE, screen loss, and query loss.}\label{tab:prefix_census}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccccc}
@@ -13,21 +13,21 @@ Initial ($n=0$) & Traffic-21 & 8.0 & 11/24 (45.8\%) & 11/24 (45.8\%) & 0/24 (0.0
 Near-term.\ ($n=59$) & Queueing & 51.5 & 17/24 (70.8\%) & 18/24 (75.0\%) & 6/24 (25.0\%) & $1.361$ & 53.0\% / 47.0\% & $0.584$ & 0.68 / 0.77 \\
 Near-term.\ ($n=59$) & Traffic-21 & 47.0 & 23/24 (95.8\%) & 20/24 (83.3\%) & 14/24 (58.3\%) & $0.936$ & 51.5\% / 48.5\% & $0.623$ & 0.68 / 0.81 \\
 \midrule
-\multicolumn{10}{l}{\textbf{B. Single-nomination value of the selected query under the reference model}} \\
-Stage & Family & All-160 best & EC-KG & Slot-0 & Feas. & EC $\ge$ Slot-0 & EC $\ge$ Feas. & Fast (s) & Ref. (s) \\
+\multicolumn{10}{l}{\textbf{B. 24-Scramble Single-Nomination Reference Gains ($\times 10^{-3}$), \texttt{UB-cEI} Comparison, and Ratio Metrics}} \\
+\textbf{Stage} & \textbf{Family} & \textbf{All-160} & \textbf{EC-KG} & \textbf{Slot-0} & \textbf{Feas.} & \textbf{UB-cEI} & \textbf{EC $\ge$ cEI} & \textbf{Mean Ratio} & \textbf{State Ratio} \\
 \midrule
-Initial & Queueing & 147.525 & 145.120 & 97.656 & 131.821 & 6/6 & 6/6 & 0.23 & 59.2 \\
-Initial & Traffic-21 & 40.122 & 34.442 & 2.626 & 26.178 & 6/6 & 5/6 & 0.25 & 58.9 \\
-Step 59 & Queueing & 3.537 & 3.077 & 0.528 & 0.282 & 5/6 & 5/6 & 0.34 & 67.1 \\
-Step 59 & Traffic-21 & 0.768 & 0.705 & 0.248 & 0.041 & 5/6 & 5/6 & 0.35 & 66.4 \\
+Initial & Queueing & 146.970 & 144.673 & 97.241 & 131.416 & 127.095 & 6/6 & 98.4\% & 99.2\% \\
+Initial & Traffic-21 & 40.603 & 35.310 & 4.179 & 26.691 & 24.998 & 6/6 & 87.0\% & 41.1\% \\
+Step 59 & Queueing & 3.638 & 3.156 & 0.556 & 0.261 & 0.387 & 6/6 & 86.7\% & 58.1\% \\
+Step 59 & Traffic-21 & 0.767 & 0.703 & 0.251 & 0.044 & 0.404 & 4/6 & 91.6\% & 44.3\%$^{\ast}$ \\
 \midrule
-\multicolumn{10}{l}{\textbf{C. Logged Stage A membership and all-candidate finite-grid error}} \\
-Stage & Family & Mean screen size & Menu hits & Nomination hits & Mean Spearman & Defined & MAE ($\times10^{-3}$) & Screen loss & Query loss \\
+\multicolumn{10}{l}{\textbf{C. Logged Stage A Membership, Missed-Winner Anatomy, and All-Candidate Finite-Grid Error}} \\
+\textbf{Stage} & \textbf{Family} & \textbf{Screen} & \textbf{Menu Hits} & \textbf{Nom.\ Hits} & \textbf{Miss (Rev/New)} & \textbf{Spearman (Def.)} & \textbf{MAE ($\times 10^{-3}$)} & \textbf{Screen Loss} & \textbf{Query Loss} \\
 \midrule
-Initial & Queueing & 14.2 & 6/6 & 6/6 & 0.923 & 6/6 & 2.106 & 0.000 & 2.406 \\
-Initial & Traffic-21 & 14.3 & 6/6 & 5/6 & 0.886 & 6/6 & 1.573 & 0.563 & 5.680 \\
-Step 59 & Queueing & 16.0 & 1/6 & 1/6 & 0.814 & 6/6 & 0.202 & 0.458 & 0.460 \\
-Step 59 & Traffic-21 & 15.8 & 5/6 & 6/6 & 0.847 & 5/6 & 0.022 & 0.000 & 0.064 \\
+Initial & Queueing & 14.2 & 6/6 & 6/6 & 0/0 & 0.923 (6/6) & 2.106 & 0.000 & 2.406 \\
+Initial & Traffic-21 & 14.3 & 6/6 & 5/6 & 0/1 & 0.886 (6/6) & 1.573 & 0.563 & 5.680 \\
+Step 59 & Queueing & 16.0 & 1/6 & 1/6 & 2/3 & 0.814 (6/6) & 0.202 & 0.458 & 0.460 \\
+Step 59 & Traffic-21 & 15.8 & 5/6 & 6/6 & 0/0 & 0.847 (5/6) & 0.022 & 0.000 & 0.064 \\
 \bottomrule
 \end{tabular}%
 }

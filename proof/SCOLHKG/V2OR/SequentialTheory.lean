@@ -34,10 +34,11 @@ Transfer (`v2.2_or`) framework without `sorry` or non-standard axioms:
    `E_n[p_{n+1}^{gate}] = p_n^{gate}`, and Jensen convexity of `(J_ref - ·)_+`—replacing
    abstract martingale assumptions on `V_n`.
 
-3. **One-Step BGP-KG Innovation Lipschitz Cap & Sequential No-Starvation Consistency**:
-   Proves `Acq_n^{BGP-KG}(x) ≤ ε_f + B_f * ε_g`, forcing `Acq_n(x) → 0` as epistemic step
-   innovations `(ε_f, ε_g) → 0` with visit count `N_n(x) → ∞`, and proves that greedy
-   `BGP-KG` maximization cannot starve any candidate retaining positive lookahead value `γ > 0`.
+3. **One-Step BGP-KG Innovation Lipschitz Cap & Conditional Greedy Visit Bound**:
+   Proves `Acq_n^{BGP-KG}(x) ≤ ε_f + B_f * ε_g`, bounding one-step BGP-KG lookahead by step
+   innovations `(ε_f, ε_g)`, and proves the conditional one-step algebraic implication that if all
+   candidates visited at least `M_cap` times have acquisition strictly below `γ` while some
+   candidate retains `≥ γ`, any greedy maximizer has visit count `< M_cap`.
 
 4. **Bellman Backward-Induction Optimality of the Three-Slot Verification Cascade**:
    Proves that under sequential slot pass probabilities `(p_0, p_1, p_2)` and status-quo
@@ -351,7 +352,7 @@ theorem bgp_kg_nonneg_from_posterior_tower
   exact mul_le_mul_of_nonneg_left hLeSup hWProd
 
 
-/-! ## Section 3: BGP-KG Innovation Lipschitz Cap & Sequential No-Starvation Consistency -/
+/-! ## Section 3: BGP-KG Innovation Lipschitz Cap & Conditional Greedy Visit Bound -/
 
 /-- Pointwise sensitivity of `(J_ref - μ)_+ * p` under bounded innovations `|μ' - μ| ≤ epsF`
     and `|p' - p| ≤ epsG` when `p' ∈ [0, 1]` and `(J_ref - μ)_+ ≤ Bf`. -/
@@ -432,11 +433,11 @@ theorem bgp_kg_lipschitz_in_step_innovations
   rw [← Finset.sum_mul, hWSum, one_mul] at hSumLe
   linarith
 
-/-- **Theorem 3b (Sequential No-Starvation / Consistency Guarantee)**:
-    If an under-explored candidate `xUnder` retains strictly positive BGP-KG value `acq(xUnder) ≥ γ > 0`,
-    and every policy visited at least `M_cap` times has BGP-KG value `< γ` (by Theorem 3a since
-    `epsF(N) + Bf * epsG(N) → 0`), then any greedy maximizer `xChosen` MUST have `visits(xChosen) < M_cap`.
-    Hence greedy BGP-KG cannot repeatedly sample already-resolved arms while informative arms remain. -/
+/-- **Theorem 3b (Conditional One-Step Greedy Visit Bound)**:
+    If an under-explored candidate `xUnder` retains BGP-KG value `acq(xUnder) ≥ γ`,
+    and every policy visited at least `M_cap` times satisfies the assumed cap `acq(x) < γ`,
+    then any one-step greedy maximizer `xChosen` satisfies `visits(xChosen) < M_cap`.
+    This is a conditional one-step implication rather than an unconditional dynamic consistency proof. -/
 theorem greedy_bgp_kg_cannot_starve_informative_arm
     {α : Type*}
     (acq : α → ℝ) (visits : α → ℕ)
@@ -495,12 +496,13 @@ theorem bellman_slot0_minimizes_expected_deployed_loss
   constructor <;> intro h <;> linarith
 
 
-/-! ## Section 5: Fisher-Whitened SURE Realizability & Dual Eligible-Cascade VOI Decomposition -/
+/-! ## Section 5: Reference-Model Unit-Variance SURE Bound & Shortlist-Menu VOI Decomposition -/
 
-/-- **Theorem 5a (Exact Unit-Variance Fisher-Whitened SURE Realizability)**:
-    For Fisher-eigenspace whitened target projections `R̃_k = D_k + ξ_k` with exact unit
-    variance `σ̃_k^2 ≡ 1` (`mode = "tempered_sure_release"` in `tempered_hvd_posterior.py`),
-    every empirical SURE minimizer `lamHat ∈ [0, 1]` satisfies
+/-- **Theorem 5a (Reference-Model Unit-Variance SURE Excess-Loss Bound)**:
+    In the idealized fixed-design, known-precision linear shrinkage reference model where
+    subspace projections `R̃_k = D_k + ξ_k` use unit variance proxy `σ̃_k^2 ≡ 1` (motivating the
+    plug-in rule in `tempered_hvd_posterior.py`), every selector `lamHat ∈ [0, 1]` satisfying
+    `R_hat(lamHat) ≤ R_hat(1)` obeys
       `L(lamHat) - L(1) ≤ 3 + (9 * CBar^2) / (2 * DBarSq)`
     uniformly across all nonzero prior-target shifts `D`. -/
 theorem fisher_whitened_unit_variance_sure_bound

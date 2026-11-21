@@ -113,6 +113,10 @@ def _copy_entry(source: Path, target: Path, relative: Path) -> None:
         match = STRICT_LEAK_RE.search(content)
         if match:
             raise ValueError(f"Review supplement contains forbidden token {match.group(0)!r} in {relative}")
+    elif target.suffix == ".pkl":
+        match = STRICT_LEAK_RE.search(target.read_bytes().decode("latin1"))
+        if match:
+            raise ValueError(f"Review supplement binary pickle contains forbidden token {match.group(0)!r} in {relative}")
 
 
 def export(source: Path, target: Path) -> dict:

@@ -1,41 +1,35 @@
 \begin{table}[htbp]
 \centering
-\caption{Five-arm comparison across 72 DES tasks and 14 previously studied ENTSO-E grid markets with 336-dimensional policies ($860$ five-arm runs at $N=60$, two paired evaluation streams per task, reusing frozen source archives with zero new source calls). Positive differences (`Arm $-$ ECKG') favor \textbf{GP-FTA-ECKG}; primary $p$-values are two-sided paired-$t$ with four-comparator Holm adjustment per row block. Cert.\ S/A/U classifies certified deployments on held-out audit draws ($0/125$ same-law verification exceedances across all five OPSD arms).}\label{tab:prospective_main}
-\scriptsize
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llccccccccc}
+\caption{Five-arm performance, simulation calls, online wall-clock time, and certification outcomes across 72 DES tasks and 14 previously studied ENTSO-E grid markets with 336-dimensional policies ($860$ runs at $N=60$, two paired evaluation streams per task, zero new source calls). Online Time averages per-run sequential search and clean-up wall-clock seconds on single-thread CPU workers. Cert.\ S/A/U classifies certified deployments on held-out audit draws ($0/125$ verification-pool exceedances across all five OPSD arms; paired contrasts appear in Table~\ref{tab:prospective_contrasts}).}\label{tab:prospective_main}
+\footnotesize
+\setlength{\tabcolsep}{5.5pt}
+\begin{tabular}{llccccc}
 \toprule
-\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Guard/Rescue} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Two-sided $p$} & \textbf{Holm $p$} \\
+\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Calls} & \textbf{Online Time (s)} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} \\
 \midrule
-\multirow{5}{*}{Inventory} & \textbf{GP-FTA-ECKG} & $1.8065 \pm 0.0350$ & 390.8 & 47/48 & 47/0/0 & 10/15 & --- & --- & --- & --- \\
- & \texttt{GP-FTA-SingleSlotKG} & $1.8238 \pm 0.0388$ & 367.1 & 48/48 & 48/0/0 & 1/18 & $+0.0174\ [-0.0007,\,0.0354]$ & 16/8/0 & $0.058$ & $0.175$ \\
- & \texttt{GP-FTA-FeasibleKG} & $1.8242 \pm 0.0391$ & 357.8 & 48/48 & 48/0/0 & 4/11 & $+0.0178\ [-0.0067,\,0.0422]$ & 12/12/0 & $0.146$ & $0.292$ \\
- & \texttt{GP-FTA-LOO-ECKG} & $\mathbf{1.8025} \pm 0.0361$ & 399.3 & 48/48 & 48/0/0 & 6/16 & $-0.0039\ [-0.0137,\,0.0058]$ & 9/15/0 & $0.413$ & $0.413$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $1.8236 \pm 0.0357$ & 390.8 & 48/48 & 48/0/0 & 9/13 & $+0.0171\ [0.0019,\,0.0323]$ & 15/9/0 & $0.029$ & $0.116$ \\
+\multirow{5}{*}{Inventory} & \textbf{GP-FTA-ECKG} & $1.8065 \pm 0.0350$ & 390.8 & 34.0 & 47/48 & 47/0/0 \\
+ & \texttt{GP-FTA-SingleSlotKG} & $1.8238 \pm 0.0388$ & 367.1 & 11.0 & 48/48 & 48/0/0 \\
+ & \texttt{GP-FTA-FeasibleKG} & $1.8242 \pm 0.0391$ & 357.8 & 9.2 & 48/48 & 48/0/0 \\
+ & \texttt{GP-FTA-LOO-ECKG} & $\mathbf{1.8025} \pm 0.0361$ & 399.3 & 35.8 & 48/48 & 48/0/0 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $1.8236 \pm 0.0357$ & 390.8 & 8.7 & 48/48 & 48/0/0 \\
 \midrule
-\multirow{5}{*}{Queueing} & \textbf{GP-FTA-ECKG} & $\mathbf{2.5649} \pm 0.0464$ & 365.8 & 48/48 & 48/0/0 & 12/3 & --- & --- & --- & --- \\
- & \texttt{GP-FTA-SingleSlotKG} & $2.5764 \pm 0.0465$ & 344.0 & 48/48 & 48/0/0 & 10/4 & $+0.0114\ [-0.0061,\,0.0290]$ & 12/12/0 & $0.190$ & $0.571$ \\
- & \texttt{GP-FTA-FeasibleKG} & $2.5666 \pm 0.0418$ & 349.3 & 48/48 & 48/0/0 & 12/3 & $+0.0016\ [-0.0173,\,0.0206]$ & 13/11/0 & $0.859$ & $1.000$ \\
- & \texttt{GP-FTA-LOO-ECKG} & $2.5687 \pm 0.0461$ & 357.3 & 48/48 & 48/0/0 & 15/1 & $+0.0038\ [-0.0113,\,0.0189]$ & 14/10/0 & $0.609$ & $1.000$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $2.6293 \pm 0.0477$ & 373.8 & 48/48 & 48/0/0 & 7/7 & $+0.0643\ [0.0311,\,0.0976]$ & 19/5/0 & $0.0006$ & $0.002$ \\
+\multirow{5}{*}{Queueing} & \textbf{GP-FTA-ECKG} & $\mathbf{2.5649} \pm 0.0464$ & 365.8 & 34.1 & 48/48 & 48/0/0 \\
+ & \texttt{GP-FTA-SingleSlotKG} & $2.5764 \pm 0.0465$ & 344.0 & 10.5 & 48/48 & 48/0/0 \\
+ & \texttt{GP-FTA-FeasibleKG} & $2.5666 \pm 0.0418$ & 349.3 & 8.7 & 48/48 & 48/0/0 \\
+ & \texttt{GP-FTA-LOO-ECKG} & $2.5687 \pm 0.0461$ & 357.3 & 36.7 & 48/48 & 48/0/0 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $2.6293 \pm 0.0477$ & 373.8 & 8.0 & 48/48 & 48/0/0 \\
 \midrule
-\multirow{5}{*}{OPSD-336} & \textbf{GP-FTA-ECKG} & $0.0575 \pm 0.0061$ & 392.7 & 25/28 & 21/2/2 & 6/4 & --- & --- & --- & --- \\
- & \texttt{GP-FTA-SingleSlotKG} & $0.0583 \pm 0.0060$ & 401.9 & 25/28 & 22/1/2 & 5/8 & $+0.0008\ [-0.0019,\,0.0036]$ & 8/6/0 & $0.534$ & $1.000$ \\
- & \texttt{GP-FTA-FeasibleKG} & $0.0595 \pm 0.0057$ & 397.7 & 25/28 & 22/2/1 & 7/5 & $+0.0020\ [-0.0002,\,0.0042]$ & 8/5/1 & $0.067$ & $0.269$ \\
- & \texttt{GP-FTA-LOO-ECKG} & $\mathbf{0.0564} \pm 0.0060$ & 393.1 & 25/28 & 22/2/1 & 3/8 & $-0.0011\ [-0.0026,\,0.0004]$ & 4/9/1 & $0.151$ & $0.453$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $0.0574 \pm 0.0064$ & 392.3 & 25/28 & 22/1/2 & 4/5 & $-0.0001\ [-0.0024,\,0.0023]$ & 7/6/1 & $0.952$ & $1.000$ \\
+\multirow{5}{*}{OPSD-336} & \textbf{GP-FTA-ECKG} & $0.0575 \pm 0.0061$ & 392.7 & 32.8 & 25/28 & 21/2/2 \\
+ & \texttt{GP-FTA-SingleSlotKG} & $0.0583 \pm 0.0060$ & 401.9 & 11.5 & 25/28 & 22/1/2 \\
+ & \texttt{GP-FTA-FeasibleKG} & $0.0595 \pm 0.0057$ & 397.7 & 9.8 & 25/28 & 22/2/1 \\
+ & \texttt{GP-FTA-LOO-ECKG} & $\mathbf{0.0564} \pm 0.0060$ & 393.1 & 33.5 & 25/28 & 22/2/1 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $0.0574 \pm 0.0064$ & 392.3 & 9.4 & 25/28 & 22/1/2 \\
 \midrule
-\multirow{5}{*}{Traffic-21} & \textbf{GP-FTA-ECKG} & $1.0790 \pm 0.0184$ & 408.6 & 35/48 & 35/0/0 & 7/6 & --- & --- & --- & --- \\
- & \texttt{GP-FTA-SingleSlotKG} & $1.0827 \pm 0.0183$ & 412.2 & 36/48 & 36/0/0 & 10/11 & $+0.0037\ [-0.0130,\,0.0205]$ & 16/6/2 & $0.647$ & $0.647$ \\
- & \texttt{GP-FTA-FeasibleKG} & $1.1078 \pm 0.0226$ & 426.8 & 30/48 & 29/1/0 & 5/6 & $+0.0288\ [0.0036,\,0.0540]$ & 16/6/2 & $0.027$ & $0.107$ \\
- & \texttt{GP-FTA-LOO-ECKG} & $1.0973 \pm 0.0225$ & 417.6 & 31/48 & 31/0/0 & 10/6 & $+0.0183\ [-0.0074,\,0.0440]$ & 11/11/2 & $0.154$ & $0.463$ \\
- & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.0598} \pm 0.0197$ & 405.4 & 41/48 & 41/0/0 & 15/10 & $-0.0192\ [-0.0463,\,0.0078]$ & 8/15/1 & $0.154$ & $0.463$ \\
-\midrule
-\multirow{4}{*}{Pooled DES ($72$)} & \texttt{GP-FTA-SingleSlotKG} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ across 72 DES tasks} & $+0.0639\ [-0.0187,\,0.1465]$ & 44/26/2 & $0.127$ & $0.382$ \\
- & \texttt{GP-FTA-FeasibleKG} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ across 72 DES tasks} & $+0.1691\ [0.0423,\,0.2958]$ & 41/29/2 & $0.010$ & $0.039$ \\
- & \texttt{GP-FTA-LOO-ECKG} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ across 72 DES tasks} & $+0.0802\ [-0.0379,\,0.1982]$ & 34/36/2 & $0.180$ & $0.382$ \\
- & \texttt{PublicPsi-TargetGP-TS} & \multicolumn{5}{c}{Standardized paired saving $(\mathcal{L}_{\mathrm{arm}}-\mathcal{L}_{\mathrm{ECKG}})/s_{\mathrm{anc}}$ across 72 DES tasks} & $+0.0154\ [-0.1192,\,0.1500]$ & 42/29/1 & $0.821$ & $0.821$ \\
+\multirow{5}{*}{Traffic-21} & \textbf{GP-FTA-ECKG} & $1.0790 \pm 0.0184$ & 408.6 & 52.2 & 35/48 & 35/0/0 \\
+ & \texttt{GP-FTA-SingleSlotKG} & $1.0827 \pm 0.0183$ & 412.2 & 30.3 & 36/48 & 36/0/0 \\
+ & \texttt{GP-FTA-FeasibleKG} & $1.1078 \pm 0.0226$ & 426.8 & 29.0 & 30/48 & 29/1/0 \\
+ & \texttt{GP-FTA-LOO-ECKG} & $1.0973 \pm 0.0225$ & 417.6 & 53.7 & 31/48 & 31/0/0 \\
+ & \texttt{PublicPsi-TargetGP-TS} & $\mathbf{1.0598} \pm 0.0197$ & 405.4 & 28.5 & 41/48 & 41/0/0 \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 \end{table}

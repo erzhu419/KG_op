@@ -4,7 +4,7 @@ On an unseen target task $t$, \textbf{GP-FTA} combines shift-invariant within-po
 
 \subsection{Within-Policy Heteroscedastic Dispersion and Plug-In Fisher-Subspace \texttt{SURE}}
 
-When transferring to a shifted target task $t$ where $g_t(x) = \tilde{\phi}(x)^\top \mu_{0,g} + \Delta_g(x)$, fitting variance parameters to raw prior residuals $(Y_{t,g,\ell}(x) - \tilde{\phi}(x)^\top\mu_{0,g})^2$ leaks deterministic mean shift $\Delta_g(x)^2$ into aleatoric variance estimates, whereas discrete leave-one-out GP branch selectors can retain misspecified source priors at small target sample sizes. \textbf{GP-FTA-ECKG} addresses both issues via two closed-form online updates.
+When transferring to a shifted target task $t$ where $g_t(x) = \tilde{\phi}(x)^\top \mu_{0,g} + \Delta_g(x)$, fitting variance parameters to raw prior residuals $(Y_{t,g,\ell}(x) - \tilde{\phi}(x)^\top\mu_{0,g})^2$ leaks deterministic mean shift $\Delta_g(x)^2$ into aleatoric variance estimates, whereas discrete leave-one-out GP branch selectors can retain misspecified source priors at small target sample sizes. \textbf{GP-FTA-ECKG} addresses these two issues by pairing constrained nonnegative least-squares (NNLS) within-policy variance estimation with a closed-form plug-in Fisher-subspace shrinkage rule.
 
 \paragraph{1. Shift-invariant within-policy HVD estimation and heuristic variance buffer.}
 Given evaluated target policies $\mathcal{D}_n = \{x_1,\dots,x_{|\mathcal{D}_n|}\}$ with replicated subset $\mathcal{I}_{\mathrm{rep}} = \{i : r_i \ge 2\}$ and total within-policy degrees of freedom $\nu_n = \sum_{i \in \mathcal{I}_{\mathrm{rep}}} (r_i - 1)$, we estimate $\hat{\gamma}_{t,c} \in \R_+^{14}$ from centered within-policy dispersion:

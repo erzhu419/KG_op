@@ -44,6 +44,18 @@ cmp "$mp_opsd/inventory_covariance_readout.json" "$diag_dir/inventory_covariance
 python scripts/summarize_eckg_reference_correction.py summarize \
   --states "$prosp/eckg_reference_states.json" --output "$diag_dir/eckg_reference_validation_corrected.json"
 cmp "$prosp/eckg_reference_validation_corrected.json" "$diag_dir/eckg_reference_validation_corrected.json"
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_eckg_multiscramble_cei_audit.py summarize \
+  --out-dir "$prosp/eckg_multiscramble_cei" --states-path "$prosp/eckg_reference_states.json" \
+  --summary-path "$diag_dir/eckg_multiscramble_cei_readout.json"
+cmp "$prosp/eckg_multiscramble_cei_readout.json" "$diag_dir/eckg_multiscramble_cei_readout.json"
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_direct_propagation_study.py summarize \
+  --panel exploratory_86 --out-dir "$mp_opsd/direct_propagation_exploratory_86" \
+  --summary-path "$diag_dir/direct_propagation_exploratory_86_readout.json"
+cmp "$mp_opsd/direct_propagation_exploratory_86_readout.json" "$diag_dir/direct_propagation_exploratory_86_readout.json"
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_direct_propagation_study.py summarize \
+  --panel confirm_fresh_72 --out-dir "$mp_opsd/direct_propagation_confirm_fresh_72" \
+  --summary-path "$diag_dir/direct_propagation_confirm_fresh_72_readout.json"
+cmp "$mp_opsd/direct_propagation_confirm_fresh_72_readout.json" "$diag_dir/direct_propagation_confirm_fresh_72_readout.json"
 ```
 
 ## Live SUMO adapter and Lean 4.31.0 proof verification

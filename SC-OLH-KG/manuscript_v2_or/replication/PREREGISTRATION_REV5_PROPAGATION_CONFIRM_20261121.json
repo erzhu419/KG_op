@@ -1,0 +1,64 @@
+{
+  "protocol_id": "PREREGISTRATION_REV5_PROPAGATION_CONFIRM_20261121",
+  "preregistered_before_confirm_execution_utc": "2026-11-21T08:04:00Z",
+  "frozen_execution_code_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "reuse_source_campaign": "v2_or_u3_confirm_v1",
+  "new_source_simulation_calls": 0,
+  "new_source_refits": 0,
+  "purpose": "One-shot confirmatory test of cross-policy information propagation on 72 newly generated unseen target tasks following exploratory development on the existing 86-task panel.",
+  "confirmatory_panel": {
+    "panel_name": "confirm_fresh_72",
+    "families": {
+      "Inventory_CrossHorizon": {
+        "n_tasks": 24,
+        "target_seed": 5611201,
+        "horizons": [96, 120],
+        "shift_scale": 1.3
+      },
+      "Queueing_CrossHorizon": {
+        "n_tasks": 24,
+        "target_seed": 5611202,
+        "horizons": [96, 120],
+        "shift_scale": 1.3
+      },
+      "Traffic_Ingolstadt": {
+        "n_tasks": 24,
+        "target_seed": 5611204,
+        "shift_scale": 1.3
+      }
+    },
+    "note_on_opsd": "All 20 usable ENTSO-E OPSD markets (6 source + 14 target) were already exhausted in exploratory_86; no synthetic OPSD tasks are fabricated."
+  },
+  "fixed_experimental_controls": {
+    "initial_observations": "Identical N0=8 cold-DCT designs (2 replications each) and scarce 2-design subset {x_sq, x_cold_1} across all compared models",
+    "representation_and_basis": "Identical public rollout psi(x) and identical source-learned active spectral basis tilde_phi(psi(x))",
+    "noise_model": "Identical target-only within-policy HVD variance fit (use_source_hvd_prior=False)",
+    "probe_and_heldout_selection": "4 deterministic probe policies selected purely by public active-basis cosine leverage (zero ground-truth or Sigma_0 peeking) and 32 disjoint held-out DCT policies audited on 400 independent replications"
+  },
+  "prespecified_primary_families": {
+    "family_A_zero_mean_kernel_propagation_regime_8to9": {
+      "description": "Post-probe held-out demeaned shape NRMSE differences (comparator minus structured, >0 favors structured) across four models sharing zero source mean mu_{0,act}=0 and identical active-subspace trace tr(Sigma_act)",
+      "contrasts_holm_4": [
+        "Kernel_Iso_minus_Full_AfterErr",
+        "Kernel_Iso_minus_Diag_AfterErr",
+        "Kernel_Diag_minus_Full_AfterErr",
+        "Kernel_Permuted_minus_Full_AfterErr"
+      ]
+    },
+    "family_B_online_sure_post_probe_accuracy_regime_8to9": {
+      "description": "Post-probe held-out demeaned shape NRMSE differences across online adaptive surrogates",
+      "contrasts_holm_4": [
+        "Online_FullSURE_vs_Weak_AfterErr",
+        "Online_DiagSURE_vs_Weak_AfterErr",
+        "Online_FullSURE_vs_DiagSURE_AfterErr",
+        "Online_FullSURE_vs_PermutedSURE_AfterErr"
+      ]
+    }
+  },
+  "secondary_endpoints": [
+    "Single-step before-to-after error reductions delta_nrmse (8->9 and 2->3) with positive/negative/zero task counts",
+    "Single-step Gaussian predictive log-score changes delta_logscore",
+    "Held-out Spearman rank correlation changes delta_spearman"
+  ],
+  "stopping_rule": "Execute confirm_fresh_72 exactly once; report all positive, null, and negative outcomes without sample expansion."
+}

@@ -1,0 +1,36 @@
+\begin{table}[htbp]
+\centering
+\caption{Task-paired status-quo decision-loss contrasts against \textbf{GP-FTA-ECKG} for the five-arm study in Table~\ref{tab:prospective_main}. Positive differences (`Arm $-$ ECKG') favor \textbf{GP-FTA-ECKG}. Primary $p$-values use two-sided paired-$t$ tests on stream-averaged task means ($n=24$ per DES family, $n=14$ for OPSD-336, and $n=72$ standardized by family anchor SD in the pooled DES block) with four-comparator Holm adjustment within each block.}\label{tab:prospective_contrasts}
+\footnotesize
+\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Domain / Panel} & \textbf{Comparator} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Two-sided $p$} & \textbf{Holm $p$} \\
+\midrule
+\multirow{4}{*}{Inventory ($n=24$)} & \texttt{GP-FTA-SingleSlotKG} & $+0.0174\ [-0.0007,\,0.0354]$ & 16/8/0 & $0.058$ & $0.175$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $+0.0178\ [-0.0067,\,0.0422]$ & 12/12/0 & $0.146$ & $0.292$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $-0.0039\ [-0.0137,\,0.0058]$ & 9/15/0 & $0.413$ & $0.413$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $+0.0171\ [0.0019,\,0.0323]$ & 15/9/0 & $0.029$ & $0.116$ \\
+\midrule
+\multirow{4}{*}{Queueing ($n=24$)} & \texttt{GP-FTA-SingleSlotKG} & $+0.0114\ [-0.0061,\,0.0290]$ & 12/12/0 & $0.190$ & $0.571$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $+0.0016\ [-0.0173,\,0.0206]$ & 13/11/0 & $0.859$ & $1.000$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $+0.0038\ [-0.0113,\,0.0189]$ & 14/10/0 & $0.609$ & $1.000$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $+0.0643\ [0.0311,\,0.0976]$ & 19/5/0 & $0.0006$ & $0.002$ \\
+\midrule
+\multirow{4}{*}{OPSD-336 ($n=14$)} & \texttt{GP-FTA-SingleSlotKG} & $+0.0008\ [-0.0019,\,0.0036]$ & 8/6/0 & $0.534$ & $1.000$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $+0.0020\ [-0.0002,\,0.0042]$ & 8/5/1 & $0.067$ & $0.269$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $-0.0011\ [-0.0026,\,0.0004]$ & 4/9/1 & $0.151$ & $0.453$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $-0.0001\ [-0.0024,\,0.0023]$ & 7/6/1 & $0.952$ & $1.000$ \\
+\midrule
+\multirow{4}{*}{Traffic-21 ($n=24$)} & \texttt{GP-FTA-SingleSlotKG} & $+0.0037\ [-0.0130,\,0.0205]$ & 16/6/2 & $0.647$ & $0.647$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $+0.0288\ [0.0036,\,0.0540]$ & 16/6/2 & $0.027$ & $0.107$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $+0.0183\ [-0.0074,\,0.0440]$ & 11/11/2 & $0.154$ & $0.463$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $-0.0192\ [-0.0463,\,0.0078]$ & 8/15/1 & $0.154$ & $0.463$ \\
+\midrule
+\multirow{4}{*}{Pooled DES ($72$)} & \texttt{GP-FTA-SingleSlotKG} & $+0.0639\ [-0.0187,\,0.1465]$ & 44/26/2 & $0.127$ & $0.382$ \\
+ & \texttt{GP-FTA-FeasibleKG} & $+0.1691\ [0.0423,\,0.2958]$ & 41/29/2 & $0.010$ & $0.039$ \\
+ & \texttt{GP-FTA-LOO-ECKG} & $+0.0802\ [-0.0379,\,0.1982]$ & 34/36/2 & $0.180$ & $0.382$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $+0.0154\ [-0.1192,\,0.1500]$ & 42/29/1 & $0.821$ & $0.821$ \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -198,10 +198,27 @@ def _task_agg(rows: list[dict[str, str]], family: str) -> dict[str, Any]:
 
 
 # ==============================================================================
-# MAIN-BODY TABLES (Tables 1-5)
+# MAIN-BODY TABLES (Tables 1-7)
 # ==============================================================================
 
-def build_table_prospective_main(prosp: dict[str, Any], mp_opsd: dict[str, Any]) -> str:
+def _mean_online_wall_by_method(
+    rows_prosp: list[dict[str, str]],
+    rows_mp_opsd: list[dict[str, str]],
+) -> dict[tuple[str, str], float]:
+    acc: dict[tuple[str, str], list[float]] = defaultdict(list)
+    for r in rows_prosp:
+        acc[(r["family"], r["method_name"])].append(float(r["online_wall_time_sec"]))
+    for r in rows_mp_opsd:
+        if r["family"] == "OPSD_EuroGrid":
+            acc[(r["family"], r["method_name"])].append(float(r["online_wall_time_sec"]))
+    return {k: float(np.mean(v)) for k, v in acc.items()}
+
+
+def build_table_prospective_main(
+    prosp: dict[str, Any],
+    mp_opsd: dict[str, Any],
+    wall_map: dict[tuple[str, str], float],
+) -> str:
     fams = ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt")
     methods = (
         "GP-FTA-ECKG",
@@ -213,12 +230,12 @@ def build_table_prospective_main(prosp: dict[str, Any], mp_opsd: dict[str, Any])
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Five-arm comparison across 72 DES tasks and 14 previously studied ENTSO-E grid markets with 336-dimensional policies ($860$ five-arm runs at $N=60$, two paired evaluation streams per task, reusing frozen source archives with zero new source calls). Positive differences (`Arm $-$ ECKG') favor \textbf{GP-FTA-ECKG}; primary $p$-values are two-sided paired-$t$ with four-comparator Holm adjustment per row block. Cert.\ S/A/U classifies certified deployments on held-out audit draws ($0/125$ same-law verification exceedances across all five OPSD arms).}\label{tab:prospective_main}",
-        r"\scriptsize",
-        r"\resizebox{\textwidth}{!}{%",
-        r"\begin{tabular}{llccccccccc}",
+        r"\caption{Five-arm performance, simulation calls, online wall-clock time, and certification outcomes across 72 DES tasks and 14 previously studied ENTSO-E grid markets with 336-dimensional policies ($860$ runs at $N=60$, two paired evaluation streams per task, zero new source calls). Online Time averages per-run sequential search and clean-up wall-clock seconds on single-thread CPU workers. Cert.\ S/A/U classifies certified deployments on held-out audit draws ($0/125$ verification-pool exceedances across all five OPSD arms; paired contrasts appear in Table~\ref{tab:prospective_contrasts}).}\label{tab:prospective_main}",
+        r"\footnotesize",
+        r"\setlength{\tabcolsep}{5.5pt}",
+        r"\begin{tabular}{llccccc}",
         r"\toprule",
-        r"\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} & \textbf{Guard/Rescue} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Two-sided $p$} & \textbf{Holm $p$} \\",
+        r"\textbf{Family} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Calls} & \textbf{Online Time (s)} & \textbf{Cert./runs} & \textbf{Cert.\ S/A/U} \\",
     ]
     for fam in fams:
         lines.append(r"\midrule")
@@ -231,29 +248,64 @@ def build_table_prospective_main(prosp: dict[str, Any], mp_opsd: dict[str, Any])
             f_col = rf"\multirow{{5}}{{*}}{{{fam_disp}}}" if idx == 0 else ""
             l_val = md["status_quo_loss_task_mean"]
             l_se = md["status_quo_loss_task_se"]
-            l_str = f"$\\mathbf{{{_fmt_num(l_val, 4)}}} \\pm {_fmt_num(l_se, 4)}$" if abs(l_val - min_l) < 1e-12 else f"${_fmt_num(l_val, 4)} \\pm {_fmt_num(l_se, 4)}$"
+            l_str = (
+                f"$\\mathbf{{{_fmt_num(l_val, 4)}}} \\pm {_fmt_num(l_se, 4)}$"
+                if abs(l_val - min_l) < 1e-12
+                else f"${_fmt_num(l_val, 4)} \\pm {_fmt_num(l_se, 4)}$"
+            )
             ds = md["deployed_safety_counts"]
             sau = f"{ds['safe']}/{ds['borderline']}/{ds['unsafe']}"
-            gr = f"{md['guard_overrides']}/{md['backup_rescues']}"
-            if m == "GP-FTA-ECKG":
-                diff_str, wlt_str, p_raw_s, p_holm_s = "---", "---", "---", "---"
-            else:
-                pr = fd["opsd_336_primary_contrasts"][m] if is_opsd else fd["paired_vs_ref"][m]["status_quo_loss"]
-                lo, hi = pr["ci95"]
-                diff_str = rf"${_fmt_num(pr['mean_diff'], 4, signed=True)}\ [{_fmt_num(lo, 4)},\,{_fmt_num(hi, 4)}]$"
-                w, l, t = pr["task_wlt"]
-                wlt_str = f"{w}/{l}/{t}"
-                p_raw_s = _fmt_p(pr["paired_t_two_sided_p"])
-                p_holm_s = _fmt_p(pr["holm_two_sided_t_p"])
+            w_sec = wall_map[(fam, m)]
             lines.append(
                 f"{f_col} & {_disp_method(m)} & {l_str} & {md['mean_total_target_calls']:.1f} & "
-                f"{md['n_certified']}/{md['n_runs']} & {sau} & {gr} & {diff_str} & {wlt_str} & {p_raw_s} & {p_holm_s} \\\\"
+                f"{w_sec:.1f} & {md['n_certified']}/{md['n_runs']} & {sau} \\\\"
             )
 
-    # Pooled 72-task DES standardized effect block
+    lines.extend([
+        r"\bottomrule",
+        r"\end{tabular}",
+        r"\end{table}",
+    ])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_prospective_contrasts(prosp: dict[str, Any], mp_opsd: dict[str, Any]) -> str:
+    fams = ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt")
+    comp_only = (
+        "GP-FTA-SingleSlotKG",
+        "GP-FTA-FeasibleKG",
+        "GP-FTA-LOO-ECKG",
+        "PublicPsi-TargetGP-TS",
+    )
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Task-paired status-quo decision-loss contrasts against \textbf{GP-FTA-ECKG} for the five-arm study in Table~\ref{tab:prospective_main}. Positive differences (`Arm $-$ ECKG') favor \textbf{GP-FTA-ECKG}. Primary $p$-values use two-sided paired-$t$ tests on stream-averaged task means ($n=24$ per DES family, $n=14$ for OPSD-336, and $n=72$ standardized by family anchor SD in the pooled DES block) with four-comparator Holm adjustment within each block.}\label{tab:prospective_contrasts}",
+        r"\footnotesize",
+        r"\setlength{\tabcolsep}{4.2pt}",
+        r"\begin{tabular}{llcccc}",
+        r"\toprule",
+        r"\textbf{Domain / Panel} & \textbf{Comparator} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Two-sided $p$} & \textbf{Holm $p$} \\",
+    ]
+    for fam in fams:
+        lines.append(r"\midrule")
+        is_opsd = fam == "OPSD_EuroGrid"
+        fd = mp_opsd["families"][fam] if is_opsd else prosp["families"][fam]
+        n_t = 14 if is_opsd else 24
+        fam_disp = f"OPSD-336 ($n={n_t}$)" if is_opsd else f"{SHORT_FAM[fam]} ($n={n_t}$)"
+        for idx, m in enumerate(comp_only):
+            f_col = rf"\multirow{{4}}{{*}}{{{fam_disp}}}" if idx == 0 else ""
+            pr = fd["opsd_336_primary_contrasts"][m] if is_opsd else fd["paired_vs_ref"][m]["status_quo_loss"]
+            lo, hi = pr["ci95"]
+            diff_str = rf"${_fmt_num(pr['mean_diff'], 4, signed=True)}\ [{_fmt_num(lo, 4)},\,{_fmt_num(hi, 4)}]$"
+            w, l, t = pr["task_wlt"]
+            lines.append(
+                f"{f_col} & {_disp_method(m)} & {diff_str} & {w}/{l}/{t} & "
+                f"{_fmt_p(pr['paired_t_two_sided_p'])} & {_fmt_p(pr['holm_two_sided_t_p'])} \\\\"
+            )
+
     lines.append(r"\midrule")
     pool = prosp["pooled_72_task_standardized_vs_ref"]
-    comp_only = [m for m in methods if m != "GP-FTA-ECKG"]
     for idx, m in enumerate(comp_only):
         f_col = r"\multirow{4}{*}{Pooled DES ($72$)}" if idx == 0 else ""
         pr = pool[m]
@@ -261,14 +313,13 @@ def build_table_prospective_main(prosp: dict[str, Any], mp_opsd: dict[str, Any])
         diff_str = rf"${_fmt_num(pr['mean_diff'], 4, signed=True)}\ [{_fmt_num(lo, 4)},\,{_fmt_num(hi, 4)}]$"
         w, l, t = pr["task_wlt"]
         lines.append(
-            f"{f_col} & {_disp_method(m)} & \\multicolumn{{5}}{{c}}{{Standardized paired saving $(\\mathcal{{L}}_{{\\mathrm{{arm}}}}-\\mathcal{{L}}_{{\\mathrm{{ECKG}}}})/s_{{\\mathrm{{anc}}}}$ across 72 DES tasks}} & "
-            f"{diff_str} & {w}/{l}/{t} & {_fmt_p(pr['paired_t_two_sided_p'])} & {_fmt_p(pr['holm_two_sided_t_p'])} \\\\"
+            f"{f_col} & {_disp_method(m)} & {diff_str} & {w}/{l}/{t} & "
+            f"{_fmt_p(pr['paired_t_two_sided_p'])} & {_fmt_p(pr['holm_two_sided_t_p'])} \\\\"
         )
 
     lines.extend([
         r"\bottomrule",
-        r"\end{tabular}%",
-        r"}",
+        r"\end{tabular}",
         r"\end{table}",
     ])
     return "\n".join(lines) + "\n"
@@ -286,55 +337,52 @@ def build_table_surge_compliance(prosp: dict[str, Any], mp_opsd: dict[str, Any])
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Operating-policy risk and posterior shrinkage. Operating S/A/U counts safe, borderline, and unsafe policies under the audit intervals, including retained anchors. In traffic the $24$ status-quo plans had mean violation probability $63.49\%$. For grid the same-law column counts verification-pool point estimates above $5\%$ among scored certifications (parentheses give mean risk). Electronic Companion Table~\ref*{tab:verification_audit} also reports point exceedances and interval classifications on the disjoint audit pool.}\label{tab:surge_compliance}",
+        r"\caption{Operating-policy risk, cascade guard/rescue activity, and posterior shrinkage. Operating S/A/U counts safe, borderline, and unsafe policies under independent audit intervals, including retained anchors ($63.49\%$ mean anchor violation in traffic). Guard/Rescue counts Slot-1 objective overrides and Slot-1/Slot-2 fallback rescues. For grid, Same-Law gives verification-pool point exceedances above $5\%$ (parentheses give mean risk); Electronic Companion Table~\ref*{tab:verification_audit} reports interleaved audit-pool counts.}\label{tab:surge_compliance}",
         r"\scriptsize",
         r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{llcccccccc}",
         r"\toprule",
-        r"\textbf{Family (Anchor Viol.)} & \textbf{Method} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{$\mathcal{L}_{10\%}$} & \textbf{$\mathcal{L}_{\mathrm{comp}}$} & \textbf{Same-Law / Init.\ $\hat{\lambda}_g$} & \textbf{Final $\hat{\lambda}_g^{\mathrm{SURE}}$} & \textbf{Thresh.\ Flag} & \textbf{Revisit \%} \\",
+        r"\textbf{Family (Anc.\ Viol.)} & \textbf{Method} & \textbf{Oper.\ S/A/U} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} & \textbf{Guard/Resc.} & \textbf{$\mathcal{L}_{10\%}$} & \textbf{$\mathcal{L}_{\mathrm{comp}}$} & \textbf{Same-Law / Init.\ $\hat{\lambda}_g$} & \textbf{Final $\hat{\lambda}_g^{\mathrm{SURE}}$} & \textbf{Revisit \%} \\",
     ]
     for fam in fams:
         lines.append(r"\midrule")
         is_opsd = fam == "OPSD_EuroGrid"
         fd = mp_opsd["families"][fam] if is_opsd else prosp["families"][fam]
         if is_opsd:
-            fam_lbl = "OPSD-336 (0.00\\%)"
+            fam_lbl = "OPSD-336 (0.0\\%)"
         else:
             anc_v = 100.0 * fd["anchor_task_mean_viol_prob"]
-            fam_lbl = f"{SHORT_FAM[fam]} ({anc_v:.2f}\\%)"
+            fam_lbl = f"{SHORT_FAM[fam]} ({anc_v:.1f}\\%)"
         for idx, m in enumerate(methods):
             md = fd["methods"][m]
             f_col = rf"\multirow{{5}}{{*}}{{{fam_lbl}}}" if idx == 0 else ""
             os_c = md["operating_safety_counts"]
             op_sau = f"{os_c['safe']}/{os_c['borderline']}/{os_c['unsafe']}"
             op_v = f"{100.0 * md['operating_viol_prob_task_mean']:.2f}\\%"
+            gr = f"{md['guard_overrides']}/{md['backup_rescues']}"
             fr10 = f"${_fmt_num(md['fixed_reject_loss_10pct_task_mean'], 4)}$"
             comp = f"${_fmt_num(md['compliance_penalized_loss_task_mean'], 4)}$"
             if is_opsd:
                 l0 = f"{md['verif_law_exceed_alpha_count']}/{md['verif_law_scored_count']} ({100.0*md['verif_law_viol_prob_mean']:.2f}\\%)"
                 if m in {"GP-FTA-ECKG", "GP-FTA-SingleSlotKG", "GP-FTA-FeasibleKG"}:
                     lf = f"{md['final_sure_lambda_con_mean']:.3f}"
-                    rel = f"{100.0 * md['source_released_rate']:.1f}\\%"
                 elif m == "GP-FTA-LOO-ECKG":
                     lf = "LOO"
-                    rel = f"{100.0 * md['source_released_rate']:.1f}\\%"
                 else:
-                    lf, rel = "---", "---"
+                    lf = "---"
             else:
                 st = md["sure_telemetry"]
                 if m in {"GP-FTA-ECKG", "GP-FTA-SingleSlotKG", "GP-FTA-FeasibleKG"}:
                     l0 = f"{st['init_lambda_con_mean']:.3f}"
                     lf = f"{st['final_lambda_con_mean']:.3f}"
-                    rel = f"{100.0 * st['source_released_rate']:.1f}\\%"
                 elif m == "GP-FTA-LOO-ECKG":
                     l0 = "---"
                     lf = f"$\\beta_g={st['final_beta_con_mean']:.2f}$"
-                    rel = f"{100.0 * st['source_released_rate']:.1f}\\%"
                 else:
-                    l0, lf, rel = "---", "---", "---"
+                    l0, lf = "---", "---"
             rev_pct = f"{100.0 * (md['mean_replication_queries'] / 60.0):.1f}\\%"
             lines.append(
-                f"{f_col} & {_disp_method(m)} & {op_sau} & {op_v} & {fr10} & {comp} & {l0} & {lf} & {rel} & {rev_pct} \\\\"
+                f"{f_col} & {_disp_method(m)} & {op_sau} & {op_v} & {gr} & {fr10} & {comp} & {l0} & {lf} & {rev_pct} \\\\"
             )
     lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
     return "\n".join(lines) + "\n"
@@ -383,11 +431,84 @@ def build_table_metaprior_decomposition(mp_opsd: dict[str, Any], mp_prop: dict[s
     return "\n".join(lines) + "\n"
 
 
-def build_table_prefix_census(prefix: dict[str, Any], ref_val: dict[str, Any]) -> str:
+def build_table_direct_propagation(dprop_exp: dict[str, Any], dprop_conf: dict[str, Any]) -> str:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Menu diagnostics and single-nomination scores. Panel A uses 96 separate diagnostic states (screen cap 24). Panels B and C use 24 production-stream states, six per family and stage. The $256\times1{,}024$ reference scores all 160 candidates under the frozen model. Panel B reports mean single-nomination gains ($\times10^{-3}$), wins or ties among the six states, and execution times in seconds. Panel C compares the $16\times128$ and reference menu scores over all 160 candidates. Hits count first-argmax reference winner IDs in the logged production screen. MAE averages absolute menu-score discrepancies. Screen loss compares the best reference nomination overall and in the screen, and query loss compares it to the production choice (both $\times10^{-3}$).}\label{tab:prefix_census}",
+        r"\caption{Direct single-probe cross-policy information propagation ($N_0=8 \to 9$ policies) on 32 disjoint held-out policies per task, holding public $\psi(x)$, source-learned basis $\tilde{\phi}(\psi(x))$, target-only within-policy HVD, and probe observations identical across models. Zero-mean kernel models (`Full', `Diag', `Iso', `Perm.') set active source means to zero ($\mu_{0,\mathrm{act}}\equiv 0$) and match active-subspace trace so pre-data shape NRMSE equals $1.000$ identically. Positive differences (`Comparator $-$ Structured') indicate lower post-probe demeaned shape NRMSE for the structured model; parentheses give four-way Holm-adjusted paired-$t$ $p$-values within each domain-head block (`+/$-$/0' counts tasks where the ninth policy reduces/increases/ties `Full' error). Panel~A evaluates the existing 86-task panel; Panel~B executes the pre-registered one-shot confirmation on 72 unseen DES tasks.}\label{tab:direct_prop}",
+        r"\scriptsize",
+        r"\setlength{\tabcolsep}{3.8pt}",
+        r"\begin{tabular}{llcccccc}",
+        r"\toprule",
+        r"\textbf{Domain ($n$)} & \textbf{Head} & \textbf{Full After} & \textbf{+/$-$/0} & \textbf{Iso $-$ Full} & \textbf{Diag $-$ Full} & \textbf{Perm.\ $-$ Full} & \textbf{Online Weak $-$ Full} \\",
+        r"\midrule",
+        r"\multicolumn{8}{l}{\textbf{Panel A: Exploratory 86-Task Four-Domain Panel (\texttt{exploratory\_86}, $8 \to 9$ transition)}} \\",
+        r"\midrule",
+    ]
+
+    def _emit_panel(readout: dict[str, Any], fam_list: tuple[tuple[str, str], ...]) -> None:
+        for idx_f, (fk, flbl) in enumerate(fam_list):
+            fb = readout["families"][fk]["regime_8to9"]
+            nt = readout["families"][fk]["n_tasks"]
+            for h_i, (hk, hlbl) in enumerate((("obj", "Obj."), ("con", "Con."))):
+                d_col = rf"\multirow{{2}}{{*}}{{{flbl} ({nt})}}" if h_i == 0 else ""
+                m_full = fb["models"]["Kernel-FullSource"]
+                after_s = f"${m_full[f'after_nrmse_{hk}']:.3f}$"
+                p, ng, z = m_full[f"pos_neg_zero_tasks_{hk}"]
+                pnz_s = f"{p}/{ng}/{z}"
+                kc = fb["contrasts"][f"kernel_post_accuracy_{hk}"]
+                oc = fb["contrasts"][f"online_post_accuracy_{hk}"]
+                c_iso = kc["Kernel_Iso_minus_Full_AfterErr"]
+                c_diag = kc["Kernel_Diag_minus_Full_AfterErr"]
+                c_perm = kc["Kernel_Permuted_minus_Full_AfterErr"]
+                c_onl = oc["Online_FullSURE_vs_Weak_AfterErr"]
+                cells = [
+                    d_col,
+                    hlbl,
+                    after_s,
+                    pnz_s,
+                    f"${_fmt_num(c_iso['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_iso['holm_two_sided_t_p'])})",
+                    f"${_fmt_num(c_diag['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_diag['holm_two_sided_t_p'])})",
+                    f"${_fmt_num(c_perm['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_perm['holm_two_sided_t_p'])})",
+                    f"${_fmt_num(c_onl['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_onl['holm_two_sided_t_p'])})",
+                ]
+                lines.append(" & ".join(cells) + r" \\")
+            if idx_f < len(fam_list) - 1:
+                lines.append(r"\cmidrule(lr){1-8}")
+
+    _emit_panel(
+        dprop_exp,
+        (
+            ("Inventory_CrossHorizon", "Inventory"),
+            ("Queueing_CrossHorizon", "Queueing"),
+            ("OPSD_EuroGrid", "OPSD-336"),
+            ("Traffic_Ingolstadt", "Traffic-21"),
+            ("Pooled_DES_72", "Pooled DES"),
+        ),
+    )
+    lines.extend([
+        r"\midrule",
+        r"\multicolumn{8}{l}{\textbf{Panel B: Pre-Registered Confirmatory 72-Task Unseen DES Panel (\texttt{confirm\_fresh\_72}, $8 \to 9$ transition)}} \\",
+        r"\midrule",
+    ])
+    _emit_panel(
+        dprop_conf,
+        (
+            ("Inventory_CrossHorizon", "Inventory"),
+            ("Queueing_CrossHorizon", "Queueing"),
+            ("Traffic_Ingolstadt", "Traffic-21"),
+            ("Pooled_DES_72", "Pooled DES"),
+        ),
+    )
+    lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_prefix_census(prefix: dict[str, Any], ref_val: dict[str, Any], mc_cei: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Menu diagnostics, 24-scramble single-nomination reference values, and \texttt{UB-cEI} comparisons. Panel~A profiles 96 diagnostic states (screen cap 24). Panels~B and~C evaluate 24 production-stream states ($256\times 1{,}024$ Sobol nodes across $24$ independent scrambles per state under the frozen working model). Panel~B reports mean single-nomination gains ($\times 10^{-3}$), wins or ties of \textbf{EC-KG} against \texttt{UB-cEI} \citep[Section~5]{ungredda2024bayesian}, ratio of group means (`Mean Ratio'), and unweighted average of state-wise ratios (`State Ratio'; $^{\ast}$5/6 non-saturated states in late traffic, excluding one near-zero state with $\Delta^{\mathrm{term}}_{\max}=3.1\times 10^{-10}$). Across all 24 states, \textbf{EC-KG} beats or ties \texttt{SingleSlotKG} in $22/24$, \texttt{FeasibleKG} in $21/24$, \texttt{UB-cEI} in $22/24$, and \texttt{Gate-cEI} in $23/24$ ($0.06$--$0.07$s fast score vs.\ $12.6$--$18.8$s all-160 reference; $3/24$ states have negative single-nomination gain). Panel~C reports Stage~A screen membership, missed revisit vs.\ new-candidate winners, all-160 Spearman correlation, menu MAE, screen loss, and query loss.}\label{tab:prefix_census}",
         r"\scriptsize",
         r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{llcccccccc}",
@@ -417,33 +538,44 @@ def build_table_prefix_census(prefix: dict[str, Any], ref_val: dict[str, Any]) -
 
     lines.extend([
         r"\midrule",
-        r"\multicolumn{10}{l}{\textbf{B. Single-nomination value of the selected query under the reference model}} \\",
-        r"Stage & Family & All-160 best & EC-KG & Slot-0 & Feas. & EC $\ge$ Slot-0 & EC $\ge$ Feas. & Fast (s) & Ref. (s) \\",
+        r"\multicolumn{10}{l}{\textbf{B. 24-Scramble Single-Nomination Reference Gains ($\times 10^{-3}$), \texttt{UB-cEI} Comparison, and Ratio Metrics}} \\",
+        r"\textbf{Stage} & \textbf{Family} & \textbf{All-160} & \textbf{EC-KG} & \textbf{Slot-0} & \textbf{Feas.} & \textbf{UB-cEI} & \textbf{EC $\ge$ cEI} & \textbf{Mean Ratio} & \textbf{State Ratio} \\",
         r"\midrule",
     ])
     reference_rows = []
     for stage, label in (("step_0", "Initial"), ("step_59", "Step 59")):
         for family in ("Queueing_CrossHorizon", "Traffic_Ingolstadt"):
             row = ref_val["families"][family][stage]
+            mrow = mc_cei["families"][family][stage]
             n = row["n_states"]
             cells = [label, SHORT_FAM[family]]
-            gains = [f"{row[f'actual_term_ref_{m}_mean_x1e3']:.3f}" for m in ("max", "eckg16", "single", "feas")]
-            wins = [f"{row[f'actual_term_eckg16_beats_or_ties_{m}_count']}/{n}" for m in ("single", "feas")]
-            wall = [f"{row['fast16_mean_wall_ms'] / 1000:.2f}", f"{row['ref_all160_mean_wall_sec']:.1f}"]
-            lines.append(" & ".join(cells + gains + wins + wall) + r" \\")
+            gains = [
+                f"{mrow['opt_term_mean_x1e3']:.3f}",
+                f"{mrow['ec_term_mean_x1e3']:.3f}",
+                f"{mrow['single_term_mean_x1e3']:.3f}",
+                f"{mrow['feas_term_mean_x1e3']:.3f}",
+                f"{mrow['ub_cei_term_mean_x1e3']:.3f}",
+            ]
+            win_cei = f"{mrow['ec_beats_or_ties_ub_cei_count']}/{n}"
+            r_mean = f"{100.0 * mrow['ratio_of_means_24scr']:.1f}\\%"
+            star = "$^{\\ast}$" if mrow["nonsaturated_states_count"] < n else ""
+            r_state = f"{100.0 * mrow['mean_of_state_ratios_24scr']:.1f}\\%{star}"
+            lines.append(" & ".join(cells + gains + [win_cei, r_mean, r_state]) + r" \\")
             hits = [f"{round(n * row[f'stage_a_top16_contains_{m}_opt_rate'])}/{n}" for m in ("menu", "term")]
+            miss_split = f"{mrow['stage_a_missed_revisit_count']}/{mrow['stage_a_missed_new_count']}"
             nrho = row["quadrature_spearman_defined_states"]
-            rho = f"{row['quadrature_spearman_mean']:.3f}" if nrho else "---"
+            rho = f"{row['quadrature_spearman_mean']:.3f} ({nrho}/{n})" if nrho else "---"
             losses = [f"{row[k]:.3f}" for k in (
                 "mean_abs_fast_minus_reference_menu_x1e3", "reference_nomination_screen_loss_mean_x1e3",
                 "reference_nomination_query_loss_mean_x1e3",
             )]
-            reference_rows.append(" & ".join(cells + [f"{row['mean_screened_candidates']:.1f}"] + hits +
-                                              [rho, f"{nrho}/{n}"] + losses) + r" \\")
+            reference_rows.append(
+                " & ".join(cells + [f"{row['mean_screened_candidates']:.1f}"] + hits + [miss_split, rho] + losses) + r" \\"
+            )
     lines.extend([
         r"\midrule",
-        r"\multicolumn{10}{l}{\textbf{C. Logged Stage A membership and all-candidate finite-grid error}} \\",
-        r"Stage & Family & Mean screen size & Menu hits & Nomination hits & Mean Spearman & Defined & MAE ($\times10^{-3}$) & Screen loss & Query loss \\",
+        r"\multicolumn{10}{l}{\textbf{C. Logged Stage A Membership, Missed-Winner Anatomy, and All-Candidate Finite-Grid Error}} \\",
+        r"\textbf{Stage} & \textbf{Family} & \textbf{Screen} & \textbf{Menu Hits} & \textbf{Nom.\ Hits} & \textbf{Miss (Rev/New)} & \textbf{Spearman (Def.)} & \textbf{MAE ($\times 10^{-3}$)} & \textbf{Screen Loss} & \textbf{Query Loss} \\",
         r"\midrule", *reference_rows,
     ])
     lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
@@ -900,7 +1032,7 @@ def build_table_independent_panel(readout: dict[str, Any]) -> str:
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Archived 432-run panel evaluating quadrature-aligned single-slot \textbf{GP-FTA-KG} (`LOO-PLL` posterior) at $N=60$ across 72 tasks (two streams per task).}\label{tab:independent_panel}",
+        r"\caption{Archived 432-run panel evaluating quadrature-aligned single-slot \textbf{GP-FTA-KG} (\texttt{LOO-PLL} posterior) at $N=60$ across 72 tasks (two streams per task).}\label{tab:independent_panel}",
         r"\scriptsize",
         r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{llrrccccc}",
@@ -1078,7 +1210,7 @@ def build_figures(
     fig_dir: Path,
     prosp: dict[str, Any],
     mp_opsd: dict[str, Any],
-    ref_val: dict[str, Any],
+    mc_cei: dict[str, Any],
     rows_u3: list[dict[str, str]],
     rows_messy: list[dict[str, str]],
     p1_diag: dict[str, Any],
@@ -1096,9 +1228,9 @@ def build_figures(
     })
 
     # --------------------------------------------------------------------------
-    # Figure 1 (Main Body): Prospective 4-Domain Controlled Contrasts + Non-Circular Actual-Terminal Reference Gain
+    # Figure 1 (Main Body): Prospective 4-Domain Controlled Contrasts + 24-Scramble Single-Nomination Reference Gain
     # --------------------------------------------------------------------------
-    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(9.5, 3.9), gridspec_kw={"width_ratios": [1.18, 1.0]})
+    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(9.6, 3.9), gridspec_kw={"width_ratios": [1.15, 1.05]})
 
     groups = [
         ("Inventory\n($n=24$)", "Inventory_CrossHorizon"),
@@ -1149,7 +1281,7 @@ def build_figures(
     ax_l.legend(loc="lower right", fontsize=6.7, framealpha=0.95)
     ax_l.grid(True, axis="x", linestyle=":", alpha=0.55)
 
-    # Panel (b): Achieved % of All-160 256x1024 Actual Single-Nomination Terminal Gain (24 Realized States)
+    # Panel (b): Ratio of Mean 24-Scramble 256x1024 Single-Nomination Gain to All-160 Optimum (incl. UB-cEI)
     bars_x = np.arange(4)
     bar_labels = ["Queueing\nStep 0", "Queueing\nStep 59", "Traffic-21\nStep 0", "Traffic-21\nStep 59"]
     keys_b = [
@@ -1158,26 +1290,28 @@ def build_figures(
         ("Traffic_Ingolstadt", "step_0"),
         ("Traffic_Ingolstadt", "step_59"),
     ]
-    pct_eckg, pct_single, pct_feas = [], [], []
+    pct_eckg, pct_single, pct_feas, pct_ubcei = [], [], [], []
     for fk, sk in keys_b:
-        rv = ref_val["families"][fk][sk]
-        denom = max(rv["actual_term_ref_max_mean_x1e3"], 1e-9)
-        pct_eckg.append(100.0 * rv["actual_term_ref_eckg16_mean_x1e3"] / denom)
-        pct_single.append(100.0 * rv["actual_term_ref_single_mean_x1e3"] / denom)
-        pct_feas.append(100.0 * rv["actual_term_ref_feas_mean_x1e3"] / denom)
+        mv = mc_cei["families"][fk][sk]
+        denom = max(mv["opt_term_mean_x1e3"], 1e-9)
+        pct_eckg.append(100.0 * mv["ec_term_mean_x1e3"] / denom)
+        pct_single.append(100.0 * mv["single_term_mean_x1e3"] / denom)
+        pct_feas.append(100.0 * mv["feas_term_mean_x1e3"] / denom)
+        pct_ubcei.append(100.0 * mv["ub_cei_term_mean_x1e3"] / denom)
 
-    bw = 0.25
+    bw = 0.19
     ax_r.axhline(100.0, color="#333333", linestyle="--", linewidth=0.95, label="All-160 Reference Optimum (100%)")
-    ax_r.bar(bars_x - bw, pct_eckg, width=bw, color="#0072B2", label="GP-FTA-ECKG (screen cap 16)")
-    ax_r.bar(bars_x, pct_single, width=bw, color="#56B4E9", label="GP-FTA-SingleSlotKG")
-    ax_r.bar(bars_x + bw, pct_feas, width=bw, color="#D55E00", label="GP-FTA-FeasibleKG")
+    ax_r.bar(bars_x - 1.5 * bw, pct_eckg, width=bw, color="#0072B2", label="GP-FTA-ECKG (screen cap 16)")
+    ax_r.bar(bars_x - 0.5 * bw, pct_single, width=bw, color="#56B4E9", label="GP-FTA-SingleSlotKG")
+    ax_r.bar(bars_x + 0.5 * bw, pct_feas, width=bw, color="#D55E00", label="GP-FTA-FeasibleKG")
+    ax_r.bar(bars_x + 1.5 * bw, pct_ubcei, width=bw, color="#009E73", label="UB-cEI (Ungredda & Branke 2024)")
     ax_r.set_xticks(bars_x)
     ax_r.set_xticklabels(bar_labels)
-    ax_r.set_ylim(0.0, 145.0)
+    ax_r.set_ylim(0.0, 152.0)
     ax_r.set_yticks([0, 20, 40, 60, 80, 100])
-    ax_r.set_ylabel("Share of mean all-160 reference maximum (%)")
-    ax_r.set_title("(b) Single-nomination working-model gain ($256\\times 1024$)", fontweight="bold")
-    ax_r.legend(loc="upper center", fontsize=6.6, frameon=True, framealpha=0.95)
+    ax_r.set_ylabel("Ratio of mean gain to all-160 optimum (%)")
+    ax_r.set_title("(b) 24-Scramble Single-Nomination Gain ($256\\times 1024$)", fontweight="bold")
+    ax_r.legend(loc="upper center", fontsize=6.2, frameon=True, framealpha=0.95)
     ax_r.grid(True, axis="y", linestyle=":", alpha=0.55)
 
     fig.tight_layout()
@@ -1298,10 +1432,13 @@ def main() -> None:
     prosp_readout = json.loads((ART_DIR / "v2_or_eckg_sure_confirm_v1/prospective_panel_readout.json").read_text(encoding="utf-8"))
     prefix_readout = json.loads((ART_DIR / "v2_or_eckg_sure_confirm_v1/eckg_prefix_audit_readout.json").read_text(encoding="utf-8"))
     ref_val_readout = json.loads((ART_DIR / "v2_or_eckg_sure_confirm_v1/eckg_reference_validation_corrected.json").read_text(encoding="utf-8"))
+    mc_cei_readout = json.loads((ART_DIR / "v2_or_eckg_sure_confirm_v1/eckg_multiscramble_cei_readout.json").read_text(encoding="utf-8"))
 
     rows_mp_opsd = _load_ledger("v2_or_metaprior_opsd_confirm_v1")
     mp_opsd_readout = json.loads((ART_DIR / "v2_or_metaprior_opsd_confirm_v1/metaprior_opsd_panel_readout.json").read_text(encoding="utf-8"))
     mp_prop_readout = json.loads((ART_DIR / "v2_or_metaprior_opsd_confirm_v1/metaprior_propagation_readout.json").read_text(encoding="utf-8"))
+    dprop_exp_readout = json.loads((ART_DIR / "v2_or_metaprior_opsd_confirm_v1/direct_propagation_exploratory_86_readout.json").read_text(encoding="utf-8"))
+    dprop_conf_readout = json.loads((ART_DIR / "v2_or_metaprior_opsd_confirm_v1/direct_propagation_confirm_fresh_72_readout.json").read_text(encoding="utf-8"))
 
     rows_u3 = _load_ledger("v2_or_u3_confirm_v1")
     rows_messy = _load_ledger("v2_or_u3_messy_archive_v1")
@@ -1310,11 +1447,23 @@ def main() -> None:
         rows_sumo_p0 = list(csv.DictReader(fh))
     p1_diag = json.loads((ART_DIR / "v2_or_p1_diagnostics_v1/p1_diagnostics_summary.json").read_text(encoding="utf-8"))
 
-    # Main-body tables (5 tables)
-    (tab_dir / "table_prospective_main.tex").write_text(build_table_prospective_main(prosp_readout, mp_opsd_readout), encoding="utf-8")
+    wall_map = _mean_online_wall_by_method(rows_prosp, rows_mp_opsd)
+
+    # Main-body tables (7 tables)
+    (tab_dir / "table_prospective_main.tex").write_text(
+        build_table_prospective_main(prosp_readout, mp_opsd_readout, wall_map), encoding="utf-8"
+    )
+    (tab_dir / "table_prospective_contrasts.tex").write_text(
+        build_table_prospective_contrasts(prosp_readout, mp_opsd_readout), encoding="utf-8"
+    )
     (tab_dir / "table_surge_compliance.tex").write_text(build_table_surge_compliance(prosp_readout, mp_opsd_readout), encoding="utf-8")
     (tab_dir / "table_metaprior_decomposition.tex").write_text(build_table_metaprior_decomposition(mp_opsd_readout, mp_prop_readout), encoding="utf-8")
-    (tab_dir / "table_prefix_census.tex").write_text(build_table_prefix_census(prefix_readout, ref_val_readout), encoding="utf-8")
+    (tab_dir / "table_direct_propagation.tex").write_text(
+        build_table_direct_propagation(dprop_exp_readout, dprop_conf_readout), encoding="utf-8"
+    )
+    (tab_dir / "table_prefix_census.tex").write_text(
+        build_table_prefix_census(prefix_readout, ref_val_readout, mc_cei_readout), encoding="utf-8"
+    )
     (tab_dir / "table_broad_summary.tex").write_text(
         build_table_broad_summary(rows_u3, rows_messy, rows_sumo_u3), encoding="utf-8"
     )
@@ -1342,8 +1491,8 @@ def main() -> None:
     (tab_dir / "table_independent_panel.tex").write_text(build_table_independent_panel(independent_readout), encoding="utf-8")
     (tab_dir / "table_operating_policy.tex").write_text(build_table_operating_policy(operating_readout), encoding="utf-8")
 
-    build_figures(args.output_dir / "figures", prosp_readout, mp_opsd_readout, ref_val_readout, rows_u3, rows_messy, p1_diag)
-    print(f"Regenerated 17 sealed-ledger tables and 3 vector figures in {args.output_dir}.")
+    build_figures(args.output_dir / "figures", prosp_readout, mp_opsd_readout, mc_cei_readout, rows_u3, rows_messy, p1_diag)
+    print(f"Regenerated 19 sealed-ledger tables and 3 vector figures in {args.output_dir}.")
 
 
 if __name__ == "__main__":
