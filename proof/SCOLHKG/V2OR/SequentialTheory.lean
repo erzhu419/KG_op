@@ -656,11 +656,10 @@ theorem revisit_ec_voi_vanishes_under_lipschitz_innovation
   rw [← Finset.sum_mul, hWSum, one_mul] at hSum
   exact hSum
 
-/-- **Proposition 5g (Constructive Screened Approximation Boundary)**:
-    Exhibits an explicit two-contender configuration where backup contender `q_B` has strictly
-    smaller single-slot marginal score than rival `q_M` (`vSingleB = 0 < vSingleM`, so a rank-one
-    marginal screen excludes `q_B`), yet under primary gate power `p0 < 1`, admitting `q_B` into
-    a backup slot strictly dominates `q_M` in three-slot cascade saving. -/
+/-- **Proposition 5g (Illustrative Static-vs.-Cascade Scoring Divergence)**:
+    Exhibits an explicit two-contender configuration where backup contender `q_B` has zero
+    static single-slot score (`vSingleB = 0 < vSingleM`), yet under primary gate power `p0 < 1`,
+    admitting `q_B` into a backup slot strictly dominates `q_M` in three-slot cascade saving. -/
 theorem screened_eckg_can_miss_cascade_winner :
     ∃ (p0 sav0 vSingleB vSingleM pBackB savBackB pBackM savBackM : ℝ),
       0 < p0 ∧ p0 < 1 ∧
@@ -669,5 +668,39 @@ theorem screened_eckg_can_miss_cascade_winner :
         (p0 * sav0 + (1 - p0) * (pBackB * savBackB)) := by
   refine ⟨(1 : ℝ) / 2, 10, 0, (1 : ℝ) / 10, (4 : ℝ) / 5, 8, 0, 0, ?_⟩
   norm_num
+
+/-- **Proposition 5h (Coupled Cascade-vs.-Single-Slot Ranking Margin)**:
+    Without assuming slot independence or replacing random guard comparisons by static means,
+    if expected post-query payoff discrepancies satisfy `|gCStar - gSStar| ≤ eStar` and
+    `|gC - gS| ≤ eQ`, then `gSStar - gS > eStar + eQ` implies `gCStar > gC`. -/
+theorem coupled_cascade_margin_preserves_order
+    (gCStar gSStar gC gS eStar eQ : ℝ)
+    (hStar : |gCStar - gSStar| ≤ eStar)
+    (hQ : |gC - gS| ≤ eQ)
+    (hMargin : eStar + eQ < gSStar - gS) :
+    gC < gCStar := by
+  have h1 := (abs_le.mp hStar).1
+  have h2 := (abs_le.mp hQ).2
+  linarith
+
+/-- **Lemma 5i (Exact Zero-Bias Paired Squared-Error Difference Under Unbiased Target Estimator)**:
+    For any fixed predictions `(a, b)` and any discrete/audit estimator `Y : Ω → ℝ` satisfying
+    `∑ ω, w ω = 1` and `∑ ω, w ω * Y ω = theta` (such as the hypergeometric U-statistic `Ĉ_U`
+    for binomial pass power `C_{112,1}(p)`), the expected difference of squared errors against `Y`
+    equals `(a - theta)^2 - (b - theta)^2` identically, cancelling estimator variance. -/
+theorem unbiased_target_preserves_mse_diff
+    {Ω : Type*} [Fintype Ω]
+    (w Y : Ω → ℝ) (a b theta : ℝ)
+    (hWSum : (∑ ω, w ω) = 1)
+    (hUnbiased : (∑ ω, w ω * Y ω) = theta) :
+    (∑ ω, w ω * ((a - Y ω) ^ 2 - (b - Y ω) ^ 2)) =
+      (a - theta) ^ 2 - (b - theta) ^ 2 := by
+  have hExpand : ∀ ω, w ω * ((a - Y ω) ^ 2 - (b - Y ω) ^ 2) =
+      (a ^ 2 - b ^ 2) * w ω - 2 * (a - b) * (w ω * Y ω) := by
+    intro ω
+    ring
+  simp_rw [hExpand]
+  rw [Finset.sum_sub_distrib, ← Finset.mul_sum, ← Finset.mul_sum, hWSum, hUnbiased]
+  ring
 
 end SCOLHKG.V2OR.SequentialTheory

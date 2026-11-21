@@ -1,6 +1,6 @@
 \begin{table}[htbp]
 \centering
-\caption{Pre-registered confirmation on $72$ newly generated unseen DES tasks ($32$ disjoint held-out policies and four single-step $8\to 9$ probes per task). Panel~A tests prior-informed posterior shape accuracy holding $\psi$, $\tilde{\phi}$, $N_0=8$ cold observations, within-policy HVD, zero source means ($\mu_{0,\mathrm{act}}\equiv 0$), and active-subspace trace identical (positive contrasts favor the structured model; four-way Holm $p$-values). Panel~B evaluates decision-aligned posterior calibration, meta-BO comparators, prior-component and $\psi$ ablations, and source-count scaling $M_{\mathrm{src}}\in\{3,6,12\}$ on the same $72$ unseen tasks (Gate-Power RMSE scores predicted vs.\ ground-truth $K_0=112$ binomial pass probability; True Slot-0 Gain scores ground-truth expected clean-up saving of each model's top nominee; exploratory $86$-task and shift-sensitivity tables appear in Electronic Companion Table~\ref*{tab:ec_full_prop}).}\label{tab:direct_prop}
+\caption{Confirmation on $72$ newly generated unseen DES tasks ($32$ disjoint held-out policies with $400$ audit draws each, four $8\to 9$ probes per task; Panels~A and~B share the same $72$ tasks). Panel~A tests zero-mean trace-matched kernel shape accuracy (four-way Holm $p$-values). Panel~B reports exact unbiased hypergeometric $\widehat{C}_U$ MSE, $400$-draw audit-plug-in RMSE, feasibility Brier and AUROC ($52/72$ two-class tasks), unbiased Slot-0 gain, component/$\psi$ ablations, and exact-$\omega_M$ archive scaling.}\label{tab:direct_prop}
 \scriptsize
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccc}
@@ -20,26 +20,29 @@
 \multirow{2}{*}{Pooled DES (72)} & Obj. & $0.748\!\to\!0.699$ & $+0.055$ ($0.062$) & $+0.052$ ($0.076$) & $-0.002$ ($0.699$) & $+0.093$ ($0.016$) & $+0.156$ ($0.0003$) \\
  & Con. & $0.739\!\to\!0.684$ & $+0.103$ ($<10^{-4}$) & $+0.095$ ($<10^{-4}$) & $-0.008$ ($0.128$) & $+0.105$ ($0.0001$) & $+0.226$ ($0.0005$) \\
 \midrule
-\multicolumn{8}{l}{\textbf{Panel B: Decision-Aligned Calibration, Meta-BO Baselines, Prior-Component Ablations, and $M_{\mathrm{src}}$ Scaling ($n=72$ unseen tasks)}} \\
-\textbf{Category} & \textbf{Surrogate / Prior Variant} & \textbf{Gate RMSE ($\downarrow$)} & \textbf{Diff.\ vs.\ FullSURE ($p$)} & \textbf{Feas.\ Brier ($\downarrow$)} & \textbf{Feas.\ AUROC ($\uparrow$)} & \textbf{True Slot-0 Gain ($\uparrow$)} & \textbf{Obj.\ NRMSE ($\downarrow$)} \\
+\multicolumn{8}{l}{\textbf{Panel B: Unbiased ($\widehat{C}_U$) \& Audit-PlugIn Calibration, Shared-$\psi$ Controls, Component Ablations, and Exact-$\omega_M$ Scaling}} \\
+\textbf{Category} & \textbf{Surrogate / Variant} & \textbf{Unb.\ MSE ($\times 10^{-3}\downarrow$)} & \textbf{MSE Diff.\ (Raw / Holm $p$)} & \textbf{PlugIn RMSE ($\downarrow$)} & \textbf{Brier ($\downarrow$)} & \textbf{AUROC ($52$, $\uparrow$)} & \textbf{Unb.\ S0 Gain ($\uparrow$)} \\
 \midrule
-Core \& Meta-BO & \textbf{Online-FullSURE ($M_{\mathrm{src}}\!=\!6$)} & $0.237$ & --- & $0.109$ & $0.900$ & $+0.0845$ & $0.577$ \\
- & \texttt{Online-DiagSURE} & $0.237$ & $0.0000$ & $0.109$ & $0.901$ & $+0.0851$ & $0.576$ \\
- & \texttt{Online-SameBasisWeak} & $0.250$ & $+0.0131$ ($0.0002$) & $0.118$ & $0.866$ & $+0.0801$ & $0.710$ \\
- & \texttt{ColdPsi-GP} (target-only) & $0.244$ & $+0.0066$ ($0.010$) & $0.115$ & $0.905$ & $+0.0706$ & $0.558$ \\
- & \texttt{ABLR-on-Psi} (linear meta-BO) & $0.236$ & $-0.0014$ ($0.780$) & $0.104$ & $0.829$ & $+0.1183$ & $0.552$ \\
- & \texttt{MTGP-ICM-on-Psi} & $0.247$ & $+0.0101$ ($0.095$) & $0.111$ & $0.838$ & $+0.0569$ & $0.762$ \\
- & \texttt{RGPE-on-Psi} & $0.231$ & $-0.0067$ ($0.490$) & $0.124$ & $0.849$ & $+0.0671$ & $0.442$ \\
-Component \& $\psi$ Abl. & \texttt{Pillar-NoLowPass} & $0.242$ & $+0.0052$ ($0.025$) & $0.107$ & $0.892$ & $+0.0844$ & $0.566$ \\
- & \texttt{Pillar-NoDebias} & $0.237$ & $+0.0002$ ($0.925$) & $0.106$ & $0.896$ & $+0.0827$ & $0.583$ \\
- & \texttt{Pillar-NoOrtho} & $0.239$ & $+0.0015$ ($0.442$) & $0.110$ & $0.909$ & $+0.1014$ & $0.544$ \\
- & \texttt{Pillar-NoSparse} & $0.239$ & $+0.0018$ ($0.605$) & $0.103$ & $0.888$ & $+0.0971$ & $0.557$ \\
- & \texttt{Psi-DropVol7D} ($7$-coord $\psi$) & $0.243$ & $+0.0061$ ($0.066$) & $0.115$ & $0.920$ & $+0.0704$ & $0.560$ \\
- & \texttt{Psi-GenericBlackBox} & $0.362$ & $+0.1244$ ($<10^{-4}$) & $0.183$ & $0.838$ & $+0.0221$ & $1.065$ \\
- & \texttt{ForecastNoise-15\%} & $0.242$ & $+0.0048$ ($0.245$) & $0.113$ & $0.924$ & $+0.0907$ & $0.573$ \\
+Shared-$\psi$ Controls & \textbf{Online-FullSURE ($M_{\mathrm{src}}\!=\!6$)} & $103.8\pm18.2$ & --- & $0.237$ & $0.109$ & $0.900$ & $+0.0952$ \\
+ & \texttt{Online-DiagSURE} & $103.8\pm18.2$ & $+0.02$ & $0.237$ & $0.109$ & $0.901$ & $+0.0948$ \\
+ & \texttt{Online-SameBasisWeak} & $110.0\pm18.3$ & $+6.22$ ($0.009$ / $0.042$) & $0.250$ & $0.118$ & $0.866$ & $+0.1095$ \\
+ & \texttt{ColdPsi-GP} (target-only) & $109.4\pm19.2$ & $+5.58$ ($0.008$ / $0.042$) & $0.244$ & $0.115$ & $0.905$ & $+0.1023$ \\
+ & \texttt{EB-LinearDict-on-Psi} & $99.9\pm17.1$ & $-3.90$ ($0.308$ / $0.582$) & $0.236$ & $0.105$ & $0.827$ & $+0.1200$ \\
+ & \texttt{PooledSourceResGP-on-Psi} & $109.4\pm19.0$ & $+5.65$ ($0.210$ / $0.582$) & $0.247$ & $0.111$ & $0.838$ & $+0.0666$ \\
+ & \texttt{RGPE-BootstrapRank-on-Psi} & $118.5\pm22.1$ & $+14.76$ ($0.194$ / $0.582$) & $0.241$ & $0.132$ & $0.854$ & $+0.1086$ \\
+ & \texttt{Fixed50-Ensemble-on-Psi} & $109.6\pm21.2$ & $+5.82$ ($0.427$) & $0.231$ & $0.127$ & $0.844$ & $+0.0957$ \\
+Impl.\ Comp.\ \& $\psi$ & \texttt{Comp-NoLowPass} & $106.0\pm17.9$ & $+2.19$ ($0.168$ / $0.430$) & $0.242$ & $0.107$ & $0.892$ & $+0.0993$ \\
+ & \texttt{Comp-NoDebias} & $102.9\pm17.9$ & $-0.89$ ($0.559$ / $0.559$) & $0.237$ & $0.106$ & $0.896$ & $+0.0964$ \\
+ & \texttt{Comp-NoOrtho} & $106.1\pm18.7$ & $+2.31$ ($0.093$ / $0.371$) & $0.239$ & $0.110$ & $0.909$ & $+0.1080$ \\
+ & \texttt{Comp-NoSparse} & $99.0\pm16.0$ & $-4.75$ ($0.143$ / $0.430$) & $0.239$ & $0.103$ & $0.888$ & $+0.1063$ \\
+ & \texttt{Psi-DropVol7D} ($7$-coord $\psi$) & $110.8\pm19.3$ & $+6.97$ ($0.004$ / $0.008$) & $0.243$ & $0.115$ & $0.920$ & $+0.0976$ \\
+ & \texttt{Psi-GenericPhysOnly} (forecast+HVD) & $131.1\pm17.8$ & $+27.30$ ($<10^{-4}$ / $<10^{-4}$) & $0.291$ & $0.139$ & $0.897$ & $+0.0665$ \\
+ & \texttt{Psi-GenericForecastFull} & $184.4\pm24.4$ & $+80.58$ ($<10^{-4}$ / $<10^{-4}$) & $0.344$ & $0.171$ & $0.891$ & $+0.0653$ \\
+ & \texttt{ForecastNoise-15\%} & $108.8\pm19.2$ & $+5.06$ ($0.094$ / $0.094$) & $0.242$ & $0.113$ & $0.924$ & $+0.1050$ \\
 \cmidrule(lr){1-8}
-$M_{\mathrm{src}}$ Scaling & $M_{\mathrm{src}}=3$ Online / Kernel Diag$-$Full & $0.241$ & Con: $-0.064$ ($0.132$) & --- & --- & Obj: $-0.016$ ($0.029$) & $0.541$ \\
- & $M_{\mathrm{src}}=12$ Online / Kernel Diag$-$Full & $0.241$ & Con: $+0.013$ ($0.096$) & --- & --- & Obj: $+0.006$ ($0.087$) & $0.576$ \\
+Exact-$\omega_M$ Scaling & $M_{\mathrm{src}}=3$ ($\omega_3\!=\!0.75$, $2\!+\!1$ strat.) & $106.4$ & Diag$-$F Con: $-0.019$ ($0.544$) & $0.242$ & --- & Diag$-$F Obj: $+0.007$ ($0.251$) & Obj: $0.575$ \\
+ & $M_{\mathrm{src}}=4$ ($\omega_4\!=\!0.69$, $2\!+\!2$ bal.) & $106.2$ & Diag$-$F Con: $-0.026$ ($0.0008$) & $0.243$ & Iso$-$F: $+0.069$ & Diag$-$F Obj: $-0.006$ ($0.239$) & Obj: $0.546$ \\
+ & $M_{\mathrm{src}}=12$ ($\omega_{12}\!=\!0.43$, $6\!+\!6$ bal.) & $105.8$ & Diag$-$F Con: $+0.017$ ($0.119$) & $0.241$ & Iso$-$F: $+0.095$ & Diag$-$F Obj: $+0.007$ ($0.165$) & Obj: $0.576$ \\
 \bottomrule
 \end{tabular}%
 }

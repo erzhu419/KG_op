@@ -66,6 +66,8 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 #check SCOLHKG.V2OR.SequentialTheory.stein_sure_gaussian_dominance_at_rank_ge_five
 #check SCOLHKG.V2OR.SequentialTheory.revisit_ec_voi_vanishes_under_lipschitz_innovation
 #check SCOLHKG.V2OR.SequentialTheory.screened_eckg_can_miss_cascade_winner
+#check SCOLHKG.V2OR.SequentialTheory.coupled_cascade_margin_preserves_order
+#check SCOLHKG.V2OR.SequentialTheory.unbiased_target_preserves_mse_diff
 
 -- Axiom audits on core theorems (must depend strictly on `[propext, Classical.choice, Quot.sound]`)
 #print axioms SCOLHKG.V2OR.FunctionalTransferRisk.effective_mismatch_second_moment_with_finite_sources
@@ -82,6 +84,8 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 #print axioms SCOLHKG.V2OR.SequentialTheory.revisit_query_zero_admit_voi
 #print axioms SCOLHKG.V2OR.SequentialTheory.revisit_ec_voi_vanishes_under_lipschitz_innovation
 #print axioms SCOLHKG.V2OR.SequentialTheory.screened_eckg_can_miss_cascade_winner
+#print axioms SCOLHKG.V2OR.SequentialTheory.coupled_cascade_margin_preserves_order
+#print axioms SCOLHKG.V2OR.SequentialTheory.unbiased_target_preserves_mse_diff
 #print axioms SCOLHKG.V2OR.SequentialTheory.bgp_kg_nonneg_from_posterior_tower
 #print axioms SCOLHKG.V2OR.SequentialTheory.bgp_kg_lipschitz_in_step_innovations
 #print axioms SCOLHKG.V2OR.SequentialTheory.greedy_bgp_kg_cannot_starve_informative_arm

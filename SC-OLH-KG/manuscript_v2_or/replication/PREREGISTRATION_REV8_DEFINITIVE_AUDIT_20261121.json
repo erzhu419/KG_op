@@ -1,0 +1,32 @@
+{
+  "protocol_id": "PREREGISTRATION_REV8_DEFINITIVE_AUDIT_20261121",
+  "locked_utc": "2026-11-21T14:12:00Z",
+  "purpose": "Targeted Round 8 definitive verification resolving all code-parameter, baseline-identity, single-factor counterfactual, unbiased gate-power U-statistic, and streaming-curtailment items while keeping sealed SC-OLH-KG/v2_or (fe8df9098424...) and all prior cohorts 100% untouched.",
+  "sealed_v2_or_execution_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "studies": {
+    "R8_1_single_factor_eligibility_nominator_and_streaming_curtailment": {
+      "panel": "Active 86 target tasks x 2 streams (172 cells across Inventory_CrossHorizon, Queueing_CrossHorizon, OPSD_EuroGrid, Traffic_Ingolstadt)",
+      "stage1_arms_truth_false": [
+        "ECKG-AllowUnvisited: unconfounded closed-loop GP-FTA-ECKG keeping score_eligible_cascade_kg online search identical and relaxing ONLY terminal shortlist eligibility to D_N U C_N^unvis",
+        "TermOnly-AllowUnvisited: pure single-factor terminal eligibility relaxation on the exact 172 frozen terminal search states F_N of GP-FTA-ECKG",
+        "TermOnly-UnthreshMaxU: pure single-factor terminal shortlist maximization of exact posterior cascade utility U_N(S) over all ordered triples of top-14 evaluated policies in D_N (both guarded and unguarded modes, zero 0.55 thresholds, zero 0.5/0.5 blending, zero Slot-1 heuristic fixing)",
+        "Streaming-Curtailed-k1 vs Coupled-FixedLoop-k1: live replication-by-replication streaming curtailment on coupled per-slot RNG streams measuring actual simulator calls and live verification wall-clock time"
+      ],
+      "stage2_audit_truth_true": "Post-hoc 2,000-draw DES / 8,000-draw OPSD ground-truth audit on exact task audit_seed"
+    },
+    "R8_2_unbiased_gate_calibration_faithful_rgpe_and_exact_msrc": {
+      "panel": "Same 72 unseen DES tasks from confirm_fresh_72 (n=9 shared observations, 32 disjoint held-out policies x 400 audit draws each)",
+      "metrics": [
+        "gate_mse_unbiased_x1e3: mean squared error against exact unbiased hypergeometric U-statistic C_hat_U = [comb(400-V, 112) + V*comb(400-V, 111)] / comb(400, 112), whose paired differences have exact zero finite-audit bias",
+        "gate_power_rmse_plugin: RMSE against 400-draw plug-in C_{112,1}(V/400)",
+        "feas_brier, feas_auroc (noting exact count of tasks with both classes), sel_true_slot0_gain, con_nrmse, obj_nrmse"
+      ],
+      "models_and_fixes": [
+        "RGPE-BootstrapRank-on-Psi: genuine Feurer et al. (2018) 64-bootstrap pairwise ranking-loss ensemble weights + analytic target LOO-CV",
+        "Fixed50-Ensemble-on-Psi, EB-LinearDict-on-Psi (fixed 52-feature empirical-Bayes BLR), PooledSourceResGP-on-Psi (pooled source-mean + target-discrepancy GP)",
+        "Psi-GenericPhysOnly (forecast-fed generic 12D psi keeping target within-policy HVD exposure fixed) and Psi-GenericForecastFull (forecast-fed generic psi + generic HVD)",
+        "Exact omega_M = p / (M + p) shrinkage across horizon-balanced M_src in {4, 6, 12} (2+2, 3+3, 6+6 horizon split) and horizon-stratified M_src = 3 (2+1 split), plus unstratified M_src = 3 with exact omega_3 = 0.75"
+      ]
+    }
+  }
+}

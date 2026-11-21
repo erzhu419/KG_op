@@ -1,6 +1,6 @@
 # GP-FTA Operations Research replication bundle
 
-This controlled archive accompanies *Certification-Aligned Search and Transferable Spectral Priors in Chance-Constrained Simulation Optimization*. It packages the LaTeX manuscript (`SC-OLH-KG/manuscript_v2_or/main_or.tex`), the sealed Python implementation (`SC-OLH-KG/v2_or`), historical snapshots (`frozen_referee/`, `frozen_independent/`, `frozen_u3/`), mechanized Lean 4.31.0 proofs (`proof/`, 22 verified theorems), third-party benchmark inputs (`SC-OLH-KG/data/`), and all sealed ledgers, compact Stage-2 receipts, and fitted source priors (`SC-OLH-KG/paper_artifacts/`). The grid accounting update for subsequent runs is in `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py`.
+This controlled archive accompanies *Certification-Aligned Search and Transferable Spectral Priors in Chance-Constrained Simulation Optimization*. It packages the LaTeX manuscript (`SC-OLH-KG/manuscript_v2_or/main_or.tex`), the sealed Python implementation (`SC-OLH-KG/v2_or`), historical snapshots (`frozen_referee/`, `frozen_independent/`, `frozen_u3/`), mechanized Lean 4.31.0 proofs (`proof/`, 24 verified declarations mechanizing algebraic identities, finite-sum inequalities, sample-path implications, and conditional ranking bounds), third-party benchmark inputs (`SC-OLH-KG/data/`), and all sealed ledgers, compact Stage-2 receipts, and fitted source priors (`SC-OLH-KG/paper_artifacts/`). The grid accounting update for subsequent runs is in `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py`.
 
 ## Verification, unit tests, table regeneration, and LaTeX build
 
@@ -42,6 +42,11 @@ cmp "$rev7/rev7_closedloop_readout.json" "$diag_dir/rev7_closedloop_readout.json
 PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev7_prior_and_simopt_study.py summarize \
   --out-dir "$rev7" --summary-path "$diag_dir/rev7_prior_and_simopt_readout.json"
 cmp "$rev7/rev7_prior_and_simopt_readout.json" "$diag_dir/rev7_prior_and_simopt_readout.json"
+
+rev8=SC-OLH-KG/paper_artifacts/v2_or_rev8_definitive_v1
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev8_definitive_supplement.py summarize \
+  --out-dir "$rev8" --summary-path "$diag_dir/rev8_definitive_readout.json"
+cmp "$rev8/rev8_definitive_readout.json" "$diag_dir/rev8_definitive_readout.json"
 
 python scripts/run_eckg_reference_validation.py summarize --out-dir "$prosp/eckg_ref_val" \
   --summary-path "$diag_dir/eckg_reference_validation_readout.json"

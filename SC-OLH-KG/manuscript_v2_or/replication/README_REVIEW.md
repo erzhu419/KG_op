@@ -5,11 +5,11 @@ This archive accompanies *Certification-Aligned Search and Transferable Spectral
 ## Included studies
 
 - The sealed implementation under `SC-OLH-KG/v2_or` (`fe8df9098424...`) ran 1,376 distinct core optimization runs: 720 five-arm runs on the 72-task discrete-event simulation panel (`v2_or_eckg_sure_confirm_v1`) plus 432 additional cold-configuration runs and 224 14-market OPSD battery-storage runs (`v2_or_metaprior_opsd_confirm_v1`, pre-registered in `PREREGISTRATION_METAPRIOR_OPSD_20261120.json`). Search, verification, and held-out audit blocks alternate within the historical period.
-- Pre-registered frontier, counterfactual, curtailment, calibration, and generic-summary studies (`v2_or_rev7_or_panel_v1`, pre-registered in `PREREGISTRATION_REV7_OR_PANEL_20261121.json`): (i) 1,204 four-domain closed-loop runs across `SCBO-3Slot`, `RGPE-on-Psi-3Slot`, `WarmStart-MTGP-KG-3Slot`, `GP-FTA-LatentNEI-3Slot`, `GP-FTA-AllowUnvisited`, `GP-FTA-DirectMaxU`, and `GP-FTA-LongSearch-k0`, (ii) 172 four-level exact binomial gate-stringency and sequential-curtailment evaluations (`k* in {0, 1, 2, 3}`), (iii) 86 offline feasible-oracle benchmarks (`Ref-Oracle`), (iv) 240 closed-loop runs on the 24-task four-channel `SimOpt_TandemCntNv` tandem queueing-newsvendor suite using strictly simulator-free black-box policy-profile summaries `psi_generic(x)`, (v) 24-state 24-scramble `LatentNEI` and HVD-buffer sensitivity diagnostics, and (vi) 72-task unseen-DES gate-power calibration, meta-BO baselines (`ABLR-on-Psi`, `MTGP-ICM-on-Psi`, `RGPE-on-Psi`), leave-one-pillar-out ablations, public-forecast corruption (`ForecastNoise-15%`), shift-scale sensitivity (`{1.0, 1.3, 1.6}`), and source-count scaling (`M_src in {3, 6, 12}`).
+- Search comparators, counterfactual, curtailment, calibration, and generic-summary studies (`v2_or_rev7_or_panel_v1` and `v2_or_rev8_definitive_v1`, pre-registered in `PREREGISTRATION_REV7_OR_PANEL_20261121.json` and `PREREGISTRATION_REV8_DEFINITIVE_AUDIT_20261121.json`): (i) 1,204 four-domain closed-loop runs across `SCBO-3Slot`, `RGPE-on-Psi-3Slot`, `PooledSourceResGP-KG-3Slot` (stored under key `WarmStart-MTGP-KG-3Slot` in the `rev7` ledger), `GP-FTA-LatentNEI-3Slot`, `Unvisited+Slot0KG` (`GP-FTA-AllowUnvisited`), `RestrictedMaxU` (`GP-FTA-DirectMaxU`), and `GP-FTA-LongSearch-k0`, (ii) 172 pure single-factor frozen-`F_N` terminal counterfactuals (`TermOnly-AllowUnvisited` and `TermOnly-UnthreshMaxU`) and live replication-by-replication streaming curtailment timings (`Streaming-Curtailed-k1` vs. coupled `FixedLoop-k1`) in `v2_or_rev8_definitive_v1`, alongside 172 four-level exact binomial gate-stringency evaluations (`k* in {0, 1, 2, 3}`), (iii) 86 fixed 400-candidate offline audited reference benchmarks (`Ref-400`), (iv) 240 closed-loop runs on the author-constructed 24-task four-channel tandem queueing-newsvendor synthetic benchmark (`SimOpt_TandemCntNv`) using strictly simulator-free policy-profile summaries `psi_generic(x)`, (v) 24-state 24-scramble `LatentNEI` and HVD-buffer sensitivity diagnostics, and (vi) 72-task unseen-DES unbiased hypergeometric U-statistic (`C_hat_U`) and 400-draw audit-plug-in gate-power calibration, representation-shared model controls (`EB-LinearDict-on-Psi`, `PooledSourceResGP-on-Psi`, 64-bootstrap `RGPE-BootstrapRank-on-Psi`, and `Fixed50-Ensemble-on-Psi`), four implementation-component ablations, forecast-fed HVD-controlled generic-`psi` (`Psi-GenericPhysOnly` and `Psi-GenericForecastFull`), public-forecast corruption (`ForecastNoise-15%`), shift-scale sensitivity (`{1.0, 1.3, 1.6}`), and exact-`omega_M = p/(M_src + p)` scaling across `M_src in {3, 4, 6, 12}` (protocol-vs.-implementation adjustments are documented in Electronic Companion Table EC.2).
 - Earlier diagnostic receipts cover (i) static prediction after eight observations on 86 tasks (`propagation_audit`), (ii) direct single-probe cross-policy propagation on both the 86-task panel (`direct_propagation_exploratory_86`) and 72 newly generated unseen DES tasks (`direct_propagation_confirm_fresh_72`, pre-registered in `PREREGISTRATION_REV5_PROPAGATION_CONFIRM_20261121.json`), (iii) a separate 96-state query study, and (iv) the 24-state re-evaluated full-bank reference winner and sampled-incumbent `PlugIn-cEI` comparison across 24 independent `256 x 1,024` Sobol scrambles (`eckg_multiscramble_cei`, stored under key `UB-cEI` in the JSON receipt) alongside `eckg_reference_states.json`. All six compact fitted source priors (`SC-OLH-KG/paper_artifacts/v2_or_u3_confirm_v1/source_bundles/*/prior_default.pkl` plus `SC-OLH-KG/paper_artifacts/v2_or_rev7_or_panel_v1/simopt_prior_default.pkl`) are bundled directly in this supplement.
 - `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py` contains the audit-purpose accounting update. The sealed execution sources remain under `SC-OLH-KG/v2_or`. Compare `v2_or_metaprior_opsd_confirm_v1/metaprior_opsd_panel_readout.json` with `as_reported/metaprior_opsd_panel_readout.json` in the same study directory for the original classification.
 - Frozen execution snapshots `frozen_referee/SC-OLH-KG` (384-run matched coefficient-prior and terminal-replay study `v2_or_gpfta_referee_ablation_v1`), `frozen_independent/SC-OLH-KG` (432-run single-slot quadrature panel `v2_or_kg_quadrature_confirm_v1`), and `frozen_u3/SC-OLH-KG` (9,796-run four-domain benchmark across `v2_or_u3_confirm_v1`, `v2_or_u3_messy_archive_v1`, and `v2_or_u3_live_sumo_v1`).
-- Mechanized Lean 4.31.0 modules under `proof/SCOLHKG/V2OR/` (`DebiasedSubspace.lean`, `TemperedHVD.lean`, `FunctionalTransferRisk.lean`, `VerificationKGAmortization.lean`, `SequentialTheory.lean`) and `proof/SCOLHKG/V2ORProofInterface.lean` verifying all 22 audited theorems with zero `sorry`.
+- Mechanized Lean 4.31.0 modules under `proof/SCOLHKG/V2OR/` (`DebiasedSubspace.lean`, `TemperedHVD.lean`, `FunctionalTransferRisk.lean`, `VerificationKGAmortization.lean`, `SequentialTheory.lean`) and `proof/SCOLHKG/V2ORProofInterface.lean` verifying all 24 audited declarations (algebraic identities, finite-sum inequalities, sample-path implications, and conditional ranking bounds) with zero `sorry`.
 - Third-party provenance and restoration recipes in `LICENSES.md` and `restore_review_inputs.py`, plus raw-archive audit documentation in `U3_REPLAY.md`.
 
 ## 1. Verify archive contents and regenerate all 24 tables and 3 figures
@@ -47,17 +47,23 @@ python summarize_metaprior_opsd_panel.py --campaign-dir "$mp_opsd" --prospective
   --output "$readout/metaprior_opsd_panel_readout.json"
 cmp "$mp_opsd/metaprior_opsd_panel_readout.json" "$readout/metaprior_opsd_panel_readout.json"
 
-# Frontier baselines, feasible-oracle gaps, eligibility/nominator counterfactuals, and gate curtailment (Tables 4A, 6)
+# Search comparators, Ref-400 ratios, closed-loop contract variants, and gate curtailment (Tables 4A, 6)
 rev7=SC-OLH-KG/paper_artifacts/v2_or_rev7_or_panel_v1
 PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev7_closedloop_study.py summarize \
   --out-dir "$rev7" --ledger-csv "$rev7/per_run_ledger.csv" \
   --summary-path "$readout/rev7_closedloop_readout.json"
 cmp "$rev7/rev7_closedloop_readout.json" "$readout/rev7_closedloop_readout.json"
 
-# SimOpt_TandemCntNv generic-psi benchmark, 72-task calibration/pillars/M_src scaling, and 24-state LatentNEI (Tables 4B, 8B, 9, EC.1-EC.2)
+# Author-constructed tandem queueing-newsvendor generic-psi benchmark, shift sensitivity, and 24-state LatentNEI (Tables 4B, 9, EC.1, EC.3)
 PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev7_prior_and_simopt_study.py summarize \
   --out-dir "$rev7" --summary-path "$readout/rev7_prior_and_simopt_readout.json"
 cmp "$rev7/rev7_prior_and_simopt_readout.json" "$readout/rev7_prior_and_simopt_readout.json"
+
+# Pure single-factor frozen-F_N counterfactuals, live streaming curtailment, unbiased C_hat_U MSE, 64-bootstrap RGPE, and exact-omega_M scaling (Tables 6, 8B)
+rev8=SC-OLH-KG/paper_artifacts/v2_or_rev8_definitive_v1
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev8_definitive_supplement.py summarize \
+  --out-dir "$rev8" --summary-path "$readout/rev8_definitive_readout.json"
+cmp "$rev8/rev8_definitive_readout.json" "$readout/rev8_definitive_readout.json"
 
 # Verify the maintenance fix for per-pool metering on a disposable copy of the simulator
 meter_test=$(mktemp -d)
@@ -177,7 +183,7 @@ python restore_review_inputs.py informs --zip opre-template.zip
   pdflatex -interaction=nonstopmode -halt-on-error main_or.tex)
 ```
 
-Verify all 22 mechanized theorems in Lean 4.31.0 (`proof/lean-toolchain` and `proof/lake-manifest.json`):
+Verify all 24 mechanized declarations in Lean 4.31.0 (`proof/lean-toolchain` and `proof/lake-manifest.json`):
 
 ```bash
 cd proof
