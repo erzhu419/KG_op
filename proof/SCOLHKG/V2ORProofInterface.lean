@@ -44,6 +44,7 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 #check SCOLHKG.V2OR.VerificationKGAmortization.v2_terminal_five_percent_asymmetric_spend
 #check SCOLHKG.V2OR.VerificationKGAmortization.binomial_zero_violation_power_bound
 #check SCOLHKG.V2OR.VerificationKGAmortization.v2_terminal_calls_le_cap
+#check SCOLHKG.V2OR.VerificationKGAmortization.curtailed_binomial_gate_iff_full_sample
 #check SCOLHKG.V2OR.VerificationKGAmortization.amortized_cost_le_cold_start_iff
 
 -- Flagship Self-Normalized SURE, Submartingale, Consistency & Bellman Cascade Theorems (`SequentialTheory`)
@@ -62,6 +63,9 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 #check SCOLHKG.V2OR.SequentialTheory.eligible_cascade_dual_voi_decomposition
 #check SCOLHKG.V2OR.SequentialTheory.eligible_cascade_components_nonneg
 #check SCOLHKG.V2OR.SequentialTheory.revisit_query_zero_admit_voi
+#check SCOLHKG.V2OR.SequentialTheory.stein_sure_gaussian_dominance_at_rank_ge_five
+#check SCOLHKG.V2OR.SequentialTheory.revisit_ec_voi_vanishes_under_lipschitz_innovation
+#check SCOLHKG.V2OR.SequentialTheory.screened_eckg_can_miss_cascade_winner
 
 -- Axiom audits on core theorems (must depend strictly on `[propext, Classical.choice, Quot.sound]`)
 #print axioms SCOLHKG.V2OR.FunctionalTransferRisk.effective_mismatch_second_moment_with_finite_sources
@@ -72,13 +76,17 @@ focused algorithm-aligned transfer dominance & `k* = 1` binomial certification t
 #print axioms SCOLHKG.V2OR.SequentialTheory.sure_selector_uniform_shift_excess_loss_bound
 #print axioms SCOLHKG.V2OR.SequentialTheory.expected_unit_projection_noise_le_sigma_div_rank
 #print axioms SCOLHKG.V2OR.SequentialTheory.fisher_whitened_unit_variance_sure_bound
+#print axioms SCOLHKG.V2OR.SequentialTheory.stein_sure_gaussian_dominance_at_rank_ge_five
 #print axioms SCOLHKG.V2OR.SequentialTheory.eligible_cascade_dual_voi_decomposition
 #print axioms SCOLHKG.V2OR.SequentialTheory.eligible_cascade_components_nonneg
 #print axioms SCOLHKG.V2OR.SequentialTheory.revisit_query_zero_admit_voi
+#print axioms SCOLHKG.V2OR.SequentialTheory.revisit_ec_voi_vanishes_under_lipschitz_innovation
+#print axioms SCOLHKG.V2OR.SequentialTheory.screened_eckg_can_miss_cascade_winner
 #print axioms SCOLHKG.V2OR.SequentialTheory.bgp_kg_nonneg_from_posterior_tower
 #print axioms SCOLHKG.V2OR.SequentialTheory.bgp_kg_lipschitz_in_step_innovations
 #print axioms SCOLHKG.V2OR.SequentialTheory.greedy_bgp_kg_cannot_starve_informative_arm
 #print axioms SCOLHKG.V2OR.SequentialTheory.bellman_slot0_minimizes_expected_deployed_loss
 #print axioms SCOLHKG.V2OR.TemperedHVD.within_policy_ssq_shift_invariant
 #print axioms SCOLHKG.V2OR.VerificationKGAmortization.v2_terminal_five_percent_asymmetric_spend
+#print axioms SCOLHKG.V2OR.VerificationKGAmortization.curtailed_binomial_gate_iff_full_sample
 #print axioms SCOLHKG.V2OR.VerificationKGAmortization.amortized_cost_le_cold_start_iff

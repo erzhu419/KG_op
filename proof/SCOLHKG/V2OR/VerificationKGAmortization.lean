@@ -154,6 +154,23 @@ theorem v2_terminal_calls_le_cap (a0 a1 a2 obj0Better : Bool) :
   cases a0 <;> cases a1 <;> cases a2 <;> cases obj0Better <;>
     simp [v2TerminalDecision]
 
+/-- **Exact Sample-Path Equivalence of Sequential Binomial Curtailment**:
+    Splitting `K` verification trials at step `m ≤ K` into `vObs` observed violations and `wRem`
+    remaining violations (`0 ≤ wRem ≤ K - m`), early rejection (`kCrit + 1 ≤ vObs`) implies
+    full-sample rejection (`¬ (vObs + wRem ≤ kCrit)`), and early acceptance (`vObs + (K - m) ≤ kCrit`)
+    implies full-sample acceptance (`vObs + wRem ≤ kCrit`). -/
+theorem curtailed_binomial_gate_iff_full_sample
+    (K m vObs wRem kCrit : ℕ)
+    (hm : m ≤ K)
+    (hRemUpper : wRem ≤ K - m) :
+    (kCrit + 1 ≤ vObs → ¬ (vObs + wRem ≤ kCrit)) ∧
+      (vObs + (K - m) ≤ kCrit → vObs + wRem ≤ kCrit) := by
+  constructor
+  · intro hRej hFalse
+    omega
+  · intro hAcc
+    omega
+
 end TerminalGate
 
 section Amortization

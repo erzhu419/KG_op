@@ -1,6 +1,6 @@
 # GP-FTA Operations Research replication bundle
 
-This controlled archive packages the LaTeX manuscript (`SC-OLH-KG/manuscript_v2_or/main_or.tex`), the Python implementation that ran `v2_or_eckg_sure_confirm_v1` and `v2_or_metaprior_opsd_confirm_v1` (720 and 656 distinct runs), historical snapshots (`frozen_referee/`, `frozen_independent/`, `frozen_u3/`), mechanized Lean 4.31.0 proofs (`proof/`), third-party benchmark inputs (`SC-OLH-KG/data/`), and the sealed ledgers and diagnostics (`SC-OLH-KG/paper_artifacts/`). The grid accounting update for subsequent runs is in `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py`.
+This controlled archive accompanies *Certification-Aligned Search and Transferable Spectral Priors in Chance-Constrained Simulation Optimization*. It packages the LaTeX manuscript (`SC-OLH-KG/manuscript_v2_or/main_or.tex`), the sealed Python implementation (`SC-OLH-KG/v2_or`), historical snapshots (`frozen_referee/`, `frozen_independent/`, `frozen_u3/`), mechanized Lean 4.31.0 proofs (`proof/`, 22 verified theorems), third-party benchmark inputs (`SC-OLH-KG/data/`), and all sealed ledgers, compact Stage-2 receipts, and fitted source priors (`SC-OLH-KG/paper_artifacts/`). The grid accounting update for subsequent runs is in `maintenance/SC-OLH-KG/v2_or/simulators/opsd_storage.py`.
 
 ## Verification, unit tests, table regeneration, and LaTeX build
 
@@ -24,14 +24,25 @@ python SC-OLH-KG/manuscript_v2_or/build_u4_tables_and_figures.py --output-dir "$
   pdflatex -interaction=nonstopmode -halt-on-error main_or.tex)
 ```
 
-## Rebuild the fine-grained diagnostic summaries
+## Rebuild fine-grained readouts with zero simulation calls
 
-The 86-task propagation audit and the original reference evaluation at two states on each of 12 tasks are distributed with their complete compact item sets. The corrected reference file adds actual shortlist indices and complete 160-candidate vectors for both menu resolutions and the single-nomination reference. The two-file patch in `scripts/eckg_reference_diagnostic.patch` records how these vectors were collected. The commands below use the included JSON files and make zero simulation calls.
+The commands below read the included CSV ledgers and compact JSON receipts directly and make zero simulation calls:
 
 ```bash
 prosp=SC-OLH-KG/paper_artifacts/v2_or_eckg_sure_confirm_v1
 mp_opsd=SC-OLH-KG/paper_artifacts/v2_or_metaprior_opsd_confirm_v1
+rev7=SC-OLH-KG/paper_artifacts/v2_or_rev7_or_panel_v1
 diag_dir=$(mktemp -d)
+
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev7_closedloop_study.py summarize \
+  --out-dir "$rev7" --ledger-csv "$rev7/per_run_ledger.csv" \
+  --summary-path "$diag_dir/rev7_closedloop_readout.json"
+cmp "$rev7/rev7_closedloop_readout.json" "$diag_dir/rev7_closedloop_readout.json"
+
+PYTHONPATH=SC-OLH-KG:scripts python scripts/run_rev7_prior_and_simopt_study.py summarize \
+  --out-dir "$rev7" --summary-path "$diag_dir/rev7_prior_and_simopt_readout.json"
+cmp "$rev7/rev7_prior_and_simopt_readout.json" "$diag_dir/rev7_prior_and_simopt_readout.json"
+
 python scripts/run_eckg_reference_validation.py summarize --out-dir "$prosp/eckg_ref_val" \
   --summary-path "$diag_dir/eckg_reference_validation_readout.json"
 python scripts/run_metaprior_propagation_audit.py summarize --out-dir "$mp_opsd/propagation_audit" \

@@ -1,0 +1,89 @@
+{
+  "protocol_id": "PREREGISTRATION_REV7_OR_PANEL_20261121",
+  "locked_utc": "2026-11-21T11:12:00Z",
+  "purpose": "Pre-registered Round 7 Operations Research supplement addressing simulated AE and three-referee panel critiques while keeping all previously sealed closed-loop runs (1,376 active runs, 72-task confirm_fresh_72, 24-scramble state audit, and 9,796 predecessor runs) and SC-OLH-KG/v2_or execution code 100% untouched.",
+  "sealed_v2_or_execution_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "studies": {
+    "R7_1_closedloop_frontier_contract_and_oracle": {
+      "panel": "Active 86 target tasks (24 Inventory_CrossHorizon, 24 Queueing_CrossHorizon, 14 OPSD_EuroGrid, 24 Traffic_Ingolstadt), 2 paired streams per task (172 runs per arm), identical search budget (N0=8, N=60, m_batch=2; 136 search calls) and identical guarded three-slot clean-up contract (112, 128, 140) unless explicitly varied by the factor under test.",
+      "primary_frontier_arms": [
+        "SCBO-3Slot (raw-space Sobol trust-region constrained BO + identical 3-slot clean-up)",
+        "GP-FTA-LatentNEI-3Slot (faithful latent-integrated noisy expected improvement, M_NEI=32 joint QMC draws recomputing feasible sampled incumbent per draw)",
+        "RGPE-on-Psi-3Slot (ranking-weighted GP ensemble on shared psi + source DCT warm-start + identical 3-slot clean-up)",
+        "WarmStart-MTGP-KG-3Slot (Poloczek-Wang-Frazier style source-mean plus target-discrepancy GP on psi + gate-power KG + identical 3-slot clean-up)"
+      ],
+      "contract_and_budget_arms": [
+        "GP-FTA-AllowUnvisited (relaxing D_N-only eligibility to allow unvisited posterior candidates in Slots 0 and 2)",
+        "GP-FTA-DirectMaxU (parameter-free shortlist maximization of working-model cascade utility U_m(S) without heuristic 0.55/0.02 thresholds)",
+        "GP-FTA-LongSearch-k0 (re-allocating budget to N=100 search steps = 216 search calls + curtailed k*=0 verification (72, 82, 90) = 244 max calls)"
+      ],
+      "terminal_gate_sensitivity": {
+        "evaluated_on": "172 reconstructed terminal GP-FTA-ECKG search states across all 86 tasks",
+        "designs": [
+          "Gate-k0: (72, 82, 90), k*=0, max 244 calls",
+          "Gate-k1-Default: (112, 128, 140), k*=1, max 380 calls",
+          "Gate-k1-Curtailed: (112, 128, 140), exact sequential binomial curtailment stopping at v_obs >= k*+1 or v_obs + (K_i - m) <= k*",
+          "Gate-k2: (142, 155, 165), k*=2, max 462 calls",
+          "Gate-k3: (173, 187, 198), k*=3, max 558 calls"
+        ]
+      },
+      "high_budget_reference_oracle": {
+        "evaluated_on": "All 86 target tasks (zero interaction with online runs)",
+        "design": "480 diverse policies per task (multi-scale DCT, source templates, Sobol, and Powell/coordinate local search) screened at 16 replications and audited on exact task audit streams (2,000 DES / 8,000 OPSD draws) to estimate feasible reference optimum J_oracle (p_audit <= 0.05) and certifiable reference optimum J_cert_oracle (p_audit <= 0.02)."
+      },
+      "inference_hierarchy": "Fixed-sequence hierarchy on standardized pooled DES status-quo loss (n=72 tasks): (Step 1) four-comparator Holm test against external frontier arms; (Step 2) paired tests against contract/budget counterfactuals; supplemented by robustness checks using EC-KG SD standardization, Wilcoxon signed-rank tests, and L_comp penalty weights {1, 2, 5, 10}."
+    },
+    "R7_2_calibration_pillars_scaling_and_simopt": {
+      "decision_calibration_and_pillars_on_confirm_fresh_72": {
+        "panel": "72 unseen DES tasks from confirm_fresh_72 (n=9 shared observations, 32 disjoint held-out policies x 400 ground-truth replications each)",
+        "metrics": [
+          "slot0_gate_power_rmse (RMSE between predicted posterior gate power and true BinomCDF(1; 112, p_true))",
+          "feasibility_auroc (AUROC for classifying held-out policies with p_true <= 0.05)",
+          "top1_selection_true_cascade_gain (true expected Slot-0 clean-up saving of the held-out policy maximizing predicted gate-weighted saving)",
+          "demeaned_shape_nrmse"
+        ],
+        "meta_baselines": [
+          "Online-FullSURE",
+          "Online-DiagSURE",
+          "Online-SameBasisWeak",
+          "ColdPsi-GP",
+          "ABLR-on-Psi (Perrone et al. 2018 empirical-Bayes shared basis)",
+          "MTGP-ICM-on-Psi (multi-task GP on psi)",
+          "RGPE-on-Psi"
+        ],
+        "four_pillar_ablations": [
+          "Full-4Pillar",
+          "NoOccupancyDebias",
+          "NoGraphLowPass",
+          "NoGramWhitening",
+          "NoSparseSelect",
+          "Psi-DropVolCoords (7-dim psi without A_local/N_shared)",
+          "Psi-GenericBlackBox (simulator-free control profile quantiles, ramps, and public forecast moments)"
+        ]
+      },
+      "archive_size_shift_and_forecast_noise": {
+        "m_src_levels": [3, 6, 12],
+        "shift_scales": [1.0, 1.3, 1.6],
+        "public_forecast_noise_cv": [0.0, 0.15]
+      },
+      "frozen_state_latent_nei_and_sensitivity": {
+        "states": "24 production states (Queueing and Traffic, t00..t05, steps 0 and 59) across R=24 independent 256x1024 Sobol scrambles",
+        "comparisons": [
+          "Faithful LatentNEI (M_NEI=64 joint draws)",
+          "DirectMaxU nominator",
+          "Sensitivity over gate threshold {0.40, 0.55, 0.70}, release threshold {0.50, 0.65, 0.80}, and HVD buffer {0.15, 0.35, 0.55}"
+        ]
+      },
+      "external_simopt_tandem_cntnv_benchmark": {
+        "description": "Published-literature stochastic constrained simulation optimization testbed combining multi-stage tandem queueing + continuous newsvendor capacity allocation (Koenig & Law 1985; Hong, Luo & Nelson 2015; Eckman et al. 2023 SimOpt conventions), 6 source tasks (d_s in {24, 32}) -> 24 target tasks (d_t in {48, 64}, 2 streams = 48 runs/arm), using strictly generic black-box control-profile summary psi_generic (zero simulator-specific fluid equations).",
+        "arms": [
+          "GP-FTA-ECKG",
+          "GP-FTA-FeasibleKG",
+          "GP-FTA-LatentNEI-3Slot",
+          "SCBO-3Slot",
+          "PublicPsi-TargetGP-TS"
+        ]
+      }
+    }
+  }
+}

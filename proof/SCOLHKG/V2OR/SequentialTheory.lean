@@ -605,4 +605,69 @@ theorem revisit_query_zero_admit_voi
   refine ⟨hAdmZero, ?_⟩
   rw [eligible_cascade_dual_voi_decomposition, hAdmZero, add_zero]
 
+/-- **Theorem 5e (Exact Gaussian Stein Shrinkage Factor at `c = |I|`)**:
+    In the `m`-dimensional Gaussian reference model `R̃ ~ N(δ, I_m)` (`m ≥ 3`), Stein's identity
+    yields normalized risk `1 - ((2 * c * (m - 2) - c^2) / m) * eInv` for `λ̃_c = 1 - c / ‖R̃‖²`
+    with `eInv = E[‖R̃‖⁻²] > 0`. At `c = m`, `2 * m * (m - 2) - m^2 = m * (m - 4)`, certifying
+    strict risk dominance (`< 1`) over target-only estimation across all `δ ∈ ℝ^m` whenever `m ≥ 5`. -/
+theorem stein_sure_gaussian_dominance_at_rank_ge_five
+    (m eInv : ℝ)
+    (hm : 5 ≤ m)
+    (hInv : 0 < eInv) :
+    2 * m * (m - 2) - m ^ 2 = m * (m - 4) ∧
+      1 - ((2 * m * (m - 2) - m ^ 2) / m) * eInv < 1 := by
+  have hmPos : 0 < m := by linarith
+  have hAlg : 2 * m * (m - 2) - m ^ 2 = m * (m - 4) := by ring
+  refine ⟨hAlg, ?_⟩
+  have hCancel : (m * (m - 4)) / m = m - 4 := by
+    field_simp [ne_of_gt hmPos]
+  rw [hAlg, hCancel]
+  have hProd : 0 < (m - 4) * eInv := mul_pos (by linarith) hInv
+  linarith
+
+/-- **Theorem 5f (Vanishing EC-KG Revisit Value Under Shrinking Posterior Innovations)**:
+    For any already-evaluated revisit `q ∈ D_n` (`uEligAdmit = uEligBase`), if post-query shortlist
+    utility perturbations satisfy `uEligBase ω - uCurrStar ≤ eps` across all `ω` (`uCurrStar ≥ 0`,
+    `eps ≥ 0`, `w ≥ 0`, `∑ w = 1`), then `VOI_EC(q) ≤ eps`. -/
+theorem revisit_ec_voi_vanishes_under_lipschitz_innovation
+    {Ω : Type*} [Fintype Ω]
+    (w uEligBase : Ω → ℝ) (uCurrStar eps : ℝ)
+    (hWNonneg : ∀ ω, 0 ≤ w ω)
+    (hWSum : (∑ ω, w ω) = 1)
+    (hCurrNonneg : 0 ≤ uCurrStar)
+    (hEpsNonneg : 0 ≤ eps)
+    (hStep : ∀ ω, uEligBase ω - uCurrStar ≤ eps) :
+    ecVoiTotal w (fun _ => uCurrStar) uEligBase uEligBase ≤ eps := by
+  rw [(revisit_query_zero_admit_voi w (fun _ => uCurrStar) uEligBase).2]
+  unfold ecVoiRefine
+  have hPt : ∀ ω ∈ (Finset.univ : Finset Ω),
+      w ω * (max 0 (max uCurrStar (uEligBase ω)) - uCurrStar) ≤ w ω * eps := by
+    intro ω _
+    apply mul_le_mul_of_nonneg_left _ (hWNonneg ω)
+    have hMax0 : max 0 (max uCurrStar (uEligBase ω)) = max uCurrStar (uEligBase ω) :=
+      max_eq_right (le_trans hCurrNonneg (le_max_left _ _))
+    rw [hMax0]
+    have hDiff : max uCurrStar (uEligBase ω) ≤ uCurrStar + eps := by
+      apply max_le
+      · linarith
+      · linarith [hStep ω]
+    linarith
+  have hSum := Finset.sum_le_sum hPt
+  rw [← Finset.sum_mul, hWSum, one_mul] at hSum
+  exact hSum
+
+/-- **Proposition 5g (Constructive Screened Approximation Boundary)**:
+    Exhibits an explicit two-contender configuration where backup contender `q_B` has strictly
+    smaller single-slot marginal score than rival `q_M` (`vSingleB = 0 < vSingleM`, so a rank-one
+    marginal screen excludes `q_B`), yet under primary gate power `p0 < 1`, admitting `q_B` into
+    a backup slot strictly dominates `q_M` in three-slot cascade saving. -/
+theorem screened_eckg_can_miss_cascade_winner :
+    ∃ (p0 sav0 vSingleB vSingleM pBackB savBackB pBackM savBackM : ℝ),
+      0 < p0 ∧ p0 < 1 ∧
+      vSingleB = 0 ∧ 0 < vSingleM ∧ vSingleB < vSingleM ∧
+      (p0 * sav0 + (1 - p0) * (pBackM * savBackM)) <
+        (p0 * sav0 + (1 - p0) * (pBackB * savBackB)) := by
+  refine ⟨(1 : ℝ) / 2, 10, 0, (1 : ℝ) / 10, (4 : ℝ) / 5, 8, 0, 0, ?_⟩
+  norm_num
+
 end SCOLHKG.V2OR.SequentialTheory

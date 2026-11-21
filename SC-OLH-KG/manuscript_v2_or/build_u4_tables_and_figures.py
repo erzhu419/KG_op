@@ -431,84 +431,405 @@ def build_table_metaprior_decomposition(mp_opsd: dict[str, Any], mp_prop: dict[s
     return "\n".join(lines) + "\n"
 
 
-def build_table_direct_propagation(dprop_exp: dict[str, Any], dprop_conf: dict[str, Any]) -> str:
+def build_table_frontier_and_oracle(rev7_cl: dict[str, Any], rev7_ps: dict[str, Any]) -> str:
+    fams = ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt")
+    frontier_arms = (
+        "GP-FTA-ECKG",
+        "SCBO-3Slot",
+        "GP-FTA-LatentNEI-3Slot",
+        "RGPE-on-Psi-3Slot",
+        "WarmStart-MTGP-KG-3Slot",
+    )
+    comp_only = frontier_arms[1:]
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Direct single-probe cross-policy information propagation ($N_0=8 \to 9$ policies) on 32 disjoint held-out policies per task, holding public $\psi(x)$, source-learned basis $\tilde{\phi}(\psi(x))$, target-only within-policy HVD, and probe observations identical across models. Zero-mean kernel models (`Full', `Diag', `Iso', `Perm.') set active source means to zero ($\mu_{0,\mathrm{act}}\equiv 0$) and match active-subspace trace so pre-data shape NRMSE equals $1.000$ identically. Positive differences (`Comparator $-$ Structured') indicate lower post-probe demeaned shape NRMSE for the structured model; parentheses give four-way Holm-adjusted paired-$t$ $p$-values within each domain-head block (`+/$-$/0' counts tasks where the ninth policy reduces/increases/ties `Full' error). Panel~A evaluates the existing 86-task panel; Panel~B executes the pre-registered one-shot confirmation on 72 unseen DES tasks.}\label{tab:direct_prop}",
+        r"\caption{External frontier baselines, achievable feasible-oracle gap closure, and simulator-free black-box summary evaluation under identical $(112,128,140)$ three-slot clean-up ($N=60$). Panel~A compares \textbf{GP-FTA-ECKG} against trust-region constrained BO (\texttt{SCBO-3Slot}), joint-draw latent noisy expected improvement (\texttt{GP-FTA-LatentNEI-3Slot}), rank-weighted GP ensembles (\texttt{RGPE-on-Psi-3Slot}), and warm-started multi-task GP knowledge gradient (\texttt{WarmStart-MTGP-KG-3Slot}). Gap Closed~(\%) reports $(\bar{J}_{\mathrm{SQ}}-\bar{\mathcal{L}}_{\mathrm{SQ}})/(\bar{J}_{\mathrm{SQ}}-\bar{J}_{\mathrm{oracle}})$ against an offline $400$-candidate polished feasible oracle ($>100\%$ in queueing indicates adaptive online proposals improve slightly upon the fixed offline grid); positive contrasts favor \textbf{GP-FTA-ECKG} with four-comparator Holm $p$-values per block. Panel~B evaluates the $24$-task four-channel tandem queueing-newsvendor suite ($d_s\in\{24,32\}\to d_t\in\{48,64\}$) using strictly simulator-free black-box policy-profile summaries $\psi^{\mathrm{generic}}(x)\in\mathbb{R}^{12}$.}\label{tab:frontier_oracle}",
         r"\scriptsize",
-        r"\setlength{\tabcolsep}{3.8pt}",
-        r"\begin{tabular}{llcccccc}",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llccccccc}",
         r"\toprule",
-        r"\textbf{Domain ($n$)} & \textbf{Head} & \textbf{Full After} & \textbf{+/$-$/0} & \textbf{Iso $-$ Full} & \textbf{Diag $-$ Full} & \textbf{Perm.\ $-$ Full} & \textbf{Online Weak $-$ Full} \\",
-        r"\midrule",
-        r"\multicolumn{8}{l}{\textbf{Panel A: Exploratory 86-Task Four-Domain Panel (\texttt{exploratory\_86}, $8 \to 9$ transition)}} \\",
-        r"\midrule",
+        r"\multicolumn{9}{l}{\textbf{Panel A: Four-Domain External Frontier Baselines and Achievable Feasible-Oracle Gap Closure ($172$ cells/arm)}} \\",
+        r"\textbf{Domain (Anc.\ / Oracle)} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Gap Closed} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Holm $p$} \\",
     ]
+    for fam in fams:
+        lines.append(r"\midrule")
+        is_opsd = fam == "OPSD_EuroGrid"
+        dec = 4 if is_opsd else 4
+        orc = rev7_cl["oracle_summary"][fam]
+        fam_lbl = (
+            f"OPSD-336 (${orc['anchor_mean_obj']:.4f}$ / ${orc['oracle_feas05_mean_obj']:.4f}$)"
+            if is_opsd
+            else f"{SHORT_FAM[fam]} (${orc['anchor_mean_obj']:.3f}$ / ${orc['oracle_feas05_mean_obj']:.3f}$)"
+        )
+        dt = rev7_cl["domain_tables"][fam]
+        dc = rev7_cl["domain_contrasts"][fam]["frontier_vs_eckg"]
+        min_l = min(dt[m]["mean_sq_loss"] for m in frontier_arms)
+        for idx, m in enumerate(frontier_arms):
+            md = dt[m]
+            f_col = rf"\multirow{{5}}{{*}}{{{fam_lbl}}}" if idx == 0 else ""
+            lv, lse = md["mean_sq_loss"], md["se_sq_loss"]
+            l_str = (
+                f"$\\mathbf{{{_fmt_num(lv, dec)}}} \\pm {_fmt_num(lse, dec)}$"
+                if abs(lv - min_l) < 1e-12
+                else f"${_fmt_num(lv, dec)} \\pm {_fmt_num(lse, dec)}$"
+            )
+            gc_str = f"{md['feasible_gap_closed_pct']:.1f}\\%"
+            cert_s = f"{md['cert_count']}/{md['n_runs']}"
+            if m == "GP-FTA-ECKG":
+                diff_s, wlt_s, p_s = "---", "---", "---"
+            else:
+                st = dc[m]
+                diff_s = rf"${_fmt_num(st['mean_diff'], 4, signed=True)}\ [{_fmt_num(st['ci95_lo'], 4)},\,{_fmt_num(st['ci95_hi'], 4)}]$"
+                wlt_s = f"{st['wins']}/{st['losses']}/{st['ties']}"
+                p_s = _fmt_p(st["p_holm_4frontier"])
+            lines.append(
+                f"{f_col} & {_disp_method(m)} & {l_str} & {gc_str} & {md['mean_total_calls']:.1f} & "
+                f"{cert_s} & {diff_s} & {wlt_s} & {p_s} \\\\"
+            )
 
-    def _emit_panel(readout: dict[str, Any], fam_list: tuple[tuple[str, str], ...]) -> None:
-        for idx_f, (fk, flbl) in enumerate(fam_list):
-            fb = readout["families"][fk]["regime_8to9"]
-            nt = readout["families"][fk]["n_tasks"]
-            for h_i, (hk, hlbl) in enumerate((("obj", "Obj."), ("con", "Con."))):
-                d_col = rf"\multirow{{2}}{{*}}{{{flbl} ({nt})}}" if h_i == 0 else ""
-                m_full = fb["models"]["Kernel-FullSource"]
-                after_s = f"${m_full[f'after_nrmse_{hk}']:.3f}$"
-                p, ng, z = m_full[f"pos_neg_zero_tasks_{hk}"]
-                pnz_s = f"{p}/{ng}/{z}"
-                kc = fb["contrasts"][f"kernel_post_accuracy_{hk}"]
-                oc = fb["contrasts"][f"online_post_accuracy_{hk}"]
-                c_iso = kc["Kernel_Iso_minus_Full_AfterErr"]
-                c_diag = kc["Kernel_Diag_minus_Full_AfterErr"]
-                c_perm = kc["Kernel_Permuted_minus_Full_AfterErr"]
-                c_onl = oc["Online_FullSURE_vs_Weak_AfterErr"]
-                cells = [
-                    d_col,
-                    hlbl,
-                    after_s,
-                    pnz_s,
-                    f"${_fmt_num(c_iso['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_iso['holm_two_sided_t_p'])})",
-                    f"${_fmt_num(c_diag['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_diag['holm_two_sided_t_p'])})",
-                    f"${_fmt_num(c_perm['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_perm['holm_two_sided_t_p'])})",
-                    f"${_fmt_num(c_onl['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_onl['holm_two_sided_t_p'])})",
-                ]
-                lines.append(" & ".join(cells) + r" \\")
-            if idx_f < len(fam_list) - 1:
-                lines.append(r"\cmidrule(lr){1-8}")
+    lines.append(r"\midrule")
+    pool_f = rev7_cl["pooled_des_72_contrasts"]["anchor_sd"]["frontier_vs_eckg"]
+    for idx, m in enumerate(comp_only):
+        f_col = r"\multirow{4}{*}{Pooled DES ($n=72$, SD)}" if idx == 0 else ""
+        st = pool_f[m]
+        diff_s = rf"${_fmt_num(st['mean_diff'], 4, signed=True)}\ [{_fmt_num(st['ci95_lo'], 4)},\,{_fmt_num(st['ci95_hi'], 4)}]$"
+        wlt_s = f"{st['wins']}/{st['losses']}/{st['ties']}"
+        lines.append(
+            f"{f_col} & {_disp_method(m)} & --- & --- & --- & --- & {diff_s} & {wlt_s} & {_fmt_p(st['p_holm_4frontier'])} \\\\"
+        )
 
-    _emit_panel(
-        dprop_exp,
-        (
-            ("Inventory_CrossHorizon", "Inventory"),
-            ("Queueing_CrossHorizon", "Queueing"),
-            ("OPSD_EuroGrid", "OPSD-336"),
-            ("Traffic_Ingolstadt", "Traffic-21"),
-            ("Pooled_DES_72", "Pooled DES"),
-        ),
-    )
     lines.extend([
         r"\midrule",
-        r"\multicolumn{8}{l}{\textbf{Panel B: Pre-Registered Confirmatory 72-Task Unseen DES Panel (\texttt{confirm\_fresh\_72}, $8 \to 9$ transition)}} \\",
+        r"\multicolumn{9}{l}{\textbf{Panel B: Simulator-Free Generic Summary $\psi^{\mathrm{generic}}$ on Tandem Queueing-Newsvendor Benchmark ($24$ tasks, $240$ runs)}} \\",
         r"\midrule",
     ])
-    _emit_panel(
-        dprop_conf,
-        (
-            ("Inventory_CrossHorizon", "Inventory"),
-            ("Queueing_CrossHorizon", "Queueing"),
-            ("Traffic_Ingolstadt", "Traffic-21"),
-            ("Pooled_DES_72", "Pooled DES"),
-        ),
-    )
-    lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}"])
+    sim_b = rev7_ps["simopt_tandem_generic_psi_benchmark"]
+    sim_arms = ("GP-FTA-ECKG", "GP-FTA-FeasibleKG", "GP-FTA-LatentNEI-3Slot", "SCBO-3Slot", "PublicPsi-TargetGP-TS")
+    min_sim = min(sim_b["arms"][m]["mean_sq_loss"] for m in sim_arms)
+    for idx, m in enumerate(sim_arms):
+        md = sim_b["arms"][m]
+        f_col = r"\multirow{5}{*}{Tandem-CntNv ($d_t\in\{48,64\}$)}" if idx == 0 else ""
+        lv, lse = md["mean_sq_loss"], md["se_sq_loss"]
+        l_str = (
+            f"$\\mathbf{{{_fmt_num(lv, 4)}}} \\pm {_fmt_num(lse, 4)}$"
+            if abs(lv - min_sim) < 1e-12
+            else f"${_fmt_num(lv, 4)} \\pm {_fmt_num(lse, 4)}$"
+        )
+        op_v_str = f"Viol.\\ {100.0 * md['mean_operating_viol_prob']:.1f}\\%"
+        cert_s = f"{md['cert_count']}/{md['n_runs']}"
+        if m == "GP-FTA-ECKG":
+            diff_s, wlt_s, p_s = "---", "---", "---"
+        else:
+            st = sim_b["contrasts_vs_eckg"][m]
+            diff_s = rf"${_fmt_num(st['mean_diff'], 4, signed=True)}\ [{_fmt_num(st['ci95_lo'], 4)},\,{_fmt_num(st['ci95_hi'], 4)}]$"
+            wlt_s = f"{st['wins']}/{st['losses']}/{st['ties']}"
+            p_s = _fmt_p(st["p_holm_4"])
+        lines.append(
+            f"{f_col} & {_disp_method(m)} & {l_str} & {op_v_str} & {md['mean_total_calls']:.1f} & "
+            f"{cert_s} & {diff_s} & {wlt_s} & {p_s} \\\\"
+        )
+
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
     return "\n".join(lines) + "\n"
 
 
-def build_table_prefix_census(prefix: dict[str, Any], ref_val: dict[str, Any], mc_cei: dict[str, Any]) -> str:
+def build_table_contract_and_gates(rev7_cl: dict[str, Any]) -> str:
+    fams = ("Inventory_CrossHorizon", "Queueing_CrossHorizon", "OPSD_EuroGrid", "Traffic_Ingolstadt")
+    c_arms = ("GP-FTA-AllowUnvisited", "GP-FTA-DirectMaxU", "GP-FTA-LongSearch-k0")
     lines = [
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Menu diagnostics, 24-scramble single-nomination reference values, and \texttt{UB-cEI} comparisons. Panel~A profiles 96 diagnostic states (screen cap 24). Panels~B and~C evaluate 24 production-stream states ($256\times 1{,}024$ Sobol nodes across $24$ independent scrambles per state under the frozen working model). Panel~B reports mean single-nomination gains ($\times 10^{-3}$), wins or ties of \textbf{EC-KG} against \texttt{UB-cEI} \citep[Section~5]{ungredda2024bayesian}, ratio of group means (`Mean Ratio'), and unweighted average of state-wise ratios (`State Ratio'; $^{\ast}$5/6 non-saturated states in late traffic, excluding one near-zero state with $\Delta^{\mathrm{term}}_{\max}=3.1\times 10^{-10}$). Across all 24 states, \textbf{EC-KG} beats or ties \texttt{SingleSlotKG} in $22/24$, \texttt{FeasibleKG} in $21/24$, \texttt{UB-cEI} in $22/24$, and \texttt{Gate-cEI} in $23/24$ ($0.06$--$0.07$s fast score vs.\ $12.6$--$18.8$s all-160 reference; $3/24$ states have negative single-nomination gain). Panel~C reports Stage~A screen membership, missed revisit vs.\ new-candidate winners, all-160 Spearman correlation, menu MAE, screen loss, and query loss.}\label{tab:prefix_census}",
+        r"\caption{Terminal eligibility relaxation, parameter-free shortlist nomination, budget reallocation, and exact binomial gate sensitivity with sequential curtailment. Panel~A compares \textbf{GP-FTA-ECKG} against (i) \texttt{GP-FTA-AllowUnvisited} (terminal shortlist permitted to nominate unvisited candidates outside $\mathcal{D}_N$; Unvis.~S0 counts Slot-0 unvisited nominations), (ii) \texttt{GP-FTA-DirectMaxU} (parameter-free combinatorial maximizer of three-slot expected saving with zero role thresholds), and (iii) \texttt{GP-FTA-LongSearch-k0} ($N=100$ search steps paired with curtailed $k^\star=0$ gates $(72,82,90)$). Panel~B evaluates exact binomial gate budgets across $k^\star\in\{0,1,2,3\}$ at $\delta=(0.025,0.015,0.010)$ alongside sample-path-identical sequential curtailment.}\label{tab:contract_gates}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llccccccc}",
+        r"\toprule",
+        r"\multicolumn{9}{l}{\textbf{Panel A: Eligibility Relaxation, Parameter-Free Nomination, and Search-vs.-Verification Reallocation}} \\",
+        r"\textbf{Domain} & \textbf{Counterfactual Arm} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Calls (Verif.)} & \textbf{Cert./runs} & \textbf{Unvis.\ S0} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Holm $p$} \\",
+    ]
+    for fam in fams:
+        lines.append(r"\midrule")
+        fam_disp = "OPSD-336" if fam == "OPSD_EuroGrid" else SHORT_FAM[fam]
+        dt = rev7_cl["domain_tables"][fam]
+        dc = rev7_cl["domain_contrasts"][fam]["contract_vs_eckg"]
+        for idx, m in enumerate(c_arms):
+            md = dt[m]
+            st = dc[m]
+            f_col = rf"\multirow{{3}}{{*}}{{{fam_disp}}}" if idx == 0 else ""
+            unv_s = f"{md['unvisited_slot0_runs']}/{md['n_runs']}" if m == "GP-FTA-AllowUnvisited" else "---"
+            diff_s = rf"${_fmt_num(st['mean_diff'], 4, signed=True)}\ [{_fmt_num(st['ci95_lo'], 4)},\,{_fmt_num(st['ci95_hi'], 4)}]$"
+            lines.append(
+                f"{f_col} & {_disp_method(m)} & ${_fmt_num(md['mean_sq_loss'], 4)}$ & "
+                f"{md['mean_total_calls']:.1f} ({md['mean_verif_calls']:.1f}) & {md['cert_count']}/{md['n_runs']} & "
+                f"{unv_s} & {diff_s} & {st['wins']}/{st['losses']}/{st['ties']} & {_fmt_p(st['p_holm_3contract'])} \\\\"
+            )
+
+    lines.append(r"\midrule")
+    pool_c = rev7_cl["pooled_des_72_contrasts"]["anchor_sd"]["contract_and_core_vs_eckg"]
+    for idx, m in enumerate(c_arms):
+        f_col = r"\multirow{3}{*}{Pooled DES ($72$)}" if idx == 0 else ""
+        st = pool_c[m]
+        diff_s = rf"${_fmt_num(st['mean_diff'], 4, signed=True)}\ [{_fmt_num(st['ci95_lo'], 4)},\,{_fmt_num(st['ci95_hi'], 4)}]$"
+        lines.append(
+            f"{f_col} & {_disp_method(m)} & --- & --- & --- & --- & "
+            f"{diff_s} & {st['wins']}/{st['losses']}/{st['ties']} & {_fmt_p(st['p_holm_3contract'])} \\\\"
+        )
+
+    lines.extend([
+        r"\midrule",
+        r"\multicolumn{9}{l}{\textbf{Panel B: Exact Binomial Gate Stringency ($k^\star\in\{0,1,2,3\}$) and Exact Sequential Curtailment ($172$ runs/level)}} \\",
+        r"\textbf{Domain} & \textbf{Gate $(K_0,K_1,K_2)$} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Fixed Verif.} & \textbf{Cert./runs} & \textbf{Verif.\ $>$5\%} & \textbf{Curtailed Verif.} & \textbf{Call Saving} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} \\",
+    ])
+    gate_labels = (
+        ("Gate-k0", r"$k^\star\!=\!0\ (72,82,90)$"),
+        ("Gate-k1-Default", r"$k^\star\!=\!1\ (112,128,140)$"),
+        ("Gate-k2", r"$k^\star\!=\!2\ (142,155,165)$"),
+        ("Gate-k3", r"$k^\star\!=\!3\ (173,187,198)$"),
+    )
+    for fam in fams:
+        lines.append(r"\midrule")
+        fam_disp = "OPSD-336" if fam == "OPSD_EuroGrid" else SHORT_FAM[fam]
+        gs = rev7_cl["gate_design_and_curtailment"][fam]
+        for idx, (gk, glbl) in enumerate(gate_labels):
+            gr = gs[gk]
+            f_col = rf"\multirow{{4}}{{*}}{{{fam_disp}}}" if idx == 0 else ""
+            pct_sav = 100.0 * gr["curtailment_call_saving"] / max(gr["mean_fixed_verif_calls"], 1e-6)
+            sav_s = f"${gr['curtailment_call_saving']:.1f}$ ({pct_sav:.1f}\\%)"
+            lines.append(
+                f"{f_col} & {glbl} & ${_fmt_num(gr['mean_sq_loss'], 4)}$ & {gr['mean_fixed_verif_calls']:.1f} & "
+                f"{gr['cert_count']}/{gr['n_runs']} & {gr['verif_law_point_exceed_count']}/{gr['cert_count']} & "
+                f"{gr['mean_curtailed_verif_calls']:.1f} & {sav_s} & {100.0*gr['mean_operating_viol_prob']:.2f}\\% \\\\"
+            )
+
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_direct_propagation(dprop_conf: dict[str, Any], rev7_ps: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Pre-registered confirmation on $72$ newly generated unseen DES tasks ($32$ disjoint held-out policies and four single-step $8\to 9$ probes per task). Panel~A tests prior-informed posterior shape accuracy holding $\psi$, $\tilde{\phi}$, $N_0=8$ cold observations, within-policy HVD, zero source means ($\mu_{0,\mathrm{act}}\equiv 0$), and active-subspace trace identical (positive contrasts favor the structured model; four-way Holm $p$-values). Panel~B evaluates decision-aligned posterior calibration, meta-BO comparators, prior-component and $\psi$ ablations, and source-count scaling $M_{\mathrm{src}}\in\{3,6,12\}$ on the same $72$ unseen tasks (Gate-Power RMSE scores predicted vs.\ ground-truth $K_0=112$ binomial pass probability; True Slot-0 Gain scores ground-truth expected clean-up saving of each model's top nominee; exploratory $86$-task and shift-sensitivity tables appear in Electronic Companion Table~\ref*{tab:ec_full_prop}).}\label{tab:direct_prop}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llcccccc}",
+        r"\toprule",
+        r"\multicolumn{8}{l}{\textbf{Panel A: Pure-Kernel Prior-Informed Posterior Shape Accuracy on 72 Unseen DES Tasks (post-probe $n=9$)}} \\",
+        r"\textbf{Domain ($n$)} & \textbf{Head} & \textbf{Full ($8\to 9$)} & \textbf{Iso $-$ Diag} & \textbf{Iso $-$ Full} & \textbf{Diag $-$ Full} & \textbf{Perm.\ $-$ Full} & \textbf{Online Weak $-$ Full} \\",
+        r"\midrule",
+    ]
+    fam_list = (
+        ("Inventory_CrossHorizon", "Inventory"),
+        ("Queueing_CrossHorizon", "Queueing"),
+        ("Traffic_Ingolstadt", "Traffic-21"),
+        ("Pooled_DES_72", "Pooled DES"),
+    )
+    for idx_f, (fk, flbl) in enumerate(fam_list):
+        fb = dprop_conf["families"][fk]["regime_8to9"]
+        nt = dprop_conf["families"][fk]["n_tasks"]
+        for h_i, (hk, hlbl) in enumerate((("obj", "Obj."), ("con", "Con."))):
+            d_col = rf"\multirow{{2}}{{*}}{{{flbl} ({nt})}}" if h_i == 0 else ""
+            m_full = fb["models"]["Kernel-FullSource"]
+            traj_s = f"${m_full[f'before_nrmse_{hk}']:.3f}\\!\\to\\!{m_full[f'after_nrmse_{hk}']:.3f}$"
+            kc = fb["contrasts"][f"kernel_post_accuracy_{hk}"]
+            oc = fb["contrasts"][f"online_post_accuracy_{hk}"]
+            c_isodiag = kc["Kernel_Iso_minus_Diag_AfterErr"]
+            c_iso = kc["Kernel_Iso_minus_Full_AfterErr"]
+            c_diag = kc["Kernel_Diag_minus_Full_AfterErr"]
+            c_perm = kc["Kernel_Permuted_minus_Full_AfterErr"]
+            c_onl = oc["Online_FullSURE_vs_Weak_AfterErr"]
+            cells = [
+                d_col,
+                hlbl,
+                traj_s,
+                f"${_fmt_num(c_isodiag['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_isodiag['holm_two_sided_t_p'])})",
+                f"${_fmt_num(c_iso['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_iso['holm_two_sided_t_p'])})",
+                f"${_fmt_num(c_diag['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_diag['holm_two_sided_t_p'])})",
+                f"${_fmt_num(c_perm['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_perm['holm_two_sided_t_p'])})",
+                f"${_fmt_num(c_onl['mean_diff'], 3, signed=True)}$ ({_fmt_p(c_onl['holm_two_sided_t_p'])})",
+            ]
+            lines.append(" & ".join(cells) + r" \\")
+        if idx_f < len(fam_list) - 1:
+            lines.append(r"\cmidrule(lr){1-8}")
+
+    lines.extend([
+        r"\midrule",
+        r"\multicolumn{8}{l}{\textbf{Panel B: Decision-Aligned Calibration, Meta-BO Baselines, Prior-Component Ablations, and $M_{\mathrm{src}}$ Scaling ($n=72$ unseen tasks)}} \\",
+        r"\textbf{Category} & \textbf{Surrogate / Prior Variant} & \textbf{Gate RMSE ($\downarrow$)} & \textbf{Diff.\ vs.\ FullSURE ($p$)} & \textbf{Feas.\ Brier ($\downarrow$)} & \textbf{Feas.\ AUROC ($\uparrow$)} & \textbf{True Slot-0 Gain ($\uparrow$)} & \textbf{Obj.\ NRMSE ($\downarrow$)} \\",
+        r"\midrule",
+    ])
+    c72 = rev7_ps["confirm_fresh_72_calibration_and_pillars"]
+    pm = c72["pooled_means"]
+    ct_gate = c72["contrasts_vs_online_full_sure"]["gate_power_rmse"]
+    msrc = rev7_ps["msrc_scaling_3_6_12"]
+
+    rows_b = [
+        ("Core \\& Meta-BO", "Online-FullSURE", r"\textbf{Online-FullSURE ($M_{\mathrm{src}}\!=\!6$)}"),
+        ("", "Online-DiagSURE", r"\texttt{Online-DiagSURE}"),
+        ("", "Online-SameBasisWeak", r"\texttt{Online-SameBasisWeak}"),
+        ("", "ColdPsi-GP", r"\texttt{ColdPsi-GP} (target-only)"),
+        ("", "ABLR-on-Psi", r"\texttt{ABLR-on-Psi} (linear meta-BO)"),
+        ("", "MTGP-ICM-on-Psi", r"\texttt{MTGP-ICM-on-Psi}"),
+        ("", "RGPE-on-Psi", r"\texttt{RGPE-on-Psi}"),
+        ("Component \\& $\\psi$ Abl.", "Pillar-NoLowPass", r"\texttt{Pillar-NoLowPass}"),
+        ("", "Pillar-NoDebias", r"\texttt{Pillar-NoDebias}"),
+        ("", "Pillar-NoOrtho", r"\texttt{Pillar-NoOrtho}"),
+        ("", "Pillar-NoSparse", r"\texttt{Pillar-NoSparse}"),
+        ("", "Psi-DropVol7D", r"\texttt{Psi-DropVol7D} ($7$-coord $\psi$)"),
+        ("", "Psi-GenericBlackBox", r"\texttt{Psi-GenericBlackBox}"),
+        ("", "ForecastNoise15-FullSURE", r"\texttt{ForecastNoise-15\%}"),
+    ]
+    for cat_s, mk, mlbl in rows_b:
+        mr = pm[mk]
+        if mk == "Online-FullSURE":
+            d_str = "---"
+        elif mk == "Online-DiagSURE":
+            d_val = mr["gate_power_rmse"] - pm["Online-FullSURE"]["gate_power_rmse"]
+            d_str = f"${_fmt_num(d_val, 4, signed=True)}$"
+        else:
+            st_g = ct_gate[mk]
+            d_str = f"${_fmt_num(st_g['mean_diff'], 4, signed=True)}$ ({_fmt_p(st_g['p_two_sided'])})"
+        lines.append(
+            f"{cat_s} & {mlbl} & ${mr['gate_power_rmse']:.3f}$ & {d_str} & ${mr['feas_brier']:.3f}$ & "
+            f"${mr['feas_auroc']:.3f}$ & ${_fmt_num(mr['sel_true_slot0_gain'], 4, signed=True)}$ & ${mr['obj_nrmse']:.3f}$ \\\\"
+        )
+
+    lines.append(r"\cmidrule(lr){1-8}")
+    for idx_m, (m_tag, m_lbl) in enumerate((("M3", "$M_{\\mathrm{src}}=3$"), ("M12", "$M_{\\mathrm{src}}=12$"))):
+        lv_onl = msrc["levels"][f"{m_tag}_OnlineFull"]
+        df_c = msrc["contrasts"][m_tag]["diag_minus_full_con_nrmse"]
+        df_o = msrc["contrasts"][m_tag]["diag_minus_full_obj_nrmse"]
+        c_col = "$M_{\\mathrm{src}}$ Scaling" if idx_m == 0 else ""
+        lines.append(
+            f"{c_col} & {m_lbl} Online / Kernel Diag$-$Full & ${lv_onl['gate_power_rmse']:.3f}$ & "
+            f"Con: ${_fmt_num(df_c['mean_diff'], 3, signed=True)}$ ({_fmt_p(df_c['p_two_sided'])}) & --- & --- & "
+            f"Obj: ${_fmt_num(df_o['mean_diff'], 3, signed=True)}$ ({_fmt_p(df_o['p_two_sided'])}) & ${lv_onl['obj_nrmse']:.3f}$ \\\\"
+        )
+
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_ec_full_propagation(dprop_exp: dict[str, Any], rev7_ps: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Exploratory $86$-task four-domain prior-informed posterior shape accuracy panel (Panel~A) and shift-scale calibration sensitivity across $\text{shift}\in\{1.0,1.3,1.6\}$ on the $72$ unseen DES tasks (Panel~B).}\label{tab:ec_full_prop}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llcccccc}",
+        r"\toprule",
+        r"\multicolumn{8}{l}{\textbf{Panel A: Exploratory 86-Task Four-Domain Panel (post-probe $n=9$)}} \\",
+        r"\textbf{Domain ($n$)} & \textbf{Head} & \textbf{Full ($8\to 9$)} & \textbf{Iso $-$ Diag} & \textbf{Iso $-$ Full} & \textbf{Diag $-$ Full} & \textbf{Perm.\ $-$ Full} & \textbf{Online Weak $-$ Full} \\",
+        r"\midrule",
+    ]
+    fam_list = (
+        ("Inventory_CrossHorizon", "Inventory"),
+        ("Queueing_CrossHorizon", "Queueing"),
+        ("OPSD_EuroGrid", "OPSD-336"),
+        ("Traffic_Ingolstadt", "Traffic-21"),
+        ("Pooled_DES_72", "Pooled DES"),
+    )
+    for idx_f, (fk, flbl) in enumerate(fam_list):
+        fb = dprop_exp["families"][fk]["regime_8to9"]
+        nt = dprop_exp["families"][fk]["n_tasks"]
+        for h_i, (hk, hlbl) in enumerate((("obj", "Obj."), ("con", "Con."))):
+            d_col = rf"\multirow{{2}}{{*}}{{{flbl} ({nt})}}" if h_i == 0 else ""
+            m_full = fb["models"]["Kernel-FullSource"]
+            traj_s = f"${m_full[f'before_nrmse_{hk}']:.3f}\\!\\to\\!{m_full[f'after_nrmse_{hk}']:.3f}$"
+            kc = fb["contrasts"][f"kernel_post_accuracy_{hk}"]
+            oc = fb["contrasts"][f"online_post_accuracy_{hk}"]
+            cells = [
+                d_col,
+                hlbl,
+                traj_s,
+                f"${_fmt_num(kc['Kernel_Iso_minus_Diag_AfterErr']['mean_diff'], 3, signed=True)}$ ({_fmt_p(kc['Kernel_Iso_minus_Diag_AfterErr']['holm_two_sided_t_p'])})",
+                f"${_fmt_num(kc['Kernel_Iso_minus_Full_AfterErr']['mean_diff'], 3, signed=True)}$ ({_fmt_p(kc['Kernel_Iso_minus_Full_AfterErr']['holm_two_sided_t_p'])})",
+                f"${_fmt_num(kc['Kernel_Diag_minus_Full_AfterErr']['mean_diff'], 3, signed=True)}$ ({_fmt_p(kc['Kernel_Diag_minus_Full_AfterErr']['holm_two_sided_t_p'])})",
+                f"${_fmt_num(kc['Kernel_Permuted_minus_Full_AfterErr']['mean_diff'], 3, signed=True)}$ ({_fmt_p(kc['Kernel_Permuted_minus_Full_AfterErr']['holm_two_sided_t_p'])})",
+                f"${_fmt_num(oc['Online_FullSURE_vs_Weak_AfterErr']['mean_diff'], 3, signed=True)}$ ({_fmt_p(oc['Online_FullSURE_vs_Weak_AfterErr']['holm_two_sided_t_p'])})",
+            ]
+            lines.append(" & ".join(cells) + r" \\")
+        if idx_f < len(fam_list) - 1:
+            lines.append(r"\cmidrule(lr){1-8}")
+
+    lines.extend([
+        r"\midrule",
+        r"\multicolumn{8}{l}{\textbf{Panel B: Target Shift-Scale Sensitivity Across 72 Unseen DES Tasks (\texttt{ColdPsi-GP} $-$ \textbf{Online-FullSURE})}} \\",
+        r"\textbf{Shift Scale} & \textbf{Tasks} & \textbf{FullSURE Gate RMSE} & \textbf{ColdPsi Gate RMSE} & \textbf{Gate Diff.\ [95\% CI]} & \textbf{Gate $p$} & \textbf{FullSURE Con.\ NRMSE} & \textbf{ColdPsi Con.\ NRMSE} \\",
+        r"\midrule",
+    ])
+    sh_map = rev7_ps["shift_scale_sensitivity_10_13_16"]
+    for sk, slbl in (("shift_10", "$1.0\\times$ (mild)"), ("shift_13", "$1.3\\times$ (default)"), ("shift_16", "$1.6\\times$ (severe)")):
+        sr = sh_map[sk]
+        gd = sr["cold_minus_full_gate_rmse"]
+        lines.append(
+            f"{slbl} & $72$ & ${sr['full_sure_gate_rmse']:.3f}$ & ${sr['cold_psi_gate_rmse']:.3f}$ & "
+            f"${_fmt_num(gd['mean_diff'], 4, signed=True)}\\ [{_fmt_num(gd['ci95_lo'], 4)},\\,{_fmt_num(gd['ci95_hi'], 4)}]$ & "
+            f"{_fmt_p(gd['p_two_sided'])} & ${sr['full_sure_con_nrmse']:.3f}$ & ${sr['cold_psi_con_nrmse']:.3f}$ \\\\"
+        )
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_ec_hyperparams(rev7_cl: dict[str, Any], rev7_ps: dict[str, Any]) -> str:
+    f24 = rev7_ps["frozen24_latent_nei_and_sensitivity"]["per_state"]
+    same_low = sum(1 for s in f24 if s["hvd_buffer_sensitivity_queries"]["buf_low_015"] == s["q_eckg"])
+    same_hi = sum(1 for s in f24 if s["hvd_buffer_sensitivity_queries"]["buf_high_055"] == s["q_eckg"])
+    tr_lcomp = rev7_cl["domain_tables"]["Traffic_Ingolstadt"]["GP-FTA-ECKG"]["lcomp_by_penalty_weight"]
+    tr_feas_lcomp = rev7_cl["domain_tables"]["Traffic_Ingolstadt"]["GP-FTA-FeasibleKG"]["lcomp_by_penalty_weight"]
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Summary of fixed algorithmic constants across all experiments, their statistical roles, and dedicated empirical sensitivity checks.}\label{tab:ec_hyperparams}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llp{7.8cm}}",
+        r"\toprule",
+        r"\textbf{Module \& Constant} & \textbf{Default Value} & \textbf{Role and Empirical Sensitivity Finding} \\",
+        r"\midrule",
+        r"Occupancy weight cap $\bar{w}$ & $6.0$ & Caps self-normalized inverse-KDE archive weights; removing debiasing entirely (\texttt{Pillar-NoDebias}) leaves $72$-task gate RMSE within $+0.0002$ ($p=0.925$; Table~\ref*{tab:direct_prop}B) and messy-archive loss unchanged (Table~\ref*{tab:messy_archive}). \\",
+        r"Laplacian roughness quantile $q_{\mathrm{lp}}$ & $0.75$ ($39/52$ kept) & Filters high-roughness dictionary features on the archive graph; omitting low-pass (\texttt{Pillar-NoLowPass}) worsens $72$-task gate RMSE by $+0.0052$ ($44$W/$28$L, raw $p=0.025$). \\",
+        r"Active modes, shrinkage \& clips & $(9, 0.60)$;\ $[-4,4],[-5,5]$ & Retains $p-1=8$ non-intercept spectral modes and shrinks rank-deficient $M_{\mathrm{src}}=6$ covariances; tested across $M_{\mathrm{src}}\in\{3,6,12\}$ (Table~\ref*{tab:direct_prop}B) and unclipped OPSD tails (Table~\ref*{tab:ablations}). \\",
+        r"HVD DOF buffer \& release cutoff & $0.35/\sqrt{\nu_n}$;\ $0.65$ & Protects gate-power integration ($76.1\%$--$87.2\%$ coverage) and disables source DCT proposals above $\hat{\lambda}^{\mathrm{SURE}}\ge 0.65$; buffer $\{0.15,0.35,0.55\}$ selects the identical query on $" + f"{same_low}/24" + r"$ and $" + f"{same_hi}/24" + r"$ states, and \texttt{SURE} vs.\ discrete \texttt{LOO-PLL} gives $+0.080$ SD ($p=0.180$; Table~\ref*{tab:prospective_contrasts}). \\",
+        r"Initial design \& batch $(N_0, r)$ & $(8, 2)$ & Provides $N_0(r-1)=8$ shift-invariant within-policy variance degrees of freedom ($N=100$ vs.\ $N=60$ search trade-off tested in Table~\ref*{tab:contract_gates}A). \\",
+        r"Stage A screen \& QMC $(|\mathcal{K}_n|, 2S_{\mathrm{out}}, S_{\mathrm{in}})$ & $16;\ (16, 128)$ & Retains $\le 16$ contenders with $8$ antithetic 4D Sobol pairs ($16$ fantasies) and $128$ 3D Sobol cascade nodes ($0.5$--$0.9\text{s}$/step); $24\times 256\times 1{,}024$ Sobol census quantifies screen vs.\ QMC error in Table~\ref*{tab:ec_screen_census}. \\",
+        r"Three-slot shortlist roles & Bellman + 2 guards & Replaced by parameter-free combinatorial \texttt{GP-FTA-DirectMaxU}: pooled DES difference $+0.031$ SD ($p=0.424$; Table~\ref*{tab:contract_gates}A). \\",
+        r"Clean-up gates $(K_0,K_1,K_2)$, $\delta$ & $(112,128,140)$, $0.05$ & Tested across $k^\star\in\{0,1,2,3\}$ ($(72,82,90)$ to $(173,187,198)$) and sequential curtailment ($0$ verification-law exceedances across all levels; Table~\ref*{tab:contract_gates}B). \\",
+        r"Compliance weight $\lambda_{\mathrm{pen}}$ & $2.0$ (diagnostic) & Secondary diagnostic only (never used by the algorithm); in traffic, \textbf{GP-FTA-ECKG} beats \texttt{FeasibleKG} across all $\lambda_{\mathrm{pen}}\in\{1,2,5,10\}$ ($" + f"{tr_lcomp['1']:.3f}" + r"$ vs.\ $" + f"{tr_feas_lcomp['1']:.3f}" + r"$ at $1$; $" + f"{tr_lcomp['10']:.3f}" + r"$ vs.\ $" + f"{tr_feas_lcomp['10']:.3f}" + r"$ at $10$). \\",
+        r"\bottomrule",
+        r"\end{tabular}%",
+        r"}",
+        r"\end{table}",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def _wtl_str(states: list[dict[str, Any]], fam: str, stg: str, comp_val_key: str, comp_q_key: str) -> str:
+    w = t = l = 0
+    for s in states:
+        if s["family"] != fam or s["stage"] != stg:
+            continue
+        ec_v = float(s["ec_term_x1e3"]["mean"])
+        c_v = float(s[comp_val_key])
+        if int(s["queries"]["eckg16"]) == int(s["queries"][comp_q_key]) or abs(ec_v - c_v) <= 1e-9:
+            t += 1
+        elif ec_v > c_v:
+            w += 1
+        else:
+            l += 1
+    return f"{w}/{t}/{l}"
+
+
+def build_table_prefix_census(prefix: dict[str, Any], mc_cei: dict[str, Any], rev7_ps: dict[str, Any]) -> str:
+    lnei_blk = rev7_ps["frozen24_latent_nei_and_sensitivity"]
+    ow = lnei_blk["overall_wtl_eckg_vs_latent_nei"]
+    wtl_lnei_tot = f"{ow['wins']}/{ow['ties']}/{ow['losses']}"
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Shortlist-menu mechanism census and $24$-scramble single-nomination reference comparisons. Panel~A profiles $96$ diagnostic states (screen cap $24$). Panel~B evaluates $24$ production-stream states across $R=24$ independent $256\times 1{,}024$ Sobol scrambles per state under the frozen working model (\texttt{Ref-160 Win.} re-evaluates the reference winner identified over all $160$ candidates on the single-scramble pass; \texttt{PlugIn-cEI} is sampled-incumbent posterior-mean plug-in constrained EI; \texttt{LatentNEI} is joint-draw latent noisy expected improvement with $M_{\mathrm{NEI}}=64$ posterior samples). Point-estimate win/tie/loss (\texttt{W/T/L}) counts across all $24$ states are $18/4/2$ vs.\ \texttt{SingleSlotKG}, $16/5/3$ vs.\ \texttt{FeasibleKG}, $13/9/2$ vs.\ \texttt{PlugIn-cEI}, $" + wtl_lnei_tot + r"$ vs.\ \texttt{LatentNEI} ($0/24$ revisits), and $14/9/1$ vs.\ \texttt{Gate-cEI} ($0.06$--$0.07$s fast score vs.\ $58.9$--$67.1$s exhaustive $1$-scramble all-$160$ pass; $3/24$ states have negative single-nomination gain; $^{\ast}5/6$ non-saturated states in late traffic). Stage~A screening and full-bank grid diagnostics appear in Electronic Companion Table~\ref*{tab:ec_screen_census}.}\label{tab:prefix_census}",
         r"\scriptsize",
         r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{llcccccccc}",
@@ -538,16 +859,15 @@ def build_table_prefix_census(prefix: dict[str, Any], ref_val: dict[str, Any], m
 
     lines.extend([
         r"\midrule",
-        r"\multicolumn{10}{l}{\textbf{B. 24-Scramble Single-Nomination Reference Gains ($\times 10^{-3}$), \texttt{UB-cEI} Comparison, and Ratio Metrics}} \\",
-        r"\textbf{Stage} & \textbf{Family} & \textbf{All-160} & \textbf{EC-KG} & \textbf{Slot-0} & \textbf{Feas.} & \textbf{UB-cEI} & \textbf{EC $\ge$ cEI} & \textbf{Mean Ratio} & \textbf{State Ratio} \\",
+        r"\multicolumn{10}{l}{\textbf{Panel B: 24-Scramble Single-Nomination Gains ($\times 10^{-3}$), \texttt{PlugIn-cEI} \& \texttt{LatentNEI} Comparisons, and Ratio Metrics}} \\",
+        r"\textbf{Stage} & \textbf{Family} & \textbf{Ref-160} & \textbf{EC-KG} & \textbf{Slot-0} & \textbf{Feas.} & \textbf{PlugIn-cEI} & \textbf{LatentNEI (W/T/L)} & \textbf{Mean Ratio} & \textbf{State Ratio} \\",
         r"\midrule",
     ])
-    reference_rows = []
     for stage, label in (("step_0", "Initial"), ("step_59", "Step 59")):
         for family in ("Queueing_CrossHorizon", "Traffic_Ingolstadt"):
-            row = ref_val["families"][family][stage]
             mrow = mc_cei["families"][family][stage]
-            n = row["n_states"]
+            lrow = lnei_blk["by_group"][f"{family}__{stage}"]
+            n = mrow["n_states"]
             cells = [label, SHORT_FAM[family]]
             gains = [
                 f"{mrow['opt_term_mean_x1e3']:.3f}",
@@ -555,29 +875,48 @@ def build_table_prefix_census(prefix: dict[str, Any], ref_val: dict[str, Any], m
                 f"{mrow['single_term_mean_x1e3']:.3f}",
                 f"{mrow['feas_term_mean_x1e3']:.3f}",
                 f"{mrow['ub_cei_term_mean_x1e3']:.3f}",
+                f"{lrow['latent_nei_mean_x1e3']:.3f} ({lrow['wtl_vs_latent_nei']})",
             ]
-            win_cei = f"{mrow['ec_beats_or_ties_ub_cei_count']}/{n}"
             r_mean = f"{100.0 * mrow['ratio_of_means_24scr']:.1f}\\%"
             star = "$^{\\ast}$" if mrow["nonsaturated_states_count"] < n else ""
             r_state = f"{100.0 * mrow['mean_of_state_ratios_24scr']:.1f}\\%{star}"
-            lines.append(" & ".join(cells + gains + [win_cei, r_mean, r_state]) + r" \\")
+            lines.append(" & ".join(cells + gains + [r_mean, r_state]) + r" \\")
+    lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    return "\n".join(lines) + "\n"
+
+
+def build_table_ec_screen_census(ref_val: dict[str, Any], mc_cei: dict[str, Any]) -> str:
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Logged Stage~A screening membership, missed-winner anatomy, and finite-grid discrepancies across the 24 production states ($6$ per family and stage). All-160 menu Spearman correlation, menu MAE, and 1-scramble screen/query losses are computed on the exhaustive single-scramble $256\times 1{,}024$ pass; 24-scramble screen and query losses re-evaluate the selected full-bank and Stage~A winners across $R=24$ independent $256\times 1{,}024$ Sobol scrambles (all losses $\times 10^{-3}$).}\label{tab:ec_screen_census}",
+        r"\scriptsize",
+        r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llccccccccc}",
+        r"\toprule",
+        r"\textbf{Stage} & \textbf{Family} & \textbf{Screen} & \textbf{Menu Hits} & \textbf{Nom.\ Hits} & \textbf{Miss (Rev/New)} & \textbf{Spearman (Def.)} & \textbf{MAE (1-Scr)} & \textbf{Screen Loss (1 / 24-Scr)} & \textbf{Query Loss (1 / 24-Scr)} & \textbf{Ref.\ Time (s)} \\",
+        r"\midrule",
+    ]
+    for stage, label in (("step_0", "Initial"), ("step_59", "Step 59")):
+        for family in ("Queueing_CrossHorizon", "Traffic_Ingolstadt"):
+            row = ref_val["families"][family][stage]
+            mrow = mc_cei["families"][family][stage]
+            sts = [s for s in mc_cei["states"] if s["family"] == family and s["stage"] == stage]
+            n = row["n_states"]
             hits = [f"{round(n * row[f'stage_a_top16_contains_{m}_opt_rate'])}/{n}" for m in ("menu", "term")]
             miss_split = f"{mrow['stage_a_missed_revisit_count']}/{mrow['stage_a_missed_new_count']}"
             nrho = row["quadrature_spearman_defined_states"]
             rho = f"{row['quadrature_spearman_mean']:.3f} ({nrho}/{n})" if nrho else "---"
-            losses = [f"{row[k]:.3f}" for k in (
-                "mean_abs_fast_minus_reference_menu_x1e3", "reference_nomination_screen_loss_mean_x1e3",
-                "reference_nomination_query_loss_mean_x1e3",
-            )]
-            reference_rows.append(
-                " & ".join(cells + [f"{row['mean_screened_candidates']:.1f}"] + hits + [miss_split, rho] + losses) + r" \\"
-            )
-    lines.extend([
-        r"\midrule",
-        r"\multicolumn{10}{l}{\textbf{C. Logged Stage A Membership, Missed-Winner Anatomy, and All-Candidate Finite-Grid Error}} \\",
-        r"\textbf{Stage} & \textbf{Family} & \textbf{Screen} & \textbf{Menu Hits} & \textbf{Nom.\ Hits} & \textbf{Miss (Rev/New)} & \textbf{Spearman (Def.)} & \textbf{MAE ($\times 10^{-3}$)} & \textbf{Screen Loss} & \textbf{Query Loss} \\",
-        r"\midrule", *reference_rows,
-    ])
+            mae_1 = f"{row['mean_abs_fast_minus_reference_menu_x1e3']:.3f}"
+            sl_1 = row["reference_nomination_screen_loss_mean_x1e3"]
+            ql_1 = row["reference_nomination_query_loss_mean_x1e3"]
+            sl_24 = float(np.mean([s["screen_loss_opt_minus_screen_x1e3"]["mean"] for s in sts]))
+            ql_24 = float(np.mean([s["query_loss_opt_minus_ec_x1e3"]["mean"] for s in sts]))
+            sl_s = f"{sl_1:.3f} / {sl_24:.3f}"
+            ql_s = f"{ql_1:.3f} / {ql_24:.3f}"
+            r_sec = f"{row['ref_all160_mean_wall_sec']:.1f}"
+            cells = [label, SHORT_FAM[family], f"{row['mean_screened_candidates']:.1f}", *hits, miss_split, rho, mae_1, sl_s, ql_s, r_sec]
+            lines.append(" & ".join(cells) + r" \\")
     lines.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
     return "\n".join(lines) + "\n"
 
@@ -1211,6 +1550,8 @@ def build_figures(
     prosp: dict[str, Any],
     mp_opsd: dict[str, Any],
     mc_cei: dict[str, Any],
+    rev7_cl: dict[str, Any],
+    rev7_ps: dict[str, Any],
     rows_u3: list[dict[str, str]],
     rows_messy: list[dict[str, str]],
     p1_diag: dict[str, Any],
@@ -1221,67 +1562,48 @@ def build_figures(
         "font.size": 8.6,
         "axes.titlesize": 9.2,
         "axes.labelsize": 8.6,
-        "legend.fontsize": 7.5,
+        "legend.fontsize": 7.2,
         "xtick.labelsize": 8.0,
         "ytick.labelsize": 8.0,
         "pdf.fonttype": 42,
     })
 
     # --------------------------------------------------------------------------
-    # Figure 1 (Main Body): Prospective 4-Domain Controlled Contrasts + 24-Scramble Single-Nomination Reference Gain
+    # Figure 1 (Main Body): Pooled DES (n=72) Internal & Frontier Contrasts + 24-Scramble Reference Gain
     # --------------------------------------------------------------------------
-    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(9.6, 3.9), gridspec_kw={"width_ratios": [1.15, 1.05]})
+    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(9.8, 3.9), gridspec_kw={"width_ratios": [1.18, 1.04]})
 
-    groups = [
-        ("Inventory\n($n=24$)", "Inventory_CrossHorizon"),
-        ("Queueing\n($n=24$)", "Queueing_CrossHorizon"),
-        ("OPSD-336\n($n=14$)", "OPSD_EuroGrid"),
-        ("Traffic-21\n($n=24$)", "Traffic_Ingolstadt"),
-        ("Pooled DES\n($n=72$)", "POOLED"),
+    pool_f = rev7_cl["pooled_des_72_contrasts"]["anchor_sd"]["frontier_vs_eckg"]
+    pool_c = rev7_cl["pooled_des_72_contrasts"]["anchor_sd"]["contract_and_core_vs_eckg"]
+    forest_rows = [
+        ("SCBO-3Slot (Frontier)", pool_f["SCBO-3Slot"], "#D55E00", "s"),
+        ("RGPE-on-Psi-3Slot (Frontier)", pool_f["RGPE-on-Psi-3Slot"], "#CC79A7", "P"),
+        ("WarmStart-MTGP-KG-3Slot (Frontier)", pool_f["WarmStart-MTGP-KG-3Slot"], "#E69F00", "^"),
+        ("GP-FTA-LatentNEI-3Slot (Frontier)", pool_f["GP-FTA-LatentNEI-3Slot"], "#009E73", "D"),
+        ("GP-FTA-FeasibleKG (Internal)", pool_c["GP-FTA-FeasibleKG"], "#0072B2", "o"),
+        ("GP-FTA-SingleSlotKG (Internal)", pool_c["GP-FTA-SingleSlotKG"], "#56B4E9", "v"),
+        ("GP-FTA-AllowUnvisited (Contract)", pool_c["GP-FTA-AllowUnvisited"], "#332288", "X"),
+        ("GP-FTA-DirectMaxU (Nominator)", pool_c["GP-FTA-DirectMaxU"], "#666666", "p"),
     ]
-    comp_specs = [
-        ("GP-FTA-SingleSlotKG", "GP-FTA-SingleSlotKG", "#0072B2", "o", -0.22),
-        ("GP-FTA-FeasibleKG", "GP-FTA-FeasibleKG", "#D55E00", "s", -0.07),
-        ("GP-FTA-LOO-ECKG", "GP-FTA-LOO-ECKG", "#CC79A7", "^", +0.08),
-        ("PublicPsi-TargetGP-TS", "PublicPsi-TargetGP-TS", "#009E73", "D", +0.23),
-    ]
-
-    y_base = np.arange(len(groups))
+    y_pos = np.arange(len(forest_rows))
     ax_l.axvline(0.0, color="#333333", linestyle="--", linewidth=1.0, zorder=1)
-    for m_key, m_lbl, col, mk, y_off in comp_specs:
-        means, lo_err, hi_err = [], [], []
-        for _, g_key in groups:
-            if g_key == "POOLED":
-                st = prosp["pooled_72_task_standardized_vs_ref"][m_key]
-                scale = 1.0
-            elif g_key == "OPSD_EuroGrid":
-                fd = mp_opsd["families"][g_key]
-                st = fd["opsd_336_primary_contrasts"][m_key]
-                scale = max(fd["methods"]["GP-FTA-ECKG"]["status_quo_loss_task_se"] * math.sqrt(14.0), 1e-6)
-            else:
-                fd = prosp["families"][g_key]
-                st = fd["paired_vs_ref"][m_key]["status_quo_loss"]
-                scale = max(fd["methods"]["GP-FTA-ECKG"]["status_quo_loss_task_se"] * math.sqrt(24.0), 1e-6)
-            m_v = st["mean_diff"] / scale
-            c_lo, c_hi = st["ci95"][0] / scale, st["ci95"][1] / scale
-            means.append(m_v)
-            lo_err.append(m_v - c_lo)
-            hi_err.append(c_hi - m_v)
+    for yi, (lbl, st, col, mk) in enumerate(forest_rows):
+        mv = float(st["mean_diff"])
+        lo_e = mv - float(st["ci95_lo"])
+        hi_e = float(st["ci95_hi"]) - mv
         ax_l.errorbar(
-            means, y_base + y_off, xerr=[lo_err, hi_err],
-            fmt=mk, color=col, markersize=4.8, linewidth=1.3, capsize=2.2, label=m_lbl, zorder=3,
+            [mv], [yi], xerr=[[lo_e], [hi_e]],
+            fmt=mk, color=col, markersize=5.2, linewidth=1.35, capsize=2.5, zorder=3,
         )
-
-    ax_l.set_yticks(y_base)
-    ax_l.set_yticklabels([g[0] for g in groups])
+    ax_l.set_yticks(y_pos)
+    ax_l.set_yticklabels([r[0] for r in forest_rows], fontsize=7.6)
     ax_l.invert_yaxis()
-    ax_l.set_xlim(-0.62, 0.88)
-    ax_l.set_xlabel("Standardized Paired Loss Reduction vs. GP-FTA-ECKG (95% CI, $>0$ favors ECKG)")
-    ax_l.set_title("(a) Prospective 4-Domain Controlled Contrasts", fontweight="bold")
-    ax_l.legend(loc="lower right", fontsize=6.7, framealpha=0.95)
+    ax_l.set_xlim(-0.22, 1.58)
+    ax_l.set_xlabel("Standardized Loss Reduction vs. GP-FTA-ECKG (95% CI)", fontsize=8.1)
+    ax_l.set_title("(a) Pooled DES ($n=72$) Closed-Loop Contrasts", fontweight="bold")
     ax_l.grid(True, axis="x", linestyle=":", alpha=0.55)
 
-    # Panel (b): Ratio of Mean 24-Scramble 256x1024 Single-Nomination Gain to All-160 Optimum (incl. UB-cEI)
+    # Panel (b): Ratio of Mean 24-Scramble 256x1024 Single-Nomination Gain to All-160 Optimum (incl. PlugIn-cEI & LatentNEI)
     bars_x = np.arange(4)
     bar_labels = ["Queueing\nStep 0", "Queueing\nStep 59", "Traffic-21\nStep 0", "Traffic-21\nStep 59"]
     keys_b = [
@@ -1290,28 +1612,32 @@ def build_figures(
         ("Traffic_Ingolstadt", "step_0"),
         ("Traffic_Ingolstadt", "step_59"),
     ]
-    pct_eckg, pct_single, pct_feas, pct_ubcei = [], [], [], []
+    lnei_grp = rev7_ps["frozen24_latent_nei_and_sensitivity"]["by_group"]
+    pct_eckg, pct_single, pct_feas, pct_ubcei, pct_lnei = [], [], [], [], []
     for fk, sk in keys_b:
         mv = mc_cei["families"][fk][sk]
+        lv = lnei_grp[f"{fk}__{sk}"]
         denom = max(mv["opt_term_mean_x1e3"], 1e-9)
         pct_eckg.append(100.0 * mv["ec_term_mean_x1e3"] / denom)
         pct_single.append(100.0 * mv["single_term_mean_x1e3"] / denom)
         pct_feas.append(100.0 * mv["feas_term_mean_x1e3"] / denom)
         pct_ubcei.append(100.0 * mv["ub_cei_term_mean_x1e3"] / denom)
+        pct_lnei.append(100.0 * lv["latent_nei_mean_x1e3"] / denom)
 
-    bw = 0.19
-    ax_r.axhline(100.0, color="#333333", linestyle="--", linewidth=0.95, label="All-160 Reference Optimum (100%)")
-    ax_r.bar(bars_x - 1.5 * bw, pct_eckg, width=bw, color="#0072B2", label="GP-FTA-ECKG (screen cap 16)")
-    ax_r.bar(bars_x - 0.5 * bw, pct_single, width=bw, color="#56B4E9", label="GP-FTA-SingleSlotKG")
-    ax_r.bar(bars_x + 0.5 * bw, pct_feas, width=bw, color="#D55E00", label="GP-FTA-FeasibleKG")
-    ax_r.bar(bars_x + 1.5 * bw, pct_ubcei, width=bw, color="#009E73", label="UB-cEI (Ungredda & Branke 2024)")
+    bw = 0.155
+    ax_r.axhline(100.0, color="#333333", linestyle="--", linewidth=0.95, label="Re-evaluated Ref-160 Winner (100%)")
+    ax_r.bar(bars_x - 2.0 * bw, pct_eckg, width=bw, color="#0072B2", label="GP-FTA-ECKG (screen cap 16)")
+    ax_r.bar(bars_x - 1.0 * bw, pct_single, width=bw, color="#56B4E9", label="GP-FTA-SingleSlotKG")
+    ax_r.bar(bars_x + 0.0 * bw, pct_feas, width=bw, color="#D55E00", label="GP-FTA-FeasibleKG")
+    ax_r.bar(bars_x + 1.0 * bw, pct_ubcei, width=bw, color="#009E73", label="PlugIn-cEI (sampled incumbent)")
+    ax_r.bar(bars_x + 2.0 * bw, pct_lnei, width=bw, color="#CC79A7", label="LatentNEI (64 joint draws)")
     ax_r.set_xticks(bars_x)
     ax_r.set_xticklabels(bar_labels)
-    ax_r.set_ylim(0.0, 152.0)
+    ax_r.set_ylim(0.0, 155.0)
     ax_r.set_yticks([0, 20, 40, 60, 80, 100])
-    ax_r.set_ylabel("Ratio of mean gain to all-160 optimum (%)")
+    ax_r.set_ylabel("Ratio of mean gain to Ref-160 winner (%)")
     ax_r.set_title("(b) 24-Scramble Single-Nomination Gain ($256\\times 1024$)", fontweight="bold")
-    ax_r.legend(loc="upper center", fontsize=6.2, frameon=True, framealpha=0.95)
+    ax_r.legend(loc="upper center", fontsize=5.9, frameon=True, framealpha=0.95)
     ax_r.grid(True, axis="y", linestyle=":", alpha=0.55)
 
     fig.tight_layout()
@@ -1447,22 +1773,42 @@ def main() -> None:
         rows_sumo_p0 = list(csv.DictReader(fh))
     p1_diag = json.loads((ART_DIR / "v2_or_p1_diagnostics_v1/p1_diagnostics_summary.json").read_text(encoding="utf-8"))
 
+    rev7_cl_readout = json.loads((ART_DIR / "v2_or_rev7_or_panel_v1/rev7_closedloop_readout.json").read_text(encoding="utf-8"))
+    rev7_ps_readout = json.loads((ART_DIR / "v2_or_rev7_or_panel_v1/rev7_prior_and_simopt_readout.json").read_text(encoding="utf-8"))
+
     wall_map = _mean_online_wall_by_method(rows_prosp, rows_mp_opsd)
 
-    # Main-body tables (7 tables)
+    # Main-body tables (8 generated tables + 1 inline Table 1 = 9 main-body tables)
     (tab_dir / "table_prospective_main.tex").write_text(
         build_table_prospective_main(prosp_readout, mp_opsd_readout, wall_map), encoding="utf-8"
     )
     (tab_dir / "table_prospective_contrasts.tex").write_text(
         build_table_prospective_contrasts(prosp_readout, mp_opsd_readout), encoding="utf-8"
     )
+    (tab_dir / "table_frontier_and_oracle.tex").write_text(
+        build_table_frontier_and_oracle(rev7_cl_readout, rev7_ps_readout), encoding="utf-8"
+    )
     (tab_dir / "table_surge_compliance.tex").write_text(build_table_surge_compliance(prosp_readout, mp_opsd_readout), encoding="utf-8")
+    (tab_dir / "table_contract_and_gates.tex").write_text(
+        build_table_contract_and_gates(rev7_cl_readout), encoding="utf-8"
+    )
     (tab_dir / "table_metaprior_decomposition.tex").write_text(build_table_metaprior_decomposition(mp_opsd_readout, mp_prop_readout), encoding="utf-8")
     (tab_dir / "table_direct_propagation.tex").write_text(
-        build_table_direct_propagation(dprop_exp_readout, dprop_conf_readout), encoding="utf-8"
+        build_table_direct_propagation(dprop_conf_readout, rev7_ps_readout), encoding="utf-8"
     )
     (tab_dir / "table_prefix_census.tex").write_text(
-        build_table_prefix_census(prefix_readout, ref_val_readout, mc_cei_readout), encoding="utf-8"
+        build_table_prefix_census(prefix_readout, mc_cei_readout, rev7_ps_readout), encoding="utf-8"
+    )
+
+    # Electronic Companion tables (16 tables)
+    (tab_dir / "table_ec_hyperparams.tex").write_text(
+        build_table_ec_hyperparams(rev7_cl_readout, rev7_ps_readout), encoding="utf-8"
+    )
+    (tab_dir / "table_ec_full_propagation.tex").write_text(
+        build_table_ec_full_propagation(dprop_exp_readout, rev7_ps_readout), encoding="utf-8"
+    )
+    (tab_dir / "table_ec_screen_census.tex").write_text(
+        build_table_ec_screen_census(ref_val_readout, mc_cei_readout), encoding="utf-8"
     )
     (tab_dir / "table_broad_summary.tex").write_text(
         build_table_broad_summary(rows_u3, rows_messy, rows_sumo_u3), encoding="utf-8"
@@ -1476,7 +1822,6 @@ def main() -> None:
     (tab_dir / "table_matched_variances.tex").write_text(build_referee_variances(referee_readout), encoding="utf-8")
     (tab_dir / "table_terminal_replay.tex").write_text(build_terminal_replay_table(replay_readout), encoding="utf-8")
 
-    # Electronic Companion tables (12 tables total)
     (tab_dir / "table_main.tex").write_text(build_table_main(rows_u3), encoding="utf-8")
     (tab_dir / "table_ablations.tex").write_text(build_table_ablations(rows_u3), encoding="utf-8")
     (tab_dir / "table_messy_archive.tex").write_text(build_table_messy_archive(rows_messy), encoding="utf-8")
@@ -1491,8 +1836,11 @@ def main() -> None:
     (tab_dir / "table_independent_panel.tex").write_text(build_table_independent_panel(independent_readout), encoding="utf-8")
     (tab_dir / "table_operating_policy.tex").write_text(build_table_operating_policy(operating_readout), encoding="utf-8")
 
-    build_figures(args.output_dir / "figures", prosp_readout, mp_opsd_readout, mc_cei_readout, rows_u3, rows_messy, p1_diag)
-    print(f"Regenerated 19 sealed-ledger tables and 3 vector figures in {args.output_dir}.")
+    build_figures(
+        args.output_dir / "figures", prosp_readout, mp_opsd_readout, mc_cei_readout,
+        rev7_cl_readout, rev7_ps_readout, rows_u3, rows_messy, p1_diag,
+    )
+    print(f"Regenerated 24 sealed-ledger tables and 3 vector figures in {args.output_dir}.")
 
 
 if __name__ == "__main__":

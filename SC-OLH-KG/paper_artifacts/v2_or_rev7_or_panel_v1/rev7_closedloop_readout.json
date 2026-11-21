@@ -1,0 +1,1947 @@
+{
+  "protocol_id": "PREREGISTRATION_REV7_OR_PANEL_20261121",
+  "execution_code_sha256": "fe8df9098424907147128161afda75d752cc0a8ab47e4357251f05da6206462b",
+  "n_new_closedloop_runs": 1204,
+  "n_gate_sensitivity_replays": 172,
+  "n_oracle_tasks": 86,
+  "oracle_summary": {
+    "Inventory_CrossHorizon": {
+      "n_tasks": 24,
+      "anchor_mean_obj": 1.89808135139,
+      "oracle_feas05_mean_obj": 1.79000121878,
+      "oracle_cert02_mean_obj": 1.79716070713,
+      "mean_achievable_feas05_gap": 0.108080132611,
+      "mean_achievable_cert02_gap": 0.100920644254,
+      "feas05_found_count": 24
+    },
+    "Queueing_CrossHorizon": {
+      "n_tasks": 24,
+      "anchor_mean_obj": 3.32246240627,
+      "oracle_feas05_mean_obj": 2.61857755221,
+      "oracle_cert02_mean_obj": 2.61989339837,
+      "mean_achievable_feas05_gap": 0.703884854062,
+      "mean_achievable_cert02_gap": 0.702569007908,
+      "feas05_found_count": 24
+    },
+    "OPSD_EuroGrid": {
+      "n_tasks": 14,
+      "anchor_mean_obj": 0.0637539075955,
+      "oracle_feas05_mean_obj": 0.0524453259207,
+      "oracle_cert02_mean_obj": 0.052784738666,
+      "mean_achievable_feas05_gap": 0.0113085816747,
+      "mean_achievable_cert02_gap": 0.0109691689294,
+      "feas05_found_count": 14
+    },
+    "Traffic_Ingolstadt": {
+      "n_tasks": 24,
+      "anchor_mean_obj": 1.19715098176,
+      "oracle_feas05_mean_obj": 1.00559397881,
+      "oracle_cert02_mean_obj": 1.00567325377,
+      "mean_achievable_feas05_gap": 0.191557002943,
+      "mean_achievable_cert02_gap": 0.19147772799,
+      "feas05_found_count": 24
+    }
+  },
+  "domain_tables": {
+    "Inventory_CrossHorizon": {
+      "GP-FTA-ECKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.80647437267,
+        "se_sq_loss": 0.035036866917,
+        "mean_oracle_gap": 0.0164731538936,
+        "feasible_gap_closed_pct": 84.7583885257,
+        "cert_count": 47,
+        "cert_rate": 0.979166666667,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.0056875,
+        "mean_total_calls": 390.833333333,
+        "mean_verif_calls": 254.833333333,
+        "mean_wall_sec": 34.0296363644,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.80647437267,
+          "2": 1.80647437267,
+          "5": 1.80647437267,
+          "10": 1.80647437267
+        }
+      },
+      "SCBO-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.90352503263,
+        "se_sq_loss": 0.0357232238797,
+        "mean_oracle_gap": 0.113523813857,
+        "feasible_gap_closed_pct": -5.03670851784,
+        "cert_count": 45,
+        "cert_rate": 0.9375,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000916666666667,
+        "mean_total_calls": 335.083333333,
+        "mean_verif_calls": 199.083333333,
+        "mean_wall_sec": 22.7818570838,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.90352503263,
+          "2": 1.90352503263,
+          "5": 1.90352503263,
+          "10": 1.90352503263
+        }
+      },
+      "GP-FTA-LatentNEI-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.81659278229,
+        "se_sq_loss": 0.0353606364349,
+        "mean_oracle_gap": 0.0265915635105,
+        "feasible_gap_closed_pct": 75.3964370065,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.0046875,
+        "mean_total_calls": 386.75,
+        "mean_verif_calls": 250.75,
+        "mean_wall_sec": 10.1758949231,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.81659278229,
+          "2": 1.81659278229,
+          "5": 1.81659278229,
+          "10": 1.81659278229
+        }
+      },
+      "RGPE-on-Psi-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.81583073878,
+        "se_sq_loss": 0.0355596019512,
+        "mean_oracle_gap": 0.0258295200033,
+        "feasible_gap_closed_pct": 76.1015097047,
+        "cert_count": 36,
+        "cert_rate": 0.75,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00585416666667,
+        "mean_total_calls": 430.0,
+        "mean_verif_calls": 294.0,
+        "mean_wall_sec": 14.0443287504,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.81583073878,
+          "2": 1.81583073878,
+          "5": 1.81583073878,
+          "10": 1.81583073878
+        }
+      },
+      "WarmStart-MTGP-KG-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.84076973385,
+        "se_sq_loss": 0.0359883348705,
+        "mean_oracle_gap": 0.0507685150696,
+        "feasible_gap_closed_pct": 53.026968192,
+        "cert_count": 39,
+        "cert_rate": 0.8125,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00553125,
+        "mean_total_calls": 401.583333333,
+        "mean_verif_calls": 265.583333333,
+        "mean_wall_sec": 13.9222983011,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.84076973385,
+          "2": 1.84076973385,
+          "5": 1.84076973385,
+          "10": 1.84076973385
+        }
+      },
+      "GP-FTA-AllowUnvisited": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.8226067664,
+        "se_sq_loss": 0.0392711666626,
+        "mean_oracle_gap": 0.0326055476223,
+        "feasible_gap_closed_pct": 69.8320617911,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00432291666667,
+        "mean_total_calls": 399.583333333,
+        "mean_verif_calls": 263.583333333,
+        "mean_wall_sec": 11.0324762094,
+        "unvisited_slot0_runs": 22,
+        "lcomp_by_penalty_weight": {
+          "1": 1.8226067664,
+          "2": 1.8226067664,
+          "5": 1.8226067664,
+          "10": 1.8226067664
+        }
+      },
+      "GP-FTA-DirectMaxU": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.80139319582,
+        "se_sq_loss": 0.0351172750593,
+        "mean_oracle_gap": 0.0113919770448,
+        "feasible_gap_closed_pct": 89.4596936832,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.0063125,
+        "mean_total_calls": 416.833333333,
+        "mean_verif_calls": 280.833333333,
+        "mean_wall_sec": 47.9225491657,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.80139319582,
+          "2": 1.80139319582,
+          "5": 1.80139319582,
+          "10": 1.80139319582
+        }
+      },
+      "GP-FTA-LongSearch-k0": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.80926685126,
+        "se_sq_loss": 0.033431723417,
+        "mean_oracle_gap": 0.0192656324859,
+        "feasible_gap_closed_pct": 82.1746772322,
+        "cert_count": 47,
+        "cert_rate": 0.979166666667,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00427083333333,
+        "mean_total_calls": 348.479166667,
+        "mean_verif_calls": 132.479166667,
+        "mean_wall_sec": 56.0683761996,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.80926685126,
+          "2": 1.80926685126,
+          "5": 1.80926685126,
+          "10": 1.80926685126
+        }
+      },
+      "GP-FTA-SingleSlotKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.82383244352,
+        "se_sq_loss": 0.0387621864826,
+        "mean_oracle_gap": 0.0338312247409,
+        "feasible_gap_closed_pct": 68.6980169958,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00372916666667,
+        "mean_total_calls": 367.083333333,
+        "mean_verif_calls": 231.083333333,
+        "mean_wall_sec": 10.9566558174,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.82383244352,
+          "2": 1.82383244352,
+          "5": 1.82383244352,
+          "10": 1.82383244352
+        }
+      },
+      "GP-FTA-FeasibleKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.82424999433,
+        "se_sq_loss": 0.0390863076961,
+        "mean_oracle_gap": 0.0342487755533,
+        "feasible_gap_closed_pct": 68.3116825213,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00323958333333,
+        "mean_total_calls": 357.833333333,
+        "mean_verif_calls": 221.833333333,
+        "mean_wall_sec": 9.16880698939,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.82424999433,
+          "2": 1.82424999433,
+          "5": 1.82424999433,
+          "10": 1.82424999433
+        }
+      },
+      "PublicPsi-TargetGP-TS": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.82358495519,
+        "se_sq_loss": 0.0356800566633,
+        "mean_oracle_gap": 0.0335837364129,
+        "feasible_gap_closed_pct": 68.9270029547,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00460416666667,
+        "mean_total_calls": 390.833333333,
+        "mean_verif_calls": 254.833333333,
+        "mean_wall_sec": 8.69806905139,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.82358495519,
+          "2": 1.82358495519,
+          "5": 1.82358495519,
+          "10": 1.82358495519
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "GP-FTA-ECKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.56494507878,
+        "se_sq_loss": 0.0464191936963,
+        "mean_oracle_gap": -0.0536324734317,
+        "feasible_gap_closed_pct": 107.619495308,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00113541666667,
+        "mean_total_calls": 365.833333333,
+        "mean_verif_calls": 229.833333333,
+        "mean_wall_sec": 34.1029807713,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.56494507878,
+          "2": 2.56494507878,
+          "5": 2.56494507878,
+          "10": 2.56494507878
+        }
+      },
+      "SCBO-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 3.19175277487,
+        "se_sq_loss": 0.0626047169982,
+        "mean_oracle_gap": 0.573175222654,
+        "feasible_gap_closed_pct": 18.5697462665,
+        "cert_count": 42,
+        "cert_rate": 0.875,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000604166666667,
+        "mean_total_calls": 351.583333333,
+        "mean_verif_calls": 215.583333333,
+        "mean_wall_sec": 24.617963698,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 3.19175277487,
+          "2": 3.19175277487,
+          "5": 3.19175277487,
+          "10": 3.19175277487
+        }
+      },
+      "GP-FTA-LatentNEI-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.55007411044,
+        "se_sq_loss": 0.0436930334418,
+        "mean_oracle_gap": -0.0685034417726,
+        "feasible_gap_closed_pct": 109.732194318,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000333333333333,
+        "mean_total_calls": 370.666666667,
+        "mean_verif_calls": 234.666666667,
+        "mean_wall_sec": 10.229427161,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.55007411044,
+          "2": 2.55007411044,
+          "5": 2.55007411044,
+          "10": 2.55007411044
+        }
+      },
+      "RGPE-on-Psi-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.65004615572,
+        "se_sq_loss": 0.0541904345718,
+        "mean_oracle_gap": 0.0314686035135,
+        "feasible_gap_closed_pct": 95.5292966837,
+        "cert_count": 46,
+        "cert_rate": 0.958333333333,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000791666666667,
+        "mean_total_calls": 350.333333333,
+        "mean_verif_calls": 214.333333333,
+        "mean_wall_sec": 13.744225927,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.65004615572,
+          "2": 2.65004615572,
+          "5": 2.65004615572,
+          "10": 2.65004615572
+        }
+      },
+      "WarmStart-MTGP-KG-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.68636152985,
+        "se_sq_loss": 0.0494378644295,
+        "mean_oracle_gap": 0.0677839776409,
+        "feasible_gap_closed_pct": 90.3700190095,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00191666666667,
+        "mean_total_calls": 333.333333333,
+        "mean_verif_calls": 197.333333333,
+        "mean_wall_sec": 14.1588493868,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.68636152985,
+          "2": 2.68636152985,
+          "5": 2.68636152985,
+          "10": 2.68636152985
+        }
+      },
+      "GP-FTA-AllowUnvisited": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.57652543532,
+        "se_sq_loss": 0.0470753231742,
+        "mean_oracle_gap": -0.0420521168881,
+        "feasible_gap_closed_pct": 105.97428921,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000770833333333,
+        "mean_total_calls": 370.666666667,
+        "mean_verif_calls": 234.666666667,
+        "mean_wall_sec": 11.6121436466,
+        "unvisited_slot0_runs": 14,
+        "lcomp_by_penalty_weight": {
+          "1": 2.57652543532,
+          "2": 2.57652543532,
+          "5": 2.57652543532,
+          "10": 2.57652543532
+        }
+      },
+      "GP-FTA-DirectMaxU": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.5612366514,
+        "se_sq_loss": 0.0448799919675,
+        "mean_oracle_gap": -0.0573409008111,
+        "feasible_gap_closed_pct": 108.146346733,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000739583333333,
+        "mean_total_calls": 378.916666667,
+        "mean_verif_calls": 242.916666667,
+        "mean_wall_sec": 50.2338050298,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.5612366514,
+          "2": 2.5612366514,
+          "5": 2.5612366514,
+          "10": 2.5612366514
+        }
+      },
+      "GP-FTA-LongSearch-k0": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.54896182566,
+        "se_sq_loss": 0.0448882001624,
+        "mean_oracle_gap": -0.0696157265522,
+        "feasible_gap_closed_pct": 109.890215161,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000729166666667,
+        "mean_total_calls": 357.0625,
+        "mean_verif_calls": 141.0625,
+        "mean_wall_sec": 60.5927469424,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.54896182566,
+          "2": 2.54896182566,
+          "5": 2.54896182566,
+          "10": 2.54896182566
+        }
+      },
+      "GP-FTA-SingleSlotKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.57637745667,
+        "se_sq_loss": 0.0464847647479,
+        "mean_oracle_gap": -0.0422000955376,
+        "feasible_gap_closed_pct": 105.995312343,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000927083333333,
+        "mean_total_calls": 344.0,
+        "mean_verif_calls": 208.0,
+        "mean_wall_sec": 10.4687804021,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.57637745667,
+          "2": 2.57637745667,
+          "5": 2.57637745667,
+          "10": 2.57637745667
+        }
+      },
+      "GP-FTA-FeasibleKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.56659252789,
+        "se_sq_loss": 0.0417800142144,
+        "mean_oracle_gap": -0.0519850243244,
+        "feasible_gap_closed_pct": 107.38544437,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.000416666666667,
+        "mean_total_calls": 349.333333333,
+        "mean_verif_calls": 213.333333333,
+        "mean_wall_sec": 8.67707326711,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.56659252789,
+          "2": 2.56659252789,
+          "5": 2.56659252789,
+          "10": 2.56659252789
+        }
+      },
+      "PublicPsi-TargetGP-TS": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 2.62929164335,
+        "se_sq_loss": 0.0477445767087,
+        "mean_oracle_gap": 0.0107140911381,
+        "feasible_gap_closed_pct": 98.4778630942,
+        "cert_count": 48,
+        "cert_rate": 1.0,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00225,
+        "mean_total_calls": 373.833333333,
+        "mean_verif_calls": 237.833333333,
+        "mean_wall_sec": 7.95219634937,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 2.62929164335,
+          "2": 2.62929164335,
+          "5": 2.62929164335,
+          "10": 2.62929164335
+        }
+      }
+    },
+    "OPSD_EuroGrid": {
+      "GP-FTA-ECKG": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0574955011134,
+        "se_sq_loss": 0.0060973000668,
+        "mean_oracle_gap": 0.0050501751927,
+        "feasible_gap_closed_pct": 55.3420991425,
+        "cert_count": 25,
+        "cert_rate": 0.892857142857,
+        "audit_point_exceed_count": 4,
+        "mean_operating_viol_prob": 0.0107142857143,
+        "mean_total_calls": 392.714285714,
+        "mean_verif_calls": 256.714285714,
+        "mean_wall_sec": 32.769874814,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.057598030823,
+          "2": 0.0577005605325,
+          "5": 0.0580081496612,
+          "10": 0.058520798209
+        }
+      },
+      "SCBO-3Slot": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0612878952873,
+        "se_sq_loss": 0.00561801100702,
+        "mean_oracle_gap": 0.00884256936657,
+        "feasible_gap_closed_pct": 21.8065569944,
+        "cert_count": 21,
+        "cert_rate": 0.75,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00274553571429,
+        "mean_total_calls": 411.857142857,
+        "mean_verif_calls": 275.857142857,
+        "mean_wall_sec": 35.8558225993,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0612878952873,
+          "2": 0.0612878952873,
+          "5": 0.0612878952873,
+          "10": 0.0612878952873
+        }
+      },
+      "GP-FTA-LatentNEI-3Slot": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0565156463581,
+        "se_sq_loss": 0.00649440550763,
+        "mean_oracle_gap": 0.00407032043742,
+        "feasible_gap_closed_pct": 64.0067998402,
+        "cert_count": 26,
+        "cert_rate": 0.928571428571,
+        "audit_point_exceed_count": 3,
+        "mean_operating_viol_prob": 0.0116116071429,
+        "mean_total_calls": 377.285714286,
+        "mean_verif_calls": 241.285714286,
+        "mean_wall_sec": 11.5023346897,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0566197748037,
+          "2": 0.0567239032492,
+          "5": 0.0570362885858,
+          "10": 0.0575569308134
+        }
+      },
+      "RGPE-on-Psi-3Slot": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0571562039364,
+        "se_sq_loss": 0.0061860058855,
+        "mean_oracle_gap": 0.00471087801569,
+        "feasible_gap_closed_pct": 58.34245044,
+        "cert_count": 15,
+        "cert_rate": 0.535714285714,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.00333928571429,
+        "mean_total_calls": 436.857142857,
+        "mean_verif_calls": 300.857142857,
+        "mean_wall_sec": 14.7552101647,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0571562039364,
+          "2": 0.0571562039364,
+          "5": 0.0571562039364,
+          "10": 0.0571562039364
+        }
+      },
+      "WarmStart-MTGP-KG-3Slot": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0562478168789,
+        "se_sq_loss": 0.00594358770468,
+        "mean_oracle_gap": 0.00380249095819,
+        "feasible_gap_closed_pct": 66.3751735845,
+        "cert_count": 25,
+        "cert_rate": 0.892857142857,
+        "audit_point_exceed_count": 2,
+        "mean_operating_viol_prob": 0.00555357142857,
+        "mean_total_calls": 354.857142857,
+        "mean_verif_calls": 218.857142857,
+        "mean_wall_sec": 14.5647584588,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0562815333656,
+          "2": 0.0563152498523,
+          "5": 0.0564163993123,
+          "10": 0.0565849817457
+        }
+      },
+      "GP-FTA-AllowUnvisited": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0561360223436,
+        "se_sq_loss": 0.00629511225211,
+        "mean_oracle_gap": 0.00369069642283,
+        "feasible_gap_closed_pct": 67.3637549873,
+        "cert_count": 26,
+        "cert_rate": 0.928571428571,
+        "audit_point_exceed_count": 3,
+        "mean_operating_viol_prob": 0.00737053571429,
+        "mean_total_calls": 411.0,
+        "mean_verif_calls": 275.0,
+        "mean_wall_sec": 12.0874697331,
+        "unvisited_slot0_runs": 12,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0561887608301,
+          "2": 0.0562414993165,
+          "5": 0.056399714776,
+          "10": 0.0566634072085
+        }
+      },
+      "GP-FTA-DirectMaxU": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0563784951158,
+        "se_sq_loss": 0.00616403230714,
+        "mean_oracle_gap": 0.00393316919509,
+        "feasible_gap_closed_pct": 65.2196065942,
+        "cert_count": 27,
+        "cert_rate": 0.964285714286,
+        "audit_point_exceed_count": 1,
+        "mean_operating_viol_prob": 0.00400446428571,
+        "mean_total_calls": 411.0,
+        "mean_verif_calls": 275.0,
+        "mean_wall_sec": 49.5980661795,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0564020221147,
+          "2": 0.0564255491136,
+          "5": 0.0564961301102,
+          "10": 0.0566137651045
+        }
+      },
+      "GP-FTA-LongSearch-k0": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0582504704777,
+        "se_sq_loss": 0.00567095828342,
+        "mean_oracle_gap": 0.00580514455698,
+        "feasible_gap_closed_pct": 48.6660244056,
+        "cert_count": 24,
+        "cert_rate": 0.857142857143,
+        "audit_point_exceed_count": 3,
+        "mean_operating_viol_prob": 0.00852232142857,
+        "mean_total_calls": 337.392857143,
+        "mean_verif_calls": 121.392857143,
+        "mean_wall_sec": 57.790041831,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0582861036165,
+          "2": 0.0583217367552,
+          "5": 0.0584286361714,
+          "10": 0.0586068018651
+        }
+      },
+      "GP-FTA-SingleSlotKG": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0583108873168,
+        "se_sq_loss": 0.0060300676421,
+        "mean_oracle_gap": 0.00586556139606,
+        "feasible_gap_closed_pct": 48.1317678488,
+        "cert_count": 25,
+        "cert_rate": 0.892857142857,
+        "audit_point_exceed_count": 3,
+        "mean_operating_viol_prob": 0.00748660714286,
+        "mean_total_calls": 401.857142857,
+        "mean_verif_calls": 265.857142857,
+        "mean_wall_sec": 11.4676769978,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0583673537196,
+          "2": 0.0584238201224,
+          "5": 0.0585932193308,
+          "10": 0.0588755513448
+        }
+      },
+      "GP-FTA-FeasibleKG": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0595066405885,
+        "se_sq_loss": 0.00565788190289,
+        "mean_oracle_gap": 0.00706131466773,
+        "feasible_gap_closed_pct": 37.5579107016,
+        "cert_count": 25,
+        "cert_rate": 0.892857142857,
+        "audit_point_exceed_count": 2,
+        "mean_operating_viol_prob": 0.00772767857143,
+        "mean_total_calls": 397.714285714,
+        "mean_verif_calls": 261.714285714,
+        "mean_wall_sec": 9.79706027525,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0595252730645,
+          "2": 0.0595439055406,
+          "5": 0.0595998029688,
+          "10": 0.0596929653491
+        }
+      },
+      "PublicPsi-TargetGP-TS": {
+        "n_tasks": 14,
+        "n_runs": 28,
+        "mean_sq_loss": 0.0574283304732,
+        "se_sq_loss": 0.00640986782349,
+        "mean_oracle_gap": 0.00498300455252,
+        "feasible_gap_closed_pct": 55.9360784947,
+        "cert_count": 25,
+        "cert_rate": 0.892857142857,
+        "audit_point_exceed_count": 2,
+        "mean_operating_viol_prob": 0.00811607142857,
+        "mean_total_calls": 392.285714286,
+        "mean_verif_calls": 256.285714286,
+        "mean_wall_sec": 9.43807101469,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 0.0574628136991,
+          "2": 0.057497296925,
+          "5": 0.0576007466027,
+          "10": 0.0577731627322
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "GP-FTA-ECKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.07898944683,
+        "se_sq_loss": 0.0184147980245,
+        "mean_oracle_gap": 0.0733954680137,
+        "feasible_gap_closed_pct": 61.6847899653,
+        "cert_count": 35,
+        "cert_rate": 0.729166666667,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.226322916667,
+        "mean_total_calls": 408.583333333,
+        "mean_verif_calls": 272.583333333,
+        "mean_wall_sec": 52.183973222,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.33850564684,
+          "2": 1.59802184686,
+          "5": 2.3765704469,
+          "10": 3.67415144696
+        }
+      },
+      "SCBO-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.16814579019,
+        "se_sq_loss": 0.0182833029819,
+        "mean_oracle_gap": 0.162551811372,
+        "feasible_gap_closed_pct": 15.1418069425,
+        "cert_count": 10,
+        "cert_rate": 0.208333333333,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.543145833333,
+        "mean_total_calls": 476.166666667,
+        "mean_verif_calls": 340.166666667,
+        "mean_wall_sec": 6.14538848484,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.78289064518,
+          "2": 2.39763550018,
+          "5": 4.24187006517,
+          "10": 7.31559434015
+        }
+      },
+      "GP-FTA-LatentNEI-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.10605766797,
+        "se_sq_loss": 0.0224518842148,
+        "mean_oracle_gap": 0.100463689155,
+        "feasible_gap_closed_pct": 47.5541548409,
+        "cert_count": 30,
+        "cert_rate": 0.625,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.313416666667,
+        "mean_total_calls": 417.833333333,
+        "mean_verif_calls": 281.833333333,
+        "mean_wall_sec": 30.7511936256,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.47020190479,
+          "2": 1.83434614161,
+          "5": 2.92677885206,
+          "10": 4.74750003616
+        }
+      },
+      "RGPE-on-Psi-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.11107119629,
+        "se_sq_loss": 0.0211860518181,
+        "mean_oracle_gap": 0.10547721748,
+        "feasible_gap_closed_pct": 44.9369034493,
+        "cert_count": 27,
+        "cert_rate": 0.5625,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.34415625,
+        "mean_total_calls": 435.083333333,
+        "mean_verif_calls": 299.083333333,
+        "mean_wall_sec": 39.1807994943,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.50181709789,
+          "2": 1.89256299948,
+          "5": 3.06480070426,
+          "10": 5.01853021222
+        }
+      },
+      "WarmStart-MTGP-KG-3Slot": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.07440293566,
+        "se_sq_loss": 0.0203652188508,
+        "mean_oracle_gap": 0.0688089568446,
+        "feasible_gap_closed_pct": 64.0791222521,
+        "cert_count": 38,
+        "cert_rate": 0.791666666667,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.1896875,
+        "mean_total_calls": 387.0,
+        "mean_verif_calls": 251.0,
+        "mean_wall_sec": 35.1808995643,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.29440613084,
+          "2": 1.51440932602,
+          "5": 2.17441891157,
+          "10": 3.27443488748
+        }
+      },
+      "GP-FTA-AllowUnvisited": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.08391655849,
+        "se_sq_loss": 0.0197644991129,
+        "mean_oracle_gap": 0.0783225796737,
+        "feasible_gap_closed_pct": 59.1126513411,
+        "cert_count": 35,
+        "cert_rate": 0.729166666667,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.2298125,
+        "mean_total_calls": 416.833333333,
+        "mean_verif_calls": 280.833333333,
+        "mean_wall_sec": 33.324183119,
+        "unvisited_slot0_runs": 21,
+        "lcomp_by_penalty_weight": {
+          "1": 1.34801542733,
+          "2": 1.61211429616,
+          "5": 2.40441090268,
+          "10": 3.72490524687
+        }
+      },
+      "GP-FTA-DirectMaxU": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.08880714383,
+        "se_sq_loss": 0.0201465431254,
+        "mean_oracle_gap": 0.0832131650177,
+        "feasible_gap_closed_pct": 56.5595808353,
+        "cert_count": 33,
+        "cert_rate": 0.6875,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.25190625,
+        "mean_total_calls": 428.5,
+        "mean_verif_calls": 292.5,
+        "mean_wall_sec": 68.1414855135,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.37807493651,
+          "2": 1.6673427292,
+          "5": 2.53514610724,
+          "10": 3.98148507065
+        }
+      },
+      "GP-FTA-LongSearch-k0": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.0883675668,
+        "se_sq_loss": 0.0205089889648,
+        "mean_oracle_gap": 0.0827735879803,
+        "feasible_gap_closed_pct": 56.7890566731,
+        "cert_count": 33,
+        "cert_rate": 0.6875,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.258197916667,
+        "mean_total_calls": 323.8125,
+        "mean_verif_calls": 107.8125,
+        "mean_wall_sec": 86.5432986299,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.38699800253,
+          "2": 1.68562843827,
+          "5": 2.58151974549,
+          "10": 4.07467192419
+        }
+      },
+      "GP-FTA-SingleSlotKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.08273692512,
+        "se_sq_loss": 0.0182739435101,
+        "mean_oracle_gap": 0.0771429463006,
+        "feasible_gap_closed_pct": 59.7284645743,
+        "cert_count": 36,
+        "cert_rate": 0.75,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.21071875,
+        "mean_total_calls": 412.25,
+        "mean_verif_calls": 276.25,
+        "mean_wall_sec": 30.3479596442,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.32354356852,
+          "2": 1.56435021193,
+          "5": 2.28677014215,
+          "10": 3.49080335918
+        }
+      },
+      "GP-FTA-FeasibleKG": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.10782011774,
+        "se_sq_loss": 0.0226437706374,
+        "mean_oracle_gap": 0.102226138928,
+        "feasible_gap_closed_pct": 46.6340894056,
+        "cert_count": 30,
+        "cert_rate": 0.625,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.316604166667,
+        "mean_total_calls": 426.833333333,
+        "mean_verif_calls": 290.833333333,
+        "mean_wall_sec": 28.965863959,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.47503881896,
+          "2": 1.84225752018,
+          "5": 2.94391362384,
+          "10": 4.78000712994
+        }
+      },
+      "PublicPsi-TargetGP-TS": {
+        "n_tasks": 24,
+        "n_runs": 48,
+        "mean_sq_loss": 1.05975143361,
+        "se_sq_loss": 0.0196623389391,
+        "mean_oracle_gap": 0.0541574547961,
+        "feasible_gap_closed_pct": 71.7277604242,
+        "cert_count": 41,
+        "cert_rate": 0.854166666667,
+        "audit_point_exceed_count": 0,
+        "mean_operating_viol_prob": 0.129104166667,
+        "mean_total_calls": 405.416666667,
+        "mean_verif_calls": 269.416666667,
+        "mean_wall_sec": 28.5483340082,
+        "unvisited_slot0_runs": 0,
+        "lcomp_by_penalty_weight": {
+          "1": 1.21099653629,
+          "2": 1.36224163897,
+          "5": 1.815976947,
+          "10": 2.57220246038
+        }
+      }
+    }
+  },
+  "domain_contrasts": {
+    "Inventory_CrossHorizon": {
+      "frontier_vs_eckg": {
+        "SCBO-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.097050659963,
+          "se_diff": 0.0105267366802,
+          "ci95_lo": 0.0752744460167,
+          "ci95_hi": 0.118826873909,
+          "wins": 24,
+          "losses": 0,
+          "ties": 0,
+          "p_two_sided": 3.46220864245e-09,
+          "p_wilcoxon": 1.19209289551e-07,
+          "p_holm_4frontier": 1.38488345698e-08
+        },
+        "GP-FTA-LatentNEI-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.0101184096169,
+          "se_diff": 0.00644607292104,
+          "ci95_lo": -0.00321630818849,
+          "ci95_hi": 0.0234531274224,
+          "wins": 12,
+          "losses": 12,
+          "ties": 0,
+          "p_two_sided": 0.130141086065,
+          "p_wilcoxon": 0.276815414429,
+          "p_holm_4frontier": 0.26028217213
+        },
+        "RGPE-on-Psi-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.00935636610971,
+          "se_diff": 0.00720749011059,
+          "ci95_lo": -0.00555346315959,
+          "ci95_hi": 0.024266195379,
+          "wins": 12,
+          "losses": 12,
+          "ties": 0,
+          "p_two_sided": 0.207104880508,
+          "p_wilcoxon": 0.316512346268,
+          "p_holm_4frontier": 0.26028217213
+        },
+        "WarmStart-MTGP-KG-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.0342953611761,
+          "se_diff": 0.00574422046574,
+          "ci95_lo": 0.0224125357937,
+          "ci95_hi": 0.0461781865585,
+          "wins": 23,
+          "losses": 1,
+          "ties": 0,
+          "p_two_sided": 4.35515169812e-06,
+          "p_wilcoxon": 2.26497650146e-06,
+          "p_holm_4frontier": 1.30654550944e-05
+        }
+      },
+      "contract_vs_eckg": {
+        "GP-FTA-AllowUnvisited": {
+          "n_tasks": 24,
+          "mean_diff": 0.0161323937287,
+          "se_diff": 0.00848049980245,
+          "ci95_lo": -0.00141085672778,
+          "ci95_hi": 0.0336756441852,
+          "wins": 11,
+          "losses": 13,
+          "ties": 0,
+          "p_two_sided": 0.0697281162164,
+          "p_wilcoxon": 0.344876766205,
+          "p_holm_3contract": 0.209184348649
+        },
+        "GP-FTA-DirectMaxU": {
+          "n_tasks": 24,
+          "mean_diff": -0.00508117684872,
+          "se_diff": 0.00467077034825,
+          "ci95_lo": -0.0147434014761,
+          "ci95_hi": 0.00458104777871,
+          "wins": 10,
+          "losses": 14,
+          "ties": 0,
+          "p_two_sided": 0.28792273362,
+          "p_wilcoxon": 0.252249360085,
+          "p_holm_3contract": 0.57584546724
+        },
+        "GP-FTA-LongSearch-k0": {
+          "n_tasks": 24,
+          "mean_diff": 0.00279247859231,
+          "se_diff": 0.00375322772012,
+          "ci95_lo": -0.00497166449455,
+          "ci95_hi": 0.0105566216792,
+          "wins": 11,
+          "losses": 12,
+          "ties": 1,
+          "p_two_sided": 0.464397983133,
+          "p_wilcoxon": 0.822927474976,
+          "p_holm_3contract": 0.57584546724
+        }
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "frontier_vs_eckg": {
+        "SCBO-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.626807696086,
+          "se_diff": 0.0266972139148,
+          "ci95_lo": 0.571580301344,
+          "ci95_hi": 0.682035090828,
+          "wins": 24,
+          "losses": 0,
+          "ties": 0,
+          "p_two_sided": 1.4284028553e-17,
+          "p_wilcoxon": 1.19209289551e-07,
+          "p_holm_4frontier": 5.7136114212e-17
+        },
+        "GP-FTA-LatentNEI-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": -0.0148709683409,
+          "se_diff": 0.00800150606509,
+          "ci95_lo": -0.0314233447573,
+          "ci95_hi": 0.00168140807544,
+          "wins": 10,
+          "losses": 14,
+          "ties": 0,
+          "p_two_sided": 0.0759398558764,
+          "p_wilcoxon": 0.107382535934,
+          "p_holm_4frontier": 0.0759398558764
+        },
+        "RGPE-on-Psi-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.0851010769452,
+          "se_diff": 0.0231898925101,
+          "ci95_lo": 0.0371291293194,
+          "ci95_hi": 0.133073024571,
+          "wins": 21,
+          "losses": 3,
+          "ties": 0,
+          "p_two_sided": 0.00127252234478,
+          "p_wilcoxon": 3.01599502563e-05,
+          "p_holm_4frontier": 0.00254504468956
+        },
+        "WarmStart-MTGP-KG-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.121416451073,
+          "se_diff": 0.0153372574447,
+          "ci95_lo": 0.0896889167367,
+          "ci95_hi": 0.153143985409,
+          "wins": 24,
+          "losses": 0,
+          "ties": 0,
+          "p_two_sided": 5.13342031357e-08,
+          "p_wilcoxon": 1.19209289551e-07,
+          "p_holm_4frontier": 1.54002609407e-07
+        }
+      },
+      "contract_vs_eckg": {
+        "GP-FTA-AllowUnvisited": {
+          "n_tasks": 24,
+          "mean_diff": 0.0115803565436,
+          "se_diff": 0.0074960233707,
+          "ci95_lo": -0.00392634925012,
+          "ci95_hi": 0.0270870623373,
+          "wins": 13,
+          "losses": 11,
+          "ties": 0,
+          "p_two_sided": 0.136027776455,
+          "p_wilcoxon": 0.229189634323,
+          "p_holm_3contract": 0.27205555291
+        },
+        "GP-FTA-DirectMaxU": {
+          "n_tasks": 24,
+          "mean_diff": -0.00370842737942,
+          "se_diff": 0.00698239014493,
+          "ci95_lo": -0.0181526018916,
+          "ci95_hi": 0.0107357471328,
+          "wins": 12,
+          "losses": 12,
+          "ties": 0,
+          "p_two_sided": 0.600433480867,
+          "p_wilcoxon": 0.564588904381,
+          "p_holm_3contract": 0.600433480867
+        },
+        "GP-FTA-LongSearch-k0": {
+          "n_tasks": 24,
+          "mean_diff": -0.0159832531205,
+          "se_diff": 0.00413902633298,
+          "ci95_lo": -0.0245454814439,
+          "ci95_hi": -0.00742102479705,
+          "wins": 5,
+          "losses": 19,
+          "ties": 0,
+          "p_two_sided": 0.000792805528639,
+          "p_wilcoxon": 0.00042986869812,
+          "p_holm_3contract": 0.00237841658592
+        }
+      }
+    },
+    "OPSD_EuroGrid": {
+      "frontier_vs_eckg": {
+        "SCBO-3Slot": {
+          "n_tasks": 14,
+          "mean_diff": 0.00379239417388,
+          "se_diff": 0.0015814432719,
+          "ci95_lo": 0.000375893697296,
+          "ci95_hi": 0.00720889465046,
+          "wins": 8,
+          "losses": 6,
+          "ties": 0,
+          "p_two_sided": 0.0322017919335,
+          "p_wilcoxon": 0.090576171875,
+          "p_holm_4frontier": 0.128807167734
+        },
+        "GP-FTA-LatentNEI-3Slot": {
+          "n_tasks": 14,
+          "mean_diff": -0.000979854755279,
+          "se_diff": 0.000965851885483,
+          "ci95_lo": -0.00306645089546,
+          "ci95_hi": 0.0011067413849,
+          "wins": 5,
+          "losses": 8,
+          "ties": 1,
+          "p_two_sided": 0.328855443827,
+          "p_wilcoxon": 0.414306640625,
+          "p_holm_4frontier": 0.986566331481
+        },
+        "RGPE-on-Psi-3Slot": {
+          "n_tasks": 14,
+          "mean_diff": -0.000339297177006,
+          "se_diff": 0.00154911193994,
+          "ci95_lo": -0.0036859500574,
+          "ci95_hi": 0.00300735570339,
+          "wins": 5,
+          "losses": 8,
+          "ties": 1,
+          "p_two_sided": 0.830030370869,
+          "p_wilcoxon": 0.454833984375,
+          "p_holm_4frontier": 0.986566331481
+        },
+        "WarmStart-MTGP-KG-3Slot": {
+          "n_tasks": 14,
+          "mean_diff": -0.00124768423451,
+          "se_diff": 0.00123215946214,
+          "ci95_lo": -0.00390960291629,
+          "ci95_hi": 0.00141423444727,
+          "wins": 6,
+          "losses": 8,
+          "ties": 0,
+          "p_two_sided": 0.329727914166,
+          "p_wilcoxon": 0.463134765625,
+          "p_holm_4frontier": 0.986566331481
+        }
+      },
+      "contract_vs_eckg": {
+        "GP-FTA-AllowUnvisited": {
+          "n_tasks": 14,
+          "mean_diff": -0.00135947876987,
+          "se_diff": 0.00108159548729,
+          "ci95_lo": -0.00369612375958,
+          "ci95_hi": 0.000977166219846,
+          "wins": 5,
+          "losses": 9,
+          "ties": 0,
+          "p_two_sided": 0.230897308812,
+          "p_wilcoxon": 0.216552734375,
+          "p_holm_3contract": 0.692691926436
+        },
+        "GP-FTA-DirectMaxU": {
+          "n_tasks": 14,
+          "mean_diff": -0.00111700599761,
+          "se_diff": 0.00120771934731,
+          "ci95_lo": -0.00372612502134,
+          "ci95_hi": 0.00149211302612,
+          "wins": 5,
+          "losses": 9,
+          "ties": 0,
+          "p_two_sided": 0.371874233754,
+          "p_wilcoxon": 0.390991210938,
+          "p_holm_3contract": 0.743748467508
+        },
+        "GP-FTA-LongSearch-k0": {
+          "n_tasks": 14,
+          "mean_diff": 0.000754969364289,
+          "se_diff": 0.000959186546976,
+          "ci95_lo": -0.0013172271875,
+          "ci95_hi": 0.00282716591608,
+          "wins": 8,
+          "losses": 4,
+          "ties": 2,
+          "p_two_sided": 0.445340326895,
+          "p_wilcoxon": 0.423828125,
+          "p_holm_3contract": 0.743748467508
+        }
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "frontier_vs_eckg": {
+        "SCBO-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.0891563433587,
+          "se_diff": 0.0119681181351,
+          "ci95_lo": 0.0643984046961,
+          "ci95_hi": 0.113914282021,
+          "wins": 21,
+          "losses": 1,
+          "ties": 2,
+          "p_two_sided": 1.42528653405e-07,
+          "p_wilcoxon": 9.53674316406e-07,
+          "p_holm_4frontier": 5.7011461362e-07
+        },
+        "GP-FTA-LatentNEI-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.0270682211411,
+          "se_diff": 0.0121813244793,
+          "ci95_lo": 0.00186923155204,
+          "ci95_hi": 0.0522672107302,
+          "wins": 14,
+          "losses": 8,
+          "ties": 2,
+          "p_two_sided": 0.0363935551245,
+          "p_wilcoxon": 0.0358753204346,
+          "p_holm_4frontier": 0.072787110249
+        },
+        "RGPE-on-Psi-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": 0.0320817494662,
+          "se_diff": 0.0118479228722,
+          "ci95_lo": 0.00757245364891,
+          "ci95_hi": 0.0565910452836,
+          "wins": 15,
+          "losses": 7,
+          "ties": 2,
+          "p_two_sided": 0.0125547880414,
+          "p_wilcoxon": 0.0358753204346,
+          "p_holm_4frontier": 0.0376643641242
+        },
+        "WarmStart-MTGP-KG-3Slot": {
+          "n_tasks": 24,
+          "mean_diff": -0.0045865111691,
+          "se_diff": 0.0117538891045,
+          "ci95_lo": -0.0289012833171,
+          "ci95_hi": 0.0197282609789,
+          "wins": 8,
+          "losses": 14,
+          "ties": 2,
+          "p_two_sided": 0.699970078512,
+          "p_wilcoxon": 0.462777614594,
+          "p_holm_4frontier": 0.699970078512
+        }
+      },
+      "contract_vs_eckg": {
+        "GP-FTA-AllowUnvisited": {
+          "n_tasks": 24,
+          "mean_diff": 0.00492711166005,
+          "se_diff": 0.00922227214564,
+          "ci95_lo": -0.0141506117994,
+          "ci95_hi": 0.0240048351195,
+          "wins": 17,
+          "losses": 5,
+          "ties": 2,
+          "p_two_sided": 0.598286956601,
+          "p_wilcoxon": 0.198218822479,
+          "p_holm_3contract": 0.863973312168
+        },
+        "GP-FTA-DirectMaxU": {
+          "n_tasks": 24,
+          "mean_diff": 0.00981769700399,
+          "se_diff": 0.00787167333866,
+          "ci95_lo": -0.00646609995477,
+          "ci95_hi": 0.0261014939627,
+          "wins": 11,
+          "losses": 11,
+          "ties": 2,
+          "p_two_sided": 0.224868542654,
+          "p_wilcoxon": 0.222107410431,
+          "p_holm_3contract": 0.674605627962
+        },
+        "GP-FTA-LongSearch-k0": {
+          "n_tasks": 24,
+          "mean_diff": 0.00937811996661,
+          "se_diff": 0.0117249768578,
+          "ci95_lo": -0.0148768426424,
+          "ci95_hi": 0.0336330825756,
+          "wins": 11,
+          "losses": 10,
+          "ties": 3,
+          "p_two_sided": 0.431986656084,
+          "p_wilcoxon": 1.0,
+          "p_holm_3contract": 0.863973312168
+        }
+      }
+    }
+  },
+  "pooled_des_72_contrasts": {
+    "anchor_sd": {
+      "frontier_vs_eckg": {
+        "SCBO-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 1.27879123373,
+          "se_diff": 0.0957403543257,
+          "ci95_lo": 1.08789038919,
+          "ci95_hi": 1.46969207827,
+          "wins": 69,
+          "losses": 1,
+          "ties": 2,
+          "p_two_sided": 4.72797703292e-21,
+          "p_wilcoxon": 3.71702934497e-13,
+          "p_holm_4frontier": 1.89119081317e-20
+        },
+        "GP-FTA-LatentNEI-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 0.127956324593,
+          "se_diff": 0.0608705515766,
+          "ci95_lo": 0.00658389198025,
+          "ci95_hi": 0.249328757207,
+          "wins": 36,
+          "losses": 34,
+          "ties": 2,
+          "p_two_sided": 0.0390920897487,
+          "p_wilcoxon": 0.26241857473,
+          "p_holm_4frontier": 0.0390920897487
+        },
+        "RGPE-on-Psi-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 0.257584387537,
+          "se_diff": 0.0634375315326,
+          "ci95_lo": 0.131093542265,
+          "ci95_hi": 0.384075232809,
+          "wins": 48,
+          "losses": 22,
+          "ties": 2,
+          "p_two_sided": 0.000124487374809,
+          "p_wilcoxon": 4.46695212243e-05,
+          "p_holm_4frontier": 0.000373462124427
+        },
+        "WarmStart-MTGP-KG-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 0.178248508963,
+          "se_diff": 0.0608826800522,
+          "ci95_lo": 0.0568518928562,
+          "ci95_hi": 0.29964512507,
+          "wins": 55,
+          "losses": 15,
+          "ties": 2,
+          "p_two_sided": 0.0045851890445,
+          "p_wilcoxon": 1.28407064463e-05,
+          "p_holm_4frontier": 0.009170378089
+        }
+      },
+      "contract_and_core_vs_eckg": {
+        "GP-FTA-AllowUnvisited": {
+          "n_tasks": 72,
+          "mean_diff": 0.067040164355,
+          "se_diff": 0.0456157122695,
+          "ci95_lo": -0.0239149825943,
+          "ci95_hi": 0.157995311304,
+          "wins": 41,
+          "losses": 29,
+          "ties": 2,
+          "p_two_sided": 0.1460679005,
+          "p_wilcoxon": 0.0179228630837,
+          "p_holm_3contract": 0.4382037015
+        },
+        "GP-FTA-DirectMaxU": {
+          "n_tasks": 72,
+          "mean_diff": 0.0309091983795,
+          "se_diff": 0.0384651913518,
+          "ci95_lo": -0.0457882148093,
+          "ci95_hi": 0.107606611568,
+          "wins": 33,
+          "losses": 37,
+          "ties": 2,
+          "p_two_sided": 0.424331626764,
+          "p_wilcoxon": 0.862934890089,
+          "p_holm_3contract": 0.848663253528
+        },
+        "GP-FTA-LongSearch-k0": {
+          "n_tasks": 72,
+          "mean_diff": 0.0312013793619,
+          "se_diff": 0.0543672762467,
+          "ci95_lo": -0.077203890538,
+          "ci95_hi": 0.139606649262,
+          "wins": 27,
+          "losses": 41,
+          "ties": 4,
+          "p_two_sided": 0.567849130619,
+          "p_wilcoxon": 0.12360689792,
+          "p_holm_3contract": 0.848663253528
+        },
+        "GP-FTA-FeasibleKG": {
+          "n_tasks": 72,
+          "mean_diff": 0.169062214873,
+          "se_diff": 0.0635860041558,
+          "ci95_lo": 0.0422753235985,
+          "ci95_hi": 0.295849106147,
+          "wins": 41,
+          "losses": 29,
+          "ties": 2,
+          "p_two_sided": 0.00968410877945,
+          "p_wilcoxon": 0.0343819048383
+        },
+        "GP-FTA-SingleSlotKG": {
+          "n_tasks": 72,
+          "mean_diff": 0.0639018877264,
+          "se_diff": 0.0414238602942,
+          "ci95_lo": -0.0186949437778,
+          "ci95_hi": 0.146498719231,
+          "wins": 44,
+          "losses": 26,
+          "ties": 2,
+          "p_two_sided": 0.127365015735,
+          "p_wilcoxon": 0.014088826851
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_tasks": 72,
+          "mean_diff": 0.0153535796864,
+          "se_diff": 0.0675036903763,
+          "ci95_lo": -0.119244956044,
+          "ci95_hi": 0.149952115417,
+          "wins": 42,
+          "losses": 29,
+          "ties": 1,
+          "p_two_sided": 0.82072907992,
+          "p_wilcoxon": 0.115093837863
+        }
+      }
+    },
+    "eckg_sd": {
+      "frontier_vs_eckg": {
+        "SCBO-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 1.43667464308,
+          "se_diff": 0.128368913408,
+          "ci95_lo": 1.18071429955,
+          "ci95_hi": 1.69263498661,
+          "wins": 69,
+          "losses": 1,
+          "ties": 2,
+          "p_two_sided": 2.47441238285e-17,
+          "p_wilcoxon": 3.71702934497e-13,
+          "p_holm_4frontier": 9.8976495314e-17
+        },
+        "GP-FTA-LatentNEI-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 0.097867154148,
+          "se_diff": 0.0507827578727,
+          "ci95_lo": -0.00339078911318,
+          "ci95_hi": 0.199125097409,
+          "wins": 36,
+          "losses": 34,
+          "ties": 2,
+          "p_two_sided": 0.0579598673952,
+          "p_wilcoxon": 0.301645909618,
+          "p_holm_4frontier": 0.0579598673952
+        },
+        "RGPE-on-Psi-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 0.261451203207,
+          "se_diff": 0.0589758161146,
+          "ci95_lo": 0.143856765802,
+          "ci95_hi": 0.379045640612,
+          "wins": 48,
+          "losses": 22,
+          "ties": 2,
+          "p_two_sided": 3.31095888633e-05,
+          "p_wilcoxon": 1.91120647557e-05,
+          "p_holm_4frontier": 9.93287665899e-05
+        },
+        "WarmStart-MTGP-KG-3Slot": {
+          "n_tasks": 72,
+          "mean_diff": 0.227627114181,
+          "se_diff": 0.0570373456943,
+          "ci95_lo": 0.113897877014,
+          "ci95_hi": 0.341356351348,
+          "wins": 55,
+          "losses": 15,
+          "ties": 2,
+          "p_two_sided": 0.000158340482589,
+          "p_wilcoxon": 4.05401444703e-06,
+          "p_holm_4frontier": 0.000316680965178
+        }
+      },
+      "contract_and_core_vs_eckg": {
+        "GP-FTA-AllowUnvisited": {
+          "n_tasks": 72,
+          "mean_diff": 0.0665088592021,
+          "se_diff": 0.0389192660871,
+          "ci95_lo": -0.0110939532937,
+          "ci95_hi": 0.144111671698,
+          "wins": 41,
+          "losses": 29,
+          "ties": 2,
+          "p_two_sided": 0.0918389957546,
+          "p_wilcoxon": 0.024812331718,
+          "p_holm_3contract": 0.275516987264
+        },
+        "GP-FTA-DirectMaxU": {
+          "n_tasks": 72,
+          "mean_diff": 0.0209722614867,
+          "se_diff": 0.0325369475561,
+          "ci95_lo": -0.0439045693028,
+          "ci95_hi": 0.0858490922762,
+          "wins": 33,
+          "losses": 37,
+          "ties": 2,
+          "p_two_sided": 0.521284605846,
+          "p_wilcoxon": 0.826294190568,
+          "p_holm_3contract": 1.0
+        },
+        "GP-FTA-LongSearch-k0": {
+          "n_tasks": 72,
+          "mean_diff": 0.0166461727919,
+          "se_diff": 0.0445272651101,
+          "ci95_lo": -0.0721386721626,
+          "ci95_hi": 0.105431017746,
+          "wins": 27,
+          "losses": 41,
+          "ties": 4,
+          "p_two_sided": 0.709635740309,
+          "p_wilcoxon": 0.0882338538385,
+          "p_holm_3contract": 1.0
+        },
+        "GP-FTA-FeasibleKG": {
+          "n_tasks": 72,
+          "mean_diff": 0.1434622827,
+          "se_diff": 0.0538297083661,
+          "ci95_lo": 0.0361288927105,
+          "ci95_hi": 0.25079567269,
+          "wins": 41,
+          "losses": 29,
+          "ties": 2,
+          "p_two_sided": 0.00952056864458,
+          "p_wilcoxon": 0.0324378755024
+        },
+        "GP-FTA-SingleSlotKG": {
+          "n_tasks": 72,
+          "mean_diff": 0.0643135469435,
+          "se_diff": 0.0361292762818,
+          "ci95_lo": -0.0077261838836,
+          "ci95_hi": 0.136353277771,
+          "wins": 44,
+          "losses": 26,
+          "ties": 2,
+          "p_two_sided": 0.0793390675099,
+          "p_wilcoxon": 0.0216198148919
+        },
+        "PublicPsi-TargetGP-TS": {
+          "n_tasks": 72,
+          "mean_diff": 0.0564649141931,
+          "se_diff": 0.0599268179196,
+          "ci95_lo": -0.0630257669538,
+          "ci95_hi": 0.17595559534,
+          "wins": 42,
+          "losses": 29,
+          "ties": 1,
+          "p_two_sided": 0.349269372768,
+          "p_wilcoxon": 0.0601917853387
+        }
+      }
+    }
+  },
+  "gate_design_and_curtailment": {
+    "Inventory_CrossHorizon": {
+      "Gate-k0": {
+        "slot_budgets": [
+          72,
+          82,
+          90
+        ],
+        "cert_count": 47,
+        "n_runs": 48,
+        "cert_rate": 0.979166666667,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.82234541471,
+        "mean_operating_viol_prob": 0.00410416666667,
+        "mean_fixed_verif_calls": 158.583333333,
+        "mean_curtailed_verif_calls": 132.083333333,
+        "curtailment_call_saving": 26.5
+      },
+      "Gate-k1-Default": {
+        "slot_budgets": [
+          112,
+          128,
+          140
+        ],
+        "cert_count": 47,
+        "n_runs": 48,
+        "cert_rate": 0.979166666667,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.80647437267,
+        "mean_operating_viol_prob": 0.0056875,
+        "mean_fixed_verif_calls": 254.833333333,
+        "mean_curtailed_verif_calls": 218.645833333,
+        "curtailment_call_saving": 36.1875
+      },
+      "Gate-k2": {
+        "slot_budgets": [
+          142,
+          155,
+          165
+        ],
+        "cert_count": 47,
+        "n_runs": 48,
+        "cert_rate": 0.979166666667,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.80663358535,
+        "mean_operating_viol_prob": 0.00554166666667,
+        "mean_fixed_verif_calls": 328.145833333,
+        "mean_curtailed_verif_calls": 283.6875,
+        "curtailment_call_saving": 44.4583333333
+      },
+      "Gate-k3": {
+        "slot_budgets": [
+          173,
+          187,
+          198
+        ],
+        "cert_count": 46,
+        "n_runs": 48,
+        "cert_rate": 0.958333333333,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.80672437808,
+        "mean_operating_viol_prob": 0.00577083333333,
+        "mean_fixed_verif_calls": 385.208333333,
+        "mean_curtailed_verif_calls": 335.6875,
+        "curtailment_call_saving": 49.5208333333
+      }
+    },
+    "Queueing_CrossHorizon": {
+      "Gate-k0": {
+        "slot_budgets": [
+          72,
+          82,
+          90
+        ],
+        "cert_count": 48,
+        "n_runs": 48,
+        "cert_rate": 1.0,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 2.56598744059,
+        "mean_operating_viol_prob": 0.000260416666667,
+        "mean_fixed_verif_calls": 147.666666667,
+        "mean_curtailed_verif_calls": 138.104166667,
+        "curtailment_call_saving": 9.5625
+      },
+      "Gate-k1-Default": {
+        "slot_budgets": [
+          112,
+          128,
+          140
+        ],
+        "cert_count": 48,
+        "n_runs": 48,
+        "cert_rate": 1.0,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 2.56494507878,
+        "mean_operating_viol_prob": 0.00113541666667,
+        "mean_fixed_verif_calls": 229.833333333,
+        "mean_curtailed_verif_calls": 222.791666667,
+        "curtailment_call_saving": 7.04166666667
+      },
+      "Gate-k2": {
+        "slot_budgets": [
+          142,
+          155,
+          165
+        ],
+        "cert_count": 48,
+        "n_runs": 48,
+        "cert_rate": 1.0,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 2.56254731255,
+        "mean_operating_viol_prob": 0.00151041666667,
+        "mean_fixed_verif_calls": 287.729166667,
+        "mean_curtailed_verif_calls": 273.625,
+        "curtailment_call_saving": 14.1041666667
+      },
+      "Gate-k3": {
+        "slot_budgets": [
+          173,
+          187,
+          198
+        ],
+        "cert_count": 48,
+        "n_runs": 48,
+        "cert_rate": 1.0,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 2.56174139799,
+        "mean_operating_viol_prob": 0.00194791666667,
+        "mean_fixed_verif_calls": 340.520833333,
+        "mean_curtailed_verif_calls": 330.583333333,
+        "curtailment_call_saving": 9.9375
+      }
+    },
+    "OPSD_EuroGrid": {
+      "Gate-k0": {
+        "slot_budgets": [
+          72,
+          82,
+          90
+        ],
+        "cert_count": 26,
+        "n_runs": 28,
+        "cert_rate": 0.928571428571,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 0.0583854042024,
+        "mean_operating_viol_prob": 0.00804464285714,
+        "mean_fixed_verif_calls": 167.714285714,
+        "mean_curtailed_verif_calls": 129.035714286,
+        "curtailment_call_saving": 38.6785714286
+      },
+      "Gate-k1-Default": {
+        "slot_budgets": [
+          112,
+          128,
+          140
+        ],
+        "cert_count": 25,
+        "n_runs": 28,
+        "cert_rate": 0.892857142857,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 0.0574955011134,
+        "mean_operating_viol_prob": 0.0107142857143,
+        "mean_fixed_verif_calls": 256.714285714,
+        "mean_curtailed_verif_calls": 195.464285714,
+        "curtailment_call_saving": 61.25
+      },
+      "Gate-k2": {
+        "slot_budgets": [
+          142,
+          155,
+          165
+        ],
+        "cert_count": 24,
+        "n_runs": 28,
+        "cert_rate": 0.857142857143,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 0.0582733518041,
+        "mean_operating_viol_prob": 0.0111919642857,
+        "mean_fixed_verif_calls": 327.178571429,
+        "mean_curtailed_verif_calls": 250.107142857,
+        "curtailment_call_saving": 77.0714285714
+      },
+      "Gate-k3": {
+        "slot_budgets": [
+          173,
+          187,
+          198
+        ],
+        "cert_count": 24,
+        "n_runs": 28,
+        "cert_rate": 0.857142857143,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 0.0583126299519,
+        "mean_operating_viol_prob": 0.01284375,
+        "mean_fixed_verif_calls": 403.607142857,
+        "mean_curtailed_verif_calls": 313.214285714,
+        "curtailment_call_saving": 90.3928571429
+      }
+    },
+    "Traffic_Ingolstadt": {
+      "Gate-k0": {
+        "slot_budgets": [
+          72,
+          82,
+          90
+        ],
+        "cert_count": 32,
+        "n_runs": 48,
+        "cert_rate": 0.666666666667,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.09984666773,
+        "mean_operating_viol_prob": 0.2785,
+        "mean_fixed_verif_calls": 178.875,
+        "mean_curtailed_verif_calls": 106.229166667,
+        "curtailment_call_saving": 72.6458333333
+      },
+      "Gate-k1-Default": {
+        "slot_budgets": [
+          112,
+          128,
+          140
+        ],
+        "cert_count": 35,
+        "n_runs": 48,
+        "cert_rate": 0.729166666667,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.07898944683,
+        "mean_operating_viol_prob": 0.226322916667,
+        "mean_fixed_verif_calls": 272.583333333,
+        "mean_curtailed_verif_calls": 182.625,
+        "curtailment_call_saving": 89.9583333333
+      },
+      "Gate-k2": {
+        "slot_budgets": [
+          142,
+          155,
+          165
+        ],
+        "cert_count": 37,
+        "n_runs": 48,
+        "cert_rate": 0.770833333333,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.07799645356,
+        "mean_operating_viol_prob": 0.2015625,
+        "mean_fixed_verif_calls": 328.5625,
+        "mean_curtailed_verif_calls": 234.895833333,
+        "curtailment_call_saving": 93.6666666667
+      },
+      "Gate-k3": {
+        "slot_budgets": [
+          173,
+          187,
+          198
+        ],
+        "cert_count": 39,
+        "n_runs": 48,
+        "cert_rate": 0.8125,
+        "verif_law_point_exceed_count": 0,
+        "mean_sq_loss": 1.07094720694,
+        "mean_operating_viol_prob": 0.1711875,
+        "mean_fixed_verif_calls": 385.4375,
+        "mean_curtailed_verif_calls": 297.083333333,
+        "curtailment_call_saving": 88.3541666667
+      }
+    }
+  }
+}

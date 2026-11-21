@@ -1,42 +1,46 @@
 \begin{table}[htbp]
 \centering
-\caption{Direct single-probe cross-policy information propagation ($N_0=8 \to 9$ policies) on 32 disjoint held-out policies per task, holding public $\psi(x)$, source-learned basis $\tilde{\phi}(\psi(x))$, target-only within-policy HVD, and probe observations identical across models. Zero-mean kernel models (`Full', `Diag', `Iso', `Perm.') set active source means to zero ($\mu_{0,\mathrm{act}}\equiv 0$) and match active-subspace trace so pre-data shape NRMSE equals $1.000$ identically. Positive differences (`Comparator $-$ Structured') indicate lower post-probe demeaned shape NRMSE for the structured model; parentheses give four-way Holm-adjusted paired-$t$ $p$-values within each domain-head block (`+/$-$/0' counts tasks where the ninth policy reduces/increases/ties `Full' error). Panel~A evaluates the existing 86-task panel; Panel~B executes the pre-registered one-shot confirmation on 72 unseen DES tasks.}\label{tab:direct_prop}
+\caption{Pre-registered confirmation on $72$ newly generated unseen DES tasks ($32$ disjoint held-out policies and four single-step $8\to 9$ probes per task). Panel~A tests prior-informed posterior shape accuracy holding $\psi$, $\tilde{\phi}$, $N_0=8$ cold observations, within-policy HVD, zero source means ($\mu_{0,\mathrm{act}}\equiv 0$), and active-subspace trace identical (positive contrasts favor the structured model; four-way Holm $p$-values). Panel~B evaluates decision-aligned posterior calibration, meta-BO comparators, prior-component and $\psi$ ablations, and source-count scaling $M_{\mathrm{src}}\in\{3,6,12\}$ on the same $72$ unseen tasks (Gate-Power RMSE scores predicted vs.\ ground-truth $K_0=112$ binomial pass probability; True Slot-0 Gain scores ground-truth expected clean-up saving of each model's top nominee; exploratory $86$-task and shift-sensitivity tables appear in Electronic Companion Table~\ref*{tab:ec_full_prop}).}\label{tab:direct_prop}
 \scriptsize
-\setlength{\tabcolsep}{3.8pt}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccc}
 \toprule
-\textbf{Domain ($n$)} & \textbf{Head} & \textbf{Full After} & \textbf{+/$-$/0} & \textbf{Iso $-$ Full} & \textbf{Diag $-$ Full} & \textbf{Perm.\ $-$ Full} & \textbf{Online Weak $-$ Full} \\
+\multicolumn{8}{l}{\textbf{Panel A: Pure-Kernel Prior-Informed Posterior Shape Accuracy on 72 Unseen DES Tasks (post-probe $n=9$)}} \\
+\textbf{Domain ($n$)} & \textbf{Head} & \textbf{Full ($8\to 9$)} & \textbf{Iso $-$ Diag} & \textbf{Iso $-$ Full} & \textbf{Diag $-$ Full} & \textbf{Perm.\ $-$ Full} & \textbf{Online Weak $-$ Full} \\
 \midrule
-\multicolumn{8}{l}{\textbf{Panel A: Exploratory 86-Task Four-Domain Panel (\texttt{exploratory\_86}, $8 \to 9$ transition)}} \\
+\multirow{2}{*}{Inventory (24)} & Obj. & $0.749\!\to\!0.699$ & $+0.020$ ($1.000$) & $+0.022$ ($1.000$) & $+0.003$ ($1.000$) & $+0.037$ ($0.840$) & $+0.208$ ($0.002$) \\
+ & Con. & $0.743\!\to\!0.669$ & $+0.082$ ($0.007$) & $+0.071$ ($0.007$) & $-0.011$ ($0.016$) & $+0.093$ ($0.008$) & $+0.289$ ($0.003$) \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{Queueing (24)} & Obj. & $0.753\!\to\!0.695$ & $-0.024$ ($0.100$) & $-0.037$ ($0.012$) & $-0.013$ ($0.012$) & $-0.005$ ($0.658$) & $+0.046$ ($0.893$) \\
+ & Con. & $0.814\!\to\!0.766$ & $+0.085$ ($0.043$) & $+0.079$ ($0.045$) & $-0.006$ ($0.255$) & $+0.059$ ($0.045$) & $+0.212$ ($0.394$) \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{Traffic-21 (24)} & Obj. & $0.742\!\to\!0.704$ & $+0.168$ ($0.022$) & $+0.171$ ($0.022$) & $+0.003$ ($0.845$) & $+0.248$ ($0.022$) & $+0.214$ ($0.100$) \\
+ & Con. & $0.660\!\to\!0.618$ & $+0.142$ ($0.006$) & $+0.135$ ($0.018$) & $-0.007$ ($0.638$) & $+0.162$ ($0.037$) & $+0.179$ ($0.042$) \\
+\cmidrule(lr){1-8}
+\multirow{2}{*}{Pooled DES (72)} & Obj. & $0.748\!\to\!0.699$ & $+0.055$ ($0.062$) & $+0.052$ ($0.076$) & $-0.002$ ($0.699$) & $+0.093$ ($0.016$) & $+0.156$ ($0.0003$) \\
+ & Con. & $0.739\!\to\!0.684$ & $+0.103$ ($<10^{-4}$) & $+0.095$ ($<10^{-4}$) & $-0.008$ ($0.128$) & $+0.105$ ($0.0001$) & $+0.226$ ($0.0005$) \\
 \midrule
-\multirow{2}{*}{Inventory (24)} & Obj. & $0.764$ & 23/1/0 & $+0.072$ ($0.034$) & $-0.007$ ($0.534$) & $+0.036$ ($0.534$) & $+0.201$ ($<10^{-4}$) \\
- & Con. & $0.789$ & 20/4/0 & $+0.094$ ($0.002$) & $-0.008$ ($0.377$) & $+0.092$ ($0.014$) & $+0.299$ ($0.007$) \\
-\cmidrule(lr){1-8}
-\multirow{2}{*}{Queueing (24)} & Obj. & $0.600$ & 22/2/0 & $0.000$ ($0.996$) & $-0.019$ ($0.006$) & $+0.058$ ($0.284$) & $+0.097$ ($0.303$) \\
- & Con. & $1.743$ & 16/8/0 & $+0.214$ ($0.0001$) & $+0.005$ ($0.640$) & $+0.163$ ($0.002$) & $+0.582$ ($0.080$) \\
-\cmidrule(lr){1-8}
-\multirow{2}{*}{OPSD-336 (14)} & Obj. & $1.960$ & 6/8/0 & $-0.008$ ($0.695$) & $-0.001$ ($1.000$) & $-0.001$ ($1.000$) & $+0.275$ ($0.017$) \\
- & Con. & $1.650$ & 6/8/0 & $-0.029$ ($1.000$) & $-0.006$ ($1.000$) & $-0.024$ ($1.000$) & $+0.173$ ($0.998$) \\
-\cmidrule(lr){1-8}
-\multirow{2}{*}{Traffic-21 (24)} & Obj. & $0.680$ & 21/3/0 & $+0.207$ ($0.0006$) & $+0.037$ ($0.005$) & $+0.259$ ($<10^{-4}$) & $+0.297$ ($0.003$) \\
- & Con. & $0.714$ & 21/3/0 & $+0.221$ ($0.006$) & $+0.032$ ($0.062$) & $+0.153$ ($0.006$) & $+0.342$ ($0.012$) \\
-\cmidrule(lr){1-8}
-\multirow{2}{*}{Pooled DES (72)} & Obj. & $0.681$ & 66/6/0 & $+0.093$ ($0.0001$) & $+0.004$ ($0.544$) & $+0.118$ ($<10^{-4}$) & $+0.198$ ($<10^{-4}$) \\
- & Con. & $1.082$ & 57/15/0 & $+0.177$ ($<10^{-4}$) & $+0.010$ ($0.196$) & $+0.136$ ($<10^{-4}$) & $+0.408$ ($<10^{-4}$) \\
+\multicolumn{8}{l}{\textbf{Panel B: Decision-Aligned Calibration, Meta-BO Baselines, Prior-Component Ablations, and $M_{\mathrm{src}}$ Scaling ($n=72$ unseen tasks)}} \\
+\textbf{Category} & \textbf{Surrogate / Prior Variant} & \textbf{Gate RMSE ($\downarrow$)} & \textbf{Diff.\ vs.\ FullSURE ($p$)} & \textbf{Feas.\ Brier ($\downarrow$)} & \textbf{Feas.\ AUROC ($\uparrow$)} & \textbf{True Slot-0 Gain ($\uparrow$)} & \textbf{Obj.\ NRMSE ($\downarrow$)} \\
 \midrule
-\multicolumn{8}{l}{\textbf{Panel B: Pre-Registered Confirmatory 72-Task Unseen DES Panel (\texttt{confirm\_fresh\_72}, $8 \to 9$ transition)}} \\
-\midrule
-\multirow{2}{*}{Inventory (24)} & Obj. & $0.699$ & 20/4/0 & $+0.022$ ($1.000$) & $+0.003$ ($1.000$) & $+0.037$ ($0.840$) & $+0.208$ ($0.002$) \\
- & Con. & $0.669$ & 21/3/0 & $+0.071$ ($0.007$) & $-0.011$ ($0.016$) & $+0.093$ ($0.008$) & $+0.289$ ($0.003$) \\
+Core \& Meta-BO & \textbf{Online-FullSURE ($M_{\mathrm{src}}\!=\!6$)} & $0.237$ & --- & $0.109$ & $0.900$ & $+0.0845$ & $0.577$ \\
+ & \texttt{Online-DiagSURE} & $0.237$ & $0.0000$ & $0.109$ & $0.901$ & $+0.0851$ & $0.576$ \\
+ & \texttt{Online-SameBasisWeak} & $0.250$ & $+0.0131$ ($0.0002$) & $0.118$ & $0.866$ & $+0.0801$ & $0.710$ \\
+ & \texttt{ColdPsi-GP} (target-only) & $0.244$ & $+0.0066$ ($0.010$) & $0.115$ & $0.905$ & $+0.0706$ & $0.558$ \\
+ & \texttt{ABLR-on-Psi} (linear meta-BO) & $0.236$ & $-0.0014$ ($0.780$) & $0.104$ & $0.829$ & $+0.1183$ & $0.552$ \\
+ & \texttt{MTGP-ICM-on-Psi} & $0.247$ & $+0.0101$ ($0.095$) & $0.111$ & $0.838$ & $+0.0569$ & $0.762$ \\
+ & \texttt{RGPE-on-Psi} & $0.231$ & $-0.0067$ ($0.490$) & $0.124$ & $0.849$ & $+0.0671$ & $0.442$ \\
+Component \& $\psi$ Abl. & \texttt{Pillar-NoLowPass} & $0.242$ & $+0.0052$ ($0.025$) & $0.107$ & $0.892$ & $+0.0844$ & $0.566$ \\
+ & \texttt{Pillar-NoDebias} & $0.237$ & $+0.0002$ ($0.925$) & $0.106$ & $0.896$ & $+0.0827$ & $0.583$ \\
+ & \texttt{Pillar-NoOrtho} & $0.239$ & $+0.0015$ ($0.442$) & $0.110$ & $0.909$ & $+0.1014$ & $0.544$ \\
+ & \texttt{Pillar-NoSparse} & $0.239$ & $+0.0018$ ($0.605$) & $0.103$ & $0.888$ & $+0.0971$ & $0.557$ \\
+ & \texttt{Psi-DropVol7D} ($7$-coord $\psi$) & $0.243$ & $+0.0061$ ($0.066$) & $0.115$ & $0.920$ & $+0.0704$ & $0.560$ \\
+ & \texttt{Psi-GenericBlackBox} & $0.362$ & $+0.1244$ ($<10^{-4}$) & $0.183$ & $0.838$ & $+0.0221$ & $1.065$ \\
+ & \texttt{ForecastNoise-15\%} & $0.242$ & $+0.0048$ ($0.245$) & $0.113$ & $0.924$ & $+0.0907$ & $0.573$ \\
 \cmidrule(lr){1-8}
-\multirow{2}{*}{Queueing (24)} & Obj. & $0.695$ & 21/3/0 & $-0.037$ ($0.012$) & $-0.013$ ($0.012$) & $-0.005$ ($0.658$) & $+0.046$ ($0.893$) \\
- & Con. & $0.766$ & 16/8/0 & $+0.079$ ($0.045$) & $-0.006$ ($0.255$) & $+0.059$ ($0.045$) & $+0.212$ ($0.394$) \\
-\cmidrule(lr){1-8}
-\multirow{2}{*}{Traffic-21 (24)} & Obj. & $0.704$ & 19/4/1 & $+0.171$ ($0.022$) & $+0.003$ ($0.845$) & $+0.248$ ($0.022$) & $+0.214$ ($0.100$) \\
- & Con. & $0.618$ & 21/3/0 & $+0.135$ ($0.018$) & $-0.007$ ($0.638$) & $+0.162$ ($0.037$) & $+0.179$ ($0.042$) \\
-\cmidrule(lr){1-8}
-\multirow{2}{*}{Pooled DES (72)} & Obj. & $0.699$ & 60/11/1 & $+0.052$ ($0.076$) & $-0.002$ ($0.699$) & $+0.093$ ($0.016$) & $+0.156$ ($0.0003$) \\
- & Con. & $0.684$ & 58/14/0 & $+0.095$ ($<10^{-4}$) & $-0.008$ ($0.128$) & $+0.105$ ($0.0001$) & $+0.226$ ($0.0005$) \\
+$M_{\mathrm{src}}$ Scaling & $M_{\mathrm{src}}=3$ Online / Kernel Diag$-$Full & $0.241$ & Con: $-0.064$ ($0.132$) & --- & --- & Obj: $-0.016$ ($0.029$) & $0.541$ \\
+ & $M_{\mathrm{src}}=12$ Online / Kernel Diag$-$Full & $0.241$ & Con: $+0.013$ ($0.096$) & --- & --- & Obj: $+0.006$ ($0.087$) & $0.576$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}

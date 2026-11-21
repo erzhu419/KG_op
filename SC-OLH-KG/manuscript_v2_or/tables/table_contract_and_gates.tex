@@ -1,0 +1,56 @@
+\begin{table}[htbp]
+\centering
+\caption{Terminal eligibility relaxation, parameter-free shortlist nomination, budget reallocation, and exact binomial gate sensitivity with sequential curtailment. Panel~A compares \textbf{GP-FTA-ECKG} against (i) \texttt{GP-FTA-AllowUnvisited} (terminal shortlist permitted to nominate unvisited candidates outside $\mathcal{D}_N$; Unvis.~S0 counts Slot-0 unvisited nominations), (ii) \texttt{GP-FTA-DirectMaxU} (parameter-free combinatorial maximizer of three-slot expected saving with zero role thresholds), and (iii) \texttt{GP-FTA-LongSearch-k0} ($N=100$ search steps paired with curtailed $k^\star=0$ gates $(72,82,90)$). Panel~B evaluates exact binomial gate budgets across $k^\star\in\{0,1,2,3\}$ at $\delta=(0.025,0.015,0.010)$ alongside sample-path-identical sequential curtailment.}\label{tab:contract_gates}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccc}
+\toprule
+\multicolumn{9}{l}{\textbf{Panel A: Eligibility Relaxation, Parameter-Free Nomination, and Search-vs.-Verification Reallocation}} \\
+\textbf{Domain} & \textbf{Counterfactual Arm} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Calls (Verif.)} & \textbf{Cert./runs} & \textbf{Unvis.\ S0} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Holm $p$} \\
+\midrule
+\multirow{3}{*}{Inventory} & \texttt{GP-FTA-AllowUnvisited} & $1.8226$ & 399.6 (263.6) & 48/48 & 22/48 & $+0.0161\ [-0.0014,\,0.0337]$ & 11/13/0 & $0.209$ \\
+ & \texttt{GP-FTA-DirectMaxU} & $1.8014$ & 416.8 (280.8) & 48/48 & --- & $-0.0051\ [-0.0147,\,0.0046]$ & 10/14/0 & $0.576$ \\
+ & \texttt{GP-FTA-LongSearch-k0} & $1.8093$ & 348.5 (132.5) & 47/48 & --- & $+0.0028\ [-0.0050,\,0.0106]$ & 11/12/1 & $0.576$ \\
+\midrule
+\multirow{3}{*}{Queueing} & \texttt{GP-FTA-AllowUnvisited} & $2.5765$ & 370.7 (234.7) & 48/48 & 14/48 & $+0.0116\ [-0.0039,\,0.0271]$ & 13/11/0 & $0.272$ \\
+ & \texttt{GP-FTA-DirectMaxU} & $2.5612$ & 378.9 (242.9) & 48/48 & --- & $-0.0037\ [-0.0182,\,0.0107]$ & 12/12/0 & $0.600$ \\
+ & \texttt{GP-FTA-LongSearch-k0} & $2.5490$ & 357.1 (141.1) & 48/48 & --- & $-0.0160\ [-0.0245,\,-0.0074]$ & 5/19/0 & $0.002$ \\
+\midrule
+\multirow{3}{*}{OPSD-336} & \texttt{GP-FTA-AllowUnvisited} & $0.0561$ & 411.0 (275.0) & 26/28 & 12/28 & $-0.0014\ [-0.0037,\,0.0010]$ & 5/9/0 & $0.693$ \\
+ & \texttt{GP-FTA-DirectMaxU} & $0.0564$ & 411.0 (275.0) & 27/28 & --- & $-0.0011\ [-0.0037,\,0.0015]$ & 5/9/0 & $0.744$ \\
+ & \texttt{GP-FTA-LongSearch-k0} & $0.0583$ & 337.4 (121.4) & 24/28 & --- & $+0.0008\ [-0.0013,\,0.0028]$ & 8/4/2 & $0.744$ \\
+\midrule
+\multirow{3}{*}{Traffic-21} & \texttt{GP-FTA-AllowUnvisited} & $1.0839$ & 416.8 (280.8) & 35/48 & 21/48 & $+0.0049\ [-0.0142,\,0.0240]$ & 17/5/2 & $0.864$ \\
+ & \texttt{GP-FTA-DirectMaxU} & $1.0888$ & 428.5 (292.5) & 33/48 & --- & $+0.0098\ [-0.0065,\,0.0261]$ & 11/11/2 & $0.675$ \\
+ & \texttt{GP-FTA-LongSearch-k0} & $1.0884$ & 323.8 (107.8) & 33/48 & --- & $+0.0094\ [-0.0149,\,0.0336]$ & 11/10/3 & $0.864$ \\
+\midrule
+\multirow{3}{*}{Pooled DES ($72$)} & \texttt{GP-FTA-AllowUnvisited} & --- & --- & --- & --- & $+0.0670\ [-0.0239,\,0.1580]$ & 41/29/2 & $0.438$ \\
+ & \texttt{GP-FTA-DirectMaxU} & --- & --- & --- & --- & $+0.0309\ [-0.0458,\,0.1076]$ & 33/37/2 & $0.849$ \\
+ & \texttt{GP-FTA-LongSearch-k0} & --- & --- & --- & --- & $+0.0312\ [-0.0772,\,0.1396]$ & 27/41/4 & $0.849$ \\
+\midrule
+\multicolumn{9}{l}{\textbf{Panel B: Exact Binomial Gate Stringency ($k^\star\in\{0,1,2,3\}$) and Exact Sequential Curtailment ($172$ runs/level)}} \\
+\textbf{Domain} & \textbf{Gate $(K_0,K_1,K_2)$} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$} & \textbf{Fixed Verif.} & \textbf{Cert./runs} & \textbf{Verif.\ $>$5\%} & \textbf{Curtailed Verif.} & \textbf{Call Saving} & \textbf{Oper.\ $p_t(X_t^{\mathrm{op}})$} \\
+\midrule
+\multirow{4}{*}{Inventory} & $k^\star\!=\!0\ (72,82,90)$ & $1.8223$ & 158.6 & 47/48 & 0/47 & 132.1 & $26.5$ (16.7\%) & 0.41\% \\
+ & $k^\star\!=\!1\ (112,128,140)$ & $1.8065$ & 254.8 & 47/48 & 0/47 & 218.6 & $36.2$ (14.2\%) & 0.57\% \\
+ & $k^\star\!=\!2\ (142,155,165)$ & $1.8066$ & 328.1 & 47/48 & 0/47 & 283.7 & $44.5$ (13.5\%) & 0.55\% \\
+ & $k^\star\!=\!3\ (173,187,198)$ & $1.8067$ & 385.2 & 46/48 & 0/46 & 335.7 & $49.5$ (12.9\%) & 0.58\% \\
+\midrule
+\multirow{4}{*}{Queueing} & $k^\star\!=\!0\ (72,82,90)$ & $2.5660$ & 147.7 & 48/48 & 0/48 & 138.1 & $9.6$ (6.5\%) & 0.03\% \\
+ & $k^\star\!=\!1\ (112,128,140)$ & $2.5649$ & 229.8 & 48/48 & 0/48 & 222.8 & $7.0$ (3.1\%) & 0.11\% \\
+ & $k^\star\!=\!2\ (142,155,165)$ & $2.5625$ & 287.7 & 48/48 & 0/48 & 273.6 & $14.1$ (4.9\%) & 0.15\% \\
+ & $k^\star\!=\!3\ (173,187,198)$ & $2.5617$ & 340.5 & 48/48 & 0/48 & 330.6 & $9.9$ (2.9\%) & 0.19\% \\
+\midrule
+\multirow{4}{*}{OPSD-336} & $k^\star\!=\!0\ (72,82,90)$ & $0.0584$ & 167.7 & 26/28 & 0/26 & 129.0 & $38.7$ (23.1\%) & 0.80\% \\
+ & $k^\star\!=\!1\ (112,128,140)$ & $0.0575$ & 256.7 & 25/28 & 0/25 & 195.5 & $61.2$ (23.9\%) & 1.07\% \\
+ & $k^\star\!=\!2\ (142,155,165)$ & $0.0583$ & 327.2 & 24/28 & 0/24 & 250.1 & $77.1$ (23.6\%) & 1.12\% \\
+ & $k^\star\!=\!3\ (173,187,198)$ & $0.0583$ & 403.6 & 24/28 & 0/24 & 313.2 & $90.4$ (22.4\%) & 1.28\% \\
+\midrule
+\multirow{4}{*}{Traffic-21} & $k^\star\!=\!0\ (72,82,90)$ & $1.0998$ & 178.9 & 32/48 & 0/32 & 106.2 & $72.6$ (40.6\%) & 27.85\% \\
+ & $k^\star\!=\!1\ (112,128,140)$ & $1.0790$ & 272.6 & 35/48 & 0/35 & 182.6 & $90.0$ (33.0\%) & 22.63\% \\
+ & $k^\star\!=\!2\ (142,155,165)$ & $1.0780$ & 328.6 & 37/48 & 0/37 & 234.9 & $93.7$ (28.5\%) & 20.16\% \\
+ & $k^\star\!=\!3\ (173,187,198)$ & $1.0709$ & 385.4 & 39/48 & 0/39 & 297.1 & $88.4$ (22.9\%) & 17.12\% \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Logged Stage~A screening membership, missed-winner anatomy, and finite-grid discrepancies across the 24 production states ($6$ per family and stage). All-160 menu Spearman correlation, menu MAE, and 1-scramble screen/query losses are computed on the exhaustive single-scramble $256\times 1{,}024$ pass; 24-scramble screen and query losses re-evaluate the selected full-bank and Stage~A winners across $R=24$ independent $256\times 1{,}024$ Sobol scrambles (all losses $\times 10^{-3}$).}\label{tab:ec_screen_census}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccccc}
+\toprule
+\textbf{Stage} & \textbf{Family} & \textbf{Screen} & \textbf{Menu Hits} & \textbf{Nom.\ Hits} & \textbf{Miss (Rev/New)} & \textbf{Spearman (Def.)} & \textbf{MAE (1-Scr)} & \textbf{Screen Loss (1 / 24-Scr)} & \textbf{Query Loss (1 / 24-Scr)} & \textbf{Ref.\ Time (s)} \\
+\midrule
+Initial & Queueing & 14.2 & 6/6 & 6/6 & 0/0 & 0.923 (6/6) & 2.106 & 0.000 / 0.000 & 2.406 / 2.297 & 59.2 \\
+Initial & Traffic-21 & 14.3 & 6/6 & 5/6 & 0/1 & 0.886 (6/6) & 1.573 & 0.563 / 0.580 & 5.680 / 5.293 & 58.9 \\
+Step 59 & Queueing & 16.0 & 1/6 & 1/6 & 2/3 & 0.814 (6/6) & 0.202 & 0.458 / 0.482 & 0.460 / 0.482 & 67.1 \\
+Step 59 & Traffic-21 & 15.8 & 5/6 & 6/6 & 0/0 & 0.847 (5/6) & 0.022 & 0.000 / 0.000 & 0.064 / 0.064 & 66.4 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

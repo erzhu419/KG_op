@@ -1,0 +1,50 @@
+\begin{table}[htbp]
+\centering
+\caption{External frontier baselines, achievable feasible-oracle gap closure, and simulator-free black-box summary evaluation under identical $(112,128,140)$ three-slot clean-up ($N=60$). Panel~A compares \textbf{GP-FTA-ECKG} against trust-region constrained BO (\texttt{SCBO-3Slot}), joint-draw latent noisy expected improvement (\texttt{GP-FTA-LatentNEI-3Slot}), rank-weighted GP ensembles (\texttt{RGPE-on-Psi-3Slot}), and warm-started multi-task GP knowledge gradient (\texttt{WarmStart-MTGP-KG-3Slot}). Gap Closed~(\%) reports $(\bar{J}_{\mathrm{SQ}}-\bar{\mathcal{L}}_{\mathrm{SQ}})/(\bar{J}_{\mathrm{SQ}}-\bar{J}_{\mathrm{oracle}})$ against an offline $400$-candidate polished feasible oracle ($>100\%$ in queueing indicates adaptive online proposals improve slightly upon the fixed offline grid); positive contrasts favor \textbf{GP-FTA-ECKG} with four-comparator Holm $p$-values per block. Panel~B evaluates the $24$-task four-channel tandem queueing-newsvendor suite ($d_s\in\{24,32\}\to d_t\in\{48,64\}$) using strictly simulator-free black-box policy-profile summaries $\psi^{\mathrm{generic}}(x)\in\mathbb{R}^{12}$.}\label{tab:frontier_oracle}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccc}
+\toprule
+\multicolumn{9}{l}{\textbf{Panel A: Four-Domain External Frontier Baselines and Achievable Feasible-Oracle Gap Closure ($172$ cells/arm)}} \\
+\textbf{Domain (Anc.\ / Oracle)} & \textbf{Method} & \textbf{$\mathcal{L}_{\mathrm{SQ}}$ (Mean $\pm$ SE)} & \textbf{Gap Closed} & \textbf{Calls} & \textbf{Cert./runs} & \textbf{Arm $-$ ECKG [95\% CI]} & \textbf{W/L/T} & \textbf{Holm $p$} \\
+\midrule
+\multirow{5}{*}{Inventory ($1.898$ / $1.790$)} & \textbf{GP-FTA-ECKG} & $\mathbf{1.8065} \pm 0.0350$ & 84.8\% & 390.8 & 47/48 & --- & --- & --- \\
+ & \texttt{SCBO-3Slot} & $1.9035 \pm 0.0357$ & -5.0\% & 335.1 & 45/48 & $+0.0971\ [0.0753,\,0.1188]$ & 24/0/0 & $<10^{-4}$ \\
+ & \texttt{GP-FTA-LatentNEI-3Slot} & $1.8166 \pm 0.0354$ & 75.4\% & 386.8 & 48/48 & $+0.0101\ [-0.0032,\,0.0235]$ & 12/12/0 & $0.260$ \\
+ & \texttt{RGPE-on-Psi-3Slot} & $1.8158 \pm 0.0356$ & 76.1\% & 430.0 & 36/48 & $+0.0094\ [-0.0056,\,0.0243]$ & 12/12/0 & $0.260$ \\
+ & \texttt{WarmStart-MTGP-KG-3Slot} & $1.8408 \pm 0.0360$ & 53.0\% & 401.6 & 39/48 & $+0.0343\ [0.0224,\,0.0462]$ & 23/1/0 & $<10^{-4}$ \\
+\midrule
+\multirow{5}{*}{Queueing ($3.322$ / $2.619$)} & \textbf{GP-FTA-ECKG} & $2.5649 \pm 0.0464$ & 107.6\% & 365.8 & 48/48 & --- & --- & --- \\
+ & \texttt{SCBO-3Slot} & $3.1918 \pm 0.0626$ & 18.6\% & 351.6 & 42/48 & $+0.6268\ [0.5716,\,0.6820]$ & 24/0/0 & $<10^{-4}$ \\
+ & \texttt{GP-FTA-LatentNEI-3Slot} & $\mathbf{2.5501} \pm 0.0437$ & 109.7\% & 370.7 & 48/48 & $-0.0149\ [-0.0314,\,0.0017]$ & 10/14/0 & $0.076$ \\
+ & \texttt{RGPE-on-Psi-3Slot} & $2.6500 \pm 0.0542$ & 95.5\% & 350.3 & 46/48 & $+0.0851\ [0.0371,\,0.1331]$ & 21/3/0 & $0.003$ \\
+ & \texttt{WarmStart-MTGP-KG-3Slot} & $2.6864 \pm 0.0494$ & 90.4\% & 333.3 & 48/48 & $+0.1214\ [0.0897,\,0.1531]$ & 24/0/0 & $<10^{-4}$ \\
+\midrule
+\multirow{5}{*}{OPSD-336 ($0.0638$ / $0.0524$)} & \textbf{GP-FTA-ECKG} & $0.0575 \pm 0.0061$ & 55.3\% & 392.7 & 25/28 & --- & --- & --- \\
+ & \texttt{SCBO-3Slot} & $0.0613 \pm 0.0056$ & 21.8\% & 411.9 & 21/28 & $+0.0038\ [0.0004,\,0.0072]$ & 8/6/0 & $0.129$ \\
+ & \texttt{GP-FTA-LatentNEI-3Slot} & $0.0565 \pm 0.0065$ & 64.0\% & 377.3 & 26/28 & $-0.0010\ [-0.0031,\,0.0011]$ & 5/8/1 & $0.987$ \\
+ & \texttt{RGPE-on-Psi-3Slot} & $0.0572 \pm 0.0062$ & 58.3\% & 436.9 & 15/28 & $-0.0003\ [-0.0037,\,0.0030]$ & 5/8/1 & $0.987$ \\
+ & \texttt{WarmStart-MTGP-KG-3Slot} & $\mathbf{0.0562} \pm 0.0059$ & 66.4\% & 354.9 & 25/28 & $-0.0012\ [-0.0039,\,0.0014]$ & 6/8/0 & $0.987$ \\
+\midrule
+\multirow{5}{*}{Traffic-21 ($1.197$ / $1.006$)} & \textbf{GP-FTA-ECKG} & $1.0790 \pm 0.0184$ & 61.7\% & 408.6 & 35/48 & --- & --- & --- \\
+ & \texttt{SCBO-3Slot} & $1.1681 \pm 0.0183$ & 15.1\% & 476.2 & 10/48 & $+0.0892\ [0.0644,\,0.1139]$ & 21/1/2 & $<10^{-4}$ \\
+ & \texttt{GP-FTA-LatentNEI-3Slot} & $1.1061 \pm 0.0225$ & 47.6\% & 417.8 & 30/48 & $+0.0271\ [0.0019,\,0.0523]$ & 14/8/2 & $0.073$ \\
+ & \texttt{RGPE-on-Psi-3Slot} & $1.1111 \pm 0.0212$ & 44.9\% & 435.1 & 27/48 & $+0.0321\ [0.0076,\,0.0566]$ & 15/7/2 & $0.038$ \\
+ & \texttt{WarmStart-MTGP-KG-3Slot} & $\mathbf{1.0744} \pm 0.0204$ & 64.1\% & 387.0 & 38/48 & $-0.0046\ [-0.0289,\,0.0197]$ & 8/14/2 & $0.700$ \\
+\midrule
+\multirow{4}{*}{Pooled DES ($n=72$, SD)} & \texttt{SCBO-3Slot} & --- & --- & --- & --- & $+1.2788\ [1.0879,\,1.4697]$ & 69/1/2 & $<10^{-4}$ \\
+ & \texttt{GP-FTA-LatentNEI-3Slot} & --- & --- & --- & --- & $+0.1280\ [0.0066,\,0.2493]$ & 36/34/2 & $0.039$ \\
+ & \texttt{RGPE-on-Psi-3Slot} & --- & --- & --- & --- & $+0.2576\ [0.1311,\,0.3841]$ & 48/22/2 & $0.0004$ \\
+ & \texttt{WarmStart-MTGP-KG-3Slot} & --- & --- & --- & --- & $+0.1782\ [0.0569,\,0.2996]$ & 55/15/2 & $0.009$ \\
+\midrule
+\multicolumn{9}{l}{\textbf{Panel B: Simulator-Free Generic Summary $\psi^{\mathrm{generic}}$ on Tandem Queueing-Newsvendor Benchmark ($24$ tasks, $240$ runs)}} \\
+\midrule
+\multirow{5}{*}{Tandem-CntNv ($d_t\in\{48,64\}$)} & \textbf{GP-FTA-ECKG} & $\mathbf{3.1932} \pm 0.0757$ & Viol.\ 2.5\% & 385.1 & 37/48 & --- & --- & --- \\
+ & \texttt{GP-FTA-FeasibleKG} & $3.2864 \pm 0.0689$ & Viol.\ 2.3\% & 382.9 & 35/48 & $+0.0932\ [-0.0267,\,0.2130]$ & 15/7/2 & $0.486$ \\
+ & \texttt{GP-FTA-LatentNEI-3Slot} & $3.2743 \pm 0.0832$ & Viol.\ 2.0\% & 396.5 & 37/48 & $+0.0811\ [-0.0926,\,0.2549]$ & 15/8/1 & $0.806$ \\
+ & \texttt{SCBO-3Slot} & $3.2564 \pm 0.0390$ & Viol.\ 2.6\% & 504.6 & 3/48 & $+0.0632\ [-0.0522,\,0.1786]$ & 12/9/3 & $0.806$ \\
+ & \texttt{PublicPsi-TargetGP-TS} & $3.2252 \pm 0.0801$ & Viol.\ 2.2\% & 416.4 & 35/48 & $+0.0320\ [-0.0496,\,0.1136]$ & 12/10/2 & $0.806$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
